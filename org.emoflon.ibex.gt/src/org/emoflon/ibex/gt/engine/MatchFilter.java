@@ -15,7 +15,9 @@ import java.util.stream.Stream;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.common.operational.IMatch;
+import org.emoflon.ibex.common.operational.SimpleMatch;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeConstraint;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeExpression;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeParameter;
@@ -44,7 +46,6 @@ public class MatchFilter {
 	 *            the matches
 	 * @return a stream containing matches
 	 */
-	@SuppressWarnings("unchecked")
 	public static Stream<IMatch> getFilteredMatchStream(final IBeXContext pattern, final Map<String, Object> parameters,
 			final Map<String, Collection<IMatch>> matches) {
 		if (pattern instanceof IBeXContextPattern) {
@@ -65,32 +66,109 @@ public class MatchFilter {
 			return matchStream.distinct();
 		} else if (pattern instanceof IBeXContextTransitive) {
 			IBeXContextTransitive transitivePattern = (IBeXContextTransitive)pattern;
-			Map<IBeXNode, IBeXContextPattern> node2Pattern = new HashMap<>();
-			for(IBeXContextPattern subPattern : transitivePattern.getSubPatterns()) {
-				for(IBeXNode node : subPattern.getSignatureNodes()) {
-					node2Pattern.put(node, subPattern);
-				}
-			}
-			for(IBeXTransitiveEdge edge : transitivePattern.getTransitiveEdges()) {
-				matches.get(node2Pattern.get(edge.getSourceNode())).parallelStream().forEach(submatch -> {
-					Set<Object> visitedNodes = Collections.synchronizedSet(new HashSet<>());
-					EObject node = (EObject)submatch.get(edge.getSourceNode().getName());
-					while(node!=null && !visitedNodes.contains(node)) {
-						
-					}
-					if(edge.getType().getUpperBound() == 1) {
-						EList<EObject> otherNodes = (EList<EObject>)node.eGet(edge.getType());
-						otherNodes.parallelStream().forEach(otherNode -> {
-							
-						});
-					}else {
-						EObject otherNode = (EObject)node.eGet(edge.getType());
-					}
-					
-				});
-			}
+			return MatchFilter.getFilteredMatchStream(transitivePattern, parameters, matches);
 		}
 		throw new IllegalArgumentException("Invalid pattern " + pattern);
+	}
+	
+	private static Stream<IMatch>  getFilteredMatchStream(final IBeXContextTransitive transitivePattern, final Map<String, Object> parameters,
+			final Map<String, Collection<IMatch>> matches) {
+		Map<IBeXNode, IBeXContextPattern> node2Pattern = new HashMap<>();
+		Map<IBeXContextPattern, Map<EObject, Set<IMatch>>> node2Match = Collections.synchronizedMap(new HashMap<>());
+		for(IBeXContextPattern subPattern : transitivePattern.getSubPatterns()) {
+			for(IBeXNode node : subPattern.getSignatureNodes()) {
+				node2Pattern.put(node, subPattern);
+			}
+		}
+		for(IBeXTransitiveEdge edge : transitivePattern.getTransitiveEdges()) {
+			IBeXContextPattern srcPattern = node2Pattern.get(edge.getTargetNode());
+			IBeXContextPattern trgPattern = node2Pattern.get(edge.getTargetNode());
+			Map<EObject, Set<IMatch>> srcMatches = node2Match.get(srcPattern);
+			Map<EObject, Set<IMatch>> trgMatches = node2Match.get(trgPattern);
+			if(srcMatches == null) {
+				srcMatches = Collections.synchronizedMap(new HashMap<>());
+				node2Match.put(srcPattern, srcMatches);
+			}
+			if(trgMatches == null) {
+				trgMatches = Collections.synchronizedMap(new HashMap<>());
+				node2Match.put(trgPattern, trgMatches);
+			}
+			for(IMatch match : matches.get(srcPattern.getName())) {
+				EObject node = (EObject) match.get(edge.getSourceNode().getName());
+				Set<IMatch> nodeMatches = srcMatches.get(node);
+				if(nodeMatches == null) {
+					nodeMatches = Collections.synchronizedSet(new HashSet<>());
+					srcMatches.put(node, nodeMatches);
+				}
+				nodeMatches.add(match);
+			}
+			for(IMatch match : matches.get(trgPattern.getName())) {
+				EObject node = (EObject) match.get(edge.getTargetNode().getName());
+				Set<IMatch> nodeMatches = trgMatches.get(node);
+				if(nodeMatches == null) {
+					nodeMatches = Collections.synchronizedSet(new HashSet<>());
+					trgMatches.put(node, nodeMatches);
+				}
+				nodeMatches.add(match);
+			}
+		}
+		
+		IBeXTransitiveEdge initialEdge = transitivePattern.getTransitiveEdges().get(0);	
+		Stream<IMatch> matchesForPattern = findTransitiveMatches(matches.get(node2Pattern.get(initialEdge.getSourceNode()).getName()).parallelStream(), 
+				transitivePattern.getTransitiveEdges(), 0, node2Pattern, node2Match, matches);
+		matchesForPattern = MatchFilter.filterNodeBindings(matchesForPattern, transitivePattern.getBasePattern(), parameters);
+		matchesForPattern = MatchFilter.filterAttributeConstraintsWithParameter(matchesForPattern, transitivePattern.getBasePattern(), parameters);
+		return matchesForPattern;
+	}
+	
+	private static Stream<IMatch> findTransitiveMatches(final Stream<IMatch> found, final List<IBeXTransitiveEdge> edges, int currentEdge, 
+			final Map<IBeXNode, IBeXContextPattern> node2Pattern, final Map<IBeXContextPattern, Map<EObject, Set<IMatch>>> node2Match,
+			final Map<String, Collection<IMatch>> matches) {
+		
+		if(currentEdge >= edges.size()) {
+			return found;
+		}
+		
+		IBeXTransitiveEdge edge = edges.get(currentEdge);
+		Stream<IMatch> connectedMatches = found
+				.flatMap(match -> findTransitiveNodes(Stream.empty(), (EObject) match.get(edge.getSourceNode().getName()), edge.getType())
+						.map(node -> {
+							SimpleMatch simpleMatch = new SimpleMatch(match);
+							simpleMatch.put(edge.getTargetNode().getName(), node);
+							return (IMatch)simpleMatch;
+						}))
+				.distinct()
+				.filter(match -> node2Match.get(node2Pattern.get(edge.getTargetNode())).containsKey(match.get(edge.getTargetNode().getName())))
+				.flatMap(match -> node2Match.get(node2Pattern.get(edge.getTargetNode())).get(match.get(edge.getTargetNode().getName())).parallelStream()
+						.map(trgMatch -> {
+							IBeXContextPattern trgPattern = node2Pattern.get(edge.getTargetNode());
+							SimpleMatch simpleMatch = new SimpleMatch(match);
+							for(IBeXNode ibexNode : trgPattern.getSignatureNodes()) {
+								simpleMatch.put(ibexNode.getName(), trgMatch.get(ibexNode.getName()));
+							}
+							return (IMatch)simpleMatch;
+						}))
+				.distinct();
+
+		return findTransitiveMatches(connectedMatches, edges, currentEdge+1, node2Pattern, node2Match, matches);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private static Stream<EObject> findTransitiveNodes(final Stream<EObject> found, final EObject src, final EReference edge) {
+		if(edge.getUpperBound() != 1) {
+			EList<EObject> otherNodes = (EList<EObject>)src.eGet(edge);
+			if(otherNodes == null || otherNodes.isEmpty())
+				return found;
+			
+			return otherNodes.parallelStream().flatMap(otherNode -> findTransitiveNodes(Stream.concat(found, otherNodes.parallelStream()), otherNode, edge));
+		}else {
+			EObject otherNode = (EObject)src.eGet(edge);
+			if(otherNode == null)
+				return found;
+			
+			Stream.of(otherNode);
+			return findTransitiveNodes(Stream.concat(found, Stream.of(otherNode)), otherNode, edge);
+		}
 	}
 
 	/**
@@ -111,7 +189,7 @@ public class MatchFilter {
 			return Stream.empty();
 		}
 
-		Stream<IMatch> matchesForPattern = matches.get(pattern.getName()).stream();
+		Stream<IMatch> matchesForPattern = matches.get(pattern.getName()).parallelStream();
 		matchesForPattern = MatchFilter.filterNodeBindings(matchesForPattern, pattern, parameters);
 		matchesForPattern = MatchFilter.filterAttributeConstraintsWithParameter(matchesForPattern, pattern, parameters);
 		return matchesForPattern;
@@ -234,7 +312,7 @@ public class MatchFilter {
 	 * @return the result of the comparison. For any objects which are not
 	 *         {@link Comparable}, <code>false</code> will be returned.
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings("unchecked")
 	private static boolean compareTo(final Object a, final Object b, final Predicate<Integer> condition) {
 		return a instanceof Comparable && b instanceof Comparable //
 				&& condition.test(((Comparable<Object>) a).compareTo(b));
