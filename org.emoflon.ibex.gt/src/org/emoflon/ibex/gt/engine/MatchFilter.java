@@ -14,7 +14,6 @@ import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeConstraint;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeExpression;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeParameter;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeValue;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextAlternatives;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
@@ -55,6 +54,16 @@ public class MatchFilter {
 				matchStream = Stream.concat(matchStream, matchesForAlterative);
 			}
 			return matchStream.distinct();
+		}
+		throw new IllegalArgumentException("Invalid pattern " + pattern);
+	}
+	
+	public static boolean isMatchValid(final IMatch match, final IBeXContext pattern, final Map<String, Object> parameters, final Map<String, Collection<IMatch>> matches) {
+		if (pattern instanceof IBeXContextPattern) {
+			Stream<IMatch> matchesForPattern = Stream.of(match);
+			matchesForPattern = MatchFilter.filterNodeBindings(matchesForPattern, (IBeXContextPattern)pattern, parameters);
+			matchesForPattern = MatchFilter.filterAttributeConstraintsWithParameter(matchesForPattern, (IBeXContextPattern)pattern, parameters);
+			return matchesForPattern.count() > 0;
 		}
 		throw new IllegalArgumentException("Invalid pattern " + pattern);
 	}

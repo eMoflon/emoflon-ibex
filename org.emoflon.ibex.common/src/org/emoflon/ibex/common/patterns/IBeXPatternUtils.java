@@ -126,25 +126,6 @@ public class IBeXPatternUtils {
 	}
 
 	/**
-	 * Returns the context pattern with the given name.
-	 * 
-	 * @param patternSet the pattern set
-	 * @param name       the name to search
-	 * @return the context pattern with the given name
-	 * @throws NoSuchElementException if no context pattern with the given name
-	 *                                exists
-	 */
-	public static IBeXContext getContextPattern(final IBeXPatternSet patternSet, final String name) {
-		Optional<IBeXContext> pattern = patternSet.getContextPatterns().stream() //
-				.filter(p -> p.getName().equals(name)) //
-				.findAny();
-		if (!pattern.isPresent()) {
-			throw new NoSuchElementException(String.format("No context pattern called %s", name));
-		}
-		return pattern.get();
-	}
-
-	/**
 	 * Returns the create pattern with the given name.
 	 * 
 	 * @param ruleSet the pattern set

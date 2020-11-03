@@ -2,14 +2,17 @@ package org.emoflon.ibex.gt.engine;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -28,7 +31,9 @@ import org.emoflon.ibex.common.operational.IMatchObserver;
 import org.emoflon.ibex.common.operational.PushoutApproach;
 import org.emoflon.ibex.common.operational.SimpleMatch;
 import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
+import org.emoflon.ibex.gt.api.GraphTransformationPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextAlternatives;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel;
@@ -47,6 +52,9 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	private IBeXModel ibexModel;
 	private IBeXPatternSet patternSet;
 	private IBeXRuleSet ruleSet;
+	
+	private Map<String, IBeXContext> name2Pattern;
+	private Map<String, GraphTransformationPattern<?,?>> name2GTPattern;
 	/**
 	 * The pattern matching engine.
 	 */
@@ -93,6 +101,9 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	private Map<IMatch, List<Consumer<IMatch>>> subscriptionsForDisappearingMatches //
 			= new HashMap<IMatch, List<Consumer<IMatch>>>();
 
+	private Map<IMatch, LinkedList<Consumer<IMatch>>> appearingSubscriptionJobs = Collections.synchronizedMap(new LinkedHashMap<>());
+	private Map<IMatch, LinkedList<Consumer<IMatch>>> disappearingSubscriptionJobs = Collections.synchronizedMap(new LinkedHashMap<>());
+	
 	/**
 	 * Creates a new GraphTransformationInterpreter for queries and modifications on
 	 * the given resource set. The default resource is set to the first resource in
@@ -150,6 +161,8 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 
 		this.contextPatternInterpreter = engine;
 		this.model = model;
+		name2GTPattern = new HashMap<>();
+		name2Pattern = new HashMap<>();
 		createPatternInterpreter = new GraphTransformationCreateInterpreter(defaultResource, this);
 		deletePatternInterpreter = new GraphTransformationDeleteInterpreter(trashResource);
 	}
@@ -179,6 +192,9 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			// Transform into patterns of the concrete engine.
 			ibexModel = (IBeXModel) resourceContent;
 			patternSet = ibexModel.getPatternSet();
+			patternSet.getContextPatterns().forEach(pattern -> {
+				name2Pattern.put(pattern.getName(), pattern);
+			});
 			ruleSet = ibexModel.getRuleSet();
 			contextPatternInterpreter.initPatterns(patternSet);
 			contextPatternInterpreter.monitor(model.getResources());
@@ -264,7 +280,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	public Stream<IMatch> matchStream(final String patternName, final Map<String, Object> parameters) {
 		updateMatches();
 
-		IBeXContext pattern = IBeXPatternUtils.getContextPattern(patternSet, patternName);
+		IBeXContext pattern = name2Pattern.get(patternName);
 		if (IBeXPatternUtils.isEmptyPattern(pattern)) {
 			return Stream.of(createEmptyMatchForCreatePattern(patternName));
 		}
@@ -300,6 +316,9 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 *            the consumer to add
 	 */
 	public void subscribeAppearing(final String patternName, final Consumer<IMatch> consumer) {
+		if(name2Pattern.get(patternName) instanceof IBeXContextAlternatives)
+			throw new IllegalArgumentException("Subscriptions to Pattern-Alternatives not supported: Invalid pattern " + name2Pattern.get(patternName));
+		
 		if (!subscriptionsForAppearingMatchesOfPattern.containsKey(patternName)) {
 			subscriptionsForAppearingMatchesOfPattern.put(patternName, new ArrayList<Consumer<IMatch>>());
 		}
@@ -330,6 +349,9 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 *            the consumer to add
 	 */
 	public void subscribeDisappearing(final String patternName, final Consumer<IMatch> consumer) {
+		if(name2Pattern.get(patternName) instanceof IBeXContextAlternatives)
+			throw new IllegalArgumentException("Subscriptions to Pattern-Alternatives not supported: Invalid pattern " + name2Pattern.get(patternName));
+		
 		if (!subscriptionsForDisappearingMatchesOfPattern.containsKey(patternName)) {
 			subscriptionsForDisappearingMatchesOfPattern.put(patternName, new ArrayList<Consumer<IMatch>>());
 		}
@@ -360,6 +382,9 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 *            the consumer to add
 	 */
 	public void subscribeMatchDisappears(final IMatch match, final Consumer<IMatch> consumer) {
+		if(name2Pattern.get(match.getPatternName()) instanceof IBeXContextAlternatives)
+			throw new IllegalArgumentException("Subscriptions to Pattern-Alternatives not supported: Invalid pattern " + name2Pattern.get(match.getPatternName()));
+			
 		if (!subscriptionsForDisappearingMatches.containsKey(match)) {
 			subscriptionsForDisappearingMatches.put(match, new ArrayList<Consumer<IMatch>>());
 		}
@@ -379,16 +404,30 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			subscriptionsForDisappearingMatches.get(match).remove(consumer);
 		}
 	}
-
+	private boolean updateDisabled = false;
 	/**
 	 * Trigger the engine to update the pattern network.
 	 */
 	public void updateMatches() {
+		if(updateDisabled)
+			return;
+		
 		contextPatternInterpreter.updateMatches();
 	}
 	
-	LinkedHashMap<IMatch, LinkedList<Consumer<IMatch>>> appearingSubscriptionJobs = new LinkedHashMap<>();
-	LinkedHashMap<IMatch, LinkedList<Consumer<IMatch>>> disappearingSubscriptionJobs = new LinkedHashMap<>();
+	public void registerGraphTransformationPattern(final String patternName, final GraphTransformationPattern<?,?> pattern) {
+		if(name2GTPattern.containsKey(patternName))
+			throw new IllegalArgumentException("Pattern already registered with interpreter: " + name2Pattern.get(patternName));
+		
+		name2GTPattern.put(patternName, pattern);
+	}
+	
+	public GraphTransformationPattern<?,?> getRegisteredGraphTransformationPattern(final String patternName) {
+		if(!name2GTPattern.containsKey(patternName))
+			throw new IllegalArgumentException("Pattern not registered with interpreter: " + name2Pattern.get(patternName));
+		
+		return name2GTPattern.get(patternName);
+	}
 	
 	@Override
 	public void notifySubscriptions() {
@@ -401,14 +440,38 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			}
 		}
 		
-		while(!appearingSubscriptionJobs.isEmpty()) {
-			IMatch nextMatch = appearingSubscriptionJobs.keySet().iterator().next();
+//		List<IMatch> removals = new LinkedList<>();
+		Set<IMatch> jobs = new LinkedHashSet<>(appearingSubscriptionJobs.keySet());
+		for(IMatch nextMatch : jobs) {
 			LinkedList<Consumer<IMatch>> subs = appearingSubscriptionJobs.get(nextMatch);
+			if(subs == null || subs.isEmpty()) {
+				appearingSubscriptionJobs.remove(nextMatch);
+				continue;
+			}
+			
+			// Check constraints using parameters
+			if(!MatchFilter.isMatchValid(nextMatch, name2Pattern.get(nextMatch.getPatternName()), 
+				(name2GTPattern.containsKey(nextMatch.getPatternName())) ? name2GTPattern.get(nextMatch.getPatternName()).getParameters() : new HashMap<>(), 
+						matches)) {
+				continue;
+			}
+			
+			updateDisabled = true;
+			// Check additional constraints (e.g. Arithmetic attribute constraints)
+			if(name2GTPattern.containsKey(nextMatch.getPatternName()) && !name2GTPattern.get(nextMatch.getPatternName()).isMatchValid(nextMatch)) {
+				continue;
+			}
+			updateDisabled = false;
+			
+			// Mark as removed and apply callbacks
 			appearingSubscriptionJobs.remove(nextMatch);
+//			removals.add(nextMatch);
 			while(matches.get(nextMatch.getPatternName()).contains(nextMatch) && !subs.isEmpty()) {
 				subs.pollFirst().accept(nextMatch);
 			}
 		}
+		// Cleanup
+//		removals.forEach(match -> appearingSubscriptionJobs.remove(match));
 	}
 
 	@Override

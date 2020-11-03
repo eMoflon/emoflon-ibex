@@ -68,6 +68,7 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 		this.api = api;
 		this.interpreter = interpreter;
 		this.patternName = patternName;
+		interpreter.registerGraphTransformationPattern(patternName, this);
 	}
 
 	/**
@@ -142,7 +143,11 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 * @return the Stream of matches
 	 */
 	protected Stream<IMatch> untypedMatchStream(){
-		return interpreter.matchStream(patternName, getParameters());
+		return interpreter.matchStream(patternName, getParameters()).filter(match -> isMatchValid(match));
+	}
+	
+	public boolean isMatchValid(IMatch match) {
+		return true;
 	}
 	
 	/**

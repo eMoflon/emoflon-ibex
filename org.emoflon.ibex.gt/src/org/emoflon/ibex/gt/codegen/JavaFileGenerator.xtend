@@ -185,7 +185,15 @@ class JavaFileGenerator {
 						* @return the new instance of the rule»
 						*/
 						public «getRuleClassName(rule)» «rule.name»(«FOR parameter : rule.parameters SEPARATOR ', '»final «getJavaType(parameter.type)» «parameter.name»Value«ENDFOR») {
-							return new «getRuleClassName(rule)»(this, interpreter«FOR parameter : rule.parameters BEFORE ', 'SEPARATOR ', '»«parameter.name»Value«ENDFOR»);
+							try{
+								«getRuleClassName(rule)» rule = («getRuleClassName(rule)») interpreter.getRegisteredGraphTransformationPattern("«rule.name»");
+								«FOR parameter : rule.parameters»
+								rule.«getMethodName('set', parameter.name)»(«parameter.name»Value);
+								«ENDFOR»
+								return rule;
+							} catch(Exception e) {
+								return new «getRuleClassName(rule)»(this, interpreter«FOR parameter : rule.parameters BEFORE ', 'SEPARATOR ', '»«parameter.name»Value«ENDFOR»);
+							}
 						}
 			«ENDFOR»
 				«FOR pattern : ibexModel.patternSet.contextPatterns
@@ -198,7 +206,15 @@ class JavaFileGenerator {
 						* @return the new instance of the pattern»
 						*/
 						public «getPatternClassName(pattern)» «pattern.name»(«FOR parameter : getPatternParameter(pattern) SEPARATOR ', '»final «getJavaType(parameter.type)» «parameter.name»Value«ENDFOR») {
-							return new «getPatternClassName(pattern)»(this, interpreter«FOR parameter : getPatternParameter(pattern) BEFORE ', 'SEPARATOR ', '»«parameter.name»Value«ENDFOR»);
+							try{
+								«getPatternClassName(pattern)» pattern = («getPatternClassName(pattern)») interpreter.getRegisteredGraphTransformationPattern("«pattern.name»");
+								«FOR parameter : getPatternParameter(pattern)»
+								pattern.«getMethodName('set', parameter.name)»(«parameter.name»Value);
+								«ENDFOR»
+								return pattern;
+							} catch(Exception e) {
+								return new «getPatternClassName(pattern)»(this, interpreter«FOR parameter : getPatternParameter(pattern) BEFORE ', 'SEPARATOR ', '»«parameter.name»Value«ENDFOR»);
+							}
 						}
 						«ENDFOR»
 			}
@@ -510,11 +526,21 @@ class JavaFileGenerator {
 						parameters.put("«node.name»", Objects.requireNonNull(object, "«node.name» must not be null!"));
 						return this;
 					}
+					
+					/**
+					 * Unbinds the node «node.name» to the given object.
+					 *
+					 * @param object
+					 *            the object to set
+					 */
+					public «getRuleClassName(rule)» «getMethodName('unbind', node.name)»() {
+						parameters.remove("«node.name»");
+						return this;
+					}
 			«ENDFOR»
 			«FOR parameter : rule.parameters»
-				
 					/**
-					 * Sets the parameter «parameter.name» to the given value.
+					 * Sets the parameter «parameter.name».
 					 *
 					 * @param value
 					 *            the value to set
@@ -526,16 +552,14 @@ class JavaFileGenerator {
 			«ENDFOR»
 				«IF !rule.arithmeticConstraints.empty»
 				@Override
-				protected Stream<IMatch> untypedMatchStream(){
-					return super.untypedMatchStream().filter( match -> 
-						«FOR constraint: rule.arithmeticConstraints SEPARATOR '&&'»
+				public boolean isMatchValid(IMatch match){
+					return «FOR constraint: rule.arithmeticConstraints SEPARATOR '&&'»
 «««						Protect against div/0
 						«FOR arithmeticConstraint: ArithmeticExtensionGenerator::getArithmeticConstraint(constraint.lhs, constraint.rhs, true)»
 						«arithmeticConstraint» &&
 						«ENDFOR»
 						«ArithmeticExtensionGenerator.transformExpression(constraint.lhs, true)»«getRelation(constraint.relation)»«ArithmeticExtensionGenerator.transformExpression(constraint.rhs, true)»
-						«ENDFOR»
-					);				
+						«ENDFOR»;
 				}
 				«ENDIF»
 				@Override
@@ -634,6 +658,17 @@ class JavaFileGenerator {
 						parameters.put("«node.name»", Objects.requireNonNull(object, "«node.name» must not be null!"));
 						return this;
 					}
+					
+					/**
+					 * Unbinds the node «node.name» to the given object.
+					 *
+					 * @param object
+					 *            the object to set
+					 */
+					public «getPatternClassName(pattern)» «getMethodName('unbind', node.name)»() {
+						parameters.remove("«node.name»");
+						return this;
+					}
 			«ENDFOR»
 			«FOR parameter : getPatternParameter(pattern)»
 				
@@ -651,16 +686,12 @@ class JavaFileGenerator {
 				
 				«IF !EditorToIBeXPatternHelper.getArithmeticConstraints(pattern).empty»
 				@Override
-				protected Stream<IMatch> untypedMatchStream(){
-					return super.untypedMatchStream().filter( match -> 
-						«FOR constraint: EditorToIBeXPatternHelper.getArithmeticConstraints(pattern) SEPARATOR '&&'» 
+				public boolean isMatchValid(IMatch match){
+					return «FOR constraint: EditorToIBeXPatternHelper.getArithmeticConstraints(pattern) SEPARATOR '&&'» 
 «««						Protection from div/0
 						«FOR arithmeticConstraint: ArithmeticExtensionGenerator::getArithmeticConstraint(constraint.lhs, constraint.rhs, true)»
-						«arithmeticConstraint» &&
-						«ENDFOR»
-						«ArithmeticExtensionGenerator.transformExpression(constraint.lhs, true)»«getRelation(constraint.relation)»«ArithmeticExtensionGenerator.transformExpression(constraint.rhs, true)»
-						«ENDFOR»
-					);				
+						«arithmeticConstraint» && «ENDFOR»
+							«ArithmeticExtensionGenerator.transformExpression(constraint.lhs, true)»«getRelation(constraint.relation)»«ArithmeticExtensionGenerator.transformExpression(constraint.rhs, true)»«ENDFOR»;				
 				}
 				«ENDIF»
 				@Override
