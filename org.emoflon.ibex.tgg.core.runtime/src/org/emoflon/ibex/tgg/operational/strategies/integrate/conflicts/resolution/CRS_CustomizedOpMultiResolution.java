@@ -2,7 +2,7 @@ package org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resoluti
 
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.util.OpMultiConflictSolution;
 
-public interface CRS_customizedOpMultiResolution extends ConflictResolutionStrategy {
+public interface CRS_CustomizedOpMultiResolution extends ConflictResolutionStrategy {
 
 	void crs_customizedOpMultiResolution(OpMultiConflictSolution solution) throws InvalidSolutionException;
 

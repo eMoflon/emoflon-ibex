@@ -2,10 +2,13 @@ package org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 
+import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_DeleteCorrs;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_MergeAndPreserve;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_PreferSource;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_PreferTarget;
@@ -20,7 +23,7 @@ import language.DomainType;
 import language.TGGRuleNode;
 
 public abstract class DeletePreserveConflict extends Conflict
-		implements CRS_MergeAndPreserve, CRS_RevokeDeletion, CRS_RevokeAddition, CRS_PreferSource, CRS_PreferTarget {
+		implements CRS_MergeAndPreserve, CRS_RevokeDeletion, CRS_RevokeAddition, CRS_PreferSource, CRS_PreferTarget, CRS_DeleteCorrs {
 
 	protected final List<ITGGMatch> causingMatches;
 	protected final DomainType domainToBePreserved;
@@ -67,7 +70,7 @@ public abstract class DeletePreserveConflict extends Conflict
 				});
 			}
 		});
-		
+
 		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by MERGE_&_PRESERVE");
 		resolved = true;
 	}
@@ -84,7 +87,7 @@ public abstract class DeletePreserveConflict extends Conflict
 				restoreMatchesBasedOn(match);
 			}
 		});
-		
+
 		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by REVOKE_DELETION");
 		resolved = true;
 	}
@@ -114,7 +117,7 @@ public abstract class DeletePreserveConflict extends Conflict
 		default:
 			break;
 		}
-		
+
 		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by PREFER_SOURCE");
 		resolved = true;
 	}
@@ -130,8 +133,30 @@ public abstract class DeletePreserveConflict extends Conflict
 		default:
 			break;
 		}
-		
+
 		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by PREFER_TARGET");
 		resolved = true;
+	}
+
+	@Override
+	public void crs_deleteCorrs() {
+		Set<ITGGMatch> processed = new HashSet<>();
+		for (ListIterator<ITGGMatch> iterator = causingMatches.listIterator(causingMatches.size()); iterator.hasPrevious();) {
+			ITGGMatch match = (ITGGMatch) iterator.previous();
+
+			if (processed.contains(match))
+				continue;
+
+			integrate().deleteGreenCorrs(match);
+			processed.add(match);
+
+			integrate().getPrecedenceGraph().getNode(match).forAllRequiredBy((act, pre) -> {
+				if (act.getMatch().getType() != PatternType.CONSISTENCY || processed.contains(act.getMatch()))
+					return false;
+				integrate().deleteGreenCorrs(act.getMatch());
+				processed.add(act.getMatch());
+				return true;
+			});
+		}
 	}
 }

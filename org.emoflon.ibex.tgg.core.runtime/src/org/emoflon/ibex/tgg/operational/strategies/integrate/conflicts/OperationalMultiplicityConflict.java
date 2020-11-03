@@ -14,11 +14,11 @@ import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.BrokenMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_PreferSource;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_PreferTarget;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_customizedOpMultiResolution;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_CustomizedOpMultiResolution;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.util.OpMultiConflictSolution;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceNode;
 
-public class OperationalMultiplicityConflict extends Conflict implements CRS_PreferSource, CRS_PreferTarget, CRS_customizedOpMultiResolution {
+public class OperationalMultiplicityConflict extends Conflict implements CRS_PreferSource, CRS_PreferTarget, CRS_CustomizedOpMultiResolution {
 
 	protected EObject subject;
 	protected EReference reference;
