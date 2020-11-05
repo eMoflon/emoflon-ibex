@@ -140,23 +140,25 @@ public abstract class DeletePreserveConflict extends Conflict
 
 	@Override
 	public void crs_deleteCorrs() {
-		Set<ITGGMatch> processed = new HashSet<>();
+		Set<ITGGMatch> toBeCorrsDeleted = new HashSet<>();
 		for (ListIterator<ITGGMatch> iterator = causingMatches.listIterator(causingMatches.size()); iterator.hasPrevious();) {
 			ITGGMatch match = (ITGGMatch) iterator.previous();
 
-			if (processed.contains(match))
+			if (toBeCorrsDeleted.contains(match))
 				continue;
 
-			integrate().deleteGreenCorrs(match);
-			processed.add(match);
+			toBeCorrsDeleted.add(match);
 
 			integrate().getPrecedenceGraph().getNode(match).forAllRequiredBy((act, pre) -> {
-				if (act.getMatch().getType() != PatternType.CONSISTENCY || processed.contains(act.getMatch()))
+				if (act.getMatch().getType() != PatternType.CONSISTENCY || toBeCorrsDeleted.contains(act.getMatch()))
 					return false;
-				integrate().deleteGreenCorrs(act.getMatch());
-				processed.add(act.getMatch());
+				toBeCorrsDeleted.add(act.getMatch());
 				return true;
 			});
 		}
+		toBeCorrsDeleted.forEach(this::deleteCorrs);
+		
+		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by DELETE_CORRS");
+		resolved = true;
 	}
 }
