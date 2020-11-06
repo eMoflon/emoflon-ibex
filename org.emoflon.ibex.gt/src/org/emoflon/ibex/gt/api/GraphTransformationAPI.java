@@ -205,4 +205,8 @@ public abstract class GraphTransformationAPI {
 	public IBeXPatternSet getPatternSet() {
 		return interpreter.getPatternSet();
 	}
+	
+	public GraphTransformationInterpreter getInterpreter() {
+		return interpreter;
+	}
 }

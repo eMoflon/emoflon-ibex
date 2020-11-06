@@ -297,7 +297,7 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 *            the untyped match
 	 * @return the typed match
 	 */
-	protected abstract M convertMatch(final IMatch match);
+	public abstract M convertMatch(final IMatch match);
 	
 	public String getPatternName() {
 		return patternName;
