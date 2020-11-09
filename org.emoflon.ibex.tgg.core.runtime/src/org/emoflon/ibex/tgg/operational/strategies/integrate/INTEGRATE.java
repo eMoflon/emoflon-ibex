@@ -40,6 +40,7 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.Dele
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DomainModification;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.ConflictContainer;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.detection.ConflictDetector;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.detection.MultiplicityCounter;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceGraph;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceNode;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeProtocol;
@@ -70,6 +71,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	protected ConflictDetector conflictDetector;
 	protected CC consistencyChecker;
 	protected PrecedenceGraph precedenceGraph;
+	protected MultiplicityCounter multiplicityCounter;
 
 	//// DATA ////
 	protected DeltaContainer userDeltaContainer;
@@ -110,7 +112,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 //			}
 //		};
 		options.executable(this);
-		this.precedenceGraph = new PrecedenceGraph(this);
+		precedenceGraph = new PrecedenceGraph(this);
+		multiplicityCounter = new MultiplicityCounter(this);
 	}
 
 	private void removeBrokenMatchesAfterCCMatchApplication(ITGGMatch ccMatch) {
@@ -194,9 +197,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 		Timer.start();
 
-		match2conflicts = conflictDetector.detectConflicts().stream() //
-				.collect(Collectors.toMap(cc -> cc.getMatch(), cc -> cc));
-		buildContainerHierarchy();
+		match2conflicts = conflictDetector.detectConflicts();
+		conflicts = buildContainerHierarchy(match2conflicts);
 
 		times.addTo("operations:detectConflicts", Timer.stop());
 
@@ -204,7 +206,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 			LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "");
 	}
 
-	private void buildContainerHierarchy() {
+	private Set<ConflictContainer> buildContainerHierarchy(Map<ITGGMatch, ConflictContainer> match2conflicts) {
 		Set<ConflictContainer> conflicts = new HashSet<>(match2conflicts.values());
 		for (ITGGMatch match : match2conflicts.keySet()) {
 			precedenceGraph.getNode(match).forAllRequiredBy((n, pre) -> {
@@ -218,15 +220,23 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 				return true;
 			});
 		}
-		this.conflicts = conflicts;
+		return conflicts;
 	}
 
 	protected void resolveConflicts() {
-		for (ConflictContainer c : conflicts) {
+		for (ConflictContainer c : conflicts)
 			options.integration.conflictSolver().resolveConflict(c);
-		}
 
 		if (!conflicts.isEmpty())
+			LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "");
+	}
+
+	protected void detectAndResolveOpMultiplicityConflicts() {
+		Set<ConflictContainer> opMultiConflicts = buildContainerHierarchy(conflictDetector.detectOpMultiplicityConflicts());
+		for (ConflictContainer c : opMultiConflicts)
+			options.integration.conflictSolver().resolveConflict(c);
+
+		if (!opMultiConflicts.isEmpty())
 			LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "");
 	}
 
@@ -292,12 +302,11 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 	/**
 	 * <p>
-	 * Determines green correspondence elements and adds them to the passed sets
-	 * (nodesToRevoke & edgesToRevoke).
+	 * Determines green correspondence elements and adds them to the passed sets (nodesToRevoke &
+	 * edgesToRevoke).
 	 * </p>
 	 * <p>
-	 * To delete this elements call
-	 * {@link IbexRedInterpreter#revoke(nodesToRevoke, edgesToRevoke)}.
+	 * To delete this elements call {@link IbexRedInterpreter#revoke(nodesToRevoke, edgesToRevoke)}.
 	 * </p>
 	 * 
 	 * @param match
@@ -549,7 +558,21 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 			addFilterNacMatch(match);
 		else {
 			precedenceGraph.notifyAddedMatch(match);
+			if (match.getType() == PatternType.CONSISTENCY)
+				multiplicityCounter.notifyAddedMatch(match);
 			super.addOperationalRuleMatch(match);
+		}
+	}
+
+	@Override
+	public boolean removeOperationalRuleMatch(ITGGMatch match) {
+		if (match.getType() == PatternType.FILTER_NAC_SRC || match.getType() == PatternType.FILTER_NAC_TRG)
+			return removeFilterNacMatch(match);
+		else {
+			precedenceGraph.notifyRemovedMatch(match);
+			if (match.getType() == PatternType.CONSISTENCY)
+				multiplicityCounter.notifyRemovedMatch(match);
+			return super.removeOperationalRuleMatch(match);
 		}
 	}
 
@@ -576,22 +599,16 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		return pattern2filterNacMatches.get(match.getPatternName()).get(overlap).remove(match);
 	}
 
-	@Override
-	public boolean removeOperationalRuleMatch(ITGGMatch match) {
-		if (match.getType() == PatternType.FILTER_NAC_SRC || match.getType() == PatternType.FILTER_NAC_TRG)
-			return removeFilterNacMatch(match);
-		else {
-			precedenceGraph.notifyRemovedMatch(match);
-			return super.removeOperationalRuleMatch(match);
-		}
-	}
-
 	public TGGMatchUtil getMatchUtil() {
 		return matchUtil;
 	}
 
 	public PrecedenceGraph getPrecedenceGraph() {
 		return precedenceGraph;
+	}
+
+	public MultiplicityCounter getMultiplicityCounter() {
+		return multiplicityCounter;
 	}
 
 	public ModelChangeProtocol getModelChangeProtocol() {
@@ -656,8 +673,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	}
 
 	/**
-	 * Applies a given delta to source and target models specified by a {@link BiConsumer}
-	 * providing the source and target root elements.
+	 * Applies a given delta to source and target models specified by a {@link BiConsumer} providing the
+	 * source and target root elements.
 	 * <p>
 	 * Alternatively use {@link INTEGRATE#applyDelta(DeltaContainer)}.
 	 * </p>
@@ -669,16 +686,15 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	}
 
 	/**
-	 * Applies a given delta to source and target models specified by a
-	 * {@link delta.DeltaContainer DeltaContainer}.
+	 * Applies a given delta to source and target models specified by a {@link delta.DeltaContainer
+	 * DeltaContainer}.
 	 * <p>
 	 * Alternatively use {@link INTEGRATE#applyDelta(BiConsumer)}.
 	 * </p>
 	 * 
 	 * @param delta delta to be applied
-	 * @throws InvalidDeltaException if a <code>Delta</code> of the given
-	 *                               <code>DeltaContainer</code> has an invalid structure or
-	 *                               invalid components
+	 * @throws InvalidDeltaException if a <code>Delta</code> of the given <code>DeltaContainer</code>
+	 *                               has an invalid structure or invalid components
 	 */
 	public void applyDelta(DeltaContainer delta) throws InvalidDeltaException {
 		DeltaValidator.validate(delta);

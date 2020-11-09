@@ -323,6 +323,8 @@ public class PrecedenceGraph implements TimeMeasurable {
 	}
 
 	private void handleBrokenConsistencyMatch(ITGGMatch match) {
+		if (!match2node.containsKey(match))
+			return;
 		PrecedenceNode node = getNode(match);
 		node.setBroken(true);
 		brokenNodes.add(node);
