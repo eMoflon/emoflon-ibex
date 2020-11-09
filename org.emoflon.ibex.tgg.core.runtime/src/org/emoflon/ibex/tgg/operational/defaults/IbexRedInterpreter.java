@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.emf.EMFManipulationUtils;
@@ -24,7 +25,12 @@ public class IbexRedInterpreter implements IRedInterpreter {
 	private final OperationalStrategy strategy;
 	private IbexOptions options;
 	
+	/**
+	 * Number of deleted source & target nodes
+	 */
 	private int numOfDeletedNodes = 0;
+	private int numOfDeletedCorrNodes = 0;
+	
 	private TGGResourceHandler resourceHandler;
 
 	public IbexRedInterpreter(OperationalStrategy operationalStrategy) {
@@ -111,6 +117,8 @@ public class IbexRedInterpreter implements IRedInterpreter {
 	}
 
 	public void revokeCorr(EObject corr, Set<EObject> nodesToRevoke, Set<EMFEdge> edgesToRevoke) {
+		resourceHandler.removeCorrCaching(corr);
+		
 		EReference srcFeature = (EReference) corr.eClass().getEStructuralFeature("source");
 		EReference trgFeature = (EReference) corr.eClass().getEStructuralFeature("target");
 
@@ -142,12 +150,24 @@ public class IbexRedInterpreter implements IRedInterpreter {
 	 *            the edges to revoke
 	 */
 	public void revoke(final Set<EObject> nodesToRevoke, final Set<EMFEdge> edgesToRevoke) {
-		numOfDeletedNodes += nodesToRevoke.size();
-		EMFManipulationUtils.delete(nodesToRevoke, edgesToRevoke, node -> resourceHandler.addToTrash(node));
+		nodesToRevoke.forEach(n -> {
+			Resource r = n.eResource();
+			if (resourceHandler.getSourceResource().equals(r) || resourceHandler.getTargetResource().equals(r))
+				numOfDeletedNodes++;
+			else if (resourceHandler.getCorrResource().equals(r))
+				numOfDeletedCorrNodes++;
+		});
+		
+		EMFManipulationUtils.delete(nodesToRevoke, edgesToRevoke, node -> resourceHandler.addToTrash(node), false);
 	}
 
 	@Override
-	public int getNumOfDeletedElements() {
+	public int getNumOfDeletedNodes() {
 		return numOfDeletedNodes;
+	}
+
+	@Override
+	public int getNumOfDeletedCorrNodes() {
+		return numOfDeletedCorrNodes;
 	}
 }

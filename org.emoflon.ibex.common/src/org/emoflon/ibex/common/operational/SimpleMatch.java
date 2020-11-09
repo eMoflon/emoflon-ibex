@@ -72,6 +72,11 @@ public class SimpleMatch implements IMatch {
 	}
 	
 	@Override
+	public Collection<Object> getObjects() {
+		return parameters.values();
+	}
+
+	@Override
 	public long getHashCode() {
 		if(!hashInit) {
 			hash = HashUtil.collectionToHash(parameters.values());
@@ -94,7 +99,7 @@ public class SimpleMatch implements IMatch {
 	@Override
 	public String toString() {
 		StringBuilder s = new StringBuilder();
-		s.append("IMatch for ").append(getPatternName()).append(" {").append(System.lineSeparator());
+		s.append("IMatch for ").append(getPatternName()).append("(" + this.hashCode()+ ") {").append(System.lineSeparator());
 
 		for (final String parameterName : getParameterNames()) {
 			s.append("	").append(parameterName);

@@ -14,13 +14,15 @@ import java.util.stream.Collectors;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.emf.EMFEdge;
-import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.IGreenInterpreter;
+import org.emoflon.ibex.tgg.operational.IRedInterpreter;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
+import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.SimpleTGGMatch;
+import org.emoflon.ibex.tgg.operational.matches.TGGMatchParameterOrderProvider;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.OperationalSCFactory;
@@ -29,232 +31,261 @@ import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule.SCInputRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.LocalPatternSearch;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.updatepolicy.IShortcutRuleUpdatePolicy;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCMatch;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCPersistence;
 import org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
-import org.emoflon.ibex.tgg.operational.strategies.PropagationDirection;
 import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
-import org.emoflon.ibex.tgg.util.String2EPrimitive;
 
 import language.BindingType;
 import language.DomainType;
-import language.TGGAttributeConstraintOperators;
-import language.TGGAttributeExpression;
-import language.TGGEnumExpression;
-import language.TGGInplaceAttributeExpression;
-import language.TGGLiteralExpression;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
+import runtime.TGGRuleApplication;
 import runtime.TempContainer;
 
 /**
- * This class handles all operationalized shortcut rules and their application
- * to fix a broken match.
+ * This class handles all operationalized shortcut rules and their application to fix a broken
+ * match.
  * 
  * @author lfritsche
  *
  */
 public class ShortcutPatternTool {
-	
+
 	protected final static Logger logger = Logger.getLogger(ShortcutPatternTool.class);
-	
+
 	private int numOfDeletedNodes = 0;
-	
+
 	private PropagatingOperationalStrategy strategy;
 	private TGGResourceHandler resourceHandler;
 	private Collection<ShortcutRule> scRules;
-	private Map<String, Collection<OperationalShortcutRule>> tggRule2srcSCRule;
-	private Map<String, Collection<OperationalShortcutRule>> tggRule2trgSCRule;
+	private Map<PatternType, Map<String, Collection<OperationalShortcutRule>>> tggRule2opSCRule;
 	private Map<OperationalShortcutRule, LocalPatternSearch> rule2matcher;
-	
+
 	private IGreenInterpreter greenInterpreter;
-	
-	public ShortcutPatternTool(PropagatingOperationalStrategy strategy, Collection<ShortcutRule> scRules) {
+	private IRedInterpreter redInterpreter;
+
+	public ShortcutPatternTool(PropagatingOperationalStrategy strategy, Collection<ShortcutRule> scRules, Set<PatternType> types) {
 		this.scRules = scRules;
 		this.strategy = strategy;
 		this.resourceHandler = strategy.getOptions().resourceHandler();
-		initialize();
+		initialize(types);
 	}
-	
-	private void initialize() {
+
+	private void initialize(Set<PatternType> types) {
 		OperationalSCFactory factory = new OperationalSCFactory(strategy, scRules);
-		
-		tggRule2srcSCRule = factory.createOperationalRules(PropagationDirection.FORWARD);
-		tggRule2trgSCRule = factory.createOperationalRules(PropagationDirection.BACKWARD);
-		
+
+		tggRule2opSCRule = new HashMap<>();
+		for (PatternType type : types) {
+			tggRule2opSCRule.put(type, factory.createOperationalRules(type));
+		}
+
 		rule2matcher = new HashMap<>();
-		
-		tggRule2srcSCRule.values().stream().flatMap(c -> c.stream()).forEach(r -> rule2matcher.put(r, new LocalPatternSearch(r)));
-		tggRule2trgSCRule.values().stream().flatMap(c -> c.stream()).forEach(r -> rule2matcher.put(r, new LocalPatternSearch(r)));
-		
+		tggRule2opSCRule.values().stream() //
+				.flatMap(m -> m.values().stream()) //
+				.flatMap(c -> c.stream()) //
+				.forEach(r -> rule2matcher.put(r, new LocalPatternSearch(r, strategy.getOptions())));
+
 		greenInterpreter = strategy.getGreenInterpreter();
-		
-		LoggerConfig.log(LoggerConfig.log_repair(), () -> "Generated " + scRules.size() + " Short-Cut Rules");
-		LoggerConfig.log(LoggerConfig.log_repair(), () -> //
-				"Generated " + tggRule2srcSCRule.values().stream().map(s -> s.size()).reduce(0, (a, b) -> a + b) + " Forward Repair Rules");
-		LoggerConfig.log(LoggerConfig.log_repair(), () -> //
-				"Generated " + tggRule2srcSCRule.values().stream().map(s -> s.size()).reduce(0, (a,b) -> a+b) + " Backward Repair Rules");
+		redInterpreter = strategy.getRedInterpreter();
+
+		tggRule2opSCRule.forEach((type, map) -> LoggerConfig.log(LoggerConfig.log_repair(), //
+				() -> "Generated " + map.values().stream().map(s -> s.size()).reduce(0, (a, b) -> a + b) //
+						+ " " + type.name() + " Repair Rules"));
 
 		persistSCRules();
 	}
-	
+
 	private void persistSCRules() {
 		SCPersistence persistence = new SCPersistence(strategy);
 		persistence.saveSCRules(scRules);
-		persistence.saveOperationalFWDSCRules(tggRule2srcSCRule.values().stream().flatMap(c -> c.stream()).collect(Collectors.toList()));
-		persistence.saveOperationalBWDSCRules(tggRule2trgSCRule.values().stream().flatMap(c -> c.stream()).collect(Collectors.toList()));
+		persistence.saveOperationalFWDSCRules(tggRule2opSCRule.get(PatternType.FWD).values().stream() //
+				.flatMap(c -> c.stream()).collect(Collectors.toList()));
+		persistence.saveOperationalBWDSCRules(tggRule2opSCRule.get(PatternType.BWD).values().stream() //
+				.flatMap(c -> c.stream()).collect(Collectors.toList()));
 	}
 
-	public ITGGMatch processBrokenMatch(PropagationDirection direction, ITGGMatch brokenMatch) {
-		String ruleName = PatternSuffixes.removeSuffix(brokenMatch.getPatternName());
-		switch(direction) {
-		case FORWARD:
-			return processBrokenMatch(tggRule2srcSCRule.get(ruleName), DomainType.TRG, brokenMatch);
-		case BACKWARD:
-			return processBrokenMatch(tggRule2trgSCRule.get(ruleName), DomainType.SRC, brokenMatch);
-		default:
+	public ITGGMatch processBrokenMatch(PatternType type, ITGGMatch brokenMatch) {
+		if (type == null)
 			return null;
+
+		if (tggRule2opSCRule.containsKey(type)) {
+			return processBrokenMatch(tggRule2opSCRule.get(type).get(brokenMatch.getRuleName()), brokenMatch);
 		}
+		return null;
 	}
 
-	private ITGGMatch processBrokenMatch(Collection<OperationalShortcutRule> rules, DomainType objDomain, ITGGMatch brokenMatch) {
-		if(rules == null)
-			return null;
+	public Map<SCMatch, OperationalShortcutRule> isRepairable(PatternType type, ITGGMatch brokenMatch, String replacingRuleName) {
+		Map<SCMatch, OperationalShortcutRule> result = new HashMap<>();
 		
+		if (type == null)
+			return result;
+
+		if (tggRule2opSCRule.containsKey(type)) {
+			Collection<OperationalShortcutRule> opSCRs = tggRule2opSCRule.get(type).get(brokenMatch.getRuleName());
+			for (OperationalShortcutRule opSCR : opSCRs) {
+				if (opSCR.getOpScRule().getReplacingRule().getName().equals(replacingRuleName)) {
+					SCMatch shortcutMatch = (SCMatch) processBrokenMatch(opSCR, brokenMatch);
+					if (shortcutMatch != null)
+						result.put(shortcutMatch, opSCR);
+				}
+			}
+		}
+		return result;
+	}
+
+	private ITGGMatch processBrokenMatch(Collection<OperationalShortcutRule> rules, ITGGMatch brokenMatch) {
+		if (rules == null)
+			return null;
+
 		Collection<OperationalShortcutRule> copiedRules = new ArrayList<>(rules);
 		IShortcutRuleUpdatePolicy policy = strategy.getOptions().repair.shortcutRuleUpdatePolicy();
 		do {
-			OperationalShortcutRule osr = policy.chooseOneShortcutRule(copiedRules, brokenMatch, objDomain);
-			if(osr == null)
+			OperationalShortcutRule osr = policy.chooseOneShortcutRule(copiedRules, brokenMatch);
+			if (osr == null)
 				return null;
-			
+
 			LoggerConfig.log(LoggerConfig.log_repair(), () -> //
-					"Attempt repair of " + brokenMatch.getPatternName() + " with " + osr.getScRule().getName() + " (" + brokenMatch.hashCode() + ")");			
+			"Repair attempt: " + brokenMatch.getPatternName() + "(" + brokenMatch.hashCode() + ") with " + osr.getName());
 			ITGGMatch newMatch = processBrokenMatch(osr, brokenMatch);
-			if(newMatch == null) {
+			if (newMatch == null) {
 				copiedRules.remove(osr);
 				continue;
 			}
-			
+
+			// TODO lfritsche, amoeller: we have to make sure that we do not delete elements that are used
+			// (context) or will be recreated
+			// this is due to the missing injectivity checks
 			Optional<ITGGMatch> newCoMatch = processCreations(osr, newMatch);
-			if(!newCoMatch.isPresent()) {
+			if (!newCoMatch.isPresent()) {
 				copiedRules.remove(osr);
 				continue;
 			}
 
 			processDeletions(osr, newMatch);
-			
-			processAttributes(osr, newMatch, objDomain);
-			
-			return transformToTargetMatch(osr, newCoMatch.get());
-			
+
+			processAttributes(osr, newMatch);
+
+			return transformToReplacingMatch(osr, newCoMatch.get());
+
 		} while (!copiedRules.isEmpty());
 		return null;
 	}
-	
+
+	private ITGGMatch processBrokenMatch(OperationalShortcutRule osr, ITGGMatch brokenMatch) {
+		Map<String, EObject> name2entryNodeElem = new HashMap<>();
+		for (String param : brokenMatch.getParameterNames()) {
+			TGGRuleNode scNode = osr.getOpScRule().mapOriginalToSCNodeNode(param);
+			if (scNode == null) {
+				// special case is the rule application node which we add here!
+				if (!((EObject) brokenMatch.get(param) instanceof TGGRuleApplication))
+					continue;
+			}
+
+			name2entryNodeElem.put(param, (EObject) brokenMatch.get(param));
+		}
+		return rule2matcher.get(osr).findMatch(name2entryNodeElem);
+	}
+
 	/**
-	 * transforms the given operationalized shortcut rule match into a match
-	 * conforming to a target rule match
+	 * transforms the given operationalized shortcut rule match into a match conforming to a target rule
+	 * match
 	 * 
 	 * @param osr
 	 * @param scMatch
 	 * @return
 	 */
-	private ITGGMatch transformToTargetMatch(OperationalShortcutRule osr, ITGGMatch scMatch) {
-		ITGGMatch newMatch = new SimpleTGGMatch(osr.getScRule().getTargetRule().getName() + PatternSuffixes.CONSISTENCY);
-		
-		osr.getScRule().getTargetRule().getNodes().forEach(n -> 
-			newMatch.put(n.getName(), scMatch.get(osr.getScRule().mapRuleNodeToSCRuleNode(n, SCInputRule.TARGET).getName()))
-		);
-		
-		IGreenPatternFactory greenFactory = strategy.getGreenFactory(osr.getScRule().getTargetRule().getName());
+	private ITGGMatch transformToReplacingMatch(OperationalShortcutRule osr, ITGGMatch scMatch) {
+		ITGGMatch tempMatch = new SimpleTGGMatch(osr.getOpScRule().getReplacingRule().getName() + PatternSuffixes.CONSISTENCY);
+
+		osr.getOpScRule().getReplacingRule().getNodes()
+				.forEach(n -> tempMatch.put(n.getName(), scMatch.get(osr.getOpScRule().mapRuleNodeToSCRuleNode(n, SCInputRule.REPLACING).getName())));
+
+		IGreenPatternFactory greenFactory = strategy.getGreenFactory(osr.getOpScRule().getReplacingRule().getName());
 		IGreenPattern greenPattern = greenFactory.create(PatternType.FWD);
-		greenPattern.createMarkers(osr.getScRule().getTargetRule().getName(), newMatch);
-		
+		greenPattern.createMarkers(osr.getOpScRule().getReplacingRule().getName(), tempMatch);
+
+		ITGGMatch newMatch = new SimpleTGGMatch(tempMatch.getPatternName());
+		for (String p : TGGMatchParameterOrderProvider.getParams(PatternSuffixes.removeSuffix(tempMatch.getPatternName()))) {
+			if (tempMatch.getParameterNames().contains(p))
+				newMatch.put(p, tempMatch.get(p));
+		}
+
 		return newMatch;
 	}
 
-	private ITGGMatch processBrokenMatch(OperationalShortcutRule osr, ITGGMatch brokenMatch) {
-		Map<String, EObject> name2entryNodeElem = new HashMap<>();	
-		for(String param : brokenMatch.getParameterNames()) {
-			TGGRuleNode scNode = osr.getScRule().mapSrcToSCNodeNode(param);
-			if(scNode == null || !osr.getScRule().getMergedNodes().contains(scNode))
-				continue;
-			
-			name2entryNodeElem.put(scNode.getName(), (EObject) brokenMatch.get(param));
-		}
-		return rule2matcher.get(osr).findMatch(name2entryNodeElem);
-	}
-	
-	/**
-	 * Revokes (i. e. deletes) the given nodes and edges.
-	 * 
-	 * @param nodesToRevoke
-	 *            the nodes to revoke
-	 * @param edgesToRevoke
-	 *            the edges to revoke
-	 */
-	private void revokeElements(final Set<EObject> nodesToRevoke, final Set<EMFEdge> edgesToRevoke) {
-		EMFManipulationUtils.delete(nodesToRevoke, edgesToRevoke, node -> resourceHandler.addToTrash(node));
-	}
-	
-	private void processDeletions(OperationalShortcutRule osc, ITGGMatch brokenMatch) {
-		Collection<TGGRuleNode> deletedRuleNodes = TGGFilterUtil.filterNodes(osc.getScRule().getNodes(), BindingType.DELETE);
-		Collection<TGGRuleEdge> deletedRuleEdges = TGGFilterUtil.filterEdges(osc.getScRule().getEdges(), BindingType.DELETE);
-		
+	private void processDeletions(OperationalShortcutRule osr, ITGGMatch brokenMatch) {
+		Collection<TGGRuleNode> deletedRuleNodes = TGGFilterUtil.filterNodes(osr.getOpScRule().getNodes(), BindingType.DELETE);
+		Collection<TGGRuleEdge> deletedRuleEdges = TGGFilterUtil.filterEdges(osr.getOpScRule().getEdges(), BindingType.DELETE);
+		Collection<TGGRuleEdge> createdRuleEdges = TGGFilterUtil.filterEdges(osr.getOpScRule().getEdges(), BindingType.CREATE);
+
 		Set<EMFEdge> edgesToRevoke = new HashSet<>();
 		// Collect edges to revoke.
 		deletedRuleEdges.forEach(e -> {
-			EMFEdge runtimeEdge = getRuntimeEdge(brokenMatch, e);
-			if (runtimeEdge.getSource() != null && runtimeEdge.getTarget() != null)
-				edgesToRevoke.add(new EMFEdge(runtimeEdge.getSource(), runtimeEdge.getTarget(), runtimeEdge.getType()));
+			EMFEdge toBeDeletedRuntimeEdge = getRuntimeEdge(brokenMatch, e);
+			boolean isSingle = !toBeDeletedRuntimeEdge.getType().isMany();
+
+			Collection<TGGRuleEdge> conflictingEdges = createdRuleEdges.stream() //
+					.filter(edge -> edge.getType().equals(e.getType())).collect(Collectors.toList());
+			for (TGGRuleEdge conflictingEdge : conflictingEdges) {
+				EMFEdge toBeCreatedRuntimeEdge = getRuntimeEdge(brokenMatch, conflictingEdge);
+				// we have to handle cases here where deletions should not be performed if the edge was just created
+				if (isSingle && toBeCreatedRuntimeEdge.getSource().equals(toBeDeletedRuntimeEdge.getSource()))
+					return;
+				if (strategy.getOptions().repair.disableInjectivity() && toBeCreatedRuntimeEdge.equals(toBeDeletedRuntimeEdge))
+					return;
+			}
+
+			if (toBeDeletedRuntimeEdge.getSource() != null && toBeDeletedRuntimeEdge.getTarget() != null)
+				edgesToRevoke.add(new EMFEdge(toBeDeletedRuntimeEdge.getSource(), toBeDeletedRuntimeEdge.getTarget(), toBeDeletedRuntimeEdge.getType()));
 		});
-		
+
 		Set<EObject> nodesToRevoke = new HashSet<>();
 		deletedRuleNodes.forEach(n -> nodesToRevoke.add((EObject) brokenMatch.get(n.getName())));
-		
+
 		numOfDeletedNodes += nodesToRevoke.size();
-		revokeElements(nodesToRevoke, edgesToRevoke);
-		
-		Collection<TGGRuleNode> contextRuleNodes = TGGFilterUtil.filterNodes(osc.getScRule().getNodes(), BindingType.CONTEXT);
-		for(TGGRuleNode n : contextRuleNodes) {
+		redInterpreter.revoke(nodesToRevoke, edgesToRevoke);
+
+		Collection<TGGRuleNode> contextRuleNodes = TGGFilterUtil.filterNodes(osr.getOpScRule().getNodes(), BindingType.CONTEXT);
+		for (TGGRuleNode n : contextRuleNodes) {
 			EObject e = (EObject) brokenMatch.get(n.getName());
-			if(e.eContainer() == null && e.eResource() == null || e.eResource() != null && e.eResource().getContents().get(0) instanceof TempContainer) {
-				if(n.getDomainType().equals(DomainType.SRC))
+			if (e.eContainer() == null && e.eResource() == null || e.eResource() != null && e.eResource().getContents().get(0) instanceof TempContainer) {
+				if (n.getDomainType().equals(DomainType.SRC))
 					resourceHandler.getSourceResource().getContents().add(e);
-				if(n.getDomainType().equals(DomainType.TRG))
+				if (n.getDomainType().equals(DomainType.TRG))
 					resourceHandler.getTargetResource().getContents().add(e);
 			}
 		}
 	}
-	
-	private Optional<ITGGMatch> processCreations(OperationalShortcutRule osc, ITGGMatch brokenMatch) {
-		return greenInterpreter.apply(osc.getGreenPattern(), osc.getScRule().getTargetRule().getName(), brokenMatch);
+
+	private Optional<ITGGMatch> processCreations(OperationalShortcutRule osr, ITGGMatch brokenMatch) {
+		return greenInterpreter.apply(osr.getGreenPattern(), osr.getOpScRule().getReplacingRule().getName(), brokenMatch);
 	}
 
-	private void processAttributes(OperationalShortcutRule osr, ITGGMatch match, DomainType objDomain) {
-		TGGFilterUtil.filterNodes(osr.getScRule().getNodes(), objDomain).stream() //
-				.filter(n -> osr.getScRule().getPreservedNodes().contains(n)) //
-				.forEach(n -> applyInPlaceAttributeAssignments(match, n, (EObject) match.get(n.getName())));
+	private void processAttributes(OperationalShortcutRule osr, ITGGMatch match) {
+		DomainType objDomain = getObjectDomain(osr.getType());
+		if (objDomain == null)
+			return;
+
+		try {
+			IbexGreenInterpreter ibexGI = (IbexGreenInterpreter) greenInterpreter;
+			TGGFilterUtil.filterNodes(osr.getOpScRule().getNodes(), objDomain).stream() //
+					.filter(n -> osr.getOpScRule().getPreservedNodes().contains(n)) //
+					.forEach(n -> ibexGI.applyInPlaceAttributeAssignments(match, n, (EObject) match.get(n.getName())));
+		} catch (Exception e) {
+			throw new RuntimeException("IbexGreenInterpreter implementation is needed", e);
+		}
 	}
-	
-	// TODO adrianm: copied from IbexGreenInterpreter's private method -> refactor this
-	private void applyInPlaceAttributeAssignments(ITGGMatch match, TGGRuleNode node, EObject obj) {
-		for (TGGInplaceAttributeExpression attrExpr : node.getAttrExpr()) {
-			if (attrExpr.getOperator().equals(TGGAttributeConstraintOperators.EQUAL)) {
-				if (attrExpr.getValueExpr() instanceof TGGLiteralExpression) {
-					TGGLiteralExpression tle = (TGGLiteralExpression) attrExpr.getValueExpr();
-					obj.eSet(attrExpr.getAttribute(), String2EPrimitive.convertLiteral(tle.getValue(),
-							attrExpr.getAttribute().getEAttributeType()));
-				} else if (attrExpr.getValueExpr() instanceof TGGEnumExpression) {
-					TGGEnumExpression tee = (TGGEnumExpression) attrExpr.getValueExpr();
-					obj.eSet(attrExpr.getAttribute(), tee.getLiteral().getInstance());
-				} else if (attrExpr.getValueExpr() instanceof TGGAttributeExpression) {
-					TGGAttributeExpression tae = (TGGAttributeExpression) attrExpr.getValueExpr();
-					EObject objVar = (EObject) match.get(tae.getObjectVar().getName());
-					obj.eSet(attrExpr.getAttribute(), objVar.eGet(tae.getAttribute()));
-				}
-			}
+
+	private DomainType getObjectDomain(PatternType type) {
+		switch (type) {
+		case FWD:
+			return DomainType.TRG;
+		case BWD:
+			return DomainType.SRC;
+		default:
+			return null;
 		}
 	}
 

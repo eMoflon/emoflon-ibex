@@ -4,15 +4,11 @@ package org.emoflon.ibex.patternmodel.IBeXPatternModel.impl;
 
 import java.util.Collection;
 
-import org.eclipse.emf.common.notify.NotificationChain;
-
 import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.InternalEObject;
 
-import org.eclipse.emf.ecore.util.EObjectContainmentEList;
-import org.eclipse.emf.ecore.util.InternalEList;
+import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
@@ -36,7 +32,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage;
  */
 public class IBeXDeletePatternImpl extends IBeXPatternImpl implements IBeXDeletePattern {
 	/**
-	 * The cached value of the '{@link #getContextNodes() <em>Context Nodes</em>}' containment reference list.
+	 * The cached value of the '{@link #getContextNodes() <em>Context Nodes</em>}' reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @see #getContextNodes()
@@ -46,7 +42,7 @@ public class IBeXDeletePatternImpl extends IBeXPatternImpl implements IBeXDelete
 	protected EList<IBeXNode> contextNodes;
 
 	/**
-	 * The cached value of the '{@link #getDeletedEdges() <em>Deleted Edges</em>}' containment reference list.
+	 * The cached value of the '{@link #getDeletedEdges() <em>Deleted Edges</em>}' reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @see #getDeletedEdges()
@@ -56,7 +52,7 @@ public class IBeXDeletePatternImpl extends IBeXPatternImpl implements IBeXDelete
 	protected EList<IBeXEdge> deletedEdges;
 
 	/**
-	 * The cached value of the '{@link #getDeletedNodes() <em>Deleted Nodes</em>}' containment reference list.
+	 * The cached value of the '{@link #getDeletedNodes() <em>Deleted Nodes</em>}' reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @see #getDeletedNodes()
@@ -92,7 +88,7 @@ public class IBeXDeletePatternImpl extends IBeXPatternImpl implements IBeXDelete
 	@Override
 	public EList<IBeXNode> getContextNodes() {
 		if (contextNodes == null) {
-			contextNodes = new EObjectContainmentEList<IBeXNode>(IBeXNode.class, this,
+			contextNodes = new EObjectResolvingEList<IBeXNode>(IBeXNode.class, this,
 					IBeXPatternModelPackage.IBE_XDELETE_PATTERN__CONTEXT_NODES);
 		}
 		return contextNodes;
@@ -106,7 +102,7 @@ public class IBeXDeletePatternImpl extends IBeXPatternImpl implements IBeXDelete
 	@Override
 	public EList<IBeXEdge> getDeletedEdges() {
 		if (deletedEdges == null) {
-			deletedEdges = new EObjectContainmentEList<IBeXEdge>(IBeXEdge.class, this,
+			deletedEdges = new EObjectResolvingEList<IBeXEdge>(IBeXEdge.class, this,
 					IBeXPatternModelPackage.IBE_XDELETE_PATTERN__DELETED_EDGES);
 		}
 		return deletedEdges;
@@ -120,28 +116,10 @@ public class IBeXDeletePatternImpl extends IBeXPatternImpl implements IBeXDelete
 	@Override
 	public EList<IBeXNode> getDeletedNodes() {
 		if (deletedNodes == null) {
-			deletedNodes = new EObjectContainmentEList<IBeXNode>(IBeXNode.class, this,
+			deletedNodes = new EObjectResolvingEList<IBeXNode>(IBeXNode.class, this,
 					IBeXPatternModelPackage.IBE_XDELETE_PATTERN__DELETED_NODES);
 		}
 		return deletedNodes;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
-		switch (featureID) {
-		case IBeXPatternModelPackage.IBE_XDELETE_PATTERN__CONTEXT_NODES:
-			return ((InternalEList<?>) getContextNodes()).basicRemove(otherEnd, msgs);
-		case IBeXPatternModelPackage.IBE_XDELETE_PATTERN__DELETED_EDGES:
-			return ((InternalEList<?>) getDeletedEdges()).basicRemove(otherEnd, msgs);
-		case IBeXPatternModelPackage.IBE_XDELETE_PATTERN__DELETED_NODES:
-			return ((InternalEList<?>) getDeletedNodes()).basicRemove(otherEnd, msgs);
-		}
-		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
 
 	/**

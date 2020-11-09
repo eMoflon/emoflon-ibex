@@ -21,6 +21,7 @@ import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.GreenSCPattern;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCMatch;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
@@ -36,26 +37,36 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
 /**
- * @author leblebici Util class for creating EObjects, Edges, and
- *         Correspondences for a given set of green TGGRuleElement
+ * Util class for creating EObjects, Edges, and Correspondences for a given set
+ * of green TGGRuleElement
+ * 
+ * @author leblebici
  */
 public class IbexGreenInterpreter implements IGreenInterpreter {
 	private static final Logger logger = Logger.getLogger(IbexGreenInterpreter.class);
 
+	/**
+	 * Number of created source & target nodes
+	 */
 	private int numOfCreatedNodes = 0;
+	private int numOfCreatedCorrNodes = 0;
+	private IbexOptions options;
+	
 	private boolean optimizeCreation;
-	private long creationTime = 0;
 
 	private TGGResourceHandler resourceHandler;
 
 	public IbexGreenInterpreter(OperationalStrategy operationalStrategy) {
-		resourceHandler = operationalStrategy.getOptions().resourceHandler();
-		optimizeCreation = operationalStrategy.getOptions().blackInterpreter() != null && operationalStrategy.getOptions().blackInterpreter().getClass().getName().contains("HiPE");
+		options = operationalStrategy.getOptions();
+		resourceHandler = options.resourceHandler();
+		optimizeCreation = options.blackInterpreter() != null && options.blackInterpreter().getClass().getName().contains("HiPE");
 	}
 
 	public void createNonCorrNodes(ITGGMatch comatch, Collection<TGGRuleNode> greenNodes, Resource nodeResource) {
-		for (TGGRuleNode n : greenNodes)
+		for (TGGRuleNode n : greenNodes) {
 			comatch.put(n.getName(), createNode(comatch, n));
+			numOfCreatedNodes++;
+		}
 	}
 
 	public Collection<EMFEdge> createEdges(ITGGMatch comatch, Collection<TGGRuleEdge> greenEdges, boolean createEMFEdge) {
@@ -76,14 +87,14 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 
 	public void createCorrs(ITGGMatch comatch, Collection<TGGRuleCorr> greenCorrs, Resource corrR) {
 		for (TGGRuleCorr c : greenCorrs) {
-			comatch.put(c.getName(), createCorr(comatch, c, comatch.get(c.getSource().getName()),
-					comatch.get(c.getTarget().getName())));
+			EObject createCorr = createCorr(comatch, c, comatch.get(c.getSource().getName()),
+					comatch.get(c.getTarget().getName()));
+			resourceHandler.addCorrCaching(createCorr);
+			comatch.put(c.getName(), createCorr);
 		}
 	}
 
 	private EObject createNode(ITGGMatch match, TGGRuleNode node) {
-		numOfCreatedNodes++;
-
 		EObject newObj = EcoreUtil.create(node.getType());
 
 		applyInPlaceAttributeAssignments(match, node, newObj);
@@ -120,7 +131,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		}
 	}
 
-	private void applyInPlaceAttributeAssignments(ITGGMatch match, TGGRuleNode node, EObject newObj) {
+	public void applyInPlaceAttributeAssignments(ITGGMatch match, TGGRuleNode node, EObject newObj) {
 		for (TGGInplaceAttributeExpression attrExpr : node.getAttrExpr()) {
 			if (attrExpr.getOperator().equals(TGGAttributeConstraintOperators.EQUAL)) {
 				if (attrExpr.getValueExpr() instanceof TGGLiteralExpression) {
@@ -158,15 +169,16 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		EObject corr = createNode(comatch, node);
 		corr.eSet(corr.eClass().getEStructuralFeature("source"), src);
 		corr.eSet(corr.eClass().getEStructuralFeature("target"), trg);
+		numOfCreatedCorrNodes++;
 		return corr;
 	}
 
 	@Override
 	public Optional<ITGGMatch> apply(IGreenPattern greenPattern, String ruleName, ITGGMatch match) {
-		long tic = System.nanoTime();
 		// Check if match is valid
-		if (matchIsInvalid(ruleName, greenPattern, match)) {
-			LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Blocking application as match is invalid.");
+		// TODO lfritsche, amoeller: this can maybe make problems? here the problem is that we create before deleting 
+		if (matchIsInvalid(ruleName, greenPattern, match) && !(options.repair.disableInjectivity() && match instanceof SCMatch)) {
+			LoggerConfig.log(LoggerConfig.log_ruleApplication(), () -> "Blocking application as match is invalid.");
 			return Optional.empty();
 		}
 
@@ -178,7 +190,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		// Check if all attribute values provided match are as expected
 		IRuntimeTGGAttrConstrContainer cspContainer = greenPattern.getAttributeConstraintContainer(match);
 		if (!cspContainer.solve()) {
-			LoggerConfig.log(LoggerConfig.log_matchApplication(), () -> "Blocking application as attribute conditions don't hold.");
+			LoggerConfig.log(LoggerConfig.log_ruleApplication(), () -> "Blocking application as attribute conditions don't hold.");
 			return Optional.empty();
 		}
 
@@ -208,8 +220,6 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 			greenPattern.getCorrNodes().forEach(n -> handlePlacementInResource(n, resourceHandler.getCorrResource(), (EObject) comatch.get(n.getName())));	
 			greenPattern.getTrgNodes().forEach(n -> handlePlacementInResource(n, resourceHandler.getTargetResource(), (EObject) comatch.get(n.getName())));	
 		}
-		
-		creationTime += System.nanoTime() - tic;
 		
 		return Optional.of(comatch);
 	}
@@ -368,11 +378,12 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	}
 
 	@Override
-	public int getNumOfCreatedElements() {
+	public int getNumOfCreatedNodes() {
 		return numOfCreatedNodes;
 	}
 
-	public long getCreationTime() {
-		return creationTime;
+	@Override
+	public int getNumOfCreatedCorrNodes() {
+		return numOfCreatedCorrNodes;
 	}
 }

@@ -68,6 +68,7 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 		this.api = api;
 		this.interpreter = interpreter;
 		this.patternName = patternName;
+		interpreter.registerGraphTransformationPattern(patternName, this);
 	}
 
 	/**
@@ -131,7 +132,7 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 * @return the list of matches (can be empty if no matches exist)
 	 */
 	public final Collection<M> findMatches() {
-		return matchStream().collect(Collectors.toList());
+		return matchStream().collect(Collectors.toSet());
 	}
 	
 	/**
@@ -140,7 +141,11 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 * @return the Stream of matches
 	 */
 	protected Stream<IMatch> untypedMatchStream(){
-		return interpreter.matchStream(patternName, getParameters());
+		return interpreter.matchStream(patternName, getParameters()).filter(match -> isMatchValid(match));
+	}
+	
+	public boolean isMatchValid(IMatch match) {
+		return true;
 	}
 	
 	/**
@@ -290,7 +295,7 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 *            the untyped match
 	 * @return the typed match
 	 */
-	protected abstract M convertMatch(final IMatch match);
+	public abstract M convertMatch(final IMatch match);
 	
 	public String getPatternName() {
 		return patternName;

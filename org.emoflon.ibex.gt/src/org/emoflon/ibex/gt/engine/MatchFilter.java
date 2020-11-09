@@ -18,6 +18,7 @@ import org.emoflon.ibex.gt.arithmetics.IBeXArithmeticsCalculatorHelper;
 import org.emoflon.ibex.gt.disjunctpatterns.GraphTransformationDisjunctPatternInterpreter;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticValue;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeConstraint;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeExpression;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeParameter;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextAlternatives;
@@ -70,6 +71,7 @@ public class MatchFilter {
 		throw new IllegalArgumentException("Invalid pattern " + pattern);
 	}
 	
+
 	/**
 	 * Returns a map of filtered match-set of the subpatterns for the pattern that is a disjunctContextPattern
 	 * 
@@ -116,6 +118,18 @@ public class MatchFilter {
 		return submatchesMap;
 	}
 	
+
+	public static boolean isMatchValid(final IMatch match, final IBeXContext pattern, final Map<String, Object> parameters, final Map<String, Collection<IMatch>> matches) {
+		if (pattern instanceof IBeXContextPattern) {
+			Stream<IMatch> matchesForPattern = Stream.of(match);
+			matchesForPattern = MatchFilter.filterNodeBindings(matchesForPattern, (IBeXContextPattern)pattern, parameters);
+			matchesForPattern = MatchFilter.filterAttributeConstraintsWithParameter(matchesForPattern, (IBeXContextPattern)pattern, parameters);
+			return matchesForPattern.count() > 0;
+		}
+		throw new IllegalArgumentException("Invalid pattern " + pattern);
+	}
+
+
 	/**
 	 * Returns a stream of matches for the pattern such that the parameter values of
 	 * the matches are equal to the given parameters.
@@ -188,15 +202,30 @@ public class MatchFilter {
 	public static Stream<IMatch> filterAttributeConstraintsWithParameter(Stream<IMatch> matches,
 			final IBeXContextPattern pattern, final Map<String, Object> parameters) {
 		for (IBeXAttributeConstraint ac : pattern.getAttributeConstraint()) {
-			if (ac.getValue() instanceof IBeXAttributeParameter) {
-				String nodeName = ac.getNode().getName();
-				String parameterName = ((IBeXAttributeParameter) ac.getValue()).getName();
+			if (ac.getLhs() instanceof IBeXAttributeExpression && ac.getRhs() instanceof IBeXAttributeParameter) {
+				IBeXAttributeExpression lhs = (IBeXAttributeExpression)ac.getLhs();
+				IBeXAttributeParameter rhs = (IBeXAttributeParameter)ac.getRhs();
+				String nodeName = lhs.getNode().getName();
+				String parameterName = rhs.getName();
 				if (!parameters.containsKey(parameterName)) {
 					throw new IllegalArgumentException("Missing required parameter " + parameterName);
 				}
 				matches = matches.filter(m -> {
 					EObject node = (EObject) m.get(nodeName);
-					Object currentValue = node.eGet(ac.getType());
+					Object currentValue = node.eGet(lhs.getAttribute());
+					return compare(currentValue, parameters.get(parameterName), ac.getRelation());
+				});
+			} else if(ac.getRhs() instanceof IBeXAttributeExpression && ac.getLhs() instanceof IBeXAttributeParameter) {
+				IBeXAttributeExpression lhs = (IBeXAttributeExpression)ac.getRhs();
+				IBeXAttributeParameter rhs = (IBeXAttributeParameter)ac.getLhs();
+				String nodeName = lhs.getNode().getName();
+				String parameterName = rhs.getName();
+				if (!parameters.containsKey(parameterName)) {
+					throw new IllegalArgumentException("Missing required parameter " + parameterName);
+				}
+				matches = matches.filter(m -> {
+					EObject node = (EObject) m.get(nodeName);
+					Object currentValue = node.eGet(lhs.getAttribute());
 					return compare(currentValue, parameters.get(parameterName), ac.getRelation());
 				});
 			}

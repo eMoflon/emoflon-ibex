@@ -6,6 +6,7 @@ public class NACCache {
 
 	private static NACCache util;
 	
+	@SuppressWarnings("unused")
 	private TGG tgg;
 	
 	public static NACCache getInstance(TGG tgg) {

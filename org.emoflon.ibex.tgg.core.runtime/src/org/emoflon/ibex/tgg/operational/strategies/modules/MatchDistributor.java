@@ -11,68 +11,83 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.apache.log4j.Logger;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.common.operational.IMatchObserver;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.IBlackInterpreter;
+import org.emoflon.ibex.tgg.operational.benchmark.TimeMeasurable;
+import org.emoflon.ibex.tgg.operational.benchmark.TimeRegistry;
+import org.emoflon.ibex.tgg.operational.benchmark.Timer;
+import org.emoflon.ibex.tgg.operational.benchmark.Times;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
-public class MatchDistributor implements IMatchObserver {
+public class MatchDistributor implements IMatchObserver, TimeMeasurable {
+
+	protected final Times times = new Times();
 
 	private final long INTERVAL_LENGTH = 5000;
 	private long currentIntervalStart = -1;
-	
+	private boolean noOutput = true;
+
 	protected final static Logger logger = Logger.getLogger(OperationalStrategy.class);
 
 	protected Map<IMatch, String> blockedMatches = cfactory.createObjectToObjectHashMap();
 
 	protected Map<PatternType, Collection<Consumer<ITGGMatch>>> type2addMatch = new HashMap<>();;
 	protected Map<PatternType, Collection<Consumer<ITGGMatch>>> type2removeMatch = new HashMap<>();
-	
+
 	private IbexOptions options;
-	
+
 	private long matchCounter = 0;
 	private IBlackInterpreter blackInterpreter;
 	private ResourceSet rs;
-	
-	protected long time;
-	
+
 	private boolean initialized = false;
-	
+	private boolean useTrashResource;
+
 	public MatchDistributor(IbexOptions options) {
 		this.options = options;
+		TimeRegistry.register(this);
 	}
-	
+
 	public void initialize() throws IOException {
-		if(initialized)
+		if (initialized)
 			return;
-		
+
 		rs = options.resourceHandler().getResourceSet();
-		if(options.blackInterpreter() == null)
+		if (options.blackInterpreter() == null)
 			logger.warn("No pattern matcher is registered!");
-		else	
+		else
 			initialiseBlackInterpreter(options.executable());
-		
+
 		initialized = true;
 	}
-	
+
 	public void updateMatches() {
-		long tic = System.nanoTime();
+		noOutput = true;
+		Timer.start();
+
 		blackInterpreter.updateMatches();
-		time = getTime() + System.nanoTime() - tic;
+
+		times.addTo("updateMatches", Timer.stop());
+		if (!noOutput)
+			LoggerConfig.log(LoggerConfig.log_matches(), () -> "Pattern matcher: update matches - done\n");
 	}
-	
+
 	@Override
 	public void notifySubscriptions() {
-	
+
 	}
-	
-	protected void initialiseBlackInterpreter(IbexExecutable executable) throws IOException {		
+
+	protected void initialiseBlackInterpreter(IbexExecutable executable) throws IOException {
 		blackInterpreter = options.blackInterpreter();
+		useTrashResource = options.blackInterpreter().getClass().getName().contains("Democles");
+
 		Optional<RuntimeException> initExcep = Optional.empty();
 		try {
 			blackInterpreter.initialise(executable, options, rs.getPackageRegistry(), this);
@@ -80,30 +95,47 @@ public class MatchDistributor implements IMatchObserver {
 			initExcep = Optional.of(e);
 		}
 
+		Collection<Resource> resources = new LinkedList<>();
+		resources.add(options.resourceHandler().source);
+		resources.add(options.resourceHandler().corr);
+		resources.add(options.resourceHandler().target);
+		resources.add(options.resourceHandler().protocol);
+		if (useTrashResource)
+			resources.add(options.resourceHandler().getTrashResource());
+
 		try {
-			blackInterpreter.monitor(rs);
+			blackInterpreter.monitor(resources);
 		} finally {
 			if (initExcep.isPresent())
 				throw initExcep.get();
 		}
 	}
-	
+
 	/**
 	 * Replaces the black interpreter and initialises the new black interpreter
 	 * 
-	 * @param newBlackInterpreter The black interpreter to replace the existing
-	 *                            black interpreter
+	 * @param newBlackInterpreter The black interpreter to replace the existing black
+	 *                            interpreter
 	 */
 	protected void reinitializeBlackInterpreter(IbexExecutable executable, IBlackInterpreter newBlackInterpreter) {
 		this.removeBlackInterpreter();
 		this.blackInterpreter = newBlackInterpreter;
 		this.blackInterpreter.initialise(executable, options, rs.getPackageRegistry(), this);
-		this.blackInterpreter.monitor(rs);
+
+		Collection<Resource> resources = new LinkedList<>();
+		resources.add(options.resourceHandler().source);
+		resources.add(options.resourceHandler().corr);
+		resources.add(options.resourceHandler().target);
+		resources.add(options.resourceHandler().protocol);
+		if (useTrashResource)
+			resources.add(options.resourceHandler().getTrashResource());
+
+		this.blackInterpreter.monitor(resources);
 	}
-	
+
 	/**
-	 * Removes the black interpreter and all references to the black interpreter
-	 * from the strategy and its resources
+	 * Removes the black interpreter and all references to the black interpreter from the
+	 * strategy and its resources
 	 */
 	public void removeBlackInterpreter() {
 		if (blackInterpreter == null)
@@ -117,16 +149,16 @@ public class MatchDistributor implements IMatchObserver {
 
 	@Override
 	public void addMatch(IMatch match) {
+		handleLogging();
+
 		ITGGMatch tggMatch = (ITGGMatch) match;
-		
 		Collection<Consumer<ITGGMatch>> consumers = type2addMatch.get(tggMatch.getType());
 		if (consumers != null) {
 			matchCounter++;
 			if (currentIntervalStart == -1) {
-				LoggerConfig.log(LoggerConfig.log_all(), () -> "Now collecting matches...");
 				currentIntervalStart = System.currentTimeMillis();
 			} else if (System.currentTimeMillis() - currentIntervalStart > INTERVAL_LENGTH) {
-				LoggerConfig.log(LoggerConfig.log_all(), () -> "Collected " + matchCounter + " matches...");
+				LoggerConfig.log(LoggerConfig.log_matches(), () -> "Pattern matcher: collected " + matchCounter + " matches...");
 				currentIntervalStart = System.currentTimeMillis();
 			}
 
@@ -136,32 +168,33 @@ public class MatchDistributor implements IMatchObserver {
 
 	@Override
 	public void removeMatch(IMatch match) {
+		handleLogging();
+		
 		ITGGMatch tggMatch = (ITGGMatch) match;
 		Collection<Consumer<ITGGMatch>> consumers = type2removeMatch.get(tggMatch.getType());
 		if (consumers != null) {
 			consumers.forEach(c -> c.accept(tggMatch));
-			LoggerConfig.log(LoggerConfig.log_all(), () ->
-					"Removed due to delete event from pattern matcher: " + match.getPatternName());
+			LoggerConfig.log(LoggerConfig.log_matches(), () -> "Matches: removed " + match.getPatternName() + "(" + match.hashCode() + ")");
 		}
 	}
 
 	/***** Benchmark Logging *****/
-	
+
 	public void collectDataToBeLogged() {
 		options.debug.benchmarkLogger().setNumOfMatchesFound(matchCounter);
 	}
-	
+
 	public void register(Collection<PatternType> types, Consumer<ITGGMatch> addMatch, Consumer<ITGGMatch> removeMatch) {
-		for(PatternType type : types) {
+		for (PatternType type : types) {
 			Collection<Consumer<ITGGMatch>> addConsumers = type2addMatch.get(type);
-			if(addConsumers == null) {
+			if (addConsumers == null) {
 				addConsumers = new LinkedList<>();
 				type2addMatch.put(type, addConsumers);
 			}
 			addConsumers.add(addMatch);
-			
+
 			Collection<Consumer<ITGGMatch>> removeConsumers = type2removeMatch.get(type);
-			if(removeConsumers == null) {
+			if (removeConsumers == null) {
 				removeConsumers = new LinkedList<>();
 				type2removeMatch.put(type, removeConsumers);
 			}
@@ -173,7 +206,16 @@ public class MatchDistributor implements IMatchObserver {
 		return type2addMatch.keySet();
 	}
 
-	public long getTime() {
-		return time;
+	@Override
+	public Times getTimes() {
+		return times;
 	}
+
+	private void handleLogging() {
+		if (noOutput) {
+			noOutput = false;
+			LoggerConfig.log(LoggerConfig.log_matches(), () -> "Pattern matcher: update matches");
+		}
+	}
+
 }

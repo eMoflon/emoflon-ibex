@@ -1,10 +1,13 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.emf.EMFEdge;
+import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 
 import delta.AttributeDelta;
 import delta.Delta;
@@ -16,11 +19,14 @@ public class ModelChangeUtil {
 
 	@SuppressWarnings("unchecked")
 	public static void deleteElement(EObject element, boolean deleteContainedChildren) {
-		if(isDangling(element))
+		if (isDangling(element))
 			return;
-		
+
+		Set<EObject> nodesToDelete = new HashSet<>();
+		nodesToDelete.add(element);
+
 		if (deleteContainedChildren) {
-			deleteElementAndContainedChildren(element);
+			EMFManipulationUtils.delete(nodesToDelete, Collections.EMPTY_SET, o -> {}, true);
 		} else {
 			element.eClass().getEAllContainments().forEach(feature -> {
 				Object content = element.eGet(feature);
@@ -33,23 +39,18 @@ public class ModelChangeUtil {
 					element.eSet(feature, null);
 				}
 			});
-			EcoreUtil.delete(element, false);
+			EMFManipulationUtils.delete(nodesToDelete, Collections.EMPTY_SET, o -> {}, false);
 		}
-	}
-
-	private static void deleteElementAndContainedChildren(EObject element) {
-		element.eContents().forEach(child -> deleteElementAndContainedChildren(child));
-		EcoreUtil.delete(element, false);
 	}
 
 	@SuppressWarnings("unchecked")
 	public static void createEdge(EMFEdge edge) {
 		if (edge.getSource() == null || edge.getTarget() == null)
 			return;
-		
+
 		if (edge.getType().isMany()) {
-			Collection<EObject> feature = (Collection<EObject>) edge.getSource().eGet(edge.getType());
-			feature.add(edge.getTarget());
+			Collection<EObject> value = (Collection<EObject>) edge.getSource().eGet(edge.getType());
+			value.add(edge.getTarget());
 		} else
 			edge.getSource().eSet(edge.getType(), edge.getTarget());
 	}
@@ -58,8 +59,12 @@ public class ModelChangeUtil {
 	public static void deleteEdge(EMFEdge edge) {
 		if (edge.getSource() == null || edge.getTarget() == null)
 			return;
-		if(isDangling(edge.getSource()))
+		if (isDangling(edge.getSource()))
 			return;
+		if (edge.getType().isContainment()) {
+			edge.getTarget().eResource().getContents().add(edge.getTarget());
+			return;
+		}
 		if (edge.getType().isMany()) {
 			Collection<EObject> value = (Collection<EObject>) edge.getSource().eGet(edge.getType());
 			value.remove(edge.getTarget());

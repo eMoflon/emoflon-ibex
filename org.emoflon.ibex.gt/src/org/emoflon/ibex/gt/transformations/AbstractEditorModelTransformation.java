@@ -1,6 +1,6 @@
 package org.emoflon.ibex.gt.transformations;
 
-import java.util.Optional;
+import java.util.function.Consumer;
 
 import org.emoflon.ibex.gt.editor.gT.EditorGTFile;
 import org.emoflon.ibex.gt.editor.gT.EditorPattern;
@@ -16,26 +16,65 @@ import org.emoflon.ibex.gt.editor.utils.GTFlattener;
  */
 public abstract class AbstractEditorModelTransformation<TargetModel>
 		extends AbstractModelTransformation<EditorGTFile, TargetModel> {
+	
+	protected TransformationData data = new TransformationData();
 
 	/**
-	 * Returns the flattened pattern if it exists and the pattern is not abstract.
+	 * Returns the flattened pattern if it exists and the pattern is not abstract. 
+	 * Side Effect: Stores the flattened pattern in a map for later usage.
 	 * 
 	 * @param editorPattern
-	 *            editor pattern
-	 * @return an Optional for the flattened pattern
+	 * @return the flattened pattern
 	 */
-	protected Optional<EditorPattern> getFlattenedPattern(final EditorPattern editorPattern) {
+	public EditorPattern calcFlattenedPattern(final EditorPattern editorPattern) {
 		if (editorPattern.getSuperPatterns().isEmpty()) {
-			return Optional.of(editorPattern);
+			data.pattern2flattened.put(editorPattern, editorPattern);
+			return editorPattern;
 		}
 
 		GTFlattener flattener = new GTFlattener(editorPattern);
 		if (flattener.hasErrors()) {
-			flattener.getErrors().forEach(e -> logError("Flattening of %s: %s", editorPattern.getName(), e));
-			return Optional.empty();
+			flattener.getErrors().forEach(e -> logError("Flattening of " + editorPattern.getName() + " "+e) );
+			return null;
 		} else {
-			return Optional.of(flattener.getFlattenedPattern());
+			data.pattern2flattened.put(editorPattern, flattener.getFlattenedPattern());
+			return flattener.getFlattenedPattern();
 		}
 	}
+	
+	/**
+	 * Returns the flattened pattern if it exists, otherwise it will be constructed if the pattern is not abstract. 
+	 * 
+	 * @param editorPattern
+	 * @return the flattened pattern
+	 */
+	public EditorPattern getFlattenedPattern(final EditorPattern editorPattern) {
+		if(!data.pattern2flattened.containsKey(editorPattern))
+			return calcFlattenedPattern(editorPattern);
+		
+		return data.pattern2flattened.get(editorPattern);
+	}
+	
+	/**
+	 * Returns the flattened pattern if it exists, otherwise it will be constructed if the pattern is not abstract. 
+	 * 
+	 * @param editorPattern
+	 * @param errorLogger Some logging function, consuming a string.
+	 * @return the flattened pattern
+	 */
+	public static EditorPattern flattenPattern(final EditorPattern editorPattern, Consumer<String> errorLogger) {
+		if (editorPattern.getSuperPatterns().isEmpty()) {
+			return editorPattern;
+		}
+
+		GTFlattener flattener = new GTFlattener(editorPattern);
+		if (flattener.hasErrors()) {
+			flattener.getErrors().forEach(e -> errorLogger.accept("Flattening of " + editorPattern.getName() + " "+e) );
+			return null;
+		} else {
+			return flattener.getFlattenedPattern();
+		}
+	}
+	
 	
 }

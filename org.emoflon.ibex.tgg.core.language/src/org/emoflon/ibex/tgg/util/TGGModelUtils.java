@@ -27,6 +27,20 @@ public class TGGModelUtils {
 				.filter(n -> type.equals(n.getBindingType())).sorted((a, b) -> a.getName().compareTo(b.getName())) //
 				.collect(Collectors.toList());
 	}
+	
+	public static List<TGGRuleEdge> getEdgesByDomain(TGGRule rule, DomainType type) {
+		Objects.requireNonNull(rule, "The rule must not be null!");
+		return rule.getEdges().stream() //
+				.filter(n -> type.equals(n.getDomainType())).sorted((a, b) -> a.getName().compareTo(b.getName())) //
+				.collect(Collectors.toList());
+	}
+	
+	public static List<TGGRuleNode> getNodesByDomain(TGGRule rule, DomainType type) {
+		Objects.requireNonNull(rule, "The rule must not be null!");
+		return rule.getNodes().stream() //
+				.filter(n -> type.equals(n.getDomainType())).sorted((a, b) -> a.getName().compareTo(b.getName())) //
+				.collect(Collectors.toList());
+	}
 
 	/**
 	 * Checks whether the rule is an axiom

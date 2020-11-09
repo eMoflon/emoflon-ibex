@@ -10,11 +10,16 @@ import org.eclipse.emf.ecore.EDataType
 import org.eclipse.emf.ecore.EEnum
 import org.emoflon.ibex.gt.codegen.EClassifiersManager
 
-import GTLanguage.GTNode
-import GTLanguage.GTRule
-import GTLanguage.GTRuleSet
 import java.util.HashSet
-import org.emoflon.ibex.gt.SGTPatternModel.GTRelation
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPattern
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextAlternatives
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRelation
+import org.emoflon.ibex.gt.transformations.EditorToIBeXPatternHelper
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext
 
 /**
  * This class contains the templates for the API Java classes.
@@ -38,7 +43,7 @@ class JavaFileGenerator {
 	/**
 	 * Utility class for probability class generation
 	 */
-	 JavaProbabilityFileGenerator probabilityGenerator;
+	 ArithmeticExtensionGenerator probabilityGenerator;
 	 
 	/**
 	 * Creates a new JavaFileGenerator.
@@ -47,56 +52,56 @@ class JavaFileGenerator {
 		this.classNamePrefix = classNamePrefix
 		this.packageName = packageName
 		this.eClassifiersManager = eClassifiersManager
-		probabilityGenerator = new JavaProbabilityFileGenerator(packageName);
+		probabilityGenerator = new ArithmeticExtensionGenerator(packageName);
 	}
 
 	/**
 	 * Generates the Java API class.
 	 */
-	def generateAPIClass(IFolder apiPackage, GTRuleSet gtRuleSet, String patternPath) {
+	def generateAPIClass(IFolder apiPackage, IBeXModel ibexModel, String patternPath) {
 		val imports = newHashSet(
 			'org.eclipse.emf.common.util.URI',
 			'org.eclipse.emf.ecore.resource.Resource',
 			'org.eclipse.emf.ecore.resource.ResourceSet',
 			'org.emoflon.ibex.common.operational.IContextPatternInterpreter',
 			'org.emoflon.ibex.gt.api.GraphTransformationAPI',
-			'org.emoflon.ibex.gt.api.GraphTransformationPattern',		
-			'java.util.Optional',
+			'org.emoflon.ibex.gt.api.GraphTransformationPattern',
 			'java.util.Map',
 			'java.util.function.Supplier',
-			'java.util.Random',
 			'org.emoflon.ibex.gt.api.GraphTransformationRule',
-			'org.emoflon.ibex.gt.api.GraphTransformationMatch',
-			'java.util.HashMap',
-			'java.util.Map.Entry',
-			'java.util.AbstractMap.SimpleEntry',
-			'org.emoflon.ibex.gt.arithmetics.Probability'
+			'java.util.HashMap'
 		)
-		gtRuleSet.rules.forEach [
-			imports.add('''«getSubPackageName('api.rules')».«getRuleClassName(it)»''')
-			imports.addAll(eClassifiersManager.getImportsForDataTypes(it.parameters))
-		]
+		
+		val rulePreconditions = new HashSet
+		
+		ibexModel.ruleSet.rules.forEach [ rule |
+			imports.add('''«getSubPackageName('api.rules')».«getRuleClassName(rule)»''')
+			imports.addAll(eClassifiersManager.getImportsForDataTypes(rule.parameters))
+			rulePreconditions.add(rule.lhs)]
+		
+		ibexModel.patternSet.contextPatterns
+			.filter [ pattern | !rulePreconditions.contains(pattern)]
+			.filter [ pattern | !pattern.name.contains("CONDITION")]
+			.forEach [ pattern |
+				imports.add('''«getSubPackageName('api.rules')».«getPatternClassName(pattern)»''')
+				if(pattern instanceof IBeXContextPattern) {
+					val context = pattern as IBeXContextPattern
+					imports.addAll(eClassifiersManager.getImportsForDataTypes(context.parameters))
+				} else {
+					val context = (pattern as IBeXContextAlternatives).context
+					imports.addAll(eClassifiersManager.getImportsForDataTypes(context.parameters))
+				}]
+				
 
 		val apiSourceCode = '''			
 			«printHeader(getSubPackageName('api'), imports)»
 			
 			/**
-			 * The «APIClassName» with «gtRuleSet.rules.size» rules.
+			 * The «APIClassName» with «ibexModel.ruleSet.rules.size» rules and «ibexModel.patternSet.contextPatterns.size» patterns.
 			 */
 			public class «APIClassName» extends GraphTransformationAPI {
 				
 				public static String patternPath = "«patternPath»";
-				
-				/**
-				 * Map with all the rules and patterns of the model
-				 */
-				private Map<String, Supplier<? extends GraphTransformationPattern>> patternMap;
-				
-				/*
-				 *Map with all the rules that can be applied to Gillespie and their probabilities;
-				 * array[0] is the probability; array[1] is probability*matchCount
-				 */
-				private Map<GraphTransformationRule, double[]> gillespieMap;
 			
 				/**
 				 * Creates a new «APIClassName».
@@ -139,22 +144,30 @@ class JavaFileGenerator {
 					gillespieMap = initiateGillespieMap();
 				}
 				
-				private Map<String, Supplier<? extends GraphTransformationPattern>> initiatePatternMap(){
-					Map<String, Supplier<? extends GraphTransformationPattern>> map = new HashMap<String, Supplier<? extends GraphTransformationPattern>>();
-					«FOR rule: gtRuleSet.rules»
+				@Override
+				protected Map<String, Supplier<? extends GraphTransformationPattern<?,?>>> initiatePatternMap(){
+					Map<String, Supplier<? extends GraphTransformationPattern<?,?>>> map = new HashMap<>();
+					«FOR rule: ibexModel.ruleSet.rules»
 					«IF rule.parameters.empty»
-					map.put("«getRuleClassName(rule)»", () -> «rule.name»());
+					map.put("«rule.name»", () -> «rule.name»());
+					«ENDIF»
+					«ENDFOR»
+					«FOR pattern: ibexModel.patternSet.contextPatterns
+						.filter [ pattern | !rulePreconditions.contains(pattern)]
+						.filter [ pattern | !pattern.name.contains("CONDITION")]»
+					«IF getPatternParameter(pattern).empty»
+					map.put("«pattern.name»", () -> «pattern.name»());
 					«ENDIF»
 					«ENDFOR»
 					return map;
 				}
 				
-				
-				private Map<GraphTransformationRule, double[]> initiateGillespieMap(){
-					Map<GraphTransformationRule, double[]> map = 
-						new HashMap<GraphTransformationRule, double[]>();
-					«FOR rule: gtRuleSet.rules»
-					«IF rule.parameters.empty && rule.executable && rule.probability!== null»
+				@Override
+				protected Map<GraphTransformationRule<?,?>, double[]> initiateGillespieMap(){
+					Map<GraphTransformationRule<?,?>, double[]> map = 
+						new HashMap<>();
+					«FOR rule: ibexModel.ruleSet.rules»
+					«IF rule.parameters.empty && rule.probability!== null»
 					«IF probabilityGenerator.isStatic(rule.probability)»
 					map.put(«rule.name»(), new double[]{
 					«rule.name»().getProbability().get().getProbability(), 0.0});					
@@ -163,77 +176,47 @@ class JavaFileGenerator {
 					«ENDFOR»
 					return map;
 				}
-				 
-				/**
-				 * Returns the probability that the rule will be applied with the
-				 * Gillespie algorithm; only works if the rules do not have parameters and the
-				 * probability is static
-				 */
-				public double getGillespieProbability(GraphTransformationRule rule){
-					if(gillespieMap.containsKey(rule)){
-						double totalActivity = getTotalSystemActivity();
-						if(totalActivity > 0){
-							return gillespieMap.get(rule)[1]/totalActivity;	
-						}								
-					}
-					return 0;
-				}
-				
-				/**
-				 * Applies a rule to the graph after the Gillerspie algorithm;
-				 * only rules that do not have parameters are counted
-				 * @return an {@link Optional} for the the match after rule application
-				 */
-				public final Optional<GraphTransformationMatch> applyGillespie(){
-					double totalActivity = getTotalSystemActivity();
-					if(totalActivity != 0){
-						Random rnd = new Random();
-						double randomValue = totalActivity*rnd.nextDouble();
-						double currentActivity = 0;
-						for(Entry<GraphTransformationRule, double[]> entries : gillespieMap.entrySet()){
-						currentActivity += entries.getValue()[1];
-							if(currentActivity >= randomValue){
-								return entries.getKey().apply();
-							}						
-						}
-					}
-					return Optional.empty();
-				}
-				
-				/**
-				 * Helper method for the Gillespie algorithm; counts all the possible matches
-				 * for rules in the graph that have a static probability
-				 */
-				private double getTotalSystemActivity(){
-					 gillespieMap.forEach((v,z) -> {
-					 	z[0] =((Probability) v.getProbability().get()).getProbability();
-						 z[1] = v.countMatches()*z[0];
-						});
-					double totalActivity = 0;
-					for(double[] activity : gillespieMap.values()) {
-						totalActivity += activity[1];
-					}
-					return totalActivity;
-				}
 								
-			«FOR rule : gtRuleSet.rules»
-				
-					/**
-					 * Creates a new instance of the «getRuleType(rule)» «getRuleSignature(rule)» which does the following:
-					 * «getRuleDocumentation(rule)»
-					 *
-					 * @return the new instance of the «getRuleType(rule)»
-					 */
-					public «getRuleClassName(rule)» «rule.name»(«FOR parameter : rule.parameters SEPARATOR ', '»final «getJavaType(parameter.type)» «parameter.name»Value«ENDFOR») {
-						return new «getRuleClassName(rule)»(this, interpreter«FOR parameter : rule.parameters BEFORE ', 'SEPARATOR ', '»«parameter.name»Value«ENDFOR»);
-					}
+				«FOR rule : ibexModel.ruleSet.rules»
+						/**
+						* Creates a new instance of the rule «getRuleSignature(rule)» which does the following:
+						* «getRuleDocumentation(rule)»
+						*
+						* @return the new instance of the rule»
+						*/
+						public «getRuleClassName(rule)» «rule.name»(«FOR parameter : rule.parameters SEPARATOR ', '»final «getJavaType(parameter.type)» «parameter.name»Value«ENDFOR») {
+							try{
+								«getRuleClassName(rule)» rule = («getRuleClassName(rule)») interpreter.getRegisteredGraphTransformationPattern("«rule.name»");
+								«FOR parameter : rule.parameters»
+								rule.«getMethodName('set', parameter.name)»(«parameter.name»Value);
+								«ENDFOR»
+								return rule;
+							} catch(Exception e) {
+								return new «getRuleClassName(rule)»(this, interpreter«FOR parameter : rule.parameters BEFORE ', 'SEPARATOR ', '»«parameter.name»Value«ENDFOR»);
+							}
+						}
 			«ENDFOR»
-			/**
-			 * returns all the patterns and rules of the model that do not need an input parameter
-			 */
-			public Map<String, Supplier<? extends GraphTransformationPattern>> getAllPatterns(){
-				return patternMap;
-			}
+				«FOR pattern : ibexModel.patternSet.contextPatterns
+						.filter [ pattern | !rulePreconditions.contains(pattern)]
+						.filter [ pattern | !pattern.name.contains("CONDITION")]»
+						/**
+						* Creates a new instance of the pattern «getPatternSignature(pattern)» which does the following:
+						* «getPatternDocumentation(pattern)»
+						*
+						* @return the new instance of the pattern»
+						*/
+						public «getPatternClassName(pattern)» «pattern.name»(«FOR parameter : getPatternParameter(pattern) SEPARATOR ', '»final «getJavaType(parameter.type)» «parameter.name»Value«ENDFOR») {
+							try{
+								«getPatternClassName(pattern)» pattern = («getPatternClassName(pattern)») interpreter.getRegisteredGraphTransformationPattern("«pattern.name»");
+								«FOR parameter : getPatternParameter(pattern)»
+								pattern.«getMethodName('set', parameter.name)»(«parameter.name»Value);
+								«ENDFOR»
+								return pattern;
+							} catch(Exception e) {
+								return new «getPatternClassName(pattern)»(this, interpreter«FOR parameter : getPatternParameter(pattern) BEFORE ', 'SEPARATOR ', '»«parameter.name»Value«ENDFOR»);
+							}
+						}
+						«ENDFOR»
 			}
 		'''
 		writeFile(apiPackage.getFile(APIClassName + '.java'), apiSourceCode)
@@ -336,8 +319,8 @@ class JavaFileGenerator {
 	/**
 	 * Generates the Java Match class for the given rule.
 	 */
-	def generateMatchClass(IFolder apiMatchesPackage, GTRule rule) {
-		val imports = eClassifiersManager.getImportsForNodeTypes(rule.nodes.toList)
+	def generateMatchClass(IFolder apiMatchesPackage, IBeXRule rule) {
+		val imports = eClassifiersManager.getImportsForNodeTypes(EditorToIBeXPatternHelper.getAllRuleNodes(rule))
 		imports.addAll(
 			'org.emoflon.ibex.common.operational.IMatch',
 			'org.emoflon.ibex.gt.api.GraphTransformationMatch',
@@ -348,15 +331,15 @@ class JavaFileGenerator {
 			«printHeader(getSubPackageName('api.matches'), imports)»
 			
 			/**
-			 * A match for the «getRuleType(rule)» «getRuleSignature(rule)».
+			 * A match for the rule «getRuleSignature(rule)».
 			 */
 			public class «getMatchClassName(rule)» extends GraphTransformationMatch<«getMatchClassName(rule)», «getRuleClassName(rule)»> {
-				«FOR node : rule.nodes»
+				«FOR node : EditorToIBeXPatternHelper.getAllRuleNodes(rule)»
 					private «getVariableType(node)» «getVariableName(node)»;
 				«ENDFOR»
 			
 				/**
-				 * Creates a new match for the «getRuleType(rule)» «getRuleSignature(rule)».
+				 * Creates a new match for the rule «getRuleSignature(rule)».
 				 * 
 				 * @param pattern
 				 *            the pattern
@@ -365,11 +348,11 @@ class JavaFileGenerator {
 				 */
 				public «getMatchClassName(rule)»(final «getRuleClassName(rule)» pattern, final IMatch match) {
 					super(pattern, match);
-					«FOR node : rule.nodes»
+					«FOR node : EditorToIBeXPatternHelper.getAllRuleNodes(rule)»
 						«getVariableName(node)» = («getVariableType(node)») match.get("«node.name»");
 					«ENDFOR»
 				}
-			«FOR node : rule.nodes»
+			«FOR node : EditorToIBeXPatternHelper.getAllRuleNodes(rule)»
 				
 					/**
 					 * Returns the «node.name».
@@ -384,7 +367,7 @@ class JavaFileGenerator {
 				@Override
 				public String toString() {
 					String s = "match {" + System.lineSeparator();
-					«FOR node : rule.nodes»
+					«FOR node : EditorToIBeXPatternHelper.getAllRuleNodes(rule)»
 						s += "	«node.name» --> " + «getVariableName(node)» + System.lineSeparator();
 					«ENDFOR»
 					s += "} for " + getPattern();
@@ -394,47 +377,109 @@ class JavaFileGenerator {
 		'''
 		writeFile(apiMatchesPackage.getFile(getMatchClassName(rule) + ".java"), matchSourceCode)
 	}
+	
+	/**
+	 * Generates the Java Match class for the given pattern.
+	 */
+	def generateMatchClass(IFolder apiMatchesPackage, IBeXContext pattern) {
+		val imports = eClassifiersManager.getImportsForNodeTypes(EditorToIBeXPatternHelper.getPatternNodes(pattern))
+		imports.addAll(
+			'org.emoflon.ibex.common.operational.IMatch',
+			'org.emoflon.ibex.gt.api.GraphTransformationMatch',
+			'''«getSubPackageName('api.rules')».«getPatternClassName(pattern)»'''
+		)
+
+		val matchSourceCode = '''
+			«printHeader(getSubPackageName('api.matches'), imports)»
+			
+			/**
+			 * A match for the pattern «getPatternSignature(pattern)».
+			 */
+			public class «getMatchClassName(pattern)» extends GraphTransformationMatch<«getMatchClassName(pattern)», «getPatternClassName(pattern)»> {
+				«FOR node : EditorToIBeXPatternHelper.getPatternNodes(pattern)»
+					private «getVariableType(node)» «getVariableName(node)»;
+				«ENDFOR»
+			
+				/**
+				 * Creates a new match for the pattern «getPatternSignature(pattern)».
+				 * 
+				 * @param pattern
+				 *            the pattern
+				 * @param match
+				 *            the untyped match
+				 */
+				public «getMatchClassName(pattern)»(final «getPatternClassName(pattern)» pattern, final IMatch match) {
+					super(pattern, match);
+					«FOR node : EditorToIBeXPatternHelper.getPatternNodes(pattern)»
+						«getVariableName(node)» = («getVariableType(node)») match.get("«node.name»");
+					«ENDFOR»
+				}
+			«FOR node : EditorToIBeXPatternHelper.getPatternNodes(pattern)»
+				
+					/**
+					 * Returns the «node.name».
+					 *
+					 * @return the «node.name»
+					 */
+					public «getVariableType(node)» «getMethodName('get', node.name)»() {
+						return «getVariableName(node)»;
+					}
+			«ENDFOR»
+			
+				@Override
+				public String toString() {
+					String s = "match {" + System.lineSeparator();
+					«FOR node : EditorToIBeXPatternHelper.getPatternNodes(pattern)»
+						s += "	«node.name» --> " + «getVariableName(node)» + System.lineSeparator();
+					«ENDFOR»
+					s += "} for " + getPattern();
+					return s;
+				}
+			}
+		'''
+		writeFile(apiMatchesPackage.getFile(getMatchClassName(pattern) + ".java"), matchSourceCode)
+	}
 
 	/**
 	 * Generates the Java Pattern/Rule class for the given rule.
 	 */
-	def generateRuleClass(IFolder rulesPackage, GTRule rule) {
-		val ruleType = if(rule.executable) 'rule' else 'pattern'
-		val ruleClassType = if(rule.executable) 'GraphTransformationRule' else 'GraphTransformationPattern'
-		val imports = eClassifiersManager.getImportsForNodeTypes(rule.ruleNodes)
+	def generateRuleClass(IFolder rulesPackage, IBeXRule rule) {
+		val imports = eClassifiersManager.getImportsForNodeTypes(EditorToIBeXPatternHelper.getRuleContextNodes(rule))
 		imports.addAll(eClassifiersManager.getImportsForDataTypes(rule.parameters))
 		imports.addAll(
 			'java.util.ArrayList',
 			'java.util.List',
+			'java.util.HashMap',
+			'java.util.stream.Stream',
 			'org.emoflon.ibex.common.operational.IMatch',
-			'''org.emoflon.ibex.gt.api.«ruleClassType»''',
+			'org.emoflon.ibex.gt.api.GraphTransformationRule',
 			'org.emoflon.ibex.gt.engine.GraphTransformationInterpreter',
 			'java.util.Optional',
 			'''«getSubPackageName('api')».«APIClassName»''',
-			'''«getSubPackageName('api.matches')».«getMatchClassName(rule)»''',
-			'java.util.stream.Stream'
+			'''«getSubPackageName('api.matches')».«getMatchClassName(rule)»'''
 		)
-		if (rule.parameters.size > 0 || rule.ruleNodes.size > 0) {
+		if (rule.parameters.size > 0 || EditorToIBeXPatternHelper.getRuleContextNodes(rule).size > 0) {
 			imports.add('java.util.Objects');
 		}
-		if(ruleType == 'rule'){
-			imports.addAll(getProbabilityImports(rule))
-		}
+		
+		imports.addAll(getProbabilityImports(rule))
+
 		val ruleSourceCode = '''
 			«printHeader(getSubPackageName('api.rules'), imports)»
 			
 			/**
-			 * The «ruleType» «getRuleSignature(rule)» which does the following:
+			 * The rule «getRuleSignature(rule)» which does the following:
 			 * «getRuleDocumentation(rule)»
 			 */
-			public class «getRuleClassName(rule)» extends «ruleClassType»<«getMatchClassName(rule)», «getRuleClassName(rule)»> {
+			@SuppressWarnings("unused")
+			public class «getRuleClassName(rule)» extends GraphTransformationRule<«getMatchClassName(rule)», «getRuleClassName(rule)»> {
 				private static String patternName = "«rule.name»";
 			
 				/**
-				 * Creates a new «ruleType» «rule.name»(«FOR parameter : rule.parameters SEPARATOR ', '»«parameter.name»«ENDFOR»).
+				 * Creates a new rule «rule.name»(«FOR parameter : rule.parameters SEPARATOR ', '»«parameter.name»«ENDFOR»).
 				 * 
 				 * @param api
-				 *            the API the «ruleType» belongs to
+				 *            the API the rule belongs to
 				 * @param interpreter
 				 *            the interpreter
 				 «FOR parameter : rule.parameters»
@@ -443,17 +488,14 @@ class JavaFileGenerator {
 				 «ENDFOR»
 				 */
 				 
-				«IF ruleType == 'rule'»
 				/**
 				 * The probability that the rule will be applied; if the rule has no probability,
 				 * then the Optional will be empty
 				 */
-				private static «probabilityGenerator.getProbability(rule)»
-				«ENDIF»
-				
+			
 				public «getRuleClassName(rule)»(final «APIClassName» api, final GraphTransformationInterpreter interpreter«IF rule.parameters.size == 0») {«ELSE»,«ENDIF»
 						«FOR parameter : rule.parameters SEPARATOR ', ' AFTER ') {'»final «getJavaType(parameter.type)» «parameter.name»Value«ENDFOR»
-					super(api, interpreter, patternName «IF ruleType == 'rule'», probability «ENDIF»);
+					super(api, interpreter, patternName, «probabilityGenerator.getProbabilityInitialization(rule)»);
 					«FOR parameter : rule.parameters»
 						«getMethodName('set', parameter.name)»(«parameter.name»Value);
 					«ENDFOR»
@@ -467,12 +509,12 @@ class JavaFileGenerator {
 				@Override
 				protected List<String> getParameterNames() {
 					List<String> names = new ArrayList<String>();
-					«FOR node : rule.ruleNodes»
+					«FOR node : EditorToIBeXPatternHelper.getRuleContextNodes(rule)»
 						names.add("«node.name»");
 					«ENDFOR»
 					return names;
 				}
-			«FOR node : rule.ruleNodes»
+			«FOR node : EditorToIBeXPatternHelper.getRuleContextNodes(rule)»
 				
 					/**
 					 * Binds the node «node.name» to the given object.
@@ -484,11 +526,21 @@ class JavaFileGenerator {
 						parameters.put("«node.name»", Objects.requireNonNull(object, "«node.name» must not be null!"));
 						return this;
 					}
+					
+					/**
+					 * Unbinds the node «node.name» to the given object.
+					 *
+					 * @param object
+					 *            the object to set
+					 */
+					public «getRuleClassName(rule)» «getMethodName('unbind', node.name)»() {
+						parameters.remove("«node.name»");
+						return this;
+					}
 			«ENDFOR»
 			«FOR parameter : rule.parameters»
-				
 					/**
-					 * Sets the parameter «parameter.name» to the given value.
+					 * Sets the parameter «parameter.name».
 					 *
 					 * @param value
 					 *            the value to set
@@ -498,24 +550,22 @@ class JavaFileGenerator {
 						return this;
 					}
 			«ENDFOR»
-				
-				«IF !rule.constraints.empty»
+				«IF !rule.arithmeticConstraints.empty»
 				@Override
-				protected Stream<IMatch> untypedMatchStream(){
-					return super.untypedMatchStream().filter( match -> 
-						«FOR constraint: rule.constraints SEPARATOR '&&'» 
-						«FOR arithmeticConstraint: JavaProbabilityFileGenerator::getArithmeticConstraint(constraint.expression, true)»
+				public boolean isMatchValid(IMatch match){
+					return «FOR constraint: rule.arithmeticConstraints SEPARATOR '&&'»
+«««						Protect against div/0
+						«FOR arithmeticConstraint: ArithmeticExtensionGenerator::getArithmeticConstraint(constraint.lhs, constraint.rhs, true)»
 						«arithmeticConstraint» &&
 						«ENDFOR»
-						((«constraint.parameter.type.name») match.get("«constraint.parameter.name»")).get«constraint.parameter.attribute.name.toFirstUpper»()«getRelation(constraint.relation)»«
-						JavaProbabilityFileGenerator.transformExpression(constraint.expression, true)»«ENDFOR»
-					);				
+						«ArithmeticExtensionGenerator.transformExpression(constraint.lhs, true)»«getRelation(constraint.relation)»«ArithmeticExtensionGenerator.transformExpression(constraint.rhs, true)»
+						«ENDFOR»;
 				}
 				«ENDIF»
 				@Override
 				public String toString() {
-					String s = "«ruleType» " + patternName + " {" + System.lineSeparator();
-					«FOR node : rule.ruleNodes»
+					String s = "rule " + patternName + " {" + System.lineSeparator();
+					«FOR node : EditorToIBeXPatternHelper.getRuleContextNodes(rule)»
 						s += "	«node.name» --> " + parameters.get("«node.name»") + System.lineSeparator();
 					«ENDFOR»
 					«FOR parameter : rule.parameters»
@@ -530,10 +580,142 @@ class JavaFileGenerator {
 	}
 	
 	/**
+	 * Generates the Java Pattern/Rule class for the given rule.
+	 */
+	def generatePatternClass(IFolder rulesPackage, IBeXContext pattern) {
+		val imports = eClassifiersManager.getImportsForNodeTypes(EditorToIBeXPatternHelper.getPatternNodes(pattern))
+		imports.addAll(eClassifiersManager.getImportsForDataTypes(getPatternParameter(pattern)))
+		imports.addAll(
+			'java.util.ArrayList',
+			'java.util.List',
+			'java.util.HashMap',
+			'java.util.stream.Stream',
+			'java.util.Optional',
+			'org.emoflon.ibex.common.operational.IMatch',
+			'org.emoflon.ibex.gt.api.GraphTransformationPattern',
+			'org.emoflon.ibex.gt.engine.GraphTransformationInterpreter',
+			'''«getSubPackageName('api')».«APIClassName»''',
+			'''«getSubPackageName('api.matches')».«getMatchClassName(pattern)»'''
+		)
+		if (getPatternParameter(pattern).size > 0 || EditorToIBeXPatternHelper.getPatternNodes(pattern).size > 0) {
+			imports.add('java.util.Objects');
+		}
+
+		val ruleSourceCode = '''
+			«printHeader(getSubPackageName('api.rules'), imports)»
+			
+			/**
+			 * The pattern «EditorToIBeXPatternHelper.getPatternNodes(pattern)» which does the following:
+			 * «getPatternDocumentation(pattern)»
+			 */
+			@SuppressWarnings("unused")
+			public class «getPatternClassName(pattern)» extends GraphTransformationPattern<«getMatchClassName(pattern)», «getPatternClassName(pattern)»> {
+				private static String patternName = "«pattern.name»";
+			
+				/**
+				 * Creates a new pattern «pattern.name»(«FOR parameter : getPatternParameter(pattern) SEPARATOR ', '»«parameter.name»«ENDFOR»).
+				 * 
+				 * @param api
+				 *            the API the pattern belongs to
+				 * @param interpreter
+				 *            the interpreter
+				 «FOR parameter : getPatternParameter(pattern)»
+				 	* @param «parameter.name»Value
+				 	*            the value for the parameter «parameter.name»
+				 «ENDFOR»
+				 */
+				
+				public «getPatternClassName(pattern)»(final «APIClassName» api, final GraphTransformationInterpreter interpreter«IF getPatternParameter(pattern).size == 0») {«ELSE»,«ENDIF»
+						«FOR parameter : getPatternParameter(pattern) SEPARATOR ', ' AFTER ') {'»final «getJavaType(parameter.type)» «parameter.name»Value«ENDFOR»
+					super(api, interpreter, patternName);
+					«FOR parameter : getPatternParameter(pattern)»
+						«getMethodName('set', parameter.name)»(«parameter.name»Value);
+					«ENDFOR»
+				}
+			
+				@Override
+				protected «getMatchClassName(pattern)» convertMatch(final IMatch match) {
+					return new «getMatchClassName(pattern)»(this, match);
+				}
+			
+				@Override
+				protected List<String> getParameterNames() {
+					List<String> names = new ArrayList<String>();
+					«FOR node : EditorToIBeXPatternHelper.getPatternNodes(pattern)»
+						names.add("«node.name»");
+					«ENDFOR»
+					return names;
+				}
+			«FOR node : EditorToIBeXPatternHelper.getPatternNodes(pattern)»
+				
+					/**
+					 * Binds the node «node.name» to the given object.
+					 *
+					 * @param object
+					 *            the object to set
+					 */
+					public «getPatternClassName(pattern)» «getMethodName('bind', node.name)»(final «getVariableType(node)» object) {
+						parameters.put("«node.name»", Objects.requireNonNull(object, "«node.name» must not be null!"));
+						return this;
+					}
+					
+					/**
+					 * Unbinds the node «node.name» to the given object.
+					 *
+					 * @param object
+					 *            the object to set
+					 */
+					public «getPatternClassName(pattern)» «getMethodName('unbind', node.name)»() {
+						parameters.remove("«node.name»");
+						return this;
+					}
+			«ENDFOR»
+			«FOR parameter : getPatternParameter(pattern)»
+				
+					/**
+					 * Sets the parameter «parameter.name» to the given value.
+					 *
+					 * @param value
+					 *            the value to set
+					 */
+					public «getPatternClassName(pattern)» «getMethodName('set', parameter.name)»(final «getJavaType(parameter.type)» value) {
+						parameters.put("«parameter.name»", Objects.requireNonNull(value, "«parameter.name» must not be null!"));
+						return this;
+					}
+			«ENDFOR»
+				
+				«IF !EditorToIBeXPatternHelper.getArithmeticConstraints(pattern).empty»
+				@Override
+				public boolean isMatchValid(IMatch match){
+					return «FOR constraint: EditorToIBeXPatternHelper.getArithmeticConstraints(pattern) SEPARATOR '&&'» 
+«««						Protection from div/0
+						«FOR arithmeticConstraint: ArithmeticExtensionGenerator::getArithmeticConstraint(constraint.lhs, constraint.rhs, true)»
+						«arithmeticConstraint» && «ENDFOR»
+							«ArithmeticExtensionGenerator.transformExpression(constraint.lhs, true)»«getRelation(constraint.relation)»«ArithmeticExtensionGenerator.transformExpression(constraint.rhs, true)»«ENDFOR»;				
+				}
+				«ENDIF»
+				@Override
+				public String toString() {
+					String s = "pattern " + patternName + " {" + System.lineSeparator();
+					«FOR node : EditorToIBeXPatternHelper.getPatternNodes(pattern)»
+						s += "	«node.name» --> " + parameters.get("«node.name»") + System.lineSeparator();
+					«ENDFOR»
+					«FOR parameter : getPatternParameter(pattern)»
+						s += "	«parameter.name» --> " + parameters.get("«parameter.name»") + System.lineSeparator();
+					«ENDFOR»
+					s += "}";
+					return s;
+				}
+			}
+		'''
+		writeFile(rulesPackage.getFile(getPatternClassName(pattern) + ".java"), ruleSourceCode)
+	}
+	
+	/**
 	 * Generates a probability class for the given rule; only generates a class if the rule is 
 	 * depended of a node attribute
 	 */
-	def generateProbabilityClass(IFolder probabilitiesPackage, GTRule rule){
+	def generateProbabilityClass(IFolder probabilitiesPackage, IBeXRule rule){
 		if(rule.probability === null){
 			return;
 		}
@@ -550,18 +732,18 @@ class JavaFileGenerator {
 	/**
 	 * Returns the necessary imports for the rule class for the stochastic extension
 	 */
-	def getProbabilityImports(GTRule rule){
+	def getProbabilityImports(IBeXRule rule){
 		val imports = new HashSet<String>()
-		imports.add(
-			'org.emoflon.ibex.gt.arithmetics.Probability'
+		imports.addAll(
+			'org.emoflon.ibex.gt.arithmetic.Probability'
 		)
 		if(rule.probability === null){
 			return imports;
 		}
 		if(probabilityGenerator.isStatic(rule.probability)){
 			imports.addAll(
-				'org.emoflon.ibex.gt.arithmetics.StaticProbability',
-				'StochasticLanguage.GTStochasticDistribution',
+				'org.emoflon.ibex.gt.arithmetic.StaticProbability',
+				'org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDistributionType',
 				'java.util.OptionalDouble'
 			)
 		}
@@ -573,7 +755,7 @@ class JavaFileGenerator {
 	/**
 	 * returns the relation between attribute and expression for the patternConstraints
 	 */
-	private def getRelation(GTRelation relation){
+	private def getRelation(IBeXRelation relation){
 		switch(relation){
 			case EQUAL: return '=='
 			case GREATER: return '>'
@@ -614,42 +796,95 @@ class JavaFileGenerator {
 	/**
 	 * Returns the name of the match class for the rule.
 	 */
-	private static def getMatchClassName(GTRule rule) {
+	private static def getMatchClassName(IBeXRule rule) {
 		return rule.name.toFirstUpper + "Match"
+	}
+	
+	/**
+	 * Returns the name of the match class for the rule.
+	 */
+	private static def getMatchClassName(IBeXPattern pattern) {
+		return pattern.name.toFirstUpper + "Match"
 	}
 
 	/**
 	 * Returns the name of the rule class for the rule.
 	 */
-	private static def getRuleClassName(GTRule rule) {
-		return rule.name.toFirstUpper + if(rule.executable) "Rule" else "Pattern"
+	private static def getRuleClassName(IBeXRule rule) {
+		return rule.name.toFirstUpper + "Rule"
 	}
-
-	/**
-	 * Returns "pattern" or "rule". 
+	
+		/**
+	 * Returns the name of the rule class for the rule.
 	 */
-	private static def getRuleType(GTRule rule) {
-		return if(rule.executable) 'rule' else 'pattern'
+	private static def getPatternClassName(IBeXPattern pattern) {
+		return pattern.name.toFirstUpper + "Pattern"
 	}
 
 	/**
 	 * Returns the concatenation of rule name and the list of parameter names.
 	 */
-	private static def getRuleSignature(GTRule rule) {
+	private static def getRuleSignature(IBeXRule rule) {
 		return '''<code>«rule.name»(«FOR parameter : rule.parameters SEPARATOR ', '»«parameter.name»«ENDFOR»)</code>'''
+	}
+	
+	/**
+	 * Returns the concatenation of rule name and the list of parameter names.
+	 */
+	private static def getPatternSignature(IBeXPattern pattern) {
+		var context = null as IBeXContextPattern
+		if(pattern instanceof IBeXContextPattern) {
+			context = pattern as IBeXContextPattern	
+		} else {
+			context = (pattern as IBeXContextAlternatives).context
+		}
+		return '''<code>«context.name»(«FOR parameter : context.parameters SEPARATOR ', '»«parameter.name»«ENDFOR»)</code>'''
+		
+	}
+	
+	private static def getPatternParameter(IBeXPattern pattern) {
+		if(pattern instanceof IBeXContextPattern) {
+			return (pattern as IBeXContextPattern).parameters
+		} else {
+			return (pattern as IBeXContextAlternatives).context.parameters
+		}
 	}
 
 	/**
 	 * Returns the documentation for the rule.
 	 */
-	private static def getRuleDocumentation(GTRule rule) {
+	private static def getRuleDocumentation(IBeXRule rule) {
+		if(rule.documentation === null)
+			return String.format(
+					"If this rule is not self-explaining, you really should add some comment in the specification.")
 		if (rule.documentation.isEmpty) {
 			return String.format(
-				"If this %s is not self-explaining, you really should add some comment in the specification.",
-				getRuleType(rule)
-			)
+				"If this rule is not self-explaining, you really should add some comment in the specification.")
 		} else {
 			return rule.documentation
+		}
+	}
+	
+	/**
+	 * Returns the documentation for the rule.
+	 */
+	private static def getPatternDocumentation(IBeXPattern pattern) {
+		var ibexPattern = null as IBeXContextPattern
+		if(pattern instanceof IBeXContextPattern)
+			ibexPattern = pattern as IBeXContextPattern
+		else 	
+			ibexPattern = (pattern as IBeXContextAlternatives).context	
+			
+		if (ibexPattern.documentation === null) {
+			return String.format(
+				"If this pattern is not self-explaining, you really should add some comment in the specification."
+			)
+		} else if (ibexPattern.documentation.isEmpty) {
+			return String.format(
+				"If this pattern is not self-explaining, you really should add some comment in the specification."
+			)
+		} else {
+			return ibexPattern.documentation
 		}
 	}
 
@@ -663,14 +898,14 @@ class JavaFileGenerator {
 	/**
 	 * Returns the variable name for the given node.
 	 */
-	private static def getVariableName(GTNode node) {
+	private static def getVariableName(IBeXNode node) {
 		return 'var' + node.name.toFirstUpper
 	}
 
 	/**
 	 * Returns the name of the type of given node.
 	 */
-	private static def getVariableType(GTNode node) {
+	private static def getVariableType(IBeXNode node) {
 		return node.type.name
 	}
 

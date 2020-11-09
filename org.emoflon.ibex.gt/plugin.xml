@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?eclipse version="3.0"?><plugin>
   <extension-point id="GTEngineExtension" name="GTEngineExtension" schema="schema/GTEngineExtension.exsd"/>
+  <extension-point id="GTEngineBuilderExtension" name="GTEngineBuilderExtension" schema="schema/GTEngineBuilderExtension.exsd"/>
   <extension point="org.emoflon.ibex.gt.editor.ui.GTBuilderExtension">
     <builder_extension class="org.emoflon.ibex.gt.codegen.GTPackageBuilder"/>
-  </extension>
-  <extension point="org.eclipse.emf.ecore.generated_package">
-    <package class="GTLanguage.GTLanguagePackage" genModel="model/Gt.genmodel" uri="platform:/resource/org.emoflon.ibex.gt/model/Gt.ecore"/>
   </extension>
 
 </plugin>

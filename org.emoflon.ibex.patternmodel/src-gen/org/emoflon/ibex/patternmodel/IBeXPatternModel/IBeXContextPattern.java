@@ -17,13 +17,16 @@ import org.eclipse.emf.common.util.EList;
  * The following features are supported:
  * </p>
  * <ul>
+ *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getDocumentation <em>Documentation</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getAttributeConstraint <em>Attribute Constraint</em>}</li>
+ *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getArithmeticConstraints <em>Arithmetic Constraints</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getInjectivityConstraints <em>Injectivity Constraints</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getInvocations <em>Invocations</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getLocalEdges <em>Local Edges</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getLocalNodes <em>Local Nodes</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getSignatureNodes <em>Signature Nodes</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getCsps <em>Csps</em>}</li>
+ *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getParameters <em>Parameters</em>}</li>
  * </ul>
  *
  * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXContextPattern()
@@ -31,6 +34,28 @@ import org.eclipse.emf.common.util.EList;
  * @generated
  */
 public interface IBeXContextPattern extends IBeXContext {
+	/**
+	 * Returns the value of the '<em><b>Documentation</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Documentation</em>' attribute.
+	 * @see #setDocumentation(String)
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXContextPattern_Documentation()
+	 * @model
+	 * @generated
+	 */
+	String getDocumentation();
+
+	/**
+	 * Sets the value of the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getDocumentation <em>Documentation</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Documentation</em>' attribute.
+	 * @see #getDocumentation()
+	 * @generated
+	 */
+	void setDocumentation(String value);
+
 	/**
 	 * Returns the value of the '<em><b>Attribute Constraint</b></em>' containment reference list.
 	 * The list contents are of type {@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeConstraint}.
@@ -44,8 +69,20 @@ public interface IBeXContextPattern extends IBeXContext {
 	EList<IBeXAttributeConstraint> getAttributeConstraint();
 
 	/**
+	 * Returns the value of the '<em><b>Arithmetic Constraints</b></em>' containment reference list.
+	 * The list contents are of type {@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticConstraint}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Arithmetic Constraints</em>' containment reference list.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXContextPattern_ArithmeticConstraints()
+	 * @model containment="true"
+	 * @generated
+	 */
+	EList<IBeXArithmeticConstraint> getArithmeticConstraints();
+
+	/**
 	 * Returns the value of the '<em><b>Injectivity Constraints</b></em>' containment reference list.
-	 * The list contents are of type {@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNodePair}.
+	 * The list contents are of type {@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInjectivityConstraint}.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Injectivity Constraints</em>' containment reference list.
@@ -53,7 +90,7 @@ public interface IBeXContextPattern extends IBeXContext {
 	 * @model containment="true"
 	 * @generated
 	 */
-	EList<IBeXNodePair> getInjectivityConstraints();
+	EList<IBeXInjectivityConstraint> getInjectivityConstraints();
 
 	/**
 	 * Returns the value of the '<em><b>Invocations</b></em>' containment reference list.
@@ -70,37 +107,37 @@ public interface IBeXContextPattern extends IBeXContext {
 	EList<IBeXPatternInvocation> getInvocations();
 
 	/**
-	 * Returns the value of the '<em><b>Local Edges</b></em>' containment reference list.
+	 * Returns the value of the '<em><b>Local Edges</b></em>' reference list.
 	 * The list contents are of type {@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge}.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Local Edges</em>' containment reference list.
+	 * @return the value of the '<em>Local Edges</em>' reference list.
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXContextPattern_LocalEdges()
-	 * @model containment="true"
+	 * @model
 	 * @generated
 	 */
 	EList<IBeXEdge> getLocalEdges();
 
 	/**
-	 * Returns the value of the '<em><b>Local Nodes</b></em>' containment reference list.
+	 * Returns the value of the '<em><b>Local Nodes</b></em>' reference list.
 	 * The list contents are of type {@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode}.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Local Nodes</em>' containment reference list.
+	 * @return the value of the '<em>Local Nodes</em>' reference list.
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXContextPattern_LocalNodes()
-	 * @model containment="true"
+	 * @model
 	 * @generated
 	 */
 	EList<IBeXNode> getLocalNodes();
 
 	/**
-	 * Returns the value of the '<em><b>Signature Nodes</b></em>' containment reference list.
+	 * Returns the value of the '<em><b>Signature Nodes</b></em>' reference list.
 	 * The list contents are of type {@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode}.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Signature Nodes</em>' containment reference list.
+	 * @return the value of the '<em>Signature Nodes</em>' reference list.
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXContextPattern_SignatureNodes()
-	 * @model containment="true"
+	 * @model
 	 * @generated
 	 */
 	EList<IBeXNode> getSignatureNodes();
@@ -116,5 +153,17 @@ public interface IBeXContextPattern extends IBeXContext {
 	 * @generated
 	 */
 	EList<IBeXCSP> getCsps();
+
+	/**
+	 * Returns the value of the '<em><b>Parameters</b></em>' containment reference list.
+	 * The list contents are of type {@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXParameter}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Parameters</em>' containment reference list.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXContextPattern_Parameters()
+	 * @model containment="true"
+	 * @generated
+	 */
+	EList<IBeXParameter> getParameters();
 
 } // IBeXContextPattern

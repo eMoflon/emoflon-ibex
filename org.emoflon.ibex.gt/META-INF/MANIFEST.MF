@@ -5,11 +5,8 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: eMoflon::IBeX Developers
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
-Export-Package: GTLanguage,
- GTLanguage.impl,
- GTLanguage.util,
- org.emoflon.ibex.gt.api,
- org.emoflon.ibex.gt.arithmetics,
+Export-Package: org.emoflon.ibex.gt.api,
+ org.emoflon.ibex.gt.arithmetic,
  org.emoflon.ibex.gt.codegen,
  org.emoflon.ibex.gt.engine,
  org.emoflon.ibex.gt.transformations
@@ -27,7 +24,6 @@ Require-Bundle: org.apache.log4j,
  org.moflon.core.plugins,
  org.moflon.core.propertycontainer,
  org.moflon.core.utilities,
- org.emoflon.ibex.gt.sgtpatternmodel;bundle-version="0.1.0",
  org.emoflon.ibex.dependencies;bundle-version="1.0.0";visibility:=reexport,
  org.emoflon.ibex.patternmodel,
  org.emoflon.ibex.disjunctpatternmodel;bundle-version="0.1.0";visibility:=reexport

@@ -2,14 +2,14 @@ package org.emoflon.ibex.tgg.operational.defaults.options;
 
 import java.util.function.BiPredicate;
 
-import org.emoflon.ibex.tgg.compiler.patterns.FilterNACStrategy;
+import org.emoflon.ibex.tgg.compiler.patterns.ACStrategy;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
 import language.TGGRuleNode;
 
 public class PatternOptions extends IbexSubOptions {
 	
-	private FilterNACStrategy lookAheadStrategy;
+	private ACStrategy acStrategy;
 	/**
 	 * Switch to using edge patterns based on some heuristics (e.g., pattern size).
 	 * If this is false (disabled), then edge patterns are never used.
@@ -17,22 +17,26 @@ public class PatternOptions extends IbexSubOptions {
 	private boolean useEdgePatterns;
 	private BiPredicate<TGGRuleNode, TGGRuleNode> ignoreInjecitity;
 	private boolean ignoreDomainConformity;
+	private boolean optimizePattern;
+	private boolean useGenPattern;
 
 	public PatternOptions(IbexOptions options) {
 		super(options);
 		
-		lookAheadStrategy = FilterNACStrategy.FILTER_NACS;
+		acStrategy = ACStrategy.FILTER_NACS;
 		useEdgePatterns = false;
 		ignoreInjecitity = (x, y) -> false;
 		ignoreDomainConformity = false;
+		optimizePattern = false;
+		useGenPattern = false;
 	}
 	
-	public FilterNACStrategy lookAheadStrategy() {
-		return lookAheadStrategy;
+	public ACStrategy acStrategy() {
+		return acStrategy;
 	}
 
-	public IbexOptions lookAheadStrategy(FilterNACStrategy lookAheadStrategy) {
-		this.lookAheadStrategy = lookAheadStrategy;
+	public IbexOptions acStrategy(ACStrategy acStrategy) {
+		this.acStrategy = acStrategy;
 		return options;
 	}
 
@@ -60,6 +64,24 @@ public class PatternOptions extends IbexSubOptions {
 
 	public IbexOptions ignoreDomainConformity(boolean ignoreDomainConformity) {
 		this.ignoreDomainConformity = ignoreDomainConformity;
+		return options;
+	}
+	
+	public boolean optimizePattern() {
+		return optimizePattern;
+	}
+
+	public IbexOptions optimizePattern(boolean optimizePattern) {
+		this.optimizePattern = optimizePattern;
+		return options;
+	}
+	
+	public boolean useGenPattern() {
+		return useGenPattern;
+	}
+
+	public IbexOptions useGenPattern(boolean useGenPattern) {
+		this.useGenPattern = useGenPattern;
 		return options;
 	}
 

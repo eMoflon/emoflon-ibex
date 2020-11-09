@@ -13,8 +13,8 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 import org.emoflon.ibex.common.operational.ICreatePatternInterpreter;
 import org.emoflon.ibex.common.operational.IMatch;
-import org.emoflon.ibex.gt.arithmetics.IBeXArithmeticsCalculatorHelper;
-import org.emoflon.ibex.gt.arithmetics.IBeXStochasticCalculatorHelper;
+import org.emoflon.ibex.gt.arithmetic.IBeXArithmeticCalculatorHelper;
+import org.emoflon.ibex.gt.arithmetic.IBeXStochasticCalculatorHelper;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticValue;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeAssignment;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeExpression;
@@ -34,6 +34,8 @@ public class GraphTransformationCreateInterpreter implements ICreatePatternInter
 	 * The default resource.
 	 */
 	private Resource defaultResource;
+	
+	private GraphTransformationInterpreter contextInterpreter;
 
 	/**
 	 * Creates a new GraphTransformationCreateInterpreter.
@@ -41,8 +43,9 @@ public class GraphTransformationCreateInterpreter implements ICreatePatternInter
 	 * @param defaultResource
 	 *            the default resource
 	 */
-	public GraphTransformationCreateInterpreter(final Resource defaultResource) {
+	public GraphTransformationCreateInterpreter(final Resource defaultResource, final GraphTransformationInterpreter contextInterpreter) {
 		this.defaultResource = defaultResource;
+		this.contextInterpreter = contextInterpreter;
 	}
 
 	@Override
@@ -145,10 +148,10 @@ public class GraphTransformationCreateInterpreter implements ICreatePatternInter
 			}
 			calculatedValue = parameters.get(parameterName);
 		} else if(value instanceof IBeXStochasticAttributeValue) {
-			calculatedValue = IBeXStochasticCalculatorHelper.getGeneratedValue(
+			calculatedValue = IBeXStochasticCalculatorHelper.getGeneratedValue(contextInterpreter,
 					(IBeXStochasticAttributeValue) value, match, assignment.getType().getEAttributeType());
 		} else if(value instanceof IBeXArithmeticValue) {
-			calculatedValue = IBeXArithmeticsCalculatorHelper.getValue((IBeXArithmeticValue) value, 
+			calculatedValue = IBeXArithmeticCalculatorHelper.getValue(contextInterpreter, (IBeXArithmeticValue) value, 
 					match, assignment.getType().getEAttributeType());
 		}
 		EObject object = (EObject) match.get(assignment.getNode().getName());

@@ -63,8 +63,7 @@ public abstract class AbstractIbexObservable implements IbexObservable {
 	}
 
 	/**
-	 * @param updatePolicy
-	 *            the updatePolicy to set
+	 * @param updatePolicy the updatePolicy to set
 	 */
 	public void setUpdatePolicy(IUpdatePolicy updatePolicy) {
 		if (updatePolicy == null)
@@ -74,9 +73,8 @@ public abstract class AbstractIbexObservable implements IbexObservable {
 	}
 
 	@Override
-	public ITGGMatch notifyChooseMatch(ImmutableMatchContainer matchContainer) { // tells observer a match needs to be
-																				// chosen and choses a match by using
-																				// the update policy
+	public ITGGMatch notifyChooseMatch(ImmutableMatchContainer matchContainer) {
+		// tells observer a match needs to be chosen and chooses a match by using the update policy
 		getObservers().forEach(o -> o.update(ObservableEvent.CHOOSEMATCH, matchContainer));
 		if (this.updatePolicy == null) {
 			throw new RuntimeException("No update strategy configured");

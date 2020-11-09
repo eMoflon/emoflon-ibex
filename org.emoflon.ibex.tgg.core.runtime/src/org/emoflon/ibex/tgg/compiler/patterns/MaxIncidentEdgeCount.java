@@ -24,4 +24,16 @@ public class MaxIncidentEdgeCount {
 	public TGGRuleNode getOneNode() {
 		return oneNode;
 	}
+	
+	public void setOneNode(TGGRuleNode oneNode) {
+		this.oneNode = oneNode;
+	}
+	
+	public void setOtherNode(TGGRuleNode otherNode) {
+		this.otherNode = otherNode;
+	}
+	
+	public void setEdgeCount(int edgeCount) {
+		this.edgeCount = edgeCount;
+	}
 }

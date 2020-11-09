@@ -1,6 +1,11 @@
 package org.emoflon.ibex.tgg.operational.strategies.modules;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
@@ -56,6 +61,8 @@ public class TGGResourceHandler {
 	
 	private Resource trash;
 	
+	private Map<EObject, Collection<EObject>> node2corrs;
+	
 	public TGGResourceHandler() throws IOException {
 		base = URI.createPlatformResourceURI("/", true);
 	}
@@ -88,6 +95,59 @@ public class TGGResourceHandler {
 		initialized = true;
 	}
 	
+	public Map<EObject, Collection<EObject>> getCorrCaching() {
+		if(node2corrs != null)
+			return node2corrs;
+		
+		initializeCorrCaching();
+		return node2corrs;
+	}
+	
+	private void initializeCorrCaching() {
+		node2corrs = Collections.synchronizedMap(new HashMap<>());
+		corr.getContents().parallelStream().forEach(corr -> {
+			for(EObject node : corr.eCrossReferences()) {
+				Collection<EObject> nodes = null;
+				if(!node2corrs.containsKey(node)) {
+					nodes = Collections.synchronizedList(new LinkedList<>());
+					node2corrs.put(node, nodes);
+				}
+				else 
+					nodes = node2corrs.get(node);
+				nodes.add(corr);
+			}
+		});
+	}
+	
+	public void addCorrCaching(EObject corr) {
+		if(node2corrs == null)
+			initializeCorrCaching();
+		
+		for(EObject node : corr.eCrossReferences()) {
+			Collection<EObject> nodes = null;
+			if(!node2corrs.containsKey(node)) {
+				nodes = Collections.synchronizedList(new LinkedList<>());
+				node2corrs.put(node, nodes);
+			}
+			else 
+				nodes = node2corrs.get(node);
+			nodes.add(corr);
+		}
+	}
+	
+	public void removeCorrCaching(EObject corr) {
+		if(node2corrs == null)
+			initializeCorrCaching();
+		
+		for(EObject node : corr.eCrossReferences()) {
+			if(node2corrs.containsKey(node)) {
+				node2corrs.get(node).remove(corr);
+			}
+			else 
+				throw new RuntimeException("Unkown correspondence node detected!");
+		}
+	}
+
 	public void saveRelevantModels() throws IOException {
 		if(executable instanceof FWD_OPT) {
 			// Unrelax the metamodel
@@ -369,5 +429,9 @@ public class TGGResourceHandler {
 
 	public Resource getPrecedenceResource() {
 		return precedence;
+	}
+	
+	public Resource getTrashResource() {
+		return trash;
 	}
 }

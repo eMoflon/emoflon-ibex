@@ -12,6 +12,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
+import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeAssignment;
@@ -48,7 +49,7 @@ public class IBeXCreatePatternImpl extends IBeXPatternImpl implements IBeXCreate
 	protected EList<IBeXAttributeAssignment> attributeAssignments;
 
 	/**
-	 * The cached value of the '{@link #getContextNodes() <em>Context Nodes</em>}' containment reference list.
+	 * The cached value of the '{@link #getContextNodes() <em>Context Nodes</em>}' reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @see #getContextNodes()
@@ -58,7 +59,7 @@ public class IBeXCreatePatternImpl extends IBeXPatternImpl implements IBeXCreate
 	protected EList<IBeXNode> contextNodes;
 
 	/**
-	 * The cached value of the '{@link #getCreatedEdges() <em>Created Edges</em>}' containment reference list.
+	 * The cached value of the '{@link #getCreatedEdges() <em>Created Edges</em>}' reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @see #getCreatedEdges()
@@ -68,7 +69,7 @@ public class IBeXCreatePatternImpl extends IBeXPatternImpl implements IBeXCreate
 	protected EList<IBeXEdge> createdEdges;
 
 	/**
-	 * The cached value of the '{@link #getCreatedNodes() <em>Created Nodes</em>}' containment reference list.
+	 * The cached value of the '{@link #getCreatedNodes() <em>Created Nodes</em>}' reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @see #getCreatedNodes()
@@ -118,7 +119,7 @@ public class IBeXCreatePatternImpl extends IBeXPatternImpl implements IBeXCreate
 	@Override
 	public EList<IBeXNode> getContextNodes() {
 		if (contextNodes == null) {
-			contextNodes = new EObjectContainmentEList<IBeXNode>(IBeXNode.class, this,
+			contextNodes = new EObjectResolvingEList<IBeXNode>(IBeXNode.class, this,
 					IBeXPatternModelPackage.IBE_XCREATE_PATTERN__CONTEXT_NODES);
 		}
 		return contextNodes;
@@ -132,7 +133,7 @@ public class IBeXCreatePatternImpl extends IBeXPatternImpl implements IBeXCreate
 	@Override
 	public EList<IBeXEdge> getCreatedEdges() {
 		if (createdEdges == null) {
-			createdEdges = new EObjectContainmentEList<IBeXEdge>(IBeXEdge.class, this,
+			createdEdges = new EObjectResolvingEList<IBeXEdge>(IBeXEdge.class, this,
 					IBeXPatternModelPackage.IBE_XCREATE_PATTERN__CREATED_EDGES);
 		}
 		return createdEdges;
@@ -146,7 +147,7 @@ public class IBeXCreatePatternImpl extends IBeXPatternImpl implements IBeXCreate
 	@Override
 	public EList<IBeXNode> getCreatedNodes() {
 		if (createdNodes == null) {
-			createdNodes = new EObjectContainmentEList<IBeXNode>(IBeXNode.class, this,
+			createdNodes = new EObjectResolvingEList<IBeXNode>(IBeXNode.class, this,
 					IBeXPatternModelPackage.IBE_XCREATE_PATTERN__CREATED_NODES);
 		}
 		return createdNodes;
@@ -162,12 +163,6 @@ public class IBeXCreatePatternImpl extends IBeXPatternImpl implements IBeXCreate
 		switch (featureID) {
 		case IBeXPatternModelPackage.IBE_XCREATE_PATTERN__ATTRIBUTE_ASSIGNMENTS:
 			return ((InternalEList<?>) getAttributeAssignments()).basicRemove(otherEnd, msgs);
-		case IBeXPatternModelPackage.IBE_XCREATE_PATTERN__CONTEXT_NODES:
-			return ((InternalEList<?>) getContextNodes()).basicRemove(otherEnd, msgs);
-		case IBeXPatternModelPackage.IBE_XCREATE_PATTERN__CREATED_EDGES:
-			return ((InternalEList<?>) getCreatedEdges()).basicRemove(otherEnd, msgs);
-		case IBeXPatternModelPackage.IBE_XCREATE_PATTERN__CREATED_NODES:
-			return ((InternalEList<?>) getCreatedNodes()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}

@@ -1,57 +1,98 @@
 package org.emoflon.ibex.tgg.operational.repair.shortcut.util;
 
-import java.util.Collection;
-import java.util.Map;
-
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
+
+import java.util.Map;
+import java.util.Set;
 
 import language.TGGRule;
 import language.TGGRuleElement;
 
 /**
- * Container class that contains the overlap information between a source and a target rule.
- * It contains the successfully mapped elements of both sides as well as those elements that
- * are to be created and deleted.
- * Additionally, it also contains context elements which were not mapped.
+ * Container class that contains the overlap information between a original and
+ * a replacing rule. It contains the successfully mapped elements of both sides
+ * as well as those elements that are to be created and deleted. Additionally,
+ * it also contains context elements which were not mapped.
  * 
  * @author lfritsche
  *
  */
 public class TGGOverlap {
-	public TGGRule sourceRule;
-	public TGGRule targetRule;
+	public TGGRule originalRule;
+	public TGGRule replacingRule;
 	public Map<TGGRuleElement, TGGRuleElement> mappings;
 	public Map<TGGRuleElement, TGGRuleElement> revertMappings;
-	
-	public Map<String, String> nameMappings;
-	
-	public Collection<TGGRuleElement> unboundSrcContext; 
-	public Collection<TGGRuleElement> unboundTrgContext; 
-	public Collection<TGGRuleElement> deletions;
-	public Collection<TGGRuleElement> creations;
 
-	public TGGOverlap(TGGRule sourceRule, TGGRule targetRule, Map<TGGRuleElement, TGGRuleElement> mappings, Collection<TGGRuleElement> srcContext, Collection<TGGRuleElement> trgContext, Collection<TGGRuleElement> deletions, Collection<TGGRuleElement> creations) {
-		this(sourceRule, targetRule);
+	public Set<TGGRuleElement> unboundOriginalContext;
+	public Set<TGGRuleElement> unboundReplacingContext;
+	public Set<TGGRuleElement> deletions;
+	public Set<TGGRuleElement> creations;
+	
+	public OverlapCategory category;
+
+	public TGGOverlap(TGGRule originalRule, TGGRule replacingRule, Map<TGGRuleElement, TGGRuleElement> mappings,
+			Set<TGGRuleElement> originalContext, Set<TGGRuleElement> replacingContext,
+			Set<TGGRuleElement> deletions, Set<TGGRuleElement> creations) {
+		this(originalRule, replacingRule);
 		this.mappings = mappings;
-		mappings.keySet().stream().forEach(k -> nameMappings.put(k.getName(), mappings.get(k).getName()));
 		mappings.keySet().stream().forEach(k -> revertMappings.put(mappings.get(k), k));
-		this.unboundSrcContext = srcContext;
-		this.unboundTrgContext = trgContext;
+		this.unboundOriginalContext = originalContext;
+		this.unboundReplacingContext = replacingContext;
 		this.deletions = deletions;
 		this.creations = creations;
 	}
-	
-	public TGGOverlap(TGGRule sourceRule, TGGRule targetRule) {
-		this.sourceRule = sourceRule;
-		this.targetRule = targetRule;
-		
+
+	public TGGOverlap(TGGRule originalRule, TGGRule replacingRule) {
+		this.originalRule = originalRule;
+		this.replacingRule = replacingRule;
+
 		this.mappings = cfactory.createObjectToObjectHashMap();
-		
+
 		this.revertMappings = cfactory.createObjectToObjectHashMap();
-		this.nameMappings = cfactory.createObjectToObjectHashMap();
-		this.unboundSrcContext = cfactory.createObjectSet();
-		this.unboundTrgContext = cfactory.createObjectSet();
+		this.unboundOriginalContext = cfactory.createObjectSet();
+		this.unboundReplacingContext = cfactory.createObjectSet();
 		this.deletions = cfactory.createObjectSet();
 		this.creations = cfactory.createObjectSet();
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((originalRule == null) ? 0 : originalRule.hashCode());
+		result = prime * result + ((replacingRule == null) ? 0 : replacingRule.hashCode());
+		result = prime * result + ((mappings == null) ? 0 : mappings.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		TGGOverlap other = (TGGOverlap) obj;
+		
+		if (originalRule == null) {
+			if (other.originalRule != null)
+				return false;
+		} else if (!originalRule.equals(other.originalRule))
+			return false;
+		
+		if (replacingRule == null) {
+			if (other.replacingRule != null)
+				return false;
+		} else if (!replacingRule.equals(other.replacingRule))
+			return false;
+
+		if (mappings == null) {
+			if (other.mappings != null)
+				return false;
+		} else if (!mappings.equals(other.mappings))
+			return false;
+		
+		return true;
 	}
 }

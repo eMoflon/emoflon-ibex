@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.common.operational.PushoutApproach;
-import org.emoflon.ibex.gt.arithmetics.Probability;
+import org.emoflon.ibex.gt.arithmetic.Probability;
 import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
 
 /**
@@ -175,6 +175,18 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 			ruleApplicationCount++;
 		});
 		return comatch;
+	}
+		
+	/**
+	 * Applies the rule on the given match.
+	 * 
+	 * @param match
+	 *            the match
+	 * @return an {@link Optional} for the the match after rule application
+	 */
+	@SuppressWarnings("unchecked")
+	public final Optional<M> applyGeneric(final GraphTransformationMatch<?, ?>  match) {
+		return apply((M) match);
 	}
 	
 	/**

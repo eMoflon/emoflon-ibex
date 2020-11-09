@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
-import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
+import org.emoflon.ibex.tgg.compiler.patterns.ACAnalysis;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.common.OperationalPatternTransformation;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
@@ -17,7 +17,7 @@ import language.TGGRule;
 
 public class ProtocolPatternTransformation extends OperationalPatternTransformation {
 
-	public ProtocolPatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule, FilterNACAnalysis filterNACAnalysis) {
+	public ProtocolPatternTransformation(ContextPatternTransformation parent, IbexOptions options, TGGRule rule, ACAnalysis filterNACAnalysis) {
 		super(parent, options, rule, filterNACAnalysis);
 	}
 
@@ -38,11 +38,6 @@ public class ProtocolPatternTransformation extends OperationalPatternTransformat
 			.filter(e -> e.getType().getName().equals("source") || e.getType().getName().equals("target"))
 			.collect(Collectors.toList());
 		corrLinks.forEach(EcoreUtil::delete);
-	}
-
-	@Override
-	protected void transformNACs(IBeXContextPattern ibexPattern) {
-		// Do nothing
 	}
 
 	@Override

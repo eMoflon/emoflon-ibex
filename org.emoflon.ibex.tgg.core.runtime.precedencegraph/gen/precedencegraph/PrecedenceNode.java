@@ -18,9 +18,10 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link precedencegraph.PrecedenceNode#isBroken <em>Broken</em>}</li>
  *   <li>{@link precedencegraph.PrecedenceNode#getRequires <em>Requires</em>}</li>
  *   <li>{@link precedencegraph.PrecedenceNode#getRequiredBy <em>Required By</em>}</li>
- *   <li>{@link precedencegraph.PrecedenceNode#getBasedOn <em>Based On</em>}</li>
- *   <li>{@link precedencegraph.PrecedenceNode#getBaseFor <em>Base For</em>}</li>
  *   <li>{@link precedencegraph.PrecedenceNode#getMatchAsString <em>Match As String</em>}</li>
+ *   <li>{@link precedencegraph.PrecedenceNode#getRollbackCauses <em>Rollback Causes</em>}</li>
+ *   <li>{@link precedencegraph.PrecedenceNode#getRollesBack <em>Rolles Back</em>}</li>
+ *   <li>{@link precedencegraph.PrecedenceNode#getPrecedenceNodeContainer <em>Precedence Node Container</em>}</li>
  * </ul>
  *
  * @see precedencegraph.PrecedencegraphPackage#getPrecedenceNode()
@@ -79,34 +80,6 @@ public interface PrecedenceNode extends EObject {
 	EList<PrecedenceNode> getRequiredBy();
 
 	/**
-	 * Returns the value of the '<em><b>Based On</b></em>' reference list.
-	 * The list contents are of type {@link precedencegraph.PrecedenceNode}.
-	 * It is bidirectional and its opposite is '{@link precedencegraph.PrecedenceNode#getBaseFor <em>Base For</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Based On</em>' reference list.
-	 * @see precedencegraph.PrecedencegraphPackage#getPrecedenceNode_BasedOn()
-	 * @see precedencegraph.PrecedenceNode#getBaseFor
-	 * @model opposite="baseFor"
-	 * @generated
-	 */
-	EList<PrecedenceNode> getBasedOn();
-
-	/**
-	 * Returns the value of the '<em><b>Base For</b></em>' reference list.
-	 * The list contents are of type {@link precedencegraph.PrecedenceNode}.
-	 * It is bidirectional and its opposite is '{@link precedencegraph.PrecedenceNode#getBasedOn <em>Based On</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Base For</em>' reference list.
-	 * @see precedencegraph.PrecedencegraphPackage#getPrecedenceNode_BaseFor()
-	 * @see precedencegraph.PrecedenceNode#getBasedOn
-	 * @model opposite="basedOn"
-	 * @generated
-	 */
-	EList<PrecedenceNode> getBaseFor();
-
-	/**
 	 * Returns the value of the '<em><b>Match As String</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -127,5 +100,57 @@ public interface PrecedenceNode extends EObject {
 	 * @generated
 	 */
 	void setMatchAsString(String value);
+
+	/**
+	 * Returns the value of the '<em><b>Rollback Causes</b></em>' reference list.
+	 * The list contents are of type {@link precedencegraph.PrecedenceNode}.
+	 * It is bidirectional and its opposite is '{@link precedencegraph.PrecedenceNode#getRollesBack <em>Rolles Back</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Rollback Causes</em>' reference list.
+	 * @see precedencegraph.PrecedencegraphPackage#getPrecedenceNode_RollbackCauses()
+	 * @see precedencegraph.PrecedenceNode#getRollesBack
+	 * @model opposite="rollesBack"
+	 * @generated
+	 */
+	EList<PrecedenceNode> getRollbackCauses();
+
+	/**
+	 * Returns the value of the '<em><b>Rolles Back</b></em>' reference list.
+	 * The list contents are of type {@link precedencegraph.PrecedenceNode}.
+	 * It is bidirectional and its opposite is '{@link precedencegraph.PrecedenceNode#getRollbackCauses <em>Rollback Causes</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Rolles Back</em>' reference list.
+	 * @see precedencegraph.PrecedencegraphPackage#getPrecedenceNode_RollesBack()
+	 * @see precedencegraph.PrecedenceNode#getRollbackCauses
+	 * @model opposite="rollbackCauses"
+	 * @generated
+	 */
+	EList<PrecedenceNode> getRollesBack();
+
+	/**
+	 * Returns the value of the '<em><b>Precedence Node Container</b></em>' container reference.
+	 * It is bidirectional and its opposite is '{@link precedencegraph.PrecedenceNodeContainer#getNodes <em>Nodes</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Precedence Node Container</em>' container reference.
+	 * @see #setPrecedenceNodeContainer(PrecedenceNodeContainer)
+	 * @see precedencegraph.PrecedencegraphPackage#getPrecedenceNode_PrecedenceNodeContainer()
+	 * @see precedencegraph.PrecedenceNodeContainer#getNodes
+	 * @model opposite="nodes" transient="false"
+	 * @generated
+	 */
+	PrecedenceNodeContainer getPrecedenceNodeContainer();
+
+	/**
+	 * Sets the value of the '{@link precedencegraph.PrecedenceNode#getPrecedenceNodeContainer <em>Precedence Node Container</em>}' container reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Precedence Node Container</em>' container reference.
+	 * @see #getPrecedenceNodeContainer()
+	 * @generated
+	 */
+	void setPrecedenceNodeContainer(PrecedenceNodeContainer value);
 
 } // PrecedenceNode

@@ -5,13 +5,12 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
+import org.emoflon.ibex.tgg.compiler.patterns.ACAnalysis;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
-import org.emoflon.ibex.tgg.operational.strategies.PropagationDirection;
 
 import language.BindingType;
-import language.DomainType;
 import language.TGGRule;
 
 public class OperationalSCFactory {
@@ -24,29 +23,41 @@ public class OperationalSCFactory {
 		this.scRules = scRules;
 	}
 
-	public Map<String, Collection<OperationalShortcutRule>> createOperationalRules(PropagationDirection direction) {
+	public Map<String, Collection<OperationalShortcutRule>> createOperationalRules(PatternType type) {
 		Map<String, Collection<OperationalShortcutRule>> operationalRules = new HashMap<>();
-		FilterNACAnalysis filterNACAnalysis = new FilterNACAnalysis(strategy.getTGG(), strategy.getOptions());
+		ACAnalysis filterNACAnalysis = new ACAnalysis(strategy.getTGG(), strategy.getOptions());
 
 		for (ShortcutRule scRule : scRules) {
-			TGGRule sourceRule = scRule.getSourceRule();
-			TGGRule targetRule = scRule.getTargetRule();
+			TGGRule originalRule = scRule.getOriginalRule();
+			TGGRule replacingRule = scRule.getReplacingRule();
 
 			// TODO larsF, adrianM: does this make sense?
-			// we do not want rules that do not preserve elements or contain no interface edges
-			if (TGGFilterUtil.filterEdges(sourceRule.getEdges(), BindingType.CREATE).size()
-					+ TGGFilterUtil.filterEdges(targetRule.getEdges(), BindingType.CREATE).size() == 0)
+			// we do not want rules that contain no interface edges
+			if (TGGFilterUtil.filterEdges(originalRule.getEdges(), BindingType.CREATE).size()
+					+ TGGFilterUtil.filterEdges(replacingRule.getEdges(), BindingType.CREATE).size() == 0)
 				continue;
 
-			if (TGGFilterUtil.filterNodes(scRule.getMergedNodes(), DomainType.SRC).size() == 0)
-				continue;
-
-			if (TGGFilterUtil.filterNodes(scRule.getMergedNodes(), DomainType.TRG).size() == 0)
-				continue;
-
-			InterfaceShortcutRule isr = new InterfaceShortcutRule(strategy, direction, scRule, filterNACAnalysis);
-			operationalRules.computeIfAbsent(sourceRule.getName(), k -> new LinkedList<>()).add(isr);
+			OperationalShortcutRule opSCR = createOpShortcutRule(strategy, scRule, filterNACAnalysis, type);
+			operationalRules.computeIfAbsent(originalRule.getName(), k -> new LinkedList<>()).add(opSCR);
 		}
 		return operationalRules;
+	}
+
+	private OperationalShortcutRule createOpShortcutRule(PropagatingOperationalStrategy strategy, ShortcutRule scRule, //
+			ACAnalysis filterNACAnalysis, PatternType type) {
+		switch (type) {
+		case FWD:
+			return new FWDShortcutRule(strategy, scRule, filterNACAnalysis);
+		case BWD:
+			return new BWDShortcutRule(strategy, scRule, filterNACAnalysis);
+		case CC:
+			return new CCShortcutRule(strategy, scRule, filterNACAnalysis);
+		case SRC:
+			return new SRCShortcutRule(strategy, scRule, filterNACAnalysis);
+		case TRG:
+			return new TRGShortcutRule(strategy, scRule, filterNACAnalysis);
+		default:
+			throw new RuntimeException("Shortcut Rules cannot be operationalized for " + type.toString() + " operations");
+		}
 	}
 }

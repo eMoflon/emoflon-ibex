@@ -1,9 +1,9 @@
 package org.emoflon.ibex.tgg.operational.matches;
 
+import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
+
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -11,41 +11,50 @@ import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.operational.debug.LoggingMatchContainer;
+import org.emoflon.ibex.tgg.operational.benchmark.TimeMeasurable;
+import org.emoflon.ibex.tgg.operational.benchmark.TimeRegistry;
+import org.emoflon.ibex.tgg.operational.benchmark.Timer;
+import org.emoflon.ibex.tgg.operational.benchmark.Times;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
-public class MarkingMatchContainer extends LoggingMatchContainer implements IMatchContainer {
+public class MarkingMatchContainer implements IMatchContainer, TimeMeasurable {
+	
+	protected final Times times = new Times();
 
 	protected OperationalStrategy opStrat;
 
-	protected Set<EObject> markedElements;
-	protected LinkedHashSet<ITGGMatch> matches;
+	protected Set<EObject> markedElements = cfactory.createObjectSet();
+	protected Set<ITGGMatch> matches = cfactory.createLinkedObjectSet();
 
 	public MarkingMatchContainer(OperationalStrategy opStrat) {
 		this.opStrat = opStrat;
-		this.markedElements = new HashSet<>();
-		this.matches = new LinkedHashSet<>();
+		TimeRegistry.register(this);
 	}
 
 	@Override
 	public void addMatch(ITGGMatch match) {
-		long tic = System.nanoTime();
+		Timer.start();
+		
 		matches.add(match);
-		addMatchTime += System.nanoTime() - tic;
+		
+		times.addTo("addMatch", Timer.stop());
 	}
 
 	@Override
 	public boolean removeMatch(ITGGMatch match) {
-		long tic = System.nanoTime();
+		Timer.start();
+		
 		if (match.getType() == PatternType.CONSISTENCY) {
 			boolean removed = removeConsistencyMatch(match);
-			removeMatchTime += System.nanoTime() - tic;
+			
+			times.addTo("removeMatch", Timer.stop());
 			return removed;
 		}
 		else {
 			matches.remove(match);
-			removeMatchTime += System.nanoTime() - tic;
+			
+			times.addTo("removeMatch", Timer.stop());
 			return true;
 		}
 	}
@@ -57,7 +66,8 @@ public class MarkingMatchContainer extends LoggingMatchContainer implements IMat
 
 	@Override
 	public ITGGMatch getNext() {
-		long tic = System.nanoTime();
+		Timer.start();
+		
 		List<ITGGMatch> notApplicable = new LinkedList<>();
 		ITGGMatch match = null;
 
@@ -78,13 +88,15 @@ public class MarkingMatchContainer extends LoggingMatchContainer implements IMat
 			}
 		}
 		matches.addAll(notApplicable);
-		getMatchTime += System.nanoTime() - tic;
+		
+		times.addTo("getNext", Timer.stop());
 		return match;
 	}
 
 	@Override
 	public Set<ITGGMatch> getMatches() {
-		long tic = System.nanoTime();
+		Timer.start();
+		
 		Collection<ITGGMatch> neverApplicable = new LinkedList<>();
 
 		Set<ITGGMatch> nextMatches = matches.stream() //
@@ -100,7 +112,8 @@ public class MarkingMatchContainer extends LoggingMatchContainer implements IMat
 				.collect(Collectors.toSet());
 
 		matches.removeAll(neverApplicable);
-		getMatchTime += System.nanoTime() - tic;
+		
+		times.addTo("getMatches", Timer.stop());
 		return nextMatches;
 	}
 
@@ -117,12 +130,14 @@ public class MarkingMatchContainer extends LoggingMatchContainer implements IMat
 
 	@Override
 	public void matchApplied(ITGGMatch match) {
-		long tic = System.nanoTime();
+		Timer.start();
+		
 		if (match.getType() == PatternType.CONSISTENCY)
 			consistencyMatchApplied(match);
 		else
 			matches.remove(match);
-		matchAppliedTime += System.nanoTime() - tic;
+		
+		times.addTo("matchApplied", Timer.stop());
 	}
 
 	private boolean removeConsistencyMatch(ITGGMatch match) {
@@ -169,6 +184,11 @@ public class MarkingMatchContainer extends LoggingMatchContainer implements IMat
 					.map(n -> (EObject) match.get(n.getName())) //
 					.noneMatch(obj -> markedElements.contains(obj));
 		return false;
+	}
+
+	@Override
+	public Times getTimes() {
+		return times;
 	}
 
 }

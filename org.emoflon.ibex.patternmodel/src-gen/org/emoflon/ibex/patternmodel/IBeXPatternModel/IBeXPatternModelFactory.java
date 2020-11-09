@@ -23,58 +23,49 @@ public interface IBeXPatternModelFactory extends EFactory {
 			.init();
 
 	/**
-	 * Returns a new object of class '<em>IBe XAttribute Assignment</em>'.
+	 * Returns a new object of class '<em>IBe XModel</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>IBe XAttribute Assignment</em>'.
+	 * @return a new object of class '<em>IBe XModel</em>'.
 	 * @generated
 	 */
-	IBeXAttributeAssignment createIBeXAttributeAssignment();
+	IBeXModel createIBeXModel();
 
 	/**
-	 * Returns a new object of class '<em>IBe XAttribute Constraint</em>'.
+	 * Returns a new object of class '<em>IBe XPattern Set</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>IBe XAttribute Constraint</em>'.
+	 * @return a new object of class '<em>IBe XPattern Set</em>'.
 	 * @generated
 	 */
-	IBeXAttributeConstraint createIBeXAttributeConstraint();
+	IBeXPatternSet createIBeXPatternSet();
 
 	/**
-	 * Returns a new object of class '<em>IBe XAttribute Parameter</em>'.
+	 * Returns a new object of class '<em>IBe XRule Set</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>IBe XAttribute Parameter</em>'.
+	 * @return a new object of class '<em>IBe XRule Set</em>'.
 	 * @generated
 	 */
-	IBeXAttributeParameter createIBeXAttributeParameter();
+	IBeXRuleSet createIBeXRuleSet();
 
 	/**
-	 * Returns a new object of class '<em>IBe XAttribute Value</em>'.
+	 * Returns a new object of class '<em>IBe XNode Set</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>IBe XAttribute Value</em>'.
+	 * @return a new object of class '<em>IBe XNode Set</em>'.
 	 * @generated
 	 */
-	IBeXAttributeValue createIBeXAttributeValue();
+	IBeXNodeSet createIBeXNodeSet();
 
 	/**
-	 * Returns a new object of class '<em>IBe XAttribute Expression</em>'.
+	 * Returns a new object of class '<em>IBe XEdge Set</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>IBe XAttribute Expression</em>'.
+	 * @return a new object of class '<em>IBe XEdge Set</em>'.
 	 * @generated
 	 */
-	IBeXAttributeExpression createIBeXAttributeExpression();
-
-	/**
-	 * Returns a new object of class '<em>IBe XConstant</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>IBe XConstant</em>'.
-	 * @generated
-	 */
-	IBeXConstant createIBeXConstant();
+	IBeXEdgeSet createIBeXEdgeSet();
 
 	/**
 	 * Returns a new object of class '<em>IBe XContext Alternatives</em>'.
@@ -113,6 +104,15 @@ public interface IBeXPatternModelFactory extends EFactory {
 	IBeXDeletePattern createIBeXDeletePattern();
 
 	/**
+	 * Returns a new object of class '<em>IBe XNode</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>IBe XNode</em>'.
+	 * @generated
+	 */
+	IBeXNode createIBeXNode();
+
+	/**
 	 * Returns a new object of class '<em>IBe XEdge</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -120,6 +120,60 @@ public interface IBeXPatternModelFactory extends EFactory {
 	 * @generated
 	 */
 	IBeXEdge createIBeXEdge();
+
+	/**
+	 * Returns a new object of class '<em>IBe XParameter</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>IBe XParameter</em>'.
+	 * @generated
+	 */
+	IBeXParameter createIBeXParameter();
+
+	/**
+	 * Returns a new object of class '<em>IBe XAttribute Assignment</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>IBe XAttribute Assignment</em>'.
+	 * @generated
+	 */
+	IBeXAttributeAssignment createIBeXAttributeAssignment();
+
+	/**
+	 * Returns a new object of class '<em>IBe XAttribute Constraint</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>IBe XAttribute Constraint</em>'.
+	 * @generated
+	 */
+	IBeXAttributeConstraint createIBeXAttributeConstraint();
+
+	/**
+	 * Returns a new object of class '<em>IBe XAttribute Value</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>IBe XAttribute Value</em>'.
+	 * @generated
+	 */
+	IBeXAttributeValue createIBeXAttributeValue();
+
+	/**
+	 * Returns a new object of class '<em>IBe XAttribute Parameter</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>IBe XAttribute Parameter</em>'.
+	 * @generated
+	 */
+	IBeXAttributeParameter createIBeXAttributeParameter();
+
+	/**
+	 * Returns a new object of class '<em>IBe XConstant</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>IBe XConstant</em>'.
+	 * @generated
+	 */
+	IBeXConstant createIBeXConstant();
 
 	/**
 	 * Returns a new object of class '<em>IBe XEnum Literal</em>'.
@@ -131,49 +185,13 @@ public interface IBeXPatternModelFactory extends EFactory {
 	IBeXEnumLiteral createIBeXEnumLiteral();
 
 	/**
-	 * Returns a new object of class '<em>IBe XNode</em>'.
+	 * Returns a new object of class '<em>IBe XAttribute Expression</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>IBe XNode</em>'.
+	 * @return a new object of class '<em>IBe XAttribute Expression</em>'.
 	 * @generated
 	 */
-	IBeXNode createIBeXNode();
-
-	/**
-	 * Returns a new object of class '<em>IBe XNode Pair</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>IBe XNode Pair</em>'.
-	 * @generated
-	 */
-	IBeXNodePair createIBeXNodePair();
-
-	/**
-	 * Returns a new object of class '<em>IBe XPattern Invocation</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>IBe XPattern Invocation</em>'.
-	 * @generated
-	 */
-	IBeXPatternInvocation createIBeXPatternInvocation();
-
-	/**
-	 * Returns a new object of class '<em>IBe XPattern Set</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>IBe XPattern Set</em>'.
-	 * @generated
-	 */
-	IBeXPatternSet createIBeXPatternSet();
-
-	/**
-	 * Returns a new object of class '<em>IBe XCSP</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>IBe XCSP</em>'.
-	 * @generated
-	 */
-	IBeXCSP createIBeXCSP();
+	IBeXAttributeExpression createIBeXAttributeExpression();
 
 	/**
 	 * Returns a new object of class '<em>IBe XStochastic Attribute Value</em>'.
@@ -192,6 +210,114 @@ public interface IBeXPatternModelFactory extends EFactory {
 	 * @generated
 	 */
 	IBeXArithmeticValue createIBeXArithmeticValue();
+
+	/**
+	 * Returns a new object of class '<em>IBe XInjectivity Constraint</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>IBe XInjectivity Constraint</em>'.
+	 * @generated
+	 */
+	IBeXInjectivityConstraint createIBeXInjectivityConstraint();
+
+	/**
+	 * Returns a new object of class '<em>IBe XPattern Invocation</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>IBe XPattern Invocation</em>'.
+	 * @generated
+	 */
+	IBeXPatternInvocation createIBeXPatternInvocation();
+
+	/**
+	 * Returns a new object of class '<em>IBe XCSP</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>IBe XCSP</em>'.
+	 * @generated
+	 */
+	IBeXCSP createIBeXCSP();
+
+	/**
+	 * Returns a new object of class '<em>IBe XRule</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>IBe XRule</em>'.
+	 * @generated
+	 */
+	IBeXRule createIBeXRule();
+
+	/**
+	 * Returns a new object of class '<em>IBe XProbability</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>IBe XProbability</em>'.
+	 * @generated
+	 */
+	IBeXProbability createIBeXProbability();
+
+	/**
+	 * Returns a new object of class '<em>IBe XArithmetic Constraint</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>IBe XArithmetic Constraint</em>'.
+	 * @generated
+	 */
+	IBeXArithmeticConstraint createIBeXArithmeticConstraint();
+
+	/**
+	 * Returns a new object of class '<em>IBe XUnary Expression</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>IBe XUnary Expression</em>'.
+	 * @generated
+	 */
+	IBeXUnaryExpression createIBeXUnaryExpression();
+
+	/**
+	 * Returns a new object of class '<em>IBe XBinary Expression</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>IBe XBinary Expression</em>'.
+	 * @generated
+	 */
+	IBeXBinaryExpression createIBeXBinaryExpression();
+
+	/**
+	 * Returns a new object of class '<em>IBe XArithmetic Value Literal</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>IBe XArithmetic Value Literal</em>'.
+	 * @generated
+	 */
+	IBeXArithmeticValueLiteral createIBeXArithmeticValueLiteral();
+
+	/**
+	 * Returns a new object of class '<em>IBe XProbability Distribution</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>IBe XProbability Distribution</em>'.
+	 * @generated
+	 */
+	IBeXProbabilityDistribution createIBeXProbabilityDistribution();
+
+	/**
+	 * Returns a new object of class '<em>IBe XArithmetic Attribute</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>IBe XArithmetic Attribute</em>'.
+	 * @generated
+	 */
+	IBeXArithmeticAttribute createIBeXArithmeticAttribute();
+
+	/**
+	 * Returns a new object of class '<em>IBe XMatch Count</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>IBe XMatch Count</em>'.
+	 * @generated
+	 */
+	IBeXMatchCount createIBeXMatchCount();
 
 	/**
 	 * Returns the package supported by this factory.

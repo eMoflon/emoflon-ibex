@@ -23,6 +23,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelFactory;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRuleSet;
 import org.moflon.core.utilities.EcoreUtils;
 
 import org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctContextPattern;
@@ -145,6 +146,7 @@ public class IBeXPatternUtils {
 	}
 
 	/**
+
 	 * Returns the context pattern with the given name.
 	 * 
 	 * @param patternSet the pattern set
@@ -171,14 +173,15 @@ public class IBeXPatternUtils {
 	/**
 	 * Returns the create pattern with the given name.
 	 * 
-	 * @param patternSet the pattern set
+	 * @param ruleSet the pattern set
 	 * @param name       the name to search
 	 * @return the create pattern with the given name
 	 * @throws NoSuchElementException if no create pattern with the given name
 	 *                                exists
 	 */
-	public static IBeXCreatePattern getCreatePattern(final IBeXPatternSet patternSet, final String name) {
-		Optional<IBeXCreatePattern> pattern = patternSet.getCreatePatterns().stream() //
+	public static IBeXCreatePattern getCreatePattern(final IBeXRuleSet ruleSet, final String name) {
+		Optional<IBeXCreatePattern> pattern = ruleSet.getRules().stream() //
+				.map(rule -> rule.getCreate()) //
 				.filter(p -> p.getName().equals(name)) //
 				.findAny();
 		if (!pattern.isPresent()) {
@@ -190,14 +193,15 @@ public class IBeXPatternUtils {
 	/**
 	 * Returns the a delete pattern with the given name.
 	 * 
-	 * @param patternSet the pattern set
+	 * @param ruleSet the pattern set
 	 * @param name       the name to search
 	 * @return the delete pattern with the given name
 	 * @throws NoSuchElementException if no delete pattern with the given name
 	 *                                exists
 	 */
-	public static IBeXDeletePattern getDeletePattern(final IBeXPatternSet patternSet, final String name) {
-		Optional<IBeXDeletePattern> pattern = patternSet.getDeletePatterns().stream() //
+	public static IBeXDeletePattern getDeletePattern(final IBeXRuleSet ruleSet, final String name) {
+		Optional<IBeXDeletePattern> pattern = ruleSet.getRules().stream() //
+				.map(rule -> rule.getDelete()) //
 				.filter(p -> p.getName().equals(name)) //
 				.findAny();
 		if (!pattern.isPresent()) {
@@ -220,46 +224,7 @@ public class IBeXPatternUtils {
 		return allNodes;
 	}
 
-	/**
-	 * Create an {@link IBeXPattern} for the given edge. If an {@link IBeXPattern}
-	 * for the given {@link EReference} exists already, the existing pattern is
-	 * returned.
-	 * 
-	 * @param edgeType the EReference to create a pattern for
-	 * @return the created IBeXPattern
-	 */
-	public static <T extends IBeXContext> Optional<IBeXContextPattern> createEdgePattern(final EReference edgeType,
-			Map<String, T> nameToPattern, Consumer<String> logError) {
-		Objects.requireNonNull(edgeType, "Edge type must not be null!");
-
-		EClass sourceType = edgeType.getEContainingClass();
-		EClass targetType = edgeType.getEReferenceType();
-
-		if (sourceType == null || targetType == null) {
-			logError.accept("Cannot resolve reference source or target type.");
-			return Optional.empty();
-		}
-
-		String name = String.format("edge-%s-%s-%s", EcoreUtils.getFQN(sourceType).replace(".", "_"),
-				edgeType.getName(), EcoreUtils.getFQN(targetType).replace(".", "_"));
-
-		if (nameToPattern.containsKey(name)) {
-			return Optional.of((IBeXContextPattern) nameToPattern.get(name));
-		}
-
-		IBeXContextPattern edgePattern = IBeXPatternModelFactory.eINSTANCE.createIBeXContextPattern();
-		edgePattern.setName(name);
-
-		IBeXNode ibexSignatureSourceNode = IBeXPatternFactory.createNode("src", sourceType);
-		edgePattern.getSignatureNodes().add(ibexSignatureSourceNode);
-
-		IBeXNode ibexSignatureTargetNode = IBeXPatternFactory.createNode("trg", targetType);
-		edgePattern.getSignatureNodes().add(ibexSignatureTargetNode);
-
-		IBeXEdge ibexEdge = IBeXPatternFactory.createEdge(ibexSignatureSourceNode, ibexSignatureTargetNode, edgeType);
-		edgePattern.getLocalEdges().add(ibexEdge);
-		return Optional.of(edgePattern);
-	}
+	
 
 	public static Collection<Optional<IBeXNode>> findIBexNodes(IBeXPattern ibexPattern, Collection<String> nodes) {
 		return nodes.stream()//

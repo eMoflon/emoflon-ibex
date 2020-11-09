@@ -1,6 +1,5 @@
 package org.emoflon.ibex.gt.codegen;
 
-import GTLanguage.GTRuleSet;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,15 +31,14 @@ import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.URIHandlerImpl;
 import org.eclipse.xtext.EcoreUtil2;
 import org.eclipse.xtext.resource.XtextResourceSet;
-import org.emoflon.ibex.gt.codegen.JavaFileGenerator;
 import org.emoflon.ibex.gt.editor.gT.EditorGTFile;
 import org.emoflon.ibex.gt.editor.gT.EditorPattern;
 import org.emoflon.ibex.gt.editor.ui.builder.GTBuilder;
 import org.emoflon.ibex.gt.editor.ui.builder.GTBuilderExtension;
 import org.emoflon.ibex.gt.transformations.AbstractModelTransformation;
 import org.emoflon.ibex.gt.transformations.EditorToIBeXPatternTransformation;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
-import org.emoflon.ibex.gt.transformations.EditorToGTModelTransformation;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPattern;
 import org.moflon.core.plugins.manifest.ManifestFileUpdater;
 import org.moflon.core.propertycontainer.MoflonPropertiesContainerHelper;
 import org.moflon.core.utilities.ClasspathUtil;
@@ -110,7 +108,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 			try {
 				EcoreUtil2.resolveLazyCrossReferences(file, () -> false);
 			} catch (WrappedException e) {
-				log(String.format("Error resolving cross references in file %s.", gtFile.getName()));
+				logError(String.format("Error resolving cross references in file %s.", gtFile.getName()));
 			}
 
 			EditorGTFile editorModel = (EditorGTFile) file.getContents().get(0);
@@ -121,18 +119,15 @@ public class GTPackageBuilder implements GTBuilderExtension {
 
 		checkEditorModelsForDuplicatePatternNames(editorModels);
 
-		// Transform editor models to rules of the GT API model.
-		GTRuleSet gtRuleSet = transformEditorModels(editorModels, new EditorToGTModelTransformation(),
-				"%s errors during editor to GT API model transformation");
-		saveModelFile(apiPackage.getFile("gt-rules.xmi"), resourceSet, gtRuleSet);
-
 		// Transform editor models to IBeXPatterns.
-		IBeXPatternSet ibexPatternSet = transformEditorModels(editorModels, new EditorToIBeXPatternTransformation(),
+		IBeXModel ibexModel = transformEditorModels(editorModels, new EditorToIBeXPatternTransformation(),
 				"%s errors during editor model to pattern transformation");
-		saveModelFile(apiPackage.getFile("ibex-patterns.xmi"), resourceSet, ibexPatternSet);
+		saveModelFile(apiPackage.getFile("ibex-patterns.xmi"), resourceSet, ibexModel);
+		// Run possible pattern matcher builder extensions (e.g. hipe builder)
+		collectEngineBuilderExtensions().forEach(builder -> builder.run(project, packagePath, ibexModel));
 
 		// Generate the Java code.
-		generateAPI(apiPackage, gtRuleSet, loadMetaModels(metaModels, resourceSet));
+		generateAPI(apiPackage, ibexModel, loadMetaModels(metaModels, resourceSet));
 		updateManifest(manifest -> processManifestForPackage(manifest));
 		log("Finished build.");
 	}
@@ -152,7 +147,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 			try {
 				folder.delete(true, null);
 			} catch (CoreException e) {
-				log("Could not delete old package.");
+				logError("Could not delete old package.");
 			}
 		}
 		return ensureFolderExists(folder);
@@ -202,7 +197,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		try {
 			resource.save(options);
 		} catch (IOException e) {
-			log("Could not save " + file.getName());
+			logError("Could not save " + file.getName() + " Error Message:\n"+e.getMessage());
 		}
 	}
 
@@ -228,7 +223,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 				ecoreFile.load(null);
 				eClassifiersManager.loadMetaModelClasses(ecoreFile);
 			} catch (Exception e) {
-				log("Could not load meta-model " + uri + ".");
+				logError("Could not load meta-model " + uri + ".");
 			}
 		});
 		return eClassifiersManager;
@@ -271,10 +266,11 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	private <T> T transformEditorModels(final Map<IFile, EditorGTFile> editorModels,
 			final AbstractModelTransformation<EditorGTFile, T> transformation, final String errorCountMessageFormat) {
 		T targetModel = null;
-		for (final IFile gtFile : editorModels.keySet()) {
-			EditorGTFile editorModel = editorModels.get(gtFile);
-			targetModel = transformation.transform(editorModel);
-		}
+//		for (final IFile gtFile : editorModels.keySet()) {
+//			EditorGTFile editorModel = editorModels.get(gtFile);
+//			targetModel = transformation.transform(editorModel);
+//		}
+		targetModel = transformation.transform(editorModels.values());
 		if (transformation.hasErrors()) {
 			logError(String.format(errorCountMessageFormat, transformation.countErrors()));
 			transformation.getErrors().forEach(e -> logError(e));
@@ -292,19 +288,30 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	 * @param eClassifiersManager
 	 *            the EClassifiers handler
 	 */
-	private void generateAPI(final IFolder apiPackage, final GTRuleSet gtRuleSet,
+	private void generateAPI(final IFolder apiPackage, final IBeXModel ibexModel,
 			final EClassifiersManager eClassifiersManager) {
 		JavaFileGenerator generator = new JavaFileGenerator(getClassNamePrefix(), packageName, eClassifiersManager);
 		IFolder matchesPackage = ensureFolderExists(apiPackage.getFolder("matches"));
 		IFolder rulesPackage = ensureFolderExists(apiPackage.getFolder("rules"));
 		IFolder probabilitiesPackage = ensureFolderExists(apiPackage.getFolder("probabilities"));
-		gtRuleSet.getRules().forEach(gtRule -> {
-			generator.generateMatchClass(matchesPackage, gtRule);
-			generator.generateRuleClass(rulesPackage, gtRule);
-			generator.generateProbabilityClass(probabilitiesPackage, gtRule);
+		
+		Set<IBeXPattern> ruleContextPatterns = new HashSet<>();
+		ibexModel.getRuleSet().getRules().forEach(ibexRule -> {
+			generator.generateMatchClass(matchesPackage, ibexRule);
+			generator.generateRuleClass(rulesPackage, ibexRule);
+			generator.generateProbabilityClass(probabilitiesPackage, ibexRule);
+			ruleContextPatterns.add(ibexRule.getLhs());
 		});
+		
+		ibexModel.getPatternSet().getContextPatterns().stream()
+			.filter(pattern -> !ruleContextPatterns.contains(pattern))
+			.filter(pattern -> !pattern.getName().contains("CONDITION"))
+			.forEach(pattern -> {
+				generator.generateMatchClass(matchesPackage, pattern);
+				generator.generatePatternClass(rulesPackage, pattern);
+			});
 
-		generator.generateAPIClass(apiPackage, gtRuleSet,
+		generator.generateAPIClass(apiPackage, ibexModel,
 				String.format("%s/%s/%s/api/ibex-patterns.xmi", project.getName(), SOURCE_GEN_FOLDER, path.toString()));
 		generator.generateAppClass(apiPackage);
 		collectEngineExtensions().forEach(e -> generator.generateAppClassForEngine(apiPackage, e));
@@ -365,6 +372,16 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		}
 		return folder;
 	}
+	
+	/**
+	 * Collects the GTEngine builder extensions.
+	 * 
+	 * @return the extensions
+	 */
+	private Collection<GTEngineBuilderExtension> collectEngineBuilderExtensions() {
+		return ExtensionsUtil.collectExtensions(GTEngineBuilderExtension.BUILDER_EXTENSON_ID, "class",
+				GTEngineBuilderExtension.class);
+	}
 
 	/**
 	 * Collects the GTEngine builder extensions.
@@ -397,7 +414,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	 */
 	private boolean processManifestForProject(final Manifest manifest) {
 		List<String> dependencies = new ArrayList<String>();
-		dependencies.addAll(Arrays.asList("org.emoflon.ibex.common", "org.emoflon.ibex.gt"));
+		dependencies.addAll(Arrays.asList("org.emoflon.ibex.common", "org.emoflon.ibex.gt", "org.emoflon.ibex.patternmodel"));
 		collectEngineExtensions().forEach(engine -> dependencies.addAll(engine.getDependencies()));
 
 		boolean changedBasics = ManifestFileUpdater.setBasicProperties(manifest, project.getName());
@@ -429,4 +446,5 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		}
 		return updateExports;
 	}
+
 }

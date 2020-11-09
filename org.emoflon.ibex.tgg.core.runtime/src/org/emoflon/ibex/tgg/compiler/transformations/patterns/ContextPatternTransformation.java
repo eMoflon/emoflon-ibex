@@ -1,23 +1,25 @@
 package org.emoflon.ibex.tgg.compiler.transformations.patterns;
 
-import static org.emoflon.ibex.tgg.compiler.patterns.IBeXPatternOptimiser.optimizeIBeXPattern;
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.generateGENBlackPatternName;
-import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.generateBWDBlackPatternName;
+import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.generateSRCBlackPatternName;
+import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.generateTRGBlackPatternName;
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.generateFWDBlackPatternName;
+import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.generateBWDBlackPatternName;
+import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.generateCCBlackPatternName;
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getConsistencyPatternName;
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getNACPatternName;
-import static org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil.isAxiomatic;
 import static org.emoflon.ibex.tgg.util.TGGModelUtils.getEdgesByOperatorAndDomain;
 import static org.emoflon.ibex.tgg.util.TGGModelUtils.getNodesByOperatorAndDomain;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EAttribute;
@@ -28,18 +30,27 @@ import org.emoflon.ibex.common.patterns.IBeXPatternFactory;
 import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.gt.transformations.EditorToIBeXPatternHelper;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeConstraint;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeExpression;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeValue;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXConstant;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdgeSet;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEnumLiteral;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNodeSet;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternInvocation;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelFactory;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRelation;
-import org.emoflon.ibex.tgg.compiler.patterns.FilterNACAnalysis;
+import org.emoflon.ibex.tgg.compiler.patterns.ACAnalysis;
+import org.emoflon.ibex.tgg.compiler.patterns.ACStrategy;
+import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
+import org.emoflon.ibex.tgg.compiler.patterns.PACAnalysis;
+import org.emoflon.ibex.tgg.compiler.patterns.PACCandidate;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.bwd.BWDPatternTransformation;
@@ -49,6 +60,8 @@ import org.emoflon.ibex.tgg.compiler.transformations.patterns.common.Operational
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.fwd.FWDPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.fwd.FWD_OPTPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.gen.GENPatternTransformation;
+import org.emoflon.ibex.tgg.compiler.transformations.patterns.inv.SRCPatternTransformation;
+import org.emoflon.ibex.tgg.compiler.transformations.patterns.inv.TRGPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.opt.CCPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.opt.COPatternTransformation;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.protocol.ProtocolCorePatternTransformation;
@@ -57,6 +70,7 @@ import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.modules.MatchDistributor;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
 import org.emoflon.ibex.tgg.util.TGGModelUtils;
+import org.moflon.core.utilities.EcoreUtils;
 
 import language.BindingType;
 import language.DomainType;
@@ -76,9 +90,8 @@ public class ContextPatternTransformation {
 	public static final int MAX_NUM_OF_EDGES_IN_PATTERN = 3;
 
 	protected static final Logger logger = Logger.getLogger(ContextPatternTransformation.class);
-	private final boolean USE_INVOCATIONS_FOR_REFERENCES;
 	private IbexOptions options;
-	private List<IBeXContext> ibexContextPatterns = new ArrayList<>();
+	private List<IBeXContext> ibexContextPatterns = new LinkedList<>();
 
 	/**
 	 * Mapping between pattern names and the context patterns.
@@ -86,49 +99,109 @@ public class ContextPatternTransformation {
 	private Map<String, IBeXContextPattern> nameToPattern = new ConcurrentHashMap<>();
 	private Map<IBeXContextPattern, TGGNamedElement> patternToRuleMap = new ConcurrentHashMap<>();
 	private MatchDistributor distributor;
-	private FilterNACAnalysis filterNacAnalysis;
+	private ACAnalysis acAnalysis;
+	private ACPatternTransformation acPatternTransformation;
 
 	public ContextPatternTransformation(IbexOptions options, MatchDistributor distributor) {
 		this.options = options;
-		this.USE_INVOCATIONS_FOR_REFERENCES = options.patterns.useEdgePatterns();
 		this.distributor = distributor;
-		this.filterNacAnalysis = new FilterNACAnalysis(options.tgg.flattenedTGG(), options);
+		this.acPatternTransformation = new ACPatternTransformation(this, options);
+
+		if(options.patterns.acStrategy() == ACStrategy.PACS)
+			acAnalysis = new PACAnalysis(options.tgg.flattenedTGG(), options);
+		else 
+			acAnalysis = new ACAnalysis(options.tgg.flattenedTGG(), options);
+
 	}
 
-	public IBeXPatternSet transform() {
+	public IBeXModel transform() {
+		boolean useGenPattern = options.patterns.useGenPattern();
+		boolean useSrcTrgPattern = options.patterns.acStrategy() == ACStrategy.PACS;
 		options.tgg.getFlattenedConcreteTGGRules().parallelStream().forEach(rule -> {
-//		for (TGGRule rule : options.getFlattenedConcreteTGGRules()) {
-			createPatternIfRelevant(rule, this::createModelGenPattern, PatternType.GEN);
-			createPatternIfRelevant(rule, this::createConsistencyPattern, PatternType.CONSISTENCY);
 			createPatternIfRelevant(rule, this::createCCPattern, PatternType.CC);
-			createPatternIfRelevant(rule, this::createCOPattern, PatternType.CO);
+			createPatternIfRelevant(rule, this::createCOPattern, PatternType.CO);			
 
 			if (isDomainProgressive(rule, DomainType.SRC)) {
+				if(isPatternRelevant(rule, PatternType.SRC) || useSrcTrgPattern) {
+					createSRCPattern(rule);
+				}
 				createPatternIfRelevant(rule, this::createFWDPattern, PatternType.FWD);
 				createPatternIfRelevant(rule, this::createFWD_OPTPattern, PatternType.FWD_OPT);
 			}
 
 			if (isDomainProgressive(rule, DomainType.TRG)) {
+				if(isPatternRelevant(rule, PatternType.TRG) || useSrcTrgPattern) {
+					createTRGPattern(rule);
+				}
 				createPatternIfRelevant(rule, this::createBWDPattern, PatternType.BWD);
 				createPatternIfRelevant(rule, this::createBWD_OPTPattern, PatternType.BWD_OPT);
 			}
-
-			optimizeSyncPatterns(rule);
-//		}
+			
+			if(isPatternRelevant(rule, PatternType.GEN)) {
+				createModelGenPattern(rule);
+			}
+			else {
+				if(useGenPattern) {
+					IBeXContextPattern fwdPattern = getPattern(generateFWDBlackPatternName(rule.getName()));
+					IBeXContextPattern bwdPattern = getPattern(generateBWDBlackPatternName(rule.getName()));
+					if(fwdPattern != null && bwdPattern != null)
+						createModelGenPattern(rule);
+				}
+			}
+			
+			createPatternIfRelevant(rule, this::createConsistencyPattern, PatternType.CONSISTENCY);
+			
+			createInvocations(rule);
 		});
 
 		return createSortedPatternSet();
 	}
-
+	
+	private void createACInvocations(TGGRule rule, IBeXContextPattern ibexPattern, boolean generateSRC, boolean generateTRG) {
+		if(options.patterns.acStrategy().equals(ACStrategy.PACS)) {
+			if(generateSRC) {
+				for (PACCandidate candidate : ((PACAnalysis) acAnalysis).computePACCandidates(rule,  DomainType.SRC)) {
+					addContextPattern(acPatternTransformation.createPAC(rule, ibexPattern,  DomainType.SRC, candidate, acAnalysis));
+				}
+			}
+			if(generateTRG) {
+				for (PACCandidate candidate : ((PACAnalysis) acAnalysis).computePACCandidates(rule,  DomainType.TRG)) {
+					addContextPattern(acPatternTransformation.createPAC(rule, ibexPattern,  DomainType.TRG, candidate, acAnalysis));
+				}
+			}
+		}
+		else {
+			if(generateSRC) {
+				for (FilterNACCandidate candidate : acAnalysis.computeFilterNACCandidates(rule, DomainType.SRC)) {
+					addContextPattern(acPatternTransformation.createFilterNAC(rule, ibexPattern, candidate));
+				}
+			}
+			if(generateTRG) {
+				for (FilterNACCandidate candidate : acAnalysis.computeFilterNACCandidates(rule, DomainType.TRG)) {
+					addContextPattern(acPatternTransformation.createFilterNAC(rule, ibexPattern, candidate));
+				}
+			}
+		}
+	}
+	
 	private boolean isDomainProgressive(TGGRule rule, DomainType domain) {
 		return !getNodesByOperatorAndDomain(rule, BindingType.CREATE, domain).isEmpty()
 				|| !getEdgesByOperatorAndDomain(rule, BindingType.CREATE, domain).isEmpty();
 	}
 
-	private void createPatternIfRelevant(TGGRule rule, Consumer<TGGRule> transformer, PatternType type) {
-		if (distributor.getPatternRelevantForCompiler().contains(type)) {
+	private boolean createPatternIfRelevant(TGGRule rule, Consumer<TGGRule> transformer, PatternType type) {
+		if (isPatternRelevant(rule, type)) {
 			transformer.accept(rule);
+			return true;
 		}
+		return false;
+	}
+	
+	public boolean isPatternRelevant(TGGRule rule, PatternType type) {
+		if (distributor.getPatternRelevantForCompiler().contains(type)) {
+			return true;
+		}
+		return false;
 	}
 
 	public boolean isTransformed(String patternName) {
@@ -142,54 +215,64 @@ public class ContextPatternTransformation {
 	public Map<IBeXContextPattern, TGGNamedElement> getPatternToRuleMap() {
 		return patternToRuleMap;
 	}
-
+	
+	private void createSRCPattern(TGGRule rule) {
+		OperationalPatternTransformation transformer = new SRCPatternTransformation(this, options, rule, acAnalysis);
+		transformer.transform();
+	}
+	
+	private void createTRGPattern(TGGRule rule) {
+		OperationalPatternTransformation transformer = new TRGPatternTransformation(this, options, rule, acAnalysis);
+		transformer.transform();
+	}
+	
 	private IBeXContextPattern createModelGenPattern(TGGRule rule) {
-		OperationalPatternTransformation transformer = new GENPatternTransformation(this, options, rule, filterNacAnalysis);
+		OperationalPatternTransformation transformer = new GENPatternTransformation(this, options, rule, acAnalysis);
 		return transformer.transform();
 	}
-
+	
 	private IBeXContextPattern createFWDPattern(TGGRule rule) {
-		OperationalPatternTransformation transformer = new FWDPatternTransformation(this, options, rule, filterNacAnalysis);
+		OperationalPatternTransformation transformer = new FWDPatternTransformation(this, options, rule, acAnalysis);
 		return transformer.transform();
 	}
-
+	
 	private IBeXContextPattern createBWDPattern(TGGRule rule) {
-		OperationalPatternTransformation transformer = new BWDPatternTransformation(this, options, rule, filterNacAnalysis);
+		OperationalPatternTransformation transformer = new BWDPatternTransformation(this, options, rule, acAnalysis);
 		return transformer.transform();
 	}
 
-	public IBeXContextPattern createConsistencyPattern(TGGRule rule) {
-		OperationalPatternTransformation transformer = new ConsistencyPatternTransformation(this, options, rule, filterNacAnalysis);
+	private IBeXContextPattern createConsistencyPattern(TGGRule rule) {
+		OperationalPatternTransformation transformer = new ConsistencyPatternTransformation(this, options, rule, acAnalysis);
 		return transformer.transform();
 	}
 
 	private IBeXContextPattern createCCPattern(TGGRule rule) {
-		OperationalPatternTransformation transformer = new CCPatternTransformation(this, options, rule, filterNacAnalysis);
+		OperationalPatternTransformation transformer = new CCPatternTransformation(this, options, rule, acAnalysis);
 		return transformer.transform();
 	}
 
 	private IBeXContextPattern createCOPattern(TGGRule rule) {
-		OperationalPatternTransformation transformer = new COPatternTransformation(this, options, rule, filterNacAnalysis);
+		OperationalPatternTransformation transformer = new COPatternTransformation(this, options, rule, acAnalysis);
 		return transformer.transform();
 	}
 
 	private IBeXContextPattern createFWD_OPTPattern(TGGRule rule) {
-		OperationalPatternTransformation transformer = new FWD_OPTPatternTransformation(this, options, rule, filterNacAnalysis);
+		OperationalPatternTransformation transformer = new FWD_OPTPatternTransformation(this, options, rule, acAnalysis);
 		return transformer.transform();
 	}
 
 	private IBeXContextPattern createBWD_OPTPattern(TGGRule rule) {
-		OperationalPatternTransformation transformer = new BWD_OPTPatternTransformation(this, options, rule, filterNacAnalysis);
+		OperationalPatternTransformation transformer = new BWD_OPTPatternTransformation(this, options, rule, acAnalysis);
 		return transformer.transform();
 	}
 
 	protected IBeXContextPattern createProtocolPattern(TGGRule rule) {
-		OperationalPatternTransformation transformer = new ProtocolPatternTransformation(this, options, rule, filterNacAnalysis);
+		OperationalPatternTransformation transformer = new ProtocolPatternTransformation(this, options, rule, acAnalysis);
 		return transformer.transform();
 	}
 
 	protected IBeXContextPattern createProtocolCorePattern(TGGRule rule) {
-		OperationalPatternTransformation transformer = new ProtocolCorePatternTransformation(this, options, rule, filterNacAnalysis);
+		OperationalPatternTransformation transformer = new ProtocolCorePatternTransformation(this, options, rule, acAnalysis);
 		return transformer.transform();
 	}
 
@@ -224,15 +307,19 @@ public class ContextPatternTransformation {
 			// Invoke NAC from parent: nodes with/without pre-image are signature/local
 			IBeXPatternInvocation invocation = IBeXPatternModelFactory.eINSTANCE.createIBeXPatternInvocation();
 			invocation.setPositive(false);
-			ArrayList<IBeXNode> localNodes = new ArrayList<>();
+			List<IBeXNode> localNodes = new LinkedList<>();
 
 			for (IBeXNode node : nacPattern.getSignatureNodes()) {
 				Optional<IBeXNode> src = IBeXPatternUtils.findIBeXNodeWithName(parent, node.getName());
 
 				if (src.isPresent())
 					invocation.getMapping().put(src.get(), node);
-				else
-					localNodes.add(node);
+				else {
+					if(!nacPattern.getSignatureNodes().contains(node)) {
+						localNodes.add(node);
+					}
+				}
+					
 			}
 
 			nacPattern.getLocalNodes().addAll(localNodes);
@@ -244,56 +331,85 @@ public class ContextPatternTransformation {
 		return nacPattern;
 	}
 
-	public void optimizeSyncPatterns(TGGRule rule) {
-		if (!options.propagate.optimizeSyncPattern())
-			return;
+	public void createInvocations(TGGRule rule) {
+		boolean optimizePattern = options.patterns.optimizePattern();
 
+		IBeXContextPattern genPattern = getPattern(generateGENBlackPatternName(rule.getName()));
+		IBeXContextPattern srcPattern = getPattern(generateSRCBlackPatternName(rule.getName()));
+		IBeXContextPattern trgPattern = getPattern(generateTRGBlackPatternName(rule.getName()));
 		IBeXContextPattern fwdPattern = getPattern(generateFWDBlackPatternName(rule.getName()));
 		IBeXContextPattern bwdPattern = getPattern(generateBWDBlackPatternName(rule.getName()));
+		IBeXContextPattern ccPattern = getPattern(generateCCBlackPatternName(rule.getName()));
 		IBeXContextPattern consistencyPattern = getPattern(getConsistencyPatternName(rule.getName()));
-
-		boolean fwdPatternPresent = fwdPattern != null;
+ 
+		boolean genPatternPresent = genPattern != null;
+		boolean srcPatternPresent = srcPattern != null;
+		boolean trgPatternPresent = trgPattern != null;
+		boolean fwdPatternPresent = fwdPattern != null; 
 		boolean bwdPatternPresent = bwdPattern != null;
+		boolean ccPatternPresent = ccPattern != null;
 		boolean consistencyPatternPresent = consistencyPattern != null;
-
-		if (fwdPatternPresent && consistencyPatternPresent) {
-			createInvocation(consistencyPattern, fwdPattern);
-
-//			optimizeIBeXPattern(consistencyPattern, fwdPattern);
+		
+		// if optimize is not enabled ACs have to be generated for all patterns that are present
+		if(!optimizePattern) {
+//			if(genPatternPresent) createACInvocations(rule, genPattern, true, true);
+			if(srcPatternPresent) createACInvocations(rule, srcPattern, true, false);
+			if(trgPatternPresent) createACInvocations(rule, trgPattern, false, true);
+			if(fwdPatternPresent) createACInvocations(rule, fwdPattern, true, false);
+			if(bwdPatternPresent) createACInvocations(rule, bwdPattern, false, true);
+			if(ccPatternPresent) createACInvocations(rule, ccPattern, true, true);
+			if(consistencyPatternPresent) createACInvocations(rule, consistencyPattern, true, true);
+			return;
 		}
+		
+		// create invocations to reduce redundant matching
+		if(genPatternPresent && fwdPatternPresent) createInvocation(fwdPattern, genPattern);
+		if(genPatternPresent && bwdPatternPresent) createInvocation(bwdPattern, genPattern);
+		if(srcPatternPresent && fwdPatternPresent) createInvocation(fwdPattern, srcPattern);
+		if(trgPatternPresent && bwdPatternPresent) createInvocation(bwdPattern, trgPattern);
+		if(fwdPatternPresent && consistencyPatternPresent) createInvocation(consistencyPattern, fwdPattern);
+		if(bwdPatternPresent && consistencyPatternPresent) createInvocation(consistencyPattern, bwdPattern);
 
-		if (bwdPatternPresent && consistencyPatternPresent) {
-			createInvocation(consistencyPattern, bwdPattern);
-
-//			optimizeIBeXPattern(consistencyPattern, bwdPattern);
-		}
-
-//		if (fwdPatternPresent && bwdPatternPresent) {
-//			if (!isAxiomatic(rule)) {
-//				IBeXContextPattern genPattern = createModelGenPattern(rule);
-//				if (genPattern != null) {
-//					createInvocation(fwdPattern, genPattern);
-//					createInvocation(bwdPattern, genPattern);
-//
-////					optimizeIBeXPattern(fwdPattern, genPattern);
-////					optimizeIBeXPattern(bwdPattern, genPattern);
-//				}
-//			}
+		// create AC invocations as early as possible to reduce the number of matches that are send upward in the invocation network
+		boolean generatedSourceAC = false;
+		boolean generatedTargetAC = false;
+//		if(genPatternPresent) {
+//			createACInvocations(rule, genPattern, true, true);
+//			generatedSourceAC = true;
+//			generatedTargetAC = true;
 //		}
-
-		if (consistencyPatternPresent) {
-//			IBeXContextPattern protocolPattern = createProtocolPattern(rule);
-//			IBeXContextPattern protocolCorePattern = createProtocolCorePattern(rule);
-
-//			createInvocation(consistencyPattern, protocolPattern);
-//			createInvocation(protocolPattern, protocolCorePattern);
-
-//			optimizeIBeXPattern(consistencyPattern, protocolPattern);
-//			optimizeIBeXPattern(protocolPattern, protocolCorePattern);
+		
+		if(srcPatternPresent) {
+			createACInvocations(rule, srcPattern, true, false);
+			generatedSourceAC = true;
 		}
+		if(trgPatternPresent) {
+			createACInvocations(rule, trgPattern, false, true);
+			generatedTargetAC = true;
+		}
+		
+		if(fwdPatternPresent && !generatedSourceAC) {
+			createACInvocations(rule, fwdPattern, true, false);
+			generatedSourceAC = true;
+		}
+		if(bwdPatternPresent && !generatedTargetAC) {
+			createACInvocations(rule, bwdPattern, false, true);
+			generatedTargetAC = true;
+		}
+		
+		if(consistencyPatternPresent && !generatedSourceAC)
+			createACInvocations(rule, consistencyPattern, true, false);
+		if(consistencyPatternPresent && !generatedTargetAC)
+			createACInvocations(rule, consistencyPattern, false, true);
+		
+		
+		// create for CC separately
+		if(ccPatternPresent) createACInvocations(rule, ccPattern, true, true);
 	}
 
-	public void createInvocation(IBeXContextPattern invoker, IBeXContextPattern invokee) {
+	public boolean createInvocation(IBeXContextPattern invoker, IBeXContextPattern invokee) {
+		if(invoker == null || invokee == null)
+			return false;
 		IBeXPatternInvocation invocation = IBeXPatternModelFactory.eINSTANCE.createIBeXPatternInvocation();
 		invocation.setPositive(true);
 
@@ -313,18 +429,19 @@ public class ContextPatternTransformation {
 				invocation.getMapping().put(newLocalNode, node);
 			}
 		}
+		for (IBeXNode node : invokee.getLocalNodes()) {
+			Optional<IBeXNode> src = IBeXPatternUtils.findIBeXNodeWithName(invoker, node.getName());
+
+			if (src.isPresent())
+				invocation.getMapping().put(src.get(), node);
+		}
 
 		invocation.setInvokedPattern(invokee);
 		invoker.getInvocations().add(invocation);
+		return true;
 	}
-
-	public void transformEdge(EReference type, IBeXNode srcNode, IBeXNode trgNode, IBeXContextPattern ibexPattern,
-			boolean tooManyEdges) {
-		if (USE_INVOCATIONS_FOR_REFERENCES && tooManyEdges) {
-			transformEdgeToPatternInvocation(type, srcNode, trgNode, ibexPattern);
-			return;
-		}
-
+	
+	public void transformEdge(EReference type, IBeXNode srcNode, IBeXNode trgNode, IBeXContextPattern ibexPattern) {
 		IBeXEdge ibexEdge = IBeXPatternModelFactory.eINSTANCE.createIBeXEdge();
 		ibexEdge.setType(type);
 		ibexEdge.setSourceNode(srcNode);
@@ -338,9 +455,8 @@ public class ContextPatternTransformation {
 		// Skip if "greater" eOpposite exists
 		if (allEdges.stream().anyMatch(e -> isGreaterEOpposite(e, edge)))
 			return;
-
-		transformEdge(edge.getType(), edge.getSrcNode(), edge.getTrgNode(), ibexPattern,
-				allEdges.size() > MAX_NUM_OF_EDGES_IN_PATTERN);
+		
+		transformEdge(edge.getType(), edge.getSrcNode(), edge.getTrgNode(), ibexPattern);
 	}
 
 	public void transformInNodeAttributeConditions(IBeXContextPattern ibexPattern, TGGRuleNode node) {
@@ -357,13 +473,13 @@ public class ContextPatternTransformation {
 				continue;
 				
 			IBeXAttributeConstraint ibexAttrConstraint = IBeXPatternModelFactory.eINSTANCE.createIBeXAttributeConstraint();
-			ibexAttrConstraint.setNode(ibexNode.get());
-			ibexAttrConstraint.setType(attrExp.getAttribute());
-
 			IBeXRelation ibexRelation = convertRelation(attrExp.getOperator());
 			ibexAttrConstraint.setRelation(ibexRelation);
+			
+			ibexAttrConstraint.setLhs(convertAttributeValue(ibexNode.get(), attrExp.getAttribute()));
 			convertValue(ibexPattern, attrExp.getValueExpr(), attrExp.getAttribute())
-					.ifPresent(value -> ibexAttrConstraint.setValue(value));
+					.ifPresent(value -> ibexAttrConstraint.setRhs(value));
+			
 			ibexPattern.getAttributeConstraint().add(ibexAttrConstraint);
 		}
 	}
@@ -378,6 +494,13 @@ public class ContextPatternTransformation {
 			logger.error("Invalid attribute value: " + valueExpr);
 			return Optional.empty();
 		}
+	}
+	
+	private IBeXAttributeValue convertAttributeValue(IBeXNode ibexNode, EAttribute attribute) {
+		IBeXAttributeExpression expression = IBeXPatternModelFactory.eINSTANCE.createIBeXAttributeExpression();
+		expression.setNode(ibexNode);
+		expression.setAttribute(attribute);
+		return expression;
 	}
 
 	private IBeXEnumLiteral convertAttributeValue(TGGEnumExpression valueExpr) {
@@ -431,37 +554,45 @@ public class ContextPatternTransformation {
 		nameToPattern.put(ibexPattern.getName(), ibexPattern);
 	}
 
-	private void transformEdgeToPatternInvocation(EReference type, IBeXNode ibexSourceNode, IBeXNode ibexTargetNode,
-			IBeXContextPattern ibexPattern) {
-		if (ibexSourceNode == ibexTargetNode) {
-			transformEdge(type, ibexSourceNode, ibexTargetNode, ibexPattern, false);
-			return;
+	/**
+	 * Create an {@link IBeXPattern} for the given edge. If an {@link IBeXPattern}
+	 * for the given {@link EReference} exists already, the existing pattern is
+	 * returned.
+	 * 
+	 * @param edgeType the EReference to create a pattern for
+	 * @return the created IBeXPattern
+	 */
+	public static <T extends IBeXContext> Optional<IBeXContextPattern> createEdgePattern(final EReference edgeType,
+			Map<String, T> nameToPattern, Consumer<String> logError) {
+		Objects.requireNonNull(edgeType, "Edge type must not be null!");
+
+		EClass sourceType = edgeType.getEContainingClass();
+		EClass targetType = edgeType.getEReferenceType();
+
+		if (sourceType == null || targetType == null) {
+			logError.accept("Cannot resolve reference source or target type.");
+			return Optional.empty();
 		}
 
-		Optional<IBeXContextPattern> edgePatternOptional = IBeXPatternUtils.createEdgePattern(type, nameToPattern,
-				(s) -> logger.error(s));
-		if (!edgePatternOptional.isPresent()) {
-			logger.error("Cannot create edge pattern for type " + type.getName());
-			return;
-		}
-		IBeXContextPattern edgePattern = edgePatternOptional.get();
-		addContextPattern(edgePattern);
+		String name = String.format("edge-%s-%s-%s", EcoreUtils.getFQN(sourceType).replace(".", "_"),
+				edgeType.getName(), EcoreUtils.getFQN(targetType).replace(".", "_"));
 
-		Optional<IBeXNode> ibexSignatureSourceNode = //
-				IBeXPatternUtils.findIBeXNodeWithName(edgePattern.getSignatureNodes(), "src");
-		Optional<IBeXNode> ibexSignatureTargetNode = //
-				IBeXPatternUtils.findIBeXNodeWithName(edgePattern.getSignatureNodes(), "trg");
-		if (!ibexSignatureSourceNode.isPresent() || !ibexSignatureTargetNode.isPresent()) {
-			logger.error("Invalid signature nodes for edge pattern!");
-			return;
+		if (nameToPattern.containsKey(name)) {
+			return Optional.of((IBeXContextPattern) nameToPattern.get(name));
 		}
 
-		IBeXPatternInvocation invocation = IBeXPatternModelFactory.eINSTANCE.createIBeXPatternInvocation();
-		invocation.setPositive(true);
-		invocation.getMapping().put(ibexSourceNode, ibexSignatureSourceNode.get());
-		invocation.getMapping().put(ibexTargetNode, ibexSignatureTargetNode.get());
-		invocation.setInvokedPattern(edgePattern);
-		ibexPattern.getInvocations().add(invocation);
+		IBeXContextPattern edgePattern = IBeXPatternModelFactory.eINSTANCE.createIBeXContextPattern();
+		edgePattern.setName(name);
+
+		IBeXNode ibexSignatureSourceNode = IBeXPatternFactory.createNode("src", sourceType);
+		edgePattern.getSignatureNodes().add(ibexSignatureSourceNode);
+
+		IBeXNode ibexSignatureTargetNode = IBeXPatternFactory.createNode("trg", targetType);
+		edgePattern.getSignatureNodes().add(ibexSignatureTargetNode);
+
+		IBeXEdge ibexEdge = IBeXPatternFactory.createEdge(ibexSignatureSourceNode, ibexSignatureTargetNode, edgeType);
+		edgePattern.getLocalEdges().add(ibexEdge);
+		return Optional.of(edgePattern);
 	}
 
 	public IBeXNode transformNode(IBeXContextPattern ibexPattern, TGGRuleNode node) {
@@ -479,12 +610,11 @@ public class ContextPatternTransformation {
 		return ibexNode;
 	}
 
-	private void transformEdge(EReference type, TGGRuleNode srcNode, TGGRuleNode trgNode,
-			IBeXContextPattern ibexPattern, boolean tooManyEdges) {
+	private void transformEdge(EReference type, TGGRuleNode srcNode, TGGRuleNode trgNode, IBeXContextPattern ibexPattern) {
 		IBeXNode sourceNode = transformNode(ibexPattern, srcNode);
 		IBeXNode targetNode = transformNode(ibexPattern, trgNode);
 
-		transformEdge(type, sourceNode, targetNode, ibexPattern, tooManyEdges);
+		transformEdge(type, sourceNode, targetNode, ibexPattern);
 	}
 
 	private boolean isGreaterEOpposite(TGGRuleEdge e1, TGGRuleEdge e2) {
@@ -503,13 +633,49 @@ public class ContextPatternTransformation {
 	 * 
 	 * @return the IBeXPatternSet
 	 */
-	private IBeXPatternSet createSortedPatternSet() {
+	private IBeXModel createSortedPatternSet() {
 		ibexContextPatterns.sort(IBeXPatternUtils.sortByName);
 
 		IBeXPatternSet ibexPatternSet = IBeXPatternModelFactory.eINSTANCE.createIBeXPatternSet();
 		ibexPatternSet.getContextPatterns().addAll(ibexContextPatterns);
 
-		return ibexPatternSet;
+		List<IBeXNode> nodes = new LinkedList<>();
+		nodes.addAll(ibexPatternSet.getContextPatterns().stream()
+				.filter(pattern -> pattern instanceof IBeXContextPattern)
+				.map(pattern -> (IBeXContextPattern)pattern)
+				.flatMap(pattern -> pattern.getSignatureNodes().stream())
+				.collect(Collectors.toList()));
+		nodes.addAll(ibexPatternSet.getContextPatterns().stream()
+				.filter(pattern -> pattern instanceof IBeXContextPattern)
+				.map(pattern -> (IBeXContextPattern)pattern)
+				.flatMap(pattern -> pattern.getLocalNodes().stream())
+				.collect(Collectors.toList()));
+		nodes.sort(IBeXPatternUtils.sortByName);
+		
+		IBeXNodeSet nodeSet = IBeXPatternModelFactory.eINSTANCE.createIBeXNodeSet();
+		nodeSet.getNodes().addAll(nodes);
+		
+		List<IBeXEdge> edges = new LinkedList<>();
+		edges.addAll(ibexPatternSet.getContextPatterns().stream()
+				.filter(pattern -> pattern instanceof IBeXContextPattern)
+				.map(pattern -> (IBeXContextPattern)pattern)
+				.flatMap(pattern -> pattern.getLocalEdges().stream())
+				.map(edge -> {
+					edge.setName(edge.getSourceNode().getName() + "->" + edge.getTargetNode().getName());
+					return edge;
+				})
+				.collect(Collectors.toList()));
+		edges.sort(IBeXPatternUtils.sortByName);
+		
+		IBeXEdgeSet edgeSet = IBeXPatternModelFactory.eINSTANCE.createIBeXEdgeSet();
+		edgeSet.getEdges().addAll(edges);
+		
+		IBeXModel model = IBeXPatternModelFactory.eINSTANCE.createIBeXModel();
+		model.setPatternSet(ibexPatternSet);
+		model.setNodeSet(nodeSet);
+		model.setEdgeSet(edgeSet);
+		
+		return model;
 	}
 
 	public void createAndConnectProtocolNode(TGGRule rule, IBeXContextPattern ibexPattern) {
@@ -543,7 +709,7 @@ public class ContextPatternTransformation {
 		for (TGGRuleNode node : nodes) {
 			EReference ref = (EReference) protocolNode.getType()
 					.getEStructuralFeature(TGGModelUtils.getMarkerRefName(type, domain, node.getName()));
-			transformEdge(ref, protocolNode, transformNode(ibexPattern, node), ibexPattern, false);
+			transformEdge(ref, protocolNode, transformNode(ibexPattern, node), ibexPattern);
 		}
 	}
 }

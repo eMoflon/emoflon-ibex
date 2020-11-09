@@ -28,6 +28,36 @@ public class TGGPatternUtil {
 		PatternUtil.registerPattern(patternName, PatternType.FWD);
 		return patternName;
 	}
+	
+	public static String generateSRCBlackPatternName(String ruleName) {
+		String patternName = ruleName + PatternSuffixes.SRC;
+		PatternUtil.registerPattern(patternName, PatternType.SRC);
+		return patternName;
+	}
+	
+	public static String generateTRGBlackPatternName(String ruleName) {
+		String patternName = ruleName + PatternSuffixes.TRG;
+		PatternUtil.registerPattern(patternName, PatternType.TRG);
+		return patternName;
+	}
+	
+	public static String generateGREENCORRBlackPatternName(String ruleName) {
+		String patternName = ruleName + PatternSuffixes.GREENCORR;
+		PatternUtil.registerPattern(patternName, PatternType.GREENCORR);
+		return patternName;
+	}
+	
+	public static String generateFWD_GREENCORRBlackPatternName(String ruleName) {
+		String patternName = ruleName + PatternSuffixes.FWD_GREENCORR;
+		PatternUtil.registerPattern(patternName, PatternType.FWD_GREENCORR);
+		return patternName;
+	}
+	
+	public static String generateBWD_GREENCORRBlackPatternName(String ruleName) {
+		String patternName = ruleName + PatternSuffixes.BWD_GREENCORR;
+		PatternUtil.registerPattern(patternName, PatternType.BWD_GREENCORR);
+		return patternName;
+	}
 
 	public static String generateBWDBlackPatternName(String ruleName) {
 		String patternName = ruleName + PatternSuffixes.BWD;
@@ -117,8 +147,12 @@ public class TGGPatternUtil {
 		return name.substring(0, name.indexOf(PatternSuffixes.SEP));
 	}
 	
-	public static String getFilterNACPatternName(FilterNACCandidate candidate, TGGRule rule) {
-		return rule.getName() + "_" + candidate + PatternSuffixes.FILTER_NAC;  
+	public static String getFilterNACSRCPatternName(FilterNACCandidate candidate, TGGRule rule) {
+		return rule.getName() + "_" + candidate + PatternSuffixes.FILTER_NAC_SRC;  
+	}
+	
+	public static String getFilterNACTRGPatternName(FilterNACCandidate candidate, TGGRule rule) {
+		return rule.getName() + "_" + candidate + PatternSuffixes.FILTER_NAC_TRG;  
 	}
 	
 	public static Collection<EObject> getNodes(EObject ruleAppNode, BindingType binding, DomainType type) {

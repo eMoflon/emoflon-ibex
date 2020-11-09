@@ -6,21 +6,20 @@ import java.util.Collections;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Logger;
-
 /**
- * This is the configuration class for console logs. It can be configured by
- * using the Environment Variable "log" and a list of options as value.
+ * This is the configuration class for console logs. It can be configured by using the
+ * Environment Variable "log" and a list of options as value.
  * <p>
  * Following options are available:
  * <ul>
  * <li>all</li>
  * <li>allTimes</li>
- * <li>incomingMatches</li>
- * <li>matchApplication</li>
+ * <li>matches</li>
+ * <li>ruleApplication</li>
  * <li>repair</li>
+ * <li>conflicts</li>
  * <li>ilp</li>
+ * <li>precedenceGraph</li>
  * <li>matchApplicationTime</li>
  * <li>addMatchTime</li>
  * <li>collectMatchTime</li>
@@ -36,16 +35,16 @@ import org.apache.log4j.Logger;
  */
 public final class LoggerConfig {
 
-	private static Logger logger = Logger.getRootLogger();
-
 	private static Collection<String> envVars = getEnvironmentVariables();
 
 	private static boolean log_all = getValue("all");
 	private static boolean log_allTimes = getValue("allTimes");
-	private static boolean log_incomingMatches = getValue("incomingMatches");
-	private static boolean log_matchApplication = getValue("matchApplication");
+	private static boolean log_matches = getValue("matches");
+	private static boolean log_ruleApplication = getValue("ruleApplication");
 	private static boolean log_repair = getValue("repair");
+	private static boolean log_conflicts = getValue("conflicts");
 	private static boolean log_ilp = getValue("ilp");
+	private static boolean log_pg = getValue("precedenceGraph");
 	private static boolean log_matchApplicationTime = getValue("matchApplicationTime");
 	private static boolean log_addMatchTime = getValue("addMatchTime");
 	private static boolean log_collectMatchTime = getValue("collectMatchTime");
@@ -53,10 +52,9 @@ public final class LoggerConfig {
 	private static boolean log_removalTime = getValue("removalTime");
 	private static boolean log_repairTime = getValue("repairTime");
 
-	public boolean log_anything() {
-		return log_all || log_allTimes || log_incomingMatches || log_matchApplication || log_repair || log_ilp
-				|| log_matchApplicationTime || log_addMatchTime || log_collectMatchTime || log_translationTime
-				|| log_removalTime || log_repairTime;
+	public static boolean log_anything() {
+		return log_all || log_allTimes || log_matches || log_ruleApplication || log_repair || log_conflicts || log_ilp || log_pg //
+				|| log_matchApplicationTime || log_addMatchTime || log_collectMatchTime || log_translationTime || log_removalTime || log_repairTime;
 	}
 
 	public static boolean log_all() {
@@ -66,21 +64,33 @@ public final class LoggerConfig {
 	public static boolean log_allTimes() {
 		return log_all || log_allTimes;
 	}
-	
-	public static boolean log_incomingMatches() {
-		return log_all || log_incomingMatches;
+
+	public static boolean log_executionStructure() {
+		return log_anything();
 	}
 
-	public static boolean log_matchApplication() {
-		return log_all || log_matchApplication;
+	public static boolean log_matches() {
+		return log_all || log_matches;
+	}
+
+	public static boolean log_ruleApplication() {
+		return log_all || log_ruleApplication;
 	}
 
 	public static boolean log_repair() {
 		return log_all || log_repair;
 	}
 
+	public static boolean log_conflicts() {
+		return log_all || log_conflicts;
+	}
+
 	public static boolean log_ilp() {
 		return log_all || log_ilp;
+	}
+
+	public static boolean log_pg() {
+		return log_pg;
 	}
 
 	public static boolean log_matchApplicationTime() {
@@ -108,10 +118,8 @@ public final class LoggerConfig {
 	}
 
 	public static void log(boolean apply, Supplier<String> output) {
-		BasicConfigurator.resetConfiguration();
-		BasicConfigurator.configure();
 		if (apply)
-			logger.debug(output.get());
+			System.out.println(output.get());
 	}
 
 	private static Collection<String> getEnvironmentVariables() {

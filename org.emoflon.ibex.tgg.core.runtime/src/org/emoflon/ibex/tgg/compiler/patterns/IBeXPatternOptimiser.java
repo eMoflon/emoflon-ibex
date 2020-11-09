@@ -5,13 +5,15 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeConstraint;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeExpression;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInjectivityConstraint;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNodePair;
 import language.TGGInplaceAttributeExpression;
 import language.TGGLiteralExpression;
 import language.TGGRuleEdge;
@@ -128,8 +130,11 @@ public class IBeXPatternOptimiser {
 
 	private static void optimizeAttributeConstraints(IBeXContextPattern invoker, IBeXContextPattern invokee) {
 		Collection<IBeXAttributeConstraint> revokedConstraints = new ArrayList<>();
-		for (IBeXAttributeConstraint constraint : invoker.getAttributeConstraint()) {
-			if(invokee.getSignatureNodes().stream().anyMatch(n -> n.getName().equals(constraint.getNode().getName()))) {
+		for (IBeXAttributeConstraint constraint : invoker.getAttributeConstraint().stream()
+				.filter(constraint -> (constraint.getLhs() instanceof IBeXAttributeExpression))
+				.collect(Collectors.toList())) {
+			if(invokee.getSignatureNodes().stream()
+					.anyMatch(n -> n.getName().equals(((IBeXAttributeExpression)constraint.getLhs()).getNode().getName()))) {
 				revokedConstraints.add(constraint);
 			}
 		}
@@ -138,9 +143,9 @@ public class IBeXPatternOptimiser {
 	}
 
 	private static void optimizeInjectivityConstraints(IBeXContextPattern invoker, IBeXContextPattern invokee) {
-		Collection<IBeXNodePair> revokedPairs = new ArrayList<>();
+		Collection<IBeXInjectivityConstraint> revokedPairs = new ArrayList<>();
 
-		for(IBeXNodePair injPair : invoker.getInjectivityConstraints()) {
+		for(IBeXInjectivityConstraint injPair : invoker.getInjectivityConstraints()) {
 			IBeXNode first = injPair.getValues().get(0);
 			IBeXNode second = injPair.getValues().get(1);
 			boolean firstFoundInInvokee = invokee.getSignatureNodes().stream().anyMatch(n -> n.getName().equals(first.getName()));

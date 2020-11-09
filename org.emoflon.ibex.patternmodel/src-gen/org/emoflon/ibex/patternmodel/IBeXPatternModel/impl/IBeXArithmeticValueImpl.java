@@ -10,8 +10,7 @@ import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
-import org.emoflon.ibex.gt.SGTPatternModel.GTArithmetics;
-
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticExpression;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticValue;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage;
 
@@ -37,7 +36,7 @@ public class IBeXArithmeticValueImpl extends IBeXAttributeValueImpl implements I
 	 * @generated
 	 * @ordered
 	 */
-	protected GTArithmetics expression;
+	protected IBeXArithmeticExpression expression;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -64,7 +63,7 @@ public class IBeXArithmeticValueImpl extends IBeXAttributeValueImpl implements I
 	 * @generated
 	 */
 	@Override
-	public GTArithmetics getExpression() {
+	public IBeXArithmeticExpression getExpression() {
 		return expression;
 	}
 
@@ -73,8 +72,8 @@ public class IBeXArithmeticValueImpl extends IBeXAttributeValueImpl implements I
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public NotificationChain basicSetExpression(GTArithmetics newExpression, NotificationChain msgs) {
-		GTArithmetics oldExpression = expression;
+	public NotificationChain basicSetExpression(IBeXArithmeticExpression newExpression, NotificationChain msgs) {
+		IBeXArithmeticExpression oldExpression = expression;
 		expression = newExpression;
 		if (eNotificationRequired()) {
 			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
@@ -93,7 +92,7 @@ public class IBeXArithmeticValueImpl extends IBeXAttributeValueImpl implements I
 	 * @generated
 	 */
 	@Override
-	public void setExpression(GTArithmetics newExpression) {
+	public void setExpression(IBeXArithmeticExpression newExpression) {
 		if (newExpression != expression) {
 			NotificationChain msgs = null;
 			if (expression != null)
@@ -147,7 +146,7 @@ public class IBeXArithmeticValueImpl extends IBeXAttributeValueImpl implements I
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
 		case IBeXPatternModelPackage.IBE_XARITHMETIC_VALUE__EXPRESSION:
-			setExpression((GTArithmetics) newValue);
+			setExpression((IBeXArithmeticExpression) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -162,7 +161,7 @@ public class IBeXArithmeticValueImpl extends IBeXAttributeValueImpl implements I
 	public void eUnset(int featureID) {
 		switch (featureID) {
 		case IBeXPatternModelPackage.IBE_XARITHMETIC_VALUE__EXPRESSION:
-			setExpression((GTArithmetics) null);
+			setExpression((IBeXArithmeticExpression) null);
 			return;
 		}
 		super.eUnset(featureID);

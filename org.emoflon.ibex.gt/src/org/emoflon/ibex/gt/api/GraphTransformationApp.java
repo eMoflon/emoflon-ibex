@@ -9,7 +9,6 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.emoflon.ibex.common.operational.IContextPatternInterpreter;
-import org.emoflon.ibex.gt.api.GraphTransformationAPI;
 
 /**
  * An application using an {@link GraphTransformationAPI}.
@@ -92,6 +91,15 @@ public abstract class GraphTransformationApp<API extends GraphTransformationAPI>
 	public ResourceSet getModel() {
 		return resourceSet;
 	}
+	
+	/**
+	 * Sets the model.
+	 * 
+	 * @param the model
+	 */
+	public void setModel(final ResourceSet model) {
+		resourceSet = model;
+	}
 
 	/**
 	 * Saves all resources in the resource set.
@@ -117,7 +125,7 @@ public abstract class GraphTransformationApp<API extends GraphTransformationAPI>
 	/**
 	 * Add the meta-models to the package registry.
 	 */
-	protected abstract void registerMetaModels();
+	public abstract void registerMetaModels();
 
 	/**
 	 * Registers the given EPackage as a meta-model.
