@@ -30,6 +30,10 @@ public abstract class DeletePreserveConflict extends Conflict
 		this.causingMatches = causingMatches;
 		this.domainToBePreserved = domainToBePreserved;
 	}
+	
+	public List<ITGGMatch> getCausingMatches() {
+		return this.causingMatches;
+	}
 
 	@Override
 	protected Set<ITGGMatch> initConflictMatches() {
