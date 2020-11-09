@@ -14,6 +14,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.emf.common.util.URI;
@@ -78,7 +79,11 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	/**
 	 * The matches (key: pattern name, value: list of matches).
 	 */
-	private Map<String, Collection<IMatch>> matches = new HashMap<>();
+	private Map<String, Collection<IMatch>> matches = Collections.synchronizedMap(new HashMap<>());
+	private Map<String, Collection<IMatch>> pendingMatches = Collections.synchronizedMap(new HashMap<>());
+	private Map<String, Collection<IMatch>> filteredMatches = Collections.synchronizedMap(new HashMap<>());
+	private Map<String, Collection<IMatch>> addedMatches = Collections.synchronizedMap(new HashMap<>());
+	private Map<String, Collection<IMatch>> removedMatches = Collections.synchronizedMap(new HashMap<>());
 
 	/**
 	 * Subscriptions for notification of new matches (key: pattern name, value: list
@@ -101,8 +106,8 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	private Map<IMatch, List<Consumer<IMatch>>> subscriptionsForDisappearingMatches //
 			= new HashMap<IMatch, List<Consumer<IMatch>>>();
 
-	private Map<IMatch, LinkedList<Consumer<IMatch>>> appearingSubscriptionJobs = Collections.synchronizedMap(new LinkedHashMap<>());
-	private Map<IMatch, LinkedList<Consumer<IMatch>>> disappearingSubscriptionJobs = Collections.synchronizedMap(new LinkedHashMap<>());
+	private Map<IMatch, List<Consumer<IMatch>>> appearingSubscriptionJobs = Collections.synchronizedMap(new LinkedHashMap<>());
+	private Map<IMatch, List<Consumer<IMatch>>> disappearingSubscriptionJobs = Collections.synchronizedMap(new LinkedHashMap<>());
 	
 	/**
 	 * Creates a new GraphTransformationInterpreter for queries and modifications on
@@ -261,15 +266,16 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			comatch = createPatternInterpreter.apply(createPattern, comatch.get(), parameters);
 		}
 
-		// Rule application may invalidate existing or lead to new matches.
-		updateMatches();
+		// Rule application may invalidate existing or lead to new matches. 
+//		-> Which is pretty much obvious to any "normal" user, hence, no more hidden update calls.
+//		updateMatches();
 
 		// Return the co-match.
 		return comatch;
 	}
 
 	/**
-	 * Finds all matches for the pattern.
+	 * Updates incrementally and finds all matches for the pattern.
 	 * 
 	 * @param patternName
 	 *            the name of the pattern
@@ -278,14 +284,39 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * @return a {@link Stream} of matches
 	 */
 	public Stream<IMatch> matchStream(final String patternName, final Map<String, Object> parameters) {
-		updateMatches();
-
+		return matchStream(patternName, parameters, true);
+	}
+	
+	/**
+	 * Finds all matches for the pattern.
+	 * 
+	 * @param patternName
+	 *            the name of the pattern
+	 * @param parameters
+	 *            the parameters
+	 * @param doUpdate
+	 * 			  triggers the incremental recalculation of all matches
+	 * @return a {@link Stream} of matches
+	 */
+	public Stream<IMatch> matchStream(final String patternName, final Map<String, Object> parameters, boolean doUpdate) {
+//		Hiding update calls from the user seems dangerous to me. In my experience this practice more often than not leads to a huge amount of nested update calls, leading to stack overflows.
+		if(doUpdate)
+			updateMatches();
+		
+		if(filteredMatches.containsKey(patternName)) {
+			return filteredMatches.get(patternName).stream();
+		}
+		
+		Collection<IMatch> patternMatches = matches.put(patternName, Collections.synchronizedSet(new HashSet<IMatch>()));
+		
 		IBeXContext pattern = name2Pattern.get(patternName);
 		if (IBeXPatternUtils.isEmptyPattern(pattern)) {
-			return Stream.of(createEmptyMatchForCreatePattern(patternName));
+			patternMatches.add(createEmptyMatchForCreatePattern(patternName));
+		} else {
+			patternMatches.addAll(MatchFilter.getFilteredMatchStream(pattern, parameters, matches).collect(Collectors.toSet()));
 		}
-
-		return MatchFilter.getFilteredMatchStream(pattern, parameters, matches);
+		
+		return patternMatches.stream();
 	}
 
 	/**
@@ -411,8 +442,119 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	public void updateMatches() {
 		if(updateDisabled)
 			return;
+		// Clear old state
+		filteredMatches.clear();
+		addedMatches.clear();
+		removedMatches.clear();
 		
+		// Fetch matches from pm
 		contextPatternInterpreter.updateMatches();
+		
+		// (1) ADDED: Check for appearing match subscribers and filter matches
+		subscriptionsForAppearingMatchesOfPattern.keySet().parallelStream().forEach(patternName -> {
+			// Check if pending matches became valid again due to attribute changes
+			// Fill filtered matches Map by calling the match stream
+			matchStream(patternName, name2GTPattern.get(patternName).getParameters());
+			// Check if existing matches recently became valid (pending) and add removal jobs
+			matches.get(patternName).parallelStream()
+				.filter(match -> filteredMatches.get(patternName).contains(match))
+				.filter(match -> pendingMatches.containsKey(patternName) && pendingMatches.get(patternName).contains(match))
+				.forEach(match -> {
+					Collection<IMatch> pending = pendingMatches.get(patternName);
+					pending.remove(match);
+					
+					Collection<IMatch> added = addedMatches.get(patternName);
+					if(added == null) {
+						added = Collections.synchronizedSet(new HashSet<>());
+						removedMatches.put(patternName, added);
+					}
+					added.add(match);
+					
+					List<Consumer<IMatch>> subs = appearingSubscriptionJobs.get(match);
+					if(subs == null) {
+						subs = Collections.synchronizedList(new LinkedList<>());
+						appearingSubscriptionJobs.put(match, subs);
+					}
+					subs.addAll(subscriptionsForAppearingMatchesOfPattern.get(patternName));
+			});
+			
+			
+			if(addedMatches.containsKey(patternName)) {
+				addedMatches.get(patternName).forEach(match -> {
+					List<Consumer<IMatch>> subs = appearingSubscriptionJobs.get(match);
+					if(subs == null) {
+						subs = Collections.synchronizedList(new LinkedList<>());
+						appearingSubscriptionJobs.put(match, subs);
+					}
+					subs.addAll(subscriptionsForAppearingMatchesOfPattern.get(patternName));
+				});
+			}
+			
+		});
+		
+		// (2) DELETED: Check for disappearing match subscribers and filter matches
+		subscriptionsForDisappearingMatchesOfPattern.keySet().parallelStream().forEach(patternName -> {
+			// Check if existing matches became invalid due to attribute changes
+			// Fill filtered matches Map by calling the match stream
+			matchStream(patternName, name2GTPattern.get(patternName).getParameters());
+			// Check if existing matches recently became invalid (not pending) and add removal jobs
+			matches.get(patternName).parallelStream()
+				.filter(match -> !filteredMatches.get(patternName).contains(match))
+				.filter(match -> !pendingMatches.containsKey(patternName) || !pendingMatches.get(patternName).contains(match))
+				.forEach(match -> {
+					Collection<IMatch> pending = pendingMatches.get(patternName);
+					if(pending == null) {
+						pending = Collections.synchronizedSet(new HashSet<>());
+						pendingMatches.put(patternName, pending);
+					}
+					pending.add(match);
+					Collection<IMatch> removed = removedMatches.get(patternName);
+					if(removed == null) {
+						removed = Collections.synchronizedSet(new HashSet<>());
+						removedMatches.put(patternName, removed);
+					}
+					removed.add(match);
+					
+					List<Consumer<IMatch>> subs = disappearingSubscriptionJobs.get(match);
+					if(subs == null) {
+						subs = Collections.synchronizedList(new LinkedList<>());
+						disappearingSubscriptionJobs.put(match, subs);
+					}
+					subs.addAll(subscriptionsForDisappearingMatchesOfPattern.get(patternName));
+				});
+			
+			if(removedMatches.containsKey(patternName)) {
+				removedMatches.get(patternName).forEach(match -> {
+					List<Consumer<IMatch>> subs = disappearingSubscriptionJobs.get(match);
+					if(subs == null) {
+						subs = Collections.synchronizedList(new LinkedList<>());
+						disappearingSubscriptionJobs.put(match, subs);
+					}
+					subs.addAll(subscriptionsForDisappearingMatchesOfPattern.get(patternName));
+				});
+			}
+		});
+		
+		// Check if any match removed subscriptions are triggered by removals
+		Set<IMatch> removals = subscriptionsForDisappearingMatches.keySet().parallelStream()
+			.filter(match -> removedMatches.containsKey(match.getPatternName()))
+			.filter(match -> removedMatches.get(match.getPatternName()).contains(match))
+			.collect(Collectors.toSet());
+		
+		for(IMatch removal : removals) {
+			List<Consumer<IMatch>> subs = disappearingSubscriptionJobs.get(removal);
+			if(subs == null) {
+				subs = Collections.synchronizedList(new LinkedList<>());
+				disappearingSubscriptionJobs.put(removal, subs);
+			}
+			subs.addAll(subscriptionsForDisappearingMatchesOfPattern.get(removal.getPatternName()));
+		}
+		
+		// Remove jobs for appearing matches for each disappeared match
+		for(IMatch removal : subscriptionsForDisappearingMatches.keySet()) {
+			appearingSubscriptionJobs.remove(removal);
+		}
+
 	}
 	
 	public void registerGraphTransformationPattern(final String patternName, final GraphTransformationPattern<?,?> pattern) {
@@ -433,66 +575,56 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	public void notifySubscriptions() {
 		while(!disappearingSubscriptionJobs.isEmpty()) {
 			IMatch nextMatch = disappearingSubscriptionJobs.keySet().iterator().next();
-			LinkedList<Consumer<IMatch>> subs = disappearingSubscriptionJobs.get(nextMatch);
+			LinkedList<Consumer<IMatch>> subs = (LinkedList<Consumer<IMatch>>) disappearingSubscriptionJobs.get(nextMatch);
 			disappearingSubscriptionJobs.remove(nextMatch);
 			while(!subs.isEmpty()) {
 				subs.pollFirst().accept(nextMatch);
 			}
 		}
 		
-//		List<IMatch> removals = new LinkedList<>();
 		Set<IMatch> jobs = new LinkedHashSet<>(appearingSubscriptionJobs.keySet());
 		for(IMatch nextMatch : jobs) {
-			LinkedList<Consumer<IMatch>> subs = appearingSubscriptionJobs.get(nextMatch);
+			LinkedList<Consumer<IMatch>> subs = (LinkedList<Consumer<IMatch>>) appearingSubscriptionJobs.get(nextMatch);
 			if(subs == null || subs.isEmpty()) {
 				appearingSubscriptionJobs.remove(nextMatch);
 				continue;
 			}
 			
-			// Check constraints using parameters
-			if(!MatchFilter.isMatchValid(nextMatch, name2Pattern.get(nextMatch.getPatternName()), 
-				(name2GTPattern.containsKey(nextMatch.getPatternName())) ? name2GTPattern.get(nextMatch.getPatternName()).getParameters() : new HashMap<>(), 
-						matches)) {
-				continue;
-			}
-			
-			updateDisabled = true;
-			// Check additional constraints (e.g. Arithmetic attribute constraints)
-			if(name2GTPattern.containsKey(nextMatch.getPatternName()) && !name2GTPattern.get(nextMatch.getPatternName()).isMatchValid(nextMatch)) {
-				continue;
-			}
-			updateDisabled = false;
-			
-			// Mark as removed and apply callbacks
 			appearingSubscriptionJobs.remove(nextMatch);
-//			removals.add(nextMatch);
 			while(matches.get(nextMatch.getPatternName()).contains(nextMatch) && !subs.isEmpty()) {
 				subs.pollFirst().accept(nextMatch);
 			}
 		}
-		// Cleanup
-//		removals.forEach(match -> appearingSubscriptionJobs.remove(match));
 	}
 
 	@Override
 	public void addMatch(final IMatch match) {
 		String patternName = match.getPatternName();
 		if (!matches.containsKey(patternName)) {
-			matches.put(patternName, new HashSet<IMatch>());
+			matches.put(patternName, Collections.synchronizedSet(new HashSet<IMatch>()));
 		}
 		matches.get(patternName).add(match);
-
-		// Notify subscribers registered for all new matches of the pattern.
-		if (subscriptionsForAppearingMatchesOfPattern.containsKey(patternName)) {
-			//subscriptionsForAppearingMatchesOfPattern.get(patternName).forEach(c -> c.accept(match));
-			
-			LinkedList<Consumer<IMatch>> subs = appearingSubscriptionJobs.get(match);
-			if(subs == null) {
-				subs = new LinkedList<Consumer<IMatch>>();
-				appearingSubscriptionJobs.put(match, subs);
-			}
-			subs.addAll(subscriptionsForAppearingMatchesOfPattern.get(patternName));
+		
+//		Check whether there are any subscribers, if not return. -> No need to track deltas.
+		if(subscriptionsForAppearingMatchesOfPattern.isEmpty() && subscriptionsForDisappearingMatches.isEmpty() && subscriptionsForDisappearingMatchesOfPattern.isEmpty())
+			return;
+		
+		if (!addedMatches.containsKey(patternName)) {
+			addedMatches.put(patternName, Collections.synchronizedSet(new HashSet<IMatch>()));
 		}
+		addedMatches.get(patternName).add(match);
+
+//		// Notify subscribers registered for all new matches of the pattern.
+//		if (subscriptionsForAppearingMatchesOfPattern.containsKey(patternName)) {
+//			//subscriptionsForAppearingMatchesOfPattern.get(patternName).forEach(c -> c.accept(match));
+//			
+//			LinkedList<Consumer<IMatch>> subs = appearingSubscriptionJobs.get(match);
+//			if(subs == null) {
+//				subs = new LinkedList<Consumer<IMatch>>();
+//				appearingSubscriptionJobs.put(match, subs);
+//			}
+//			subs.addAll(subscriptionsForAppearingMatchesOfPattern.get(patternName));
+//		}
 		
 	}
 
@@ -501,34 +633,44 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		String patternName = match.getPatternName();
 		if (matches.containsKey(patternName)) {
 			matches.get(patternName).remove(match);
-
-			appearingSubscriptionJobs.remove(match);
-			LinkedList<Consumer<IMatch>> subs = disappearingSubscriptionJobs.get(match);
 			
-			// Notify subscribers registered for all disappearing matches of the pattern.
-			if (subscriptionsForDisappearingMatchesOfPattern.containsKey(patternName)) {
-				//subscriptionsForDisappearingMatchesOfPattern.get(patternName).forEach(c -> c.accept(match));
-				if(subs == null) {
-					subs = new LinkedList<Consumer<IMatch>>();
-					disappearingSubscriptionJobs.put(match, subs);
-				}
-				subs.addAll(subscriptionsForDisappearingMatchesOfPattern.get(patternName));
-			}			
-
-			// Notify subscribers registered for the disappearing match.
-			if (subscriptionsForDisappearingMatches.containsKey(match)) {
-				//subscriptionsForDisappearingMatches.get(match).forEach(c -> c.accept(match));
-				if(subs == null) {
-					subs = new LinkedList<Consumer<IMatch>>();
-					disappearingSubscriptionJobs.put(match, subs);
-				}
-				subs.addAll(subscriptionsForDisappearingMatches.get(match));
-				subscriptionsForDisappearingMatches.remove(match);
+//			Check whether there are any subscribers, if not return. -> No need to track deltas.
+			if(subscriptionsForAppearingMatchesOfPattern.isEmpty() && subscriptionsForDisappearingMatches.isEmpty() && subscriptionsForDisappearingMatchesOfPattern.isEmpty())
+				return;
+			
+			if (!removedMatches.containsKey(patternName)) {
+				removedMatches.put(patternName, Collections.synchronizedSet(new HashSet<IMatch>()));
 			}
+			removedMatches.get(patternName).add(match);
+
+//			appearingSubscriptionJobs.remove(match);
+//			LinkedList<Consumer<IMatch>> subs = disappearingSubscriptionJobs.get(match);
+//			
+//			// Notify subscribers registered for all disappearing matches of the pattern.
+//			if (subscriptionsForDisappearingMatchesOfPattern.containsKey(patternName)) {
+//				//subscriptionsForDisappearingMatchesOfPattern.get(patternName).forEach(c -> c.accept(match));
+//				if(subs == null) {
+//					subs = new LinkedList<Consumer<IMatch>>();
+//					disappearingSubscriptionJobs.put(match, subs);
+//				}
+//				subs.addAll(subscriptionsForDisappearingMatchesOfPattern.get(patternName));
+//			}			
+//
+//			// Notify subscribers registered for the disappearing match.
+//			if (subscriptionsForDisappearingMatches.containsKey(match)) {
+//				//subscriptionsForDisappearingMatches.get(match).forEach(c -> c.accept(match));
+//				if(subs == null) {
+//					subs = new LinkedList<Consumer<IMatch>>();
+//					disappearingSubscriptionJobs.put(match, subs);
+//				}
+//				subs.addAll(subscriptionsForDisappearingMatches.get(match));
+//				subscriptionsForDisappearingMatches.remove(match);
+//			}
 			
 		} else {
 			throw new IllegalArgumentException("Cannot remove a match which was never added!");
 		}
+		
 	}
 
 	public IBeXPatternSet getPatternSet() {
