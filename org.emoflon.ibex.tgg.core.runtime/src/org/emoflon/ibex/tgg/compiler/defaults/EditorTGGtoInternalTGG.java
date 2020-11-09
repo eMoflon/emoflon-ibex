@@ -57,7 +57,6 @@ import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile;
 import language.BindingType;
 import language.DomainType;
 import language.LanguageFactory;
-import language.NAC;
 import language.TGG;
 import language.TGGAttributeConstraint;
 import language.TGGAttributeConstraintAdornment;

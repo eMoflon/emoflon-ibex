@@ -4,10 +4,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.log4j.Logger;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
@@ -22,6 +23,7 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.DelPreser
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.DelPreserveEdgeConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.DeletePreserveConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.InconsDomainChangesConflict;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.InconsistentChangesConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.OperationalMultiplicityConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.detection.MultiplicityCounter.OutgoingEdge;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceNode;
@@ -42,8 +44,6 @@ public class ConflictDetector {
 
 	private INTEGRATE integrate;
 
-	private MultiplicityCounter multiplicityCounter;
-	private Set<PrecedenceNode> cachedAddedConsNodes;
 	private Set<ITGGMatch> cachedAddedFwdBwdMatches;
 
 	private Map<ITGGMatch, ConflictContainer> match2conflictContainer;
@@ -51,19 +51,18 @@ public class ConflictDetector {
 
 	public ConflictDetector(INTEGRATE integrate) {
 		this.integrate = integrate;
-		this.multiplicityCounter = new MultiplicityCounter(integrate.getOptions().tgg.getFlattenedConcreteTGGRules());
-		cachedAddedConsNodes = new HashSet<>();
 		cachedAddedFwdBwdMatches = new HashSet<>();
 	}
 
-	public Set<ConflictContainer> detectConflicts() {
+	public Map<ITGGMatch, ConflictContainer> detectConflicts() {
 		match2conflictContainer = Collections.synchronizedMap(new HashMap<>());
 		match2sortedRollBackCauses = Collections.synchronizedMap(new HashMap<>());
 
+		// delete-preserve conflicts must be detected last, since some of them may be irrelevant, in case
+		// they depend on other conflicts which repair the deletions while being resolved
 		integrate.getClassifiedBrokenMatches().values().parallelStream() //
-				.forEach(brokenMatch -> detectMatchConflicts(brokenMatch));
+				.forEach(brokenMatch -> detectConsMatchBasedConflicts(brokenMatch));
 		detectDeletePreserveConflicts();
-		detectOpMultiplicityConflicts();
 
 		// sort out empty conflict containers
 		for (Iterator<ConflictContainer> iterator = match2conflictContainer.values().iterator(); iterator.hasNext();) {
@@ -72,12 +71,12 @@ public class ConflictDetector {
 				iterator.remove();
 		}
 
-		return new HashSet<>(match2conflictContainer.values());
+		return match2conflictContainer;
 	}
 
 	private void detectDeletePreserveConflicts() {
-		// we only iterate over src/trg matches which are not part of a consistency match (already
-		// filtered in precedence graph)
+		// we only iterate over src/trg matches which are not part of a consistency match (already filtered
+		// in precedence graph)
 
 		// TODO adrianm: parallel stream causes concurrent modification exception
 		integrate.getPrecedenceGraph().getSourceNodes().stream() //
@@ -91,10 +90,10 @@ public class ConflictDetector {
 		detectDeletePreserveAttrConflicts();
 	}
 
-	private void detectDeletePreserveEdgeConflict(PrecedenceNode node, DomainType domainToBePreserved) {
+	private void detectDeletePreserveEdgeConflict(PrecedenceNode srcTrgNode, DomainType domainToBePreserved) {
 		Set<PrecedenceNode> directRollBackCauses = new HashSet<>();
-		node.forAllToBeRolledBackBy((act, pre) -> {
-			// TODO adrianm: improve performance
+		srcTrgNode.forAllToBeRolledBackBy((act, pre) -> {
+			// TODO adrianm: improve performance?
 			if (integrate.getPrecedenceGraph().hasAnyConsistencyOverlap(act))
 				return false;
 			if (act.isBroken()) {
@@ -104,14 +103,15 @@ public class ConflictDetector {
 			return true;
 		});
 
-		for (PrecedenceNode rollBackCause : directRollBackCauses) {
-			ConflictContainer container = match2conflictContainer.computeIfAbsent(rollBackCause.getMatch(), //
-					key -> new ConflictContainer(integrate, rollBackCause.getMatch()));
+		for (PrecedenceNode dirRollBackCause : directRollBackCauses) {
+			ConflictContainer container = match2conflictContainer.computeIfAbsent(dirRollBackCause.getMatch(), //
+					key -> new ConflictContainer(integrate, dirRollBackCause.getMatch()));
 
 			boolean skipCheckDomainSpecificViolations = skipCheckDomainSpecificViolations(container, domainToBePreserved);
 
-			if (skipCheckDomainSpecificViolations || checkDomainSpecificViolations(rollBackCause, oppositeOf(domainToBePreserved)))
-				new DelPreserveEdgeConflict(container, node.getMatch(), domainToBePreserved, match2sortedRollBackCauses.get(rollBackCause.getMatch()));
+			if (skipCheckDomainSpecificViolations || checkDomainSpecificViolations(dirRollBackCause, oppositeOf(domainToBePreserved)))
+				new DelPreserveEdgeConflict(container, srcTrgNode.getMatch(), domainToBePreserved,
+						match2sortedRollBackCauses.get(dirRollBackCause.getMatch()));
 		}
 	}
 
@@ -142,38 +142,62 @@ public class ConflictDetector {
 				.anyMatch(conflict -> conflict.getDomainToBePreserved() == domain);
 	}
 
-	private boolean checkDomainSpecificViolations(PrecedenceNode rollBackCause, DomainType criticalDomain) {
-		List<ITGGMatch> rollBackCauses = match2sortedRollBackCauses.computeIfAbsent(rollBackCause.getMatch(), match -> {
-			return rollBackCause.computeSortedRollBackCauses().stream() //
-					.map(node -> node.getMatch()) //
-					.collect(Collectors.toList());
+	private boolean checkDomainSpecificViolations(PrecedenceNode directRollBackCause, DomainType criticalDomain) {
+		if (isDeletionRepairableConflictedMatch(directRollBackCause.getMatch()))
+			return false;
+
+		List<ITGGMatch> rollBackCauses = new LinkedList<>();
+		rollBackCauses.add(directRollBackCause.getMatch());
+
+		AtomicBoolean domainSpecificViolation = new AtomicBoolean(false);
+		if (hasDomainSpecificViolations(directRollBackCause.getMatch(), criticalDomain))
+			domainSpecificViolation.set(true);
+
+		directRollBackCause.forAllToBeRolledBackBy((act, pre) -> {
+			if (act.isBroken()) {
+				if (!domainSpecificViolation.get()) {
+					if (isDeletionRepairableConflictedMatch(act.getMatch()))
+						return false;
+					if (hasDomainSpecificViolations(act.getMatch(), criticalDomain))
+						domainSpecificViolation.set(true);
+				}
+				rollBackCauses.add(act.getMatch());
+			}
+			return true;
 		});
 
-		for (ITGGMatch match : rollBackCauses) {
-			BrokenMatch brokenMatch = integrate.getClassifiedBrokenMatches().get(match);
-			if (brokenMatch == null)
-				continue;
-			if (hasDomainSpecificViolations(brokenMatch, criticalDomain))
-				return true;
+		if (domainSpecificViolation.get()) {
+			match2sortedRollBackCauses.put(directRollBackCause.getMatch(), rollBackCauses);
+			return true;
 		}
 		return false;
 	}
 
-	private boolean hasDomainSpecificViolations(BrokenMatch cMatch, DomainType domain) {
+	private boolean isDeletionRepairableConflictedMatch(ITGGMatch match) {
+		if (!match2conflictContainer.containsKey(match))
+			return false;
+		return match2conflictContainer.get(match).getConflicts().stream().anyMatch(InconsistentChangesConflict.class::isInstance);
+	}
+
+	private boolean hasDomainSpecificViolations(ITGGMatch match, DomainType domain) {
+		BrokenMatch brokenMatch = integrate.getClassifiedBrokenMatches().get(match);
+		if (brokenMatch == null)
+			brokenMatch = new BrokenMatch(integrate, match, false);
+
 		switch (domain) {
 		case SRC:
-			if (DeletionType.getSrcDelCandidates().contains(cMatch.getDeletionType()))
+			if (DeletionType.getSrcDelCandidates().contains(brokenMatch.getDeletionType()))
 				return true;
 			break;
 		case TRG:
-			if (DeletionType.getTrgDelCandidates().contains(cMatch.getDeletionType()))
+			if (DeletionType.getTrgDelCandidates().contains(brokenMatch.getDeletionType()))
 				return true;
 			break;
 		default:
 			break;
 		}
 
-		if (cMatch.getFilterNacViolations().containsValue(domain))
+		if (brokenMatch.getFilterNacViolations().containsValue(domain))
 			return true;
 
 		// TODO adrianm: check attributes
@@ -194,7 +218,7 @@ public class ConflictDetector {
 		}
 	}
 
-	private void detectMatchConflicts(BrokenMatch brokenMatch) {
+	private void detectConsMatchBasedConflicts(BrokenMatch brokenMatch) {
 		ConflictContainer container = match2conflictContainer.computeIfAbsent(brokenMatch.getMatch(), //
 				key -> new ConflictContainer(integrate, brokenMatch.getMatch()));
 
@@ -281,30 +305,23 @@ public class ConflictDetector {
 		return false;
 	}
 
-	private void detectOpMultiplicityConflicts() {
-		// fill multiplicity counter
-		Set<PrecedenceNode> actConsNodes = integrate.getPrecedenceGraph().getConsistencyNodes();
-		for (PrecedenceNode consNode : Sets.difference(actConsNodes, cachedAddedConsNodes))
-			multiplicityCounter.addMatch(consNode.getMatch());
-		for (PrecedenceNode consNode : Sets.difference(cachedAddedConsNodes, actConsNodes))
-			multiplicityCounter.removeMatch(consNode.getMatch());
-		cachedAddedConsNodes = new HashSet<>(actConsNodes);
+	public Map<ITGGMatch, ConflictContainer> detectOpMultiplicityConflicts() {
+		Map<ITGGMatch, ConflictContainer> match2conflictContainer = new HashMap<>();
 
+		// fill multiplicity counter with applicable fwd & bwd matches (consistency matches are caught
+		// directly at INTEGRATE)
 		Set<ITGGMatch> actFwdBwdMatches = integrate.getMatchContainer().getMatches();
 		for (ITGGMatch fwdBwdMatch : Sets.difference(actFwdBwdMatches, cachedAddedFwdBwdMatches))
-			multiplicityCounter.addMatch(fwdBwdMatch);
+			integrate.getMultiplicityCounter().notifyAddedMatch(fwdBwdMatch);
 		for (ITGGMatch fwdBwdMatch : Sets.difference(cachedAddedFwdBwdMatches, actFwdBwdMatches))
-			multiplicityCounter.removeMatch(fwdBwdMatch);
+			integrate.getMultiplicityCounter().notifyRemovedMatch(fwdBwdMatch);
 		cachedAddedFwdBwdMatches = new HashSet<>(actFwdBwdMatches);
 
-		// TODO adrianm: revert deletions to get additional FWD/BWD matches, which are required to
-		// detect all conflicts -> not needed, since in the multiplicity counter we also cover
-		// consistency matches
-
 		// detect conflicts
-		multiplicityCounter.getSubject2reference2numOfEdges().forEach((subj, ref2numOfEdges) -> {
+		integrate.getMultiplicityCounter().getSubject2reference2numOfEdges().forEach((subj, ref2numOfEdges) -> {
 			ref2numOfEdges.forEach((ref, numOfEdges) -> {
-				if (multiplicityCounter.violatesMultiplicity(ref, numOfEdges)) {
+				int violationCounter = integrate.getMultiplicityCounter().violatesMultiplicity(ref, numOfEdges);
+				if (violationCounter != 0) {
 					ITGGMatch underlyingMatch = null;
 					for (PrecedenceNode node : integrate.getPrecedenceGraph().getNodesTranslating(subj)) {
 						if (node.getMatch().getType() == PatternType.CONSISTENCY) {
@@ -320,13 +337,18 @@ public class ConflictDetector {
 					ConflictContainer container = match2conflictContainer.computeIfAbsent(underlyingMatch, //
 							key -> new ConflictContainer(integrate, tmpUnderlyingMatch));
 
-					Set<ITGGMatch> violatingMatches = multiplicityCounter.getOutgoingEdge2matches() //
-							.getOrDefault(new OutgoingEdge(subj, ref), Collections.emptySet());
+					OutgoingEdge outgoingEdge = new OutgoingEdge(subj, ref);
+					Map<ITGGMatch, Integer> addedMatches = integrate.getMultiplicityCounter().getOutgoingEdge2addedMatches2numOfEdges() //
+							.getOrDefault(outgoingEdge, Collections.emptyMap());
+					Map<ITGGMatch, Integer> removedMatches = integrate.getMultiplicityCounter().getOutgoingEdge2removedMatches2numOfEdges() //
+							.getOrDefault(outgoingEdge, Collections.emptyMap());
 
-					new OperationalMultiplicityConflict(container, subj, ref, violatingMatches);
+					new OperationalMultiplicityConflict(container, subj, ref, violationCounter, addedMatches, removedMatches);
 				}
 			});
 		});
+
+		return match2conflictContainer;
 	}
 
 }
