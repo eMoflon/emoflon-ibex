@@ -45,7 +45,6 @@ import org.moflon.core.utilities.ExtensionsUtil;
 import org.moflon.core.utilities.MoflonUtil;
 import org.moflon.tgg.mosl.tgg.AttrCond;
 import org.moflon.tgg.mosl.tgg.AttrCondDef;
-import org.moflon.tgg.mosl.tgg.Nac;
 import org.moflon.tgg.mosl.tgg.Rule;
 import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile;
 

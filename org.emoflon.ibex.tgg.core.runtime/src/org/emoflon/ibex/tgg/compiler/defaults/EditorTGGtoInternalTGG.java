@@ -45,7 +45,6 @@ import org.moflon.tgg.mosl.tgg.Expression;
 import org.moflon.tgg.mosl.tgg.LinkVariablePattern;
 import org.moflon.tgg.mosl.tgg.LiteralExpression;
 import org.moflon.tgg.mosl.tgg.LocalVariable;
-import org.moflon.tgg.mosl.tgg.Nac;
 import org.moflon.tgg.mosl.tgg.ObjectVariablePattern;
 import org.moflon.tgg.mosl.tgg.Operator;
 import org.moflon.tgg.mosl.tgg.OperatorPattern;
