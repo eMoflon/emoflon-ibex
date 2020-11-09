@@ -291,21 +291,38 @@ public class ModelChanges {
 				if (content instanceof Collection) {
 					Collection<EObject> contentList = (Collection<EObject>) content;
 					contentList.forEach(child -> {
-						this.addCreatedEdge(new EMFEdge(createdElement, child, feature));
+						this.raw_addCreatedEdge(new EMFEdge(createdElement, child, feature));
 						if (feature.isContainment()) {
-							this.addCreatedElement(child);
+							this.raw_addCreatedElement(child);
 							detectAppendages(traversedElements, child);
 						}
 					});
 				} else if (content instanceof EObject) {
 					EObject child = (EObject) content;
-					this.addCreatedEdge(new EMFEdge(createdElement, child, feature));
+					this.raw_addCreatedEdge(new EMFEdge(createdElement, child, feature));
 					if (feature.isContainment()) {
-						this.addCreatedElement(child);
+						this.raw_addCreatedElement(child);
 						detectAppendages(traversedElements, child);
 					}
 				}
 			});
+		}
+	}
+
+	private void raw_addCreatedElement(EObject createdElement) {
+		if (!deletedElements.remove(createdElement))
+			createdElements.add(createdElement);
+		else
+			containedInResource.remove(createdElement);
+	}
+
+	private void raw_addCreatedEdge(EMFEdge createdEdge) {
+		if (deletedEdges.remove(createdEdge)) {
+			srcMappedDeletedEdges.get(createdEdge.getSource()).remove(createdEdge);
+			trgMappedDeletedEdges.get(createdEdge.getTarget()).remove(createdEdge);
+		} else if (createdEdges.add(createdEdge)) {
+			srcMappedCreatedEdges.computeIfAbsent(createdEdge.getSource(), k -> new HashSet<>()).add(createdEdge);
+			trgMappedCreatedEdges.computeIfAbsent(createdEdge.getTarget(), k -> new HashSet<>()).add(createdEdge);
 		}
 	}
 
