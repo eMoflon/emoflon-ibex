@@ -118,13 +118,23 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	public final Optional<Probability<M,P>> getProbability() {
 		return probability;	
 	}
+	
+	/**
+	 * Checks whether the rule is applicable.
+	 * 
+	 * @return <code>true</code> if there is at least one match
+	 */
+	public final boolean isApplicable(boolean doUpdate) {
+		return hasMatches(doUpdate);
+	}
+	
 	/**
 	 * Checks whether the rule is applicable.
 	 * 
 	 * @return <code>true</code> if there is at least one match
 	 */
 	public final boolean isApplicable() {
-		return hasMatches();
+		return hasMatches(true);
 	}
 
 	/**
@@ -132,8 +142,21 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	 * 
 	 * @return an {@link Optional} for the the match after rule application
 	 */
+	public final Optional<M> apply(boolean doUpdate) {
+		Optional<M> match = findAnyMatch(doUpdate);
+		if (!match.isPresent()) {
+			return Optional.empty();
+		}
+		return apply(match.get());
+	}
+	
+	/**
+	 * Applies the rule on an arbitrary match if a match can be found.
+	 * 
+	 * @return an {@link Optional} for the the match after rule application
+	 */
 	public final Optional<M> apply() {
-		Optional<M> match = findAnyMatch();
+		Optional<M> match = findAnyMatch(true);
 		if (!match.isPresent()) {
 			return Optional.empty();
 		}
@@ -146,8 +169,8 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	 * 
 	 * @return an {@link Optional} for the the match after rule application
 	 */
-	public final Optional<M> applyStochastic(){
-		Optional <M> match = findAnyMatch();
+	public final Optional<M> applyStochastic(boolean doUpdate){
+		Optional <M> match = findAnyMatch(doUpdate);
 		if(probability.isPresent()) {
 			if(match.isPresent()) {
 				if(rnd.nextDouble() < probability.get().getProbability(match.get())) {
@@ -156,8 +179,46 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 			}
 			return Optional.empty();			
 		}
-		else return apply();
+		else return apply(doUpdate);
 	}
+	
+	/**
+	 * If the rule has a probability, it applies the rule on an arbitrary 
+	 * match with the given probability if a match can be found; else it will return apply()
+	 * 
+	 * @return an {@link Optional} for the the match after rule application
+	 */
+	public final Optional<M> applyStochastic(){
+		Optional <M> match = findAnyMatch(true);
+		if(probability.isPresent()) {
+			if(match.isPresent()) {
+				if(rnd.nextDouble() < probability.get().getProbability(match.get())) {
+					return apply(match.get());
+				}
+			}
+			return Optional.empty();			
+		}
+		else return apply(true);
+	}
+	
+	/**
+	 * Applies the rule on the given match.
+	 * 
+	 * @param match
+	 *            the match
+	 * @return an {@link Optional} for the the match after rule application
+	 */
+	public final Optional<M> apply(final M match, boolean doUpdate) {
+		Objects.requireNonNull(match, "The match must not be null!");
+		Optional<M> comatch = interpreter.apply(match.toIMatch(), getPushoutApproach(), getParameters(), doUpdate)
+				.map(m -> convertMatch(m));
+		comatch.ifPresent(cm -> {
+			ruleApplicationConsumers.forEach(action -> action.accept(cm));
+			ruleApplicationCount++;
+		});
+		return comatch;
+	}
+		
 	
 	/**
 	 * Applies the rule on the given match.
@@ -168,7 +229,7 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	 */
 	public final Optional<M> apply(final M match) {
 		Objects.requireNonNull(match, "The match must not be null!");
-		Optional<M> comatch = interpreter.apply(match.toIMatch(), getPushoutApproach(), getParameters())
+		Optional<M> comatch = interpreter.apply(match.toIMatch(), getPushoutApproach(), getParameters(), true)
 				.map(m -> convertMatch(m));
 		comatch.ifPresent(cm -> {
 			ruleApplicationConsumers.forEach(action -> action.accept(cm));
@@ -176,7 +237,6 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 		});
 		return comatch;
 	}
-		
 	/**
 	 * Applies the rule on the given match.
 	 * 
@@ -207,6 +267,18 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 		}
 		else return apply(match);
 	}
+	
+	/**
+	 * Applies the rule on at most <code>max</code> arbitrary matches.
+	 * 
+	 * @param max
+	 *            the maximal number of rule applications
+	 * @return the matches after rule application
+	 */
+	public final Collection<M> apply(final int max, boolean doUpdate) {
+		return apply(matches -> matches.size() < max && hasMatches(doUpdate), doUpdate);
+	}
+	
 	/**
 	 * Applies the rule on at most <code>max</code> arbitrary matches.
 	 * 
@@ -215,7 +287,23 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	 * @return the matches after rule application
 	 */
 	public final Collection<M> apply(final int max) {
-		return apply(matches -> matches.size() < max && hasMatches());
+		return apply(matches -> matches.size() < max && hasMatches(true), true);
+	}
+	
+	/**
+	 * Applies the rule as long as the given condition is fulfilled.
+	 * 
+	 * @param condition
+	 *            the condition to check, based on the matches of successful rule
+	 *            applications so far
+	 * @return the matches after rule application
+	 */
+	public final Collection<M> apply(final Predicate<Collection<M>> condition, boolean doUpdate) {
+		Collection<M> matches = new ArrayList<M>();
+		while (condition.test(matches)) {
+			apply(doUpdate).ifPresent(m -> matches.add(m));
+		}
+		return matches;
 	}
 	
 	/**
@@ -229,7 +317,7 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	public final Collection<M> apply(final Predicate<Collection<M>> condition) {
 		Collection<M> matches = new ArrayList<M>();
 		while (condition.test(matches)) {
-			apply().ifPresent(m -> matches.add(m));
+			apply(true).ifPresent(m -> matches.add(m));
 		}
 		return matches;
 	}
@@ -242,9 +330,22 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	 *            the match
 	 * @return the match after rule application
 	 */
+	public final Optional<M> bindAndApply(final IMatch match, boolean doUpdate) {
+		bind(match);
+		return apply(doUpdate);
+	}
+	
+	/**
+	 * Applies the rule after binding its parameters to the values given by the
+	 * match.
+	 * 
+	 * @param match
+	 *            the match
+	 * @return the match after rule application
+	 */
 	public final Optional<M> bindAndApply(final IMatch match) {
 		bind(match);
-		return apply();
+		return apply(true);
 	}
 
 	/**
@@ -255,10 +356,41 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	 *            the match
 	 * @return the match after rule application
 	 */
+	public final Optional<M> bindAndApply(final GraphTransformationMatch<?, ?> match, boolean doUpdate) {
+		return bindAndApply(match.toIMatch(), doUpdate);
+	}
+	
+	/**
+	 * Applies the rule after binding its parameters to the values given by the
+	 * match.
+	 * 
+	 * @param match
+	 *            the match
+	 * @return the match after rule application
+	 */
 	public final Optional<M> bindAndApply(final GraphTransformationMatch<?, ?> match) {
-		return bindAndApply(match.toIMatch());
+		return bindAndApply(match.toIMatch(), true);
 	}
 
+	/**
+	 * Applies the rule after binding its parameters to the values given by the
+	 * match the supplier returns as long as the the match is not <code>null</code>.
+	 * 
+	 * @param matchSupplier
+	 *            the supplier for a match whose bindings shall be used
+	 * @return the matches after rule application
+	 */
+	public final Collection<M> bindAndApply(final Supplier<? extends GraphTransformationMatch<?, ?>> matchSupplier, boolean doUpdate) {
+		Collection<M> matches = new ArrayList<M>();
+		GraphTransformationMatch<?, ?> match = matchSupplier.get();
+		while (match != null) {
+			bind(match);
+			apply(doUpdate).ifPresent(m -> matches.add(m));
+			match = matchSupplier.get();
+		}
+		return matches;
+	}
+	
 	/**
 	 * Applies the rule after binding its parameters to the values given by the
 	 * match the supplier returns as long as the the match is not <code>null</code>.
@@ -272,7 +404,7 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 		GraphTransformationMatch<?, ?> match = matchSupplier.get();
 		while (match != null) {
 			bind(match);
-			apply().ifPresent(m -> matches.add(m));
+			apply(true).ifPresent(m -> matches.add(m));
 			match = matchSupplier.get();
 		}
 		return matches;
