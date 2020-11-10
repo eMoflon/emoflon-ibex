@@ -327,7 +327,10 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		if (IBeXPatternUtils.isEmptyPattern(pattern)) {
 			patternMatches.add(createEmptyMatchForCreatePattern(patternName));
 		} else {
-			patternMatches.addAll(MatchFilter.getFilteredMatchStream(pattern, parameters, matches).collect(Collectors.toSet()));
+			GraphTransformationPattern<?,?> gtPattern = name2GTPattern.get(patternName);
+			patternMatches.addAll(MatchFilter.getFilteredMatchStream(pattern, parameters, matches)
+					.filter(match -> gtPattern.isMatchValid(match))
+					.collect(Collectors.toSet()));
 		}
 		
 		return patternMatches.stream();

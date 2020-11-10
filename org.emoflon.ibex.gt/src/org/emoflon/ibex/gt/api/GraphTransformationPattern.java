@@ -163,7 +163,7 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 * @return the Stream of matches
 	 */
 	protected Stream<IMatch> untypedMatchStream(boolean doUpdate){
-		return interpreter.matchStream(patternName, getParameters(), doUpdate).filter(match -> isMatchValid(match));
+		return interpreter.matchStream(patternName, getParameters(), doUpdate);
 	}
 	
 	public boolean isMatchValid(IMatch match) {
