@@ -268,7 +268,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 
 		// Rule application may invalidate existing or lead to new matches. 
 //		-> Which is pretty much obvious to any "normal" user, hence, no more hidden update calls.
-//		updateMatches();
+		updateMatches();
 
 		// Return the co-match.
 		return comatch;
@@ -283,7 +283,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 *            the parameters
 	 * @return a {@link Stream} of matches
 	 */
-	public Stream<IMatch> matchStream(final String patternName, final Map<String, Object> parameters) {
+	public synchronized Stream<IMatch> matchStream(final String patternName, final Map<String, Object> parameters) {
 		return matchStream(patternName, parameters, true);
 	}
 	
@@ -298,16 +298,17 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * 			  triggers the incremental recalculation of all matches
 	 * @return a {@link Stream} of matches
 	 */
-	public Stream<IMatch> matchStream(final String patternName, final Map<String, Object> parameters, boolean doUpdate) {
+	public synchronized Stream<IMatch> matchStream(final String patternName, final Map<String, Object> parameters, boolean doUpdate) {
 //		Hiding update calls from the user seems dangerous to me. In my experience this practice more often than not leads to a huge amount of nested update calls, leading to stack overflows.
 		if(doUpdate)
-			updateMatches();
+//			updateMatches();
 		
 		if(filteredMatches.containsKey(patternName)) {
 			return filteredMatches.get(patternName).stream();
 		}
 		
-		Collection<IMatch> patternMatches = matches.put(patternName, Collections.synchronizedSet(new HashSet<IMatch>()));
+		Collection<IMatch> patternMatches = Collections.synchronizedSet(new HashSet<IMatch>());
+		filteredMatches.put(patternName, patternMatches);
 		
 		IBeXContext pattern = name2Pattern.get(patternName);
 		if (IBeXPatternUtils.isEmptyPattern(pattern)) {
@@ -435,13 +436,13 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			subscriptionsForDisappearingMatches.get(match).remove(consumer);
 		}
 	}
-	private boolean updateDisabled = false;
+//	private boolean updateDisabled = false;
 	/**
 	 * Trigger the engine to update the pattern network.
 	 */
-	public void updateMatches() {
-		if(updateDisabled)
-			return;
+	public synchronized void updateMatches() {
+//		if(updateDisabled)
+//			return;
 		// Clear old state
 		filteredMatches.clear();
 		addedMatches.clear();
@@ -572,7 +573,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	}
 	
 	@Override
-	public void notifySubscriptions() {
+	public synchronized void notifySubscriptions() {
 		while(!disappearingSubscriptionJobs.isEmpty()) {
 			IMatch nextMatch = disappearingSubscriptionJobs.keySet().iterator().next();
 			LinkedList<Consumer<IMatch>> subs = (LinkedList<Consumer<IMatch>>) disappearingSubscriptionJobs.get(nextMatch);
