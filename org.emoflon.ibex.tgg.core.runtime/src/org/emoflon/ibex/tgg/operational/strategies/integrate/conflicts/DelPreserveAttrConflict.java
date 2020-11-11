@@ -28,7 +28,7 @@ public class DelPreserveAttrConflict extends DeletePreserveConflict {
 	@Override
 	public void crs_revokeAddition() {
 		ModelChangeUtil.revertAttributeChange(attrChange);
-		
+
 		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by REVOKE_ADDITION");
 		resolved = true;
 	}

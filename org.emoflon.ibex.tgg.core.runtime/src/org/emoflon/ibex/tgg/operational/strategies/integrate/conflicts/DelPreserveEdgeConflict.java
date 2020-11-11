@@ -23,6 +23,12 @@ public class DelPreserveEdgeConflict extends DeletePreserveConflict {
 		super(container, domainToBePreserved, causingMatches);
 		this.srcTrgMatch = srcTrgMatch;
 	}
+	
+	public DelPreserveEdgeConflict(ConflictContainer container, ITGGMatch srcTrgMatch, DomainType domainToBePreserved,
+			List<ITGGMatch> causingMatches, ITGGMatch matchToBeRepaired) {
+		super(container, domainToBePreserved, causingMatches, matchToBeRepaired);
+		this.srcTrgMatch = srcTrgMatch;
+	}
 
 	@Override
 	protected Set<ITGGMatch> initConflictMatches() {

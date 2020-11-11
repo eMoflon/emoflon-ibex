@@ -54,9 +54,8 @@ public class CorrPreservationConflict extends InconsistentChangesConflict implem
 
 				if (pg.getSourceNodes().contains(node))
 					srcMatches.add(node.getMatch());
-				else if (pg.getTargetNodes().contains(node)) {
+				else if (pg.getTargetNodes().contains(node))
 					trgMatches.add(node.getMatch());
-				}
 			}
 		}
 	}

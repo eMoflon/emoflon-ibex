@@ -27,11 +27,21 @@ public abstract class DeletePreserveConflict extends Conflict
 
 	protected final List<ITGGMatch> causingMatches;
 	protected final DomainType domainToBePreserved;
+	protected final ITGGMatch matchToBeRepaired;
 
 	public DeletePreserveConflict(ConflictContainer container, DomainType domainToBePreserved, List<ITGGMatch> causingMatches) {
 		super(container);
 		this.causingMatches = causingMatches;
 		this.domainToBePreserved = domainToBePreserved;
+		this.matchToBeRepaired = null;
+	}
+
+	public DeletePreserveConflict(ConflictContainer container, DomainType domainToBePreserved, List<ITGGMatch> causingMatches,
+			ITGGMatch matchToBeRepaired) {
+		super(container);
+		this.causingMatches = causingMatches;
+		this.domainToBePreserved = domainToBePreserved;
+		this.matchToBeRepaired = matchToBeRepaired;
 	}
 
 	@Override
@@ -157,7 +167,7 @@ public abstract class DeletePreserveConflict extends Conflict
 			});
 		}
 		toBeCorrsDeleted.forEach(this::deleteCorrs);
-		
+
 		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by DELETE_CORRS");
 		resolved = true;
 	}
