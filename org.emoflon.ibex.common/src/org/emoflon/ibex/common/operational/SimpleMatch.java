@@ -64,6 +64,7 @@ public class SimpleMatch implements IMatch {
 	@Override
 	public void put(final String name, final Object object) {
 		parameters.put(name, object);
+		hashInit = false;
 	}
 
 	@Override
@@ -88,6 +89,11 @@ public class SimpleMatch implements IMatch {
 	@Override
 	public int hashCode() {
 		return (int)getHashCode();
+	}
+	
+	public void setHashCode(long hashCode) {
+		this.hash = hashCode;
+		hashInit = true;
 	}
 
 	@Override

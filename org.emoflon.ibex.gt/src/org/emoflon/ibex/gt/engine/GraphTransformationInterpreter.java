@@ -325,7 +325,9 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		
 		IBeXContext pattern = name2Pattern.get(patternName);
 		if (IBeXPatternUtils.isEmptyPattern(pattern)) {
-			patternMatches.add(createEmptyMatchForCreatePattern(patternName));
+			SimpleMatch match = (SimpleMatch)createEmptyMatchForCreatePattern(patternName);
+			match.setHashCode(Objects.hash(match.getParameterNames()));
+			patternMatches.add(match);
 		} else {
 			GraphTransformationPattern<?,?> gtPattern = name2GTPattern.get(patternName);
 			patternMatches.addAll(MatchFilter.getFilteredMatchStream(pattern, parameters, matches)
