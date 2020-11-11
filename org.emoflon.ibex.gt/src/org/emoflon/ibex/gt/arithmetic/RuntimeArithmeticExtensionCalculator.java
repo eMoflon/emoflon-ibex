@@ -90,7 +90,7 @@ public class RuntimeArithmeticExtensionCalculator {
 	}
 	
 	public static long evaluateMatchCount(final GraphTransformationInterpreter interpreter, final IBeXMatchCount expression, final IMatch match) {
-			Stream<IMatch> overlappedMatches = interpreter.matchStream(expression.getInvocation().getInvokedPattern().getName(), new HashMap<>());
+			Stream<IMatch> overlappedMatches = interpreter.matchStream(expression.getInvocation().getInvokedPattern().getName(), new HashMap<>(), false);
 			for(Entry<IBeXNode, IBeXNode> entry : expression.getInvocation().getMapping().entrySet()) {
 				overlappedMatches = overlappedMatches.filter(localMatch -> match.get(entry.getKey().getName()).equals(localMatch.get(entry.getValue().getName())));
 			}

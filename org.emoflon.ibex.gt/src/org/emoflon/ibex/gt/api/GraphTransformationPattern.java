@@ -103,6 +103,23 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 		});
 		return (P) this;
 	}
+	
+	/**
+	 * Unbinds the parameters of the pattern if there is a parameter of the same name
+	 * in the match.
+	 * 
+	 * @param match
+	 *            the match
+	 */
+	@SuppressWarnings("unchecked")
+	public final P unbind(final IMatch match) {
+		getParameterNames().forEach(parameterName -> {
+			if (match.isInMatch(parameterName)) {
+				getParameters().remove(parameterName);
+			}
+		});
+		return (P) this;
+	}
 
 	/**
 	 * Binds the parameters of the pattern if there is a parameter of the same name
@@ -114,6 +131,19 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	@SuppressWarnings("unchecked")
 	public final P bind(final GraphTransformationMatch<?, ?> match) {
 		bind(match.toIMatch());
+		return (P) this;
+	}
+	
+	/**
+	 * Unbinds the parameters of the pattern if there is a parameter of the same name
+	 * in the match.
+	 * 
+	 * @param match
+	 *            the match
+	 */
+	@SuppressWarnings("unchecked")
+	public final P unbind(final GraphTransformationMatch<?, ?> match) {
+		unbind(match.toIMatch());
 		return (P) this;
 	}
 

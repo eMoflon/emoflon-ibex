@@ -311,7 +311,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * 			  triggers the incremental recalculation of all matches
 	 * @return a {@link Stream} of matches
 	 */
-	public synchronized Stream<IMatch> matchStream(final String patternName, final Map<String, Object> parameters, boolean doUpdate) {
+	public Stream<IMatch> matchStream(final String patternName, final Map<String, Object> parameters, boolean doUpdate) {
 //		Hiding update calls from the user seems dangerous to me. In my experience this practice more often than not leads to a huge amount of nested update calls, leading to stack overflows.
 		if(doUpdate)
 			updateMatches();
@@ -353,12 +353,12 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		contextPatternInterpreter.updateMatches();
 		
 		// (1) ADDED: Check for appearing match subscribers and filter matches
-		subscriptionsForAppearingMatchesOfPattern.keySet().parallelStream().forEach(patternName -> {
+		subscriptionsForAppearingMatchesOfPattern.keySet().stream().forEach(patternName -> {
 			// Check if pending matches became valid again due to attribute changes
 			// Fill filtered matches Map by calling the match stream
-			matchStream(patternName, name2GTPattern.get(patternName).getParameters());
+			matchStream(patternName, name2GTPattern.get(patternName).getParameters(), false);
 			// Check if existing matches recently became valid (pending) and add removal jobs
-			matches.get(patternName).parallelStream()
+			matches.get(patternName).stream()
 				.filter(match -> filteredMatches.get(patternName).contains(match))
 				.filter(match -> pendingMatches.containsKey(patternName) && pendingMatches.get(patternName).contains(match))
 				.forEach(match -> {
@@ -395,12 +395,12 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		});
 		
 		// (2) DELETED: Check for disappearing match subscribers and filter matches
-		subscriptionsForDisappearingMatchesOfPattern.keySet().parallelStream().forEach(patternName -> {
+		subscriptionsForDisappearingMatchesOfPattern.keySet().stream().forEach(patternName -> {
 			// Check if existing matches became invalid due to attribute changes
 			// Fill filtered matches Map by calling the match stream
-			matchStream(patternName, name2GTPattern.get(patternName).getParameters());
+			matchStream(patternName, name2GTPattern.get(patternName).getParameters(), false);
 			// Check if existing matches recently became invalid (not pending) and add removal jobs
-			matches.get(patternName).parallelStream()
+			matches.get(patternName).stream()
 				.filter(match -> !filteredMatches.get(patternName).contains(match))
 				.filter(match -> !pendingMatches.containsKey(patternName) || !pendingMatches.get(patternName).contains(match))
 				.forEach(match -> {
@@ -449,11 +449,11 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 				subs = new LinkedBlockingQueue<>();
 				disappearingSubscriptionJobs.put(removal, subs);
 			}
-			subs.addAll(subscriptionsForDisappearingMatchesOfPattern.get(removal.getPatternName()));
+			subs.addAll(subscriptionsForDisappearingMatches.get(removal));
 		}
 		
 		// Remove jobs for appearing matches for each disappeared match
-		for(IMatch removal : subscriptionsForDisappearingMatches.keySet()) {
+		for(IMatch removal : removals) {
 			appearingSubscriptionJobs.remove(removal);
 		}
 		
