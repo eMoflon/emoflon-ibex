@@ -1,14 +1,11 @@
 package org.emoflon.ibex.gt.engine;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -91,22 +88,19 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * Subscriptions for notification of new matches (key: pattern name, value: list
 	 * of consumers).
 	 */
-	private Map<String, List<Consumer<IMatch>>> subscriptionsForAppearingMatchesOfPattern //
-			= new HashMap<String, List<Consumer<IMatch>>>();
+	private Map<String, Set<Consumer<IMatch>>> subscriptionsForAppearingMatchesOfPattern = new HashMap<>();
 
 	/**
 	 * Subscriptions for notification of disappearing matches (key: pattern name,
 	 * value: list of consumers).
 	 */
-	private Map<String, List<Consumer<IMatch>>> subscriptionsForDisappearingMatchesOfPattern //
-			= new HashMap<String, List<Consumer<IMatch>>>();
+	private Map<String, Set<Consumer<IMatch>>> subscriptionsForDisappearingMatchesOfPattern = new HashMap<>();
 
 	/**
 	 * Subscriptions for notification of disappearing matches (key: match, value:
 	 * list of consumers).
 	 */
-	private Map<IMatch, List<Consumer<IMatch>>> subscriptionsForDisappearingMatches //
-			= new HashMap<IMatch, List<Consumer<IMatch>>>();
+	private Map<IMatch, Set<Consumer<IMatch>>> subscriptionsForDisappearingMatches = new HashMap<>();
 
 	private Map<IMatch, Queue<Consumer<IMatch>>> appearingSubscriptionJobs = Collections.synchronizedMap(new LinkedHashMap<>());
 	private Map<IMatch, Queue<Consumer<IMatch>>> disappearingSubscriptionJobs = Collections.synchronizedMap(new LinkedHashMap<>());
@@ -234,21 +228,6 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	public void terminate() {
 		contextPatternInterpreter.terminate();
 	}
-
-	/**
-	 * Executes the pattern, but does not update beforehand. 
-	 * 
-	 * @param match
-	 *            the match to execute the pattern on
-	 * @param po
-	 *            the pushout approach to use
-	 * @param parameters
-	 *            the parameters to pass
-	 * @return the match after rule application
-	 */
-	public Optional<IMatch> apply(final IMatch match, final PushoutApproach po, final Map<String, Object> parameters) {
-		return apply(match, po, parameters, false);
-	}
 	
 	/**
 	 * Executes the pattern.
@@ -260,7 +239,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * @param parameters
 	 *            the parameters to pass
 	 * @param doUpdate
-	 * 			  triggers the incremental recalculation of all matches
+	 * 			  triggers the incremental recalculation of all matches after application
 	 * @return the match after rule application
 	 */
 	public Optional<IMatch> apply(final IMatch match, final PushoutApproach po, final Map<String, Object> parameters, boolean doUpdate) {
@@ -286,19 +265,6 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		// Return the co-match.
 		return comatch;
 	}
-
-	/**
-	 * Finds all matches for the pattern, but does not update beforehand. 
-	 * 
-	 * @param patternName
-	 *            the name of the pattern
-	 * @param parameters
-	 *            the parameters
-	 * @return a {@link Stream} of matches
-	 */
-	public synchronized Stream<IMatch> matchStream(final String patternName, final Map<String, Object> parameters) {
-		return matchStream(patternName, parameters, false);
-	}
 	
 	/**
 	 * Finds all matches for the pattern.
@@ -308,10 +274,10 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * @param parameters
 	 *            the parameters
 	 * @param doUpdate
-	 * 			  triggers the incremental recalculation of all matches
+	 * 			  triggers the incremental recalculation of all matches before filtering matches
 	 * @return a {@link Stream} of matches
 	 */
-	public Stream<IMatch> matchStream(final String patternName, final Map<String, Object> parameters, boolean doUpdate) {
+	public synchronized Stream<IMatch> matchStream(final String patternName, final Map<String, Object> parameters, boolean doUpdate) {
 //		Hiding update calls from the user seems dangerous to me. In my experience this practice more often than not leads to a huge amount of nested update calls, leading to stack overflows.
 		if(doUpdate)
 			updateMatches();
@@ -474,8 +440,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		return name2GTPattern.get(patternName);
 	}
 	
-	@Override
-	public synchronized void notifySubscriptions() {
+	public void notifySubscriptions() {
 		while(!disappearingSubscriptionJobs.isEmpty()) {
 			IMatch nextMatch = disappearingSubscriptionJobs.keySet().iterator().next();
 			Queue<Consumer<IMatch>> subs = disappearingSubscriptionJobs.get(nextMatch);
@@ -494,7 +459,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			}
 			
 			appearingSubscriptionJobs.remove(nextMatch);
-			while(matches.get(nextMatch.getPatternName()).contains(nextMatch) && !subs.isEmpty()) {
+			while(!subs.isEmpty()) {
 				subs.poll().accept(nextMatch);
 			}
 		}
@@ -512,6 +477,11 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		if(subscriptionsForAppearingMatchesOfPattern.isEmpty() && subscriptionsForDisappearingMatches.isEmpty() && subscriptionsForDisappearingMatchesOfPattern.isEmpty())
 			return;
 		
+		if(removedMatches.containsKey(patternName) && removedMatches.get(patternName).contains(match)) {
+			removedMatches.get(patternName).remove(match);
+			return;
+		}
+		
 		if (!addedMatches.containsKey(patternName)) {
 			addedMatches.put(patternName, Collections.synchronizedSet(new HashSet<IMatch>()));
 		}
@@ -528,6 +498,10 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 //			Check whether there are any subscribers, if not return. -> No need to track deltas.
 			if(subscriptionsForAppearingMatchesOfPattern.isEmpty() && subscriptionsForDisappearingMatches.isEmpty() && subscriptionsForDisappearingMatchesOfPattern.isEmpty())
 				return;
+			
+			if(addedMatches.containsKey(patternName) && addedMatches.get(patternName).contains(match)) {
+				addedMatches.get(patternName).remove(match);
+			}
 			
 			if (!removedMatches.containsKey(patternName)) {
 				removedMatches.put(patternName, Collections.synchronizedSet(new HashSet<IMatch>()));
@@ -585,7 +559,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			throw new IllegalArgumentException("Subscriptions to Pattern-Alternatives not supported: Invalid pattern " + name2Pattern.get(patternName));
 		
 		if (!subscriptionsForAppearingMatchesOfPattern.containsKey(patternName)) {
-			subscriptionsForAppearingMatchesOfPattern.put(patternName, new ArrayList<Consumer<IMatch>>());
+			subscriptionsForAppearingMatchesOfPattern.put(patternName, new LinkedHashSet<Consumer<IMatch>>());
 		}
 		subscriptionsForAppearingMatchesOfPattern.get(patternName).add(consumer);
 	}
@@ -618,7 +592,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			throw new IllegalArgumentException("Subscriptions to Pattern-Alternatives not supported: Invalid pattern " + name2Pattern.get(patternName));
 		
 		if (!subscriptionsForDisappearingMatchesOfPattern.containsKey(patternName)) {
-			subscriptionsForDisappearingMatchesOfPattern.put(patternName, new ArrayList<Consumer<IMatch>>());
+			subscriptionsForDisappearingMatchesOfPattern.put(patternName, new LinkedHashSet<Consumer<IMatch>>());
 		}
 		subscriptionsForDisappearingMatchesOfPattern.get(patternName).add(consumer);
 	}
@@ -651,7 +625,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			throw new IllegalArgumentException("Subscriptions to Pattern-Alternatives not supported: Invalid pattern " + name2Pattern.get(match.getPatternName()));
 			
 		if (!subscriptionsForDisappearingMatches.containsKey(match)) {
-			subscriptionsForDisappearingMatches.put(match, new ArrayList<Consumer<IMatch>>());
+			subscriptionsForDisappearingMatches.put(match, new LinkedHashSet<Consumer<IMatch>>());
 		}
 		subscriptionsForDisappearingMatches.get(match).add(consumer);
 	}

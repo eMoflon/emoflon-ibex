@@ -86,7 +86,7 @@ public class MatchFilter {
 			return Stream.empty();
 		}
 
-		Stream<IMatch> matchesForPattern = matches.get(pattern.getName()).parallelStream();
+		Stream<IMatch> matchesForPattern = matches.get(pattern.getName()).stream();
 		matchesForPattern = MatchFilter.filterNodeBindings(matchesForPattern, pattern, parameters);
 		matchesForPattern = MatchFilter.filterAttributeConstraintsWithParameter(matchesForPattern, pattern, parameters);
 		return matchesForPattern;

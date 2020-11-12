@@ -4,8 +4,6 @@ package org.emoflon.ibex.common.operational;
  * Interface for getting notifications by the pattern matcher about new matches.
  */
 public interface IMatchObserver {
-
-	public void notifySubscriptions();
 	
 	/**
 	 * Notifies about a new match.
