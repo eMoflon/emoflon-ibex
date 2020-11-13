@@ -70,11 +70,12 @@ public class CorrPreservationConflict extends InconsistentChangesConflict implem
 				revertRepairable(repairableMatch, DomainType.TRG);
 		}
 
-		integrate().getOptions().matchDistributor().updateMatches();
-		integrate().repairOneMatch(integrate().getShortcutRepairStrat(), getMatch(), PatternType.FWD);
-
 		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by PREFER_SOURCE");
 		resolved = true;
+
+		integrate().getOptions().matchDistributor().updateMatches();
+		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Auto-repair after resolution of " + printConflictIdentification() + ":");
+		integrate().repairOneMatch(integrate().getShortcutRepairStrat(), getMatch(), PatternType.FWD);
 	}
 
 	@Override
@@ -85,11 +86,12 @@ public class CorrPreservationConflict extends InconsistentChangesConflict implem
 				revertRepairable(repairableMatch, DomainType.SRC);
 		}
 
-		integrate().getOptions().matchDistributor().updateMatches();
-		integrate().repairOneMatch(integrate().getShortcutRepairStrat(), getMatch(), PatternType.BWD);
-
 		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by PREFER_TARGET");
 		resolved = true;
+
+		integrate().getOptions().matchDistributor().updateMatches();
+		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Auto-repair after resolution of " + printConflictIdentification() + ":");
+		integrate().repairOneMatch(integrate().getShortcutRepairStrat(), getMatch(), PatternType.BWD);
 	}
 
 }

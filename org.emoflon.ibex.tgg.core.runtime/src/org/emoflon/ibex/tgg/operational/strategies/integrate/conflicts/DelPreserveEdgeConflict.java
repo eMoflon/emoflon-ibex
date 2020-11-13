@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.emoflon.ibex.common.emf.EMFEdge;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
@@ -16,18 +17,20 @@ import language.TGGRuleEdge;
 
 public class DelPreserveEdgeConflict extends DeletePreserveConflict {
 
-	private final ITGGMatch srcTrgMatch;
+	protected final ITGGMatch srcTrgMatch;
+	protected final ITGGMatch matchToBeRepaired;
 
-	public DelPreserveEdgeConflict(ConflictContainer container, ITGGMatch srcTrgMatch, DomainType domainToBePreserved,
-			List<ITGGMatch> causingMatches) {
+	public DelPreserveEdgeConflict(ConflictContainer container, ITGGMatch srcTrgMatch, DomainType domainToBePreserved, List<ITGGMatch> causingMatches) {
 		super(container, domainToBePreserved, causingMatches);
 		this.srcTrgMatch = srcTrgMatch;
+		this.matchToBeRepaired = null;
 	}
-	
-	public DelPreserveEdgeConflict(ConflictContainer container, ITGGMatch srcTrgMatch, DomainType domainToBePreserved,
-			List<ITGGMatch> causingMatches, ITGGMatch matchToBeRepaired) {
-		super(container, domainToBePreserved, causingMatches, matchToBeRepaired);
+
+	public DelPreserveEdgeConflict(ConflictContainer container, ITGGMatch srcTrgMatch, DomainType domainToBePreserved, List<ITGGMatch> causingMatches,
+			ITGGMatch matchToBeRepaired) {
+		super(container, domainToBePreserved, causingMatches);
 		this.srcTrgMatch = srcTrgMatch;
+		this.matchToBeRepaired = matchToBeRepaired;
 	}
 
 	@Override
@@ -41,6 +44,46 @@ public class DelPreserveEdgeConflict extends DeletePreserveConflict {
 
 	@Override
 	public void crs_revokeAddition() {
+		super.crs_revokeAddition();
+
+		if (matchToBeRepaired != null)
+			autoRepair();
+	}
+
+	@Override
+	public void crs_mergeAndPreserve() {
+		super.crs_mergeAndPreserve();
+
+		if (matchToBeRepaired != null)
+			autoRepair();
+	}
+
+	@Override
+	public void crs_revokeDeletion() {
+		super.crs_revokeDeletion();
+
+		if (matchToBeRepaired != null)
+			autoRepair();
+	}
+
+	@Override
+	public void crs_preferSource() {
+		super.crs_preferSource();
+		
+		if (matchToBeRepaired != null)
+			autoRepair();
+	}
+
+	@Override
+	public void crs_preferTarget() {
+		super.crs_preferTarget();
+		
+		if (matchToBeRepaired != null)
+			autoRepair();
+	}
+
+	@Override
+	protected void revokeAddition() {
 		for (TGGRuleEdge e : integrate().getMatchUtil().getEdges(srcTrgMatch, new EltFilter().create())) {
 			if (e.getSrcNode().getBindingType() != BindingType.CONTEXT && e.getTrgNode().getBindingType() != BindingType.CONTEXT)
 				return;
@@ -51,9 +94,13 @@ public class DelPreserveEdgeConflict extends DeletePreserveConflict {
 			else
 				ModelChangeUtil.deleteEdge(emfEdge);
 		}
-		
-		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by REVOKE_ADDITION");
-		resolved = true;
+	}
+
+	protected void autoRepair() {
+		integrate().getOptions().matchDistributor().updateMatches();
+		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Auto-repair after resolution of " + printConflictIdentification() + ":");
+		PatternType repairDirection = domainToBePreserved == DomainType.SRC ? PatternType.FWD : PatternType.BWD;
+		integrate().repairOneMatch(integrate().getShortcutRepairStrat(), matchToBeRepaired, repairDirection);
 	}
 
 }
