@@ -187,6 +187,11 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			patternSet = ibexModel.getPatternSet();
 			patternSet.getContextPatterns().forEach(pattern -> {
 				matches.put(pattern.getName(), Collections.synchronizedSet(new HashSet<IMatch>()));
+				if(pattern instanceof IBeXContextAlternatives) {
+					IBeXContextAlternatives alt = (IBeXContextAlternatives) pattern;
+					alt.getAlternativePatterns().forEach(altPattern -> name2Pattern.put(altPattern.getName(), altPattern));
+					
+				}
 				name2Pattern.put(pattern.getName(), pattern);
 			});
 			ruleSet = ibexModel.getRuleSet();
@@ -286,12 +291,12 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			return filteredMatches.get(patternName).stream();
 		} else {
 			IBeXContext pattern = name2Pattern.get(patternName);
-			if(pattern.getApiPatternDependencies().isEmpty()) {
+			if(pattern.getApiPatternDependencies() == null || pattern.getApiPatternDependencies().isEmpty()) {
 				updateFilteredMatches(patternName, parameters);
 			} else {
 				// Check dependencies to prevent deadlocks
 				pattern.getApiPatternDependencies().forEach(depPattern -> {
-					matchStream(depPattern.getName(), name2GTPattern.get(depPattern.getName()).getParameters(), false);
+					matchStream(depPattern.getName(), new HashMap<>(), false);
 				});
 				updateFilteredMatches(patternName, parameters);
 			}
@@ -310,9 +315,14 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			patternMatches.add(match);
 		} else {
 			GraphTransformationPattern<?,?> gtPattern = name2GTPattern.get(patternName);
-			patternMatches.addAll(MatchFilter.getFilteredMatchStream(pattern, parameters, matches)
-					.filter(match -> gtPattern.isMatchValid(match))
-					.collect(Collectors.toSet()));
+			if(gtPattern != null) {
+				patternMatches.addAll(MatchFilter.getFilteredMatchStream(pattern, parameters, matches)
+						.filter(match -> gtPattern.isMatchValid(match))
+						.collect(Collectors.toSet()));
+			} else {
+				patternMatches.addAll(MatchFilter.getFilteredMatchStream(pattern, parameters, matches).collect(Collectors.toSet()));
+			}
+			
 		}
 		
 	}
