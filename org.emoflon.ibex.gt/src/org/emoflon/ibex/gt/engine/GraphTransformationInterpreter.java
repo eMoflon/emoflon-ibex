@@ -284,8 +284,22 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		
 		if(filteredMatches.containsKey(patternName)) {
 			return filteredMatches.get(patternName).stream();
+		} else {
+			IBeXContext pattern = name2Pattern.get(patternName);
+			if(pattern.getApiPatternDependencies().isEmpty()) {
+				updateFilteredMatches(patternName, parameters);
+			} else {
+				// Check dependencies to prevent deadlocks
+				pattern.getApiPatternDependencies().forEach(depPattern -> {
+					matchStream(depPattern.getName(), name2GTPattern.get(depPattern.getName()).getParameters(), false);
+				});
+				updateFilteredMatches(patternName, parameters);
+			}
+			return filteredMatches.get(patternName).stream();
 		}
-		
+	}
+	
+	public synchronized void updateFilteredMatches(final String patternName, final Map<String, Object> parameters) {
 		Collection<IMatch> patternMatches = Collections.synchronizedSet(new HashSet<IMatch>());
 		filteredMatches.put(patternName, patternMatches);
 		
@@ -301,7 +315,6 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 					.collect(Collectors.toSet()));
 		}
 		
-		return patternMatches.stream();
 	}
 
 	
