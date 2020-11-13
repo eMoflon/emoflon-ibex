@@ -382,7 +382,7 @@ class ArithmeticExtensionGenerator {
 				case COUNT: {
 					val countExpr = expression as IBeXMatchCount
 					return '''
-						interpreter.matchStream("«countExpr.invocation.invokedPattern.name»", new HashMap<>(), false)
+						interpreter.getFilteredMatchStream("«countExpr.invocation.invokedPattern.name»").parallel()
 								«FOR mapping : countExpr.invocation.mapping.entrySet»
 								.filter(localMatch -> match.get("«mapping.key.name»").equals(localMatch.get("«mapping.value.name»")))
 								«ENDFOR»

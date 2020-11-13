@@ -282,7 +282,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * 			  triggers the incremental recalculation of all matches before filtering matches
 	 * @return a {@link Stream} of matches
 	 */
-	public synchronized Stream<IMatch> matchStream(final String patternName, final Map<String, Object> parameters, boolean doUpdate) {
+	public Stream<IMatch> matchStream(final String patternName, final Map<String, Object> parameters, boolean doUpdate) {
 //		Hiding update calls from the user seems dangerous to me. In my experience this practice more often than not leads to a huge amount of nested update calls, leading to stack overflows.
 		if(doUpdate)
 			updateMatches();
@@ -296,15 +296,33 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			} else {
 				// Check dependencies to prevent deadlocks
 				pattern.getApiPatternDependencies().forEach(depPattern -> {
-					matchStream(depPattern.getName(), new HashMap<>(), false);
+					updateMatchStream(depPattern.getName(), new HashMap<>());
 				});
 				updateFilteredMatches(patternName, parameters);
 			}
 			return filteredMatches.get(patternName).stream();
 		}
 	}
+
+	private synchronized void updateMatchStream(final String patternName, final Map<String, Object> parameters) {		
+		if(filteredMatches.containsKey(patternName)) {
+			return;
+		} else {
+			IBeXContext pattern = name2Pattern.get(patternName);
+			if(pattern.getApiPatternDependencies() == null || pattern.getApiPatternDependencies().isEmpty()) {
+				updateFilteredMatches(patternName, parameters);
+			} else {
+				// Check dependencies to prevent deadlocks
+				pattern.getApiPatternDependencies().forEach(depPattern -> {
+					updateMatchStream(depPattern.getName(), new HashMap<>());
+				});
+				updateFilteredMatches(patternName, parameters);
+			}
+			return;
+		}
+	}
 	
-	public synchronized void updateFilteredMatches(final String patternName, final Map<String, Object> parameters) {
+	private void updateFilteredMatches(final String patternName, final Map<String, Object> parameters) {
 		Collection<IMatch> patternMatches = Collections.synchronizedSet(new HashSet<IMatch>());
 		filteredMatches.put(patternName, patternMatches);
 		
@@ -548,6 +566,14 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 */
 	public ResourceSet getModel() {
 		return model;
+	}
+	
+	public Map<String, Collection<IMatch>> getFilteredMatches() {
+		return filteredMatches;
+	}
+	
+	public Stream<IMatch> getFilteredMatchStream(String patternName) {
+		return filteredMatches.getOrDefault(patternName, Collections.synchronizedSet(new HashSet<IMatch>())).stream();
 	}
 	
 	/**

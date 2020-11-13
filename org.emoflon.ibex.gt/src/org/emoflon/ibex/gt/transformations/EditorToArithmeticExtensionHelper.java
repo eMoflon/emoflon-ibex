@@ -213,7 +213,7 @@ public class EditorToArithmeticExtensionHelper {
 		EditorToIBeXPatternHelper.addNodeMapping(invocation, nodeMap);
 		matchCount.setInvocation(invocation);
 		
-		invokingContext.getApiPatternDependencies().add(invokingContext);
+		invokingContext.getApiPatternDependencies().add(invokedContext);
 		return matchCount;
 	}
 }
