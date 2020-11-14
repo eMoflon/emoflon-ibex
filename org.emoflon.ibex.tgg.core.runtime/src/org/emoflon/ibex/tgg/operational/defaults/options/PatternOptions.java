@@ -19,10 +19,12 @@ public class PatternOptions extends IbexSubOptions {
 	private boolean ignoreDomainConformity;
 	private boolean optimizePattern;
 	private boolean useGenPattern;
+	private boolean parallelizeMatchProcessing;
 
 	public PatternOptions(IbexOptions options) {
 		super(options);
-		
+
+		parallelizeMatchProcessing = true;
 		acStrategy = ACStrategy.FILTER_NACS;
 		useEdgePatterns = false;
 		ignoreInjecitity = (x, y) -> false;
@@ -82,6 +84,15 @@ public class PatternOptions extends IbexSubOptions {
 
 	public IbexOptions useGenPattern(boolean useGenPattern) {
 		this.useGenPattern = useGenPattern;
+		return options;
+	}
+	
+	public boolean parallelizeMatchProcessing() {
+		return parallelizeMatchProcessing;
+	}
+
+	public IbexOptions parallelizeMatchProcessing(boolean parallelizeMatchProcessing) {
+		this.parallelizeMatchProcessing = parallelizeMatchProcessing;
 		return options;
 	}
 

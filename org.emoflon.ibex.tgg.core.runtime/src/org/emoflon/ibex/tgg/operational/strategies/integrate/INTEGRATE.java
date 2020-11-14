@@ -576,7 +576,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		}
 	}
 
-	private void addFilterNacMatch(ITGGMatch match) {
+	private synchronized void addFilterNacMatch(ITGGMatch match) {
 		if (!pattern2filterNacMatches.containsKey(match.getPatternName())) {
 			String ruleName = match.getRuleName().split("_")[0];
 			ruleName2filterNacPatternNames.get(ruleName).add(match.getPatternName());

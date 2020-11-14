@@ -4,6 +4,7 @@ import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -30,10 +31,10 @@ public class PrecedenceGraph implements TimeMeasurable {
 
 	protected final PropagatingOperationalStrategy strategy;
 
-	protected Map<PrecedenceNode, Collection<Object>> requires = cfactory.createObjectToObjectHashMap();
-	protected Map<Object, Collection<PrecedenceNode>> requiredBy = cfactory.createObjectToObjectHashMap();
-	protected Map<PrecedenceNode, Collection<Object>> translates = cfactory.createObjectToObjectHashMap();
-	protected Map<Object, Collection<PrecedenceNode>> translatedBy = cfactory.createObjectToObjectHashMap();
+	protected Map<PrecedenceNode, Collection<Object>> requires = Collections.synchronizedMap(cfactory.createObjectToObjectHashMap());
+	protected Map<Object, LockedSet<PrecedenceNode>> requiredBy = Collections.synchronizedMap(cfactory.createObjectToObjectHashMap());
+	protected Map<PrecedenceNode, Collection<Object>> translates = Collections.synchronizedMap(cfactory.createObjectToObjectHashMap());
+	protected Map<Object, LockedSet<PrecedenceNode>> translatedBy = Collections.synchronizedMap(cfactory.createObjectToObjectHashMap());
 
 	//// Precedence Graph ////
 	protected Set<PrecedenceNode> nodes = cfactory.createObjectSet();
@@ -134,7 +135,7 @@ public class PrecedenceGraph implements TimeMeasurable {
 	}
 
 	public Collection<PrecedenceNode> getNodesTranslating(Object elt) {
-		return translatedBy.getOrDefault(elt, new HashSet<>());
+		return translatedBy.getOrDefault(elt, new LockedSet<>());
 	}
 
 	public boolean hasAnyConsistencyOverlap(PrecedenceNode srcTrgNode) {
@@ -180,30 +181,34 @@ public class PrecedenceGraph implements TimeMeasurable {
 		// Register elements
 		for (Object elt : requiredElts) {
 			requires.computeIfAbsent(node, x -> cfactory.createObjectSet());
-			requiredBy.computeIfAbsent(elt, x -> cfactory.createObjectSet());
+			requiredBy.computeIfAbsent(elt, x -> new LockedSet<>());
 			requires.get(node).add(elt);
 			requiredBy.get(elt).add(node);
 		}
 		for (Object elt : translatedElts) {
 			translates.computeIfAbsent(node, x -> cfactory.createObjectSet());
-			translatedBy.computeIfAbsent(elt, x -> cfactory.createObjectSet());
+			translatedBy.computeIfAbsent(elt, x -> new LockedSet<>());
 			translates.get(node).add(elt);
 			translatedBy.get(elt).add(node);
 		}
 
 		// Create links
 		for (Object elt : requiredElts) {
-			Collection<PrecedenceNode> requiredNodes = translatedBy.get(elt);
+			LockedSet<PrecedenceNode> requiredNodes = translatedBy.get(elt);
 			if (requiredNodes != null) {
+				requiredNodes.lock_for_read();
 				for (PrecedenceNode reqNode : requiredNodes)
 					node.addRequires(reqNode);
+				requiredNodes.unlock_for_read();
 			}
 		}
 		for (Object elt : translatedElts) {
-			Collection<PrecedenceNode> dependentNodes = requiredBy.get(elt);
+			LockedSet<PrecedenceNode> dependentNodes = requiredBy.get(elt);
 			if (dependentNodes != null) {
+				dependentNodes.lock_for_read();
 				for (PrecedenceNode depNode : dependentNodes)
 					node.addRequiredBy(depNode);
+				dependentNodes.unlock_for_read();
 			}
 		}
 

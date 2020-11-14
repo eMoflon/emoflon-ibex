@@ -89,7 +89,8 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		matchDistributor = options.matchDistributor();
 		factories = new HashMap<>();
 
-		matchDistributor.register(getPatternRelevantForCompiler(), this::addOperationalRuleMatch, this::removeOperationalRuleMatch);
+		matchDistributor.registerSingle(getPatternRelevantForCompiler(), this::addOperationalRuleMatch, this::removeOperationalRuleMatch);
+		matchDistributor.registerMultiple(getPatternRelevantForCompiler(), this::addOperationalRuleMatches, this::removeOperationalRuleMatches);
 
 		this.notifyStartLoading();
 		resourceHandler.initialize();
@@ -131,7 +132,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	}
 
 	/***** Match and pattern management *****/
-	protected void addOperationalRuleMatch(ITGGMatch match) {
+	protected synchronized void addOperationalRuleMatch(ITGGMatch match) {
 		if (match.getType() == PatternType.CONSISTENCY) {
 			addConsistencyMatch(match);
 			return;
@@ -144,6 +145,10 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 			LoggerConfig.log(LoggerConfig.log_matches(), () -> "Matches: received but rejected " + match.getPatternName() + "(" + match.hashCode() + ")");
 	}
 
+	protected void addOperationalRuleMatches(Collection<ITGGMatch> matches) {
+		matches.parallelStream().forEach(this::addOperationalRuleMatch);
+	}
+
 	protected void addConsistencyMatch(ITGGMatch match) {
 		TGGRuleApplication ruleAppNode = getRuleApplicationNode(match);
 		consistencyMatches.put(ruleAppNode, match);
@@ -154,6 +159,14 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	protected boolean removeOperationalRuleMatch(ITGGMatch match) {
 		return operationalMatchContainer.removeMatch(match);
 	}
+	
+	protected void removeOperationalRuleMatches(Collection<ITGGMatch> matches) {
+//		matches.stream().forEach(this::removeOperationalRuleMatch);
+		for(ITGGMatch match : matches) {
+			removeOperationalRuleMatch(match);
+		}
+	}
+
 
 	public boolean isPatternRelevantForInterpreter(PatternType patternType) {
 		return getPatternRelevantForCompiler().contains(patternType);

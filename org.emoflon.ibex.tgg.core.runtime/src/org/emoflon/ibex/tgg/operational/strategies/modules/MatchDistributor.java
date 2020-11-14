@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -38,8 +39,11 @@ public class MatchDistributor implements IMatchObserver, TimeMeasurable {
 
 	protected Map<IMatch, String> blockedMatches = cfactory.createObjectToObjectHashMap();
 
-	protected Map<PatternType, Collection<Consumer<ITGGMatch>>> type2addMatch = new HashMap<>();;
+	protected Map<PatternType, Collection<Consumer<ITGGMatch>>> type2addMatch = new HashMap<>();
 	protected Map<PatternType, Collection<Consumer<ITGGMatch>>> type2removeMatch = new HashMap<>();
+	
+	protected Map<Consumer<Collection<ITGGMatch>>, Collection<PatternType>> addMatches2types = new HashMap<>();
+	protected Map<Consumer<Collection<ITGGMatch>>, Collection<PatternType>> removeMatches2types = new HashMap<>();
 
 	private IbexOptions options;
 
@@ -167,6 +171,18 @@ public class MatchDistributor implements IMatchObserver, TimeMeasurable {
 	}
 
 	@Override
+	public void addMatches(Collection<IMatch> matches) {
+		handleLogging();
+		
+		for(Consumer<Collection<ITGGMatch>> consumer : addMatches2types.keySet()) {
+			Collection<PatternType> types = addMatches2types.get(consumer);
+			Collection<ITGGMatch> tggMatches = matches.parallelStream().map(m -> (ITGGMatch) m).filter(m -> types.contains(m.getType())).collect(Collectors.toList());
+			matchCounter+=tggMatches.size();
+			consumer.accept(tggMatches);
+		}
+	}
+
+	@Override
 	public void removeMatch(IMatch match) {
 		handleLogging();
 		
@@ -178,13 +194,24 @@ public class MatchDistributor implements IMatchObserver, TimeMeasurable {
 		}
 	}
 
+	@Override
+	public void removeMatches(Collection<IMatch> matches) {
+		handleLogging();
+		
+		for(Consumer<Collection<ITGGMatch>> consumer : removeMatches2types.keySet()) {
+			Collection<PatternType> types = removeMatches2types.get(consumer);
+			Collection<ITGGMatch> tggMatches = matches.parallelStream().map(m -> (ITGGMatch) m).filter(m -> types.contains(m.getType())).collect(Collectors.toList());
+			consumer.accept(tggMatches);
+		}
+	}
+
 	/***** Benchmark Logging *****/
 
 	public void collectDataToBeLogged() {
 		options.debug.benchmarkLogger().setNumOfMatchesFound(matchCounter);
 	}
 
-	public void register(Collection<PatternType> types, Consumer<ITGGMatch> addMatch, Consumer<ITGGMatch> removeMatch) {
+	public void registerSingle(Collection<PatternType> types, Consumer<ITGGMatch> addMatch, Consumer<ITGGMatch> removeMatch) {
 		for (PatternType type : types) {
 			Collection<Consumer<ITGGMatch>> addConsumers = type2addMatch.get(type);
 			if (addConsumers == null) {
@@ -200,6 +227,11 @@ public class MatchDistributor implements IMatchObserver, TimeMeasurable {
 			}
 			removeConsumers.add(removeMatch);
 		}
+	}
+	
+	public void registerMultiple(Collection<PatternType> types, Consumer<Collection<ITGGMatch>> addMatches, Consumer<Collection<ITGGMatch>> removeMatches) {
+		addMatches2types.put(addMatches, types.stream().collect(Collectors.toSet()));
+		removeMatches2types.put(removeMatches, types.stream().collect(Collectors.toSet()));
 	}
 
 	public Collection<PatternType> getPatternRelevantForCompiler() {

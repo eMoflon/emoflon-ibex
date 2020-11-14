@@ -534,4 +534,14 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	public IBeXPatternSet getPatternSet() {
 		return patternSet;
 	}
+
+	@Override
+	public void addMatches(Collection<IMatch> matches) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void removeMatches(Collection<IMatch> matches) {
+		throw new UnsupportedOperationException();
+	}
 }
