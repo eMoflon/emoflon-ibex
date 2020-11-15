@@ -93,6 +93,7 @@ public abstract class Conflict {
 	}
 
 	protected void restoreMatch(BrokenMatch brokenMatch) {
+		// FIXME adrianm: wrong deletion order may lead to not perceived deletions! (ModelChangeProtocol)
 		Set<EMFEdge> deletedContainmentEdges = new HashSet<>();
 		Set<EObject> deletedNodes = new HashSet<>();
 		Set<EMFEdge> deletedCrossEdges = new HashSet<>();
