@@ -8,6 +8,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class LockedSet<E> extends HashSet<E> {
 
+	private static final long serialVersionUID = 8024757431383098909L;
+	
 	private final ReadWriteLock lock = new ReentrantReadWriteLock();
 	
 	public static <E> Set<E> create() {
@@ -32,7 +34,7 @@ public class LockedSet<E> extends HashSet<E> {
 	}
 	
 	@Override
-	public boolean addAll(Collection c) {
+	public boolean addAll(Collection<? extends E> c) {
 		lock.writeLock().lock();
 		boolean b = super.addAll(c);
 		lock.writeLock().unlock();
@@ -55,7 +57,7 @@ public class LockedSet<E> extends HashSet<E> {
 	}
 	
 	@Override
-	public boolean removeAll(Collection c) {
+	public boolean removeAll(Collection<?> c) {
 		lock.writeLock().lock();
 		boolean b = super.removeAll(c);
 		lock.writeLock().unlock();
