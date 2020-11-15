@@ -59,6 +59,20 @@ public class PrecedenceGraph implements TimeMeasurable {
 	public void notifyAddedMatch(ITGGMatch match) {
 		Timer.start();
 
+		notifyAddedOneMatch(match);
+
+		times.addTo("notifyAdded", Timer.stop());
+	}
+
+	public void notifyAddedMatches(Collection<ITGGMatch> matches) {
+		Timer.start();
+		
+		matches.parallelStream().forEach(this::notifyAddedOneMatch);
+		
+		times.addTo("notifyAdded", Timer.stop());
+	}
+
+	private void notifyAddedOneMatch(ITGGMatch match) {
 		if (match.getType() == PatternType.CONSISTENCY && !handleRestoredConsistencyMatch(match)) {
 			addMatch(match);
 			killRedundantSrcTrgMatches(match);
@@ -68,13 +82,25 @@ public class PrecedenceGraph implements TimeMeasurable {
 			else
 				addMatch(match);
 		}
-
-		times.addTo("notifyAdded", Timer.stop());
 	}
 
 	public void notifyRemovedMatch(ITGGMatch match) {
 		Timer.start();
 
+		notifyRemovedOneMatch(match);
+
+		times.addTo("notifyRemoved", Timer.stop());
+	}
+
+	public void notifyRemovedMatches(Collection<ITGGMatch> matches) {
+		Timer.start();
+
+		matches.stream().forEach(this::notifyRemovedOneMatch);
+
+		times.addTo("notifyRemoved", Timer.stop());
+	}
+
+	private void notifyRemovedOneMatch(ITGGMatch match) {
 		if (match.getType() == PatternType.CONSISTENCY) {
 			handleBrokenConsistencyMatch(match);
 		} else if (match.getType() == PatternType.SRC || match.getType() == PatternType.TRG) {
@@ -83,8 +109,6 @@ public class PrecedenceGraph implements TimeMeasurable {
 			else
 				pendingSrcTrgMatches.remove(match);
 		}
-
-		times.addTo("notifyRemoved", Timer.stop());
 	}
 
 	public void clearBrokenMatches() {

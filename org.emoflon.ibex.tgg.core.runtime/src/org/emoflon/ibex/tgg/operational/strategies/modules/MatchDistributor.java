@@ -203,6 +203,7 @@ public class MatchDistributor implements IMatchObserver, TimeMeasurable {
 			Collection<ITGGMatch> tggMatches = matches.parallelStream().map(m -> (ITGGMatch) m).filter(m -> types.contains(m.getType())).collect(Collectors.toList());
 			consumer.accept(tggMatches);
 		}
+		matches.forEach(match -> LoggerConfig.log(LoggerConfig.log_matches(), () -> "Matches: removed " + match.getPatternName() + "(" + match.hashCode() + ")"));
 	}
 
 	/***** Benchmark Logging *****/

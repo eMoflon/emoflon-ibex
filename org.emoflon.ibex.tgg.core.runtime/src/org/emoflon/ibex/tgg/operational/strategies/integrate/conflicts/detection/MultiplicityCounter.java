@@ -88,7 +88,7 @@ public class MultiplicityCounter {
 		}
 	}
 
-	public synchronized void notifyAddedMatch(ITGGMatch match) {
+	public void notifyAddedMatch(ITGGMatch match) {
 		// check, if the match potentially violates the multiplicity of references
 		Map<String, Map<EReference, Integer>> contextNode2refs2numOfEdges = ruleName2contextNodeName2refs2numOfEdges.get(match.getRuleName());
 		if (contextNode2refs2numOfEdges == null)

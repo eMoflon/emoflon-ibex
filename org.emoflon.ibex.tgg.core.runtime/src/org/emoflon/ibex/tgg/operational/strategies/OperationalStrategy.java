@@ -132,7 +132,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	}
 
 	/***** Match and pattern management *****/
-	protected synchronized void addOperationalRuleMatch(ITGGMatch match) {
+	protected void addOperationalRuleMatch(ITGGMatch match) {
 		if (match.getType() == PatternType.CONSISTENCY) {
 			addConsistencyMatch(match);
 			return;
@@ -146,7 +146,8 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	}
 
 	protected void addOperationalRuleMatches(Collection<ITGGMatch> matches) {
-		matches.parallelStream().forEach(this::addOperationalRuleMatch);
+		for (ITGGMatch match : matches)
+			addOperationalRuleMatch(match);
 	}
 
 	protected void addConsistencyMatch(ITGGMatch match) {
@@ -161,10 +162,8 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	}
 	
 	protected void removeOperationalRuleMatches(Collection<ITGGMatch> matches) {
-//		matches.stream().forEach(this::removeOperationalRuleMatch);
-		for(ITGGMatch match : matches) {
+		for (ITGGMatch match : matches)
 			removeOperationalRuleMatch(match);
-		}
 	}
 
 

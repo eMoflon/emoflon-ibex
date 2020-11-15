@@ -3,6 +3,7 @@ package org.emoflon.ibex.tgg.operational.strategies.integrate;
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -114,6 +115,10 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		options.executable(this);
 		precedenceGraph = new PrecedenceGraph(this);
 		multiplicityCounter = new MultiplicityCounter(this);
+
+		Collection<PatternType> patternsRelevantForPrecedenceGraph = Arrays.asList(PatternType.CONSISTENCY, PatternType.SRC, PatternType.TRG);
+		matchDistributor.registerSingle(patternsRelevantForPrecedenceGraph, precedenceGraph::notifyAddedMatch, precedenceGraph::notifyRemovedMatch);
+		matchDistributor.registerMultiple(patternsRelevantForPrecedenceGraph, precedenceGraph::notifyAddedMatches, precedenceGraph::notifyRemovedMatches);
 	}
 
 	private void removeBrokenMatchesAfterCCMatchApplication(ITGGMatch ccMatch) {
@@ -557,7 +562,6 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		if (match.getType() == PatternType.FILTER_NAC_SRC || match.getType() == PatternType.FILTER_NAC_TRG)
 			addFilterNacMatch(match);
 		else {
-			precedenceGraph.notifyAddedMatch(match);
 			if (match.getType() == PatternType.CONSISTENCY)
 				multiplicityCounter.notifyAddedMatch(match);
 			super.addOperationalRuleMatch(match);
@@ -569,14 +573,13 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		if (match.getType() == PatternType.FILTER_NAC_SRC || match.getType() == PatternType.FILTER_NAC_TRG)
 			return removeFilterNacMatch(match);
 		else {
-			precedenceGraph.notifyRemovedMatch(match);
 			if (match.getType() == PatternType.CONSISTENCY)
 				multiplicityCounter.notifyRemovedMatch(match);
 			return super.removeOperationalRuleMatch(match);
 		}
 	}
 
-	private synchronized void addFilterNacMatch(ITGGMatch match) {
+	private void addFilterNacMatch(ITGGMatch match) {
 		if (!pattern2filterNacMatches.containsKey(match.getPatternName())) {
 			String ruleName = match.getRuleName().split("_")[0];
 			ruleName2filterNacPatternNames.get(ruleName).add(match.getPatternName());
