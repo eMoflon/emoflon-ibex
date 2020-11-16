@@ -36,20 +36,20 @@ public class PrecedenceGraph implements TimeMeasurable {
 	protected Map<Object, LockedSet<PrecedenceNode>> translatedBy = Collections.synchronizedMap(cfactory.createObjectToObjectHashMap());
 
 	//// Precedence Graph ////
-	protected Set<PrecedenceNode> nodes = cfactory.createObjectSet();
-	protected Map<ITGGMatch, PrecedenceNode> match2node = cfactory.createObjectToObjectHashMap();
+	protected Set<PrecedenceNode> nodes = Collections.synchronizedSet(cfactory.createObjectSet());
+	protected Map<ITGGMatch, PrecedenceNode> match2node = Collections.synchronizedMap(cfactory.createObjectToObjectHashMap());
 
 	//// Caching ////
-	protected Set<PrecedenceNode> brokenNodes = cfactory.createObjectSet();
-	protected Set<PrecedenceNode> implicitBrokenNodes = cfactory.createObjectSet();
+	protected Set<PrecedenceNode> brokenNodes = Collections.synchronizedSet(cfactory.createObjectSet());
+	protected Set<PrecedenceNode> implicitBrokenNodes = Collections.synchronizedSet(cfactory.createObjectSet());
 
-	protected Set<PrecedenceNode> consNodes = cfactory.createObjectSet();
-	protected Set<PrecedenceNode> srcNodes = cfactory.createObjectSet();
-	protected Set<PrecedenceNode> trgNodes = cfactory.createObjectSet();
+	protected Set<PrecedenceNode> consNodes = Collections.synchronizedSet(cfactory.createObjectSet());
+	protected Set<PrecedenceNode> srcNodes = Collections.synchronizedSet(cfactory.createObjectSet());
+	protected Set<PrecedenceNode> trgNodes = Collections.synchronizedSet(cfactory.createObjectSet());
 
-	protected Map<ITGGMatch, SrcTrgMatchContainer> consMatch2srcTrgMatches = cfactory.createObjectToObjectHashMap();
-	protected Map<ITGGMatch, ITGGMatch> srcTrgMatch2consMatch = cfactory.createObjectToObjectHashMap();
-	protected Set<ITGGMatch> pendingSrcTrgMatches = cfactory.createObjectSet();
+	protected Map<ITGGMatch, SrcTrgMatchContainer> consMatch2srcTrgMatches = Collections.synchronizedMap(cfactory.createObjectToObjectHashMap());
+	protected Map<ITGGMatch, ITGGMatch> srcTrgMatch2consMatch = Collections.synchronizedMap(cfactory.createObjectToObjectHashMap());
+	protected Set<ITGGMatch> pendingSrcTrgMatches = Collections.synchronizedSet(cfactory.createObjectSet());
 
 	public PrecedenceGraph(PropagatingOperationalStrategy strategy) {
 		this.strategy = strategy;
@@ -66,9 +66,9 @@ public class PrecedenceGraph implements TimeMeasurable {
 
 	public void notifyAddedMatches(Collection<ITGGMatch> matches) {
 		Timer.start();
-		
+
 		matches.parallelStream().forEach(this::notifyAddedOneMatch);
-		
+
 		times.addTo("notifyAdded", Timer.stop());
 	}
 
