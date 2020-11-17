@@ -175,7 +175,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		name2GTPattern = new HashMap<>();
 		name2Pattern = new HashMap<>();
 		createPatternInterpreter = new GraphTransformationCreateInterpreter(defaultResource, this);
-		deletePatternInterpreter = new GraphTransformationDeleteInterpreter(trashResource);
+		deletePatternInterpreter = new GraphTransformationDeleteInterpreter(trashResource, engine);
 	}
 
 	/**
@@ -669,6 +669,15 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	public IBeXPatternSet getPatternSet() {
 		return patternSet;
 	}
+
+	@Override
+	public void addMatches(Collection<IMatch> matches) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void removeMatches(Collection<IMatch> matches) {
+		throw new UnsupportedOperationException();
 	
 	public boolean isDisjunct(final String patternName) {
 		IBeXContext pattern = IBeXPatternUtils.getContextPattern(patternSet, disjunctContextPatternSet, patternName);

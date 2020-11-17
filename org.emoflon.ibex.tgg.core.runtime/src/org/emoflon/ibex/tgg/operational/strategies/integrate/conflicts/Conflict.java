@@ -84,8 +84,8 @@ public abstract class Conflict {
 	 * 
 	 * @param filter       used to filter the elements by different criteria described in
 	 *                     {@link ConflictEltFilter}
-	 * @param includeScope if <code>true</code>, the result includes the elements from the
-	 *                     conflict scope
+	 * @param includeScope if <code>true</code>, the result includes the elements from the conflict
+	 *                     scope
 	 * @return a container that contains the filtered objects and edges
 	 */
 	public ConflictElements filterConflictElements(ConflictEltFilter filter, boolean includeScope) {
@@ -290,12 +290,17 @@ public abstract class Conflict {
 		});
 	}
 
+	protected void deleteCorrs(ITGGMatch match) {
+		integrate().deleteGreenCorrs(match);
+		integrate().removeBrokenMatch(match);
+	}
+
 	protected String printConflictIdentification() {
 		return this.getClass().getSimpleName() + " at match " + getMatch().getPatternName() + "(" + getMatch().hashCode() + ")";
 	}
-	
+
 	public List<Class<?>> getAllImplementedCRSInterfaces() {
 		return ClassUtils.getAllInterfaces(this.getClass());
 	}
-	
+
 }

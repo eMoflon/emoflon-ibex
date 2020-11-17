@@ -26,7 +26,8 @@ public class ModelChangeUtil {
 		nodesToDelete.add(element);
 
 		if (deleteContainedChildren) {
-			EMFManipulationUtils.delete(nodesToDelete, Collections.EMPTY_SET, o -> {}, true);
+			// TODO adrianM: this will only work with democles if you delete correctly using a trash resource!
+			EMFManipulationUtils.delete(nodesToDelete, Collections.EMPTY_SET, true, true);
 		} else {
 			element.eClass().getEAllContainments().forEach(feature -> {
 				Object content = element.eGet(feature);
@@ -39,7 +40,7 @@ public class ModelChangeUtil {
 					element.eSet(feature, null);
 				}
 			});
-			EMFManipulationUtils.delete(nodesToDelete, Collections.EMPTY_SET, o -> {}, false);
+			EMFManipulationUtils.delete(nodesToDelete, Collections.EMPTY_SET, false, true);
 		}
 	}
 

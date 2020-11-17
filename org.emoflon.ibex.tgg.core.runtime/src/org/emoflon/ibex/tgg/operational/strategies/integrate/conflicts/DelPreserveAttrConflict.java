@@ -2,7 +2,6 @@ package org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts;
 
 import java.util.List;
 
-import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.AttributeChange;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
@@ -26,11 +25,8 @@ public class DelPreserveAttrConflict extends DeletePreserveConflict {
 	//// CRS ////
 
 	@Override
-	public void crs_revokeAddition() {
+	protected void revokeAddition() {
 		ModelChangeUtil.revertAttributeChange(attrChange);
-		
-		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by REVOKE_ADDITION");
-		resolved = true;
 	}
 
 }

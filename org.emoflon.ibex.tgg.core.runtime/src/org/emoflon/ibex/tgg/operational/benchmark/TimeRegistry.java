@@ -47,7 +47,7 @@ public class TimeRegistry {
 		if (!Timer.timerStack.isEmpty())
 			throw new RuntimeException("Timer: there is still a timer running!");
 
-		LoggerConfig.log(LoggerConfig.log_allTimes(), () -> {
+		LoggerConfig.log(true, () -> {
 			StringBuffer b = new StringBuffer();
 
 			b.append("\nMeasured Times (sec) {\n");

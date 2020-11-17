@@ -13,6 +13,7 @@ import org.eclipse.emf.ecore.util.EContentsEList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.emf.EMFManipulationUtils;
+import org.emoflon.ibex.common.operational.IContextPatternInterpreter;
 import org.emoflon.ibex.common.operational.IDeletePatternInterpreter;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.common.operational.PushoutApproach;
@@ -28,15 +29,18 @@ public class GraphTransformationDeleteInterpreter implements IDeletePatternInter
 	 * The trash resource.
 	 */
 	private Resource trashResource;
+	private IContextPatternInterpreter engine;
 
 	/**
 	 * Creates a new GraphTransformationDeleteInterpreter.
 	 * 
 	 * @param trashResource
 	 *            the resource containing trash objects
+	 * @param graphTransformationInterpreter 
 	 */
-	public GraphTransformationDeleteInterpreter(final Resource trashResource) {
+	public GraphTransformationDeleteInterpreter(final Resource trashResource,final IContextPatternInterpreter engine) {
 		this.trashResource = trashResource;
+		this.engine = engine;
 	}
 
 	@Override
@@ -69,8 +73,12 @@ public class GraphTransformationDeleteInterpreter implements IDeletePatternInter
 			EObject trg = (EObject) match.get(edge.getTargetNode().getName());
 			edgesToDelete.add(new EMFEdge(src, trg, edge.getType()));
 		});
-		EMFManipulationUtils.delete(nodesToDelete, edgesToDelete,
-				node -> trashResource.getContents().add(EcoreUtil.getRootContainer(node)));
+		
+		if(engine.getProperties().needs_trash_resource()) 
+			EMFManipulationUtils.delete(nodesToDelete, edgesToDelete,
+					node -> trashResource.getContents().add(EcoreUtil.getRootContainer(node)), false);
+		else
+			EMFManipulationUtils.delete(nodesToDelete, edgesToDelete, false);
 	}
 
 	/**
