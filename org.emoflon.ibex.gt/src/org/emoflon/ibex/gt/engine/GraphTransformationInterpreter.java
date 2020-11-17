@@ -693,4 +693,14 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			subscriptionsForDisappearingMatches.get(match).remove(consumer);
 		}
 	}
+	
+	@Override
+	public void addMatches(Collection<IMatch> matches) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void removeMatches(Collection<IMatch> matches) {
+		throw new UnsupportedOperationException();
+	}
 }
