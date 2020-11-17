@@ -14,17 +14,15 @@ import java.util.stream.Stream;
 
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.operational.IMatch;
-import org.emoflon.ibex.gt.arithmetics.IBeXArithmeticsCalculatorHelper;
 import org.emoflon.ibex.gt.disjunctpatterns.GraphTransformationDisjunctPatternInterpreter;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticValue;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeConstraint;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeExpression;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeParameter;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextAlternatives;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjunctContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRelation;
-import org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctContextPattern;
 
 /**
  * Utility methods to filter match streams.
@@ -152,8 +150,8 @@ public class MatchFilter {
 		matchesForPattern = MatchFilter.filterNodeBindings(matchesForPattern, pattern, parameters);
 		matchesForPattern = MatchFilter.filterAttributeConstraintsWithParameter(matchesForPattern, pattern, parameters);
 		
-		//filter for artihmetic attribute constraints
-		matchesForPattern = MatchFilter.filterArithmeticAttributeConstraints(matchesForPattern, pattern);
+		//TODO: filter for artihmetic attribute constraints
+//		matchesForPattern = MatchFilter.filterArithmeticAttributeConstraints(matchesForPattern, pattern);
 		
 		return matchesForPattern;
 	}
@@ -245,23 +243,24 @@ public class MatchFilter {
 	 *            the arithmetic constraints
 	 * @return the filtered stream
 	 */
-	public static Stream<IMatch> filterArithmeticAttributeConstraints(Stream<IMatch> matches,
-			final IBeXContextPattern pattern){
-		
-		for(IBeXAttributeConstraint constraint: pattern.getAttributeConstraint()) {
-			if(constraint.getValue() instanceof IBeXArithmeticValue) {
-				String nodeName = constraint.getNode().getName();
-				matches = matches.filter(m -> {
-					EObject node = (EObject) m.get(nodeName);
-					Object currentValue = node.eGet(constraint.getType());
-					if(!isValid(constraint, m)) return false;
-					else return compare(currentValue, IBeXArithmeticsCalculatorHelper.getValue((IBeXArithmeticValue) constraint.getValue(), 
-							m, constraint.getType().getEAttributeType()), constraint.getRelation());
-				});			
-			}
-		}
-		return matches;
-	}
+	//TODO
+//	public static Stream<IMatch> filterArithmeticAttributeConstraints(Stream<IMatch> matches,
+//			final IBeXContextPattern pattern){
+//		
+//		for(IBeXAttributeConstraint constraint: pattern.getAttributeConstraint()) {
+//			if(constraint.getLhs() instanceof IBeXArithmeticValue) {
+//				String nodeName = constraint.getNode().getName();
+//				matches = matches.filter(m -> {
+//					EObject node = (EObject) m.get(nodeName);
+//					Object currentValue = node.eGet(constraint.getType());
+//					if(!isValid(constraint, m)) return false;
+//					else return compare(currentValue, IBeXArithmeticsCalculatorHelper.getValue((IBeXArithmeticValue) constraint.getValue(), 
+//							m, constraint.getType().getEAttributeType()), constraint.getRelation());
+//				});			
+//			}
+//		}
+//		return matches;
+//	}
 	
 	/**
 	 * Compares two objects according to the given relation.
@@ -312,15 +311,17 @@ public class MatchFilter {
 	}
 	
 	/**
-	 * checks if a parameter can be calculated arithmetically
+	 * returns a value if a value can be calculated
 	 */
-	private static boolean isValid(IBeXAttributeConstraint constraint, IMatch match) {
-		try {
-			IBeXArithmeticsCalculatorHelper.getValue((IBeXArithmeticValue) constraint.getValue(), 
-					match, constraint.getType().getEAttributeType());
-			return true;
-		}catch(IllegalArgumentException e) {
-			return false;
-		}
-	}
+	//TODO is necessary for disjunct patterns
+//	private static Optional<Integer> getValue(IBeXAttributeConstraint constraint, IMatch match) {
+//		try {
+//			if()
+//			IBeXArithmeticCalculatorHelper.getValue((IBeXArithmeticValue) constraint.getValue(), 
+//					match, constraint.getType().getEAttributeType());
+//			return true;
+//		}catch(IllegalArgumentException e) {
+//			return false;
+//		}
+//	}
 }

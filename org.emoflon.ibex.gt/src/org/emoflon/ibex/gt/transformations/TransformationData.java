@@ -48,6 +48,11 @@ public class TransformationData {
 	public Map<String, IBeXContext> nameToPattern = new HashMap<>();
 	
 	/**
+	 * Maps disjoint patterns names to a all context patterns.
+	 */
+	public Map<String, IBeXContext> nameToDisjointPattern = new HashMap<>();
+	
+	/**
 	 * All context patterns.
 	 */
 	public Map<IBeXContext, EditorPattern> ibexContextPatterns = new HashMap<>();

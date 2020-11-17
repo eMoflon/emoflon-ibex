@@ -54,7 +54,7 @@ public class RuntimeArithmeticExtensionCalculator {
 				case TAN: 			result = Math.tan(value);
 									break;
 				case COUNT: {
-						result = evaluateMatchCount(interpreter, (IBeXMatchCount)expression, match);
+						result = evaluateMatchCount(interpreter, (IBeXMatchCount) expression, match);
 					break;
 				}
 			

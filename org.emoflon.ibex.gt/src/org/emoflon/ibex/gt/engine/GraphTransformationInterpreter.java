@@ -23,8 +23,6 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctContextPattern;
-import org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctPatternModelPackage;
 import org.emoflon.ibex.common.operational.IContextPatternInterpreter;
 import org.emoflon.ibex.common.operational.ICreatePatternInterpreter;
 import org.emoflon.ibex.common.operational.IDeletePatternInterpreter;
@@ -40,6 +38,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextAlternatives;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjunctContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
@@ -213,7 +212,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			disjunctContextPatternSet = IBeXPatternUtils.transformIBeXPatternSet(patternSet);
 			disjunctPatternInterpreter = new HashMap<IBeXDisjunctContextPattern, GraphTransformationDisjunctPatternInterpreter>();
 			for(IBeXDisjunctContextPattern pattern: disjunctContextPatternSet) {
-				disjunctPatternInterpreter.put(pattern, new GraphTransformationDisjunctPatternInterpreter(pattern, model));
+				disjunctPatternInterpreter.put(pattern, new GraphTransformationDisjunctPatternInterpreter(this, pattern, model));
 			}
 			
 			contextPatternInterpreter.initPatterns(patternSet);
@@ -233,7 +232,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		ResourceSet rs = new ResourceSetImpl();
 		rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());
 		rs.getPackageRegistry().putAll(model.getPackageRegistry());
-		rs.getPackageRegistry().put(IBeXDisjunctPatternModelPackage.eNS_URI, IBeXDisjunctPatternModelPackage.eINSTANCE);
+		rs.getPackageRegistry().put(IBeXPatternModelPackage.eNS_URI, IBeXPatternModelPackage.eINSTANCE);
 		Resource ibexPatternResource = rs.getResource(uri, true);
 		EcoreUtil.resolveAll(rs);
 		loadPatternSet(ibexPatternResource);
@@ -525,7 +524,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			
 			// Mark as removed and apply callbacks
 			appearingSubscriptionJobs.remove(nextMatch);
-<<<<<<< HEAD
+			
 			Optional<IBeXDisjunctContextPattern> disjunctPattern  = disjunctContextPatternSet.stream()
 					.filter(pattern -> nextMatch.getPatternName().equals(pattern.getName())).findAny();
 			if(disjunctPattern.isEmpty()) {
@@ -533,7 +532,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 					subs.pollFirst().accept(nextMatch);
 				}				
 			}else {
-//			removals.add(nextMatch);
+//				removals.add(nextMatch);
 			
 				if(!subs.isEmpty() && DisjunctPatternHelper
 						.doesMatchExists(nextMatch, MatchFilter.getUnfilteredMatchList((IBeXDisjunctContextPattern) disjunctPattern.get(),matches))) {

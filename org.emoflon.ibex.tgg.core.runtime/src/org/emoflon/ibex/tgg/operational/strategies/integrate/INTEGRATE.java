@@ -54,7 +54,6 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil;
 import org.emoflon.ibex.tgg.operational.strategies.opt.CC;
 
 import com.google.common.collect.Sets;
-
 import delta.DeltaContainer;
 import language.BindingType;
 import language.DomainType;

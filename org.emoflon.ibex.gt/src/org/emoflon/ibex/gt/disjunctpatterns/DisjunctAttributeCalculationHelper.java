@@ -13,12 +13,12 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDependentDisjunctAttribute;
-import org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctAttribute;
-import org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctContextPattern;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.gt.transformations.Pair;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDependentDisjunctAttribute;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjunctAttribute;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjunctContextPattern;
 
 /**
  * Helper class for attribute conditions for disjunct patterns
@@ -36,18 +36,18 @@ public class DisjunctAttributeCalculationHelper {
 		
 		//find the target pattern and source list
 		List<SubmatchAttributeComparator> constraintComparators  = new ArrayList<SubmatchAttributeComparator>(comparators.stream()
-				.filter(c -> patternSequence.getLeft().contains(c.getTargetPattern()) && !patternSequence.getLeft().containsAll(c.getSourcePatterns())).collect(Collectors.toSet()));		
+				.filter(c -> patternSequence.getLeft().containsAll(c.getTargetPatterns()) && !patternSequence.getLeft().containsAll(c.getSourcePatterns())).collect(Collectors.toSet()));		
 
 		//find the reverse comparators (source -> target) if there are any; necessary for cyclic dependencies
 		List<SubmatchAttributeComparator> reverseComparator = new ArrayList<SubmatchAttributeComparator>(comparators.stream()
-				.filter(c -> patternSequence.getRight().contains(c.getTargetPattern()) && !patternSequence.getRight().containsAll(c.getSourcePatterns())).collect(Collectors.toSet()));
+				.filter(c -> patternSequence.getRight().containsAll(c.getTargetPatterns()) && !patternSequence.getRight().containsAll(c.getSourcePatterns())).collect(Collectors.toSet()));
 		
 		//comparators for the cartesian products
 		List<SubmatchAttributeComparator> cartesianTargetComparators = new ArrayList<SubmatchAttributeComparator>(comparators.stream()
-				.filter(c -> patternSequence.getLeft().contains(c.getTargetPattern()) && patternSequence.getLeft().containsAll(c.getSourcePatterns())).collect(Collectors.toSet()));
+				.filter(c -> patternSequence.getLeft().containsAll(c.getTargetPatterns()) && patternSequence.getLeft().containsAll(c.getSourcePatterns())).collect(Collectors.toSet()));
 		
 		List<SubmatchAttributeComparator> cartesianSourceComparators = new ArrayList<SubmatchAttributeComparator>(comparators.stream()
-				.filter(c -> patternSequence.getRight().contains(c.getTargetPattern()) && patternSequence.getRight().containsAll(c.getSourcePatterns())).collect(Collectors.toSet()));
+				.filter(c -> patternSequence.getRight().containsAll(c.getTargetPatterns()) && patternSequence.getRight().containsAll(c.getSourcePatterns())).collect(Collectors.toSet()));
 		
 		//calculate the new and old target matches		
 		List<Set<IMatch>> calculatedTargetMatches = DisjunctPatternHelper.createNewAndOldCartesianProducts(pattern, patternSequence.getLeft(), submatchesMap, oldMatches, 
@@ -351,6 +351,7 @@ public class DisjunctAttributeCalculationHelper {
 		for(IBeXDisjunctAttribute subattribute: attribute.getAttributes()) {
 			if(subattribute.getSourcePattern().size()>1) {
 				forbiddenPatterns.add(subattribute.getSourcePattern());
+				forbiddenPatterns.add(subattribute.getTargetPattern());
 			}
 		}
 		
@@ -366,8 +367,8 @@ public class DisjunctAttributeCalculationHelper {
 		//find all constraints that need to be calculated between the two pattern sequences
 		for(IBeXDisjunctAttribute constraint: attribute.getAttributes()) {
 			for(Entry<Pair<List<IBeXContextPattern>, List<IBeXContextPattern>>, Integer> entry: patternFrequency.entrySet()) {
-				boolean isPartial = entry.getKey().getLeft().contains(constraint.getTargetPattern()) && !entry.getKey().getLeft().containsAll(constraint.getSourcePattern()) ||
-						!entry.getKey().getLeft().contains(constraint.getTargetPattern()) && entry.getKey().getLeft().containsAll(constraint.getSourcePattern());
+				boolean isPartial = entry.getKey().getLeft().containsAll(constraint.getTargetPattern()) && !entry.getKey().getLeft().containsAll(constraint.getSourcePattern()) ||
+						!entry.getKey().getLeft().containsAll(constraint.getTargetPattern()) && entry.getKey().getLeft().containsAll(constraint.getSourcePattern());
 				if(isPartial) {
 					entry.setValue(Integer.valueOf(entry.getValue().intValue()+1));
 				}

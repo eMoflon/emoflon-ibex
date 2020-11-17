@@ -12,11 +12,11 @@ import java.util.Map.Entry;
 import java.util.NavigableSet;
 import java.util.stream.Collectors;
 
-import org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctContextPattern;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.common.operational.SimpleMatch;
 import org.emoflon.ibex.gt.transformations.Pair;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjunctContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRelation;
 
@@ -79,19 +79,19 @@ public class DisjunctPatternHelper {
 			for(SubmatchAttributeComparator comp: attributes) {
 				boolean firstIsTarget = true;
 				boolean secondIsTarget = true;
-				if(!matchFromSubpattern(firstMatch, comp.getTargetPattern())) firstIsTarget = false;
-				if(!matchFromSubpattern(secondMatch, comp.getTargetPattern())) secondIsTarget = false;
+				if(!matchFromSubpattern(firstMatch, comp.getTargetPatterns())) firstIsTarget = false;
+				if(!matchFromSubpattern(secondMatch, comp.getTargetPatterns())) secondIsTarget = false;
 				if(!firstIsTarget && !secondIsTarget) continue;
 				//find the source match
 				boolean firstIsSource = true;
 				boolean secondIsSource = true;
 				boolean bothAreSource = true;
 				IMatch merge = merge(firstMatch,secondMatch, name);
-				for(IBeXContextPattern pattern: comp.getSourcePatterns()) {
-					if(!matchFromSubpattern(firstMatch, pattern)) firstIsSource = false;
-					if(!matchFromSubpattern(secondMatch, pattern)) secondIsSource = false;
-					if(!matchFromSubpattern(merge, pattern)) bothAreSource = false;
-				}
+				
+				if(!matchFromSubpattern(firstMatch, comp.getSourcePatterns())) firstIsSource = false;
+				if(!matchFromSubpattern(secondMatch, comp.getSourcePatterns())) secondIsSource = false;
+				if(!matchFromSubpattern(merge, comp.getSourcePatterns())) bothAreSource = false;
+
 				if(!firstIsSource && !secondIsSource && !bothAreSource) continue;
 				else if(bothAreSource && !firstIsSource && !secondIsSource) afterMergeComp.add(comp);
 				else {
@@ -291,8 +291,8 @@ public class DisjunctPatternHelper {
 		IMatch targetMatch;
 		boolean firstIsTarget = true;
 		boolean secondIsTarget = true;
-		if(!matchFromSubpattern(match1, comparator.getTargetPattern())) firstIsTarget = false;
-		if(!matchFromSubpattern(match2, comparator.getTargetPattern())) secondIsTarget = false;
+		if(!matchFromSubpattern(match1, comparator.getTargetPatterns())) firstIsTarget = false;
+		if(!matchFromSubpattern(match2, comparator.getTargetPatterns())) secondIsTarget = false;
 		if(!firstIsTarget && !secondIsTarget) return true;
 		
 		if(firstIsTarget) targetMatch = match1;
@@ -303,11 +303,11 @@ public class DisjunctPatternHelper {
 		boolean match1IsSource = true;
 		boolean match2IsSource = true;
 		boolean bothAreSource = true;
-		for(IBeXContextPattern pattern: comparator.getSourcePatterns()) {
-			if(!matchFromSubpattern(match1, pattern)) match1IsSource = false;
-			if(!matchFromSubpattern(match2, pattern)) match2IsSource = false;
-			if(!matchFromSubpattern(mergedMatch, pattern)) bothAreSource = false;
-		}
+
+		if(!matchFromSubpattern(match1, comparator.getSourcePatterns())) match1IsSource = false;
+		if(!matchFromSubpattern(match2, comparator.getSourcePatterns())) match2IsSource = false;
+		if(!matchFromSubpattern(mergedMatch, comparator.getSourcePatterns())) bothAreSource = false;
+		
 		if(!match1IsSource && !match2IsSource && bothAreSource){
 			if(comparator.isLegal(mergedMatch)){
 				return comparator.compareWithEquals(mergedMatch, mergedMatch);
@@ -342,9 +342,11 @@ public class DisjunctPatternHelper {
 	/**
 	 * checks if a match is from a specific subpattern
 	 */
-	public static boolean matchFromSubpattern(final IMatch match, final IBeXContextPattern pattern) {
-		for(final IBeXNode node: pattern.getSignatureNodes()) {
-			if(!match.isInMatch(node.getName())) return false;
+	public static boolean matchFromSubpattern(final IMatch match, final List<IBeXContextPattern> patterns) {
+		for(IBeXContextPattern pattern: patterns) {
+			for(final IBeXNode node: pattern.getSignatureNodes()) {
+				if(!match.isInMatch(node.getName())) return false;
+			}			
 		}
 		return true;
 	}

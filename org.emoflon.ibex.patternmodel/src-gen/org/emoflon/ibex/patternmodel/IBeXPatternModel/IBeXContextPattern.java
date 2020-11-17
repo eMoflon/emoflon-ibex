@@ -27,6 +27,7 @@ import org.eclipse.emf.common.util.EList;
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getSignatureNodes <em>Signature Nodes</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getCsps <em>Csps</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getParameters <em>Parameters</em>}</li>
+ *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#isOptimizedDisjoint <em>Optimized Disjoint</em>}</li>
  * </ul>
  *
  * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXContextPattern()
@@ -165,5 +166,28 @@ public interface IBeXContextPattern extends IBeXContext {
 	 * @generated
 	 */
 	EList<IBeXParameter> getParameters();
+
+	/**
+	 * Returns the value of the '<em><b>Optimized Disjoint</b></em>' attribute.
+	 * The default value is <code>"FALSE"</code>.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Optimized Disjoint</em>' attribute.
+	 * @see #setOptimizedDisjoint(boolean)
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXContextPattern_OptimizedDisjoint()
+	 * @model default="FALSE"
+	 * @generated
+	 */
+	boolean isOptimizedDisjoint();
+
+	/**
+	 * Sets the value of the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#isOptimizedDisjoint <em>Optimized Disjoint</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Optimized Disjoint</em>' attribute.
+	 * @see #isOptimizedDisjoint()
+	 * @generated
+	 */
+	void setOptimizedDisjoint(boolean value);
 
 } // IBeXContextPattern

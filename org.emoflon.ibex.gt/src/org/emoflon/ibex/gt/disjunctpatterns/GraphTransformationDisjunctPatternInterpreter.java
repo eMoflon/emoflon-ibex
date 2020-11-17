@@ -17,15 +17,16 @@ import java.util.stream.Stream;
 
 
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDependentDisjunctAttribute;
-import org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDependentInjectivityConstraints;
-import org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctAttribute;
-import org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctContextPattern;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.common.operational.SimpleMatch;
+import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
 import org.emoflon.ibex.gt.transformations.Pair;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeConstraint;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXConstraint;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDependentDisjunctAttribute;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDependentInjectivityConstraints;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjunctAttribute;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjunctContextPattern;
 
 
 /**
@@ -36,50 +37,50 @@ public class GraphTransformationDisjunctPatternInterpreter {
 	/**
 	 * the old matches
 	 */
-	private Map<IBeXContextPattern, Set<IMatch>> oldMatches;
+	private final Map<IBeXContextPattern, Set<IMatch>> oldMatches;
 	
 	/**
 	 * the old injectivity constraints
 	 */
-	private Map<IBeXDependentInjectivityConstraints, Pair<Map<IMatch, Set<IMatch>>, Map<IMatch, Set<IMatch>>>> oldInjectivityConstraints;
+	private final Map<IBeXDependentInjectivityConstraints, Pair<Map<IMatch, Set<IMatch>>, Map<IMatch, Set<IMatch>>>> oldInjectivityConstraints;
 	
 	/**
 	 * the old calculated cartesian products for the injectivity constraints
 	 */
-	private Map<IBeXDependentInjectivityConstraints, Pair<Set<IMatch>, Set<IMatch>>> oldCartesianProducts;
+	private final Map<IBeXDependentInjectivityConstraints, Pair<Set<IMatch>, Set<IMatch>>> oldCartesianProducts;
 	
 	/**
 	 * the old attribute constraints
 	 */
-	private Map<IBeXDependentDisjunctAttribute, Map<IMatch, Set<IMatch>>> targetMatchSets;
+	private final Map<IBeXDependentDisjunctAttribute, Map<IMatch, Set<IMatch>>> targetMatchSets;
 	
 	/**
 	 * the comparators for the attribute constraints
 	 */
-	private List<SubmatchAttributeComparator> attributeComparators;
+	private final List<SubmatchAttributeComparator> attributeComparators;
 	
 	/**
 	 * the sorted source matches for the attribute constraints
 	 */
-	private Map<IBeXDependentDisjunctAttribute, Map<IMatch, Set<IMatch>>> sourceMatchSets;
+	private final Map<IBeXDependentDisjunctAttribute, Map<IMatch, Set<IMatch>>> sourceMatchSets;
 	
 	/**
 	 * the source and target sets for the attribute constraints sorted by the respective attribute; left = target; right = source
 	 */
-	private Map<SubmatchAttributeComparator, Pair<TreeSet<IMatch>, TreeSet<IMatch>>> sortedSets;
+	private final Map<SubmatchAttributeComparator, Pair<TreeSet<IMatch>, TreeSet<IMatch>>> sortedSets;
 	
 	/**
 	 * the pattern sequence for the calculation of the cartesian products
 	 */
-	private Map<IBeXDependentInjectivityConstraints, Pair<List<IBeXContextPattern>, List<IBeXContextPattern>>> injectivityPatternSequence;
-	private Map<IBeXDependentDisjunctAttribute, Pair<List<IBeXContextPattern>, List<IBeXContextPattern>>> attributePatternSequence;
+	private final Map<IBeXDependentInjectivityConstraints, Pair<List<IBeXContextPattern>, List<IBeXContextPattern>>> injectivityPatternSequence;
+	private final Map<IBeXDependentDisjunctAttribute, Pair<List<IBeXContextPattern>, List<IBeXContextPattern>>> attributePatternSequence;
 	
 	/**
 	 * the notification adapter
 	 */
 	IBeXDisjunctContentAdapter adapter; 
 	
-	public GraphTransformationDisjunctPatternInterpreter(IBeXDisjunctContextPattern contextPattern, ResourceSet rsSet) {
+	public GraphTransformationDisjunctPatternInterpreter(final GraphTransformationInterpreter interpreter, final IBeXDisjunctContextPattern contextPattern, final ResourceSet rsSet) {
 		
 		oldMatches = new HashMap<IBeXContextPattern, Set<IMatch>>();
 		adapter = new IBeXDisjunctContentAdapter(rsSet);
@@ -104,9 +105,9 @@ public class GraphTransformationDisjunctPatternInterpreter {
 		}
 		for(IBeXDependentDisjunctAttribute attribute: contextPattern.getAttributesConstraints()) {		
 			for(IBeXDisjunctAttribute subattribute: attribute.getAttributes()) {
-				for(IBeXAttributeConstraint constraint: subattribute.getDisjunctAttribute()) {
+				for(IBeXConstraint constraint: subattribute.getDisjunctAttribute()) {
 					SubmatchAttributeComparator comparator = new SubmatchAttributeComparator(constraint,
-							subattribute.getSourcePattern(), subattribute.getTargetPattern());
+							subattribute.getSourcePattern(), subattribute.getTargetPattern(), interpreter);
 					sortedSets.put(comparator, new Pair<TreeSet<IMatch>, TreeSet<IMatch>>(new TreeSet<IMatch>(comparator),new TreeSet<IMatch>(comparator)));
 					attributeComparators.add(comparator);						
 				}	

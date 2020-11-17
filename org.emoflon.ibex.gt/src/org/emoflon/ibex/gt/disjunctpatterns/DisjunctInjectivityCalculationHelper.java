@@ -12,13 +12,13 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDependentDisjunctAttribute;
-import org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDependentInjectivityConstraints;
-import org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctContextPattern;
-import org.emoflon.ibex.IBeXDisjunctPatternModel.IBexDisjunctInjectivityConstraint;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.gt.transformations.Pair;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDependentDisjunctAttribute;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDependentInjectivityConstraints;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjunctContextPattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBexDisjunctInjectivityConstraint;
 
 public class DisjunctInjectivityCalculationHelper {
 
@@ -53,10 +53,10 @@ public class DisjunctInjectivityCalculationHelper {
 		
 		//find the necessary submatch comparators for the cartesian products
 		List<SubmatchAttributeComparator> cartesianSourceComparators = new ArrayList<SubmatchAttributeComparator>(comparators.stream()
-				.filter(c -> cartesianSequence.getRight().contains(c.getTargetPattern()) && cartesianSequence.getRight().containsAll(c.getSourcePatterns())).collect(Collectors.toSet()));
+				.filter(c -> cartesianSequence.getRight().containsAll(c.getTargetPatterns()) && cartesianSequence.getRight().containsAll(c.getSourcePatterns())).collect(Collectors.toSet()));
 
 		List<SubmatchAttributeComparator> cartesianTargetComparators = new ArrayList<SubmatchAttributeComparator>(comparators.stream()
-				.filter(c -> cartesianSequence.getLeft().contains(c.getTargetPattern()) && cartesianSequence.getLeft().containsAll(c.getSourcePatterns())).collect(Collectors.toSet()));
+				.filter(c -> cartesianSequence.getLeft().containsAll(c.getTargetPatterns()) && cartesianSequence.getLeft().containsAll(c.getSourcePatterns())).collect(Collectors.toSet()));
 
 		Set<IMatch> cartesianTargetProduct = new HashSet<IMatch>();
 		Set<IMatch> oldTargetMatches;		
@@ -104,11 +104,11 @@ public class DisjunctInjectivityCalculationHelper {
 			
 			//find out which comparators are needed for the forbidden constraints
 			List<SubmatchAttributeComparator> constraintComparators = new ArrayList<SubmatchAttributeComparator>(comparators.stream()
-					.filter(c -> cartesianSequence.getLeft().contains(c.getTargetPattern()) && !cartesianSequence.getLeft().containsAll(c.getSourcePatterns())).collect(Collectors.toSet()));
+					.filter(c -> cartesianSequence.getLeft().containsAll(c.getTargetPatterns()) && !cartesianSequence.getLeft().containsAll(c.getSourcePatterns())).collect(Collectors.toSet()));
 			
 			//find the reverse comparators (source -> target) if there are any; necessary for cyclic dependencies
 			List<SubmatchAttributeComparator> reverseComparator = new ArrayList<SubmatchAttributeComparator>(comparators.stream()
-					.filter(c -> cartesianSequence.getRight().contains(c.getTargetPattern()) && !cartesianSequence.getRight().containsAll(c.getSourcePatterns())).collect(Collectors.toSet()));
+					.filter(c -> cartesianSequence.getRight().containsAll(c.getTargetPatterns()) && !cartesianSequence.getRight().containsAll(c.getSourcePatterns())).collect(Collectors.toSet()));
 			
 			//if it is not present than it was already solved when calculating the attribute constraints
 			if(!constraintComparators.isEmpty() || !reverseComparator.isEmpty()) {

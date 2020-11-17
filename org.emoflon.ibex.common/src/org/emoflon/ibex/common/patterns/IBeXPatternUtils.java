@@ -4,29 +4,22 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjunctContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNamedElement;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPattern;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelFactory;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRuleSet;
-import org.moflon.core.utilities.EcoreUtils;
 
-import org.emoflon.ibex.IBeXDisjunctPatternModel.IBeXDisjunctContextPattern;
 
 
 /**
@@ -49,8 +42,8 @@ public class IBeXPatternUtils {
 		List<IBeXContext> disjunctPatterns = ibexPattern.getContextPatterns().stream()
 				.filter(pattern -> pattern instanceof IBeXDisjunctContextPattern).collect(Collectors.toList());
 		ibexPattern.getContextPatterns().removeAll(disjunctPatterns);
-		List<IBeXDisjunctContextPattern> patterns = new ArrayList<IBeXDisjunctContextPattern>();
 		
+		List<IBeXDisjunctContextPattern> patterns = new ArrayList<IBeXDisjunctContextPattern>();
 		for(IBeXContext pattern: disjunctPatterns) {
 			patterns.add((IBeXDisjunctContextPattern) pattern);
 		}	
