@@ -237,6 +237,19 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 		});
 		return comatch;
 	}
+	
+	/**
+	 * Applies the rule on the given match.
+	 * 
+	 * @param match
+	 *            the match
+	 * @return an {@link Optional} for the the match after rule application
+	 */
+	@SuppressWarnings("unchecked")
+	public final Optional<M> applyGeneric(final GraphTransformationMatch<?, ?>  match, boolean doUpdate) {
+		return apply((M) match, doUpdate);
+	}	
+	
 	/**
 	 * Applies the rule on the given match.
 	 * 
@@ -247,6 +260,25 @@ public abstract class GraphTransformationRule<M extends GraphTransformationMatch
 	@SuppressWarnings("unchecked")
 	public final Optional<M> applyGeneric(final GraphTransformationMatch<?, ?>  match) {
 		return apply((M) match);
+	}
+	
+	/**
+	 * If the rule has a probability, then it applies the rule on the given match 
+	 * with the rule probability; else returns an empty Optional<M>
+	 * If the rule has no probability, it will use apply(match)
+	 * 
+	 * @param match
+	 * 			the match
+	 * @return an {@link Optional} for the the match after rule application
+	 */
+	public final Optional<M> applyStochastic(final M match, boolean doUpdate){
+		if(probability.isPresent()) {
+			if(rnd.nextDouble() < probability.get().getProbability(match)) {
+				return apply(match, doUpdate);
+			}
+			return Optional.empty();			
+		}
+		else return apply(match, doUpdate);
 	}
 	
 	/**
