@@ -6,8 +6,6 @@ import java.util.Collection;
  * Interface for getting notifications by the pattern matcher about new matches.
  */
 public interface IMatchObserver {
-
-	public void notifySubscriptions();
 	
 	/**
 	 * Notifies about a new match.

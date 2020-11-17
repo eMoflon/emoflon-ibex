@@ -212,6 +212,8 @@ public class EditorToArithmeticExtensionHelper {
 		invocation.setInvokedPattern(invokedContext );
 		EditorToIBeXPatternHelper.addNodeMapping(invocation, nodeMap);
 		matchCount.setInvocation(invocation);
+		
+		invokingContext.getApiPatternDependencies().add(invokedContext);
 		return matchCount;
 	}
 }

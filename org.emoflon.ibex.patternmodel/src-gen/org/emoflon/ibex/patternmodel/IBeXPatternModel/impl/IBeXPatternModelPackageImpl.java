@@ -613,6 +613,16 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 	 * @generated
 	 */
 	@Override
+	public EReference getIBeXContext_ApiPatternDependencies() {
+		return (EReference) iBeXContextEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EClass getIBeXContextAlternatives() {
 		return iBeXContextAlternativesEClass;
 	}
@@ -1781,6 +1791,7 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 		iBeXPatternEClass = createEClass(IBE_XPATTERN);
 
 		iBeXContextEClass = createEClass(IBE_XCONTEXT);
+		createEReference(iBeXContextEClass, IBE_XCONTEXT__API_PATTERN_DEPENDENCIES);
 
 		iBeXContextAlternativesEClass = createEClass(IBE_XCONTEXT_ALTERNATIVES);
 		createEReference(iBeXContextAlternativesEClass, IBE_XCONTEXT_ALTERNATIVES__ALTERNATIVE_PATTERNS);
@@ -2034,6 +2045,9 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 
 		initEClass(iBeXContextEClass, IBeXContext.class, "IBeXContext", IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getIBeXContext_ApiPatternDependencies(), this.getIBeXContext(), null, "apiPatternDependencies",
+				null, 0, -1, IBeXContext.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
+				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(iBeXContextAlternativesEClass, IBeXContextAlternatives.class, "IBeXContextAlternatives",
 				!IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
