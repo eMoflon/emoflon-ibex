@@ -542,6 +542,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			
 			if(addedMatches.containsKey(patternName) && addedMatches.get(patternName).contains(match)) {
 				addedMatches.get(patternName).remove(match);
+				return;
 			}
 			
 			if (!removedMatches.containsKey(patternName)) {
