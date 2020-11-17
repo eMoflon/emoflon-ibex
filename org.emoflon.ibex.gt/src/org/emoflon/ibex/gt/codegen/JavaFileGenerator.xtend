@@ -502,7 +502,7 @@ class JavaFileGenerator {
 				}
 			
 				@Override
-				protected «getMatchClassName(rule)» convertMatch(final IMatch match) {
+				public «getMatchClassName(rule)» convertMatch(final IMatch match) {
 					return new «getMatchClassName(rule)»(this, match);
 				}
 			
@@ -634,7 +634,7 @@ class JavaFileGenerator {
 				}
 			
 				@Override
-				protected «getMatchClassName(pattern)» convertMatch(final IMatch match) {
+				public «getMatchClassName(pattern)» convertMatch(final IMatch match) {
 					return new «getMatchClassName(pattern)»(this, match);
 				}
 			
