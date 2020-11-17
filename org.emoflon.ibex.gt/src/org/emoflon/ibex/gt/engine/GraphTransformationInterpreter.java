@@ -164,7 +164,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		name2GTPattern = new HashMap<>();
 		name2Pattern = new HashMap<>();
 		createPatternInterpreter = new GraphTransformationCreateInterpreter(defaultResource, this);
-		deletePatternInterpreter = new GraphTransformationDeleteInterpreter(trashResource);
+		deletePatternInterpreter = new GraphTransformationDeleteInterpreter(trashResource, engine);
 	}
 
 	/**
