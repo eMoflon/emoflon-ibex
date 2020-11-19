@@ -28,6 +28,7 @@ import org.eclipse.emf.common.util.EList;
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getCsps <em>Csps</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#getParameters <em>Parameters</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#isOptimizedDisjoint <em>Optimized Disjoint</em>}</li>
+ *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#isSubpattern <em>Subpattern</em>}</li>
  * </ul>
  *
  * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXContextPattern()
@@ -189,5 +190,27 @@ public interface IBeXContextPattern extends IBeXContext {
 	 * @generated
 	 */
 	void setOptimizedDisjoint(boolean value);
+
+	/**
+	 * Returns the value of the '<em><b>Subpattern</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Subpattern</em>' attribute.
+	 * @see #setSubpattern(boolean)
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXContextPattern_Subpattern()
+	 * @model
+	 * @generated
+	 */
+	boolean isSubpattern();
+
+	/**
+	 * Sets the value of the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#isSubpattern <em>Subpattern</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Subpattern</em>' attribute.
+	 * @see #isSubpattern()
+	 * @generated
+	 */
+	void setSubpattern(boolean value);
 
 } // IBeXContextPattern

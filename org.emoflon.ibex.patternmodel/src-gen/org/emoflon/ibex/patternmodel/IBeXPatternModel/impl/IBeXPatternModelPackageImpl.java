@@ -811,6 +811,16 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 	 * @generated
 	 */
 	@Override
+	public EAttribute getIBeXContextPattern_Subpattern() {
+		return (EAttribute) iBeXContextPatternEClass.getEStructuralFeatures().get(11);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EClass getIBeXCreatePattern() {
 		return iBeXCreatePatternEClass;
 	}
@@ -1791,6 +1801,16 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 	 * @generated
 	 */
 	@Override
+	public EReference getIBeXDisjunctContextPattern_NonOptimizedPattern() {
+		return (EReference) iBeXDisjunctContextPatternEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EClass getIBeXDisjunctAttribute() {
 		return iBeXDisjunctAttributeEClass;
 	}
@@ -2076,6 +2096,7 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 		createEReference(iBeXContextPatternEClass, IBE_XCONTEXT_PATTERN__CSPS);
 		createEReference(iBeXContextPatternEClass, IBE_XCONTEXT_PATTERN__PARAMETERS);
 		createEAttribute(iBeXContextPatternEClass, IBE_XCONTEXT_PATTERN__OPTIMIZED_DISJOINT);
+		createEAttribute(iBeXContextPatternEClass, IBE_XCONTEXT_PATTERN__SUBPATTERN);
 
 		iBeXCreatePatternEClass = createEClass(IBE_XCREATE_PATTERN);
 		createEReference(iBeXCreatePatternEClass, IBE_XCREATE_PATTERN__ATTRIBUTE_ASSIGNMENTS);
@@ -2205,6 +2226,7 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 		createEReference(iBeXDisjunctContextPatternEClass, IBE_XDISJUNCT_CONTEXT_PATTERN__SUBPATTERNS);
 		createEReference(iBeXDisjunctContextPatternEClass, IBE_XDISJUNCT_CONTEXT_PATTERN__INJECTIVITY_CONSTRAINTS);
 		createEReference(iBeXDisjunctContextPatternEClass, IBE_XDISJUNCT_CONTEXT_PATTERN__ATTRIBUTES_CONSTRAINTS);
+		createEReference(iBeXDisjunctContextPatternEClass, IBE_XDISJUNCT_CONTEXT_PATTERN__NON_OPTIMIZED_PATTERN);
 
 		iBeXDisjunctAttributeEClass = createEClass(IBE_XDISJUNCT_ATTRIBUTE);
 		createEReference(iBeXDisjunctAttributeEClass, IBE_XDISJUNCT_ATTRIBUTE__TARGET_PATTERN);
@@ -2393,6 +2415,9 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 		initEAttribute(getIBeXContextPattern_OptimizedDisjoint(), ecorePackage.getEBoolean(), "optimizedDisjoint",
 				"FALSE", 0, 1, IBeXContextPattern.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE,
 				!IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getIBeXContextPattern_Subpattern(), ecorePackage.getEBoolean(), "subpattern", null, 0, 1,
+				IBeXContextPattern.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
 
 		initEClass(iBeXCreatePatternEClass, IBeXCreatePattern.class, "IBeXCreatePattern", !IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);
@@ -2686,6 +2711,9 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 				null, "attributesConstraints", null, 0, -1, IBeXDisjunctContextPattern.class, !IS_TRANSIENT,
 				!IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
 				IS_ORDERED);
+		initEReference(getIBeXDisjunctContextPattern_NonOptimizedPattern(), this.getIBeXContextPattern(), null,
+				"nonOptimizedPattern", null, 0, 1, IBeXDisjunctContextPattern.class, !IS_TRANSIENT, !IS_VOLATILE,
+				IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(iBeXDisjunctAttributeEClass, IBeXDisjunctAttribute.class, "IBeXDisjunctAttribute", !IS_ABSTRACT,
 				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);

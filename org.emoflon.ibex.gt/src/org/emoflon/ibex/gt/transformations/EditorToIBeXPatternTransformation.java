@@ -115,8 +115,10 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 			IBeXContextPattern lhs = null;
 			if(rule.getLhs() instanceof IBeXContextPattern) {
 				lhs = (IBeXContextPattern) rule.getLhs();
-			} else {
+			}else if (rule.getLhs() instanceof IBeXContextAlternatives) {
 				lhs = ((IBeXContextAlternatives) rule.getLhs()).getContext();
+			} else {
+				lhs = ((IBeXDisjunctContextPattern) rule.getLhs()).getNonOptimizedPattern();
 			}
 			
 			rule.getArithmeticConstraints().addAll(lhs.getArithmeticConstraints());
@@ -168,8 +170,10 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 			IBeXContextPattern lhs = null;
 			if(rule.getLhs() instanceof IBeXContextPattern) {
 				lhs = (IBeXContextPattern) rule.getLhs();
-			} else {
+			}else if (rule.getLhs() instanceof IBeXContextAlternatives) {
 				lhs = ((IBeXContextAlternatives) rule.getLhs()).getContext();
+			} else {
+				lhs = ((IBeXDisjunctContextPattern) rule.getLhs()).getNonOptimizedPattern();
 			}
 			
 			rule.getArithmeticConstraints().addAll(lhs.getArithmeticConstraints());
@@ -192,8 +196,9 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		List<IBeXContext> sortPatterns = new LinkedList<>(data.ibexContextPatterns.keySet());
 		
 		//remove the context patterns of the disjoint patterns that are optimized
-		sortPatterns.removeIf(pattern -> data.nameToDisjointPattern.keySet().contains(pattern.getName()));
-		sortPatterns.addAll(data.nameToDisjointPattern.values());		
+		data.nameToDisjointPattern.values().forEach(pattern -> sortPatterns.remove(pattern.getNonOptimizedPattern()));
+		sortPatterns.addAll(data.nameToDisjointPattern.values());	
+		sortPatterns.addAll(data.nameToDisjointPattern.values().stream().flatMap(pattern -> pattern.getSubpatterns().stream()).collect(Collectors.toList()));
 		sortPatterns.sort(IBeXPatternUtils.sortByName);
 			
 		List<IBeXRule> sortRules = new LinkedList<>(data.ibexRules.keySet());
@@ -308,6 +313,7 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 				try {
 					IBeXDisjunctContextPattern disjunctPattern = new IBeXDisjunctPatternTransformation(possibleDisjointPattern, patternFinder.getSubgraphs())
 							.transformToContextPattern();
+					disjunctPattern.setNonOptimizedPattern(ibexPattern);
 					//add them to the disjoint pattern set; the used context pattern will be removed at the end
 					data.nameToDisjointPattern.put(disjunctPattern.getName(), disjunctPattern);
 
@@ -315,6 +321,7 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 				catch(IllegalArgumentException e) {
 					//when something goes wrong proceed normally
 					// already transformed patterns do not need to be removed
+					ibexPattern.setOptimizedDisjoint(false);
 				}
 			}
 		}
@@ -374,6 +381,7 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		ibexPattern.setName(name);
 		//is the pattern optimized or not
 		ibexPattern.setOptimizedDisjoint(editorPattern.isDisjoint());
+		ibexPattern.setSubpattern(false);
 		addContextPattern(editorPattern, ibexPattern);
 		
 		// Add documentation

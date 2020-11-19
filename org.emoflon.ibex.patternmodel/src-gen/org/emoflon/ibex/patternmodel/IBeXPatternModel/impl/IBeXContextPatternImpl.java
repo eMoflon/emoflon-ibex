@@ -49,6 +49,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage;
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXContextPatternImpl#getCsps <em>Csps</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXContextPatternImpl#getParameters <em>Parameters</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXContextPatternImpl#isOptimizedDisjoint <em>Optimized Disjoint</em>}</li>
+ *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXContextPatternImpl#isSubpattern <em>Subpattern</em>}</li>
  * </ul>
  *
  * @generated
@@ -183,6 +184,26 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 	 * @ordered
 	 */
 	protected boolean optimizedDisjoint = OPTIMIZED_DISJOINT_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #isSubpattern() <em>Subpattern</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isSubpattern()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final boolean SUBPATTERN_EDEFAULT = false;
+
+	/**
+	 * The cached value of the '{@link #isSubpattern() <em>Subpattern</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isSubpattern()
+	 * @generated
+	 * @ordered
+	 */
+	protected boolean subpattern = SUBPATTERN_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -386,6 +407,30 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
+	public boolean isSubpattern() {
+		return subpattern;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setSubpattern(boolean newSubpattern) {
+		boolean oldSubpattern = subpattern;
+		subpattern = newSubpattern;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__SUBPATTERN, oldSubpattern, subpattern));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
@@ -450,6 +495,8 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 			return getParameters();
 		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__OPTIMIZED_DISJOINT:
 			return isOptimizedDisjoint();
+		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__SUBPATTERN:
+			return isSubpattern();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -505,6 +552,9 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__OPTIMIZED_DISJOINT:
 			setOptimizedDisjoint((Boolean) newValue);
 			return;
+		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__SUBPATTERN:
+			setSubpattern((Boolean) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -550,6 +600,9 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__OPTIMIZED_DISJOINT:
 			setOptimizedDisjoint(OPTIMIZED_DISJOINT_EDEFAULT);
 			return;
+		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__SUBPATTERN:
+			setSubpattern(SUBPATTERN_EDEFAULT);
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -585,6 +638,8 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 			return parameters != null && !parameters.isEmpty();
 		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__OPTIMIZED_DISJOINT:
 			return optimizedDisjoint != OPTIMIZED_DISJOINT_EDEFAULT;
+		case IBeXPatternModelPackage.IBE_XCONTEXT_PATTERN__SUBPATTERN:
+			return subpattern != SUBPATTERN_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
 	}
@@ -604,6 +659,8 @@ public class IBeXContextPatternImpl extends IBeXContextImpl implements IBeXConte
 		result.append(documentation);
 		result.append(", optimizedDisjoint: ");
 		result.append(optimizedDisjoint);
+		result.append(", subpattern: ");
+		result.append(subpattern);
 		result.append(')');
 		return result.toString();
 	}

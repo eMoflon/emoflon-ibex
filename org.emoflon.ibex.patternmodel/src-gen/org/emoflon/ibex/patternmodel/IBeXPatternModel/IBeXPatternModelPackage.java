@@ -558,13 +558,22 @@ public interface IBeXPatternModelPackage extends EPackage {
 	int IBE_XCONTEXT_PATTERN__OPTIMIZED_DISJOINT = IBE_XCONTEXT_FEATURE_COUNT + 10;
 
 	/**
+	 * The feature id for the '<em><b>Subpattern</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XCONTEXT_PATTERN__SUBPATTERN = IBE_XCONTEXT_FEATURE_COUNT + 11;
+
+	/**
 	 * The number of structural features of the '<em>IBe XContext Pattern</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XCONTEXT_PATTERN_FEATURE_COUNT = IBE_XCONTEXT_FEATURE_COUNT + 11;
+	int IBE_XCONTEXT_PATTERN_FEATURE_COUNT = IBE_XCONTEXT_FEATURE_COUNT + 12;
 
 	/**
 	 * The number of operations of the '<em>IBe XContext Pattern</em>' class.
@@ -2164,13 +2173,22 @@ public interface IBeXPatternModelPackage extends EPackage {
 	int IBE_XDISJUNCT_CONTEXT_PATTERN__ATTRIBUTES_CONSTRAINTS = IBE_XCONTEXT_FEATURE_COUNT + 2;
 
 	/**
+	 * The feature id for the '<em><b>Non Optimized Pattern</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XDISJUNCT_CONTEXT_PATTERN__NON_OPTIMIZED_PATTERN = IBE_XCONTEXT_FEATURE_COUNT + 3;
+
+	/**
 	 * The number of structural features of the '<em>IBe XDisjunct Context Pattern</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XDISJUNCT_CONTEXT_PATTERN_FEATURE_COUNT = IBE_XCONTEXT_FEATURE_COUNT + 3;
+	int IBE_XDISJUNCT_CONTEXT_PATTERN_FEATURE_COUNT = IBE_XCONTEXT_FEATURE_COUNT + 4;
 
 	/**
 	 * The number of operations of the '<em>IBe XDisjunct Context Pattern</em>' class.
@@ -2801,6 +2819,17 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getIBeXContextPattern_OptimizedDisjoint();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#isSubpattern <em>Subpattern</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Subpattern</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern#isSubpattern()
+	 * @see #getIBeXContextPattern()
+	 * @generated
+	 */
+	EAttribute getIBeXContextPattern_Subpattern();
 
 	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern <em>IBe XCreate Pattern</em>}'.
@@ -3852,6 +3881,17 @@ public interface IBeXPatternModelPackage extends EPackage {
 	EReference getIBeXDisjunctContextPattern_AttributesConstraints();
 
 	/**
+	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjunctContextPattern#getNonOptimizedPattern <em>Non Optimized Pattern</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Non Optimized Pattern</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjunctContextPattern#getNonOptimizedPattern()
+	 * @see #getIBeXDisjunctContextPattern()
+	 * @generated
+	 */
+	EReference getIBeXDisjunctContextPattern_NonOptimizedPattern();
+
+	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjunctAttribute <em>IBe XDisjunct Attribute</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -4385,6 +4425,14 @@ public interface IBeXPatternModelPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute IBE_XCONTEXT_PATTERN__OPTIMIZED_DISJOINT = eINSTANCE.getIBeXContextPattern_OptimizedDisjoint();
+
+		/**
+		 * The meta object literal for the '<em><b>Subpattern</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute IBE_XCONTEXT_PATTERN__SUBPATTERN = eINSTANCE.getIBeXContextPattern_Subpattern();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXCreatePatternImpl <em>IBe XCreate Pattern</em>}' class.
@@ -5233,6 +5281,15 @@ public interface IBeXPatternModelPackage extends EPackage {
 		 */
 		EReference IBE_XDISJUNCT_CONTEXT_PATTERN__ATTRIBUTES_CONSTRAINTS = eINSTANCE
 				.getIBeXDisjunctContextPattern_AttributesConstraints();
+
+		/**
+		 * The meta object literal for the '<em><b>Non Optimized Pattern</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XDISJUNCT_CONTEXT_PATTERN__NON_OPTIMIZED_PATTERN = eINSTANCE
+				.getIBeXDisjunctContextPattern_NonOptimizedPattern();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXDisjunctAttributeImpl <em>IBe XDisjunct Attribute</em>}' class.

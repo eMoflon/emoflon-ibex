@@ -11,6 +11,7 @@ import org.emoflon.ibex.gt.editor.gT.EditorReference;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjunctContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule;
@@ -50,7 +51,7 @@ public class TransformationData {
 	/**
 	 * Maps disjoint patterns names to a all context patterns.
 	 */
-	public Map<String, IBeXContext> nameToDisjointPattern = new HashMap<>();
+	public Map<String, IBeXDisjunctContextPattern> nameToDisjointPattern = new HashMap<>();
 	
 	/**
 	 * All context patterns.

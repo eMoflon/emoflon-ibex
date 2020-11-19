@@ -678,7 +678,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	@Override
 	public void removeMatches(Collection<IMatch> matches) {
 		throw new UnsupportedOperationException();
-	
+	}
 	public boolean isDisjunct(final String patternName) {
 		IBeXContext pattern = IBeXPatternUtils.getContextPattern(patternSet, disjunctContextPatternSet, patternName);
 		return pattern instanceof IBeXDisjunctContextPattern;

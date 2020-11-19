@@ -73,6 +73,7 @@
         eType="#//IBeXParameter" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="optimizedDisjoint" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
         defaultValueLiteral="FALSE"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="subpattern" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBeXCreatePattern" eSuperTypes="#//IBeXPattern">
     <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
@@ -338,6 +339,8 @@
         upperBound="-1" eType="#//IBeXDependentInjectivityConstraints" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="attributesConstraints"
         upperBound="-1" eType="#//IBeXDependentDisjunctAttribute" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="nonOptimizedPattern" eType="#//IBeXContextPattern"
+        containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBeXDisjunctAttribute">
     <eStructuralFeatures xsi:type="ecore:EReference" name="targetPattern" upperBound="-1"
