@@ -51,6 +51,10 @@ public abstract class DeletePreserveConflict extends Conflict
 		return matches;
 	}
 
+	public List<ITGGMatch> getCausingMatches() {
+		return this.causingMatches;
+	}
+
 	public DomainType getDomainToBePreserved() {
 		return domainToBePreserved;
 	}
