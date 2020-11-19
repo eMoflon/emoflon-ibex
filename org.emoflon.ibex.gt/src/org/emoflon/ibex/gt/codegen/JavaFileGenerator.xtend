@@ -85,6 +85,7 @@ class JavaFileGenerator {
 			.filter [ pattern | !pattern.name.contains("CONDITION")]
 			.filter [pattern  | !((pattern instanceof IBeXContextPattern) && (pattern as IBeXContextPattern).isSubpattern())]
 			.filter [pattern   | !((pattern instanceof IBeXContextPattern) && (pattern as IBeXContextPattern).isOptimizedDisjoint())]
+			.filter [pattern  | !((pattern instanceof IBeXDisjunctContextPattern) && rulePreconditions.contains((pattern as IBeXDisjunctContextPattern).getNonOptimizedPattern()))]
 			.forEach [ pattern |
 				imports.add('''«getSubPackageName('api.rules')».«getPatternClassName(pattern)»''')
 				if(pattern instanceof IBeXContextPattern) {
@@ -161,8 +162,9 @@ class JavaFileGenerator {
 					«FOR pattern: ibexModel.patternSet.contextPatterns
 						.filter [ pattern | !rulePreconditions.contains(pattern)]
 						.filter [ pattern | !pattern.name.contains("CONDITION")]
-						.filter [pattern | !((pattern instanceof IBeXContextPattern) && (pattern as IBeXContextPattern).isSubpattern())]
-						.filter [pattern   | !((pattern instanceof IBeXContextPattern) && (pattern as IBeXContextPattern).isOptimizedDisjoint())]»
+						.filter [pattern  | !((pattern instanceof IBeXContextPattern) && (pattern as IBeXContextPattern).isSubpattern())]
+						.filter [pattern  | !((pattern instanceof IBeXContextPattern) && (pattern as IBeXContextPattern).isOptimizedDisjoint())]
+						.filter [pattern  | !((pattern instanceof IBeXDisjunctContextPattern) && rulePreconditions.contains((pattern as IBeXDisjunctContextPattern).getNonOptimizedPattern()))]»
 					«IF getPatternParameter(pattern).empty»
 					map.put("«pattern.name»", () -> «pattern.name»());
 					«ENDIF»
@@ -208,7 +210,8 @@ class JavaFileGenerator {
 						.filter [ pattern | !rulePreconditions.contains(pattern)]
 						.filter [ pattern | !pattern.name.contains("CONDITION")]
 						.filter [pattern | !((pattern instanceof IBeXContextPattern) && (pattern as IBeXContextPattern).isSubpattern())]
-						.filter [pattern   | !((pattern instanceof IBeXContextPattern) && (pattern as IBeXContextPattern).isOptimizedDisjoint())]»
+						.filter [pattern   | !((pattern instanceof IBeXContextPattern) && (pattern as IBeXContextPattern).isOptimizedDisjoint())]
+						.filter [pattern  | !((pattern instanceof IBeXDisjunctContextPattern) && rulePreconditions.contains((pattern as IBeXDisjunctContextPattern).getNonOptimizedPattern()))]»
 						/**
 						* Creates a new instance of the pattern «getPatternSignature(pattern)» which does the following:
 						* «getPatternDocumentation(pattern)»
