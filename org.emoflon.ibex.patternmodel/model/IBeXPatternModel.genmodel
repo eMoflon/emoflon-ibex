@@ -73,7 +73,9 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXPatternModel.ecore#//IBeXNamedElement/name"/>
     </genClasses>
     <genClasses image="false" ecoreClass="IBeXPatternModel.ecore#//IBeXPattern"/>
-    <genClasses image="false" ecoreClass="IBeXPatternModel.ecore#//IBeXContext"/>
+    <genClasses image="false" ecoreClass="IBeXPatternModel.ecore#//IBeXContext">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXContext/apiPatternDependencies"/>
+    </genClasses>
     <genClasses ecoreClass="IBeXPatternModel.ecore#//IBeXContextAlternatives">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXContextAlternatives/alternativePatterns"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXContextAlternatives/context"/>

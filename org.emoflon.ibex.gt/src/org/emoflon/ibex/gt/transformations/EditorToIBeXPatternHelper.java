@@ -106,7 +106,7 @@ final public class EditorToIBeXPatternHelper {
 		IBeXContextPattern context = null;
 		if(pattern instanceof IBeXContextPattern) {
 			context = (IBeXContextPattern) pattern;
-		} else if (context instanceof IBeXContextAlternatives){
+		} else if (pattern instanceof IBeXContextAlternatives){
 			context = ((IBeXContextAlternatives) pattern).getContext();		
 		} else {
 			context = ((IBeXDisjunctContextPattern) pattern).getNonOptimizedPattern();

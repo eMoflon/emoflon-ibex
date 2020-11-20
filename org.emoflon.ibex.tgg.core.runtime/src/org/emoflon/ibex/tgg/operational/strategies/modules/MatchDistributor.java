@@ -83,11 +83,6 @@ public class MatchDistributor implements IMatchObserver, TimeMeasurable {
 			LoggerConfig.log(LoggerConfig.log_matches(), () -> "Pattern matcher: update matches - done\n");
 	}
 
-	@Override
-	public void notifySubscriptions() {
-
-	}
-
 	protected void initialiseBlackInterpreter(IbexExecutable executable) throws IOException {
 		blackInterpreter = options.blackInterpreter();
 		useTrashResource = options.blackInterpreter().getClass().getName().contains("Democles");

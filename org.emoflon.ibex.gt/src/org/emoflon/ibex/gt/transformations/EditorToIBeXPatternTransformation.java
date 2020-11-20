@@ -349,6 +349,7 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 			IBeXContextPattern ibexPattern = transformToContextPattern(editorPattern, name, null);
 			transformCondition(ibexPattern, editorCondition);
 			ibexAlternatives.getAlternativePatterns().add(ibexPattern);
+			ibexAlternatives.getApiPatternDependencies().add(ibexPattern);
 		}
 
 		addContextPattern(editorPattern, ibexAlternatives);

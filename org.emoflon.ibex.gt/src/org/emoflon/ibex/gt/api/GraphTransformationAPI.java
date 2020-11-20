@@ -113,10 +113,10 @@ public abstract class GraphTransformationAPI {
 	 * Helper method for the Gillespie algorithm; counts all the possible matches
 	 * for rules in the graph that have a static probability
 	 */
-	public double getTotalSystemActivity(){
+	public double getTotalSystemActivity(boolean doUpdate){
 		 gillespieMap.forEach((v,z) -> {
 		 	z[0] =((Probability<?,?>) v.getProbability().get()).getProbability();
-			 z[1] = v.countMatches()*z[0];
+			 z[1] = v.countMatches(doUpdate)*z[0];
 			});
 		double totalActivity = 0;
 		for(double[] activity : gillespieMap.values()) {
@@ -130,9 +130,9 @@ public abstract class GraphTransformationAPI {
 	 * Gillespie algorithm; only works if the rules do not have parameters and the
 	 * probability is static
 	 */
-	public double getGillespieProbability(GraphTransformationRule<?,?> rule){
+	public double getGillespieProbability(GraphTransformationRule<?,?> rule, boolean doUpdate){
 		if(gillespieMap.containsKey(rule)){
-			double totalActivity = getTotalSystemActivity();
+			double totalActivity = getTotalSystemActivity(doUpdate);
 			if(totalActivity > 0){
 				return gillespieMap.get(rule)[1]/totalActivity;	
 			}								
@@ -146,8 +146,8 @@ public abstract class GraphTransformationAPI {
 	 * @return an {@link Optional} for the the match after rule application
 	 */
 	@SuppressWarnings("unchecked")
-	public final Optional<GraphTransformationMatch<?,?>> applyGillespie(){
-		double totalActivity = getTotalSystemActivity();
+	public final Optional<GraphTransformationMatch<?,?>> applyGillespie(boolean doUpdate){
+		double totalActivity = getTotalSystemActivity(doUpdate);
 		if(totalActivity != 0){
 			Random rnd = new Random();
 			double randomValue = totalActivity*rnd.nextDouble();
@@ -155,7 +155,7 @@ public abstract class GraphTransformationAPI {
 			for(Entry<GraphTransformationRule<?,?>, double[]> entries : gillespieMap.entrySet()){
 			currentActivity += entries.getValue()[1];
 				if(currentActivity >= randomValue){
-					return (Optional<GraphTransformationMatch<?, ?>>)entries.getKey().apply();
+					return (Optional<GraphTransformationMatch<?, ?>>)entries.getKey().apply(doUpdate);
 				}						
 			}
 		}

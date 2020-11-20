@@ -103,6 +103,23 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 		});
 		return (P) this;
 	}
+	
+	/**
+	 * Unbinds the parameters of the pattern if there is a parameter of the same name
+	 * in the match.
+	 * 
+	 * @param match
+	 *            the match
+	 */
+	@SuppressWarnings("unchecked")
+	public final P unbind(final IMatch match) {
+		getParameterNames().forEach(parameterName -> {
+			if (match.isInMatch(parameterName)) {
+				getParameters().remove(parameterName);
+			}
+		});
+		return (P) this;
+	}
 
 	/**
 	 * Binds the parameters of the pattern if there is a parameter of the same name
@@ -116,14 +133,36 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 		bind(match.toIMatch());
 		return (P) this;
 	}
+	
+	/**
+	 * Unbinds the parameters of the pattern if there is a parameter of the same name
+	 * in the match.
+	 * 
+	 * @param match
+	 *            the match
+	 */
+	@SuppressWarnings("unchecked")
+	public final P unbind(final GraphTransformationMatch<?, ?> match) {
+		unbind(match.toIMatch());
+		return (P) this;
+	}
 
 	/**
 	 * Finds and returns an arbitrary match for the pattern if a match exists.
 	 * 
 	 * @return an {@link Optional} for the match
 	 */
+	public final Optional<M> findAnyMatch(boolean doUpdate) {
+		return interpreter.findAnyMatch(patternName, getParameters(), doUpdate).map(m -> convertMatch(m));
+	}
+	
+	/**
+	 * Finds and returns an arbitrary match for the pattern if a match exists.
+	 * 
+	 * @return an {@link Optional} for the match
+	 */
 	public final Optional<M> findAnyMatch() {
-		return interpreter.findAnyMatch(patternName, getParameters()).map(m -> convertMatch(m));
+		return interpreter.findAnyMatch(patternName, getParameters(), true).map(m -> convertMatch(m));
 	}
 
 	/**
@@ -131,8 +170,17 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 * 
 	 * @return the list of matches (can be empty if no matches exist)
 	 */
+	public final Collection<M> findMatches(boolean doUpdate) {
+		return matchStream(doUpdate).collect(Collectors.toSet());
+	}
+	
+	/**
+	 * Finds and returns all matches for the pattern.
+	 * 
+	 * @return the list of matches (can be empty if no matches exist)
+	 */
 	public final Collection<M> findMatches() {
-		return matchStream().collect(Collectors.toSet());
+		return matchStream(true).collect(Collectors.toSet());
 	}
 	
 	/**
@@ -140,8 +188,8 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 * 
 	 * @return the Stream of matches
 	 */
-	protected Stream<IMatch> untypedMatchStream(){
-		return interpreter.matchStream(patternName, getParameters()).filter(match -> isMatchValid(match));
+	protected Stream<IMatch> untypedMatchStream(boolean doUpdate){
+		return interpreter.matchStream(patternName, getParameters(), doUpdate);
 	}
 	
 	public boolean isMatchValid(IMatch match) {
@@ -153,8 +201,18 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 * 
 	 * @return the Stream of matches
 	 */
+	public Stream<M> matchStream(boolean doUpdate) {
+		return untypedMatchStream(doUpdate) //
+				.map(m -> convertMatch(m));
+	}
+	
+	/**
+	 * Finds and returns all matches for the pattern as a Stream.
+	 * 
+	 * @return the Stream of matches
+	 */
 	public Stream<M> matchStream() {
-		return untypedMatchStream() //
+		return untypedMatchStream(true) //
 				.map(m -> convertMatch(m));
 	}
 
@@ -165,8 +223,19 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 * @param action
 	 *            a Consumer for the matches found
 	 */
+	public final void forEachMatch(boolean doUpdate, final Consumer<M> action) {
+		matchStream(doUpdate).forEach(action);
+	}
+	
+	/**
+	 * Executes the <code>accept</code> of the given {@link Consumer} for all
+	 * matches found for the pattern.
+	 * 
+	 * @param action
+	 *            a Consumer for the matches found
+	 */
 	public final void forEachMatch(final Consumer<M> action) {
-		matchStream().forEach(action);
+		matchStream(true).forEach(action);
 	}
 
 	/**
@@ -174,8 +243,17 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 * 
 	 * @return <code>true</code> if and only if there is at least one match
 	 */
+	public final boolean hasMatches(boolean doUpdate) {
+		return findAnyMatch(doUpdate).isPresent();
+	}
+	
+	/**
+	 * Returns whether any matches for the pattern exist.
+	 * 
+	 * @return <code>true</code> if and only if there is at least one match
+	 */
 	public final boolean hasMatches() {
-		return findAnyMatch().isPresent();
+		return findAnyMatch(true).isPresent();
 	}
 
 	/**
@@ -183,8 +261,17 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 * 
 	 * @return the number of matches
 	 */
+	public final long countMatches(boolean doUpdate) {
+		return interpreter.countMatches(patternName, getParameters(), doUpdate);
+	}
+	
+	/**
+	 * Returns the number of matches found for the pattern.
+	 * 
+	 * @return the number of matches
+	 */
 	public final long countMatches() {
-		return interpreter.countMatches(patternName, getParameters());
+		return interpreter.countMatches(patternName, getParameters(), true);
 	}
 
 	/**

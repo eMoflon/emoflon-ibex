@@ -1,19 +1,20 @@
 package org.emoflon.ibex.gt.engine;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.emf.common.util.URI;
@@ -31,7 +32,6 @@ import org.emoflon.ibex.common.operational.IMatchObserver;
 import org.emoflon.ibex.common.operational.PushoutApproach;
 import org.emoflon.ibex.common.operational.SimpleMatch;
 import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
-import org.emoflon.ibex.gt.disjunctpatterns.DisjunctPatternHelper;
 import org.emoflon.ibex.gt.disjunctpatterns.GraphTransformationDisjunctPatternInterpreter;
 import org.emoflon.ibex.gt.api.GraphTransformationPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
@@ -89,31 +89,32 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	/**
 	 * The matches (key: pattern name, value: list of matches).
 	 */
-	private Map<String, Collection<IMatch>> matches = new HashMap<>();
+	private Map<String, Collection<IMatch>> matches = Collections.synchronizedMap(new HashMap<>());
+	private Map<String, Collection<IMatch>> pendingMatches = Collections.synchronizedMap(new HashMap<>());
+	private Map<String, Collection<IMatch>> filteredMatches = Collections.synchronizedMap(new HashMap<>());
+	private Map<String, Collection<IMatch>> addedMatches = Collections.synchronizedMap(new HashMap<>());
+	private Map<String, Collection<IMatch>> removedMatches = Collections.synchronizedMap(new HashMap<>());
 
 	/**
 	 * Subscriptions for notification of new matches (key: pattern name, value: list
 	 * of consumers).
 	 */
-	private Map<String, List<Consumer<IMatch>>> subscriptionsForAppearingMatchesOfPattern //
-			= new HashMap<String, List<Consumer<IMatch>>>();
+	private Map<String, Set<Consumer<IMatch>>> subscriptionsForAppearingMatchesOfPattern = new HashMap<>();
 
 	/**
 	 * Subscriptions for notification of disappearing matches (key: pattern name,
 	 * value: list of consumers).
 	 */
-	private Map<String, List<Consumer<IMatch>>> subscriptionsForDisappearingMatchesOfPattern //
-			= new HashMap<String, List<Consumer<IMatch>>>();
+	private Map<String, Set<Consumer<IMatch>>> subscriptionsForDisappearingMatchesOfPattern = new HashMap<>();
 
 	/**
 	 * Subscriptions for notification of disappearing matches (key: match, value:
 	 * list of consumers).
 	 */
-	private Map<IMatch, List<Consumer<IMatch>>> subscriptionsForDisappearingMatches //
-			= new HashMap<IMatch, List<Consumer<IMatch>>>();
+	private Map<IMatch, Set<Consumer<IMatch>>> subscriptionsForDisappearingMatches = new HashMap<>();
 
-	private Map<IMatch, LinkedList<Consumer<IMatch>>> appearingSubscriptionJobs = Collections.synchronizedMap(new LinkedHashMap<>());
-	private Map<IMatch, LinkedList<Consumer<IMatch>>> disappearingSubscriptionJobs = Collections.synchronizedMap(new LinkedHashMap<>());
+	private Map<IMatch, Queue<Consumer<IMatch>>> appearingSubscriptionJobs = Collections.synchronizedMap(new LinkedHashMap<>());
+	private Map<IMatch, Queue<Consumer<IMatch>>> disappearingSubscriptionJobs = Collections.synchronizedMap(new LinkedHashMap<>());
 	
 	/**
 	 * Creates a new GraphTransformationInterpreter for queries and modifications on
@@ -178,14 +179,6 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		deletePatternInterpreter = new GraphTransformationDeleteInterpreter(trashResource, engine);
 	}
 
-	/**
-	 * Returns the resource set.
-	 * 
-	 * @return the resource set
-	 */
-	public ResourceSet getModel() {
-		return model;
-	}
 
 	/**
 	 * Loads IBeXPatterns from the resource set.
@@ -204,6 +197,12 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			ibexModel = (IBeXModel) resourceContent;
 			patternSet = ibexModel.getPatternSet();
 			patternSet.getContextPatterns().forEach(pattern -> {
+				matches.put(pattern.getName(), Collections.synchronizedSet(new HashSet<IMatch>()));
+				if(pattern instanceof IBeXContextAlternatives) {
+					IBeXContextAlternatives alt = (IBeXContextAlternatives) pattern;
+					alt.getAlternativePatterns().forEach(altPattern -> name2Pattern.put(altPattern.getName(), altPattern));
+					
+				}
 				name2Pattern.put(pattern.getName(), pattern);
 			});
 			ruleSet = ibexModel.getRuleSet();
@@ -213,6 +212,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			disjunctPatternInterpreter = new HashMap<IBeXDisjunctContextPattern, GraphTransformationDisjunctPatternInterpreter>();
 			for(IBeXDisjunctContextPattern pattern: disjunctContextPatternSet) {
 				disjunctPatternInterpreter.put(pattern, new GraphTransformationDisjunctPatternInterpreter(this, pattern, model));
+				name2Pattern.put(pattern.getName(), pattern);
 			}
 			
 			contextPatternInterpreter.initPatterns(patternSet);
@@ -253,7 +253,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	public void terminate() {
 		contextPatternInterpreter.terminate();
 	}
-
+	
 	/**
 	 * Executes the pattern.
 	 * 
@@ -263,9 +263,11 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 *            the pushout approach to use
 	 * @param parameters
 	 *            the parameters to pass
+	 * @param doUpdate
+	 * 			  triggers the incremental recalculation of all matches after application
 	 * @return the match after rule application
 	 */
-	public Optional<IMatch> apply(final IMatch match, final PushoutApproach po, final Map<String, Object> parameters) {
+	public Optional<IMatch> apply(final IMatch match, final PushoutApproach po, final Map<String, Object> parameters, boolean doUpdate) {
 		String patternName = match.getPatternName();
 
 		IBeXCreatePattern createPattern = IBeXPatternUtils.getCreatePattern(ruleSet, patternName);
@@ -280,13 +282,15 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			comatch = createPatternInterpreter.apply(createPattern, comatch.get(), parameters);
 		}
 
-		// Rule application may invalidate existing or lead to new matches.
-		updateMatches();
+		// Rule application may invalidate existing or lead to new matches. 
+//		-> Which is pretty much obvious to any "normal" user, hence, no more hidden update calls.
+		if(doUpdate)
+			updateMatches();
 
 		// Return the co-match.
 		return comatch;
 	}
-
+	
 	/**
 	 * Finds all matches for the pattern.
 	 * 
@@ -294,18 +298,74 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 *            the name of the pattern
 	 * @param parameters
 	 *            the parameters
+	 * @param doUpdate
+	 * 			  triggers the incremental recalculation of all matches before filtering matches
 	 * @return a {@link Stream} of matches
 	 */
-	public Stream<IMatch> matchStream(final String patternName, final Map<String, Object> parameters) {
-		updateMatches();
-
-		IBeXContext pattern = name2Pattern.get(patternName);
-		if (IBeXPatternUtils.isEmptyPattern(pattern)) {
-			return Stream.of(createEmptyMatchForCreatePattern(patternName));
+	public Stream<IMatch> matchStream(final String patternName, final Map<String, Object> parameters, boolean doUpdate) {
+//		Hiding update calls from the user seems dangerous to me. In my experience this practice more often than not leads to a huge amount of nested update calls, leading to stack overflows.
+		if(doUpdate)
+			updateMatches();
+		
+		if(filteredMatches.containsKey(patternName)) {
+			return filteredMatches.get(patternName).stream();
+		} else {
+			IBeXContext pattern = name2Pattern.get(patternName);
+			if(pattern.getApiPatternDependencies() == null || pattern.getApiPatternDependencies().isEmpty()) {
+				updateFilteredMatches(patternName, parameters);
+			} else {
+				// Check dependencies to prevent deadlocks
+				pattern.getApiPatternDependencies().forEach(depPattern -> {
+					updateMatchStream(depPattern.getName(), new HashMap<>());
+				});
+				updateFilteredMatches(patternName, parameters);
+			}
+			return filteredMatches.get(patternName).stream();
 		}
-		return MatchFilter.getFilteredMatchStream(pattern, parameters, matches, disjunctPatternInterpreter);
+	}
+
+	private synchronized void updateMatchStream(final String patternName, final Map<String, Object> parameters) {		
+		if(filteredMatches.containsKey(patternName)) {
+			return;
+		} else {
+			IBeXContext pattern = name2Pattern.get(patternName);
+			if(pattern.getApiPatternDependencies() == null || pattern.getApiPatternDependencies().isEmpty()) {
+				updateFilteredMatches(patternName, parameters);
+			} else {
+				// Check dependencies to prevent deadlocks
+				pattern.getApiPatternDependencies().forEach(depPattern -> {
+					updateMatchStream(depPattern.getName(), new HashMap<>());
+				});
+				updateFilteredMatches(patternName, parameters);
+			}
+			return;
+		}
 	}
 	
+	private void updateFilteredMatches(final String patternName, final Map<String, Object> parameters) {
+		Collection<IMatch> patternMatches = Collections.synchronizedSet(new HashSet<IMatch>());
+		filteredMatches.put(patternName, patternMatches);
+		
+		IBeXContext pattern = name2Pattern.get(patternName);
+		if (IBeXPatternUtils.isEmptyPattern(pattern)) {
+			SimpleMatch match = (SimpleMatch)createEmptyMatchForCreatePattern(patternName);
+			match.setHashCode(Objects.hash(match.getParameterNames()));
+			patternMatches.add(match);
+		} else {
+			GraphTransformationPattern<?,?> gtPattern = name2GTPattern.get(patternName);
+			if(gtPattern != null) {
+				patternMatches.addAll(MatchFilter.getFilteredMatchStream(pattern, parameters, matches, disjunctPatternInterpreter)
+						.filter(match -> gtPattern.isMatchValid(match))
+						.collect(Collectors.toSet()));
+			} else {
+				patternMatches.addAll(MatchFilter.getFilteredMatchStream(pattern, parameters, matches, disjunctPatternInterpreter)
+						.collect(Collectors.toSet()));
+			}
+			
+		}
+		
+	}
+
 	/**
 	 * count the number of matches for the pattern
 	 * 
@@ -315,17 +375,18 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * 			the parameters
 	 * @return the number of matches
 	 */
-	public final long countMatches(final String patternName, final Map<String, Object> parameters) {
+	public final long countMatches(final String patternName, final Map<String, Object> parameters, boolean doUpdate) {
 		
-		IBeXContext pattern = IBeXPatternUtils.getContextPattern(patternSet, disjunctContextPatternSet, patternName);
-		if(pattern instanceof IBeXDisjunctContextPattern) {
+		if(doUpdate)
 			updateMatches();
-			
+		
+		IBeXContext pattern = name2Pattern.get(patternName);
+		if(pattern instanceof IBeXDisjunctContextPattern) {
+	
 			return disjunctPatternInterpreter.get(pattern).calculateMatchCount((IBeXDisjunctContextPattern) pattern, 
 					MatchFilter.getFilteredMatchList((IBeXDisjunctContextPattern) pattern, parameters, matches));
-		}
-		else {
-			return matchStream(patternName, parameters).count();
+		} else {
+			return matchStream(patternName, parameters, doUpdate).count();
 		}
 	}
 	
@@ -334,19 +395,251 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * 
 	 * @return an {@link Optional} for the match
 	 */
-	public final Optional<IMatch> findAnyMatch(final String patternName, final Map<String, Object> parameters) {		
-		IBeXContext pattern = IBeXPatternUtils.getContextPattern(patternSet, disjunctContextPatternSet, patternName);
-		if(pattern instanceof IBeXDisjunctContextPattern) {
+	public final Optional<IMatch> findAnyMatch(final String patternName, final Map<String, Object> parameters, boolean doUpdate) {	
+		
+		if(doUpdate)
 			updateMatches();
-			
+		
+		IBeXContext pattern = name2Pattern.get(patternName);
+		if(pattern instanceof IBeXDisjunctContextPattern) {
+
 			return disjunctPatternInterpreter.get(pattern).findAnyMatch((IBeXDisjunctContextPattern) pattern, 
 					MatchFilter.getFilteredMatchList((IBeXDisjunctContextPattern) pattern, parameters, matches)); 
+		} else {
+			return matchStream(patternName, parameters, doUpdate).findAny();
 		}
-		else {
-			return matchStream(patternName, parameters).findAny();
+	}
+	
+	/**
+	 * Trigger the engine to update the pattern network.
+	 */
+	public synchronized void updateMatches() {
+		// Clear old state
+		filteredMatches.clear();
+		addedMatches.clear();
+		removedMatches.clear();
+		
+		// Fetch matches from pm
+		contextPatternInterpreter.updateMatches();
+		
+		// (1) ADDED: Check for appearing match subscribers and filter matches
+		subscriptionsForAppearingMatchesOfPattern.keySet().stream().forEach(patternName -> {
+			// Check if pending matches became valid again due to attribute changes
+			// Fill filtered matches Map by calling the match stream
+			matchStream(patternName, name2GTPattern.get(patternName).getParameters(), false);
+			// Check if existing matches recently became valid (pending) and add removal jobs
+			matches.get(patternName).stream()
+				.filter(match -> filteredMatches.get(patternName).contains(match))
+				.filter(match -> pendingMatches.containsKey(patternName) && pendingMatches.get(patternName).contains(match))
+				.forEach(match -> {
+					Collection<IMatch> pending = pendingMatches.get(patternName);
+					pending.remove(match);
+					
+					Collection<IMatch> added = addedMatches.get(patternName);
+					if(added == null) {
+						added = Collections.synchronizedSet(new HashSet<>());
+						removedMatches.put(patternName, added);
+					}
+					added.add(match);
+					
+					Queue<Consumer<IMatch>> subs = appearingSubscriptionJobs.get(match);
+					if(subs == null) {
+						subs = new LinkedBlockingQueue<>();
+						appearingSubscriptionJobs.put(match, subs);
+					}
+					subs.addAll(subscriptionsForAppearingMatchesOfPattern.get(patternName));
+			});
+			
+			
+			if(addedMatches.containsKey(patternName)) {
+				addedMatches.get(patternName).forEach(match -> {
+					Queue<Consumer<IMatch>> subs = appearingSubscriptionJobs.get(match);
+					if(subs == null) {
+						subs = new LinkedBlockingQueue<>();
+						appearingSubscriptionJobs.put(match, subs);
+					}
+					subs.addAll(subscriptionsForAppearingMatchesOfPattern.get(patternName));
+				});
+			}
+			
+		});
+		
+		// (2) DELETED: Check for disappearing match subscribers and filter matches
+		subscriptionsForDisappearingMatchesOfPattern.keySet().stream().forEach(patternName -> {
+			// Check if existing matches became invalid due to attribute changes
+			// Fill filtered matches Map by calling the match stream
+			matchStream(patternName, name2GTPattern.get(patternName).getParameters(), false);
+			// Check if existing matches recently became invalid (not pending) and add removal jobs
+			matches.get(patternName).stream()
+				.filter(match -> !filteredMatches.get(patternName).contains(match))
+				.filter(match -> !pendingMatches.containsKey(patternName) || !pendingMatches.get(patternName).contains(match))
+				.forEach(match -> {
+					Collection<IMatch> pending = pendingMatches.get(patternName);
+					if(pending == null) {
+						pending = Collections.synchronizedSet(new HashSet<>());
+						pendingMatches.put(patternName, pending);
+					}
+					pending.add(match);
+					Collection<IMatch> removed = removedMatches.get(patternName);
+					if(removed == null) {
+						removed = Collections.synchronizedSet(new HashSet<>());
+						removedMatches.put(patternName, removed);
+					}
+					removed.add(match);
+					
+					Queue<Consumer<IMatch>> subs = disappearingSubscriptionJobs.get(match);
+					if(subs == null) {
+						subs = new LinkedBlockingQueue<>();
+						disappearingSubscriptionJobs.put(match, subs);
+					}
+					subs.addAll(subscriptionsForDisappearingMatchesOfPattern.get(patternName));
+				});
+			
+			if(removedMatches.containsKey(patternName)) {
+				removedMatches.get(patternName).forEach(match -> {
+					Queue<Consumer<IMatch>> subs = disappearingSubscriptionJobs.get(match);
+					if(subs == null) {
+						subs = new LinkedBlockingQueue<>();
+						disappearingSubscriptionJobs.put(match, subs);
+					}
+					subs.addAll(subscriptionsForDisappearingMatchesOfPattern.get(patternName));
+				});
+			}
+		});
+		
+		// Check if any match removed subscriptions are triggered by removals
+		Set<IMatch> removals = subscriptionsForDisappearingMatches.keySet().parallelStream()
+			.filter(match -> removedMatches.containsKey(match.getPatternName()))
+			.filter(match -> removedMatches.get(match.getPatternName()).contains(match))
+			.collect(Collectors.toSet());
+		
+		for(IMatch removal : removals) {
+			Queue<Consumer<IMatch>> subs = disappearingSubscriptionJobs.get(removal);
+			if(subs == null) {
+				subs = new LinkedBlockingQueue<>();
+				disappearingSubscriptionJobs.put(removal, subs);
+			}
+			subs.addAll(subscriptionsForDisappearingMatches.get(removal));
+		}
+		
+		// Remove jobs for appearing matches for each disappeared match
+		for(IMatch removal : removals) {
+			appearingSubscriptionJobs.remove(removal);
+		}
+		
+		notifySubscriptions();
+	}
+	
+	public void registerGraphTransformationPattern(final String patternName, final GraphTransformationPattern<?,?> pattern) {
+		if(name2GTPattern.containsKey(patternName))
+			throw new IllegalArgumentException("Pattern already registered with interpreter: " + name2Pattern.get(patternName));
+		
+		name2GTPattern.put(patternName, pattern);
+	}
+	
+	public GraphTransformationPattern<?,?> getRegisteredGraphTransformationPattern(final String patternName) {
+		if(!name2GTPattern.containsKey(patternName))
+			throw new IllegalArgumentException("Pattern not registered with interpreter: " + name2Pattern.get(patternName));
+		
+		return name2GTPattern.get(patternName);
+	}
+	
+	public void notifySubscriptions() {
+		while(!disappearingSubscriptionJobs.isEmpty()) {
+			IMatch nextMatch = disappearingSubscriptionJobs.keySet().iterator().next();
+			Queue<Consumer<IMatch>> subs = disappearingSubscriptionJobs.get(nextMatch);
+			disappearingSubscriptionJobs.remove(nextMatch);
+			while(!subs.isEmpty()) {
+				subs.poll().accept(nextMatch);
+			}
+		}
+		
+		Set<IMatch> jobs = new LinkedHashSet<>(appearingSubscriptionJobs.keySet());
+		for(IMatch nextMatch : jobs) {
+			Queue<Consumer<IMatch>> subs = appearingSubscriptionJobs.get(nextMatch);
+			if(subs == null || subs.isEmpty()) {
+				appearingSubscriptionJobs.remove(nextMatch);
+				continue;
+			}
+			
+			appearingSubscriptionJobs.remove(nextMatch);
+			while(!subs.isEmpty()) {
+				subs.poll().accept(nextMatch);
+			}
 		}
 	}
 
+	@Override
+	public void addMatch(final IMatch match) {
+		String patternName = match.getPatternName();
+		if (!matches.containsKey(patternName)) {
+			matches.put(patternName, Collections.synchronizedSet(new HashSet<IMatch>()));
+		}
+		matches.get(patternName).add(match);
+		
+//		Check whether there are any subscribers, if not return. -> No need to track deltas.
+		if(subscriptionsForAppearingMatchesOfPattern.isEmpty() && subscriptionsForDisappearingMatches.isEmpty() && subscriptionsForDisappearingMatchesOfPattern.isEmpty())
+			return;
+		
+		if(removedMatches.containsKey(patternName) && removedMatches.get(patternName).contains(match)) {
+			removedMatches.get(patternName).remove(match);
+			return;
+		}
+		
+		if (!addedMatches.containsKey(patternName)) {
+			addedMatches.put(patternName, Collections.synchronizedSet(new HashSet<IMatch>()));
+		}
+		addedMatches.get(patternName).add(match);
+		
+	}
+
+	@Override
+	public void removeMatch(final IMatch match) {
+		String patternName = match.getPatternName();
+		if (matches.containsKey(patternName)) {
+			matches.get(patternName).remove(match);
+			
+//			Check whether there are any subscribers, if not return. -> No need to track deltas.
+			if(subscriptionsForAppearingMatchesOfPattern.isEmpty() && subscriptionsForDisappearingMatches.isEmpty() && subscriptionsForDisappearingMatchesOfPattern.isEmpty())
+				return;
+			
+			if(addedMatches.containsKey(patternName) && addedMatches.get(patternName).contains(match)) {
+				addedMatches.get(patternName).remove(match);
+				return;
+			}
+			
+			if (!removedMatches.containsKey(patternName)) {
+				removedMatches.put(patternName, Collections.synchronizedSet(new HashSet<IMatch>()));
+			}
+			removedMatches.get(patternName).add(match);
+			
+		} else {
+			throw new IllegalArgumentException("Cannot remove a match which was never added!");
+		}
+		
+	}
+
+	public IBeXPatternSet getPatternSet() {
+		return patternSet;
+	}
+
+	/**
+	 * Returns the resource set.
+	 * 
+	 * @return the resource set
+	 */
+	public ResourceSet getModel() {
+		return model;
+	}
+	
+	public Map<String, Collection<IMatch>> getFilteredMatches() {
+		return filteredMatches;
+	}
+	
+	public Stream<IMatch> getFilteredMatchStream(String patternName) {
+		return filteredMatches.getOrDefault(patternName, Collections.synchronizedSet(new HashSet<IMatch>())).stream();
+	}
+	
 	/**
 	 * Creates an empty match for the create pattern with the given name. The
 	 * created nodes are mapped to <code>null</code>.
@@ -379,7 +672,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			throw new IllegalArgumentException("Subscriptions to Pattern-Alternatives not supported: Invalid pattern " + name2Pattern.get(patternName));
 		
 		if (!subscriptionsForAppearingMatchesOfPattern.containsKey(patternName)) {
-			subscriptionsForAppearingMatchesOfPattern.put(patternName, new ArrayList<Consumer<IMatch>>());
+			subscriptionsForAppearingMatchesOfPattern.put(patternName, new LinkedHashSet<Consumer<IMatch>>());
 		}
 		subscriptionsForAppearingMatchesOfPattern.get(patternName).add(consumer);
 	}
@@ -412,7 +705,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			throw new IllegalArgumentException("Subscriptions to Pattern-Alternatives not supported: Invalid pattern " + name2Pattern.get(patternName));
 		
 		if (!subscriptionsForDisappearingMatchesOfPattern.containsKey(patternName)) {
-			subscriptionsForDisappearingMatchesOfPattern.put(patternName, new ArrayList<Consumer<IMatch>>());
+			subscriptionsForDisappearingMatchesOfPattern.put(patternName, new LinkedHashSet<Consumer<IMatch>>());
 		}
 		subscriptionsForDisappearingMatchesOfPattern.get(patternName).add(consumer);
 	}
@@ -445,7 +738,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			throw new IllegalArgumentException("Subscriptions to Pattern-Alternatives not supported: Invalid pattern " + name2Pattern.get(match.getPatternName()));
 			
 		if (!subscriptionsForDisappearingMatches.containsKey(match)) {
-			subscriptionsForDisappearingMatches.put(match, new ArrayList<Consumer<IMatch>>());
+			subscriptionsForDisappearingMatches.put(match, new LinkedHashSet<Consumer<IMatch>>());
 		}
 		subscriptionsForDisappearingMatches.get(match).add(consumer);
 	}
@@ -463,213 +756,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			subscriptionsForDisappearingMatches.get(match).remove(consumer);
 		}
 	}
-	private boolean updateDisabled = false;
-	/**
-	 * Trigger the engine to update the pattern network.
-	 */
-	public void updateMatches() {
-		if(updateDisabled)
-			return;
-		
-		contextPatternInterpreter.updateMatches();
-	}
 	
-	public void registerGraphTransformationPattern(final String patternName, final GraphTransformationPattern<?,?> pattern) {
-		if(name2GTPattern.containsKey(patternName))
-			throw new IllegalArgumentException("Pattern already registered with interpreter: " + name2Pattern.get(patternName));
-		
-		name2GTPattern.put(patternName, pattern);
-	}
-	
-	public GraphTransformationPattern<?,?> getRegisteredGraphTransformationPattern(final String patternName) {
-		if(!name2GTPattern.containsKey(patternName))
-			throw new IllegalArgumentException("Pattern not registered with interpreter: " + name2Pattern.get(patternName));
-		
-		return name2GTPattern.get(patternName);
-	}
-	
-	@Override
-	public void notifySubscriptions() {
-		while(!disappearingSubscriptionJobs.isEmpty()) {
-			IMatch nextMatch = disappearingSubscriptionJobs.keySet().iterator().next();
-			LinkedList<Consumer<IMatch>> subs = disappearingSubscriptionJobs.get(nextMatch);
-			disappearingSubscriptionJobs.remove(nextMatch);
-			while(!subs.isEmpty()) {
-				subs.pollFirst().accept(nextMatch);
-			}
-		}
-		
-//		List<IMatch> removals = new LinkedList<>();
-		Set<IMatch> jobs = new LinkedHashSet<>(appearingSubscriptionJobs.keySet());
-		for(IMatch nextMatch : jobs) {
-			LinkedList<Consumer<IMatch>> subs = appearingSubscriptionJobs.get(nextMatch);
-			if(subs == null || subs.isEmpty()) {
-				appearingSubscriptionJobs.remove(nextMatch);
-				continue;
-			}
-			
-			// Check constraints using parameters
-			if(!MatchFilter.isMatchValid(nextMatch, name2Pattern.get(nextMatch.getPatternName()), 
-				(name2GTPattern.containsKey(nextMatch.getPatternName())) ? name2GTPattern.get(nextMatch.getPatternName()).getParameters() : new HashMap<>(), 
-						matches)) {
-				continue;
-			}
-			
-			updateDisabled = true;
-			// Check additional constraints (e.g. Arithmetic attribute constraints)
-			if(name2GTPattern.containsKey(nextMatch.getPatternName()) && !name2GTPattern.get(nextMatch.getPatternName()).isMatchValid(nextMatch)) {
-				continue;
-			}
-			updateDisabled = false;
-			
-			// Mark as removed and apply callbacks
-			appearingSubscriptionJobs.remove(nextMatch);
-			
-			Optional<IBeXDisjunctContextPattern> disjunctPattern  = disjunctContextPatternSet.stream()
-					.filter(pattern -> nextMatch.getPatternName().equals(pattern.getName())).findAny();
-			if(disjunctPattern.isEmpty()) {
-				while(matches.get(nextMatch.getPatternName()).contains(nextMatch) && !subs.isEmpty()) {
-					subs.pollFirst().accept(nextMatch);
-				}				
-			}else {
-//				removals.add(nextMatch);
-			
-				if(!subs.isEmpty() && DisjunctPatternHelper
-						.doesMatchExists(nextMatch, MatchFilter.getUnfilteredMatchList((IBeXDisjunctContextPattern) disjunctPattern.get(),matches))) {
-					subs.pollFirst().accept(nextMatch);
-				}
-			}
-		}
-		// Cleanup
-//		removals.forEach(match -> appearingSubscriptionJobs.remove(match));
-	}
-
-	@Override
-	public void addMatch(final IMatch match) {
-		String patternName = match.getPatternName();
-		if (!matches.containsKey(patternName)) {
-			matches.put(patternName, new HashSet<IMatch>());
-		}
-		matches.get(patternName).add(match);
-		
-		// Notify subscribers registered for all new matches of the pattern.
-		if (subscriptionsForAppearingMatchesOfPattern.containsKey(patternName)) {
-			//subscriptionsForAppearingMatchesOfPattern.get(patternName).forEach(c -> c.accept(match));
-			
-			LinkedList<Consumer<IMatch>> subs = appearingSubscriptionJobs.get(match);
-			if(subs == null) {
-				subs = new LinkedList<Consumer<IMatch>>();
-				appearingSubscriptionJobs.put(match, subs);
-			}
-			subs.addAll(subscriptionsForAppearingMatchesOfPattern.get(patternName));
-		}	
-		
-		//find out if the imatch belongs to a disjunctContextPattern
-		int index = patternName.lastIndexOf("_");
-		if(index != -1) {
-			//see if there is a disjunctContextPattern with the same name
-			String disjunctPatternName = patternName.substring(0, index);
-			
-			disjunctContextPatternSet.stream().filter(pattern -> pattern.getName().equals(disjunctPatternName))
-			.findFirst().ifPresent(pattern -> {
-				// Notify subscribers registered for all new matches of the pattern
-				if(subscriptionsForAppearingMatchesOfPattern.containsKey(pattern.getName())) {
-					Set<IMatch> newMatches = disjunctPatternInterpreter.get(pattern)
-							.createMatchesWithThisSubmatch(pattern, match, MatchFilter.getUnfilteredMatchList((IBeXDisjunctContextPattern) pattern, matches), 
-									pattern.getName());
-					for(IMatch newMatch: newMatches) {						
-						LinkedList<Consumer<IMatch>> subs = appearingSubscriptionJobs.get(newMatch);
-						if(subs == null) {
-							subs = new LinkedList<Consumer<IMatch>>();
-							appearingSubscriptionJobs.put(newMatch, subs);
-						}
-						subs.addAll(subscriptionsForAppearingMatchesOfPattern.get(pattern.getName()));						
-					}
-
-				}			
-			});
-		}
-
-	}
-
-	@Override
-	public void removeMatch(final IMatch match) {
-		String patternName = match.getPatternName();
-				
-		if (matches.containsKey(patternName)) {
-			matches.get(patternName).remove(match);
-
-			appearingSubscriptionJobs.remove(match);
-			LinkedList<Consumer<IMatch>> subs = disappearingSubscriptionJobs.get(match);
-			
-			// Notify subscribers registered for all disappearing matches of the pattern.
-			if (subscriptionsForDisappearingMatchesOfPattern.containsKey(patternName)) {
-				//subscriptionsForDisappearingMatchesOfPattern.get(patternName).forEach(c -> c.accept(match));
-				if(subs == null) {
-					subs = new LinkedList<Consumer<IMatch>>();
-					disappearingSubscriptionJobs.put(match, subs);
-				}
-				subs.addAll(subscriptionsForDisappearingMatchesOfPattern.get(patternName));
-			}			
-
-			// Notify subscribers registered for the disappearing match.
-			if (subscriptionsForDisappearingMatches.containsKey(match)) {
-				//subscriptionsForDisappearingMatches.get(match).forEach(c -> c.accept(match));
-				if(subs == null) {
-					subs = new LinkedList<Consumer<IMatch>>();
-					disappearingSubscriptionJobs.put(match, subs);
-				}
-				subs.addAll(subscriptionsForDisappearingMatches.get(match));
-				subscriptionsForDisappearingMatches.remove(match);
-			}
-			
-			//find out if the imatch belongs to a disjunctContextPattern
-			int index = patternName.lastIndexOf("_");
-			if(index != -1) {
-				//see if there is a disjunctContextPattern with the same name
-				String disjunctPatternName = patternName.substring(0, index);
-				
-				disjunctContextPatternSet.stream().filter(pattern -> pattern.getName().equals(disjunctPatternName))
-				.findFirst().ifPresent(pattern -> {
- 							
-					// Notify subscribers registered for all new matches of the pattern
-					if(subscriptionsForDisappearingMatchesOfPattern.containsKey(pattern.getName())) {	
-						Set<IMatch> newMatches = disjunctPatternInterpreter.get(pattern).createMatchesWithThisSubmatch(pattern, match, 
-						MatchFilter.getUnfilteredMatchList((IBeXDisjunctContextPattern) pattern, matches), pattern.getName());		
-						for(IMatch newMatch: newMatches) {
-							LinkedList<Consumer<IMatch>> newSubs = disappearingSubscriptionJobs.get(match);			
-							if(newSubs == null) {
-								newSubs = new LinkedList<Consumer<IMatch>>();
-								disappearingSubscriptionJobs.put(newMatch, newSubs);
-							}
-							newSubs.addAll(subscriptionsForDisappearingMatchesOfPattern.get(pattern.getName()));						
-						}
-					}
-						
-					//finds out which matches have the new match as an submatch -> these matches will be removed
-					for(IMatch subscribedMatch: subscriptionsForDisappearingMatches.keySet()) {
-						//subscriptionsForDisappearingMatches.get(subscribedMatch).forEach(c -> c.accept(match));
-						if(DisjunctPatternHelper.isASubmatch(match, subscribedMatch)) {
-							LinkedList<Consumer<IMatch>> newSubs = disappearingSubscriptionJobs.get(subscribedMatch);		 
-							if(newSubs == null) {
-								newSubs = new LinkedList<Consumer<IMatch>>();
-								disappearingSubscriptionJobs.put(subscribedMatch, newSubs);
-							}
-							newSubs.addAll(subscriptionsForDisappearingMatches.get(subscribedMatch));
-							subscriptionsForDisappearingMatches.remove(subscribedMatch);							
-						}
-					}													
-				});
-			}
-		}else {
-			throw new IllegalArgumentException("Cannot remove a match which was never added!");
-		}
-		
-	}
-	public IBeXPatternSet getPatternSet() {
-		return patternSet;
-	}
-
 	@Override
 	public void addMatches(Collection<IMatch> matches) {
 		throw new UnsupportedOperationException();
@@ -679,8 +766,8 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	public void removeMatches(Collection<IMatch> matches) {
 		throw new UnsupportedOperationException();
 	}
-	public boolean isDisjunct(final String patternName) {
-		IBeXContext pattern = IBeXPatternUtils.getContextPattern(patternSet, disjunctContextPatternSet, patternName);
-		return pattern instanceof IBeXDisjunctContextPattern;
+	
+	public boolean isDisjunct(String patternName){
+		return disjunctContextPatternSet.stream().anyMatch(pattern -> pattern.getName().equals(patternName));
 	}
 }
