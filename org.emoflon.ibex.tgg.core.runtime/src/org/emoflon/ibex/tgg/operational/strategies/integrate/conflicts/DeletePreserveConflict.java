@@ -20,6 +20,7 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.util.EltFilter;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis;
 
 import language.DomainType;
+import language.TGGRuleElement;
 import language.TGGRuleNode;
 
 public abstract class DeletePreserveConflict extends Conflict
@@ -50,6 +51,10 @@ public abstract class DeletePreserveConflict extends Conflict
 		return matches;
 	}
 
+	public List<ITGGMatch> getCausingMatches() {
+		return this.causingMatches;
+	}
+
 	public DomainType getDomainToBePreserved() {
 		return domainToBePreserved;
 	}
@@ -60,16 +65,17 @@ public abstract class DeletePreserveConflict extends Conflict
 	public void crs_mergeAndPreserve() {
 		MatchAnalysis analysis = integrate().getMatchUtil().getAnalysis(getMatch());
 
-		causingMatches.forEach(m -> restoreMatch(integrate().getClassifiedBrokenMatches().get(m)));
+		for (ITGGMatch causingMatch : causingMatches)
+			restoreMatch(integrate().getClassifiedBrokenMatches().get(causingMatch));
 
-		analysis.getElts(new EltFilter().srcAndTrg().create().deleted()).forEach(elt -> {
+		for (TGGRuleElement elt : analysis.getElts(new EltFilter().srcAndTrg().create().deleted())) {
 			if (elt instanceof TGGRuleNode) {
 				analysis.getObject((TGGRuleNode) elt).eContents().forEach(child -> {
 					if (!analysis.getObjects().contains(child))
 						ModelChangeUtil.deleteElement(child, true);
 				});
 			}
-		});
+		}
 
 		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by MERGE_&_PRESERVE");
 		resolved = true;
