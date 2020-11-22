@@ -1,6 +1,7 @@
 package org.emoflon.ibex.gt.disjunctpatterns;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,8 +31,8 @@ public class DisjunctAttributeCalculationHelper {
 	 * updates the old attribute matches and calculates the constraints between two submatches
 	 */
 	public static final long calculateForbiddenConstraintMatches(final IBeXDisjunctContextPattern pattern, final IBeXDependentDisjunctAttribute attribute, 
-			final Map<IBeXContextPattern, Set<IMatch>> submatchesMap, final List<SubmatchAttributeComparator> comparators, final Map<IBeXContextPattern, Set<IMatch>> oldMatches,
-			final Map<IMatch, Set<IMatch>> targetMap, final Map<IMatch, Set<IMatch>> sourceMap, final Set<Object> changedNodes, 
+			final Map<IBeXContextPattern, Collection<IMatch>> submatchesMap, final List<SubmatchAttributeComparator> comparators, final Map<IBeXContextPattern, Collection<IMatch>> oldMatches,
+			final Map<IMatch, Collection<IMatch>> targetMap, final Map<IMatch, Collection<IMatch>> sourceMap, final Collection<Object> changedNodes, 
 			final Map<SubmatchAttributeComparator, Pair<TreeSet<IMatch>, TreeSet<IMatch>>> sortedNeededSets, Pair<List<IBeXContextPattern>, List<IBeXContextPattern>> patternSequence) {
 		
 		//find the target pattern and source list
@@ -50,24 +51,24 @@ public class DisjunctAttributeCalculationHelper {
 				.filter(c -> patternSequence.getRight().containsAll(c.getTargetPatterns()) && patternSequence.getRight().containsAll(c.getSourcePatterns())).collect(Collectors.toSet()));
 		
 		//calculate the new and old target matches		
-		List<Set<IMatch>> calculatedTargetMatches = DisjunctPatternHelper.createNewAndOldCartesianProducts(pattern, patternSequence.getLeft(), submatchesMap, oldMatches, 
+		List<Collection<IMatch>> calculatedTargetMatches = DisjunctPatternHelper.createNewAndOldCartesianProducts(pattern, patternSequence.getLeft(), submatchesMap, oldMatches, 
 				cartesianTargetComparators);
-		Set<IMatch> oldCalculatedTargetMatches = calculatedTargetMatches.get(1);
-		Set<IMatch> newCalculatedTargetMatches = calculatedTargetMatches.get(0);
+		Collection<IMatch> oldCalculatedTargetMatches = calculatedTargetMatches.get(1);
+		Collection<IMatch> newCalculatedTargetMatches = calculatedTargetMatches.get(0);
 		
 		//find out which matches were changed
-		Set<IMatch> changedTargetMatches = DisjunctPatternHelper.createChangedCartesianProducts(pattern, patternSequence.getLeft(), changedNodes, submatchesMap, oldMatches, 
-				newCalculatedTargetMatches, cartesianTargetComparators);
+		Collection<IMatch> changedTargetMatches = DisjunctPatternHelper.createChangedCartesianProducts(pattern, patternSequence.getLeft(), changedNodes, submatchesMap, oldMatches, 
+				newCalculatedTargetMatches, targetMap.keySet(), cartesianTargetComparators);
 
 		//calculate the new and old source matches		
-		List<Set<IMatch>> calculatedSourceMatches = DisjunctPatternHelper.createNewAndOldCartesianProducts(pattern, patternSequence.getRight(), submatchesMap, oldMatches, 
+		List<Collection<IMatch>> calculatedSourceMatches = DisjunctPatternHelper.createNewAndOldCartesianProducts(pattern, patternSequence.getRight(), submatchesMap, oldMatches, 
 				cartesianSourceComparators);
-		Set<IMatch> oldCalculatedSourceMatches = calculatedSourceMatches.get(1);
-		Set<IMatch> newCalculatedSourceMatches = calculatedSourceMatches.get(0);
+		Collection<IMatch> oldCalculatedSourceMatches = calculatedSourceMatches.get(1);
+		Collection<IMatch> newCalculatedSourceMatches = calculatedSourceMatches.get(0);
 		
 		//find out which matches were changed
-		Set<IMatch> changedSourceMatches = DisjunctPatternHelper.createChangedCartesianProducts(pattern, patternSequence.getRight(), changedNodes, submatchesMap, oldMatches, 
-				newCalculatedSourceMatches, cartesianSourceComparators);
+		Collection<IMatch> changedSourceMatches = DisjunctPatternHelper.createChangedCartesianProducts(pattern, patternSequence.getRight(), changedNodes, submatchesMap, oldMatches, 
+				newCalculatedSourceMatches, sourceMap.keySet(), cartesianSourceComparators);
 
 		long forbiddenMatches = calculateForbiddenConstraintMatches(oldCalculatedTargetMatches, changedTargetMatches, 
 				newCalculatedTargetMatches, oldCalculatedSourceMatches, changedSourceMatches, 
@@ -83,24 +84,24 @@ public class DisjunctAttributeCalculationHelper {
 	 * updates the old attribute matches and calculates the constraints between two submatches dependent of the injectivity constraints between them 
 	 */
 	public static final long calculateForbiddenConstraintWithInjectivityMatches(final List<SubmatchAttributeComparator> comparators, 
-			final List<SubmatchAttributeComparator> reverseComparators, final Set<IMatch> oldTargetMatches, final Set<IMatch> changedTargetMatches, 
-			final Set<IMatch> newTargetMatches, final Map<IMatch, Set<IMatch>> targetMap, final Set<IMatch> oldCartesianMatches, 
-			final Set<IMatch> changedSourceMatchSet, final Set<IMatch> newCartesianMatches,
-			final Map<IMatch, Set<IMatch>> sourceMap, final Map<IMatch, Set<IMatch>> injectivityConstraintMap,
+			final List<SubmatchAttributeComparator> reverseComparators, final Collection<IMatch> oldTargetMatches, final Collection<IMatch> changedTargetMatches, 
+			final Collection<IMatch> newTargetMatches, final Map<IMatch, Collection<IMatch>> map, final Collection<IMatch> oldCartesianMatches, 
+			final Collection<IMatch> changedSourceMatchSet, final Collection<IMatch> newCartesianMatches,
+			final Map<IMatch, Collection<IMatch>> map2, final Map<IMatch, Collection<IMatch>> injectivityConstraintMap,
 			final Map<SubmatchAttributeComparator, Pair<TreeSet<IMatch>, TreeSet<IMatch>>> sortedNeededSets) {
 		
 		 calculateForbiddenConstraintMatches(oldTargetMatches, changedTargetMatches, newTargetMatches,  
-				oldCartesianMatches, changedSourceMatchSet, newCartesianMatches, targetMap, sourceMap, sortedNeededSets, comparators, reverseComparators);	
+				oldCartesianMatches, changedSourceMatchSet, newCartesianMatches, map, map2, sortedNeededSets, comparators, reverseComparators);	
 		 
 		 //remove all matches forbidden through injectivity constraints
 		 for(IMatch match: injectivityConstraintMap.keySet()) {
-			 targetMap.get(match).removeAll(injectivityConstraintMap.get(match));
+			 map.get(match).removeAll(injectivityConstraintMap.get(match));
 			 for(IMatch sourceMatches: injectivityConstraintMap.get(match)) {
-				 sourceMap.get(sourceMatches).remove(match);
+				 map2.get(sourceMatches).remove(match);
 			 }
 		 }
 		 	
-		 long constraintValue =  targetMap.values().parallelStream().mapToLong(matches -> (long) matches.size()).sum();
+		 long constraintValue =  map.values().parallelStream().mapToLong(matches -> (long) matches.size()).sum();
 		 constraintValue += injectivityConstraintMap.values().parallelStream().mapToLong(matches -> (long) matches.size()).sum();
 		 return constraintValue;
 	}
@@ -108,9 +109,9 @@ public class DisjunctAttributeCalculationHelper {
 	/**
 	 * calculate all the attribute constraints between two submatches
 	 */
-	public static final Map<IMatch, Set<IMatch>> calculateForbiddenConstraintMatches(final Set<IMatch> oldTargetMatch, final Set<IMatch> changedTargetMatch, 
-			final Set<IMatch> newTargetMatch, final Set<IMatch>oldSourceMatch, final Set<IMatch> changedSourceMatch, final Set<IMatch> newSourceMatch, 
-			final Map<IMatch, Set<IMatch>> targetMap, final Map<IMatch, Set<IMatch>> sourceMap,
+	public static final Map<IMatch, Collection<IMatch>> calculateForbiddenConstraintMatches(final Collection<IMatch> oldTargetMatch, final Collection<IMatch> changedTargetMatch, 
+			final Collection<IMatch> newTargetMatch, final Collection<IMatch>oldSourceMatch, final Collection<IMatch> changedSourceMatch, final Collection<IMatch> newSourceMatch, 
+			final Map<IMatch, Collection<IMatch>> targetMap, final Map<IMatch, Collection<IMatch>> map2,
 			final Map<SubmatchAttributeComparator, Pair<TreeSet<IMatch>, TreeSet<IMatch>>> sortedNeededSets, List<SubmatchAttributeComparator> comparators, 
 			List<SubmatchAttributeComparator> reverseComparator) {
 		
@@ -119,7 +120,7 @@ public class DisjunctAttributeCalculationHelper {
 		for(IMatch oldMatch: oldTargetMatch) {
 			boolean removed = true;
 			for(IMatch dependentSourceMatch: targetMap.remove(oldMatch)) {
-				sourceMap.get(dependentSourceMatch).remove(oldMatch);
+				map2.get(dependentSourceMatch).remove(oldMatch);
 			}
 			for(SubmatchAttributeComparator comparator: comparators) {
 				removed &= sortedNeededSets.get(comparator).getLeft().remove(oldMatch);
@@ -158,7 +159,7 @@ public class DisjunctAttributeCalculationHelper {
 		//remove the old source matches
 		for(IMatch oldMatch: oldSourceMatch) {
 			boolean removed = true;
-			for(IMatch dependentTargetMatch: sourceMap.remove(oldMatch)) {
+			for(IMatch dependentTargetMatch: map2.remove(oldMatch)) {
 				targetMap.get(dependentTargetMatch).remove(oldMatch);
 			}
 			for(SubmatchAttributeComparator comparator: comparators) {
@@ -196,7 +197,7 @@ public class DisjunctAttributeCalculationHelper {
 		//remove the changed matches -> needs to be found iteratively because it cant be found with the comparator
 		for(IMatch updatedMatch: changedTargetMatch) {
 			for(IMatch dependentMatches: targetMap.remove(updatedMatch)){
-				sourceMap.get(dependentMatches).remove(updatedMatch);
+				map2.get(dependentMatches).remove(updatedMatch);
 			}
 			for(SubmatchAttributeComparator comparator: comparators) {
 				Iterator<IMatch> iter =  sortedNeededSets.get(comparator).getLeft().iterator();
@@ -224,7 +225,7 @@ public class DisjunctAttributeCalculationHelper {
 
 		//remove the changed source matches -> needs to be found iteratively because it cant be found with the comparator
 		for(IMatch updatedMatch: changedSourceMatch) {
-			for(IMatch dependentMatches: sourceMap.remove(updatedMatch)){
+			for(IMatch dependentMatches: map2.remove(updatedMatch)){
 				targetMap.get(dependentMatches).remove(updatedMatch);
 			}
 			for(SubmatchAttributeComparator comparator: comparators) {
@@ -255,11 +256,13 @@ public class DisjunctAttributeCalculationHelper {
 		for(IMatch newMatch: newTargetMatch) {
 			Set<IMatch> allForbiddenMatches = new HashSet<IMatch>();
 			for(SubmatchAttributeComparator comparator: comparators) {
-				allForbiddenMatches.addAll(DisjunctPatternHelper.findSubsetWithAttributeConstraint(comparator, sortedNeededSets.get(comparator).getRight(), newMatch, true));
+				//notReversed = true when newMatch = lhs 
+				allForbiddenMatches.addAll(DisjunctPatternHelper
+						.findSubsetWithAttributeConstraint(comparator, sortedNeededSets.get(comparator).getRight(), newMatch, comparator.isLhs(newMatch)));
 				sortedNeededSets.get(comparator).getLeft().add(newMatch);
 			}			
 			for(IMatch match: allForbiddenMatches) {
-				sourceMap.get(match).add(newMatch);
+				map2.get(match).add(newMatch);
 			}
 			targetMap.put(newMatch, allForbiddenMatches);
 		}	
@@ -270,7 +273,9 @@ public class DisjunctAttributeCalculationHelper {
 			Set<IMatch> allForbiddenMatches = new HashSet<IMatch>();
 			for(SubmatchAttributeComparator comparator: comparators) {
 				if(comparator.isLegal(newMatch)) {
-					allForbiddenMatches.addAll(DisjunctPatternHelper.findSubsetWithAttributeConstraint(comparator, sortedNeededSets.get(comparator).getLeft(), newMatch, false));
+					//notReversed = false when newMatch = rhs 
+					allForbiddenMatches.addAll(DisjunctPatternHelper
+							.findSubsetWithAttributeConstraint(comparator, sortedNeededSets.get(comparator).getLeft(), newMatch, comparator.isLhs(newMatch)));
 					sortedNeededSets.get(comparator).getRight().add(newMatch);					
 				}
 				else {
@@ -280,30 +285,34 @@ public class DisjunctAttributeCalculationHelper {
 
 			}
 			for(SubmatchAttributeComparator comparator: reverseComparator) {
-				allForbiddenMatches.addAll(DisjunctPatternHelper.findSubsetWithAttributeConstraint(comparator, sortedNeededSets.get(comparator).getRight(), newMatch, true));
+				//notReversed = true when newMatch = rhs 
+				allForbiddenMatches.addAll(DisjunctPatternHelper
+						.findSubsetWithAttributeConstraint(comparator, sortedNeededSets.get(comparator).getRight(), newMatch, comparator.isLhs(newMatch)));
 				sortedNeededSets.get(comparator).getLeft().add(newMatch);					
 			}
 			for(IMatch dependentTargetMatch: allForbiddenMatches) {
 				targetMap.get(dependentTargetMatch).add(newMatch);
 			}				
-			sourceMap.put(newMatch, allForbiddenMatches);
+			map2.put(newMatch, allForbiddenMatches);
 		}	
 		//now use the reverse comparator
 		for(IMatch newMatch: newTargetMatch) {
 			Set<IMatch> allForbiddenMatches = new HashSet<IMatch>();
 			for(SubmatchAttributeComparator comparator: reverseComparator) {
 				if(comparator.isLegal(newMatch)) {
-					allForbiddenMatches.addAll(DisjunctPatternHelper.findSubsetWithAttributeConstraint(comparator, sortedNeededSets.get(comparator).getLeft(), newMatch, false));
+					//notReversed = false when newMatch = lhs 					
+					allForbiddenMatches.addAll(DisjunctPatternHelper
+							.findSubsetWithAttributeConstraint(comparator, sortedNeededSets.get(comparator).getLeft(), newMatch, comparator.isLhs(newMatch)));
 					sortedNeededSets.get(comparator).getRight().add(newMatch);
 				}
 				else {
 					//match is illegal for all target matches
-					allForbiddenMatches.addAll(new HashSet<IMatch>(sourceMap.keySet()));	
+					allForbiddenMatches.addAll(new HashSet<IMatch>(map2.keySet()));	
 				}
 
 			}	
 			for(IMatch match: allForbiddenMatches) {
-				sourceMap.get(match).add(newMatch);
+				map2.get(match).add(newMatch);
 			}
 			targetMap.get(newMatch).addAll(allForbiddenMatches);			
 		}
@@ -314,7 +323,7 @@ public class DisjunctAttributeCalculationHelper {
 	/**
 	 * finds the best cartesian sequence patterns for calculation
 	 */
-	public static final Pair<List<IBeXContextPattern>, List<IBeXContextPattern>> findPatternFrequency(final IBeXDependentDisjunctAttribute attribute, final Map<IBeXContextPattern, Set<IMatch>> submatchesMap){
+	public static final Pair<List<IBeXContextPattern>, List<IBeXContextPattern>> findPatternFrequency(final IBeXDependentDisjunctAttribute attribute, final Map<IBeXContextPattern, Collection<IMatch>> submatchesMap){
 		Map<Pair<List<IBeXContextPattern>, List<IBeXContextPattern>>, Integer> frequencyMap = findAttributeConstraintFrequency(attribute);
 
 		//search for the pattern with the least dependencies
@@ -351,7 +360,9 @@ public class DisjunctAttributeCalculationHelper {
 		for(IBeXDisjunctAttribute subattribute: attribute.getAttributes()) {
 			if(subattribute.getSourcePattern().size()>1) {
 				forbiddenPatterns.add(subattribute.getSourcePattern());
-				forbiddenPatterns.add(subattribute.getTargetPattern());
+			}
+			if(subattribute.getTargetPattern().size()>1) {
+				forbiddenPatterns.add(subattribute.getTargetPattern());				
 			}
 		}
 		

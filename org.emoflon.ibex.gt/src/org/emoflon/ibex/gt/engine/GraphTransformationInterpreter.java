@@ -427,84 +427,97 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			// Check if pending matches became valid again due to attribute changes
 			// Fill filtered matches Map by calling the match stream
 			matchStream(patternName, name2GTPattern.get(patternName).getParameters(), false);
-			// Check if existing matches recently became valid (pending) and add removal jobs
-			matches.get(patternName).stream()
-				.filter(match -> filteredMatches.get(patternName).contains(match))
-				.filter(match -> pendingMatches.containsKey(patternName) && pendingMatches.get(patternName).contains(match))
-				.forEach(match -> {
-					Collection<IMatch> pending = pendingMatches.get(patternName);
-					pending.remove(match);
-					
-					Collection<IMatch> added = addedMatches.get(patternName);
-					if(added == null) {
-						added = Collections.synchronizedSet(new HashSet<>());
-						removedMatches.put(patternName, added);
-					}
-					added.add(match);
-					
-					Queue<Consumer<IMatch>> subs = appearingSubscriptionJobs.get(match);
-					if(subs == null) {
-						subs = new LinkedBlockingQueue<>();
-						appearingSubscriptionJobs.put(match, subs);
-					}
-					subs.addAll(subscriptionsForAppearingMatchesOfPattern.get(patternName));
-			});
 			
-			
-			if(addedMatches.containsKey(patternName)) {
-				addedMatches.get(patternName).forEach(match -> {
-					Queue<Consumer<IMatch>> subs = appearingSubscriptionJobs.get(match);
-					if(subs == null) {
-						subs = new LinkedBlockingQueue<>();
-						appearingSubscriptionJobs.put(match, subs);
-					}
-					subs.addAll(subscriptionsForAppearingMatchesOfPattern.get(patternName));
-				});
+			Collection<IMatch> matchCollection;
+			if(name2Pattern.get(patternName) instanceof IBeXDisjunctContextPattern) {
+				matchCollection = filteredMatches.get(patternName);
+			} else {
+				matchCollection = matches.get(patternName).stream()
+					.filter(match -> filteredMatches.get(patternName).contains(match)).collect(Collectors.toList());			
 			}
-			
+				matchCollection.stream().filter(match -> pendingMatches.containsKey(patternName) && pendingMatches.get(patternName).contains(match))
+					.forEach(match -> {
+						Collection<IMatch> pending = pendingMatches.get(patternName);
+						pending.remove(match);
+						
+						Collection<IMatch> added = addedMatches.get(patternName);
+						if(added == null) {
+							added = Collections.synchronizedSet(new HashSet<>());
+							removedMatches.put(patternName, added);
+						}
+						added.add(match);
+						
+						Queue<Consumer<IMatch>> subs = appearingSubscriptionJobs.get(match);
+						if(subs == null) {
+							subs = new LinkedBlockingQueue<>();
+							appearingSubscriptionJobs.put(match, subs);
+						}
+						subs.addAll(subscriptionsForAppearingMatchesOfPattern.get(patternName));
+				});
+				
+				
+				if(addedMatches.containsKey(patternName)) {
+					addedMatches.get(patternName).forEach(match -> {
+						Queue<Consumer<IMatch>> subs = appearingSubscriptionJobs.get(match);
+						if(subs == null) {
+							subs = new LinkedBlockingQueue<>();
+							appearingSubscriptionJobs.put(match, subs);
+						}
+						subs.addAll(subscriptionsForAppearingMatchesOfPattern.get(patternName));
+					});
+				}					
 		});
 		
+
 		// (2) DELETED: Check for disappearing match subscribers and filter matches
 		subscriptionsForDisappearingMatchesOfPattern.keySet().stream().forEach(patternName -> {
 			// Check if existing matches became invalid due to attribute changes
 			// Fill filtered matches Map by calling the match stream
 			matchStream(patternName, name2GTPattern.get(patternName).getParameters(), false);
 			// Check if existing matches recently became invalid (not pending) and add removal jobs
-			matches.get(patternName).stream()
-				.filter(match -> !filteredMatches.get(patternName).contains(match))
-				.filter(match -> !pendingMatches.containsKey(patternName) || !pendingMatches.get(patternName).contains(match))
-				.forEach(match -> {
-					Collection<IMatch> pending = pendingMatches.get(patternName);
-					if(pending == null) {
-						pending = Collections.synchronizedSet(new HashSet<>());
-						pendingMatches.put(patternName, pending);
-					}
-					pending.add(match);
-					Collection<IMatch> removed = removedMatches.get(patternName);
-					if(removed == null) {
-						removed = Collections.synchronizedSet(new HashSet<>());
-						removedMatches.put(patternName, removed);
-					}
-					removed.add(match);
-					
-					Queue<Consumer<IMatch>> subs = disappearingSubscriptionJobs.get(match);
-					if(subs == null) {
-						subs = new LinkedBlockingQueue<>();
-						disappearingSubscriptionJobs.put(match, subs);
-					}
-					subs.addAll(subscriptionsForDisappearingMatchesOfPattern.get(patternName));
-				});
 			
-			if(removedMatches.containsKey(patternName)) {
-				removedMatches.get(patternName).forEach(match -> {
-					Queue<Consumer<IMatch>> subs = disappearingSubscriptionJobs.get(match);
-					if(subs == null) {
-						subs = new LinkedBlockingQueue<>();
-						disappearingSubscriptionJobs.put(match, subs);
-					}
-					subs.addAll(subscriptionsForDisappearingMatchesOfPattern.get(patternName));
-				});
+			Collection<IMatch> matchCollection;
+			if(name2Pattern.get(patternName) instanceof IBeXDisjunctContextPattern) {
+				matchCollection = filteredMatches.get(patternName);
+			} else {
+				matchCollection = matches.get(patternName).stream()
+				.filter(match -> !filteredMatches.get(patternName).contains(match)).collect(Collectors.toList());			
 			}
+				matchCollection.stream()
+					.filter(match -> !pendingMatches.containsKey(patternName) || !pendingMatches.get(patternName).contains(match))
+					.forEach(match -> {
+						Collection<IMatch> pending = pendingMatches.get(patternName);
+						if(pending == null) {
+							pending = Collections.synchronizedSet(new HashSet<>());
+							pendingMatches.put(patternName, pending);
+						}
+						pending.add(match);
+						Collection<IMatch> removed = removedMatches.get(patternName);
+						if(removed == null) {
+							removed = Collections.synchronizedSet(new HashSet<>());
+							removedMatches.put(patternName, removed);
+						}
+						removed.add(match);
+						
+						Queue<Consumer<IMatch>> subs = disappearingSubscriptionJobs.get(match);
+						if(subs == null) {
+							subs = new LinkedBlockingQueue<>();
+							disappearingSubscriptionJobs.put(match, subs);
+						}
+						subs.addAll(subscriptionsForDisappearingMatchesOfPattern.get(patternName));
+					});
+				
+				if(removedMatches.containsKey(patternName)) {
+					removedMatches.get(patternName).forEach(match -> {
+						Queue<Consumer<IMatch>> subs = disappearingSubscriptionJobs.get(match);
+						if(subs == null) {
+							subs = new LinkedBlockingQueue<>();
+							disappearingSubscriptionJobs.put(match, subs);
+						}
+						subs.addAll(subscriptionsForDisappearingMatchesOfPattern.get(patternName));
+					});
+				}				
+
 		});
 		
 		// Check if any match removed subscriptions are triggered by removals
@@ -580,6 +593,31 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 //		Check whether there are any subscribers, if not return. -> No need to track deltas.
 		if(subscriptionsForAppearingMatchesOfPattern.isEmpty() && subscriptionsForDisappearingMatches.isEmpty() && subscriptionsForDisappearingMatchesOfPattern.isEmpty())
 			return;
+	
+		//find out if the match belongs to a disjunctContextPattern
+		int index = patternName.lastIndexOf("_");
+		if(index != -1) {
+			//see if there is a disjunctContextPattern with the same name
+			String disjunctPatternName = patternName.substring(0, index);
+			
+			disjunctContextPatternSet.stream().filter(pattern -> pattern.getName().equals(disjunctPatternName))
+			.findFirst().ifPresent(pattern -> {
+				
+				Collection<IMatch> newMatches = disjunctPatternInterpreter.get(pattern).createMatchesWithThisSubmatch(pattern, match, 
+				matches, pattern.getName());	
+				for(IMatch newMatch: newMatches) {
+					if(removedMatches.containsKey(pattern.getName()) && removedMatches.get(pattern.getName()).contains(newMatch)) {
+						removedMatches.get(pattern.getName()).remove(newMatch);
+						return;
+					}
+					
+					if (!addedMatches.containsKey(pattern.getName())) {
+						addedMatches.put(pattern.getName(), Collections.synchronizedSet(new HashSet<IMatch>()));
+					}
+					addedMatches.get(pattern.getName()).add(newMatch);
+				}
+			});
+		}
 		
 		if(removedMatches.containsKey(patternName) && removedMatches.get(patternName).contains(match)) {
 			removedMatches.get(patternName).remove(match);
@@ -602,6 +640,30 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 //			Check whether there are any subscribers, if not return. -> No need to track deltas.
 			if(subscriptionsForAppearingMatchesOfPattern.isEmpty() && subscriptionsForDisappearingMatches.isEmpty() && subscriptionsForDisappearingMatchesOfPattern.isEmpty())
 				return;
+			
+			//find out if the match belongs to a disjunctContextPattern
+			int index = patternName.lastIndexOf("_");
+			if(index != -1) {
+				//see if there is a disjunctContextPattern with the same name
+				String disjunctPatternName = patternName.substring(0, index);
+				
+				disjunctContextPatternSet.stream().filter(pattern -> pattern.getName().equals(disjunctPatternName))
+				.findFirst().ifPresent(pattern -> {
+					Collection<IMatch> oldMatches = disjunctPatternInterpreter.get(pattern).createMatchesWithThisSubmatch(pattern, match, 
+							matches, pattern.getName());	
+					for(IMatch oldMatch: oldMatches) {
+						if(addedMatches.containsKey(pattern.getName()) && addedMatches.get(pattern.getName()).contains(oldMatch)) {
+							addedMatches.get(pattern.getName()).remove(oldMatch);
+							return;
+						}
+						
+						if (!removedMatches.containsKey(pattern.getName())) {
+							removedMatches.put(pattern.getName(), Collections.synchronizedSet(new HashSet<IMatch>()));
+						}
+						removedMatches.get(pattern.getName()).add(oldMatch);
+					}
+				});				
+			}
 			
 			if(addedMatches.containsKey(patternName) && addedMatches.get(patternName).contains(match)) {
 				addedMatches.get(patternName).remove(match);

@@ -1,6 +1,7 @@
 package org.emoflon.ibex.gt.disjunctpatterns;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -15,10 +16,14 @@ import java.util.stream.Collectors;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.common.operational.SimpleMatch;
 import org.emoflon.ibex.gt.transformations.Pair;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticAttribute;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticExpression;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXBinaryExpression;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjunctContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRelation;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXUnaryExpression;
 
 /**
  * Helper class for the GraphTransformationDisjunctPatternInterpreter
@@ -30,11 +35,11 @@ public class DisjunctPatternHelper {
 	 * calculates all the matches that contain the specific submatch
 
 	 */
-	public static final Set<IMatch> createMatchesWithThisSubmatch(final IMatch match, final Map<IBeXContextPattern, Set<IMatch>> submatchesMap, final String name,
+	public static final Collection<IMatch> createMatchesWithThisSubmatch(final IMatch match, final Map<IBeXContextPattern, Collection<IMatch>> submatchesMap, final String name,
 			final List<SubmatchAttributeComparator> attributes){
-		Set<IMatch> cartesianProduct = new HashSet<IMatch>();
+		Collection<IMatch> cartesianProduct = new HashSet<IMatch>();
 		cartesianProduct.add(match);
-		for(Set<IMatch> matches: submatchesMap.values()) {
+		for(Collection<IMatch> matches: submatchesMap.values()) {
 			if(!matches.isEmpty()) {
 				if(!matches.iterator().next().getPatternName().equals(match.getPatternName())) {
 					cartesianProduct = cartesianProduct(cartesianProduct, matches, name, attributes);
@@ -57,9 +62,9 @@ public class DisjunctPatternHelper {
 	 * @param match2 the second matchSet
 	 * @return the cartesian product
 	 */
-	public static final Set<IMatch> cartesianProduct(final Set<IMatch> match1, final Set<IMatch> match2, final String name,
+	public static final Collection<IMatch> cartesianProduct(final Collection<IMatch> match1, final Collection<IMatch> match2, final String name,
 			final List<SubmatchAttributeComparator> attributes){
-		Set<IMatch> newSubMatches = new HashSet<IMatch>();
+		Collection<IMatch> newSubMatches = new HashSet<IMatch>();
 		if(match1.isEmpty() || match2.isEmpty()) {
 			return newSubMatches;		
 		}
@@ -77,23 +82,29 @@ public class DisjunctPatternHelper {
 			List<SubmatchAttributeComparator> afterMergeComp = new ArrayList<SubmatchAttributeComparator>();
 			//find all necessary attributes for the calculation of the cartesian product
 			for(SubmatchAttributeComparator comp: attributes) {
+				
+				IMatch merge = merge(firstMatch,secondMatch, name);	
+				
 				boolean firstIsTarget = true;
 				boolean secondIsTarget = true;
+				boolean bothAreTarget = true;
+				
 				if(!matchFromSubpattern(firstMatch, comp.getTargetPatterns())) firstIsTarget = false;
 				if(!matchFromSubpattern(secondMatch, comp.getTargetPatterns())) secondIsTarget = false;
-				if(!firstIsTarget && !secondIsTarget) continue;
+				if(!matchFromSubpattern(merge, comp.getTargetPatterns())) bothAreTarget = false;
+				
 				//find the source match
 				boolean firstIsSource = true;
 				boolean secondIsSource = true;
 				boolean bothAreSource = true;
-				IMatch merge = merge(firstMatch,secondMatch, name);
-				
+						
 				if(!matchFromSubpattern(firstMatch, comp.getSourcePatterns())) firstIsSource = false;
 				if(!matchFromSubpattern(secondMatch, comp.getSourcePatterns())) secondIsSource = false;
 				if(!matchFromSubpattern(merge, comp.getSourcePatterns())) bothAreSource = false;
-
-				if(!firstIsSource && !secondIsSource && !bothAreSource) continue;
-				else if(bothAreSource && !firstIsSource && !secondIsSource) afterMergeComp.add(comp);
+				
+				//if the matches are both source and target after merge but not before
+				if(bothAreSource && bothAreTarget && (!firstIsSource || !secondIsSource
+						|| !firstIsTarget || !secondIsTarget)) afterMergeComp.add(comp);
 				else {
 					//other constraints were already solved
 					if(firstIsTarget && secondIsSource) firstIsTargetComp.add(comp);
@@ -129,8 +140,8 @@ public class DisjunctPatternHelper {
 	/**
 	 * creates an updated cartesian product with the given sets
 	 */
-	public static final Set<IMatch> createUpdatedCartesianProduct(final IBeXDisjunctContextPattern pattern, final List<IBeXContextPattern> patternSequence, 
-			final IBeXContextPattern updatedPattern, final Set<IMatch> updatedMatches, final Map<IBeXContextPattern, Set<IMatch>> submatchesMap,
+	public static final Collection<IMatch> createUpdatedCartesianProduct(final IBeXDisjunctContextPattern pattern, final List<IBeXContextPattern> patternSequence, 
+			final IBeXContextPattern updatedPattern, final Collection<IMatch> updatedMatches, final Map<IBeXContextPattern, Collection<IMatch>> submatchesMap,
 			final List<SubmatchAttributeComparator> attributes){
 
 		Set<IMatch> newCartesianMatches = new HashSet<IMatch>();
@@ -163,15 +174,15 @@ public class DisjunctPatternHelper {
 	/**
 	 * creates the old and new matches of the cartesian product; at index 0 are the new matches and at 1 are the old matches
 	 */
-	public static final List<Set<IMatch>> createNewAndOldCartesianProducts(final IBeXDisjunctContextPattern pattern, final List<IBeXContextPattern> cartesianSequence, 
-			final Map<IBeXContextPattern, Set<IMatch>> submatchesMap, final Map<IBeXContextPattern, Set<IMatch>> oldMatches,
+	public static final List<Collection<IMatch>> createNewAndOldCartesianProducts(final IBeXDisjunctContextPattern pattern, final List<IBeXContextPattern> cartesianSequence, 
+			final Map<IBeXContextPattern, Collection<IMatch>> submatchesMap, final Map<IBeXContextPattern, Collection<IMatch>> oldMatches,
 			final List<SubmatchAttributeComparator> comparators){
 		Map<IBeXContextPattern, Set<IMatch>> newSubmatches = new HashMap<IBeXContextPattern, Set<IMatch>>();
 		Map<IBeXContextPattern, Set<IMatch>> oldSubmatches = new HashMap<IBeXContextPattern, Set<IMatch>>();
 		
 		for(IBeXContextPattern subpattern: cartesianSequence) {
-			Set<IMatch> newMatch = submatchesMap.get(subpattern);
-			Set<IMatch> oldMatch = oldMatches.get(subpattern);
+			Collection<IMatch> newMatch = submatchesMap.get(subpattern);
+			Collection<IMatch> oldMatch = oldMatches.get(subpattern);
 			newSubmatches.put(subpattern, newMatch.parallelStream().filter(match -> !oldMatch.contains(match)).collect(Collectors.toSet()));
 			oldSubmatches.put(subpattern, oldMatch.parallelStream().filter(match -> !newMatch.contains(match)).collect(Collectors.toSet()));
 		}
@@ -188,7 +199,7 @@ public class DisjunctPatternHelper {
 			}		
 		}
 		
-		List<Set<IMatch>> matches = new ArrayList<Set<IMatch>>();
+		List<Collection<IMatch>> matches = new ArrayList<Collection<IMatch>>();
 		matches.add(0, newCalculatedMatches);
 		matches.add(1, oldCalculatedMatches);
 		return matches;
@@ -197,13 +208,14 @@ public class DisjunctPatternHelper {
 	/**
 	 * calculate the changed matches for the cartesian product and add it to the new cartesian matches
 	 */
-	public static Set<IMatch> createChangedCartesianProducts(final IBeXDisjunctContextPattern pattern, final List<IBeXContextPattern> cartesianSequence, final Set<Object> changedNodes,
-			final Map<IBeXContextPattern, Set<IMatch>> oldMatches, final Map<IBeXContextPattern, Set<IMatch>> submatchesMap, final Set<IMatch> newMatches, List<SubmatchAttributeComparator> comparators){
+	public static Collection<IMatch> createChangedCartesianProducts(final IBeXDisjunctContextPattern pattern, final List<IBeXContextPattern> cartesianSequence, final Collection<Object> changedNodes,
+			final Map<IBeXContextPattern, Collection<IMatch>> oldMatches, final Map<IBeXContextPattern, Collection<IMatch>> submatchesMap, 
+			final Collection<IMatch> newMatches, final Collection<IMatch> oldCartesianMatches, List<SubmatchAttributeComparator> comparators){
 		
 		Map<IBeXContextPattern, Set<IMatch>> changedMatches = new HashMap<IBeXContextPattern, Set<IMatch>>();
 		for(IBeXContextPattern subpattern: cartesianSequence) {
-			Set<IMatch> oldSubpatternMatches = oldMatches.get(subpattern);
-			Set<IMatch> newSubpatternMatches = submatchesMap.get(subpattern);
+			Collection<IMatch> oldSubpatternMatches = oldMatches.get(subpattern);
+			Collection<IMatch> newSubpatternMatches = submatchesMap.get(subpattern);
 			if(newSubpatternMatches.isEmpty()) return new HashSet<IMatch>();
 			changedMatches.put(subpattern, newSubpatternMatches.parallelStream().filter(match -> {
 				//if it is a new match then it cant be updated
@@ -218,10 +230,18 @@ public class DisjunctPatternHelper {
 		}
 		
 		//add the changed matches to the new matches and to the changed match set
-		Set<IMatch> changedCartesianMatches = new HashSet<IMatch>();
+		Collection<IMatch> changedCartesianMatches = new HashSet<IMatch>();
+		changedCartesianMatches.addAll(oldCartesianMatches.parallelStream().filter(match -> {
+			for(String parameter: match.getParameterNames()) {
+				if(changedNodes.contains(match.get(parameter))) {
+					return true;
+				}
+			}	
+			return false;
+		}).collect(Collectors.toSet()));
+		
 		for(IBeXContextPattern subpattern: cartesianSequence) {
 			newMatches.addAll(DisjunctPatternHelper.createUpdatedCartesianProduct(pattern, cartesianSequence, subpattern, changedMatches.get(subpattern), submatchesMap, comparators));
-			changedCartesianMatches.addAll(DisjunctPatternHelper.createUpdatedCartesianProduct(pattern, cartesianSequence, subpattern, changedMatches.get(subpattern), oldMatches, comparators));
 		}
 		return changedCartesianMatches;
 	}
@@ -534,4 +554,21 @@ public class DisjunctPatternHelper {
 		return combinations;
 	}
 
+	/**
+	 * find all dependent nodes of an arithmetic expression
+	 */
+	public static List<IBeXArithmeticAttribute> findNodesInExpression(IBeXArithmeticExpression expression) {
+		List<IBeXArithmeticAttribute> allNodes = new ArrayList<IBeXArithmeticAttribute>();
+		if(expression instanceof IBeXUnaryExpression) {
+			allNodes.addAll(findNodesInExpression(((IBeXUnaryExpression) expression).getOperand()));
+		}
+		if(expression instanceof IBeXBinaryExpression) {
+			allNodes.addAll(findNodesInExpression(((IBeXBinaryExpression) expression).getLeft()));
+			allNodes.addAll(findNodesInExpression(((IBeXBinaryExpression) expression).getRight()));
+		}
+		if(expression instanceof IBeXArithmeticAttribute) {
+			allNodes.add((IBeXArithmeticAttribute) expression);
+		}
+		return allNodes;
+	}
 }

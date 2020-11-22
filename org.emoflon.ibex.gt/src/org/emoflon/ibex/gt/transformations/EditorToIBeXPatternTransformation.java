@@ -106,6 +106,11 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 			}
 		});
 		
+		//transfrom the disjunct attribute constraints
+		data.disjointPatternToTransformation.forEach((disjunctPattern, transformation) -> {
+			transformation.transformAttributeConstraint(disjunctPattern);
+		});
+		
 		while(!rulesToBeTransformed.isEmpty())
 			transformToRule(rulesToBeTransformed.poll());
 		
@@ -311,11 +316,12 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 			//transform if the pattern is disjoint and the pattern has the disjoint flag (which says that the pattern can be optimized)
 			if(editorPattern.isDisjoint() && patternFinder.isDisjunct()) {
 				try {
-					IBeXDisjunctContextPattern disjunctPattern = new IBeXDisjunctPatternTransformation(possibleDisjointPattern, patternFinder.getSubgraphs())
-							.transformToContextPattern();
+					IBeXDisjunctPatternTransformation transformation = new IBeXDisjunctPatternTransformation(possibleDisjointPattern, patternFinder.getSubgraphs());
+					IBeXDisjunctContextPattern disjunctPattern = transformation.transformToContextPattern();
 					disjunctPattern.setNonOptimizedPattern(ibexPattern);
 					//add them to the disjoint pattern set; the used context pattern will be removed at the end
 					data.nameToDisjointPattern.put(disjunctPattern.getName(), disjunctPattern);
+					data.disjointPatternToTransformation.put(disjunctPattern, transformation);
 
 				}
 				catch(IllegalArgumentException e) {

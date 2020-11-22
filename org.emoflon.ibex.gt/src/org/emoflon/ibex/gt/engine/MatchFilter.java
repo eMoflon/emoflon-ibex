@@ -81,10 +81,10 @@ public class MatchFilter {
 	 *            the matches
 	 * @return a list containing a set of the submatches
 	 */
-	public static final Map<IBeXContextPattern, Set<IMatch>> getFilteredMatchList(final IBeXDisjunctContextPattern pattern, final Map<String, Object> parameters,
+	public static final Map<IBeXContextPattern, Collection<IMatch>> getFilteredMatchList(final IBeXDisjunctContextPattern pattern, final Map<String, Object> parameters,
 			final Map<String, Collection<IMatch>> matches){
 		IBeXDisjunctContextPattern disjunctPattern = (IBeXDisjunctContextPattern) pattern;
-		Map<IBeXContextPattern, Set<IMatch>> submatchesMap = new HashMap<IBeXContextPattern, Set<IMatch>>();
+		Map<IBeXContextPattern, Collection<IMatch>> submatchesMap = new HashMap<IBeXContextPattern, Collection<IMatch>>();
 		
 		for(IBeXContextPattern subpattern: disjunctPattern.getSubpatterns()) {
 			submatchesMap.put(subpattern, MatchFilter.getFilteredMatchStream(subpattern, parameters, matches).collect(Collectors.toSet()));

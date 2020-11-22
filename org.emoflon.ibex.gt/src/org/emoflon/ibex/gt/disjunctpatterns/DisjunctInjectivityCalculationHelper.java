@@ -1,6 +1,7 @@
 package org.emoflon.ibex.gt.disjunctpatterns;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,11 +27,11 @@ public class DisjunctInjectivityCalculationHelper {
 	 * calculates the match count for dependent subpatterns
 	 */
 	public static long calculateSubmatchCount(final IBeXDisjunctContextPattern pattern, 
-			final IBeXDependentInjectivityConstraints constraints, final Map<IBeXContextPattern, Set<IMatch>> submatchesMap, final Map<IBeXContextPattern, Set<IMatch>> oldMatches, 
-			final Pair<List<IBeXContextPattern>,List<IBeXContextPattern>> cartesianSequence, final Map<IBeXDependentInjectivityConstraints, Pair<Set<IMatch>, Set<IMatch>>> oldCartesianProducts, 
+			final IBeXDependentInjectivityConstraints constraints, final Map<IBeXContextPattern, Collection<IMatch>> submatchesMap, final Map<IBeXContextPattern, Collection<IMatch>> oldMatches, 
+			final Pair<List<IBeXContextPattern>,List<IBeXContextPattern>> cartesianSequence, final Map<IBeXDependentInjectivityConstraints, Pair<Collection<IMatch>, Collection<IMatch>>> oldCartesianProducts, 
 			final List<SubmatchAttributeComparator> comparators, 
-			final Map<IBeXDependentInjectivityConstraints, Pair<Map<IMatch, Set<IMatch>>, Map<IMatch, Set<IMatch>>>> oldInjectivityConstraints,
-			final Map<IBeXDependentDisjunctAttribute, Map<IMatch, Set<IMatch>>> targetMap, final Map<IBeXDependentDisjunctAttribute, Map<IMatch, Set<IMatch>>> sourceMap, 
+			final Map<IBeXDependentInjectivityConstraints, Pair<Map<IMatch, Collection<IMatch>>, Map<IMatch, Collection<IMatch>>>> oldInjectivityConstraints,
+			final Map<IBeXDependentDisjunctAttribute, Map<IMatch, Collection<IMatch>>> targetMatchSets, final Map<IBeXDependentDisjunctAttribute, Map<IMatch, Collection<IMatch>>> sourceMatchSets, 
 			final Map<SubmatchAttributeComparator, Pair<TreeSet<IMatch>, TreeSet<IMatch>>> sourceNeededSets, Set<Object> changedNodes) {
 		
 		//the parameter names
@@ -58,8 +59,8 @@ public class DisjunctInjectivityCalculationHelper {
 		List<SubmatchAttributeComparator> cartesianTargetComparators = new ArrayList<SubmatchAttributeComparator>(comparators.stream()
 				.filter(c -> cartesianSequence.getLeft().containsAll(c.getTargetPatterns()) && cartesianSequence.getLeft().containsAll(c.getSourcePatterns())).collect(Collectors.toSet()));
 
-		Set<IMatch> cartesianTargetProduct = new HashSet<IMatch>();
-		Set<IMatch> oldTargetMatches;		
+		Collection<IMatch> cartesianTargetProduct = new HashSet<IMatch>();
+		Collection<IMatch> oldTargetMatches;		
 		
 		if(cartesianSequence.getLeft().size()>1) {
 			oldTargetMatches = oldCartesianProducts.get(constraints).getLeft();
@@ -70,15 +71,15 @@ public class DisjunctInjectivityCalculationHelper {
 			cartesianTargetProduct.addAll(submatchesMap.get(cartesianSequence.getLeft().get(0)));
 		}			
 		//find the matches which were added and removed
-		List<Set<IMatch>> calculatedTargetMatches = DisjunctPatternHelper.createNewAndOldCartesianProducts(pattern, cartesianSequence.getLeft(), submatchesMap, oldMatches, 
+		List<Collection<IMatch>> calculatedTargetMatches = DisjunctPatternHelper.createNewAndOldCartesianProducts(pattern, cartesianSequence.getLeft(), submatchesMap, oldMatches, 
 				cartesianTargetComparators);
-		Set<IMatch> oldCalculatedTargetMatches = calculatedTargetMatches.get(1);
-		Set<IMatch> newCalculatedTargetMatches = calculatedTargetMatches.get(0);
+		Collection<IMatch> oldCalculatedTargetMatches = calculatedTargetMatches.get(1);
+		Collection<IMatch> newCalculatedTargetMatches = calculatedTargetMatches.get(0);
 		cartesianTargetProduct.addAll(newCalculatedTargetMatches);
 		cartesianTargetProduct.removeAll(oldCalculatedTargetMatches);
 		
 		Set<IMatch> cartesianSourceProduct = new HashSet<IMatch>();
-		Set<IMatch> oldSourceMatches;		
+		Collection<IMatch> oldSourceMatches;		
 		
 		if(cartesianSequence.getRight().size()>1) {
 			oldSourceMatches = oldCartesianProducts.get(constraints).getRight();
@@ -89,14 +90,14 @@ public class DisjunctInjectivityCalculationHelper {
 			cartesianSourceProduct.addAll(submatchesMap.get(cartesianSequence.getRight().get(0)));
 		}			
 		//find the matches which were added and removed
-		List<Set<IMatch>> calculatedSourceMatches = DisjunctPatternHelper.createNewAndOldCartesianProducts(pattern, cartesianSequence.getRight(), submatchesMap, oldMatches, 
+		List<Collection<IMatch>> calculatedSourceMatches = DisjunctPatternHelper.createNewAndOldCartesianProducts(pattern, cartesianSequence.getRight(), submatchesMap, oldMatches, 
 				cartesianSourceComparators);
-		Set<IMatch> oldCalculatedSourceMatches = calculatedSourceMatches.get(1);
-		Set<IMatch> newCalculatedSourceMatches = calculatedSourceMatches.get(0);
+		Collection<IMatch> oldCalculatedSourceMatches = calculatedSourceMatches.get(1);
+		Collection<IMatch> newCalculatedSourceMatches = calculatedSourceMatches.get(0);
 		cartesianSourceProduct.addAll(newCalculatedSourceMatches);
 		cartesianSourceProduct.removeAll(oldCalculatedSourceMatches);
 		
-		Map<IMatch, Set<IMatch>> injectivityMap = findForbiddenMatches(constraints, oldTargetMatches, oldSourceMatches,parameter1, parameter2, 
+		Map<IMatch, Collection<IMatch>> injectivityMap = findForbiddenMatches(constraints, oldTargetMatches, oldSourceMatches,parameter1, parameter2, 
 				cartesianTargetProduct, cartesianSourceProduct, oldInjectivityConstraints);
 		
 		//find the updated matches if it is necessary
@@ -126,12 +127,12 @@ public class DisjunctInjectivityCalculationHelper {
 				}
 
 				//changed target matches
-				Set<IMatch> changedTargetMatches = DisjunctPatternHelper.createChangedCartesianProducts(pattern, cartesianSequence.getLeft(), changedNodes, oldMatches, submatchesMap, newCalculatedTargetMatches, 
-						cartesianTargetComparators);
+				Collection<IMatch> changedTargetMatches = DisjunctPatternHelper.createChangedCartesianProducts(pattern, cartesianSequence.getLeft(), changedNodes, oldMatches, submatchesMap, newCalculatedTargetMatches, 
+						 oldCartesianProducts.get(constraints).getLeft(), cartesianTargetComparators);
 
 				//add the changed matches to the new matches and to the changed match set
-				Set<IMatch> changedSourceMatches = DisjunctPatternHelper.createChangedCartesianProducts(pattern, cartesianSequence.getRight(), changedNodes, oldMatches, submatchesMap, newCalculatedSourceMatches, 
-						cartesianSourceComparators);
+				Collection<IMatch> changedSourceMatches = DisjunctPatternHelper.createChangedCartesianProducts(pattern, cartesianSequence.getRight(), changedNodes, oldMatches, submatchesMap, newCalculatedSourceMatches, 
+						oldCartesianProducts.get(constraints).getRight(), cartesianSourceComparators);
 				
 				if(cartesianSequence.getRight().size() > 1 || cartesianSequence.getLeft().size() > 1) {
 					//update the cartesian product
@@ -140,8 +141,8 @@ public class DisjunctInjectivityCalculationHelper {
 				}	
 				
 				return cartesianTargetProduct.size()*cartesianSourceProduct.size() - DisjunctAttributeCalculationHelper.calculateForbiddenConstraintWithInjectivityMatches(constraintComparators, reverseComparator, oldCalculatedTargetMatches, 
-						changedTargetMatches, newCalculatedTargetMatches, targetMap.get(dependentAttribute), oldCalculatedSourceMatches, changedSourceMatches, newCalculatedSourceMatches, 
-						sourceMap.get(dependentAttribute), injectivityMap, sourceNeededSets);				
+						changedTargetMatches, newCalculatedTargetMatches, targetMatchSets.get(dependentAttribute), oldCalculatedSourceMatches, changedSourceMatches, newCalculatedSourceMatches, 
+						sourceMatchSets.get(dependentAttribute), injectivityMap, sourceNeededSets);				
 				}
 		}
 
@@ -165,23 +166,23 @@ public class DisjunctInjectivityCalculationHelper {
 	 * @param match2 the second match
 	 * @return the sum of forbidden matches
 	 */
-	public static final Map<IMatch, Set<IMatch>> findForbiddenMatches(final IBeXDependentInjectivityConstraints constraint, final Set<IMatch> oldMatch1, final Set<IMatch> oldMatch2,
-			final List<String> parameter1, final List<String> parameter2, final Set<IMatch> match1, final Set<IMatch> match2, 
-			Map<IBeXDependentInjectivityConstraints, Pair<Map<IMatch, Set<IMatch>>, Map<IMatch, Set<IMatch>>>> oldInjectivityConstraints ){
+	public static final Map<IMatch, Collection<IMatch>> findForbiddenMatches(final IBeXDependentInjectivityConstraints constraint, final Collection<IMatch> oldMatch1, 
+			final Collection<IMatch> oldMatch2,	final List<String> parameter1, final List<String> parameter2, final Collection<IMatch> match1, final Collection<IMatch> match2, 
+			Map<IBeXDependentInjectivityConstraints, Pair<Map<IMatch, Collection<IMatch>>, Map<IMatch, Collection<IMatch>>>> oldInjectivityConstraints ){
 		
 
 		//find out which matches where added		
-		Set<IMatch> newMatches1 = match1.parallelStream().filter(match -> !oldMatch1.contains(match)).collect(Collectors.toSet());
-		Set<IMatch> newMatches2 = match2.parallelStream().filter(match -> !oldMatch2.contains(match)).collect(Collectors.toSet());
+		Collection<IMatch> newMatches1 = match1.parallelStream().filter(match -> !oldMatch1.contains(match)).collect(Collectors.toSet());
+		Collection<IMatch> newMatches2 = match2.parallelStream().filter(match -> !oldMatch2.contains(match)).collect(Collectors.toSet());
 		
 		//find out which matches where removed	
-		Set<IMatch> oldMatches1 = oldMatch1.parallelStream().filter(match -> !match1.contains(match)).collect(Collectors.toSet());
-		Set<IMatch> oldMatches2 = oldMatch2.parallelStream().filter(match -> !match2.contains(match)).collect(Collectors.toSet());
+		Collection<IMatch> oldMatches1 = oldMatch1.parallelStream().filter(match -> !match1.contains(match)).collect(Collectors.toSet());
+		Collection<IMatch> oldMatches2 = oldMatch2.parallelStream().filter(match -> !match2.contains(match)).collect(Collectors.toSet());
 		
 
-		Pair<Map<IMatch, Set<IMatch>>, Map<IMatch, Set<IMatch>>> constraintMap = oldInjectivityConstraints.get(constraint);
-		Map<IMatch, Set<IMatch>> constraintMap1 = constraintMap.getLeft();
-		Map<IMatch, Set<IMatch>> constraintMap2 = constraintMap.getRight();
+		Pair<Map<IMatch, Collection<IMatch>>, Map<IMatch, Collection<IMatch>>> constraintMap = oldInjectivityConstraints.get(constraint);
+		Map<IMatch, Collection<IMatch>> constraintMap1 = constraintMap.getLeft();
+		Map<IMatch, Collection<IMatch>> constraintMap2 = constraintMap.getRight();
 	
 		//remove the old matches and their injectivity constraint
 		for(IMatch oldMatch: oldMatches1) {
@@ -197,11 +198,11 @@ public class DisjunctInjectivityCalculationHelper {
 		}
 		
 		//calculate the first map
-		Set<Object> intersection1 = getIntersection(getObjectSet(newMatches1, parameter1), getObjectSet(constraintMap2.keySet(), parameter2));
+		Collection<Object> intersection1 = getIntersection(getObjectSet(newMatches1, parameter1), getObjectSet(constraintMap2.keySet(), parameter2));
 		updateInjectivityMap(constraintMap2, constraintMap1, newMatches1, parameter2, parameter1, intersection1);
 		
 		//calculate the second map
-		Set<Object> intersection2 = getIntersection(getObjectSet(newMatches2, parameter2), getObjectSet(constraintMap1.keySet(), parameter1));
+		Collection<Object> intersection2 = getIntersection(getObjectSet(newMatches2, parameter2), getObjectSet(constraintMap1.keySet(), parameter1));
 		updateInjectivityMap(constraintMap1, constraintMap2, newMatches2, parameter1, parameter2, intersection2);
 
 		return constraintMap1;		
@@ -209,7 +210,7 @@ public class DisjunctInjectivityCalculationHelper {
 	/**
 	 * calculates the set of objects that could break the injectivity constraints
 	 */
-	private static final Set<Object> getObjectSet(final Set<IMatch> matches, final List<String> parameters){
+	private static final Collection<Object> getObjectSet(final Collection<IMatch> matches, final List<String> parameters){
 		return matches.parallelStream()
 				.flatMap( match -> parameters.stream().map(parameter -> match.get(parameter)))
 				.collect(Collectors.toSet());
@@ -218,7 +219,7 @@ public class DisjunctInjectivityCalculationHelper {
 	/**
 	 * calculates the intersection of two sets
 	 */
-	private static final Set<Object> getIntersection(final Set<Object> set1, final Set<Object> set2){
+	private static final Collection<Object> getIntersection(final Collection<Object> set1, final Collection<Object> set2){
 		if(set1.size()<set2.size()) {
 			return set1.parallelStream().filter(object -> set2.contains(object)).collect(Collectors.toSet());
 		}else {
@@ -229,8 +230,8 @@ public class DisjunctInjectivityCalculationHelper {
 	/**
 	 * update the injectivityConstraintMap
 	 */
-	private static void updateInjectivityMap(final Map<IMatch, Set<IMatch>> injectivityMap, final Map<IMatch,Set<IMatch>> matchInjectivityMap, final Set<IMatch> matches, 
-			final List<String> mapParameters, final List<String> matchParameters, Set<Object> conflictSet) {
+	private static void updateInjectivityMap(final Map<IMatch, Collection<IMatch>> injectivityMap, final Map<IMatch,Collection<IMatch>> matchInjectivityMap, final Collection<IMatch> matches, 
+			final List<String> mapParameters, final List<String> matchParameters, Collection<Object> conflictSet) {
 		
 		for(Object object: conflictSet) {
 			//matches of the first set that break injectivity constraints
@@ -271,7 +272,7 @@ public class DisjunctInjectivityCalculationHelper {
 	 * @param constraint the constraint
 	 * @return the list of the subpatterns that should be used for the cartesian product calculation
 	 */
-	public static final Pair<List<IBeXContextPattern>, List<IBeXContextPattern>> findPatternFrequency(final IBeXDependentInjectivityConstraints constraint, Map<IBeXContextPattern, Set<IMatch>> submatchesMap){
+	public static final Pair<List<IBeXContextPattern>, List<IBeXContextPattern>> findPatternFrequency(final IBeXDependentInjectivityConstraints constraint, Map<IBeXContextPattern, Collection<IMatch>> submatchesMap){
 		
 		Map<Pair<List<IBeXContextPattern>, List<IBeXContextPattern>>, Integer> patternFrequency = new HashMap<Pair<List<IBeXContextPattern>, List<IBeXContextPattern>>, Integer>();
 		//searches for the patterns with attribute constraints

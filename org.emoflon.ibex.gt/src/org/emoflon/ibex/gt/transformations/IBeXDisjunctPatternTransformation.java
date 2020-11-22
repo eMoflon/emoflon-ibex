@@ -31,10 +31,12 @@ public class IBeXDisjunctPatternTransformation {
 	
 	private final IBeXContextPattern pattern;
 	private final Set<Set<IBeXNode>> subpatterns;
+	Map<Set<IBeXNode>, IBeXContextPattern> dividedSubpatterns;
 	
 	public IBeXDisjunctPatternTransformation(final IBeXContextPattern disjunctPattern, Set<Set<IBeXNode>> subgraphs) {
 		pattern = disjunctPattern;
-		subpatterns = subgraphs;	
+		subpatterns = subgraphs;
+		dividedSubpatterns = new HashMap<Set<IBeXNode>, IBeXContextPattern>();
 	}
 	
 	/**
@@ -53,7 +55,7 @@ public class IBeXDisjunctPatternTransformation {
 		ibexPattern.setName(pattern.getName());
 		
 		//divide the pattern into subpatterns
-		Map<Set<IBeXNode>, IBeXContextPattern> dividedSubpatterns = divideContextPatterns(pattern);
+		dividedSubpatterns = divideContextPatterns(pattern);
 		
 		ibexPattern.getSubpatterns().addAll(dividedSubpatterns.values());		
 		
@@ -75,20 +77,8 @@ public class IBeXDisjunctPatternTransformation {
 				}
 			}	
 		}
-		List<IBeXDependentInjectivityConstraints> injectivityConstraint = transformInjectivityConstraints(ibexPattern.getSubpatterns(), subconstraint);
-		ibexPattern.getInjectivityConstraints().addAll(injectivityConstraint);
-		
-		//find the attribute constraints
-		//the remaining attribute constraints should both in lhs and rhs be attribute expressions
-		if(pattern.getAttributeConstraint().stream().anyMatch(attr -> !(attr.getLhs() instanceof IBeXAttributeExpression && attr.getRhs() instanceof IBeXAttributeExpression))) {
-			throw new IllegalArgumentException("the attribute constraints could not be divided");
-		}
-		else {
-			//create the disjunct attribute constraint
-			List<IBeXConstraint> constraintList = new ArrayList<IBeXConstraint>(pattern.getAttributeConstraint());
-			constraintList.addAll(pattern.getArithmeticConstraints());
-			ibexPattern.getAttributesConstraints().addAll(transformAttributeConstraints(dividedSubpatterns, constraintList, injectivityConstraint));
-		}
+		List<IBeXDependentInjectivityConstraints> injectivityConstraints = transformInjectivityConstraints(ibexPattern.getSubpatterns(), subconstraint);
+		ibexPattern.getInjectivityConstraints().addAll(injectivityConstraints);
 		
 		return ibexPattern;
 	}
@@ -156,46 +146,6 @@ public class IBeXDisjunctPatternTransformation {
 				newSubpattern.getLocalEdges().addAll(pattern.getLocalEdges().stream().filter(edge -> subpattern.contains(edge.getSourceNode())).collect(Collectors.toList()));
 				newSubpattern.getInjectivityConstraints().addAll(pattern.getInjectivityConstraints().stream()
 						.filter(pair -> subpattern.contains(pair.getValues().get(0)) && subpattern.contains(pair.getValues().get(1))).collect(Collectors.toList()));		
-
-				//divide the attribute constraints; for now only the attribute constraints that are not dependent on other subpatterns
-				for(IBeXAttributeConstraint constraint: pattern.getAttributeConstraint()) {
-					boolean isInSubpattern = true;
-					//check if the left side is dependent on the subpattern; only attribute constraints are checked since the other expression types are independent on the subpattern
-					if(constraint.getLhs() instanceof IBeXAttributeExpression) {
-						if(!subpattern.contains(((IBeXAttributeExpression) constraint).getNode())) {
-							isInSubpattern = false;
-						}
-					}
-					//check if the right side is dependent on the subpattern
-					if(constraint.getRhs() instanceof IBeXAttributeExpression) {
-						if(!subpattern.contains(((IBeXAttributeExpression) constraint).getNode())) {
-							isInSubpattern = false;
-						}
-					}
-					//if both sides are not in other subpatterns then it is added to the current subpattern
-					if(isInSubpattern) {
-						newSubpattern.getAttributeConstraint().add(constraint);
-					}
-				}
-				
-				for(IBeXArithmeticConstraint constraint: pattern.getArithmeticConstraints()) {
-					boolean isInSubpattern = true;
-					
-					//find all dependent nodes of the expression
-					List<IBeXArithmeticAttribute> dependencies = findNodesInExpression(constraint.getLhs());
-					dependencies.addAll(findNodesInExpression(constraint.getRhs()));
-
-					for(IBeXArithmeticAttribute node: dependencies) {
-						if(!subpattern.stream().anyMatch(n -> n.getName().equals(node.getName()) && n.getType().equals(node.getType()))) {
-							//if there is no node that is the same then it is not (fully) in the subpattern
-							isInSubpattern = false;
-						}
-					}
-					//if both sides are not in other subpatterns then it is added to the current subpattern
-					if(isInSubpattern) {
-						newSubpattern.getArithmeticConstraints().add(constraint);
-					}					
-				}
 				
 				dividedSubpatterns.put(subpattern, newSubpattern);
 				i++;
@@ -289,6 +239,71 @@ public class IBeXDisjunctPatternTransformation {
 		constraint.getNode2().addAll(nodes2);
 		return constraint;
 	}
+	
+	/**
+	 * divides all attribute contraints of an ibexPattern
+	 */
+	public void transformAttributeConstraint(IBeXDisjunctContextPattern disjunctPattern) {
+		
+		for(Set<IBeXNode> subpattern: subpatterns) {
+			
+			List<IBeXAttributeConstraint> attributeConstraints = new ArrayList<IBeXAttributeConstraint>();	
+		
+			IBeXContextPattern pattern = disjunctPattern.getSubpatterns().stream()
+				.filter(p -> p.getSignatureNodes().stream().anyMatch(n -> subpattern.contains(n)) || p.getLocalNodes().stream().anyMatch(n -> subpattern.contains(n)))
+				.findFirst().get();
+				
+			//divide the attribute constraints; for now only the attribute constraints that are not dependent on other subpatterns
+			for(IBeXAttributeConstraint constraint: disjunctPattern.getNonOptimizedPattern().getAttributeConstraint()) {
+				boolean isInSubpattern = true;
+				//check if the left side is dependent on the subpattern; only attribute constraints are checked since the other expression types are independent on the subpattern
+				if(constraint.getLhs() instanceof IBeXAttributeExpression) {
+					if(!subpattern.contains(((IBeXAttributeExpression) constraint.getLhs()).getNode())) {
+						isInSubpattern = false;
+					}
+				}
+				//check if the right side is dependent on the subpattern
+				if(constraint.getRhs() instanceof IBeXAttributeExpression) {
+					if(!subpattern.contains(((IBeXAttributeExpression) constraint.getRhs()).getNode())) {
+						isInSubpattern = false;
+					}
+				}
+				//if both sides are not in other subpatterns then it is added to the current subpattern
+				if(isInSubpattern) {
+					attributeConstraints.add(constraint);
+				} 
+			}
+			pattern.getAttributeConstraint().addAll(attributeConstraints);
+			
+			List<IBeXArithmeticConstraint> arithmeticConstraints = new ArrayList<IBeXArithmeticConstraint>();			
+			for(IBeXArithmeticConstraint constraint: pattern.getArithmeticConstraints()) {
+				boolean isInSubpattern = true;
+				
+				//find all dependent nodes of the expression
+				List<IBeXArithmeticAttribute> dependencies = findNodesInExpression(constraint.getLhs());
+				dependencies.addAll(findNodesInExpression(constraint.getRhs()));
+	
+				for(IBeXArithmeticAttribute node: dependencies) {
+					if(!subpattern.stream().anyMatch(n -> n.getName().equals(node.getName()) && n.getType().equals(node.getType()))) {
+						//if there is no node that is the same then it is not (fully) in the subpattern
+						isInSubpattern = false;
+					}
+				}
+				//if both sides are not in other subpatterns then it is added to the current subpattern
+				if(isInSubpattern) {
+					arithmeticConstraints.add(constraint);
+				} 
+			}
+			pattern.getArithmeticConstraints().addAll(arithmeticConstraints);
+			
+		}
+		
+		List<IBeXConstraint> dependentConstraints = new ArrayList<IBeXConstraint>();	
+		dependentConstraints.addAll(disjunctPattern.getNonOptimizedPattern().getAttributeConstraint());
+		dependentConstraints.addAll(disjunctPattern.getNonOptimizedPattern().getArithmeticConstraints());
+		//create the disjunct attribute constraint
+		disjunctPattern.getAttributesConstraints().addAll(transformAttributeConstraints(dividedSubpatterns, dependentConstraints, disjunctPattern.getInjectivityConstraints()));
+			}
 	
 	/**
 	 * transforms the attributes into dependent disjunct attributes; pool dependent attributes together to dependent attributes
@@ -387,11 +402,13 @@ public class IBeXDisjunctPatternTransformation {
 			List<IBeXArithmeticAttribute> dependentRhs = findNodesInExpression(((IBeXArithmeticConstraint) constraint).getRhs());
 			for(Entry<Set<IBeXNode>, IBeXContextPattern> entry: dividedSubpatterns.entrySet()) {
 				//if any node of the subpattern is contained in the expression, then it is added to the dependent patterns
-				if(dependentLhs.stream().anyMatch(n -> entry.getKey().contains(n))) {
+				if(dependentLhs.stream()
+						.anyMatch(n -> entry.getKey().stream().anyMatch(node -> node.getName().equals(n.getName()) && node.getType().equals(n.getType())))) {
 					sourcePatterns.add(entry.getValue());
 				}
 				//same for rhs
-				if(dependentRhs.stream().anyMatch(n -> entry.getKey().contains(n))) {
+				if(dependentRhs.stream(
+						).anyMatch(n -> entry.getKey().stream().anyMatch(node -> node.getName().equals(n.getName()) && node.getType().equals(n.getType())))) {
 					targetPatterns.add(entry.getValue());
 				}
 			}

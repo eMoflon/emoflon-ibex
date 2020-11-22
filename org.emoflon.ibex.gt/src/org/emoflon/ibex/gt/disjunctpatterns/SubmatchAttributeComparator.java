@@ -27,12 +27,13 @@ public class SubmatchAttributeComparator implements Comparator<IMatch>{
 	private final List<IBeXContextPattern> sourcePatterns;
 	private final List<IBeXContextPattern> targetPatterns;
 	private final GraphTransformationInterpreter interpreter;
+	private final boolean targetIsLhs;
 	
 	public SubmatchAttributeComparator(final IBeXConstraint constraint, final List<IBeXContextPattern> sourcePatterns, final List<IBeXContextPattern> targetPatterns, 
 			final GraphTransformationInterpreter interpreter) {
 		this.constraint = constraint;
 		//it is sorted from smallest to biggest
-		arithmetic = constraint instanceof IBeXAttributeConstraint;
+		arithmetic = constraint instanceof IBeXArithmeticConstraint;
 		
 		if(constraint instanceof IBeXAttributeConstraint) {
 			relation = ((IBeXAttributeConstraint) constraint).getRelation();
@@ -44,6 +45,21 @@ public class SubmatchAttributeComparator implements Comparator<IMatch>{
 		this.sourcePatterns = sourcePatterns;
 		this.targetPatterns = targetPatterns;
 		this.interpreter = interpreter;
+		//it is needed to find out if target patterns are lhs or rhs
+		if(arithmetic) {
+			targetIsLhs = targetPatterns.stream()
+					.anyMatch(p -> {
+						return p.getSignatureNodes().stream()
+								.anyMatch(sig -> {
+									return DisjunctPatternHelper.findNodesInExpression(((IBeXArithmeticConstraint) constraint).getLhs())
+											.stream().anyMatch(n -> n.getName().equals(sig.getName()) && n.getType().equals(sig.getType()));
+								});
+					});	
+		} else {
+			targetIsLhs = targetPatterns.stream()
+					.anyMatch(p -> p.getSignatureNodes().contains(((IBeXAttributeExpression)((IBeXAttributeConstraint) constraint).getLhs()).getNode()));
+		}
+
 	}
 	
 
@@ -65,43 +81,30 @@ public class SubmatchAttributeComparator implements Comparator<IMatch>{
 	 * compare the value between two matches; is 0 when the value is equal, not when the objects are equal
 	 */
 	public int compareValue(final IMatch o1, final IMatch o2) {
+		Object newO1;
+		Object newO2;
 		if(DisjunctPatternHelper.matchFromSubpattern(o1, targetPatterns) && DisjunctPatternHelper.matchFromSubpattern(o2, targetPatterns)) {
-			Object newO1 = calculateSourceValue(o1, true);
-			Object newO2 = calculateSourceValue(o2, true);
-			
-			if(newO1.equals(newO2)) return 0;
-			else {
-				return MatchFilter.compare(newO1, newO2, IBeXRelation.SMALLER)? -1: 1;
-			}
+			newO1 = calculateSourceValue(o1, targetIsLhs);
+			newO2 = calculateSourceValue(o2, targetIsLhs);
 		}
 		else if(!DisjunctPatternHelper.matchFromSubpattern(o1, targetPatterns) &&  !DisjunctPatternHelper.matchFromSubpattern(o2, targetPatterns)) {
-			Object newO1 = calculateSourceValue(o1, false);
-			Object newO2 = calculateSourceValue(o2, false);
-			
-			if(newO1.equals(newO2)) return 0;
-			else {
-				return MatchFilter.compare(newO1, newO2, IBeXRelation.SMALLER)? -1: 1;
-			}
-			
+			newO1 = calculateSourceValue(o1, !targetIsLhs);
+			newO2 = calculateSourceValue(o2, !targetIsLhs);
+
 		}
 		else if(DisjunctPatternHelper.matchFromSubpattern(o1, targetPatterns)) {
-			Object newO1 = calculateSourceValue(o1, true);
-			Object newO2 = calculateSourceValue(o2, false);
-			
-			if(newO1.equals(newO2)) return 0;
-			else {
-				return MatchFilter.compare(newO1, newO2, IBeXRelation.SMALLER)? -1: 1;
-			}
+			newO1 = calculateSourceValue(o1, targetIsLhs);
+			newO2 = calculateSourceValue(o2, !targetIsLhs);
+
 		}
 		else {
-			Object newO1 = calculateSourceValue(o1, false);
-			Object newO2 = calculateSourceValue(o2, true);
-			
-			if(newO1.equals(newO2)) return 0;
-			else {
-				return MatchFilter.compare(newO1, newO2, IBeXRelation.SMALLER)? -1: 1;
-			}
+			newO1 = calculateSourceValue(o1, !targetIsLhs);
+			newO2 = calculateSourceValue(o2, targetIsLhs);
 		}
+		if(newO1.equals(newO2)) return 0;
+		else {
+			return MatchFilter.compare(newO1, newO2, IBeXRelation.SMALLER)? -1: 1;
+		}				
 	}
 	/**
 	 * compares two matches with the given relation
@@ -109,8 +112,14 @@ public class SubmatchAttributeComparator implements Comparator<IMatch>{
 	 * @param o2 the source match
 	 */
 	public boolean compareWithEquals(final IMatch o1, final IMatch o2) {
-		return MatchFilter.compare(calculateSourceValue(o1, true), calculateSourceValue(o2, false),	
+		if(targetIsLhs) {
+			return MatchFilter.compare(calculateSourceValue(o1, true), calculateSourceValue(o2, false),	
 				relation);				
+		} else {
+			return MatchFilter.compare(calculateSourceValue(o2, true), calculateSourceValue(o1, false), 	
+					relation);			
+		}
+			
 	}
 	
 	/**
@@ -146,7 +155,7 @@ public class SubmatchAttributeComparator implements Comparator<IMatch>{
 			if(arithmetic) {
 				try {
 					//if it is from target pattern then it is lhs
-					calculateSourceValue(o, true);
+					calculateSourceValue(o, targetIsLhs);
 					return true;
 				}catch(IllegalArgumentException e) {
 					return false;
@@ -157,7 +166,7 @@ public class SubmatchAttributeComparator implements Comparator<IMatch>{
 		else {
 			if(arithmetic) {
 				try {
-					calculateSourceValue(o, false);
+					calculateSourceValue(o, !targetIsLhs);
 					return true;
 				}catch(IllegalArgumentException e) {
 					return false;
@@ -166,6 +175,15 @@ public class SubmatchAttributeComparator implements Comparator<IMatch>{
 			else return true;
 		}
 	}
+	
+	/**
+	 * checks if a submatch is part of the lhs of the constraint; important else its get confusing what the relation between lhs and rhs is
+	 */
+	public boolean isLhs(IMatch m){
+		boolean isTarget = DisjunctPatternHelper.matchFromSubpattern(m, targetPatterns);
+		return targetIsLhs && isTarget || (!targetIsLhs)&&(!isTarget);
+	}
+	
 	
 	public final IBeXRelation getRelation() {
 		return relation;

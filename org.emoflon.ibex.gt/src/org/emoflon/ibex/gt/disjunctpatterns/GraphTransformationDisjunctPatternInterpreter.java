@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -37,22 +36,22 @@ public class GraphTransformationDisjunctPatternInterpreter {
 	/**
 	 * the old matches
 	 */
-	private final Map<IBeXContextPattern, Set<IMatch>> oldMatches;
+	private final Map<IBeXContextPattern, Collection<IMatch>> oldMatches;
 	
 	/**
 	 * the old injectivity constraints
 	 */
-	private final Map<IBeXDependentInjectivityConstraints, Pair<Map<IMatch, Set<IMatch>>, Map<IMatch, Set<IMatch>>>> oldInjectivityConstraints;
+	private final Map<IBeXDependentInjectivityConstraints, Pair<Map<IMatch, Collection<IMatch>>, Map<IMatch, Collection<IMatch>>>> oldInjectivityConstraints;
 	
 	/**
 	 * the old calculated cartesian products for the injectivity constraints
 	 */
-	private final Map<IBeXDependentInjectivityConstraints, Pair<Set<IMatch>, Set<IMatch>>> oldCartesianProducts;
+	private final Map<IBeXDependentInjectivityConstraints, Pair<Collection<IMatch>, Collection<IMatch>>> oldCartesianProducts;
 	
 	/**
 	 * the old attribute constraints
 	 */
-	private final Map<IBeXDependentDisjunctAttribute, Map<IMatch, Set<IMatch>>> targetMatchSets;
+	private final Map<IBeXDependentDisjunctAttribute, Map<IMatch, Collection<IMatch>>> targetMatchSets;
 	
 	/**
 	 * the comparators for the attribute constraints
@@ -62,7 +61,7 @@ public class GraphTransformationDisjunctPatternInterpreter {
 	/**
 	 * the sorted source matches for the attribute constraints
 	 */
-	private final Map<IBeXDependentDisjunctAttribute, Map<IMatch, Set<IMatch>>> sourceMatchSets;
+	private final Map<IBeXDependentDisjunctAttribute, Map<IMatch, Collection<IMatch>>> sourceMatchSets;
 	
 	/**
 	 * the source and target sets for the attribute constraints sorted by the respective attribute; left = target; right = source
@@ -82,26 +81,26 @@ public class GraphTransformationDisjunctPatternInterpreter {
 	
 	public GraphTransformationDisjunctPatternInterpreter(final GraphTransformationInterpreter interpreter, final IBeXDisjunctContextPattern contextPattern, final ResourceSet rsSet) {
 		
-		oldMatches = new HashMap<IBeXContextPattern, Set<IMatch>>();
+		oldMatches = new HashMap<IBeXContextPattern, Collection<IMatch>>();
 		adapter = new IBeXDisjunctContentAdapter(rsSet);
 		
 		for(IBeXContextPattern subpattern: contextPattern.getSubpatterns()) {
 			oldMatches.put(subpattern, new HashSet<IMatch>());
 		}		
 	
-		oldInjectivityConstraints = new HashMap<IBeXDependentInjectivityConstraints, Pair<Map<IMatch, Set<IMatch>>, Map<IMatch, Set<IMatch>>>>();
-		targetMatchSets = new HashMap<IBeXDependentDisjunctAttribute, Map<IMatch,Set<IMatch>>>();
+		oldInjectivityConstraints = new HashMap<IBeXDependentInjectivityConstraints, Pair<Map<IMatch, Collection<IMatch>>, Map<IMatch, Collection<IMatch>>>>();
+		targetMatchSets = new HashMap<IBeXDependentDisjunctAttribute, Map<IMatch,Collection<IMatch>>>();
 		attributeComparators = new ArrayList<SubmatchAttributeComparator>();
-		sourceMatchSets = new HashMap<IBeXDependentDisjunctAttribute, Map<IMatch,Set<IMatch>>>();
+		sourceMatchSets = new HashMap<IBeXDependentDisjunctAttribute, Map<IMatch,Collection<IMatch>>>();
 		sortedSets = new HashMap<SubmatchAttributeComparator, Pair<TreeSet<IMatch>,TreeSet<IMatch>>>();
 		injectivityPatternSequence = new HashMap<IBeXDependentInjectivityConstraints,Pair<List<IBeXContextPattern>, List<IBeXContextPattern>>>();
 		attributePatternSequence = new HashMap<IBeXDependentDisjunctAttribute, Pair<List<IBeXContextPattern>, List<IBeXContextPattern>>>();
-		oldCartesianProducts = new HashMap<IBeXDependentInjectivityConstraints, Pair<Set<IMatch>, Set<IMatch>>>();
+		oldCartesianProducts = new HashMap<IBeXDependentInjectivityConstraints, Pair<Collection<IMatch>, Collection<IMatch>>>();
 		
 		for(IBeXDependentInjectivityConstraints subpatternConstraint: contextPattern.getInjectivityConstraints()) {
 			oldInjectivityConstraints.put(subpatternConstraint, 
-				new Pair<Map<IMatch, Set<IMatch>>, Map<IMatch, Set<IMatch>>>(new HashMap<IMatch, Set<IMatch>>(), new HashMap<IMatch, Set<IMatch>>()));
-			oldCartesianProducts.put(subpatternConstraint, new Pair<Set<IMatch>, Set<IMatch>>(new HashSet<IMatch>(), new HashSet<IMatch>()));
+				new Pair<Map<IMatch, Collection<IMatch>>, Map<IMatch, Collection<IMatch>>>(new HashMap<IMatch, Collection<IMatch>>(), new HashMap<IMatch, Collection<IMatch>>()));
+			oldCartesianProducts.put(subpatternConstraint, new Pair<Collection<IMatch>, Collection<IMatch>>(new HashSet<IMatch>(), new HashSet<IMatch>()));
 		}
 		for(IBeXDependentDisjunctAttribute attribute: contextPattern.getAttributesConstraints()) {		
 			for(IBeXDisjunctAttribute subattribute: attribute.getAttributes()) {
@@ -113,8 +112,8 @@ public class GraphTransformationDisjunctPatternInterpreter {
 				}	
 			
 			}
-			targetMatchSets.put(attribute, new HashMap<IMatch, Set<IMatch>>());
-			sourceMatchSets.put(attribute, new HashMap<IMatch,Set<IMatch>>());
+			targetMatchSets.put(attribute, new HashMap<IMatch, Collection<IMatch>>());
+			sourceMatchSets.put(attribute, new HashMap<IMatch, Collection<IMatch>>());
 		}
 	}
 
@@ -125,12 +124,12 @@ public class GraphTransformationDisjunctPatternInterpreter {
 	 * @param submatches the submatches
 	 * @return a random match of the pattern
 	 */
-	public final Optional<IMatch> findAnyMatch(final IBeXDisjunctContextPattern pattern, final Map<IBeXContextPattern, Set<IMatch>> submatchesMap){		
+	public final Optional<IMatch> findAnyMatch(final IBeXDisjunctContextPattern pattern, final Map<IBeXContextPattern, Collection<IMatch>> submatchesMap){		
 
 		if(calculateMatchCount(pattern, submatchesMap)>0) {
 			
 			//sorts from the smallest submatch to the biggest
-			List<Set<IMatch>> submatches = new ArrayList<Set<IMatch>>(submatchesMap.values());
+			List<Collection<IMatch>> submatches = new ArrayList<Collection<IMatch>>(submatchesMap.values());
 			submatches.sort(new SubmatchSizeComparator());
 			//a map of the attribute constraints
 			//recursively generate a new match
@@ -144,7 +143,7 @@ public class GraphTransformationDisjunctPatternInterpreter {
 	/**
 	 * recursive function that finds a random match in the pattern
 	 */
-	private final Optional<IMatch> calculateAnyMatch(final IBeXDisjunctContextPattern pattern, final List<Set<IMatch>> submatches, 
+	private final Optional<IMatch> calculateAnyMatch(final IBeXDisjunctContextPattern pattern, final List<Collection<IMatch>> submatches, 
 			final String patternName, final IMatch match, final List<SubmatchAttributeComparator> attributes){		
 		if(!submatches.isEmpty()) {
 			IMatch submatch;
@@ -195,7 +194,7 @@ public class GraphTransformationDisjunctPatternInterpreter {
 	 * @param submatches a list with matches for all subpatterns
 	 * @return the number of matches
 	 */
-	public long calculateMatchCount(final IBeXDisjunctContextPattern pattern, final Map<IBeXContextPattern, Set<IMatch>> submatchesMap) {
+	public long calculateMatchCount(final IBeXDisjunctContextPattern pattern, final Map<IBeXContextPattern, Collection<IMatch>> submatchesMap) {
 		//matchCount is one for multiplication purposes; the submatch list size should be bigger than one anyway
 		int matchCount = 1;
 		
@@ -249,7 +248,7 @@ public class GraphTransformationDisjunctPatternInterpreter {
 		}
 
 		//update the matches
-		for(Entry<IBeXContextPattern, Set<IMatch>> submatches: submatchesMap.entrySet()) {
+		for(Entry<IBeXContextPattern, Collection<IMatch>> submatches: submatchesMap.entrySet()) {
 			oldMatches.put(submatches.getKey(), submatches.getValue());
 		}
 		
@@ -261,8 +260,8 @@ public class GraphTransformationDisjunctPatternInterpreter {
 	 * @param submatches the submatches of a pattern
 	 * @return the matches
 	 */
-	public final Stream<IMatch> matchStream(final IBeXDisjunctContextPattern pattern, final Map<IBeXContextPattern, Set<IMatch>> submatchesMap){
-		return joinDisjunctSubMatches(pattern, new ArrayList<Set<IMatch>>(submatchesMap.values()), pattern.getName()).stream();
+	public final Stream<IMatch> matchStream(final IBeXDisjunctContextPattern pattern, final Map<IBeXContextPattern, Collection<IMatch>> submatchesMap){
+		return joinDisjunctSubMatches(pattern, new ArrayList<Collection<IMatch>>(submatchesMap.values()), pattern.getName()).stream();
 	}
 	
 	/**
@@ -271,7 +270,7 @@ public class GraphTransformationDisjunctPatternInterpreter {
 	 * @param submatches the submatches
 	 * @return the all computed matches
 	 */
-	private final Set<IMatch> joinDisjunctSubMatches(final IBeXDisjunctContextPattern pattern, final List<Set<IMatch>> submatches, final String name){
+	private final Collection<IMatch> joinDisjunctSubMatches(final IBeXDisjunctContextPattern pattern, final List<Collection<IMatch>> submatches, final String name){
 		if(submatches.size() == 0) {
 			throw new IllegalArgumentException("the list of subpatterns should not be empty");
 		}
@@ -293,11 +292,12 @@ public class GraphTransformationDisjunctPatternInterpreter {
 	 * calculates all the matches that contain the specific submatch
 
 	 */
-	public final Set<IMatch> createMatchesWithThisSubmatch(final IBeXDisjunctContextPattern pattern, final IMatch match, final Map<IBeXContextPattern, Set<IMatch>> submatchesMap, 
+	public final Collection<IMatch> createMatchesWithThisSubmatch(final IBeXDisjunctContextPattern pattern, final IMatch match, final Map<String, Collection<IMatch>> submatchesMap, 
 			final String name){
-		Set<IMatch> cartesianProduct = new HashSet<IMatch>();
+		Collection<IMatch> cartesianProduct = new HashSet<IMatch>();
 		cartesianProduct.add(match);
-		for(Set<IMatch> matches: submatchesMap.values()) {
+		for(IBeXContextPattern subpattern: pattern.getSubpatterns()) {
+			Collection<IMatch> matches = submatchesMap.get(subpattern.getName());
 			if(!matches.isEmpty()) {
 				if(!matches.iterator().next().getPatternName().equals(match.getPatternName())) {
 					cartesianProduct = DisjunctPatternHelper.cartesianProduct(cartesianProduct, matches, name, attributeComparators);
