@@ -52,4 +52,19 @@ public abstract class GraphTransformationMatch<M extends GraphTransformationMatc
 	public final IMatch toIMatch() {
 		return match;
 	}
+	
+	@Override
+	public int hashCode() {
+		return match.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj instanceof GraphTransformationMatch<?,?>) {
+			return match.equals(((GraphTransformationMatch<?,?>)obj).toIMatch());
+		} else if(obj instanceof IMatch) {
+			return match.equals(obj);
+		}
+		return false;
+	}
 }
