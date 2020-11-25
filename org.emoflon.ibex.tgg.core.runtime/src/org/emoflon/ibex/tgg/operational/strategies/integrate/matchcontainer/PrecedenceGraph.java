@@ -4,7 +4,7 @@ import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,26 +30,26 @@ public class PrecedenceGraph implements TimeMeasurable {
 
 	protected final PropagatingOperationalStrategy strategy;
 
-	protected Map<PrecedenceNode, Collection<Object>> requires = cfactory.createObjectToObjectHashMap();
-	protected Map<Object, Collection<PrecedenceNode>> requiredBy = cfactory.createObjectToObjectHashMap();
-	protected Map<PrecedenceNode, Collection<Object>> translates = cfactory.createObjectToObjectHashMap();
-	protected Map<Object, Collection<PrecedenceNode>> translatedBy = cfactory.createObjectToObjectHashMap();
+	protected Map<PrecedenceNode, Collection<Object>> requires = Collections.synchronizedMap(cfactory.createObjectToObjectHashMap());
+	protected Map<Object, LockedSet<PrecedenceNode>> requiredBy = Collections.synchronizedMap(cfactory.createObjectToObjectHashMap());
+	protected Map<PrecedenceNode, Collection<Object>> translates = Collections.synchronizedMap(cfactory.createObjectToObjectHashMap());
+	protected Map<Object, LockedSet<PrecedenceNode>> translatedBy = Collections.synchronizedMap(cfactory.createObjectToObjectHashMap());
 
 	//// Precedence Graph ////
-	protected Set<PrecedenceNode> nodes = cfactory.createObjectSet();
-	protected Map<ITGGMatch, PrecedenceNode> match2node = cfactory.createObjectToObjectHashMap();
+	protected Set<PrecedenceNode> nodes = Collections.synchronizedSet(cfactory.createObjectSet());
+	protected Map<ITGGMatch, PrecedenceNode> match2node = Collections.synchronizedMap(cfactory.createObjectToObjectHashMap());
 
 	//// Caching ////
-	protected Set<PrecedenceNode> brokenNodes = cfactory.createObjectSet();
-	protected Set<PrecedenceNode> implicitBrokenNodes = cfactory.createObjectSet();
+	protected Set<PrecedenceNode> brokenNodes = Collections.synchronizedSet(cfactory.createObjectSet());
+	protected Set<PrecedenceNode> implicitBrokenNodes = Collections.synchronizedSet(cfactory.createObjectSet());
 
-	protected Set<PrecedenceNode> consNodes = cfactory.createObjectSet();
-	protected Set<PrecedenceNode> srcNodes = cfactory.createObjectSet();
-	protected Set<PrecedenceNode> trgNodes = cfactory.createObjectSet();
+	protected Set<PrecedenceNode> consNodes = Collections.synchronizedSet(cfactory.createObjectSet());
+	protected Set<PrecedenceNode> srcNodes = Collections.synchronizedSet(cfactory.createObjectSet());
+	protected Set<PrecedenceNode> trgNodes = Collections.synchronizedSet(cfactory.createObjectSet());
 
-	protected Map<ITGGMatch, SrcTrgMatchContainer> consMatch2srcTrgMatches = cfactory.createObjectToObjectHashMap();
-	protected Map<ITGGMatch, ITGGMatch> srcTrgMatch2consMatch = cfactory.createObjectToObjectHashMap();
-	protected Set<ITGGMatch> pendingSrcTrgMatches = cfactory.createObjectSet();
+	protected Map<ITGGMatch, SrcTrgMatchContainer> consMatch2srcTrgMatches = Collections.synchronizedMap(cfactory.createObjectToObjectHashMap());
+	protected Map<ITGGMatch, ITGGMatch> srcTrgMatch2consMatch = Collections.synchronizedMap(cfactory.createObjectToObjectHashMap());
+	protected Set<ITGGMatch> pendingSrcTrgMatches = Collections.synchronizedSet(cfactory.createObjectSet());
 
 	public PrecedenceGraph(PropagatingOperationalStrategy strategy) {
 		this.strategy = strategy;
@@ -59,6 +59,20 @@ public class PrecedenceGraph implements TimeMeasurable {
 	public void notifyAddedMatch(ITGGMatch match) {
 		Timer.start();
 
+		notifyAddedOneMatch(match);
+
+		times.addTo("notifyAdded", Timer.stop());
+	}
+
+	public void notifyAddedMatches(Collection<ITGGMatch> matches) {
+		Timer.start();
+
+		matches.parallelStream().forEach(this::notifyAddedOneMatch);
+
+		times.addTo("notifyAdded", Timer.stop());
+	}
+
+	private void notifyAddedOneMatch(ITGGMatch match) {
 		if (match.getType() == PatternType.CONSISTENCY && !handleRestoredConsistencyMatch(match)) {
 			addMatch(match);
 			killRedundantSrcTrgMatches(match);
@@ -68,13 +82,25 @@ public class PrecedenceGraph implements TimeMeasurable {
 			else
 				addMatch(match);
 		}
-
-		times.addTo("notifyAdded", Timer.stop());
 	}
 
 	public void notifyRemovedMatch(ITGGMatch match) {
 		Timer.start();
 
+		notifyRemovedOneMatch(match);
+
+		times.addTo("notifyRemoved", Timer.stop());
+	}
+
+	public void notifyRemovedMatches(Collection<ITGGMatch> matches) {
+		Timer.start();
+
+		matches.stream().forEach(this::notifyRemovedOneMatch);
+
+		times.addTo("notifyRemoved", Timer.stop());
+	}
+
+	private void notifyRemovedOneMatch(ITGGMatch match) {
 		if (match.getType() == PatternType.CONSISTENCY) {
 			handleBrokenConsistencyMatch(match);
 		} else if (match.getType() == PatternType.SRC || match.getType() == PatternType.TRG) {
@@ -83,8 +109,6 @@ public class PrecedenceGraph implements TimeMeasurable {
 			else
 				pendingSrcTrgMatches.remove(match);
 		}
-
-		times.addTo("notifyRemoved", Timer.stop());
 	}
 
 	public void clearBrokenMatches() {
@@ -134,7 +158,7 @@ public class PrecedenceGraph implements TimeMeasurable {
 	}
 
 	public Collection<PrecedenceNode> getNodesTranslating(Object elt) {
-		return translatedBy.getOrDefault(elt, new HashSet<>());
+		return translatedBy.getOrDefault(elt, new LockedSet<>());
 	}
 
 	public boolean hasAnyConsistencyOverlap(PrecedenceNode srcTrgNode) {
@@ -180,30 +204,34 @@ public class PrecedenceGraph implements TimeMeasurable {
 		// Register elements
 		for (Object elt : requiredElts) {
 			requires.computeIfAbsent(node, x -> cfactory.createObjectSet());
-			requiredBy.computeIfAbsent(elt, x -> cfactory.createObjectSet());
+			requiredBy.computeIfAbsent(elt, x -> new LockedSet<>());
 			requires.get(node).add(elt);
 			requiredBy.get(elt).add(node);
 		}
 		for (Object elt : translatedElts) {
 			translates.computeIfAbsent(node, x -> cfactory.createObjectSet());
-			translatedBy.computeIfAbsent(elt, x -> cfactory.createObjectSet());
+			translatedBy.computeIfAbsent(elt, x -> new LockedSet<>());
 			translates.get(node).add(elt);
 			translatedBy.get(elt).add(node);
 		}
 
 		// Create links
 		for (Object elt : requiredElts) {
-			Collection<PrecedenceNode> requiredNodes = translatedBy.get(elt);
+			LockedSet<PrecedenceNode> requiredNodes = translatedBy.get(elt);
 			if (requiredNodes != null) {
+				requiredNodes.lock_for_read();
 				for (PrecedenceNode reqNode : requiredNodes)
 					node.addRequires(reqNode);
+				requiredNodes.unlock_for_read();
 			}
 		}
 		for (Object elt : translatedElts) {
-			Collection<PrecedenceNode> dependentNodes = requiredBy.get(elt);
+			LockedSet<PrecedenceNode> dependentNodes = requiredBy.get(elt);
 			if (dependentNodes != null) {
+				dependentNodes.lock_for_read();
 				for (PrecedenceNode depNode : dependentNodes)
 					node.addRequiredBy(depNode);
+				dependentNodes.unlock_for_read();
 			}
 		}
 

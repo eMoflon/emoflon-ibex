@@ -20,6 +20,7 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.util.EltFilter;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis;
 
 import language.DomainType;
+import language.TGGRuleElement;
 import language.TGGRuleNode;
 
 public abstract class DeletePreserveConflict extends Conflict
@@ -32,10 +33,6 @@ public abstract class DeletePreserveConflict extends Conflict
 		super(container);
 		this.causingMatches = causingMatches;
 		this.domainToBePreserved = domainToBePreserved;
-	}
-	
-	public List<ITGGMatch> getCausingMatches() {
-		return this.causingMatches;
 	}
 
 	@Override
@@ -54,6 +51,10 @@ public abstract class DeletePreserveConflict extends Conflict
 		return matches;
 	}
 
+	public List<ITGGMatch> getCausingMatches() {
+		return this.causingMatches;
+	}
+
 	public DomainType getDomainToBePreserved() {
 		return domainToBePreserved;
 	}
@@ -64,60 +65,46 @@ public abstract class DeletePreserveConflict extends Conflict
 	public void crs_mergeAndPreserve() {
 		MatchAnalysis analysis = integrate().getMatchUtil().getAnalysis(getMatch());
 
-		causingMatches.forEach(m -> restoreMatch(integrate().getClassifiedBrokenMatches().get(m)));
+		for (ITGGMatch causingMatch : causingMatches)
+			restoreMatch(integrate().getClassifiedBrokenMatches().get(causingMatch));
 
-		analysis.getElts(new EltFilter().srcAndTrg().create().deleted()).forEach(elt -> {
+		for (TGGRuleElement elt : analysis.getElts(new EltFilter().srcAndTrg().create().deleted())) {
 			if (elt instanceof TGGRuleNode) {
 				analysis.getObject((TGGRuleNode) elt).eContents().forEach(child -> {
 					if (!analysis.getObjects().contains(child))
 						ModelChangeUtil.deleteElement(child, true);
 				});
 			}
-		});
+		}
 
 		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by MERGE_&_PRESERVE");
 		resolved = true;
 	}
 
-	private Set<ITGGMatch> tmp_restored;
-
 	@Override
 	public void crs_revokeDeletion() {
-		tmp_restored = new HashSet<>();
-		causingMatches.forEach(match -> {
-			if (!tmp_restored.contains(match)) {
-				restoreMatch(integrate().getClassifiedBrokenMatches().get(match));
-				tmp_restored.add(match);
-				restoreMatchesBasedOn(match);
-			}
-		});
+		revokeDeletion();
 
 		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by REVOKE_DELETION");
 		resolved = true;
 	}
 
-	protected void restoreMatchesBasedOn(ITGGMatch match) {
-		PrecedenceGraph pg = integrate().getPrecedenceGraph();
-		pg.getNode(match).getRequiredBy().forEach(n -> {
-			if (n.isBroken()) {
-				ITGGMatch m = n.getMatch();
-				if (!tmp_restored.contains(m)) {
-					restoreMatch(integrate().getClassifiedBrokenMatches().get(m));
-					tmp_restored.add(m);
-					restoreMatchesBasedOn(m);
-				}
-			}
-		});
+	@Override
+	public void crs_revokeAddition() {
+		revokeAddition();
+
+		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by REVOKE_ADDITION");
+		resolved = true;
 	}
 
 	@Override
 	public void crs_preferSource() {
 		switch (domainToBePreserved) {
 		case SRC:
-			crs_revokeDeletion();
+			revokeDeletion();
 			break;
 		case TRG:
-			crs_revokeAddition();
+			revokeAddition();
 		default:
 			break;
 		}
@@ -130,10 +117,10 @@ public abstract class DeletePreserveConflict extends Conflict
 	public void crs_preferTarget() {
 		switch (domainToBePreserved) {
 		case SRC:
-			crs_revokeAddition();
+			revokeAddition();
 			break;
 		case TRG:
-			crs_revokeDeletion();
+			revokeDeletion();
 		default:
 			break;
 		}
@@ -161,8 +148,37 @@ public abstract class DeletePreserveConflict extends Conflict
 			});
 		}
 		toBeCorrsDeleted.forEach(this::deleteCorrs);
-		
+
 		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by DELETE_CORRS");
 		resolved = true;
 	}
+
+	private Set<ITGGMatch> tmp_restored;
+
+	protected void revokeDeletion() {
+		tmp_restored = new HashSet<>();
+		causingMatches.forEach(match -> {
+			if (!tmp_restored.contains(match)) {
+				restoreMatch(integrate().getClassifiedBrokenMatches().get(match));
+				tmp_restored.add(match);
+				restoreMatchesBasedOn(match);
+			}
+		});
+	}
+
+	protected void restoreMatchesBasedOn(ITGGMatch match) {
+		PrecedenceGraph pg = integrate().getPrecedenceGraph();
+		pg.getNode(match).getRequiredBy().forEach(n -> {
+			if (n.isBroken()) {
+				ITGGMatch m = n.getMatch();
+				if (!tmp_restored.contains(m)) {
+					restoreMatch(integrate().getClassifiedBrokenMatches().get(m));
+					tmp_restored.add(m);
+					restoreMatchesBasedOn(m);
+				}
+			}
+		});
+	}
+
+	abstract protected void revokeAddition();
 }

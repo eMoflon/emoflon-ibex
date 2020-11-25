@@ -367,13 +367,22 @@ public interface IBeXPatternModelPackage extends EPackage {
 	int IBE_XCONTEXT__NAME = IBE_XPATTERN__NAME;
 
 	/**
+	 * The feature id for the '<em><b>Api Pattern Dependencies</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XCONTEXT__API_PATTERN_DEPENDENCIES = IBE_XPATTERN_FEATURE_COUNT + 0;
+
+	/**
 	 * The number of structural features of the '<em>IBe XContext</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XCONTEXT_FEATURE_COUNT = IBE_XPATTERN_FEATURE_COUNT + 0;
+	int IBE_XCONTEXT_FEATURE_COUNT = IBE_XPATTERN_FEATURE_COUNT + 1;
 
 	/**
 	 * The number of operations of the '<em>IBe XContext</em>' class.
@@ -402,6 +411,15 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int IBE_XCONTEXT_ALTERNATIVES__NAME = IBE_XCONTEXT__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Api Pattern Dependencies</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XCONTEXT_ALTERNATIVES__API_PATTERN_DEPENDENCIES = IBE_XCONTEXT__API_PATTERN_DEPENDENCIES;
 
 	/**
 	 * The feature id for the '<em><b>Alternative Patterns</b></em>' containment reference list.
@@ -457,6 +475,15 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int IBE_XCONTEXT_PATTERN__NAME = IBE_XCONTEXT__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Api Pattern Dependencies</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XCONTEXT_PATTERN__API_PATTERN_DEPENDENCIES = IBE_XCONTEXT__API_PATTERN_DEPENDENCIES;
 
 	/**
 	 * The feature id for the '<em><b>Documentation</b></em>' attribute.
@@ -2310,6 +2337,17 @@ public interface IBeXPatternModelPackage extends EPackage {
 	EClass getIBeXContext();
 
 	/**
+	 * Returns the meta object for the reference list '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext#getApiPatternDependencies <em>Api Pattern Dependencies</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference list '<em>Api Pattern Dependencies</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext#getApiPatternDependencies()
+	 * @see #getIBeXContext()
+	 * @generated
+	 */
+	EReference getIBeXContext_ApiPatternDependencies();
+
+	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextAlternatives <em>IBe XContext Alternatives</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -3681,6 +3719,14 @@ public interface IBeXPatternModelPackage extends EPackage {
 		 * @generated
 		 */
 		EClass IBE_XCONTEXT = eINSTANCE.getIBeXContext();
+
+		/**
+		 * The meta object literal for the '<em><b>Api Pattern Dependencies</b></em>' reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XCONTEXT__API_PATTERN_DEPENDENCIES = eINSTANCE.getIBeXContext_ApiPatternDependencies();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXContextAlternativesImpl <em>IBe XContext Alternatives</em>}' class.

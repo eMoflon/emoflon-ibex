@@ -66,4 +66,11 @@ public interface IContextPatternInterpreter {
 	 *            debugging is disabled.
 	 */
 	public void setDebugPath(String debugPath);
+	
+	/**
+	 * Returns the properties for a specific pattern matcher
+	 * 
+	 * @return
+	 */
+	public IPatternInterpreterProperties getProperties();
 }

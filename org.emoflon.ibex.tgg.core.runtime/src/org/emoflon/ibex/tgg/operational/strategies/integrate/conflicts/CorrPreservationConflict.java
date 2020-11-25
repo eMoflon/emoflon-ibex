@@ -54,9 +54,8 @@ public class CorrPreservationConflict extends InconsistentChangesConflict implem
 
 				if (pg.getSourceNodes().contains(node))
 					srcMatches.add(node.getMatch());
-				else if (pg.getTargetNodes().contains(node)) {
+				else if (pg.getTargetNodes().contains(node))
 					trgMatches.add(node.getMatch());
-				}
 			}
 		}
 	}
@@ -71,11 +70,12 @@ public class CorrPreservationConflict extends InconsistentChangesConflict implem
 				revertRepairable(repairableMatch, DomainType.TRG);
 		}
 
-		integrate().getOptions().matchDistributor().updateMatches();
-		integrate().repairOneMatch(integrate().getShortcutRepairStrat(), getMatch(), PatternType.FWD);
-
 		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by PREFER_SOURCE");
 		resolved = true;
+
+		integrate().getOptions().matchDistributor().updateMatches();
+		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Auto-repair after resolution of " + printConflictIdentification() + ":");
+		integrate().repairOneMatch(integrate().getShortcutRepairStrat(), getMatch(), PatternType.FWD);
 	}
 
 	@Override
@@ -86,11 +86,12 @@ public class CorrPreservationConflict extends InconsistentChangesConflict implem
 				revertRepairable(repairableMatch, DomainType.SRC);
 		}
 
-		integrate().getOptions().matchDistributor().updateMatches();
-		integrate().repairOneMatch(integrate().getShortcutRepairStrat(), getMatch(), PatternType.BWD);
-
 		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by PREFER_TARGET");
 		resolved = true;
+
+		integrate().getOptions().matchDistributor().updateMatches();
+		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Auto-repair after resolution of " + printConflictIdentification() + ":");
+		integrate().repairOneMatch(integrate().getShortcutRepairStrat(), getMatch(), PatternType.BWD);
 	}
 
 }

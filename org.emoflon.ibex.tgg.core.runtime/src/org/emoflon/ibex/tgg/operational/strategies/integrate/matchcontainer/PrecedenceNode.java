@@ -2,6 +2,7 @@ package org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer;
 
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -15,8 +16,8 @@ public class PrecedenceNode {
 	private final ITGGMatch match;
 	private boolean broken = false;
 
-	private Set<PrecedenceNode> requires = cfactory.createObjectSet();
-	private Set<PrecedenceNode> requiredBy = cfactory.createObjectSet();
+	private Set<PrecedenceNode> requires = Collections.synchronizedSet(cfactory.createObjectSet());
+	private Set<PrecedenceNode> requiredBy = Collections.synchronizedSet(cfactory.createObjectSet());
 
 	private Set<PrecedenceNode> toBeRolledBackBy = cfactory.createObjectSet();
 

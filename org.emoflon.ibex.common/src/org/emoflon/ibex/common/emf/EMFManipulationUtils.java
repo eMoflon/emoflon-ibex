@@ -78,9 +78,6 @@ public class EMFManipulationUtils {
 	 */
 	@SuppressWarnings("rawtypes")
 	public static void deleteEdge(final EObject source, final EObject target, final EReference reference) {
-		if (source.eResource() == null) {
-			return;
-		}
 		if (reference.isMany()) {
 			EList list = ((EList) source.eGet(reference));
 			if (list.contains(target)) {
@@ -109,15 +106,67 @@ public class EMFManipulationUtils {
 	 *            the action to execute for dangling nodes
 	 */
 	public static void delete(final Set<EObject> nodesToDelete, final Set<EMFEdge> edgesToDelete,
-			final Consumer<EObject> danglingNodeAction) {
-		delete(nodesToDelete, edgesToDelete, danglingNodeAction, false);
+			final Consumer<EObject> danglingNodeAction, boolean optimize) {
+		delete(nodesToDelete, edgesToDelete, danglingNodeAction, false, optimize);
+	}
+	
+	/**
+	 * Deletes the given nodes and edges in the following order:
+	 * <ol>
+	 * <li>the regular edges</li>
+	 * <li>the nodes</li>
+	 * <li>the containment edges</li>
+	 * </ol>
+	 * 
+	 * @param nodesToDelete
+	 *            the nodes marked for deletion
+	 * @param edgesToDelete
+	 *            the edges marked for deletion
+	 */
+	public static void delete(final Set<EObject> nodesToDelete, final Set<EMFEdge> edgesToDelete, boolean optimize) {
+		delete(nodesToDelete, edgesToDelete, false, optimize);
 	}
 	
 	public static void delete(final Set<EObject> nodesToDelete, final Set<EMFEdge> edgesToDelete,
-			final Consumer<EObject> danglingNodeAction, boolean recursive) {
+			final Consumer<EObject> danglingNodeAction, boolean recursive, boolean optimize) {
 		deleteEdges(edgesToDelete, danglingNodeAction, false);
 		deleteEdges(edgesToDelete, danglingNodeAction, true);
-		deleteNodes(nodesToDelete, danglingNodeAction, recursive);
+		deleteNodes(nodesToDelete, danglingNodeAction, recursive, optimize);
+	}
+	
+	public static void delete(final Set<EObject> nodesToDelete, final Set<EMFEdge> edgesToDelete, boolean recursive, boolean optimize) {
+		deleteEdges(edgesToDelete, false);
+		deleteEdges(edgesToDelete, true);
+		deleteNodes(nodesToDelete, recursive, optimize);
+	}
+	
+	/**
+	 * Deletes the given nodes.
+	 * 
+	 * @param nodesToDelete
+	 *            the nodes marked for deletion
+	 * @param danglingNodeAction
+	 *            the action to execute for dangling nodes
+	 */
+	private static void deleteNodes(final Set<EObject> nodesToDelete, boolean recursive, boolean optimize) {
+		if(optimize) {
+			for (EObject eObject : nodesToDelete) {
+				for (EReference ref : eObject.eClass().getEAllReferences()) {
+					if(ref.isMany())
+						((List<?>) eObject.eGet(ref)).clear();
+					else
+						eObject.eSet(ref, null);
+				}
+				EcoreUtil.remove(eObject);
+			}
+		}
+		else {
+			for (EObject node : nodesToDelete) {
+				if(!node.eContents().isEmpty() && recursive)
+					deleteNodes(node.eContents().stream().collect(Collectors.toSet()), recursive, optimize);
+			}
+			EcoreUtil.deleteAll(nodesToDelete, false);
+		}
 	}
 
 	/**
@@ -128,25 +177,29 @@ public class EMFManipulationUtils {
 	 * @param danglingNodeAction
 	 *            the action to execute for dangling nodes
 	 */
-	private static void deleteNodes(final Set<EObject> nodesToDelete, final Consumer<EObject> danglingNodeAction, boolean recursive) {
-		for (EObject node : nodesToDelete) {
-			if (isDanglingNode(node)) {
-				danglingNodeAction.accept(node);
+	private static void deleteNodes(final Set<EObject> nodesToDelete, final Consumer<EObject> danglingNodeAction, boolean recursive, boolean optimize) {
+		if(optimize) {
+			for (EObject eObject : nodesToDelete) {
+				for (EReference ref : eObject.eClass().getEAllReferences()) {
+					if(ref.isMany())
+						((List<?>) eObject.eGet(ref)).clear();
+					else
+						eObject.eSet(ref, null);
+				}
+				EcoreUtil.remove(eObject);
 			}
-			if(!node.eContents().isEmpty() && recursive)
-				deleteNodes(node.eContents().stream().collect(Collectors.toSet()), danglingNodeAction, recursive);
 		}
-		EcoreUtil.deleteAll(nodesToDelete, false);
-		//TODO: Fix for all use-cases (GT tests tend to throw errors when enabled)
-//		for (EObject eObject : nodesToDelete) {
-//			for (EReference ref : eObject.eClass().getEAllReferences()) {
-//				if(ref.isMany())
-//					((List<?>) eObject.eGet(ref)).clear();
-//				else
-//					eObject.eSet(ref, null);
-//			}
-//			EcoreUtil.remove(eObject);
-//		}
+		else {
+			for (EObject node : nodesToDelete) {
+				if (isDanglingNode(node)) {
+					danglingNodeAction.accept(node);
+				}
+				if(!node.eContents().isEmpty() && recursive)
+					deleteNodes(node.eContents().stream().collect(Collectors.toSet()), danglingNodeAction, recursive, optimize);
+			}
+			EcoreUtil.deleteAll(nodesToDelete, false);
+		}
+		
 	}
 	
 	/**
@@ -166,6 +219,22 @@ public class EMFManipulationUtils {
 				if (isDanglingNode(edge.getTarget())) {
 					danglingNodeAction.accept(edge.getTarget());
 				}
+				deleteEdge(edge.getSource(), edge.getTarget(), edge.getType());
+			}
+		}
+	}
+	
+	/**
+	 * Deletes the edges whose type has the containment set to the given value.
+	 * 
+	 * @param edgesToDelete
+	 *            the edges marked for deletion
+	 * @param containment
+	 *            the containment setting
+	 */
+	private static void deleteEdges(final Set<EMFEdge> edgesToDelete, boolean containment) {
+		for (EMFEdge edge : edgesToDelete) {
+			if (isContainment(edge.getType()) == containment) {
 				deleteEdge(edge.getSource(), edge.getTarget(), edge.getType());
 			}
 		}

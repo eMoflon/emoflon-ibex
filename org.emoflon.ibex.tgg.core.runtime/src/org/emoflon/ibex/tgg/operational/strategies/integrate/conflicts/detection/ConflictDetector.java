@@ -9,14 +9,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
+import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.BrokenMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DeletionType;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DomainModification;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.AttributeConflict;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.Conflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.ConflictContainer;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.CorrPreservationConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.DelPreserveAttrConflict;
@@ -33,6 +37,7 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis.
 
 import com.google.common.collect.Sets;
 
+import language.BindingType;
 import language.DomainType;
 import language.TGGAttributeConstraintDefinition;
 import language.TGGAttributeExpression;
@@ -78,19 +83,28 @@ public class ConflictDetector {
 		// we only iterate over src/trg matches which are not part of a consistency match (already filtered
 		// in precedence graph)
 
-		// TODO adrianm: parallel stream causes concurrent modification exception
-		integrate.getPrecedenceGraph().getSourceNodes().stream() //
+		integrate.getPrecedenceGraph().getSourceNodes().parallelStream() //
 				.filter(srcNode -> !integrate.getPrecedenceGraph().hasAnyConsistencyOverlap(srcNode)) //
-				.forEach(srcNode -> detectDeletePreserveEdgeConflict(srcNode, DomainType.SRC));
+				.forEach(srcNode -> detectDeletePreserveEdgeConflict(srcNode, null));
 
-		integrate.getPrecedenceGraph().getTargetNodes().stream() //
+		integrate.getPrecedenceGraph().getTargetNodes().parallelStream() //
 				.filter(trgNode -> !integrate.getPrecedenceGraph().hasAnyConsistencyOverlap(trgNode)) //
-				.forEach(trgNode -> detectDeletePreserveEdgeConflict(trgNode, DomainType.TRG));
+				.forEach(trgNode -> detectDeletePreserveEdgeConflict(trgNode, null));
 
 		detectDeletePreserveAttrConflicts();
 	}
 
-	private void detectDeletePreserveEdgeConflict(PrecedenceNode srcTrgNode, DomainType domainToBePreserved) {
+	/**
+	 * Detects one or multiple delete-preserve conflicts for a given source/target match.
+	 * 
+	 * @param srcTrgNode        node which contains the source/target match
+	 * @param matchToBeRepaired optional consistency match which has to be repaired after resolving this
+	 *                          conflict (may be <code>null</code>)
+	 */
+	private boolean detectDeletePreserveEdgeConflict(PrecedenceNode srcTrgNode, ITGGMatch matchToBeRepaired) {
+		boolean anyConflictDetected = false;
+		DomainType domainToBePreserved = srcTrgNode.getMatch().getType() == PatternType.SRC ? DomainType.SRC : DomainType.TRG;
+
 		Set<PrecedenceNode> directRollBackCauses = new HashSet<>();
 		srcTrgNode.forAllToBeRolledBackBy((act, pre) -> {
 			// TODO adrianm: improve performance?
@@ -109,10 +123,18 @@ public class ConflictDetector {
 
 			boolean skipCheckDomainSpecificViolations = skipCheckDomainSpecificViolations(container, domainToBePreserved);
 
-			if (skipCheckDomainSpecificViolations || checkDomainSpecificViolations(dirRollBackCause, oppositeOf(domainToBePreserved)))
-				new DelPreserveEdgeConflict(container, srcTrgNode.getMatch(), domainToBePreserved,
-						match2sortedRollBackCauses.get(dirRollBackCause.getMatch()));
+			if (skipCheckDomainSpecificViolations || checkDomainSpecificViolations(dirRollBackCause, oppositeOf(domainToBePreserved))) {
+				if (matchToBeRepaired == null)
+					createDelPresEdgeConflict(container, srcTrgNode.getMatch(), domainToBePreserved,
+							match2sortedRollBackCauses.get(dirRollBackCause.getMatch()));
+				else
+					createDelPresEdgeConflict(container, srcTrgNode.getMatch(), domainToBePreserved,
+							match2sortedRollBackCauses.get(dirRollBackCause.getMatch()), matchToBeRepaired);
+				anyConflictDetected = true;
+			}
 		}
+
+		return anyConflictDetected;
 	}
 
 	private void detectDeletePreserveAttrConflicts() {
@@ -130,16 +152,19 @@ public class ConflictDetector {
 				boolean skipCheckDomainSpecificViolations = skipCheckDomainSpecificViolations(container, ruleNode.getDomainType());
 
 				if (skipCheckDomainSpecificViolations || checkDomainSpecificViolations(node, oppositeOf(ruleNode.getDomainType())))
-					new DelPreserveAttrConflict(container, change, ruleNode.getDomainType(), match2sortedRollBackCauses.get(node.getMatch()));
+					createDelPresAttrConflict(container, change, ruleNode.getDomainType(), match2sortedRollBackCauses.get(node.getMatch()));
 			}
 		}
 	}
 
-	private boolean skipCheckDomainSpecificViolations(ConflictContainer container, DomainType domain) {
-		return container.getConflicts().stream() //
-				.filter(conflict -> conflict instanceof DeletePreserveConflict) //
-				.map(conflict -> (DeletePreserveConflict) conflict) //
-				.anyMatch(conflict -> conflict.getDomainToBePreserved() == domain);
+	private synchronized boolean skipCheckDomainSpecificViolations(ConflictContainer container, DomainType domain) {
+		for (Conflict conflict : container.getConflicts()) {
+			if (!(conflict instanceof DeletePreserveConflict))
+				continue;
+			if (((DeletePreserveConflict) conflict).getDomainToBePreserved() == domain)
+				return true;
+		}
+		return false;
 	}
 
 	private boolean checkDomainSpecificViolations(PrecedenceNode directRollBackCause, DomainType criticalDomain) {
@@ -173,10 +198,16 @@ public class ConflictDetector {
 		return false;
 	}
 
-	private boolean isDeletionRepairableConflictedMatch(ITGGMatch match) {
-		if (!match2conflictContainer.containsKey(match))
+	private synchronized boolean isDeletionRepairableConflictedMatch(ITGGMatch match) {
+		ConflictContainer container = match2conflictContainer.get(match);
+		if (container == null)
 			return false;
-		return match2conflictContainer.get(match).getConflicts().stream().anyMatch(InconsistentChangesConflict.class::isInstance);
+
+		for (Conflict conflict : container.getConflicts()) {
+			if (conflict instanceof InconsistentChangesConflict)
+				return true;
+		}
+		return false;
 	}
 
 	private boolean hasDomainSpecificViolations(ITGGMatch match, DomainType domain) {
@@ -222,7 +253,7 @@ public class ConflictDetector {
 		ConflictContainer container = match2conflictContainer.computeIfAbsent(brokenMatch.getMatch(), //
 				key -> new ConflictContainer(integrate, brokenMatch.getMatch()));
 
-		detectInconsistentChangesConflict(container, brokenMatch);
+		detectConflictsCausedByContradictoryChanges(container, brokenMatch);
 		detectAttributeConflicts(container, brokenMatch);
 	}
 
@@ -257,52 +288,109 @@ public class ConflictDetector {
 				if (srcChange == null || trgChange == null)
 					logger.error("User attribute edit was not domain conform!");
 
-				new AttributeConflict(container, constrAttrChanges, srcChange, trgChange);
+				createAttrConflict(container, constrAttrChanges, srcChange, trgChange);
 			}
 		}
 	}
 
-	private boolean detectInconsistentChangesConflict(ConflictContainer container, BrokenMatch brokenMatch) {
-		if (DeletionType.getInconsDelsCandidates().contains(brokenMatch.getDeletionType())) {
-			if (brokenMatch.getDeletionType() == DeletionType.SRC_PARTLY_TRG_NOT) {
-				new InconsDomainChangesConflict(container, DomainType.SRC);
-				return true;
-			}
-			if (brokenMatch.getDeletionType() == DeletionType.SRC_NOT_TRG_PARTLY) {
-				new InconsDomainChangesConflict(container, DomainType.TRG);
-				return true;
-			}
-			new CorrPreservationConflict(container);
-			return true;
-		}
-
-		if (brokenMatch.getFilterNacViolations().isEmpty())
-			return false;
+	private boolean detectConflictsCausedByContradictoryChanges(ConflictContainer container, BrokenMatch brokenMatch) {
+		DomainModification domainModSrc = brokenMatch.getDeletionPattern().getModType(DomainType.SRC, BindingType.CREATE);
+		DomainModification domainModTrg = brokenMatch.getDeletionPattern().getModType(DomainType.TRG, BindingType.CREATE);
 
 		boolean nacAtSrc = brokenMatch.getFilterNacViolations().containsValue(DomainType.SRC);
 		boolean nacAtTrg = brokenMatch.getFilterNacViolations().containsValue(DomainType.TRG);
-		if (nacAtSrc && nacAtTrg) {
-			new CorrPreservationConflict(container);
-			return true;
-		}
-		if (nacAtSrc) {
-			if (DeletionType.getPropBWDCandidates().contains(brokenMatch.getDeletionType())) {
-				new CorrPreservationConflict(container);
-				return true;
-			}
-			new InconsDomainChangesConflict(container, DomainType.SRC);
-			return true;
-		}
-		if (nacAtTrg) {
-			if (DeletionType.getPropFWDCandidates().contains(brokenMatch.getDeletionType())) {
-				new CorrPreservationConflict(container);
-				return true;
-			}
-			new InconsDomainChangesConflict(container, DomainType.TRG);
+
+		boolean partlyModSrc = domainModSrc == DomainModification.PART_DEL || nacAtSrc;
+		boolean partlyModTrg = domainModTrg == DomainModification.PART_DEL || nacAtTrg;
+
+		if (partlyModSrc && partlyModTrg) {
+			createCorrPresConflict(container);
 			return true;
 		}
 
-		return false;
+		if (!partlyModSrc && !partlyModTrg)
+			return false;
+
+		boolean anyConflictsDetected = false;
+		if (partlyModSrc) {
+			Set<ITGGMatch> srcMatches = computeSrcMatches(container.getMatch());
+
+			for (ITGGMatch srcMatch : srcMatches)
+				if (detectDeletePreserveEdgeConflict(integrate.getPrecedenceGraph().getNode(srcMatch), brokenMatch.getMatch()))
+					anyConflictsDetected = true;
+
+			if (domainModTrg == DomainModification.COMPL_DEL) {
+				List<ITGGMatch> causingMatches = integrate.getPrecedenceGraph().getNode(brokenMatch.getMatch()).computeSortedRollBackCauses().stream() //
+						.map(n -> n.getMatch()) //
+						.collect(Collectors.toList());
+				for (ITGGMatch srcMatch : srcMatches) {
+					createDelPresEdgeConflict(container, srcMatch, DomainType.SRC, causingMatches, brokenMatch.getMatch());
+					anyConflictsDetected = true;
+				}
+			}
+
+			if (!anyConflictsDetected) {
+				createInconsDomainChangesConflict(container, DomainType.SRC);
+				return true;
+			}
+		} else {
+			Set<ITGGMatch> trgMatches = computeTrgMatches(container.getMatch());
+
+			for (ITGGMatch trgMatch : trgMatches)
+				if (detectDeletePreserveEdgeConflict(integrate.getPrecedenceGraph().getNode(trgMatch), brokenMatch.getMatch()))
+					anyConflictsDetected = true;
+
+			if (domainModSrc == DomainModification.COMPL_DEL) {
+				List<ITGGMatch> causingMatches = integrate.getPrecedenceGraph().getNode(brokenMatch.getMatch()).computeSortedRollBackCauses().stream() //
+						.map(n -> n.getMatch()) //
+						.collect(Collectors.toList());
+				for (ITGGMatch trgMatch : trgMatches) {
+					createDelPresEdgeConflict(container, trgMatch, DomainType.TRG, causingMatches, brokenMatch.getMatch());
+					anyConflictsDetected = true;
+				}
+			}
+
+			if (!anyConflictsDetected) {
+				createInconsDomainChangesConflict(container, DomainType.TRG);
+				return true;
+			}
+		}
+
+		return true;
+	}
+
+	private Set<ITGGMatch> computeSrcMatches(ITGGMatch match) {
+		Set<ITGGMatch> srcMatches = new HashSet<>();
+
+		IGreenPatternFactory gFactory = integrate.getGreenFactory(match.getRuleName());
+		for (TGGRuleNode ruleNode : gFactory.getGreenSrcNodesInRule()) {
+			for (PrecedenceNode node : integrate.getPrecedenceGraph().getNodesTranslating(match.get(ruleNode.getName()))) {
+				if (node.getMatch().getType() == PatternType.CONSISTENCY)
+					continue;
+
+				if (integrate.getPrecedenceGraph().getSourceNodes().contains(node))
+					srcMatches.add(node.getMatch());
+			}
+		}
+
+		return srcMatches;
+	}
+
+	private Set<ITGGMatch> computeTrgMatches(ITGGMatch match) {
+		Set<ITGGMatch> trgMatches = new HashSet<>();
+
+		IGreenPatternFactory gFactory = integrate.getGreenFactory(match.getRuleName());
+		for (TGGRuleNode ruleNode : gFactory.getGreenTrgNodesInRule()) {
+			for (PrecedenceNode node : integrate.getPrecedenceGraph().getNodesTranslating(match.get(ruleNode.getName()))) {
+				if (node.getMatch().getType() == PatternType.CONSISTENCY)
+					continue;
+
+				if (integrate.getPrecedenceGraph().getTargetNodes().contains(node))
+					trgMatches.add(node.getMatch());
+			}
+		}
+
+		return trgMatches;
 	}
 
 	public Map<ITGGMatch, ConflictContainer> detectOpMultiplicityConflicts() {
@@ -349,6 +437,36 @@ public class ConflictDetector {
 		});
 
 		return match2conflictContainer;
+	}
+
+	//// CONFLICT FACTORIES ////
+
+	private synchronized void createDelPresEdgeConflict(ConflictContainer container, ITGGMatch srcTrgMatch, DomainType domainToBePreserved,
+			List<ITGGMatch> causingMatches) {
+		new DelPreserveEdgeConflict(container, srcTrgMatch, domainToBePreserved, causingMatches);
+	}
+
+	private synchronized void createDelPresEdgeConflict(ConflictContainer container, ITGGMatch srcTrgMatch, DomainType domainToBePreserved,
+			List<ITGGMatch> causingMatches, ITGGMatch matchToBeRepaired) {
+		new DelPreserveEdgeConflict(container, srcTrgMatch, domainToBePreserved, causingMatches, matchToBeRepaired);
+	}
+
+	private synchronized void createDelPresAttrConflict(ConflictContainer container, AttributeChange attrChange, DomainType domainToBePreserved,
+			List<ITGGMatch> causingMatches) {
+		new DelPreserveAttrConflict(container, attrChange, domainToBePreserved, causingMatches);
+	}
+
+	private synchronized void createAttrConflict(ConflictContainer container, ConstrainedAttributeChanges conflictedConstraint, AttributeChange srcChange,
+			AttributeChange trgChange) {
+		new AttributeConflict(container, conflictedConstraint, srcChange, trgChange);
+	}
+
+	private synchronized void createCorrPresConflict(ConflictContainer container) {
+		new CorrPreservationConflict(container);
+	}
+
+	private synchronized void createInconsDomainChangesConflict(ConflictContainer container, DomainType changedDomain) {
+		new InconsDomainChangesConflict(container, changedDomain);
 	}
 
 }
