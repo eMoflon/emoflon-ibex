@@ -365,8 +365,8 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			// Fill filtered matches Map by calling the match stream
 			matchStream(patternName, name2GTPattern.get(patternName).getParameters(), false);
 			// Check if existing matches recently became valid (pending) and add removal jobs
-			matches.get(patternName).stream()
-				.filter(match -> filteredMatches.get(patternName).contains(match))
+			matches.get(patternName).parallelStream()
+				.filter(match -> filteredMatches.containsKey(patternName) && filteredMatches.get(patternName).contains(match))
 				.filter(match -> pendingMatches.containsKey(patternName) && pendingMatches.get(patternName).contains(match))
 				.forEach(match -> {
 					Collection<IMatch> pending = pendingMatches.get(patternName);
@@ -375,7 +375,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 					Collection<IMatch> added = addedMatches.get(patternName);
 					if(added == null) {
 						added = Collections.synchronizedSet(new HashSet<>());
-						removedMatches.put(patternName, added);
+						addedMatches.put(patternName, added);
 					}
 					added.add(match);
 					
@@ -389,7 +389,23 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			
 			
 			if(addedMatches.containsKey(patternName)) {
-				addedMatches.get(patternName).forEach(match -> {
+				// Remove structurally valid matches that do not satisfy additional constraints
+				Set<IMatch> pendingAdded = new HashSet<>();
+				addedMatches.get(patternName).stream()
+				.filter(match -> !filteredMatches.containsKey(patternName) || !filteredMatches.get(patternName).contains(match))
+				.forEach(match -> {
+					pendingAdded.add(match);
+					Collection<IMatch> pending = pendingMatches.get(patternName);
+					if(pending == null) {
+						pending = Collections.synchronizedSet(new HashSet<>());
+						pendingMatches.put(patternName, pending);
+					}
+					pending.add(match);
+				});
+				addedMatches.get(patternName).removeAll(pendingAdded);
+				
+				addedMatches.get(patternName).stream()
+				.forEach(match -> {
 					Queue<Consumer<IMatch>> subs = appearingSubscriptionJobs.get(match);
 					if(subs == null) {
 						subs = new LinkedBlockingQueue<>();
@@ -407,8 +423,8 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			// Fill filtered matches Map by calling the match stream
 			matchStream(patternName, name2GTPattern.get(patternName).getParameters(), false);
 			// Check if existing matches recently became invalid (not pending) and add removal jobs
-			matches.get(patternName).stream()
-				.filter(match -> !filteredMatches.get(patternName).contains(match))
+			matches.get(patternName).parallelStream()
+				.filter(match -> !filteredMatches.containsKey(patternName) || !filteredMatches.get(patternName).contains(match))
 				.filter(match -> !pendingMatches.containsKey(patternName) || !pendingMatches.get(patternName).contains(match))
 				.forEach(match -> {
 					Collection<IMatch> pending = pendingMatches.get(patternName);
@@ -417,6 +433,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 						pendingMatches.put(patternName, pending);
 					}
 					pending.add(match);
+					
 					Collection<IMatch> removed = removedMatches.get(patternName);
 					if(removed == null) {
 						removed = Collections.synchronizedSet(new HashSet<>());
@@ -433,6 +450,16 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 				});
 			
 			if(removedMatches.containsKey(patternName)) {
+				// Ignore previously invalidated matches due to violation of additional constraints
+				Set<IMatch> pendingRemoved = new HashSet<>();
+				removedMatches.get(patternName).stream()
+					.filter(match -> pendingMatches.containsKey(patternName) && pendingMatches.get(patternName).contains(match))
+					.forEach(match -> {
+						pendingRemoved.add(match);
+						pendingMatches.get(patternName).remove(match);
+					});
+				removedMatches.get(patternName).removeAll(pendingRemoved);
+				
 				removedMatches.get(patternName).forEach(match -> {
 					Queue<Consumer<IMatch>> subs = disappearingSubscriptionJobs.get(match);
 					if(subs == null) {
