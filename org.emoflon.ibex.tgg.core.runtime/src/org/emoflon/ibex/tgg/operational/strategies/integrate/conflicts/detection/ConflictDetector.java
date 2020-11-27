@@ -125,11 +125,9 @@ public class ConflictDetector {
 
 			if (skipCheckDomainSpecificViolations || checkDomainSpecificViolations(dirRollBackCause, oppositeOf(domainToBePreserved))) {
 				if (matchToBeRepaired == null)
-					createDelPresEdgeConflict(container, srcTrgNode.getMatch(), domainToBePreserved,
-							match2sortedRollBackCauses.get(dirRollBackCause.getMatch()));
+					createDelPresEdgeConflict(container, srcTrgNode.getMatch(), domainToBePreserved, dirRollBackCause.getMatch());
 				else
-					createDelPresEdgeConflict(container, srcTrgNode.getMatch(), domainToBePreserved,
-							match2sortedRollBackCauses.get(dirRollBackCause.getMatch()), matchToBeRepaired);
+					createDelPresEdgeConflict(container, srcTrgNode.getMatch(), domainToBePreserved, dirRollBackCause.getMatch(), matchToBeRepaired);
 				anyConflictDetected = true;
 			}
 		}
@@ -152,7 +150,7 @@ public class ConflictDetector {
 				boolean skipCheckDomainSpecificViolations = skipCheckDomainSpecificViolations(container, ruleNode.getDomainType());
 
 				if (skipCheckDomainSpecificViolations || checkDomainSpecificViolations(node, oppositeOf(ruleNode.getDomainType())))
-					createDelPresAttrConflict(container, change, ruleNode.getDomainType(), match2sortedRollBackCauses.get(node.getMatch()));
+					createDelPresAttrConflict(container, change, ruleNode.getDomainType(), node.getMatch());
 			}
 		}
 	}
@@ -320,11 +318,8 @@ public class ConflictDetector {
 					anyConflictsDetected = true;
 
 			if (domainModTrg == DomainModification.COMPL_DEL) {
-				List<ITGGMatch> causingMatches = integrate.getPrecedenceGraph().getNode(brokenMatch.getMatch()).computeSortedRollBackCauses().stream() //
-						.map(n -> n.getMatch()) //
-						.collect(Collectors.toList());
 				for (ITGGMatch srcMatch : srcMatches) {
-					createDelPresEdgeConflict(container, srcMatch, DomainType.SRC, causingMatches, brokenMatch.getMatch());
+					createDelPresEdgeConflict(container, srcMatch, DomainType.SRC, brokenMatch.getMatch(), brokenMatch.getMatch());
 					anyConflictsDetected = true;
 				}
 			}
@@ -341,11 +336,8 @@ public class ConflictDetector {
 					anyConflictsDetected = true;
 
 			if (domainModSrc == DomainModification.COMPL_DEL) {
-				List<ITGGMatch> causingMatches = integrate.getPrecedenceGraph().getNode(brokenMatch.getMatch()).computeSortedRollBackCauses().stream() //
-						.map(n -> n.getMatch()) //
-						.collect(Collectors.toList());
 				for (ITGGMatch trgMatch : trgMatches) {
-					createDelPresEdgeConflict(container, trgMatch, DomainType.TRG, causingMatches, brokenMatch.getMatch());
+					createDelPresEdgeConflict(container, trgMatch, DomainType.TRG, brokenMatch.getMatch(), brokenMatch.getMatch());
 					anyConflictsDetected = true;
 				}
 			}
@@ -391,6 +383,13 @@ public class ConflictDetector {
 		}
 
 		return trgMatches;
+	}
+
+	private List<ITGGMatch> computeSortedRollBackCausesIfAbsent(ITGGMatch directCausingMatch) {
+		return match2sortedRollBackCauses.computeIfAbsent(directCausingMatch, //
+				k -> integrate.getPrecedenceGraph().getNode(directCausingMatch).computeSortedRollBackCauses().stream() //
+						.map(n -> n.getMatch()) //
+						.collect(Collectors.toList()));
 	}
 
 	public Map<ITGGMatch, ConflictContainer> detectOpMultiplicityConflicts() {
@@ -442,18 +441,19 @@ public class ConflictDetector {
 	//// CONFLICT FACTORIES ////
 
 	private synchronized void createDelPresEdgeConflict(ConflictContainer container, ITGGMatch srcTrgMatch, DomainType domainToBePreserved,
-			List<ITGGMatch> causingMatches) {
-		new DelPreserveEdgeConflict(container, srcTrgMatch, domainToBePreserved, causingMatches);
+			ITGGMatch directCausingMatch) {
+		new DelPreserveEdgeConflict(container, srcTrgMatch, domainToBePreserved, computeSortedRollBackCausesIfAbsent(directCausingMatch));
 	}
 
 	private synchronized void createDelPresEdgeConflict(ConflictContainer container, ITGGMatch srcTrgMatch, DomainType domainToBePreserved,
-			List<ITGGMatch> causingMatches, ITGGMatch matchToBeRepaired) {
-		new DelPreserveEdgeConflict(container, srcTrgMatch, domainToBePreserved, causingMatches, matchToBeRepaired);
+			ITGGMatch directCausingMatch, ITGGMatch matchToBeRepaired) {
+		new DelPreserveEdgeConflict(container, srcTrgMatch, domainToBePreserved, computeSortedRollBackCausesIfAbsent(directCausingMatch),
+				matchToBeRepaired);
 	}
 
 	private synchronized void createDelPresAttrConflict(ConflictContainer container, AttributeChange attrChange, DomainType domainToBePreserved,
-			List<ITGGMatch> causingMatches) {
-		new DelPreserveAttrConflict(container, attrChange, domainToBePreserved, causingMatches);
+			ITGGMatch directCausingMatch) {
+		new DelPreserveAttrConflict(container, attrChange, domainToBePreserved, computeSortedRollBackCausesIfAbsent(directCausingMatch));
 	}
 
 	private synchronized void createAttrConflict(ConflictContainer container, ConstrainedAttributeChanges conflictedConstraint, AttributeChange srcChange,
