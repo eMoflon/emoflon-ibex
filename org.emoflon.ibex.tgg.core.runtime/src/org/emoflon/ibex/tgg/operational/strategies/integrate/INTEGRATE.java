@@ -168,8 +168,9 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 		modelChangeProtocol.deregisterKey(generalDeltaKey);
 		modelChangeProtocol.detachAdapter();
+		// TODO adrianm: cleaner reset of ModelChangeProtocol
 		modelChangeProtocol = new ModelChangeProtocol(resourceHandler.getSourceResource(), resourceHandler.getTargetResource(),
-				resourceHandler.getCorrResource());
+				resourceHandler.getCorrResource(), resourceHandler.getProtocolResource());
 		classifiedBrokenMatches = new HashMap<>();
 		conflicts = new HashSet<>();
 		match2conflicts = new HashMap<>();
