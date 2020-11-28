@@ -1,10 +1,13 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts;
 
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
@@ -70,10 +73,11 @@ public abstract class DeletePreserveConflict extends Conflict
 
 		for (TGGRuleElement elt : analysis.getElts(new EltFilter().srcAndTrg().create().deleted())) {
 			if (elt instanceof TGGRuleNode) {
-				analysis.getObject((TGGRuleNode) elt).eContents().forEach(child -> {
+				List<EObject> childs = new LinkedList<>(analysis.getObject((TGGRuleNode) elt).eContents());
+				for (EObject child : childs) {
 					if (!analysis.getObjects().contains(child))
 						ModelChangeUtil.deleteElement(child, true);
-				});
+				}
 			}
 		}
 
