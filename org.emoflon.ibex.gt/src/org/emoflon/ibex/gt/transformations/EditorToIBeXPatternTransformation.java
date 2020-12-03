@@ -501,7 +501,7 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 				.map(n -> n.getName()) //
 				.collect(Collectors.toSet());
 		String patternName = editorPattern.getName() + "-CONDITION-"
-				+ signatureNodeNames.stream().collect(Collectors.joining(","));
+				+ signatureNodeNames.stream().collect(Collectors.joining("_"));
 		return  transformToContextPattern(editorPattern, patternName, nodeMap);
 		
 	}
