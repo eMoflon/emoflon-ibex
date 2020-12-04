@@ -432,8 +432,27 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			if(name2Pattern.get(patternName) instanceof IBeXDisjunctContextPattern) {
 				matchCollection = filteredMatches.get(patternName);
 			} else {
-				matchCollection = matches.get(patternName).stream()
-					.filter(match -> filteredMatches.get(patternName).contains(match)).collect(Collectors.toList());			
+				matchCollection = matches.get(patternName);
+			}
+			// Check if existing matches recently became valid (pending) and add removal jobs
+			matchCollection.parallelStream()
+				.filter(match -> filteredMatches.containsKey(patternName) && filteredMatches.get(patternName).contains(match))
+				.filter(match -> pendingMatches.containsKey(patternName) && pendingMatches.get(patternName).contains(match))
+				.forEach(match -> {
+					Collection<IMatch> pending = pendingMatches.get(patternName);
+					pending.remove(match);
+					
+					Collection<IMatch> added = addedMatches.get(patternName);
+					if(added == null) {
+						added = Collections.synchronizedSet(new HashSet<>());
+						addedMatches.put(patternName, added);
+					}
+					added.add(match);
+					
+					Queue<Consumer<IMatch>> subs = appearingSubscriptionJobs.get(match);
+					if(subs == null) {
+						subs = new LinkedBlockingQueue<>();
+						appearingSubscriptionJobs.put(match, subs);
 			}
 				matchCollection.stream().filter(match -> pendingMatches.containsKey(patternName) && pendingMatches.get(patternName).contains(match))
 					.forEach(match -> {
@@ -480,10 +499,9 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			if(name2Pattern.get(patternName) instanceof IBeXDisjunctContextPattern) {
 				matchCollection = filteredMatches.get(patternName);
 			} else {
-				matchCollection = matches.get(patternName).stream()
-				.filter(match -> !filteredMatches.get(patternName).contains(match)).collect(Collectors.toList());			
+				matchCollection = matches.get(patternName);
 			}
-				matchCollection.stream()
+			matchCollection.stream()
 					.filter(match -> !pendingMatches.containsKey(patternName) || !pendingMatches.get(patternName).contains(match))
 					.forEach(match -> {
 						Collection<IMatch> pending = pendingMatches.get(patternName);
