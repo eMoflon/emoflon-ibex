@@ -161,13 +161,13 @@ public abstract class DeletePreserveConflict extends Conflict
 
 	protected void revokeDeletion() {
 		tmp_restored = new HashSet<>();
-		causingMatches.forEach(match -> {
+		for (ITGGMatch match : causingMatches) {
 			if (!tmp_restored.contains(match)) {
 				restoreMatch(integrate().getClassifiedBrokenMatches().get(match));
 				tmp_restored.add(match);
 				restoreMatchesBasedOn(match);
 			}
-		});
+		}
 	}
 
 	protected void restoreMatchesBasedOn(ITGGMatch match) {

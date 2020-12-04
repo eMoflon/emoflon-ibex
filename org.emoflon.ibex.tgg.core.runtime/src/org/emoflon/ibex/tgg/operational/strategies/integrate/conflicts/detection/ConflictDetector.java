@@ -64,7 +64,8 @@ public class ConflictDetector {
 		match2sortedRollBackCauses = Collections.synchronizedMap(new HashMap<>());
 
 		// delete-preserve conflicts must be detected last, since some of them may be irrelevant, in case
-		// they depend on other conflicts which repair the deletions while being resolved
+		// they depend on other conflicts which repair the deletions while being resolved (see method
+		// isDeletionRepairableConflictedMatch)
 		integrate.getClassifiedBrokenMatches().values().parallelStream() //
 				.forEach(brokenMatch -> detectConsMatchBasedConflicts(brokenMatch));
 		detectDeletePreserveConflicts();
@@ -108,7 +109,8 @@ public class ConflictDetector {
 		Set<PrecedenceNode> directRollBackCauses = new HashSet<>();
 		srcTrgNode.forAllToBeRolledBackBy((act, pre) -> {
 			// TODO adrianm: improve performance?
-			if (integrate.getPrecedenceGraph().hasAnyConsistencyOverlap(act))
+			// we only want to traverse those src/trg matches that only matches non-translated green elements
+			if (act.getMatch().getType() != PatternType.CONSISTENCY && integrate.getPrecedenceGraph().hasAnyConsistencyOverlap(act))
 				return false;
 			if (act.isBroken()) {
 				directRollBackCauses.add(act);
