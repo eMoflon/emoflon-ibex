@@ -21,7 +21,6 @@ Require-Bundle: org.eclipse.emf.ecore,
  org.sat4j.core;visibility:=reexport,
  org.sat4j.pb;visibility:=reexport,
  org.emoflon.ibex.gt;visibility:=reexport,
- org.emoflon.ibex.tgg.runtime.precedencegraph;visibility:=reexport,
  org.emoflon.delta;bundle-version="1.0.0";visibility:=reexport,
  org.emoflon.ibex.patternmodel,
  org.emoflon.ibex.tgg.language
