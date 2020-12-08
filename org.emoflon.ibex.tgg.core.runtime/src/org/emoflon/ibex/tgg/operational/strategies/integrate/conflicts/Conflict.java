@@ -247,48 +247,55 @@ public abstract class Conflict {
 		// used to eliminate opposite edges
 		Set<EReference> processedRefs = new HashSet<>();
 
-		containmentEdges.forEach(edge -> {
+		for (EMFEdge edge : containmentEdges) {
 			ModelChangeUtil.createEdge(edge);
 			if (edge.getType().getEOpposite() != null)
 				processedRefs.add(edge.getType());
-		});
+		}
 
-		nodes.forEach(node -> {
+		for (EObject node : nodes) {
 			Resource resource = integrate().getGeneralModelChanges().containedInResource(node);
 			if (resource != null)
 				resource.getContents().add(node);
-		});
 
-		crossEdges.forEach(edge -> {
+			// searches for deleted incoming marker edges and adds them to crossEdges
+			for (EMFEdge edge : integrate().getGeneralModelChanges().getDeletedIncomingEdges(node)) {
+				if (edge.getSource() instanceof TGGRuleApplication)
+					crossEdges.add(edge);
+			}
+		}
+
+		for (EMFEdge edge : crossEdges) {
 			boolean isBidirectional = edge.getType().getEOpposite() != null;
 			if (isBidirectional && processedRefs.contains(edge.getType().getEOpposite()))
-				return;
+				continue;
 			ModelChangeUtil.createEdge(edge);
 			if (isBidirectional)
 				processedRefs.add(edge.getType());
-		});
+		}
 	}
 
 	protected void revokeElements(Collection<EObject> nodes, Collection<EMFEdge> containmentEdges, Collection<EMFEdge> crossEdges) {
 		// used to eliminate opposite edges
 		Set<EReference> processedRefs = new HashSet<>();
 
-		containmentEdges.forEach(edge -> {
+		for (EMFEdge edge : containmentEdges) {
 			ModelChangeUtil.deleteEdge(edge);
 			if (edge.getType().getEOpposite() != null)
 				processedRefs.add(edge.getType());
-		});
+		}
 
-		nodes.forEach(node -> ModelChangeUtil.deleteElement(node, true));
+		for (EObject node : nodes)
+			ModelChangeUtil.deleteElement(node, true);
 
-		crossEdges.forEach(edge -> {
+		for (EMFEdge edge : crossEdges) {
 			boolean isBidirectional = edge.getType().getEOpposite() != null;
 			if (isBidirectional && processedRefs.contains(edge.getType().getEOpposite()))
-				return;
+				continue;
 			ModelChangeUtil.deleteEdge(edge);
 			if (isBidirectional)
 				processedRefs.add(edge.getType());
-		});
+		}
 	}
 
 	protected void deleteCorrs(ITGGMatch match) {

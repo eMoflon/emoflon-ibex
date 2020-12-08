@@ -260,6 +260,16 @@ public class ModelChanges {
 		result.addAll(trgMappedCreatedEdges.getOrDefault(element, Collections.emptySet()));
 		return Collections.unmodifiableSet(result);
 	}
+	
+	public Set<EMFEdge> getCreatedOutgoingEdges(EObject element) {
+		cleanUp();
+		return Collections.unmodifiableSet(srcMappedCreatedEdges.getOrDefault(element, Collections.emptySet()));
+	}
+	
+	public Set<EMFEdge> getCreatedIncomingEdges(EObject element) {
+		cleanUp();
+		return Collections.unmodifiableSet(trgMappedCreatedEdges.getOrDefault(element, Collections.emptySet()));
+	}
 
 	public Set<EMFEdge> getDeletedEdges(EObject element) {
 		cleanUp();
@@ -268,6 +278,18 @@ public class ModelChanges {
 		result.addAll(trgMappedDeletedEdges.getOrDefault(element, Collections.emptySet()));
 		return Collections.unmodifiableSet(result);
 	}
+	
+	public Set<EMFEdge> getDeletedOutgoingEdges(EObject element) {
+		cleanUp();
+		return Collections.unmodifiableSet(srcMappedDeletedEdges.getOrDefault(element, Collections.emptySet()));
+	}
+	
+	public Set<EMFEdge> getDeletedIncomingEdges(EObject element) {
+		cleanUp();
+		return Collections.unmodifiableSet(trgMappedDeletedEdges.getOrDefault(element, Collections.emptySet()));
+	}
+	
+	/* INTERN */
 
 	synchronized private void cleanUp() {
 		if (modified) {

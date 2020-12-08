@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
@@ -165,7 +164,9 @@ public abstract class DeletePreserveConflict extends Conflict
 			if (!tmp_restored.contains(match)) {
 				restoreMatch(integrate().getClassifiedBrokenMatches().get(match));
 				tmp_restored.add(match);
-				restoreMatchesBasedOn(match);
+				// restore other branches based on this match below the conflict match
+				if (!match.equals(getMatch()))
+					restoreMatchesBasedOn(match);
 			}
 		}
 	}
