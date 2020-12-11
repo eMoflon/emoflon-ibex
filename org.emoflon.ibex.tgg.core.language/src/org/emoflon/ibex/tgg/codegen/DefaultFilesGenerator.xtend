@@ -18,7 +18,7 @@ class DefaultFilesGenerator {
 			
 			«FOR constraint : userDefConstraints»
 				import org.emoflon.ibex.tgg.operational.csp.constraints.custom.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase».«UserAttrCondHelper.getFileName(constraint)»;
-			«ENDFOR»
+			«ENDFOR» 
 			
 			public class UserDefinedRuntimeTGGAttrConstraintFactory extends RuntimeTGGAttrConstraintFactory {
 			
