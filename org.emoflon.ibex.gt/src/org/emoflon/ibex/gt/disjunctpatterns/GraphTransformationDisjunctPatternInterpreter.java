@@ -261,7 +261,12 @@ public class GraphTransformationDisjunctPatternInterpreter {
 	 * @return the matches
 	 */
 	public final Stream<IMatch> matchStream(final IBeXDisjunctContextPattern pattern, final Map<IBeXContextPattern, Collection<IMatch>> submatchesMap){
-		return joinDisjunctSubMatches(pattern, new ArrayList<Collection<IMatch>>(submatchesMap.values()), pattern.getName()).stream();
+		//ArrayList needs to be sorted after the pattern sequence
+		List<Collection<IMatch>> subpatternSequence = new ArrayList<Collection<IMatch>>();
+		for(IBeXContextPattern subpattern: pattern.getSubpatterns()) {
+			subpatternSequence.add(submatchesMap.get(subpattern));
+		}
+		return joinDisjunctSubMatches(pattern, subpatternSequence, pattern.getName()).stream();
 	}
 	
 	/**
@@ -295,20 +300,29 @@ public class GraphTransformationDisjunctPatternInterpreter {
 	public final Collection<IMatch> createMatchesWithThisSubmatch(final IBeXDisjunctContextPattern pattern, final IMatch match, final Map<String, Collection<IMatch>> submatchesMap, 
 			final String name){
 		Collection<IMatch> cartesianProduct = new HashSet<IMatch>();
-		cartesianProduct.add(match);
 		for(IBeXContextPattern subpattern: pattern.getSubpatterns()) {
 			Collection<IMatch> matches = submatchesMap.get(subpattern.getName());
 			if(!matches.isEmpty()) {
 				if(!matches.iterator().next().getPatternName().equals(match.getPatternName())) {
-					cartesianProduct = DisjunctPatternHelper.cartesianProduct(cartesianProduct, matches, name, attributeComparators);
+					if(cartesianProduct.isEmpty()) {
+						cartesianProduct = matches;
+					}
+					else {
+						cartesianProduct = DisjunctPatternHelper.cartesianProduct(cartesianProduct, matches, name, attributeComparators);						
+					}
 				}else {
-					continue;
-				}
-				
+					if(cartesianProduct.isEmpty()) {
+						cartesianProduct.add(match);
+					}
+					else {
+						Collection<IMatch> matchSet = new HashSet<IMatch>();
+						matchSet.add(match);
+						cartesianProduct = DisjunctPatternHelper.cartesianProduct(cartesianProduct, matchSet, name, attributeComparators);						
+					}
+				}				
 			}else {
 				return new HashSet<IMatch>();
-			}
-			
+			}			
 		}
 		return cartesianProduct;
 	}

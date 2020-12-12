@@ -53,7 +53,6 @@ public class TGGResourceHandler {
 	protected Resource target;
 	protected Resource corr;
 	protected Resource protocol;
-	protected Resource precedence;
 	
 	private MetamodelRelaxer relaxer = new MetamodelRelaxer();
 	
@@ -237,7 +236,6 @@ public class TGGResourceHandler {
 			target.save(null);
 			corr.save(null);
 			protocol.save(null);
-			precedence.save(null);
 		}
 	}
 	
@@ -317,7 +315,6 @@ public class TGGResourceHandler {
 			target = loadResource(options.project.path() + "/instances/trg.xmi");
 			corr = loadResource(options.project.path() + "/instances/corr.xmi");
 			protocol = loadResource(options.project.path() + "/instances/protocol.xmi");
-			precedence = createResource(options.project.path() + "/instances/epg.xmi");
 		}
 
 		EcoreUtil.resolveAll(rs);
@@ -425,10 +422,6 @@ public class TGGResourceHandler {
 	public void addToTrash(EObject o) {
 		TempContainer c = (TempContainer) trash.getContents().get(0);
 		c.getObjects().add(EcoreUtil.getRootContainer(o));
-	}
-
-	public Resource getPrecedenceResource() {
-		return precedence;
 	}
 	
 	public Resource getTrashResource() {

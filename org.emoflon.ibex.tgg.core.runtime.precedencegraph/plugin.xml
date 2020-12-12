@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?eclipse version="3.0"?><plugin>
-  <extension point="org.eclipse.emf.ecore.generated_package">
-    <package class="precedencegraph.PrecedencegraphPackage" genModel="model/Precedencegraph.genmodel" uri="http://www.example.org/precedencegraph"/>
-  </extension>
-</plugin>

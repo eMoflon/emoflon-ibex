@@ -51,5 +51,4 @@ public interface IMatchObserver {
 		return true;
 	}
 
-	public void notifySubscriptions();
 }
