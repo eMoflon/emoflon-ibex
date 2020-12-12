@@ -1,13 +1,10 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts;
 
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 
-import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
@@ -18,13 +15,8 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolutio
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_RevokeAddition;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_RevokeDeletion;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceGraph;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.EltFilter;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis;
 
 import language.DomainType;
-import language.TGGRuleElement;
-import language.TGGRuleNode;
 
 public abstract class DeletePreserveConflict extends Conflict
 		implements CRS_MergeAndPreserve, CRS_RevokeDeletion, CRS_RevokeAddition, CRS_PreferSource, CRS_PreferTarget, CRS_DeleteCorrs {
@@ -66,20 +58,10 @@ public abstract class DeletePreserveConflict extends Conflict
 
 	@Override
 	public void crs_mergeAndPreserve() {
-		MatchAnalysis analysis = integrate().getMatchUtil().getAnalysis(getMatch());
-
 		for (ITGGMatch causingMatch : causingMatches)
 			restoreMatch(integrate().getClassifiedBrokenMatches().get(causingMatch));
 
-		for (TGGRuleElement elt : analysis.getElts(new EltFilter().srcAndTrg().create().deleted())) {
-			if (elt instanceof TGGRuleNode) {
-				List<EObject> childs = new LinkedList<>(analysis.getObject((TGGRuleNode) elt).eContents());
-				for (EObject child : childs) {
-					if (!analysis.getObjects().contains(child))
-						ModelChangeUtil.deleteElement(child, true);
-				}
-			}
-		}
+		// Do not remove elements above conflict match due to new explicit/implicit user deletion handling approach!
 
 		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by MERGE_&_PRESERVE");
 		resolved = true;
@@ -161,13 +143,15 @@ public abstract class DeletePreserveConflict extends Conflict
 
 	protected void revokeDeletion() {
 		tmp_restored = new HashSet<>();
-		causingMatches.forEach(match -> {
+		for (ITGGMatch match : causingMatches) {
 			if (!tmp_restored.contains(match)) {
 				restoreMatch(integrate().getClassifiedBrokenMatches().get(match));
 				tmp_restored.add(match);
-				restoreMatchesBasedOn(match);
+				// restore other branches based on this match below the conflict match
+				if (!match.equals(getMatch()))
+					restoreMatchesBasedOn(match);
 			}
-		});
+		}
 	}
 
 	protected void restoreMatchesBasedOn(ITGGMatch match) {
