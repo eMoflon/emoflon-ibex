@@ -13,10 +13,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
+import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.OperationalShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.AttrCheck;
@@ -42,8 +42,6 @@ import language.TGGRuleNode;
 import runtime.RuntimePackage;
 
 public class SearchPlanCreator {
-
-	protected final static Logger logger = Logger.getLogger(SearchPlanCreator.class);
 
 	protected final PropagatingOperationalStrategy strategy;
 	protected final OperationalShortcutRule opSCR;
@@ -315,12 +313,9 @@ public class SearchPlanCreator {
 
 		// first calculate the lookups to find all elements + their corresponding node checks
 		while (!uncheckedNodes.isEmpty()) {
-			List<SearchKey> nextSearchKeys = //
-					filterKeys(uncheckedSearchKeys, uncheckedNodes, uncheckedRelaxedNodes, false);
+			List<SearchKey> nextSearchKeys = filterKeys(uncheckedSearchKeys, uncheckedNodes, uncheckedRelaxedNodes, false);
 			if (nextSearchKeys.isEmpty()) {
-				// TODO lfritsche: clear this up
-//				throw new RuntimeException("Searchplan could not be generated for OperationalShortcutRule - " + scRule);
-				logger.error("Searchplan could not be generated for OperationalShortcutRule - " + opSCR.getOpScRule().getName());
+				LoggerConfig.log(LoggerConfig.log_repair(), () -> "!Warning! Searchplan could not be generated for: " + opSCR.getName());
 				return null;
 			}
 

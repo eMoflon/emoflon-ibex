@@ -2,8 +2,11 @@ package org.emoflon.ibex.tgg.operational.repair.shortcut.util;
 
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 
 import language.TGGRule;
 import language.TGGRuleElement;
@@ -29,6 +32,7 @@ public class TGGOverlap {
 	public Set<TGGRuleElement> creations;
 	
 	public OverlapCategory category;
+	public Set<PatternType> nonOperationalizablePatterns = new HashSet<>();
 
 	public TGGOverlap(TGGRule originalRule, TGGRule replacingRule, Map<TGGRuleElement, TGGRuleElement> mappings,
 			Set<TGGRuleElement> originalContext, Set<TGGRuleElement> replacingContext,

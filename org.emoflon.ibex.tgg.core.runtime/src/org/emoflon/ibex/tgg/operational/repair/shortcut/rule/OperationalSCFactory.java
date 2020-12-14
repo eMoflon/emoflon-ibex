@@ -31,6 +31,9 @@ public class OperationalSCFactory {
 			TGGRule originalRule = scRule.getOriginalRule();
 			TGGRule replacingRule = scRule.getReplacingRule();
 
+			if (scRule.getOverlap().nonOperationalizablePatterns.contains(type))
+				continue;
+			
 			// TODO larsF, adrianM: does this make sense?
 			// we do not want rules that contain no interface edges
 			if (TGGFilterUtil.filterEdges(originalRule.getEdges(), BindingType.CREATE).size()
