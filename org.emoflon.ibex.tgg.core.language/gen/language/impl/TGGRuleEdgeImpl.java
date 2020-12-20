@@ -92,8 +92,7 @@ public class TGGRuleEdgeImpl extends TGGRuleElementImpl implements TGGRuleEdge {
 			srcNode = (TGGRuleNode) eResolveProxy(oldSrcNode);
 			if (srcNode != oldSrcNode) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, LanguagePackage.TGG_RULE_EDGE__SRC_NODE,
-							oldSrcNode, srcNode));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, LanguagePackage.TGG_RULE_EDGE__SRC_NODE, oldSrcNode, srcNode));
 			}
 		}
 		return srcNode;
@@ -117,8 +116,8 @@ public class TGGRuleEdgeImpl extends TGGRuleElementImpl implements TGGRuleEdge {
 		TGGRuleNode oldSrcNode = srcNode;
 		srcNode = newSrcNode;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
-					LanguagePackage.TGG_RULE_EDGE__SRC_NODE, oldSrcNode, newSrcNode);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_RULE_EDGE__SRC_NODE, oldSrcNode,
+					newSrcNode);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -137,17 +136,14 @@ public class TGGRuleEdgeImpl extends TGGRuleElementImpl implements TGGRuleEdge {
 		if (newSrcNode != srcNode) {
 			NotificationChain msgs = null;
 			if (srcNode != null)
-				msgs = ((InternalEObject) srcNode).eInverseRemove(this, LanguagePackage.TGG_RULE_NODE__OUTGOING_EDGES,
-						TGGRuleNode.class, msgs);
+				msgs = ((InternalEObject) srcNode).eInverseRemove(this, LanguagePackage.TGG_RULE_NODE__OUTGOING_EDGES, TGGRuleNode.class, msgs);
 			if (newSrcNode != null)
-				msgs = ((InternalEObject) newSrcNode).eInverseAdd(this, LanguagePackage.TGG_RULE_NODE__OUTGOING_EDGES,
-						TGGRuleNode.class, msgs);
+				msgs = ((InternalEObject) newSrcNode).eInverseAdd(this, LanguagePackage.TGG_RULE_NODE__OUTGOING_EDGES, TGGRuleNode.class, msgs);
 			msgs = basicSetSrcNode(newSrcNode, msgs);
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_RULE_EDGE__SRC_NODE, newSrcNode,
-					newSrcNode));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_RULE_EDGE__SRC_NODE, newSrcNode, newSrcNode));
 	}
 
 	/**
@@ -162,8 +158,7 @@ public class TGGRuleEdgeImpl extends TGGRuleElementImpl implements TGGRuleEdge {
 			trgNode = (TGGRuleNode) eResolveProxy(oldTrgNode);
 			if (trgNode != oldTrgNode) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, LanguagePackage.TGG_RULE_EDGE__TRG_NODE,
-							oldTrgNode, trgNode));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, LanguagePackage.TGG_RULE_EDGE__TRG_NODE, oldTrgNode, trgNode));
 			}
 		}
 		return trgNode;
@@ -187,8 +182,8 @@ public class TGGRuleEdgeImpl extends TGGRuleElementImpl implements TGGRuleEdge {
 		TGGRuleNode oldTrgNode = trgNode;
 		trgNode = newTrgNode;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
-					LanguagePackage.TGG_RULE_EDGE__TRG_NODE, oldTrgNode, newTrgNode);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_RULE_EDGE__TRG_NODE, oldTrgNode,
+					newTrgNode);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -207,17 +202,14 @@ public class TGGRuleEdgeImpl extends TGGRuleElementImpl implements TGGRuleEdge {
 		if (newTrgNode != trgNode) {
 			NotificationChain msgs = null;
 			if (trgNode != null)
-				msgs = ((InternalEObject) trgNode).eInverseRemove(this, LanguagePackage.TGG_RULE_NODE__INCOMING_EDGES,
-						TGGRuleNode.class, msgs);
+				msgs = ((InternalEObject) trgNode).eInverseRemove(this, LanguagePackage.TGG_RULE_NODE__INCOMING_EDGES, TGGRuleNode.class, msgs);
 			if (newTrgNode != null)
-				msgs = ((InternalEObject) newTrgNode).eInverseAdd(this, LanguagePackage.TGG_RULE_NODE__INCOMING_EDGES,
-						TGGRuleNode.class, msgs);
+				msgs = ((InternalEObject) newTrgNode).eInverseAdd(this, LanguagePackage.TGG_RULE_NODE__INCOMING_EDGES, TGGRuleNode.class, msgs);
 			msgs = basicSetTrgNode(newTrgNode, msgs);
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_RULE_EDGE__TRG_NODE, newTrgNode,
-					newTrgNode));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_RULE_EDGE__TRG_NODE, newTrgNode, newTrgNode));
 	}
 
 	/**
@@ -232,8 +224,7 @@ public class TGGRuleEdgeImpl extends TGGRuleElementImpl implements TGGRuleEdge {
 			type = (EReference) eResolveProxy(oldType);
 			if (type != oldType) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, LanguagePackage.TGG_RULE_EDGE__TYPE,
-							oldType, type));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, LanguagePackage.TGG_RULE_EDGE__TYPE, oldType, type));
 			}
 		}
 		return type;
@@ -271,13 +262,11 @@ public class TGGRuleEdgeImpl extends TGGRuleElementImpl implements TGGRuleEdge {
 		switch (featureID) {
 		case LanguagePackage.TGG_RULE_EDGE__SRC_NODE:
 			if (srcNode != null)
-				msgs = ((InternalEObject) srcNode).eInverseRemove(this, LanguagePackage.TGG_RULE_NODE__OUTGOING_EDGES,
-						TGGRuleNode.class, msgs);
+				msgs = ((InternalEObject) srcNode).eInverseRemove(this, LanguagePackage.TGG_RULE_NODE__OUTGOING_EDGES, TGGRuleNode.class, msgs);
 			return basicSetSrcNode((TGGRuleNode) otherEnd, msgs);
 		case LanguagePackage.TGG_RULE_EDGE__TRG_NODE:
 			if (trgNode != null)
-				msgs = ((InternalEObject) trgNode).eInverseRemove(this, LanguagePackage.TGG_RULE_NODE__INCOMING_EDGES,
-						TGGRuleNode.class, msgs);
+				msgs = ((InternalEObject) trgNode).eInverseRemove(this, LanguagePackage.TGG_RULE_NODE__INCOMING_EDGES, TGGRuleNode.class, msgs);
 			return basicSetTrgNode((TGGRuleNode) otherEnd, msgs);
 		}
 		return super.eInverseAdd(otherEnd, featureID, msgs);

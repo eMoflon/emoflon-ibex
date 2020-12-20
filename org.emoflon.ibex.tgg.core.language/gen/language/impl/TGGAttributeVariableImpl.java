@@ -84,8 +84,7 @@ public class TGGAttributeVariableImpl extends TGGParamValueImpl implements TGGAt
 		String oldName = name;
 		name = newName;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_ATTRIBUTE_VARIABLE__NAME, oldName,
-					name));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_ATTRIBUTE_VARIABLE__NAME, oldName, name));
 	}
 
 	/**

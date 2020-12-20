@@ -405,6 +405,7 @@ public class EditorTGGtoInternalTGG {
 			TGGAttributeExpression tae = LanguageFactory.eINSTANCE.createTGGAttributeExpression();
 			tae.setAttribute(ae.getAttribute());
 			tae.setObjectVar((TGGRuleNode) xtextToTGG.get(ae.getObjectVar()));
+			tae.setDerived(ae.isDerived());
 			return tae;
 		}
 		return null;

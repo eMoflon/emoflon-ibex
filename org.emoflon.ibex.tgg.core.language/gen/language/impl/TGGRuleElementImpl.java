@@ -107,8 +107,7 @@ public abstract class TGGRuleElementImpl extends TGGNamedElementImpl implements 
 		DomainType oldDomainType = domainType;
 		domainType = newDomainType == null ? DOMAIN_TYPE_EDEFAULT : newDomainType;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_RULE_ELEMENT__DOMAIN_TYPE,
-					oldDomainType, domainType));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_RULE_ELEMENT__DOMAIN_TYPE, oldDomainType, domainType));
 	}
 
 	/**
@@ -131,8 +130,7 @@ public abstract class TGGRuleElementImpl extends TGGNamedElementImpl implements 
 		BindingType oldBindingType = bindingType;
 		bindingType = newBindingType == null ? BINDING_TYPE_EDEFAULT : newBindingType;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_RULE_ELEMENT__BINDING_TYPE,
-					oldBindingType, bindingType));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_RULE_ELEMENT__BINDING_TYPE, oldBindingType, bindingType));
 	}
 
 	/**

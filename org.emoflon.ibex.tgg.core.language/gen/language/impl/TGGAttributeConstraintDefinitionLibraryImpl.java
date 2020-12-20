@@ -33,8 +33,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
  *
  * @generated
  */
-public class TGGAttributeConstraintDefinitionLibraryImpl extends EObjectImpl
-		implements TGGAttributeConstraintDefinitionLibrary {
+public class TGGAttributeConstraintDefinitionLibraryImpl extends EObjectImpl implements TGGAttributeConstraintDefinitionLibrary {
 	/**
 	 * The cached value of the '{@link #getTggAttributeConstraintDefinitions() <em>Tgg Attribute Constraint Definitions</em>}' containment reference list.
 	 * <!-- begin-user-doc -->
@@ -72,8 +71,7 @@ public class TGGAttributeConstraintDefinitionLibraryImpl extends EObjectImpl
 	@Override
 	public EList<TGGAttributeConstraintDefinition> getTggAttributeConstraintDefinitions() {
 		if (tggAttributeConstraintDefinitions == null) {
-			tggAttributeConstraintDefinitions = new EObjectContainmentEList<TGGAttributeConstraintDefinition>(
-					TGGAttributeConstraintDefinition.class, this,
+			tggAttributeConstraintDefinitions = new EObjectContainmentEList<TGGAttributeConstraintDefinition>(TGGAttributeConstraintDefinition.class, this,
 					LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS);
 		}
 		return tggAttributeConstraintDefinitions;
@@ -118,8 +116,7 @@ public class TGGAttributeConstraintDefinitionLibraryImpl extends EObjectImpl
 		switch (featureID) {
 		case LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS:
 			getTggAttributeConstraintDefinitions().clear();
-			getTggAttributeConstraintDefinitions()
-					.addAll((Collection<? extends TGGAttributeConstraintDefinition>) newValue);
+			getTggAttributeConstraintDefinitions().addAll((Collection<? extends TGGAttributeConstraintDefinition>) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);

@@ -15,6 +15,7 @@ import org.eclipse.emf.ecore.EAttribute;
  * <ul>
  *   <li>{@link language.TGGAttributeExpression#getObjectVar <em>Object Var</em>}</li>
  *   <li>{@link language.TGGAttributeExpression#getAttribute <em>Attribute</em>}</li>
+ *   <li>{@link language.TGGAttributeExpression#isDerived <em>Derived</em>}</li>
  * </ul>
  *
  * @see language.LanguagePackage#getTGGAttributeExpression()
@@ -65,5 +66,27 @@ public interface TGGAttributeExpression extends TGGExpression {
 	 * @generated
 	 */
 	void setAttribute(EAttribute value);
+
+	/**
+	 * Returns the value of the '<em><b>Derived</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Derived</em>' attribute.
+	 * @see #setDerived(boolean)
+	 * @see language.LanguagePackage#getTGGAttributeExpression_Derived()
+	 * @model
+	 * @generated
+	 */
+	boolean isDerived();
+
+	/**
+	 * Sets the value of the '{@link language.TGGAttributeExpression#isDerived <em>Derived</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Derived</em>' attribute.
+	 * @see #isDerived()
+	 * @generated
+	 */
+	void setDerived(boolean value);
 
 } // TGGAttributeExpression
