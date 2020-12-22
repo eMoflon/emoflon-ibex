@@ -23,22 +23,23 @@ This repository contains only the part which is independent from a concrete patt
 	https://hipe-devops.github.io/HiPE-Updatesite/hipe.updatesite/
 6. Install Viatra from this update site:
 	http://download.eclipse.org/viatra/updates/release/latest
-7. Check the encoding for Xtend files.
+7. Install the EPackage Registration Feature from http://www.kermeta.org/k2/update
+8. Check the encoding for Xtend files.
     - In Eclipse: Go to ```Window->Preferences->General->Workspace```.
     - Change the text file encoding to 'Other: UTF-8'.
-8. Go to ```File/Import.../Team/Team Project Set```, check URL and enter in and import one of these PSF files:<br/>
+9. Go to ```File/Import.../Team/Team Project Set```, check URL and enter in and import one of these PSF files:<br/>
    For eMoflon including everything:	<br/>
 	- https://raw.githubusercontent.com/eMoflon/emoflon-ibex-deployment/master/devProjectSet.psf <br/>
-9. Execute MWE2
+10. Execute MWE2
     - Open packages ```org.emoflon.ibex.gt.editor/src/org.emoflon.ibex.gt.editor``` and ```org.emoflon.ibex.tgg.editor/src/org.moflon.tgg.mosl``` and ```org.emoflon.ibex.tgg.integrate/src/org.emoflon.ibex.tgg.integrate```
     - Right-click on ```GenerateGT.mwe2``` in the first package and ```GenerateTGG.mwe2``` in the second.
     - Press ```Run As -> MWE2 Workflow```.
-10. Set UTF-8 as file encoding for the development workspace (*Window &rarr; Preferences &rarr; General/Workspace*) and build all projects (*Project &rarr; Build All*) to trigger code generation (and get rid of errors).
-11. Set up your runtime and test workspaces by starting a runtime Eclipse workspace
+11. Set UTF-8 as file encoding for the development workspace (*Window &rarr; Preferences &rarr; General/Workspace*) and build all projects (*Project &rarr; Build All*) to trigger code generation (and get rid of errors).
+12. Set up your runtime and test workspaces by starting a runtime Eclipse workspace
 	from your development workspace, and importing this PSF file:<br/>
 	https://raw.githubusercontent.com/eMoflon/emoflon-ibex-tests/master/testProjectSet.psf
-12. Inside the runtime workspace, build all projects (*Project &rarr; Build All*) to trigger code generation.
-13. Run the JUnit tests to ensure that all is well by right-clicking
+13. Inside the runtime workspace, build all projects (*Project &rarr; Build All*) to trigger code generation.
+14. Run the JUnit tests to ensure that all is well by right-clicking
 	one of the ```Testsuite_*.launch``` in the ```Testsuite``` project
 	and ```TestsuiteGT.launch``` in the ```TestsuiteGT``` project
 	and start the tests by selecting ```Run As/JUnit```.
