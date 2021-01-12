@@ -142,7 +142,6 @@ public class TGGPackageBuilder implements TGGBuilderExtension{
 			logError(e);
 			throw new RuntimeException("Could not generate editor model. Message: "+e.getMessage());
 		}
-
 	}
 	
 	private TripleGraphGrammarFile generateFlattenedEditorModel(TripleGraphGrammarFile editorModel) throws Exception {
