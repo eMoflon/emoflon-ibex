@@ -57,4 +57,9 @@ public class TRGPatternTransformation extends OperationalPatternTransformation {
 				TGGModelUtils.getEdgesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.TRG).isEmpty();
 	}
 
+	@Override
+	protected boolean includeDerivedCSPParams() {
+		return false;
+	}
+
 }

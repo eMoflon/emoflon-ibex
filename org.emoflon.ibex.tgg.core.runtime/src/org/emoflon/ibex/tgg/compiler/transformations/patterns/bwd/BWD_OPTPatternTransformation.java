@@ -59,4 +59,9 @@ public class BWD_OPTPatternTransformation extends OperationalPatternTransformati
 		return TGGModelUtils.getNodesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.TRG).isEmpty() &&
 				TGGModelUtils.getEdgesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.TRG).isEmpty();
 	}
+
+	@Override
+	protected boolean includeDerivedCSPParams() {
+		return false;
+	}
 }

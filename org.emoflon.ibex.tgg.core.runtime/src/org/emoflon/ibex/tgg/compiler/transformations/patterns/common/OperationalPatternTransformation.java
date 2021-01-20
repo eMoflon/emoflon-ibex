@@ -49,6 +49,8 @@ public abstract class OperationalPatternTransformation {
 	protected abstract void transformEdges(IBeXContextPattern ibexPattern);
 
 	protected abstract boolean patternIsEmpty();
+	
+	protected abstract boolean includeDerivedCSPParams();
 
 	public IBeXContextPattern transform() {
 		String patternName = getPatternName();
@@ -111,6 +113,8 @@ public abstract class OperationalPatternTransformation {
 			for(TGGParamValue param : csp.getParameters()) {
 				if(param instanceof TGGAttributeExpression) {
 					TGGAttributeExpression tggAttrExpr = (TGGAttributeExpression) param;
+					if (tggAttrExpr.isDerived() && !this.includeDerivedCSPParams())
+						break;
 					IBeXAttributeExpression attrExpr = IBeXPatternModelFactory.eINSTANCE.createIBeXAttributeExpression();
 					Optional<IBeXNode> iBeXNode = IBeXPatternUtils.findIBeXNodeWithName(ibexPattern, tggAttrExpr.getObjectVar().getName());
 					if(iBeXNode.isPresent())
