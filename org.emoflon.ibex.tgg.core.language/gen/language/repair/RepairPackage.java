@@ -445,8 +445,7 @@ public interface RepairPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_RULE_ELEMENT_MAPPING__SOURCE_RULE_ELEMENT = eINSTANCE
-				.getTGGRuleElementMapping_SourceRuleElement();
+		EReference TGG_RULE_ELEMENT_MAPPING__SOURCE_RULE_ELEMENT = eINSTANCE.getTGGRuleElementMapping_SourceRuleElement();
 
 		/**
 		 * The meta object literal for the '<em><b>Target Rule Element</b></em>' reference feature.
@@ -454,8 +453,7 @@ public interface RepairPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_RULE_ELEMENT_MAPPING__TARGET_RULE_ELEMENT = eINSTANCE
-				.getTGGRuleElementMapping_TargetRuleElement();
+		EReference TGG_RULE_ELEMENT_MAPPING__TARGET_RULE_ELEMENT = eINSTANCE.getTGGRuleElementMapping_TargetRuleElement();
 
 	}
 

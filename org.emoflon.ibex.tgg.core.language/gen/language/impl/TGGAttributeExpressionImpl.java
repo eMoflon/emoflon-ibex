@@ -24,6 +24,7 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * <ul>
  *   <li>{@link language.impl.TGGAttributeExpressionImpl#getObjectVar <em>Object Var</em>}</li>
  *   <li>{@link language.impl.TGGAttributeExpressionImpl#getAttribute <em>Attribute</em>}</li>
+ *   <li>{@link language.impl.TGGAttributeExpressionImpl#isDerived <em>Derived</em>}</li>
  * </ul>
  *
  * @generated
@@ -48,6 +49,26 @@ public class TGGAttributeExpressionImpl extends TGGExpressionImpl implements TGG
 	 * @ordered
 	 */
 	protected EAttribute attribute;
+
+	/**
+	 * The default value of the '{@link #isDerived() <em>Derived</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isDerived()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final boolean DERIVED_EDEFAULT = false;
+
+	/**
+	 * The cached value of the '{@link #isDerived() <em>Derived</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isDerived()
+	 * @generated
+	 * @ordered
+	 */
+	protected boolean derived = DERIVED_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -80,8 +101,8 @@ public class TGGAttributeExpressionImpl extends TGGExpressionImpl implements TGG
 			objectVar = (TGGRuleNode) eResolveProxy(oldObjectVar);
 			if (objectVar != oldObjectVar) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
-							LanguagePackage.TGG_ATTRIBUTE_EXPRESSION__OBJECT_VAR, oldObjectVar, objectVar));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, LanguagePackage.TGG_ATTRIBUTE_EXPRESSION__OBJECT_VAR, oldObjectVar,
+							objectVar));
 			}
 		}
 		return objectVar;
@@ -106,8 +127,7 @@ public class TGGAttributeExpressionImpl extends TGGExpressionImpl implements TGG
 		TGGRuleNode oldObjectVar = objectVar;
 		objectVar = newObjectVar;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_ATTRIBUTE_EXPRESSION__OBJECT_VAR,
-					oldObjectVar, objectVar));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_ATTRIBUTE_EXPRESSION__OBJECT_VAR, oldObjectVar, objectVar));
 	}
 
 	/**
@@ -122,8 +142,8 @@ public class TGGAttributeExpressionImpl extends TGGExpressionImpl implements TGG
 			attribute = (EAttribute) eResolveProxy(oldAttribute);
 			if (attribute != oldAttribute) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
-							LanguagePackage.TGG_ATTRIBUTE_EXPRESSION__ATTRIBUTE, oldAttribute, attribute));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, LanguagePackage.TGG_ATTRIBUTE_EXPRESSION__ATTRIBUTE, oldAttribute,
+							attribute));
 			}
 		}
 		return attribute;
@@ -148,8 +168,30 @@ public class TGGAttributeExpressionImpl extends TGGExpressionImpl implements TGG
 		EAttribute oldAttribute = attribute;
 		attribute = newAttribute;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_ATTRIBUTE_EXPRESSION__ATTRIBUTE,
-					oldAttribute, attribute));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_ATTRIBUTE_EXPRESSION__ATTRIBUTE, oldAttribute, attribute));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public boolean isDerived() {
+		return derived;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setDerived(boolean newDerived) {
+		boolean oldDerived = derived;
+		derived = newDerived;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_ATTRIBUTE_EXPRESSION__DERIVED, oldDerived, derived));
 	}
 
 	/**
@@ -168,6 +210,8 @@ public class TGGAttributeExpressionImpl extends TGGExpressionImpl implements TGG
 			if (resolve)
 				return getAttribute();
 			return basicGetAttribute();
+		case LanguagePackage.TGG_ATTRIBUTE_EXPRESSION__DERIVED:
+			return isDerived();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -185,6 +229,9 @@ public class TGGAttributeExpressionImpl extends TGGExpressionImpl implements TGG
 			return;
 		case LanguagePackage.TGG_ATTRIBUTE_EXPRESSION__ATTRIBUTE:
 			setAttribute((EAttribute) newValue);
+			return;
+		case LanguagePackage.TGG_ATTRIBUTE_EXPRESSION__DERIVED:
+			setDerived((Boolean) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -204,6 +251,9 @@ public class TGGAttributeExpressionImpl extends TGGExpressionImpl implements TGG
 		case LanguagePackage.TGG_ATTRIBUTE_EXPRESSION__ATTRIBUTE:
 			setAttribute((EAttribute) null);
 			return;
+		case LanguagePackage.TGG_ATTRIBUTE_EXPRESSION__DERIVED:
+			setDerived(DERIVED_EDEFAULT);
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -220,8 +270,27 @@ public class TGGAttributeExpressionImpl extends TGGExpressionImpl implements TGG
 			return objectVar != null;
 		case LanguagePackage.TGG_ATTRIBUTE_EXPRESSION__ATTRIBUTE:
 			return attribute != null;
+		case LanguagePackage.TGG_ATTRIBUTE_EXPRESSION__DERIVED:
+			return derived != DERIVED_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public String toString() {
+		if (eIsProxy())
+			return super.toString();
+
+		StringBuilder result = new StringBuilder(super.toString());
+		result.append(" (derived: ");
+		result.append(derived);
+		result.append(')');
+		return result.toString();
 	}
 
 } //TGGAttributeExpressionImpl

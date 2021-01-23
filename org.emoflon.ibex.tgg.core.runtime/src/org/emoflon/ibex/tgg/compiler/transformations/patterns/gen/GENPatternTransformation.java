@@ -55,4 +55,9 @@ public class GENPatternTransformation extends OperationalPatternTransformation {
 				TGGModelUtils.getNodesByOperatorAndDomain(rule, BindingType.CONTEXT, DomainType.TRG).isEmpty() &&
 				TGGModelUtils.getEdgesByOperatorAndDomain(rule, BindingType.CONTEXT, DomainType.TRG).isEmpty();
 	}
+
+	@Override
+	protected boolean includeDerivedCSPParams() {
+		return false;
+	}
 }

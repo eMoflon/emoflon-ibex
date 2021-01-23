@@ -37,4 +37,9 @@ public class ProtocolCorePatternTransformation extends OperationalPatternTransfo
 		return false;
 	}
 
+	@Override
+	protected boolean includeDerivedCSPParams() {
+		return true;
+	}
+
 }

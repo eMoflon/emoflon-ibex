@@ -57,4 +57,9 @@ public class SRCPatternTransformation extends OperationalPatternTransformation {
 				TGGModelUtils.getEdgesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.SRC).isEmpty();
 	}
 
+	@Override
+	protected boolean includeDerivedCSPParams() {
+		return false;
+	}
+
 }

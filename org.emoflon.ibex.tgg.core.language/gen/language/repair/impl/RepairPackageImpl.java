@@ -83,16 +83,14 @@ public class RepairPackageImpl extends EPackageImpl implements RepairPackage {
 
 		// Obtain or create and register package
 		Object registeredRepairPackage = EPackage.Registry.INSTANCE.get(eNS_URI);
-		RepairPackageImpl theRepairPackage = registeredRepairPackage instanceof RepairPackageImpl
-				? (RepairPackageImpl) registeredRepairPackage
+		RepairPackageImpl theRepairPackage = registeredRepairPackage instanceof RepairPackageImpl ? (RepairPackageImpl) registeredRepairPackage
 				: new RepairPackageImpl();
 
 		isInited = true;
 
 		// Obtain or create and register interdependencies
 		Object registeredPackage = EPackage.Registry.INSTANCE.getEPackage(LanguagePackage.eNS_URI);
-		LanguagePackageImpl theLanguagePackage = (LanguagePackageImpl) (registeredPackage instanceof LanguagePackageImpl
-				? registeredPackage
+		LanguagePackageImpl theLanguagePackage = (LanguagePackageImpl) (registeredPackage instanceof LanguagePackageImpl ? registeredPackage
 				: LanguagePackage.eINSTANCE);
 
 		// Create package meta-data objects
@@ -301,8 +299,7 @@ public class RepairPackageImpl extends EPackageImpl implements RepairPackage {
 		setNsURI(eNS_URI);
 
 		// Obtain other dependent packages
-		LanguagePackage theLanguagePackage = (LanguagePackage) EPackage.Registry.INSTANCE
-				.getEPackage(LanguagePackage.eNS_URI);
+		LanguagePackage theLanguagePackage = (LanguagePackage) EPackage.Registry.INSTANCE.getEPackage(LanguagePackage.eNS_URI);
 
 		// Create type parameters
 
@@ -311,41 +308,37 @@ public class RepairPackageImpl extends EPackageImpl implements RepairPackage {
 		// Add supertypes to classes
 
 		// Initialize classes, features, and operations; add parameters
-		initEClass(externalShortcutRuleEClass, ExternalShortcutRule.class, "ExternalShortcutRule", !IS_ABSTRACT,
-				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getExternalShortcutRule_SourceRule(), theLanguagePackage.getTGGRule(), null, "sourceRule", null,
-				0, 1, ExternalShortcutRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
-				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getExternalShortcutRule_TargetRule(), theLanguagePackage.getTGGRule(), null, "targetRule", null,
-				0, 1, ExternalShortcutRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
-				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getExternalShortcutRule_Deletions(), theLanguagePackage.getTGGRuleElement(), null, "deletions",
-				null, 0, -1, ExternalShortcutRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
-				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getExternalShortcutRule_Creations(), theLanguagePackage.getTGGRuleElement(), null, "creations",
-				null, 0, -1, ExternalShortcutRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
-				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getExternalShortcutRule_UnboundSrcContext(), theLanguagePackage.getTGGRuleElement(), null,
-				"unboundSrcContext", null, 0, -1, ExternalShortcutRule.class, !IS_TRANSIENT, !IS_VOLATILE,
-				IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getExternalShortcutRule_UnboundTrgContext(), theLanguagePackage.getTGGRuleElement(), null,
-				"unboundTrgContext", null, 0, -1, ExternalShortcutRule.class, !IS_TRANSIENT, !IS_VOLATILE,
-				IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getExternalShortcutRule_Mapping(), this.getTGGRuleElementMapping(), null, "mapping", null, 0, -1,
-				ExternalShortcutRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
-				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getExternalShortcutRule_Name(), ecorePackage.getEString(), "name", null, 0, 1,
-				ExternalShortcutRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID,
-				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEClass(externalShortcutRuleEClass, ExternalShortcutRule.class, "ExternalShortcutRule", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getExternalShortcutRule_SourceRule(), theLanguagePackage.getTGGRule(), null, "sourceRule", null, 0, 1, ExternalShortcutRule.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getExternalShortcutRule_TargetRule(), theLanguagePackage.getTGGRule(), null, "targetRule", null, 0, 1, ExternalShortcutRule.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getExternalShortcutRule_Deletions(), theLanguagePackage.getTGGRuleElement(), null, "deletions", null, 0, -1,
+				ExternalShortcutRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
+		initEReference(getExternalShortcutRule_Creations(), theLanguagePackage.getTGGRuleElement(), null, "creations", null, 0, -1,
+				ExternalShortcutRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
+		initEReference(getExternalShortcutRule_UnboundSrcContext(), theLanguagePackage.getTGGRuleElement(), null, "unboundSrcContext", null, 0, -1,
+				ExternalShortcutRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
+		initEReference(getExternalShortcutRule_UnboundTrgContext(), theLanguagePackage.getTGGRuleElement(), null, "unboundTrgContext", null, 0, -1,
+				ExternalShortcutRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
+		initEReference(getExternalShortcutRule_Mapping(), this.getTGGRuleElementMapping(), null, "mapping", null, 0, -1, ExternalShortcutRule.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getExternalShortcutRule_Name(), ecorePackage.getEString(), "name", null, 0, 1, ExternalShortcutRule.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(tggRuleElementMappingEClass, TGGRuleElementMapping.class, "TGGRuleElementMapping", !IS_ABSTRACT,
-				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getTGGRuleElementMapping_SourceRuleElement(), theLanguagePackage.getTGGRuleElement(), null,
-				"sourceRuleElement", null, 0, 1, TGGRuleElementMapping.class, !IS_TRANSIENT, !IS_VOLATILE,
-				IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getTGGRuleElementMapping_TargetRuleElement(), theLanguagePackage.getTGGRuleElement(), null,
-				"targetRuleElement", null, 0, 1, TGGRuleElementMapping.class, !IS_TRANSIENT, !IS_VOLATILE,
-				IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEClass(tggRuleElementMappingEClass, TGGRuleElementMapping.class, "TGGRuleElementMapping", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getTGGRuleElementMapping_SourceRuleElement(), theLanguagePackage.getTGGRuleElement(), null, "sourceRuleElement", null, 0, 1,
+				TGGRuleElementMapping.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
+		initEReference(getTGGRuleElementMapping_TargetRuleElement(), theLanguagePackage.getTGGRuleElement(), null, "targetRuleElement", null, 0, 1,
+				TGGRuleElementMapping.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
 	}
 
 } //RepairPackageImpl

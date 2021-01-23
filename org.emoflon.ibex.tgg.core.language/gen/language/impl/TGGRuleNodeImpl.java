@@ -130,8 +130,8 @@ public class TGGRuleNodeImpl extends TGGRuleElementImpl implements TGGRuleNode {
 	@Override
 	public EList<TGGRuleEdge> getIncomingEdges() {
 		if (incomingEdges == null) {
-			incomingEdges = new EObjectWithInverseResolvingEList<TGGRuleEdge>(TGGRuleEdge.class, this,
-					LanguagePackage.TGG_RULE_NODE__INCOMING_EDGES, LanguagePackage.TGG_RULE_EDGE__TRG_NODE);
+			incomingEdges = new EObjectWithInverseResolvingEList<TGGRuleEdge>(TGGRuleEdge.class, this, LanguagePackage.TGG_RULE_NODE__INCOMING_EDGES,
+					LanguagePackage.TGG_RULE_EDGE__TRG_NODE);
 		}
 		return incomingEdges;
 	}
@@ -144,8 +144,8 @@ public class TGGRuleNodeImpl extends TGGRuleElementImpl implements TGGRuleNode {
 	@Override
 	public EList<TGGRuleEdge> getOutgoingEdges() {
 		if (outgoingEdges == null) {
-			outgoingEdges = new EObjectWithInverseResolvingEList<TGGRuleEdge>(TGGRuleEdge.class, this,
-					LanguagePackage.TGG_RULE_NODE__OUTGOING_EDGES, LanguagePackage.TGG_RULE_EDGE__SRC_NODE);
+			outgoingEdges = new EObjectWithInverseResolvingEList<TGGRuleEdge>(TGGRuleEdge.class, this, LanguagePackage.TGG_RULE_NODE__OUTGOING_EDGES,
+					LanguagePackage.TGG_RULE_EDGE__SRC_NODE);
 		}
 		return outgoingEdges;
 	}
@@ -162,8 +162,7 @@ public class TGGRuleNodeImpl extends TGGRuleElementImpl implements TGGRuleNode {
 			type = (EClass) eResolveProxy(oldType);
 			if (type != oldType) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, LanguagePackage.TGG_RULE_NODE__TYPE,
-							oldType, type));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, LanguagePackage.TGG_RULE_NODE__TYPE, oldType, type));
 			}
 		}
 		return type;
@@ -227,8 +226,8 @@ public class TGGRuleNodeImpl extends TGGRuleElementImpl implements TGGRuleNode {
 	@Override
 	public EList<TGGInplaceAttributeExpression> getAttrExpr() {
 		if (attrExpr == null) {
-			attrExpr = new EObjectContainmentEList<TGGInplaceAttributeExpression>(TGGInplaceAttributeExpression.class,
-					this, LanguagePackage.TGG_RULE_NODE__ATTR_EXPR);
+			attrExpr = new EObjectContainmentEList<TGGInplaceAttributeExpression>(TGGInplaceAttributeExpression.class, this,
+					LanguagePackage.TGG_RULE_NODE__ATTR_EXPR);
 		}
 		return attrExpr;
 	}
@@ -247,11 +246,9 @@ public class TGGRuleNodeImpl extends TGGRuleElementImpl implements TGGRuleNode {
 		case LanguagePackage.TGG_RULE_NODE__OUTGOING_EDGES:
 			return ((InternalEList<InternalEObject>) (InternalEList<?>) getOutgoingEdges()).basicAdd(otherEnd, msgs);
 		case LanguagePackage.TGG_RULE_NODE__INCOMING_CORRS_SOURCE:
-			return ((InternalEList<InternalEObject>) (InternalEList<?>) getIncomingCorrsSource()).basicAdd(otherEnd,
-					msgs);
+			return ((InternalEList<InternalEObject>) (InternalEList<?>) getIncomingCorrsSource()).basicAdd(otherEnd, msgs);
 		case LanguagePackage.TGG_RULE_NODE__INCOMING_CORRS_TARGET:
-			return ((InternalEList<InternalEObject>) (InternalEList<?>) getIncomingCorrsTarget()).basicAdd(otherEnd,
-					msgs);
+			return ((InternalEList<InternalEObject>) (InternalEList<?>) getIncomingCorrsTarget()).basicAdd(otherEnd, msgs);
 		}
 		return super.eInverseAdd(otherEnd, featureID, msgs);
 	}

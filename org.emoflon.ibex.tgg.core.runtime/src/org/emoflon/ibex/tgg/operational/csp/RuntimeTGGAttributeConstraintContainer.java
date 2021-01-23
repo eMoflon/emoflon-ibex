@@ -68,6 +68,8 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 	private boolean calculateBoundState(TGGParamValue value) {
 		if (value instanceof TGGAttributeExpression) {
 			TGGAttributeExpression tae = (TGGAttributeExpression) value;
+			if (tae.isDerived())
+				return false;
 			return boundObjectNames.contains(tae.getObjectVar().getName());
 		}
 		if (value instanceof TGGAttributeVariable) {

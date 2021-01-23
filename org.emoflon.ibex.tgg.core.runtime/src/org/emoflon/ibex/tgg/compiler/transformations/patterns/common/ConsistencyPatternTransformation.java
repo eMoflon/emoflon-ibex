@@ -53,4 +53,9 @@ public class ConsistencyPatternTransformation extends OperationalPatternTransfor
 	protected boolean patternIsEmpty() {
 		return false;
 	}
+
+	@Override
+	protected boolean includeDerivedCSPParams() {
+		return true;
+	}
 }

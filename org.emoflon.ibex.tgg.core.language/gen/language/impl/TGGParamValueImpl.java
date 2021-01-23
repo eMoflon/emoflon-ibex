@@ -69,9 +69,8 @@ public class TGGParamValueImpl extends EObjectImpl implements TGGParamValue {
 			parameterDefinition = (TGGAttributeConstraintParameterDefinition) eResolveProxy(oldParameterDefinition);
 			if (parameterDefinition != oldParameterDefinition) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
-							LanguagePackage.TGG_PARAM_VALUE__PARAMETER_DEFINITION, oldParameterDefinition,
-							parameterDefinition));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, LanguagePackage.TGG_PARAM_VALUE__PARAMETER_DEFINITION,
+							oldParameterDefinition, parameterDefinition));
 			}
 		}
 		return parameterDefinition;
@@ -96,8 +95,8 @@ public class TGGParamValueImpl extends EObjectImpl implements TGGParamValue {
 		TGGAttributeConstraintParameterDefinition oldParameterDefinition = parameterDefinition;
 		parameterDefinition = newParameterDefinition;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_PARAM_VALUE__PARAMETER_DEFINITION,
-					oldParameterDefinition, parameterDefinition));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_PARAM_VALUE__PARAMETER_DEFINITION, oldParameterDefinition,
+					parameterDefinition));
 	}
 
 	/**

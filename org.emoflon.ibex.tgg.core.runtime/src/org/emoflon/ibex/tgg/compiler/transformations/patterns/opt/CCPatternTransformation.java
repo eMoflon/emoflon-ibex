@@ -58,4 +58,9 @@ public class CCPatternTransformation extends OperationalPatternTransformation {
 	protected boolean patternIsEmpty() {
 		return false;
 	}
+
+	@Override
+	protected boolean includeDerivedCSPParams() {
+		return true;
+	}
 }

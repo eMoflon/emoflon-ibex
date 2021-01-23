@@ -84,8 +84,7 @@ public class TGGLiteralExpressionImpl extends TGGExpressionImpl implements TGGLi
 		String oldValue = value;
 		value = newValue;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_LITERAL_EXPRESSION__VALUE,
-					oldValue, value));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_LITERAL_EXPRESSION__VALUE, oldValue, value));
 	}
 
 	/**

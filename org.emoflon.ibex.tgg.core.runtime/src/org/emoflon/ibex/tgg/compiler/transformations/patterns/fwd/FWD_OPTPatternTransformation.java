@@ -59,4 +59,9 @@ public class FWD_OPTPatternTransformation extends OperationalPatternTransformati
 		return TGGModelUtils.getNodesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.SRC).isEmpty() &&
 				TGGModelUtils.getEdgesByOperatorAndDomain(rule, BindingType.CREATE, DomainType.SRC).isEmpty();
 	}
+
+	@Override
+	protected boolean includeDerivedCSPParams() {
+		return false;
+	}
 }

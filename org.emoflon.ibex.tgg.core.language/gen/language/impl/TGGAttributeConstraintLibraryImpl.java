@@ -83,8 +83,8 @@ public class TGGAttributeConstraintLibraryImpl extends EObjectImpl implements TG
 	@Override
 	public EList<TGGAttributeConstraint> getTggAttributeConstraints() {
 		if (tggAttributeConstraints == null) {
-			tggAttributeConstraints = new EObjectContainmentEList<TGGAttributeConstraint>(TGGAttributeConstraint.class,
-					this, LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__TGG_ATTRIBUTE_CONSTRAINTS);
+			tggAttributeConstraints = new EObjectContainmentEList<TGGAttributeConstraint>(TGGAttributeConstraint.class, this,
+					LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__TGG_ATTRIBUTE_CONSTRAINTS);
 		}
 		return tggAttributeConstraints;
 	}

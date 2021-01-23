@@ -85,8 +85,7 @@ public class TGGNamedElementImpl extends EObjectImpl implements TGGNamedElement 
 		String oldName = name;
 		name = newName;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_NAMED_ELEMENT__NAME, oldName,
-					name));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_NAMED_ELEMENT__NAME, oldName, name));
 	}
 
 	/**

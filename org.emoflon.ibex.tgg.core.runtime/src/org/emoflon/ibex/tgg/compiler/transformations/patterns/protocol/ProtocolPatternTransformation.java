@@ -46,4 +46,9 @@ public class ProtocolPatternTransformation extends OperationalPatternTransformat
 		return false;
 	}
 
+	@Override
+	protected boolean includeDerivedCSPParams() {
+		return true;
+	}
+
 }
