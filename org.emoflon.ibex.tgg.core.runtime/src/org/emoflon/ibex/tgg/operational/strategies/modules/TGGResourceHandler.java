@@ -416,7 +416,7 @@ public class TGGResourceHandler {
 		options.registrationHelper().registerMetamodels(rs, options.executable());
 		
 		// Register correspondence metamodel last
-		loadAndRegisterCorrMetamodel(options.project.path() + "/model/" + MoflonUtil.lastCapitalizedSegmentOf(options.project.name()) + ".ecore");
+		loadAndRegisterCorrMetamodel(options.project.name() + "/model/" + MoflonUtil.lastCapitalizedSegmentOf(options.project.name()) + ".ecore");
 	}
 	
 	public void addToTrash(EObject o) {
