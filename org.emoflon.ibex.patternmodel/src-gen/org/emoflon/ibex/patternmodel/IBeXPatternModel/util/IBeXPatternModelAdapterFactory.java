@@ -269,28 +269,28 @@ public class IBeXPatternModelAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
-		public Adapter caseIBeXDisjunctContextPattern(IBeXDisjunctContextPattern object) {
-			return createIBeXDisjunctContextPatternAdapter();
+		public Adapter caseIBeXDisjointContextPattern(IBeXDisjointContextPattern object) {
+			return createIBeXDisjointContextPatternAdapter();
 		}
 
 		@Override
-		public Adapter caseIBeXDisjunctAttribute(IBeXDisjunctAttribute object) {
-			return createIBeXDisjunctAttributeAdapter();
+		public Adapter caseIBexDisjointInjectivityConstraint(IBexDisjointInjectivityConstraint object) {
+			return createIBexDisjointInjectivityConstraintAdapter();
 		}
 
 		@Override
-		public Adapter caseIBeXDependentInjectivityConstraints(IBeXDependentInjectivityConstraints object) {
-			return createIBeXDependentInjectivityConstraintsAdapter();
+		public Adapter caseIBeXDisjointAttribute(IBeXDisjointAttribute object) {
+			return createIBeXDisjointAttributeAdapter();
 		}
 
 		@Override
-		public Adapter caseIBexDisjunctInjectivityConstraint(IBexDisjunctInjectivityConstraint object) {
-			return createIBexDisjunctInjectivityConstraintAdapter();
+		public Adapter caseIBeXInterdependentInjectivityConstraints(IBeXInterdependentInjectivityConstraints object) {
+			return createIBeXInterdependentInjectivityConstraintsAdapter();
 		}
 
 		@Override
-		public Adapter caseIBeXDependentDisjunctAttribute(IBeXDependentDisjunctAttribute object) {
-			return createIBeXDependentDisjunctAttributeAdapter();
+		public Adapter caseIBeXInterdependentAttributes(IBeXInterdependentAttributes object) {
+			return createIBeXInterdependentAttributesAdapter();
 		}
 
 		@Override
@@ -873,72 +873,72 @@ public class IBeXPatternModelAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjunctContextPattern <em>IBe XDisjunct Context Pattern</em>}'.
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjointContextPattern <em>IBe XDisjoint Context Pattern</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjunctContextPattern
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjointContextPattern
 	 * @generated
 	 */
-	public Adapter createIBeXDisjunctContextPatternAdapter() {
+	public Adapter createIBeXDisjointContextPatternAdapter() {
 		return null;
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjunctAttribute <em>IBe XDisjunct Attribute</em>}'.
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBexDisjointInjectivityConstraint <em>IBex Disjoint Injectivity Constraint</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjunctAttribute
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBexDisjointInjectivityConstraint
 	 * @generated
 	 */
-	public Adapter createIBeXDisjunctAttributeAdapter() {
+	public Adapter createIBexDisjointInjectivityConstraintAdapter() {
 		return null;
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDependentInjectivityConstraints <em>IBe XDependent Injectivity Constraints</em>}'.
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjointAttribute <em>IBe XDisjoint Attribute</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDependentInjectivityConstraints
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjointAttribute
 	 * @generated
 	 */
-	public Adapter createIBeXDependentInjectivityConstraintsAdapter() {
+	public Adapter createIBeXDisjointAttributeAdapter() {
 		return null;
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBexDisjunctInjectivityConstraint <em>IBex Disjunct Injectivity Constraint</em>}'.
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInterdependentInjectivityConstraints <em>IBe XInterdependent Injectivity Constraints</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBexDisjunctInjectivityConstraint
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInterdependentInjectivityConstraints
 	 * @generated
 	 */
-	public Adapter createIBexDisjunctInjectivityConstraintAdapter() {
+	public Adapter createIBeXInterdependentInjectivityConstraintsAdapter() {
 		return null;
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDependentDisjunctAttribute <em>IBe XDependent Disjunct Attribute</em>}'.
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInterdependentAttributes <em>IBe XInterdependent Attributes</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDependentDisjunctAttribute
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInterdependentAttributes
 	 * @generated
 	 */
-	public Adapter createIBeXDependentDisjunctAttributeAdapter() {
+	public Adapter createIBeXInterdependentAttributesAdapter() {
 		return null;
 	}
 

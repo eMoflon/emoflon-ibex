@@ -335,33 +335,17 @@
         eType="#//IBeXPatternInvocation" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBeXConstraint" abstract="true" interface="true"/>
-  <eClassifiers xsi:type="ecore:EClass" name="IBeXDisjunctContextPattern" eSuperTypes="#//IBeXContext">
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXDisjointContextPattern" eSuperTypes="#//IBeXContext">
     <eStructuralFeatures xsi:type="ecore:EReference" name="subpatterns" upperBound="-1"
         eType="#//IBeXContextPattern"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="injectivityConstraints"
-        upperBound="-1" eType="#//IBeXDependentInjectivityConstraints" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="attributesConstraints"
-        upperBound="-1" eType="#//IBeXDependentDisjunctAttribute" containment="true"/>
+        upperBound="-1" eType="#//IBeXInterdependentInjectivityConstraints" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="attributeConstraints" upperBound="-1"
+        eType="#//IBeXInterdependentAttributes" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="nonOptimizedPattern" eType="#//IBeXContextPattern"
         containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="IBeXDisjunctAttribute">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="targetPattern" upperBound="-1"
-        eType="#//IBeXContextPattern"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="sourcePattern" upperBound="-1"
-        eType="#//IBeXContextPattern"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="disjunctAttribute" upperBound="-1"
-        eType="#//IBeXConstraint" containment="true"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="IBeXDependentInjectivityConstraints">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="injectivityConstraints"
-        upperBound="-1" eType="#//IBexDisjunctInjectivityConstraint" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="patterns" upperBound="-1"
-        eType="#//IBeXContextPattern"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="attributeConstraints" upperBound="-1"
-        eType="#//IBeXDependentDisjunctAttribute" eOpposite="#//IBeXDependentDisjunctAttribute/injectivityConstraints"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="IBexDisjunctInjectivityConstraint">
+  <eClassifiers xsi:type="ecore:EClass" name="IBexDisjointInjectivityConstraint">
     <eStructuralFeatures xsi:type="ecore:EReference" name="pattern1" eType="#//IBeXContextPattern"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="pattern2" eType="#//IBeXContextPattern"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="node1" upperBound="-1"
@@ -369,12 +353,28 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="node2" upperBound="-1"
         eType="#//IBeXNode"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="IBeXDependentDisjunctAttribute">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="attributes" upperBound="-1"
-        eType="#//IBeXDisjunctAttribute" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="dependentPatterns" upperBound="-1"
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXDisjointAttribute">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="targetPattern" upperBound="-1"
         eType="#//IBeXContextPattern"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="sourcePattern" upperBound="-1"
+        eType="#//IBeXContextPattern"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="disjointAttribute" upperBound="-1"
+        eType="#//IBeXConstraint" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXInterdependentInjectivityConstraints">
     <eStructuralFeatures xsi:type="ecore:EReference" name="injectivityConstraints"
-        eType="#//IBeXDependentInjectivityConstraints" eOpposite="#//IBeXDependentInjectivityConstraints/attributeConstraints"/>
+        upperBound="-1" eType="#//IBexDisjointInjectivityConstraint" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="patterns" upperBound="-1"
+        eType="#//IBeXContextPattern"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="attributeConstraints" upperBound="-1"
+        eType="#//IBeXInterdependentAttributes" eOpposite="#//IBeXInterdependentAttributes/injectivityConstraints"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXInterdependentAttributes">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="attributes" upperBound="-1"
+        eType="#//IBeXDisjointAttribute" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="interdependentPatterns"
+        upperBound="-1" eType="#//IBeXContextPattern"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="injectivityConstraints"
+        eType="#//IBeXInterdependentInjectivityConstraints" eOpposite="#//IBeXInterdependentInjectivityConstraints/attributeConstraints"/>
   </eClassifiers>
 </ecore:EPackage>

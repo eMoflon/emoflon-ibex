@@ -92,6 +92,7 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXContextPattern/csps"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXContextPattern/parameters"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXPatternModel.ecore#//IBeXContextPattern/optimizedDisjoint"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXPatternModel.ecore#//IBeXContextPattern/subpattern"/>
     </genClasses>
     <genClasses ecoreClass="IBeXPatternModel.ecore#//IBeXCreatePattern">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXCreatePattern/attributeAssignments"/>
@@ -212,31 +213,32 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXMatchCount/invocation"/>
     </genClasses>
     <genClasses image="false" ecoreClass="IBeXPatternModel.ecore#//IBeXConstraint"/>
-    <genClasses ecoreClass="IBeXPatternModel.ecore#//IBeXDisjunctContextPattern">
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXDisjunctContextPattern/subpatterns"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXDisjunctContextPattern/injectivityConstraints"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXDisjunctContextPattern/attributesConstraints"/>
+    <genClasses ecoreClass="IBeXPatternModel.ecore#//IBeXDisjointContextPattern">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXDisjointContextPattern/subpatterns"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXDisjointContextPattern/injectivityConstraints"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXDisjointContextPattern/attributeConstraints"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXDisjointContextPattern/nonOptimizedPattern"/>
     </genClasses>
-    <genClasses ecoreClass="IBeXPatternModel.ecore#//IBeXDisjunctAttribute">
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXDisjunctAttribute/targetPattern"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXDisjunctAttribute/sourcePattern"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXDisjunctAttribute/disjunctAttribute"/>
+    <genClasses ecoreClass="IBeXPatternModel.ecore#//IBexDisjointInjectivityConstraint">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBexDisjointInjectivityConstraint/pattern1"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBexDisjointInjectivityConstraint/pattern2"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBexDisjointInjectivityConstraint/node1"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBexDisjointInjectivityConstraint/node2"/>
     </genClasses>
-    <genClasses ecoreClass="IBeXPatternModel.ecore#//IBeXDependentInjectivityConstraints">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXDependentInjectivityConstraints/injectivityConstraints"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXDependentInjectivityConstraints/patterns"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXDependentInjectivityConstraints/attributeConstraints"/>
+    <genClasses ecoreClass="IBeXPatternModel.ecore#//IBeXDisjointAttribute">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXDisjointAttribute/targetPattern"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXDisjointAttribute/sourcePattern"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXDisjointAttribute/disjointAttribute"/>
     </genClasses>
-    <genClasses ecoreClass="IBeXPatternModel.ecore#//IBexDisjunctInjectivityConstraint">
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBexDisjunctInjectivityConstraint/pattern1"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBexDisjunctInjectivityConstraint/pattern2"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBexDisjunctInjectivityConstraint/node1"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBexDisjunctInjectivityConstraint/node2"/>
+    <genClasses ecoreClass="IBeXPatternModel.ecore#//IBeXInterdependentInjectivityConstraints">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXInterdependentInjectivityConstraints/injectivityConstraints"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXInterdependentInjectivityConstraints/patterns"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXInterdependentInjectivityConstraints/attributeConstraints"/>
     </genClasses>
-    <genClasses ecoreClass="IBeXPatternModel.ecore#//IBeXDependentDisjunctAttribute">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXDependentDisjunctAttribute/attributes"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXDependentDisjunctAttribute/dependentPatterns"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXDependentDisjunctAttribute/injectivityConstraints"/>
+    <genClasses ecoreClass="IBeXPatternModel.ecore#//IBeXInterdependentAttributes">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXInterdependentAttributes/attributes"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXInterdependentAttributes/interdependentPatterns"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXPatternModel.ecore#//IBeXInterdependentAttributes/injectivityConstraints"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>

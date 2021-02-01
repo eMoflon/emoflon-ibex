@@ -13,7 +13,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjunctContextPattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjointContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNamedElement;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPattern;
@@ -32,20 +32,20 @@ public class IBeXPatternUtils {
 	public static final Comparator<IBeXNamedElement> sortByName = (a, b) -> a.getName().compareTo(b.getName());
 	
 	/**
-	 * Removes all IBeXDisjunctContextPatterns in a PatternSet, adds all subpatterns to it and creates a new patternSet for the disjunct context patterns
+	 * Removes all IBeXDisjointContextPatterns in a PatternSet, adds all subpatterns to it and creates a new patternSet for the disjoint context patterns
 	 * 
 	 * @param ibexPattern the pattern
 	 * @return the new, modified PatternSet
 	 */
-	public static List<IBeXDisjunctContextPattern> transformIBeXPatternSet(IBeXPatternSet ibexPattern) {
+	public static List<IBeXDisjointContextPattern> transformIBeXPatternSet(IBeXPatternSet ibexPattern) {
 		
-		List<IBeXContext> disjunctPatterns = ibexPattern.getContextPatterns().stream()
-				.filter(pattern -> pattern instanceof IBeXDisjunctContextPattern).collect(Collectors.toList());
-		ibexPattern.getContextPatterns().removeAll(disjunctPatterns);
+		List<IBeXContext> disjointPatterns = ibexPattern.getContextPatterns().stream()
+				.filter(pattern -> pattern instanceof IBeXDisjointContextPattern).collect(Collectors.toList());
+		ibexPattern.getContextPatterns().removeAll(disjointPatterns);
 		
-		List<IBeXDisjunctContextPattern> patterns = new ArrayList<IBeXDisjunctContextPattern>();
-		for(IBeXContext pattern: disjunctPatterns) {
-			patterns.add((IBeXDisjunctContextPattern) pattern);
+		List<IBeXDisjointContextPattern> patterns = new ArrayList<IBeXDisjointContextPattern>();
+		for(IBeXContext pattern: disjointPatterns) {
+			patterns.add((IBeXDisjointContextPattern) pattern);
 		}	
 		return patterns;
 	}
@@ -148,17 +148,17 @@ public class IBeXPatternUtils {
 	 * @throws NoSuchElementException if no context pattern with the given name
 	 *                                exists
 	 */
-	public static IBeXContext getContextPattern(final IBeXPatternSet patternSet, final List<IBeXDisjunctContextPattern> disjunctContextPatterns , final String name) {
+	public static IBeXContext getContextPattern(final IBeXPatternSet patternSet, final List<IBeXDisjointContextPattern> disjointContextPatterns , final String name) {
 		Optional<IBeXContext> pattern = patternSet.getContextPatterns().stream() //
 				.filter(p -> p.getName().equals(name)) //
 				.findAny();
 		if (!pattern.isPresent()) {
-			//maybe it is an IBeXDisjunctPattern
-			Optional<IBeXDisjunctContextPattern> disjunctPattern = disjunctContextPatterns.stream().filter(p -> p.getName().equals(name)).findAny();
-			if(!disjunctPattern.isPresent()) {
+			//maybe it is an IBeXDisjointPattern
+			Optional<IBeXDisjointContextPattern> disjointPattern = disjointContextPatterns.stream().filter(p -> p.getName().equals(name)).findAny();
+			if(!disjointPattern.isPresent()) {
 				throw new NoSuchElementException(String.format("No context pattern called %s", name));
 			}
-			return disjunctPattern.get();
+			return disjointPattern.get();
 		}
 		return pattern.get();
 	}

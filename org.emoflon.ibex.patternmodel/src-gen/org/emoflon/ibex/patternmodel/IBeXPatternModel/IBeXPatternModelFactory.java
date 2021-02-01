@@ -320,49 +320,49 @@ public interface IBeXPatternModelFactory extends EFactory {
 	IBeXMatchCount createIBeXMatchCount();
 
 	/**
-	 * Returns a new object of class '<em>IBe XDisjunct Context Pattern</em>'.
+	 * Returns a new object of class '<em>IBe XDisjoint Context Pattern</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>IBe XDisjunct Context Pattern</em>'.
+	 * @return a new object of class '<em>IBe XDisjoint Context Pattern</em>'.
 	 * @generated
 	 */
-	IBeXDisjunctContextPattern createIBeXDisjunctContextPattern();
+	IBeXDisjointContextPattern createIBeXDisjointContextPattern();
 
 	/**
-	 * Returns a new object of class '<em>IBe XDisjunct Attribute</em>'.
+	 * Returns a new object of class '<em>IBex Disjoint Injectivity Constraint</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>IBe XDisjunct Attribute</em>'.
+	 * @return a new object of class '<em>IBex Disjoint Injectivity Constraint</em>'.
 	 * @generated
 	 */
-	IBeXDisjunctAttribute createIBeXDisjunctAttribute();
+	IBexDisjointInjectivityConstraint createIBexDisjointInjectivityConstraint();
 
 	/**
-	 * Returns a new object of class '<em>IBe XDependent Injectivity Constraints</em>'.
+	 * Returns a new object of class '<em>IBe XDisjoint Attribute</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>IBe XDependent Injectivity Constraints</em>'.
+	 * @return a new object of class '<em>IBe XDisjoint Attribute</em>'.
 	 * @generated
 	 */
-	IBeXDependentInjectivityConstraints createIBeXDependentInjectivityConstraints();
+	IBeXDisjointAttribute createIBeXDisjointAttribute();
 
 	/**
-	 * Returns a new object of class '<em>IBex Disjunct Injectivity Constraint</em>'.
+	 * Returns a new object of class '<em>IBe XInterdependent Injectivity Constraints</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>IBex Disjunct Injectivity Constraint</em>'.
+	 * @return a new object of class '<em>IBe XInterdependent Injectivity Constraints</em>'.
 	 * @generated
 	 */
-	IBexDisjunctInjectivityConstraint createIBexDisjunctInjectivityConstraint();
+	IBeXInterdependentInjectivityConstraints createIBeXInterdependentInjectivityConstraints();
 
 	/**
-	 * Returns a new object of class '<em>IBe XDependent Disjunct Attribute</em>'.
+	 * Returns a new object of class '<em>IBe XInterdependent Attributes</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>IBe XDependent Disjunct Attribute</em>'.
+	 * @return a new object of class '<em>IBe XInterdependent Attributes</em>'.
 	 * @generated
 	 */
-	IBeXDependentDisjunctAttribute createIBeXDependentDisjunctAttribute();
+	IBeXInterdependentAttributes createIBeXInterdependentAttributes();
 
 	/**
 	 * Returns the package supported by this factory.

@@ -32,7 +32,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXConstant;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextAlternatives;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjunctContextPattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjointContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDistributionRange;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEnumLiteral;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
@@ -59,7 +59,7 @@ final public class EditorToIBeXPatternHelper {
 		}else if (rule.getLhs() instanceof IBeXContextAlternatives) {
 			lhs = ((IBeXContextAlternatives) rule.getLhs()).getContext();
 		} else {
-			lhs = ((IBeXDisjunctContextPattern) rule.getLhs()).getNonOptimizedPattern();
+			lhs = ((IBeXDisjointContextPattern) rule.getLhs()).getNonOptimizedPattern();
 		}
 		
 		nodes.addAll(lhs.getSignatureNodes());
@@ -79,7 +79,7 @@ final public class EditorToIBeXPatternHelper {
 		}else if (rule.getLhs() instanceof IBeXContextAlternatives) {
 			lhs = ((IBeXContextAlternatives) rule.getLhs()).getContext();
 		} else {
-			lhs = ((IBeXDisjunctContextPattern) rule.getLhs()).getNonOptimizedPattern();
+			lhs = ((IBeXDisjointContextPattern) rule.getLhs()).getNonOptimizedPattern();
 		}
 		
 		nodes.addAll(lhs.getSignatureNodes());
@@ -94,7 +94,7 @@ final public class EditorToIBeXPatternHelper {
 		} else if (pattern instanceof IBeXContextAlternatives) {
 			context = ((IBeXContextAlternatives) pattern).getContext();
 		} else {
-			context = ((IBeXDisjunctContextPattern) pattern).getNonOptimizedPattern();
+			context = ((IBeXDisjointContextPattern) pattern).getNonOptimizedPattern();
 		}
 		
 		nodes.addAll(context.getSignatureNodes());
@@ -109,7 +109,7 @@ final public class EditorToIBeXPatternHelper {
 		} else if (pattern instanceof IBeXContextAlternatives){
 			context = ((IBeXContextAlternatives) pattern).getContext();		
 		} else {
-			context = ((IBeXDisjunctContextPattern) pattern).getNonOptimizedPattern();
+			context = ((IBeXDisjointContextPattern) pattern).getNonOptimizedPattern();
 		}
 		constraints.addAll(context.getArithmeticConstraints());
 		return constraints;
