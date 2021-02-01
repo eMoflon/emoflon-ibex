@@ -20,6 +20,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRelation
 import org.emoflon.ibex.gt.transformations.EditorToIBeXPatternHelper
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjunctContextPattern
 
 /**
  * This class contains the templates for the API Java classes.
@@ -82,13 +83,19 @@ class JavaFileGenerator {
 		ibexModel.patternSet.contextPatterns
 			.filter [ pattern | !rulePreconditions.contains(pattern)]
 			.filter [ pattern | !pattern.name.contains("CONDITION")]
+			.filter [pattern  | !((pattern instanceof IBeXContextPattern) && (pattern as IBeXContextPattern).isSubpattern())]
+			.filter [pattern   | !((pattern instanceof IBeXContextPattern) && (pattern as IBeXContextPattern).isOptimizedDisjoint())]
+			.filter [pattern  | !((pattern instanceof IBeXDisjunctContextPattern) && rulePreconditions.contains((pattern as IBeXDisjunctContextPattern).getNonOptimizedPattern()))]
 			.forEach [ pattern |
 				imports.add('''«getSubPackageName('api.rules')».«getPatternClassName(pattern)»''')
 				if(pattern instanceof IBeXContextPattern) {
 					val context = pattern as IBeXContextPattern
 					imports.addAll(eClassifiersManager.getImportsForDataTypes(context.parameters))
-				} else {
+				} else if (pattern instanceof IBeXContextAlternatives) {
 					val context = (pattern as IBeXContextAlternatives).context
+					imports.addAll(eClassifiersManager.getImportsForDataTypes(context.parameters))
+				} else {
+					val context = (pattern as IBeXDisjunctContextPattern).nonOptimizedPattern
 					imports.addAll(eClassifiersManager.getImportsForDataTypes(context.parameters))
 				}]
 				
@@ -154,7 +161,10 @@ class JavaFileGenerator {
 					«ENDFOR»
 					«FOR pattern: ibexModel.patternSet.contextPatterns
 						.filter [ pattern | !rulePreconditions.contains(pattern)]
-						.filter [ pattern | !pattern.name.contains("CONDITION")]»
+						.filter [ pattern | !pattern.name.contains("CONDITION")]
+						.filter [pattern  | !((pattern instanceof IBeXContextPattern) && (pattern as IBeXContextPattern).isSubpattern())]
+						.filter [pattern  | !((pattern instanceof IBeXContextPattern) && (pattern as IBeXContextPattern).isOptimizedDisjoint())]
+						.filter [pattern  | !((pattern instanceof IBeXDisjunctContextPattern) && rulePreconditions.contains((pattern as IBeXDisjunctContextPattern).getNonOptimizedPattern()))]»
 					«IF getPatternParameter(pattern).empty»
 					map.put("«pattern.name»", () -> «pattern.name»());
 					«ENDIF»
@@ -198,7 +208,10 @@ class JavaFileGenerator {
 			«ENDFOR»
 				«FOR pattern : ibexModel.patternSet.contextPatterns
 						.filter [ pattern | !rulePreconditions.contains(pattern)]
-						.filter [ pattern | !pattern.name.contains("CONDITION")]»
+						.filter [ pattern | !pattern.name.contains("CONDITION")]
+						.filter [pattern | !((pattern instanceof IBeXContextPattern) && (pattern as IBeXContextPattern).isSubpattern())]
+						.filter [pattern   | !((pattern instanceof IBeXContextPattern) && (pattern as IBeXContextPattern).isOptimizedDisjoint())]
+						.filter [pattern  | !((pattern instanceof IBeXDisjunctContextPattern) && rulePreconditions.contains((pattern as IBeXDisjunctContextPattern).getNonOptimizedPattern()))]»
 						/**
 						* Creates a new instance of the pattern «getPatternSignature(pattern)» which does the following:
 						* «getPatternDocumentation(pattern)»
@@ -835,8 +848,11 @@ class JavaFileGenerator {
 		var context = null as IBeXContextPattern
 		if(pattern instanceof IBeXContextPattern) {
 			context = pattern as IBeXContextPattern	
-		} else {
+		} else if (pattern instanceof IBeXContextAlternatives)  {
 			context = (pattern as IBeXContextAlternatives).context
+		} else {
+			context = (pattern as IBeXDisjunctContextPattern).nonOptimizedPattern
+		
 		}
 		return '''<code>«context.name»(«FOR parameter : context.parameters SEPARATOR ', '»«parameter.name»«ENDFOR»)</code>'''
 		
@@ -845,8 +861,10 @@ class JavaFileGenerator {
 	private static def getPatternParameter(IBeXPattern pattern) {
 		if(pattern instanceof IBeXContextPattern) {
 			return (pattern as IBeXContextPattern).parameters
-		} else {
+		} else if (pattern instanceof IBeXContextAlternatives) {
 			return (pattern as IBeXContextAlternatives).context.parameters
+		} else {
+			return (pattern as IBeXDisjunctContextPattern).nonOptimizedPattern.parameters
 		}
 	}
 
@@ -872,9 +890,11 @@ class JavaFileGenerator {
 		var ibexPattern = null as IBeXContextPattern
 		if(pattern instanceof IBeXContextPattern)
 			ibexPattern = pattern as IBeXContextPattern
-		else 	
+		else if (pattern instanceof IBeXContextAlternatives)
 			ibexPattern = (pattern as IBeXContextAlternatives).context	
-			
+		else
+			ibexPattern = (pattern as IBeXDisjunctContextPattern).nonOptimizedPattern
+		
 		if (ibexPattern.documentation === null) {
 			return String.format(
 				"If this pattern is not self-explaining, you really should add some comment in the specification."

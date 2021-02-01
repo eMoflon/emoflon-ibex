@@ -4,11 +4,13 @@ package org.emoflon.ibex.patternmodel.IBeXPatternModel.impl;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
+
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
-
 import org.eclipse.emf.ecore.InternalEObject;
+
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeAssignment;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeValue;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
@@ -39,6 +41,7 @@ public class IBeXAttributeAssignmentImpl extends IBeXAttributeImpl implements IB
 	 * @ordered
 	 */
 	protected IBeXAttributeValue value;
+
 	/**
 	 * The cached value of the '{@link #getNode() <em>Node</em>}' reference.
 	 * <!-- begin-user-doc -->
@@ -48,6 +51,7 @@ public class IBeXAttributeAssignmentImpl extends IBeXAttributeImpl implements IB
 	 * @ordered
 	 */
 	protected IBeXNode node;
+
 	/**
 	 * The cached value of the '{@link #getType() <em>Type</em>}' reference.
 	 * <!-- begin-user-doc -->

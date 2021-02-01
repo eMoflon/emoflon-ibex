@@ -127,6 +127,16 @@ public class IBeXPatternModelFactoryImpl extends EFactoryImpl implements IBeXPat
 			return createIBeXArithmeticAttribute();
 		case IBeXPatternModelPackage.IBE_XMATCH_COUNT:
 			return createIBeXMatchCount();
+		case IBeXPatternModelPackage.IBE_XDISJUNCT_CONTEXT_PATTERN:
+			return createIBeXDisjunctContextPattern();
+		case IBeXPatternModelPackage.IBE_XDISJUNCT_ATTRIBUTE:
+			return createIBeXDisjunctAttribute();
+		case IBeXPatternModelPackage.IBE_XDEPENDENT_INJECTIVITY_CONSTRAINTS:
+			return createIBeXDependentInjectivityConstraints();
+		case IBeXPatternModelPackage.IBEX_DISJUNCT_INJECTIVITY_CONSTRAINT:
+			return createIBexDisjunctInjectivityConstraint();
+		case IBeXPatternModelPackage.IBE_XDEPENDENT_DISJUNCT_ATTRIBUTE:
+			return createIBeXDependentDisjunctAttribute();
 		default:
 			throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -549,6 +559,61 @@ public class IBeXPatternModelFactoryImpl extends EFactoryImpl implements IBeXPat
 	public IBeXMatchCount createIBeXMatchCount() {
 		IBeXMatchCountImpl iBeXMatchCount = new IBeXMatchCountImpl();
 		return iBeXMatchCount;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public IBeXDisjunctContextPattern createIBeXDisjunctContextPattern() {
+		IBeXDisjunctContextPatternImpl iBeXDisjunctContextPattern = new IBeXDisjunctContextPatternImpl();
+		return iBeXDisjunctContextPattern;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public IBeXDisjunctAttribute createIBeXDisjunctAttribute() {
+		IBeXDisjunctAttributeImpl iBeXDisjunctAttribute = new IBeXDisjunctAttributeImpl();
+		return iBeXDisjunctAttribute;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public IBeXDependentInjectivityConstraints createIBeXDependentInjectivityConstraints() {
+		IBeXDependentInjectivityConstraintsImpl iBeXDependentInjectivityConstraints = new IBeXDependentInjectivityConstraintsImpl();
+		return iBeXDependentInjectivityConstraints;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public IBexDisjunctInjectivityConstraint createIBexDisjunctInjectivityConstraint() {
+		IBexDisjunctInjectivityConstraintImpl iBexDisjunctInjectivityConstraint = new IBexDisjunctInjectivityConstraintImpl();
+		return iBexDisjunctInjectivityConstraint;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public IBeXDependentDisjunctAttribute createIBeXDependentDisjunctAttribute() {
+		IBeXDependentDisjunctAttributeImpl iBeXDependentDisjunctAttribute = new IBeXDependentDisjunctAttributeImpl();
+		return iBeXDependentDisjunctAttribute;
 	}
 
 	/**

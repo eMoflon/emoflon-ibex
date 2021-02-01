@@ -37,6 +37,8 @@ import org.emoflon.ibex.gt.editor.ui.builder.GTBuilder;
 import org.emoflon.ibex.gt.editor.ui.builder.GTBuilderExtension;
 import org.emoflon.ibex.gt.transformations.AbstractModelTransformation;
 import org.emoflon.ibex.gt.transformations.EditorToIBeXPatternTransformation;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjunctContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPattern;
 import org.moflon.core.plugins.manifest.ManifestFileUpdater;
@@ -306,6 +308,8 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		ibexModel.getPatternSet().getContextPatterns().stream()
 			.filter(pattern -> !ruleContextPatterns.contains(pattern))
 			.filter(pattern -> !pattern.getName().contains("CONDITION"))
+			.filter(pattern -> !((pattern instanceof IBeXContextPattern) && ((IBeXContextPattern) pattern).isSubpattern()))
+			.filter(pattern -> !((pattern instanceof IBeXDisjunctContextPattern) && ruleContextPatterns.contains(((IBeXDisjunctContextPattern) pattern).getNonOptimizedPattern())))
 			.forEach(pattern -> {
 				generator.generateMatchClass(matchesPackage, pattern);
 				generator.generatePatternClass(rulesPackage, pattern);
