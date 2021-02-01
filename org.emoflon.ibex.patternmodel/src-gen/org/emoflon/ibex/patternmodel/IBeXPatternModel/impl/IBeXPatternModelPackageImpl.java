@@ -27,17 +27,22 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXBinaryExpression;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXBinaryOperator;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCSP;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXConstant;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXConstraint;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextAlternatives;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjointAttribute;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjointContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDistributionRange;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDistributionType;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdgeSet;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEnumLiteral;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInjectivityConstraint;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInterdependentAttributes;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInterdependentInjectivityConstraints;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXMatchCount;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNamedElement;
@@ -57,6 +62,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRuleSet;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXStochasticAttributeValue;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXUnaryExpression;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXUnaryOperator;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBexDisjointInjectivityConstraint;
 
 /**
  * <!-- begin-user-doc -->
@@ -337,6 +343,48 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 	 * @generated
 	 */
 	private EClass iBeXMatchCountEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass iBeXConstraintEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass iBeXDisjointContextPatternEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass iBexDisjointInjectivityConstraintEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass iBeXDisjointAttributeEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass iBeXInterdependentInjectivityConstraintsEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass iBeXInterdependentAttributesEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -755,6 +803,26 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 	@Override
 	public EReference getIBeXContextPattern_Parameters() {
 		return (EReference) iBeXContextPatternEClass.getEStructuralFeatures().get(9);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getIBeXContextPattern_OptimizedDisjoint() {
+		return (EAttribute) iBeXContextPatternEClass.getEStructuralFeatures().get(10);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getIBeXContextPattern_Subpattern() {
+		return (EAttribute) iBeXContextPatternEClass.getEStructuralFeatures().get(11);
 	}
 
 	/**
@@ -1693,6 +1761,236 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 	 * @generated
 	 */
 	@Override
+	public EClass getIBeXConstraint() {
+		return iBeXConstraintEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EClass getIBeXDisjointContextPattern() {
+		return iBeXDisjointContextPatternEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBeXDisjointContextPattern_Subpatterns() {
+		return (EReference) iBeXDisjointContextPatternEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBeXDisjointContextPattern_InjectivityConstraints() {
+		return (EReference) iBeXDisjointContextPatternEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBeXDisjointContextPattern_AttributeConstraints() {
+		return (EReference) iBeXDisjointContextPatternEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBeXDisjointContextPattern_NonOptimizedPattern() {
+		return (EReference) iBeXDisjointContextPatternEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EClass getIBexDisjointInjectivityConstraint() {
+		return iBexDisjointInjectivityConstraintEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBexDisjointInjectivityConstraint_Pattern1() {
+		return (EReference) iBexDisjointInjectivityConstraintEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBexDisjointInjectivityConstraint_Pattern2() {
+		return (EReference) iBexDisjointInjectivityConstraintEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBexDisjointInjectivityConstraint_Node1() {
+		return (EReference) iBexDisjointInjectivityConstraintEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBexDisjointInjectivityConstraint_Node2() {
+		return (EReference) iBexDisjointInjectivityConstraintEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EClass getIBeXDisjointAttribute() {
+		return iBeXDisjointAttributeEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBeXDisjointAttribute_TargetPattern() {
+		return (EReference) iBeXDisjointAttributeEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBeXDisjointAttribute_SourcePattern() {
+		return (EReference) iBeXDisjointAttributeEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBeXDisjointAttribute_DisjointAttribute() {
+		return (EReference) iBeXDisjointAttributeEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EClass getIBeXInterdependentInjectivityConstraints() {
+		return iBeXInterdependentInjectivityConstraintsEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBeXInterdependentInjectivityConstraints_InjectivityConstraints() {
+		return (EReference) iBeXInterdependentInjectivityConstraintsEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBeXInterdependentInjectivityConstraints_Patterns() {
+		return (EReference) iBeXInterdependentInjectivityConstraintsEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBeXInterdependentInjectivityConstraints_AttributeConstraints() {
+		return (EReference) iBeXInterdependentInjectivityConstraintsEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EClass getIBeXInterdependentAttributes() {
+		return iBeXInterdependentAttributesEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBeXInterdependentAttributes_Attributes() {
+		return (EReference) iBeXInterdependentAttributesEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBeXInterdependentAttributes_InterdependentPatterns() {
+		return (EReference) iBeXInterdependentAttributesEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBeXInterdependentAttributes_InjectivityConstraints() {
+		return (EReference) iBeXInterdependentAttributesEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EEnum getIBeXRelation() {
 		return iBeXRelationEEnum;
 	}
@@ -1808,6 +2106,8 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 		createEReference(iBeXContextPatternEClass, IBE_XCONTEXT_PATTERN__SIGNATURE_NODES);
 		createEReference(iBeXContextPatternEClass, IBE_XCONTEXT_PATTERN__CSPS);
 		createEReference(iBeXContextPatternEClass, IBE_XCONTEXT_PATTERN__PARAMETERS);
+		createEAttribute(iBeXContextPatternEClass, IBE_XCONTEXT_PATTERN__OPTIMIZED_DISJOINT);
+		createEAttribute(iBeXContextPatternEClass, IBE_XCONTEXT_PATTERN__SUBPATTERN);
 
 		iBeXCreatePatternEClass = createEClass(IBE_XCREATE_PATTERN);
 		createEReference(iBeXCreatePatternEClass, IBE_XCREATE_PATTERN__ATTRIBUTE_ASSIGNMENTS);
@@ -1931,6 +2231,38 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 		iBeXMatchCountEClass = createEClass(IBE_XMATCH_COUNT);
 		createEReference(iBeXMatchCountEClass, IBE_XMATCH_COUNT__INVOCATION);
 
+		iBeXConstraintEClass = createEClass(IBE_XCONSTRAINT);
+
+		iBeXDisjointContextPatternEClass = createEClass(IBE_XDISJOINT_CONTEXT_PATTERN);
+		createEReference(iBeXDisjointContextPatternEClass, IBE_XDISJOINT_CONTEXT_PATTERN__SUBPATTERNS);
+		createEReference(iBeXDisjointContextPatternEClass, IBE_XDISJOINT_CONTEXT_PATTERN__INJECTIVITY_CONSTRAINTS);
+		createEReference(iBeXDisjointContextPatternEClass, IBE_XDISJOINT_CONTEXT_PATTERN__ATTRIBUTE_CONSTRAINTS);
+		createEReference(iBeXDisjointContextPatternEClass, IBE_XDISJOINT_CONTEXT_PATTERN__NON_OPTIMIZED_PATTERN);
+
+		iBexDisjointInjectivityConstraintEClass = createEClass(IBEX_DISJOINT_INJECTIVITY_CONSTRAINT);
+		createEReference(iBexDisjointInjectivityConstraintEClass, IBEX_DISJOINT_INJECTIVITY_CONSTRAINT__PATTERN1);
+		createEReference(iBexDisjointInjectivityConstraintEClass, IBEX_DISJOINT_INJECTIVITY_CONSTRAINT__PATTERN2);
+		createEReference(iBexDisjointInjectivityConstraintEClass, IBEX_DISJOINT_INJECTIVITY_CONSTRAINT__NODE1);
+		createEReference(iBexDisjointInjectivityConstraintEClass, IBEX_DISJOINT_INJECTIVITY_CONSTRAINT__NODE2);
+
+		iBeXDisjointAttributeEClass = createEClass(IBE_XDISJOINT_ATTRIBUTE);
+		createEReference(iBeXDisjointAttributeEClass, IBE_XDISJOINT_ATTRIBUTE__TARGET_PATTERN);
+		createEReference(iBeXDisjointAttributeEClass, IBE_XDISJOINT_ATTRIBUTE__SOURCE_PATTERN);
+		createEReference(iBeXDisjointAttributeEClass, IBE_XDISJOINT_ATTRIBUTE__DISJOINT_ATTRIBUTE);
+
+		iBeXInterdependentInjectivityConstraintsEClass = createEClass(IBE_XINTERDEPENDENT_INJECTIVITY_CONSTRAINTS);
+		createEReference(iBeXInterdependentInjectivityConstraintsEClass,
+				IBE_XINTERDEPENDENT_INJECTIVITY_CONSTRAINTS__INJECTIVITY_CONSTRAINTS);
+		createEReference(iBeXInterdependentInjectivityConstraintsEClass,
+				IBE_XINTERDEPENDENT_INJECTIVITY_CONSTRAINTS__PATTERNS);
+		createEReference(iBeXInterdependentInjectivityConstraintsEClass,
+				IBE_XINTERDEPENDENT_INJECTIVITY_CONSTRAINTS__ATTRIBUTE_CONSTRAINTS);
+
+		iBeXInterdependentAttributesEClass = createEClass(IBE_XINTERDEPENDENT_ATTRIBUTES);
+		createEReference(iBeXInterdependentAttributesEClass, IBE_XINTERDEPENDENT_ATTRIBUTES__ATTRIBUTES);
+		createEReference(iBeXInterdependentAttributesEClass, IBE_XINTERDEPENDENT_ATTRIBUTES__INTERDEPENDENT_PATTERNS);
+		createEReference(iBeXInterdependentAttributesEClass, IBE_XINTERDEPENDENT_ATTRIBUTES__INJECTIVITY_CONSTRAINTS);
+
 		// Create enums
 		iBeXRelationEEnum = createEEnum(IBE_XRELATION);
 		iBeXBinaryOperatorEEnum = createEEnum(IBE_XBINARY_OPERATOR);
@@ -1979,6 +2311,7 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 		iBeXParameterEClass.getESuperTypes().add(this.getIBeXNamedElement());
 		iBeXAttributeAssignmentEClass.getESuperTypes().add(this.getIBeXAttribute());
 		iBeXAttributeConstraintEClass.getESuperTypes().add(this.getIBeXAttribute());
+		iBeXAttributeConstraintEClass.getESuperTypes().add(this.getIBeXConstraint());
 		iBeXAttributeParameterEClass.getESuperTypes().add(this.getIBeXAttributeValue());
 		iBeXAttributeParameterEClass.getESuperTypes().add(this.getIBeXNamedElement());
 		iBeXConstantEClass.getESuperTypes().add(this.getIBeXAttributeValue());
@@ -1987,12 +2320,14 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 		iBeXStochasticAttributeValueEClass.getESuperTypes().add(this.getIBeXAttributeValue());
 		iBeXArithmeticValueEClass.getESuperTypes().add(this.getIBeXAttributeValue());
 		iBeXRuleEClass.getESuperTypes().add(this.getIBeXNamedElement());
+		iBeXArithmeticConstraintEClass.getESuperTypes().add(this.getIBeXConstraint());
 		iBeXUnaryExpressionEClass.getESuperTypes().add(this.getIBeXArithmeticExpression());
 		iBeXBinaryExpressionEClass.getESuperTypes().add(this.getIBeXArithmeticExpression());
 		iBeXArithmeticValueLiteralEClass.getESuperTypes().add(this.getIBeXArithmeticExpression());
 		iBeXArithmeticAttributeEClass.getESuperTypes().add(this.getIBeXNode());
 		iBeXArithmeticAttributeEClass.getESuperTypes().add(this.getIBeXArithmeticExpression());
 		iBeXMatchCountEClass.getESuperTypes().add(this.getIBeXUnaryExpression());
+		iBeXDisjointContextPatternEClass.getESuperTypes().add(this.getIBeXContext());
 
 		// Initialize classes, features, and operations; add parameters
 		initEClass(iBeXModelEClass, IBeXModel.class, "IBeXModel", !IS_ABSTRACT, !IS_INTERFACE,
@@ -2091,6 +2426,12 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 		initEReference(getIBeXContextPattern_Parameters(), this.getIBeXParameter(), null, "parameters", null, 0, -1,
 				IBeXContextPattern.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getIBeXContextPattern_OptimizedDisjoint(), ecorePackage.getEBoolean(), "optimizedDisjoint",
+				"FALSE", 0, 1, IBeXContextPattern.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE,
+				!IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getIBeXContextPattern_Subpattern(), ecorePackage.getEBoolean(), "subpattern", null, 0, 1,
+				IBeXContextPattern.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
 
 		initEClass(iBeXCreatePatternEClass, IBeXCreatePattern.class, "IBeXCreatePattern", !IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);
@@ -2367,6 +2708,82 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 		initEReference(getIBeXMatchCount_Invocation(), this.getIBeXPatternInvocation(), null, "invocation", null, 1, 1,
 				IBeXMatchCount.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(iBeXConstraintEClass, IBeXConstraint.class, "IBeXConstraint", IS_ABSTRACT, IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+
+		initEClass(iBeXDisjointContextPatternEClass, IBeXDisjointContextPattern.class, "IBeXDisjointContextPattern",
+				!IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getIBeXDisjointContextPattern_Subpatterns(), this.getIBeXContextPattern(), null, "subpatterns",
+				null, 0, -1, IBeXDisjointContextPattern.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				!IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getIBeXDisjointContextPattern_InjectivityConstraints(),
+				this.getIBeXInterdependentInjectivityConstraints(), null, "injectivityConstraints", null, 0, -1,
+				IBeXDisjointContextPattern.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
+				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getIBeXDisjointContextPattern_AttributeConstraints(), this.getIBeXInterdependentAttributes(),
+				null, "attributeConstraints", null, 0, -1, IBeXDisjointContextPattern.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
+				IS_ORDERED);
+		initEReference(getIBeXDisjointContextPattern_NonOptimizedPattern(), this.getIBeXContextPattern(), null,
+				"nonOptimizedPattern", null, 0, 1, IBeXDisjointContextPattern.class, !IS_TRANSIENT, !IS_VOLATILE,
+				IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(iBexDisjointInjectivityConstraintEClass, IBexDisjointInjectivityConstraint.class,
+				"IBexDisjointInjectivityConstraint", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getIBexDisjointInjectivityConstraint_Pattern1(), this.getIBeXContextPattern(), null, "pattern1",
+				null, 0, 1, IBexDisjointInjectivityConstraint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				!IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getIBexDisjointInjectivityConstraint_Pattern2(), this.getIBeXContextPattern(), null, "pattern2",
+				null, 0, 1, IBexDisjointInjectivityConstraint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				!IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getIBexDisjointInjectivityConstraint_Node1(), this.getIBeXNode(), null, "node1", null, 0, -1,
+				IBexDisjointInjectivityConstraint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
+				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getIBexDisjointInjectivityConstraint_Node2(), this.getIBeXNode(), null, "node2", null, 0, -1,
+				IBexDisjointInjectivityConstraint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
+				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(iBeXDisjointAttributeEClass, IBeXDisjointAttribute.class, "IBeXDisjointAttribute", !IS_ABSTRACT,
+				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getIBeXDisjointAttribute_TargetPattern(), this.getIBeXContextPattern(), null, "targetPattern",
+				null, 0, -1, IBeXDisjointAttribute.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
+				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getIBeXDisjointAttribute_SourcePattern(), this.getIBeXContextPattern(), null, "sourcePattern",
+				null, 0, -1, IBeXDisjointAttribute.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
+				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getIBeXDisjointAttribute_DisjointAttribute(), this.getIBeXConstraint(), null,
+				"disjointAttribute", null, 0, -1, IBeXDisjointAttribute.class, !IS_TRANSIENT, !IS_VOLATILE,
+				IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(iBeXInterdependentInjectivityConstraintsEClass, IBeXInterdependentInjectivityConstraints.class,
+				"IBeXInterdependentInjectivityConstraints", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getIBeXInterdependentInjectivityConstraints_InjectivityConstraints(),
+				this.getIBexDisjointInjectivityConstraint(), null, "injectivityConstraints", null, 0, -1,
+				IBeXInterdependentInjectivityConstraints.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getIBeXInterdependentInjectivityConstraints_Patterns(), this.getIBeXContextPattern(), null,
+				"patterns", null, 0, -1, IBeXInterdependentInjectivityConstraints.class, !IS_TRANSIENT, !IS_VOLATILE,
+				IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getIBeXInterdependentInjectivityConstraints_AttributeConstraints(),
+				this.getIBeXInterdependentAttributes(), this.getIBeXInterdependentAttributes_InjectivityConstraints(),
+				"attributeConstraints", null, 0, -1, IBeXInterdependentInjectivityConstraints.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
+				IS_ORDERED);
+
+		initEClass(iBeXInterdependentAttributesEClass, IBeXInterdependentAttributes.class,
+				"IBeXInterdependentAttributes", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getIBeXInterdependentAttributes_Attributes(), this.getIBeXDisjointAttribute(), null,
+				"attributes", null, 0, -1, IBeXInterdependentAttributes.class, !IS_TRANSIENT, !IS_VOLATILE,
+				IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getIBeXInterdependentAttributes_InterdependentPatterns(), this.getIBeXContextPattern(), null,
+				"interdependentPatterns", null, 0, -1, IBeXInterdependentAttributes.class, !IS_TRANSIENT, !IS_VOLATILE,
+				IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getIBeXInterdependentAttributes_InjectivityConstraints(),
+				this.getIBeXInterdependentInjectivityConstraints(),
+				this.getIBeXInterdependentInjectivityConstraints_AttributeConstraints(), "injectivityConstraints", null,
+				0, 1, IBeXInterdependentAttributes.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
+				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Initialize enums and add enum literals
 		initEEnum(iBeXRelationEEnum, IBeXRelation.class, "IBeXRelation");

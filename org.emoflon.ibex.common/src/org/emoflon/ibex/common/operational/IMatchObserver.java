@@ -50,4 +50,5 @@ public interface IMatchObserver {
 	default public boolean isPatternRelevantForCompiler(String patternName) {
 		return true;
 	}
+
 }

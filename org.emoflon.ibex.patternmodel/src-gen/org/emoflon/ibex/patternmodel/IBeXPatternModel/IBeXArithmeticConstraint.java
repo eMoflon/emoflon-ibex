@@ -2,8 +2,6 @@
  */
 package org.emoflon.ibex.patternmodel.IBeXPatternModel;
 
-import org.eclipse.emf.ecore.EObject;
-
 /**
  * <!-- begin-user-doc -->
  * A representation of the model object '<em><b>IBe XArithmetic Constraint</b></em>'.
@@ -22,7 +20,7 @@ import org.eclipse.emf.ecore.EObject;
  * @model
  * @generated
  */
-public interface IBeXArithmeticConstraint extends EObject {
+public interface IBeXArithmeticConstraint extends IBeXConstraint {
 	/**
 	 * Returns the value of the '<em><b>Lhs</b></em>' containment reference.
 	 * <!-- begin-user-doc -->

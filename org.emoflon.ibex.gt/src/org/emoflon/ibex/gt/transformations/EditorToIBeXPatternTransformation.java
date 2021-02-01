@@ -7,9 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import java.util.Queue;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.emoflon.ibex.common.patterns.IBeXPatternFactory;
 import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
@@ -30,6 +32,7 @@ import org.emoflon.ibex.gt.editor.gT.EditorParameterExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorPattern;
 import org.emoflon.ibex.gt.editor.gT.EditorPatternType;
 import org.emoflon.ibex.gt.editor.gT.EditorReference;
+
 import org.emoflon.ibex.gt.editor.gT.StochasticFunctionExpression;
 import org.emoflon.ibex.gt.editor.utils.GTCommentExtractor;
 import org.emoflon.ibex.gt.editor.utils.GTEditorModelUtils;
@@ -47,6 +50,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextAlternatives;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjointContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdgeSet;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel;
@@ -62,15 +66,17 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRuleSet;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelFactoryImpl;
 
+
 /**
  * Transformation from the editor model to IBeX Patterns.
  */
 public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransformation<IBeXModel> {
 	
 	private Queue<EditorPattern> rulesToBeTransformed = new LinkedList<>();
-	
+
 	@Override
 	public IBeXModel transform(Collection<EditorGTFile> sourceModels) {
+
 		sourceModels.forEach(file -> {
 			Objects.requireNonNull(file, "The editor file must not be null!");
 			// flattend all editor patterns
@@ -100,6 +106,11 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 			}
 		});
 		
+		//transfrom the disjoint attribute constraints
+		data.disjointPatternToTransformation.forEach((disjointPattern, transformation) -> {
+			transformation.transformAttributeConstraint(disjointPattern);
+		});
+		
 		while(!rulesToBeTransformed.isEmpty())
 			transformToRule(rulesToBeTransformed.poll());
 		
@@ -109,8 +120,10 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 			IBeXContextPattern lhs = null;
 			if(rule.getLhs() instanceof IBeXContextPattern) {
 				lhs = (IBeXContextPattern) rule.getLhs();
-			} else {
+			}else if (rule.getLhs() instanceof IBeXContextAlternatives) {
 				lhs = ((IBeXContextAlternatives) rule.getLhs()).getContext();
+			} else {
+				lhs = ((IBeXDisjointContextPattern) rule.getLhs()).getNonOptimizedPattern();
 			}
 			
 			rule.getArithmeticConstraints().addAll(lhs.getArithmeticConstraints());
@@ -127,6 +140,7 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 	@Override
 	public IBeXModel transform(final EditorGTFile file) {
 		Objects.requireNonNull(file, "The editor file must not be null!");
+		
 		// flattend all editor patterns
 		file.getPatterns().stream() //
 			.forEach(editorPattern -> calcFlattenedPattern(editorPattern));
@@ -161,8 +175,10 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 			IBeXContextPattern lhs = null;
 			if(rule.getLhs() instanceof IBeXContextPattern) {
 				lhs = (IBeXContextPattern) rule.getLhs();
-			} else {
+			}else if (rule.getLhs() instanceof IBeXContextAlternatives) {
 				lhs = ((IBeXContextAlternatives) rule.getLhs()).getContext();
+			} else {
+				lhs = ((IBeXDisjointContextPattern) rule.getLhs()).getNonOptimizedPattern();
 			}
 			
 			rule.getArithmeticConstraints().addAll(lhs.getArithmeticConstraints());
@@ -183,10 +199,16 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 	 */
 	private IBeXModel createSortedIBeXSets() {
 		List<IBeXContext> sortPatterns = new LinkedList<>(data.ibexContextPatterns.keySet());
-		sortPatterns.sort(IBeXPatternUtils.sortByName);
 		
+		//remove the context patterns of the disjoint patterns that are optimized
+		data.nameToDisjointPattern.values().forEach(pattern -> sortPatterns.remove(pattern.getNonOptimizedPattern()));
+		sortPatterns.addAll(data.nameToDisjointPattern.values());	
+		sortPatterns.addAll(data.nameToDisjointPattern.values().stream().flatMap(pattern -> pattern.getSubpatterns().stream()).collect(Collectors.toList()));
+		sortPatterns.sort(IBeXPatternUtils.sortByName);
+			
 		List<IBeXRule> sortRules = new LinkedList<>(data.ibexRules.keySet());
 		sortRules.sort(IBeXPatternUtils.sortByName);
+		
 		data.ibexNodes.addAll(data.node2ibexNode.values().stream()
 				.flatMap(map -> map.values().stream())
 				.collect(Collectors.toList()));
@@ -197,7 +219,7 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		data.ibexEdges.sort(IBeXPatternUtils.sortByName);
 		
 		IBeXModel ibexModel = IBeXPatternModelFactory.eINSTANCE.createIBeXModel();
-		
+
 		IBeXPatternSet ibexPatternSet = IBeXPatternModelFactory.eINSTANCE.createIBeXPatternSet();
 		ibexModel.setPatternSet(ibexPatternSet);
 		ibexPatternSet.getContextPatterns().addAll(sortPatterns);
@@ -217,13 +239,14 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		return ibexModel;
 	}
 
-	/**chrome
+	/**
 	 * Transforms the given pattern to a context, a create and a delete pattern.
 	 * 
 	 * @param editorPattern
 	 *            the editor pattern to transform
+	 * @param canBeDisjoint if the pattern can be a ibexDisjointContextPattern
 	 */
-	private void transformPattern(final EditorPattern editorPattern) {
+	private void transformPattern(EditorPattern editorPattern) {
 		Objects.requireNonNull(editorPattern, "The pattern must not be null!");
 
 		if (data.nameToPattern.containsKey(editorPattern.getName())) {
@@ -236,7 +259,6 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 //			transformToRule(editorPattern);
 			rulesToBeTransformed.add(editorPattern);
 		}
-
 	}
 
 	/**
@@ -252,7 +274,6 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		if (ibexPattern instanceof IBeXContextAlternatives) {
 			((IBeXContextAlternatives) ibexPattern).getAlternativePatterns().forEach(pattern -> data.ibexContextPatterns.remove(pattern));
 		}
-
 		data.nameToPattern.put(ibexPattern.getName(), ibexPattern);
 	}
 
@@ -262,8 +283,10 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 	 * 
 	 * @param editorPattern
 	 *            the editor pattern
+	 * @param canBeDisjoint if the pattern can be disjoint; only used for editorConditions
 	 * @return the IBeXContextPattern
 	 */
+
 	public IBeXContext getOrCreateContextPattern(final EditorPattern editorPattern) {
 		if (!data.nameToPattern.containsKey(editorPattern.getName())) {
 			transformPattern(editorPattern);
@@ -285,6 +308,27 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 			if (editorPattern.getConditions().size() == 1) {
 				EditorCondition editorCondition = editorPattern.getConditions().get(0);
 				transformCondition(ibexPattern, editorCondition);
+			}
+			
+			//copy the IBeXPattern to not destroy the non optimized pattern
+			IBeXContextPattern possibleDisjointPattern = EcoreUtil.copy(ibexPattern);
+			IBeXDisjointPatternFinder patternFinder = new IBeXDisjointPatternFinder(possibleDisjointPattern);
+			//transform if the pattern is disjoint and the pattern has the disjoint flag (which says that the pattern can be optimized)
+			if(editorPattern.isOptimize() && patternFinder.isDisjoint()) {
+				try {
+					IBeXDisjointPatternTransformation transformation = new IBeXDisjointPatternTransformation(possibleDisjointPattern, patternFinder.getSubgraphs());
+					IBeXDisjointContextPattern disjointPattern = transformation.transformToContextPattern();
+					disjointPattern.setNonOptimizedPattern(ibexPattern);
+					//add them to the disjoint pattern set; the used context pattern will be removed at the end
+					data.nameToDisjointPattern.put(disjointPattern.getName(), disjointPattern);
+					data.disjointPatternToTransformation.put(disjointPattern, transformation);
+
+				}
+				catch(IllegalArgumentException e) {
+					//when something goes wrong proceed normally
+					// already transformed patterns do not need to be removed
+					ibexPattern.setOptimizedDisjoint(false);
+				}
 			}
 		}
 	}
@@ -342,6 +386,9 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		
 		IBeXContextPattern ibexPattern = IBeXPatternModelFactory.eINSTANCE.createIBeXContextPattern();
 		ibexPattern.setName(name);
+		//is the pattern optimized or not
+		ibexPattern.setOptimizedDisjoint(editorPattern.isOptimize());
+		ibexPattern.setSubpattern(false);
 		addContextPattern(editorPattern, ibexPattern);
 		
 		// Add documentation

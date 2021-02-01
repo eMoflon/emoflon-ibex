@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -32,10 +33,12 @@ import org.emoflon.ibex.common.operational.PushoutApproach;
 import org.emoflon.ibex.common.operational.SimpleMatch;
 import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.gt.api.GraphTransformationPattern;
+import org.emoflon.ibex.gt.disjointpatterns.GraphTransformationDisjointPatternInterpreter;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextAlternatives;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjointContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
@@ -51,6 +54,10 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 */
 	private IBeXModel ibexModel;
 	private IBeXPatternSet patternSet;
+	/**
+	 * The pattern set containing the disjoint patterns.
+	 */
+	private List<IBeXDisjointContextPattern> disjointContextPatternSet;
 	private IBeXRuleSet ruleSet;
 	
 	private Map<String, IBeXContext> name2Pattern;
@@ -74,7 +81,11 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * The resource set containing the model file.
 	 */
 	private ResourceSet model;
-
+	
+	/**
+	 * the pattern interpreter for disjoint patterns
+	 */
+	private Map<IBeXDisjointContextPattern, GraphTransformationDisjointPatternInterpreter> disjointPatternInterpreter;
 	/**
 	 * The matches (key: pattern name, value: list of matches).
 	 */
@@ -195,6 +206,15 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 				name2Pattern.put(pattern.getName(), pattern);
 			});
 			ruleSet = ibexModel.getRuleSet();
+
+			//changes the pattern that is given to the interpreter; only gives the subpatterns of the IBeXDisjointPatternContextPattern to the interpreter
+			disjointContextPatternSet = IBeXPatternUtils.transformIBeXPatternSet(patternSet);
+			disjointPatternInterpreter = new HashMap<IBeXDisjointContextPattern, GraphTransformationDisjointPatternInterpreter>();
+			for(IBeXDisjointContextPattern pattern: disjointContextPatternSet) {
+				disjointPatternInterpreter.put(pattern, new GraphTransformationDisjointPatternInterpreter(this, pattern, model));
+				name2Pattern.put(pattern.getName(), pattern);
+			}
+			
 			contextPatternInterpreter.initPatterns(patternSet);
 			contextPatternInterpreter.monitor(model.getResources());
 		} else {
@@ -334,18 +354,61 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		} else {
 			GraphTransformationPattern<?,?> gtPattern = name2GTPattern.get(patternName);
 			if(gtPattern != null) {
-				patternMatches.addAll(MatchFilter.getFilteredMatchStream(pattern, parameters, matches)
+				patternMatches.addAll(MatchFilter.getFilteredMatchStream(pattern, parameters, matches, disjointPatternInterpreter)
 						.filter(match -> gtPattern.isMatchValid(match))
 						.collect(Collectors.toSet()));
 			} else {
-				patternMatches.addAll(MatchFilter.getFilteredMatchStream(pattern, parameters, matches).collect(Collectors.toSet()));
+				patternMatches.addAll(MatchFilter.getFilteredMatchStream(pattern, parameters, matches, disjointPatternInterpreter)
+						.collect(Collectors.toSet()));
 			}
 			
 		}
 		
 	}
 
+	/**
+	 * count the number of matches for the pattern
+	 * 
+	 * @param patternName 
+	 * 			the name of the pattern
+	 * @param parameters 
+	 * 			the parameters
+	 * @return the number of matches
+	 */
+	public final long countMatches(final String patternName, final Map<String, Object> parameters, boolean doUpdate) {
+		
+		if(doUpdate)
+			updateMatches();
+		
+		IBeXContext pattern = name2Pattern.get(patternName);
+		if(pattern instanceof IBeXDisjointContextPattern) {
 	
+			return disjointPatternInterpreter.get(pattern).calculateMatchCount((IBeXDisjointContextPattern) pattern, 
+					MatchFilter.getFilteredMatchList((IBeXDisjointContextPattern) pattern, parameters, matches));
+		} else {
+			return matchStream(patternName, parameters, doUpdate).count();
+		}
+	}
+	
+	/**
+	 * Finds and returns an arbitrary match for the pattern if a match exists.
+	 * 
+	 * @return an {@link Optional} for the match
+	 */
+	public final Optional<IMatch> findAnyMatch(final String patternName, final Map<String, Object> parameters, boolean doUpdate) {	
+		
+		if(doUpdate)
+			updateMatches();
+		
+		IBeXContext pattern = name2Pattern.get(patternName);
+		if(pattern instanceof IBeXDisjointContextPattern) {
+
+			return disjointPatternInterpreter.get(pattern).findAnyMatch((IBeXDisjointContextPattern) pattern, 
+					MatchFilter.getFilteredMatchList((IBeXDisjointContextPattern) pattern, parameters, matches)); 
+		} else {
+			return matchStream(patternName, parameters, doUpdate).findAny();
+		}
+	}
 	
 	/**
 	 * Trigger the engine to update the pattern network.
@@ -365,7 +428,14 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			// Fill filtered matches Map by calling the match stream
 			matchStream(patternName, name2GTPattern.get(patternName).getParameters(), false);
 			// Check if existing matches recently became valid (pending) and add removal jobs
-			matches.get(patternName).parallelStream()
+			
+			Collection<IMatch> matchCollection;
+			if(name2Pattern.get(patternName) instanceof IBeXDisjointContextPattern) {
+				matchCollection = filteredMatches.get(patternName);
+			} else {
+				matchCollection = matches.get(patternName);
+			}
+			matchCollection.parallelStream()
 				.filter(match -> filteredMatches.containsKey(patternName) && filteredMatches.get(patternName).contains(match))
 				.filter(match -> pendingMatches.containsKey(patternName) && pendingMatches.get(patternName).contains(match))
 				.forEach(match -> {
@@ -423,7 +493,13 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			// Fill filtered matches Map by calling the match stream
 			matchStream(patternName, name2GTPattern.get(patternName).getParameters(), false);
 			// Check if existing matches recently became invalid (not pending) and add removal jobs
-			matches.get(patternName).parallelStream()
+			Collection<IMatch> matchCollection;
+			if(name2Pattern.get(patternName) instanceof IBeXDisjointContextPattern) {
+				matchCollection = filteredMatches.get(patternName);
+			} else {
+				matchCollection = matches.get(patternName);
+			}
+			matchCollection.parallelStream()
 				.filter(match -> !filteredMatches.containsKey(patternName) || !filteredMatches.get(patternName).contains(match))
 				.filter(match -> !pendingMatches.containsKey(patternName) || !pendingMatches.get(patternName).contains(match))
 				.forEach(match -> {
@@ -544,6 +620,36 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 //		Check whether there are any subscribers, if not return. -> No need to track deltas.
 		if(subscriptionsForAppearingMatchesOfPattern.isEmpty() && subscriptionsForDisappearingMatches.isEmpty() && subscriptionsForDisappearingMatchesOfPattern.isEmpty())
 			return;
+	
+		//find out if the match belongs to a disjointContextPattern
+		int index = patternName.lastIndexOf("_");
+		if(index != -1) {
+			//see if there is a disjointContextPattern with the same name
+			String disjointPatternName = patternName.substring(0, index);
+			
+			//sees if a disjoint context pattern needs to be calculated
+			if(!subscriptionsForAppearingMatchesOfPattern.keySet().contains(disjointPatternName) && 
+					!subscriptionsForDisappearingMatches.keySet().stream().anyMatch(m -> m.getPatternName().equals(disjointPatternName)) && 
+					!subscriptionsForDisappearingMatchesOfPattern.keySet().contains(disjointPatternName)) return;
+			
+			disjointContextPatternSet.stream().filter(pattern -> pattern.getName().equals(disjointPatternName))
+			.findFirst().ifPresent(pattern -> {
+				
+				Collection<IMatch> newMatches = disjointPatternInterpreter.get(pattern).createMatchesWithThisSubmatch(pattern, match, 
+				matches, pattern.getName());	
+				for(IMatch newMatch: newMatches) {
+					if(removedMatches.containsKey(pattern.getName()) && removedMatches.get(pattern.getName()).contains(newMatch)) {
+						removedMatches.get(pattern.getName()).remove(newMatch);
+						return;
+					}
+					
+					if (!addedMatches.containsKey(pattern.getName())) {
+						addedMatches.put(pattern.getName(), Collections.synchronizedSet(new HashSet<IMatch>()));
+					}
+					addedMatches.get(pattern.getName()).add(newMatch);
+				}
+			});
+		}
 		
 		if(removedMatches.containsKey(patternName) && removedMatches.get(patternName).contains(match)) {
 			removedMatches.get(patternName).remove(match);
@@ -566,6 +672,35 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 //			Check whether there are any subscribers, if not return. -> No need to track deltas.
 			if(subscriptionsForAppearingMatchesOfPattern.isEmpty() && subscriptionsForDisappearingMatches.isEmpty() && subscriptionsForDisappearingMatchesOfPattern.isEmpty())
 				return;
+			
+			//find out if the match belongs to a disjointContextPattern
+			int index = patternName.lastIndexOf("_");
+			if(index != -1) {
+				//see if there is a disjointContextPattern with the same name
+				String disjointPatternName = patternName.substring(0, index);
+				
+				//sees if a disjoint context pattern needs to be calculated
+				if(!subscriptionsForAppearingMatchesOfPattern.keySet().contains(disjointPatternName) && 
+						!subscriptionsForDisappearingMatches.keySet().stream().anyMatch(m -> m.getPatternName().equals(disjointPatternName)) && 
+						!subscriptionsForDisappearingMatchesOfPattern.keySet().contains(disjointPatternName)) return;
+				
+				disjointContextPatternSet.stream().filter(pattern -> pattern.getName().equals(disjointPatternName))
+				.findFirst().ifPresent(pattern -> {
+					Collection<IMatch> oldMatches = disjointPatternInterpreter.get(pattern).createMatchesWithThisSubmatch(pattern, match, 
+							matches, pattern.getName());	
+					for(IMatch oldMatch: oldMatches) {
+						if(addedMatches.containsKey(pattern.getName()) && addedMatches.get(pattern.getName()).contains(oldMatch)) {
+							addedMatches.get(pattern.getName()).remove(oldMatch);
+							return;
+						}
+						
+						if (!removedMatches.containsKey(pattern.getName())) {
+							removedMatches.put(pattern.getName(), Collections.synchronizedSet(new HashSet<IMatch>()));
+						}
+						removedMatches.get(pattern.getName()).add(oldMatch);
+					}
+				});				
+			}
 			
 			if(addedMatches.containsKey(patternName) && addedMatches.get(patternName).contains(match)) {
 				addedMatches.get(patternName).remove(match);
@@ -729,5 +864,9 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	@Override
 	public void removeMatches(Collection<IMatch> matches) {
 		throw new UnsupportedOperationException();
+	}
+	
+	public boolean isDisjoint(String patternName){
+		return disjointContextPatternSet.stream().anyMatch(pattern -> pattern.getName().equals(patternName));
 	}
 }

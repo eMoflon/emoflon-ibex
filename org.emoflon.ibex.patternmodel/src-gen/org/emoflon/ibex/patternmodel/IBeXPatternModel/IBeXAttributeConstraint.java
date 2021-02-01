@@ -24,7 +24,7 @@ package org.emoflon.ibex.patternmodel.IBeXPatternModel;
  * @model
  * @generated
  */
-public interface IBeXAttributeConstraint extends IBeXAttribute {
+public interface IBeXAttributeConstraint extends IBeXAttribute, IBeXConstraint {
 	/**
 	 * Returns the value of the '<em><b>Relation</b></em>' attribute.
 	 * The literals are from the enumeration {@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRelation}.

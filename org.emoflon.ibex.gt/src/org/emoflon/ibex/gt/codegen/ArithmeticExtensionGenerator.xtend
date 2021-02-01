@@ -18,7 +18,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXMatchCount
  *  Enum for the different Constraint types
  */
 enum ConstraintType {
-	SDNEGATIVE,//when the distribution is normal and the standard deviation is negative
+	SDNEGATIVE, //when the distribution is normal and the standard deviation is negative
 	UNIFORMDISTRIBUTION, //when it is a uniformdistribution and the min/max value is an attribute
 	UNIFORMVALUE, // when it is a randomly generated probability and the min/max value is an attribute
 	STATICPARAMETER, // when the static probability is an attribute
@@ -63,37 +63,37 @@ class ArithmeticExtensionGenerator {
 		val probability = rule.probability
 
 		var sourceCode = '''
-		/**
-		 * The probability class for the rule «getRuleClassName(rule)»; calculates the probability
-		 * that the rule will be applied
-		 */
-		public class «getProbabilityClassName(rule)» extends Probability«getGenerics(rule)»{
-			«IF probability.parameter!== null»
-			«getDistributionFunction(probability.distribution.type)» distribution;
-			«ELSE»
-			
-			Random rnd = new Random();
-			«ENDIF»
-			
-			public «getProbabilityClassName(rule)»(final GraphTransformationInterpreter interpreter) {
-				super(interpreter);
+			/**
+			 * The probability class for the rule «getRuleClassName(rule)»; calculates the probability
+			 * that the rule will be applied
+			 */
+			public class «getProbabilityClassName(rule)» extends Probability«getGenerics(rule)»{
+				«IF probability.parameter!== null»
+					«getDistributionFunction(probability.distribution.type)» distribution;
+				«ELSE»
+					
+					Random rnd = new Random();
+				«ENDIF»
+				
+				public «getProbabilityClassName(rule)»(final GraphTransformationInterpreter interpreter) {
+					super(interpreter);
+				}
+				
+				@Override
+				public double getProbability(«getMatchClassName(rule)» match){
+					«getProbabilityBodyWithConstraints(rule)»				
+				}
+				
+				@Override
+				public double getProbabilityGeneric(GraphTransformationMatch<?, ?> match){
+					return getProbability((«getMatchClassName(rule)»)match);
+				}
+				
+				@Override
+				public double getProbability(){
+					return 0;
+				}
 			}
-			
-			@Override
-			public double getProbability(«getMatchClassName(rule)» match){
-				«getProbabilityBodyWithConstraints(rule)»				
-			}
-			
-			@Override
-			public double getProbabilityGeneric(GraphTransformationMatch<?, ?> match){
-				return getProbability((«getMatchClassName(rule)»)match);
-			}
-			
-			@Override
-			public double getProbability(){
-				return 0;
-			}
-		}
 		'''
 
 		return sourceCode
@@ -108,28 +108,28 @@ class ArithmeticExtensionGenerator {
 		val arithmeticConstraints = getArithmeticConstraint(probability)
 		if(!arithmeticConstraints.empty){
 			return '''
-				if(«FOR constraints: arithmeticConstraints SEPARATOR '&&'»«constraints»«ENDFOR»){
-					«IF constraint != ConstraintType.NOCONSTRAINT»
+			if(«FOR constraints: arithmeticConstraints SEPARATOR '&&'»«constraints»«ENDFOR»){
+				«IF constraint != ConstraintType.NOCONSTRAINT»
 					if(«FOR constraints: getStochasticConstraint(constraint, probability) SEPARATOR '&&'»«constraints»«ENDFOR»){
 						«getProbabilityBody(probability)»
 					}
 					else{
 						throw new IllegalArgumentException("«getExceptionMessage(constraint, rule)»");
-					}«ELSE»
+				}«ELSE»
 						«getProbabilityBody(probability)»
-					«ENDIF»
-				} else{
-					throw new IllegalArgumentException("There was an error with the arithmetic expression when calculating the probability");
-				}'''
+				«ENDIF»
+			} else{
+				throw new IllegalArgumentException("There was an error with the arithmetic expression when calculating the probability");
+			}'''
 		}else {
 			if(constraint != ConstraintType.NOCONSTRAINT){	
 				return '''
-					if(«FOR constraints: getStochasticConstraint(constraint, probability) SEPARATOR '&&'»«constraints»«ENDFOR»){
-						«getProbabilityBody(probability)»
-					}
-					else{
-						throw new IllegalArgumentException("«getExceptionMessage(constraint, rule)»");
-					}'''		
+				if(«FOR constraints: getStochasticConstraint(constraint, probability) SEPARATOR '&&'»«constraints»«ENDFOR»){
+					«getProbabilityBody(probability)»
+				}
+				else{
+					throw new IllegalArgumentException("«getExceptionMessage(constraint, rule)»");
+				}'''		
 			}else{
 				return '''«getProbabilityBody(probability)»'''
 			}	
@@ -385,8 +385,8 @@ class ArithmeticExtensionGenerator {
 						interpreter.getFilteredMatchStream("«countExpr.invocation.invokedPattern.name»").parallel()
 								«FOR mapping : countExpr.invocation.mapping.entrySet»
 								.filter(localMatch -> match.get("«mapping.key.name»").equals(localMatch.get("«mapping.value.name»")))
-								«ENDFOR»
-								.count()'''
+							«ENDFOR»
+							.count()'''
 				}
 			}		
 		}

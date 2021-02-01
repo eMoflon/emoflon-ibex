@@ -21,7 +21,6 @@ import org.eclipse.emf.common.util.EList;
  * @generated
  */
 public interface IBeXContext extends IBeXPattern {
-
 	/**
 	 * Returns the value of the '<em><b>Api Pattern Dependencies</b></em>' reference list.
 	 * The list contents are of type {@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext}.
@@ -33,4 +32,5 @@ public interface IBeXContext extends IBeXPattern {
 	 * @generated
 	 */
 	EList<IBeXContext> getApiPatternDependencies();
+
 } // IBeXContext

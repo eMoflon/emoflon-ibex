@@ -27,7 +27,6 @@ import org.eclipse.emf.ecore.EAttribute;
  * @generated
  */
 public interface IBeXAttributeAssignment extends IBeXAttribute {
-
 	/**
 	 * Returns the value of the '<em><b>Value</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
@@ -93,4 +92,5 @@ public interface IBeXAttributeAssignment extends IBeXAttribute {
 	 * @generated
 	 */
 	void setType(EAttribute value);
+
 } // IBeXAttributeAssignment
