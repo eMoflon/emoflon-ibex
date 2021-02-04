@@ -34,6 +34,7 @@ import org.emoflon.ibex.common.operational.SimpleMatch;
 import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.gt.api.GraphTransformationPattern;
 import org.emoflon.ibex.gt.disjointpatterns.GraphTransformationDisjointPatternInterpreter;
+import org.emoflon.ibex.gt.state.ModelStateTracker;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextAlternatives;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern;
@@ -42,6 +43,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjointContextPattern
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRuleSet;
 
 /**
@@ -81,6 +83,13 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * The resource set containing the model file.
 	 */
 	private ResourceSet model;
+	
+	/**
+	 * The framework used for tracking different model states over all rule applications
+	 */
+	
+	private ModelStateTracker tracker;
+	private boolean trackingStates = false;
 	
 	/**
 	 * the pattern interpreter for disjoint patterns
@@ -254,6 +263,18 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		contextPatternInterpreter.terminate();
 	}
 	
+	public Optional<IMatch> apply(final IMatch match, final PushoutApproach po, final Map<String, Object> parameters, boolean doUpdate) {
+		if(trackingStates) {
+			Optional<IBeXRule> rule = ruleSet.getRules().stream().filter(r -> r.getName().equals(match.getPatternName())).findFirst();
+			if(!rule.isPresent())
+				return Optional.empty();
+			
+			return tracker.addNewState(rule.get(), match, () -> applyInternal(match, po, parameters, doUpdate));
+		}else {
+			return applyInternal(match, po, parameters, doUpdate);
+		}
+	}
+	
 	/**
 	 * Executes the pattern.
 	 * 
@@ -267,7 +288,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * 			  triggers the incremental recalculation of all matches after application
 	 * @return the match after rule application
 	 */
-	public Optional<IMatch> apply(final IMatch match, final PushoutApproach po, final Map<String, Object> parameters, boolean doUpdate) {
+	private Optional<IMatch> applyInternal(final IMatch match, final PushoutApproach po, final Map<String, Object> parameters, boolean doUpdate) {
 		String patternName = match.getPatternName();
 
 		IBeXCreatePattern createPattern = IBeXPatternUtils.getCreatePattern(ruleSet, patternName);
@@ -868,5 +889,15 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	
 	public boolean isDisjoint(String patternName){
 		return disjointContextPatternSet.stream().anyMatch(pattern -> pattern.getName().equals(patternName));
+	}
+	
+	public void trackModelStates() {
+		tracker = new ModelStateTracker();
+		trackingStates = true;
+	}
+	
+	public void deactivateModelStatesTracking() {
+		tracker = null;
+		trackingStates = false;
 	}
 }

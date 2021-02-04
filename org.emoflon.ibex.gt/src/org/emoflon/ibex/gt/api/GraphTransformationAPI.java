@@ -10,6 +10,8 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.common.operational.IContextPatternInterpreter;
 import org.emoflon.ibex.common.operational.PushoutApproach;
+import org.emoflon.ibex.gt.StateModel.StateContainer;
+import org.emoflon.ibex.gt.StateModel.StateModelFactory;
 import org.emoflon.ibex.gt.arithmetic.Probability;
 import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
@@ -208,5 +210,18 @@ public abstract class GraphTransformationAPI {
 	
 	public GraphTransformationInterpreter getInterpreter() {
 		return interpreter;
+	}
+	
+	public void trackModelStates() {
+		interpreter.trackModelStates();
+	}
+	
+	public void resetModelStatesTracking() {
+		deactivateModelStatesTracking();
+		trackModelStates();
+	}
+	
+	public void deactivateModelStatesTracking() {
+		interpreter.deactivateModelStatesTracking();
 	}
 }
