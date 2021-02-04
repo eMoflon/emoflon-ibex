@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel"
+    modelDirectory="/org.emoflon.ibex.gt.statemodel/src-gen" creationIcons="false"
+    editDirectory="/org.emoflon.ibex.gt.statemodel.edit/src-gen" editorDirectory="/org.emoflon.ibex.gt.statemodel.editor/src-gen"
+    modelPluginID="org.emoflon.ibex.gt.statemodel" modelName="StateModel" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
+    codeFormatting="true" importerID="org.eclipse.emf.importer.ecore" complianceLevel="8.0"
+    copyrightFields="false" usedGenPackages="../../org.emoflon.ibex.patternmodel/model/IBeXPatternModel.genmodel#//IBeXPatternModel"
+    operationReflection="true" importOrganizing="true">
+  <foreignModel>StateModel.ecore</foreignModel>
+  <testsDirectory xsi:nil="true"/>
+  <genPackages prefix="StateModel" basePackage="org.emoflon.ibex.gt" disposableProviderFactory="true"
+      ecorePackage="StateModel.ecore#/">
+    <genClasses ecoreClass="StateModel.ecore#//StateContainer">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference StateModel.ecore#//StateContainer/states"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference StateModel.ecore#//StateContainer/initialState"/>
+    </genClasses>
+    <genClasses ecoreClass="StateModel.ecore#//State">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute StateModel.ecore#//State/initial"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference StateModel.ecore#//State/children"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute StateModel.ecore#//State/hash"/>
+    </genClasses>
+    <genClasses ecoreClass="StateModel.ecore#//RuleState">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference StateModel.ecore#//RuleState/parent"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference StateModel.ecore#//RuleState/rule"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute StateModel.ecore#//RuleState/match"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute StateModel.ecore#//RuleState/coMatch"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference StateModel.ecore#//RuleState/structuralDelta"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference StateModel.ecore#//RuleState/attributeDeltas"/>
+    </genClasses>
+    <genClasses ecoreClass="StateModel.ecore#//AttributeDelta">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference StateModel.ecore#//AttributeDelta/attribute"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference StateModel.ecore#//AttributeDelta/object"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute StateModel.ecore#//AttributeDelta/newValue"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute StateModel.ecore#//AttributeDelta/oldValue"/>
+    </genClasses>
+    <genClasses ecoreClass="StateModel.ecore#//StructuralDelta">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference StateModel.ecore#//StructuralDelta/createdObjects"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference StateModel.ecore#//StructuralDelta/deletedObjects"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference StateModel.ecore#//StructuralDelta/createdLinks"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference StateModel.ecore#//StructuralDelta/deletedLinks"/>
+    </genClasses>
+    <genClasses ecoreClass="StateModel.ecore#//Link">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference StateModel.ecore#//Link/type"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference StateModel.ecore#//Link/src"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference StateModel.ecore#//Link/trg"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>
