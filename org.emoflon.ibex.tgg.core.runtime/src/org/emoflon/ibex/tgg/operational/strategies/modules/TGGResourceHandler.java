@@ -358,8 +358,10 @@ public class TGGResourceHandler {
 		return pack;
 	}
 
-	public EPackage loadAndRegisterCorrMetamodel(String workspaceRelativePath) throws IOException {
-		EPackage pack = loadAndRegisterMetamodel(workspaceRelativePath);
+	public EPackage loadAndRegisterCorrMetamodel() throws IOException {
+		String relativePath = MoflonUtil.lastCapitalizedSegmentOf(options.project.name()) + "/model/" + MoflonUtil.lastCapitalizedSegmentOf(options.project.name()) + ".ecore";
+		
+		EPackage pack = loadAndRegisterMetamodel("platform:/resource/" + relativePath);
 		options.tgg.corrMetamodel(pack);
 		return pack;
 	}
@@ -416,7 +418,7 @@ public class TGGResourceHandler {
 		options.registrationHelper().registerMetamodels(rs, options.executable());
 		
 		// Register correspondence metamodel last
-		loadAndRegisterCorrMetamodel(options.project.name() + "/model/" + MoflonUtil.lastCapitalizedSegmentOf(options.project.name()) + ".ecore");
+		loadAndRegisterCorrMetamodel();
 	}
 	
 	public void addToTrash(EObject o) {
