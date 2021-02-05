@@ -24,12 +24,12 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule;
 
-public class ModelStateTracker {
+public class ModelStateManager {
 	private StateModelFactory factory = StateModelFactory.eINSTANCE;
 	private StateContainer modelStates;
 	private State currentState;
 	
-	public ModelStateTracker() {
+	public ModelStateManager() {
 		init();
 	}
 	
@@ -39,8 +39,12 @@ public class ModelStateTracker {
 		modelStates.getStates().add(initialState);
 		modelStates.setInitialState(initialState);
 		initialState.setInitial(true);
-		initialState.setHash(recalculateHash(initialState));
+//		initialState.setHash(recalculateHash(initialState));
 		currentState = initialState;
+	}
+	
+	public State getCurrentState() {
+		return currentState;
 	}
 	
 	public Optional<IMatch> addNewState(final IBeXRule rule, final IMatch match, Supplier<Optional<IMatch>> applyRule) {
@@ -49,11 +53,14 @@ public class ModelStateTracker {
 		newState.setInitial(false);
 		newState.setMatch(match);
 		newState.setRule(rule);
+		
+		// Store attribute assignments for context nodes
 		Map<IBeXAttributeAssignment, AttributeDelta> attributeDeltas = new HashMap<>();
 		rule.getCreate().getAttributeAssignments().stream()
 			.filter(asgn -> match.isInMatch(asgn.getNode().getName()))
 			.forEach(asgn -> attributeDeltas.put(asgn, createAttributeDelta(match, asgn)));
-
+		
+		// Let the rule play out
 		Optional<IMatch> optComatch = applyRule.get();
 		if(!optComatch.isPresent())
 			return optComatch;
@@ -63,23 +70,51 @@ public class ModelStateTracker {
 		newState.setParent(currentState);
 		currentState = newState;
 		
+		// Store attribute assignments for created nodes
 		rule.getCreate().getAttributeAssignments().stream()
 			.forEach(asgn -> {
 				newState.getAttributeDeltas().add(completeAttributeDelta(comatch, asgn, attributeDeltas.get(asgn)));
 			});
 		
+		// Store created and deleted nodes/edges
 		StructuralDelta delta = factory.createStructuralDelta();
 		if(addCreateDelta(delta, comatch, rule.getCreate()) || addDeleteDelta(delta, match, rule.getDelete())) {
 			newState.setStructuralDelta(delta);
 		}
 		
 		// Calculate hash based on current state and all prior states -> see crypto currency
-		newState.setHash(recalculateHash(newState));
+//		newState.setHash(recalculateHash(newState));
 		
 		return optComatch;
 	}
 	
-	public AttributeDelta createAttributeDelta(final IMatch match, final IBeXAttributeAssignment assignment) {
+	public Optional<IMatch> revertToPrevious() {
+		if(currentState.isInitial())
+			Optional.empty();
+		
+		RuleState current = (RuleState)currentState;
+		State previousState = current.getParent();
+		IBeXRule r = current.getRule();
+		IMatch match = (IMatch) current.getMatch();
+		IMatch comatch = (IMatch) current.getCoMatch();
+		
+		if(current.getStructuralDelta() != null) {
+			StructuralDelta delta = current.getStructuralDelta();
+			// Restore deleted nodes and edges
+			if(r.getDelete() != null) {
+				IBeXDeletePattern delete = r.getDelete();
+				for(IBeXNode deletedNode : delete.getDeletedNodes()) {
+					
+				}
+			}
+			
+			// Delete created edges and nodes
+				
+		}
+		return null;
+	}
+	
+	private AttributeDelta createAttributeDelta(final IMatch match, final IBeXAttributeAssignment assignment) {
 		AttributeDelta delta = factory.createAttributeDelta();
 		
 		delta.setAttribute(assignment.getType());
@@ -90,7 +125,7 @@ public class ModelStateTracker {
 		return delta;
 	}
 	
-	public AttributeDelta completeAttributeDelta(final IMatch match, final IBeXAttributeAssignment assignment, AttributeDelta delta) {
+	private AttributeDelta completeAttributeDelta(final IMatch match, final IBeXAttributeAssignment assignment, AttributeDelta delta) {
 		if(delta == null) {
 			delta = createAttributeDelta(match, assignment);
 		}
@@ -101,7 +136,7 @@ public class ModelStateTracker {
 		return delta;
 	}
 	
-	public boolean addCreateDelta(StructuralDelta delta, final IMatch match, final IBeXCreatePattern pattern) {
+	private boolean addCreateDelta(StructuralDelta delta, final IMatch match, final IBeXCreatePattern pattern) {
 		if(pattern.getCreatedNodes().size() == 0 && pattern.getCreatedEdges().size() == 0) {
 			return false;
 		}
@@ -123,7 +158,7 @@ public class ModelStateTracker {
 		return true;
 	}
 	
-	public boolean addDeleteDelta(StructuralDelta delta, final IMatch match, final IBeXDeletePattern pattern) {
+	private boolean addDeleteDelta(StructuralDelta delta, final IMatch match, final IBeXDeletePattern pattern) {
 		if(pattern.getDeletedNodes().size() == 0 && pattern.getDeletedEdges().size() == 0) {
 			return false;
 		}
@@ -145,7 +180,7 @@ public class ModelStateTracker {
 		return true;
 	}
 	
-	public long recalculateHash(State state) {
+	private long recalculateHash(State state) {
 		if(state instanceof RuleState) {
 			RuleState rState = (RuleState)state;
 			List<Object> components = new LinkedList<>();

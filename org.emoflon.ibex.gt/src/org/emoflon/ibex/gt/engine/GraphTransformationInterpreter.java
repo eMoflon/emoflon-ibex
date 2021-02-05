@@ -34,7 +34,8 @@ import org.emoflon.ibex.common.operational.SimpleMatch;
 import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.gt.api.GraphTransformationPattern;
 import org.emoflon.ibex.gt.disjointpatterns.GraphTransformationDisjointPatternInterpreter;
-import org.emoflon.ibex.gt.state.ModelStateTracker;
+import org.emoflon.ibex.gt.state.ModelStateManager;
+import org.emoflon.ibex.gt.StateModel.State;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextAlternatives;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern;
@@ -88,7 +89,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * The framework used for tracking different model states over all rule applications
 	 */
 	
-	private ModelStateTracker tracker;
+	private ModelStateManager stateManager;
 	private boolean trackingStates = false;
 	
 	/**
@@ -269,7 +270,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			if(!rule.isPresent())
 				return Optional.empty();
 			
-			return tracker.addNewState(rule.get(), match, () -> applyInternal(match, po, parameters, doUpdate));
+			return stateManager.addNewState(rule.get(), match, () -> applyInternal(match, po, parameters, doUpdate));
 		}else {
 			return applyInternal(match, po, parameters, doUpdate);
 		}
@@ -311,6 +312,14 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		// Return the co-match.
 		return comatch;
 	}
+	
+	public Optional<IMatch> revertApply(boolean doUpdate) {
+		if(trackingStates) {
+			return stateManager.revertToPrevious();
+		}else {
+			throw new UnsupportedOperationException("Graph state is currently not tracked, cannot reverse rule application.");
+		}
+	} 
 	
 	/**
 	 * Finds all matches for the pattern.
@@ -892,12 +901,19 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	}
 	
 	public void trackModelStates() {
-		tracker = new ModelStateTracker();
+		stateManager = new ModelStateManager();
 		trackingStates = true;
 	}
 	
 	public void deactivateModelStatesTracking() {
-		tracker = null;
+		stateManager = null;
 		trackingStates = false;
+	}
+	
+	public State getCurrentModelState() {
+		if(!trackingStates)
+			throw new UnsupportedOperationException("Graph state is currently not tracked, cannot return current state.");
+		
+		return stateManager.getCurrentState();
 	}
 }
