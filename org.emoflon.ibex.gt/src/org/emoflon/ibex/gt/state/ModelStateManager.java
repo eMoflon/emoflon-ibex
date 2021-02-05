@@ -1,13 +1,26 @@
 package org.emoflon.ibex.gt.state;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Queue;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.impl.ENotificationImpl;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.util.EContentAdapter;
 import org.emoflon.ibex.common.operational.HashUtil;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.gt.StateModel.AttributeDelta;
@@ -206,4 +219,83 @@ public class ModelStateManager {
 			return HashUtil.objectToHash(state);
 		}
 	}
+}
+
+class ModelStateDeleteAdapter extends EContentAdapter {
+	
+	private StateModelFactory factory = StateModelFactory.eINSTANCE;
+	private final Resource resource;
+	private Set<EObject> nodesToWatch;
+	private Set<Link> removedLinks;
+	
+	public ModelStateDeleteAdapter(final Resource resource) {
+		this.resource = resource;
+	}
+	
+	public void pluginAdapter(final Set<EObject> nodesToWatch) {
+		this.nodesToWatch = nodesToWatch;
+		removedLinks = new HashSet<>();
+		resource.eAdapters().add(this);
+	}
+	
+	public void removeAdapter() {
+		resource.eAdapters().remove(this);
+		this.nodesToWatch = null;
+		removedLinks = null;
+	}
+	
+	@Override
+	public void notifyChanged(Notification notification) {	
+		super.notifyChanged(notification);
+		//DO Stuff..
+		switch(notification.getEventType()) {
+			case Notification.REMOVE: {
+				Object feature = notification.getFeature();
+				if(feature == null)
+					break;
+				
+				if(nodesToWatch.contains(notification.getNotifier()) || nodesToWatch.contains(notification.getOldValue())) {
+					Link link = factory.createLink();
+					link.setSrc((EObject) notification.getNotifier());
+					link.setTrg((EObject) notification.getOldValue());
+					link.setType((EReference) feature);
+					removedLinks.add(link);
+				}
+				break;
+			}
+			case Notification.REMOVING_ADAPTER: {
+				EObject container = (EObject) notification.getNotifier();
+				break;
+			}
+			case Notification.SET: {
+				Object feature = notification.getFeature();
+				if(feature == null || !(feature instanceof EReference))
+					break;
+				
+				if(nodesToWatch.contains(notification.getNotifier()) || nodesToWatch.contains(notification.getOldValue())) {
+					Link link = factory.createLink();
+					link.setSrc((EObject) notification.getNotifier());
+					link.setTrg((EObject) notification.getOldValue());
+					link.setType((EReference) feature);
+					removedLinks.add(link);
+				}
+				break;
+			}
+		}
+	
+	}
+	
+//	private void exploreContainmentHierarchy(EObject container) {
+//		if(container == null) 
+//			return;
+//		
+//		Queue<EObject> frontier = new LinkedList<>();
+//			
+//		frontier.addAll(container.eContents());
+//		while(!frontier.isEmpty()) {
+//			frontier = frontier.parallelStream().flatMap(child -> {
+//				
+//			}).collect(Collectors.toCollection(LinkedList::new));
+//		}
+//	}
 }
