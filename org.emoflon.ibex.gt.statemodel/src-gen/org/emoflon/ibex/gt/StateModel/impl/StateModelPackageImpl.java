@@ -382,6 +382,16 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 	 * @generated
 	 */
 	@Override
+	public EReference getStructuralDelta_DeletedRootLevelObjects() {
+		return (EReference) structuralDeltaEClass.getEStructuralFeatures().get(4);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EClass getLink() {
 		return linkEClass;
 	}
@@ -474,6 +484,7 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 		createEReference(structuralDeltaEClass, STRUCTURAL_DELTA__DELETED_OBJECTS);
 		createEReference(structuralDeltaEClass, STRUCTURAL_DELTA__CREATED_LINKS);
 		createEReference(structuralDeltaEClass, STRUCTURAL_DELTA__DELETED_LINKS);
+		createEReference(structuralDeltaEClass, STRUCTURAL_DELTA__DELETED_ROOT_LEVEL_OBJECTS);
 
 		linkEClass = createEClass(LINK);
 		createEReference(linkEClass, LINK__TYPE);
@@ -572,8 +583,8 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 		initEClass(structuralDeltaEClass, StructuralDelta.class, "StructuralDelta", !IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getStructuralDelta_CreatedObjects(), ecorePackage.getEObject(), null, "createdObjects", null, 0,
-				-1, StructuralDelta.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
-				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+				-1, StructuralDelta.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
+				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getStructuralDelta_DeletedObjects(), ecorePackage.getEObject(), null, "deletedObjects", null, 0,
 				-1, StructuralDelta.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
 				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -583,6 +594,9 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 		initEReference(getStructuralDelta_DeletedLinks(), this.getLink(), null, "deletedLinks", null, 0, -1,
 				StructuralDelta.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getStructuralDelta_DeletedRootLevelObjects(), ecorePackage.getEObject(), null,
+				"deletedRootLevelObjects", null, 0, -1, StructuralDelta.class, !IS_TRANSIENT, !IS_VOLATILE,
+				IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(linkEClass, Link.class, "Link", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getLink_Type(), ecorePackage.getEReference(), null, "type", null, 1, 1, Link.class,

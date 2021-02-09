@@ -341,7 +341,7 @@ public interface StateModelPackage extends EPackage {
 	int STRUCTURAL_DELTA = 4;
 
 	/**
-	 * The feature id for the '<em><b>Created Objects</b></em>' containment reference list.
+	 * The feature id for the '<em><b>Created Objects</b></em>' reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -377,13 +377,22 @@ public interface StateModelPackage extends EPackage {
 	int STRUCTURAL_DELTA__DELETED_LINKS = 3;
 
 	/**
+	 * The feature id for the '<em><b>Deleted Root Level Objects</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int STRUCTURAL_DELTA__DELETED_ROOT_LEVEL_OBJECTS = 4;
+
+	/**
 	 * The number of structural features of the '<em>Structural Delta</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int STRUCTURAL_DELTA_FEATURE_COUNT = 4;
+	int STRUCTURAL_DELTA_FEATURE_COUNT = 5;
 
 	/**
 	 * The number of operations of the '<em>Structural Delta</em>' class.
@@ -665,10 +674,10 @@ public interface StateModelPackage extends EPackage {
 	EClass getStructuralDelta();
 
 	/**
-	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.gt.StateModel.StructuralDelta#getCreatedObjects <em>Created Objects</em>}'.
+	 * Returns the meta object for the reference list '{@link org.emoflon.ibex.gt.StateModel.StructuralDelta#getCreatedObjects <em>Created Objects</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference list '<em>Created Objects</em>'.
+	 * @return the meta object for the reference list '<em>Created Objects</em>'.
 	 * @see org.emoflon.ibex.gt.StateModel.StructuralDelta#getCreatedObjects()
 	 * @see #getStructuralDelta()
 	 * @generated
@@ -707,6 +716,17 @@ public interface StateModelPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getStructuralDelta_DeletedLinks();
+
+	/**
+	 * Returns the meta object for the reference list '{@link org.emoflon.ibex.gt.StateModel.StructuralDelta#getDeletedRootLevelObjects <em>Deleted Root Level Objects</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference list '<em>Deleted Root Level Objects</em>'.
+	 * @see org.emoflon.ibex.gt.StateModel.StructuralDelta#getDeletedRootLevelObjects()
+	 * @see #getStructuralDelta()
+	 * @generated
+	 */
+	EReference getStructuralDelta_DeletedRootLevelObjects();
 
 	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.gt.StateModel.Link <em>Link</em>}'.
@@ -945,7 +965,7 @@ public interface StateModelPackage extends EPackage {
 		EClass STRUCTURAL_DELTA = eINSTANCE.getStructuralDelta();
 
 		/**
-		 * The meta object literal for the '<em><b>Created Objects</b></em>' containment reference list feature.
+		 * The meta object literal for the '<em><b>Created Objects</b></em>' reference list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
@@ -975,6 +995,15 @@ public interface StateModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference STRUCTURAL_DELTA__DELETED_LINKS = eINSTANCE.getStructuralDelta_DeletedLinks();
+
+		/**
+		 * The meta object literal for the '<em><b>Deleted Root Level Objects</b></em>' reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference STRUCTURAL_DELTA__DELETED_ROOT_LEVEL_OBJECTS = eINSTANCE
+				.getStructuralDelta_DeletedRootLevelObjects();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.gt.StateModel.impl.LinkImpl <em>Link</em>}' class.

@@ -3,6 +3,7 @@ package org.emoflon.ibex.gt.state;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -38,11 +39,13 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule;
 
 public class ModelStateManager {
+	private Resource model;
 	private StateModelFactory factory = StateModelFactory.eINSTANCE;
 	private StateContainer modelStates;
 	private State currentState;
 	
-	public ModelStateManager() {
+	public ModelStateManager(final Resource model) {
+		this.model = model;
 		init();
 	}
 	
@@ -73,6 +76,13 @@ public class ModelStateManager {
 			.filter(asgn -> match.isInMatch(asgn.getNode().getName()))
 			.forEach(asgn -> attributeDeltas.put(asgn, createAttributeDelta(match, asgn)));
 		
+		// Find all deleted nodes as well as transitively deleted nodes (containment)
+		Set<EObject> nodesToWatch = findAllDeletedNodes(match, rule.getDelete());
+		
+		// Register adapter to catch all indirectly deleted edges
+		ModelStateDeleteAdapter adapter = new ModelStateDeleteAdapter(model);
+		adapter.pluginAdapter(nodesToWatch);
+		
 		// Let the rule play out
 		Optional<IMatch> optComatch = applyRule.get();
 		if(!optComatch.isPresent())
@@ -95,36 +105,84 @@ public class ModelStateManager {
 			newState.setStructuralDelta(delta);
 		}
 		
+		if(adapter.getRemovedLinks().size()>0) {
+			delta.getDeletedLinks().addAll(adapter.getRemovedLinks());
+			adapter.removeAdapter();
+			if(newState.getStructuralDelta() == null) {
+				newState.setStructuralDelta(delta);
+			}
+		}
+		
 		// Calculate hash based on current state and all prior states -> see crypto currency
 //		newState.setHash(recalculateHash(newState));
 		
 		return optComatch;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Optional<IMatch> revertToPrevious() {
 		if(currentState.isInitial())
 			Optional.empty();
 		
-		RuleState current = (RuleState)currentState;
-		State previousState = current.getParent();
-		IBeXRule r = current.getRule();
-		IMatch match = (IMatch) current.getMatch();
-		IMatch comatch = (IMatch) current.getCoMatch();
+		RuleState currentRuleState = (RuleState)currentState;
+		State previousState = currentRuleState.getParent();
 		
-		if(current.getStructuralDelta() != null) {
-			StructuralDelta delta = current.getStructuralDelta();
-			// Restore deleted nodes and edges
-			if(r.getDelete() != null) {
-				IBeXDeletePattern delete = r.getDelete();
-				for(IBeXNode deletedNode : delete.getDeletedNodes()) {
-					
+		if(currentRuleState.getStructuralDelta() != null) {
+			StructuralDelta delta = currentRuleState.getStructuralDelta();
+			
+			// Restore root level nodes
+			delta.getDeletedRootLevelObjects().forEach(node -> {
+				model.getContents().add(node);
+			});
+			
+			// Restore deleted nodes and edges -> restoring edges is enough, since deleted nodes are nodes whose containment edge has been removed
+			LinkedList<Link> toRestore = new LinkedList<>();
+			toRestore.addAll(delta.getDeletedLinks());
+			// Ignore contents of the delete pattern (which is incomplete anyways) -> take the ground truth from collected emf notifications
+			while(!toRestore.isEmpty()) {
+				Link current = toRestore.poll();
+				if(current.getType().getUpperBound()<0) {
+					List<EObject> refs = (List<EObject>)current.getSrc().eGet(current.getType());
+					refs.add(current.getTrg());
+				} else {
+					current.getSrc().eSet(current.getType(), current.getTrg());
 				}
 			}
 			
 			// Delete created edges and nodes
-				
+			LinkedList<Link> toDelete = new LinkedList<>();
+			toDelete.addAll(delta.getCreatedLinks());
+			// Ignore contents of the create pattern -> take the actual stored delta
+			while(!toDelete.isEmpty()) {
+				Link current = toDelete.poll();
+				if(current.getType().getUpperBound()<0) {
+					List<EObject> refs = (List<EObject>)current.getSrc().eGet(current.getType());
+					refs.remove(current.getTrg());
+				} else {
+					// Check if this reference has not been repaired by restoring deleted edges
+					EObject currentValue = (EObject) current.getSrc().eGet(current.getType());
+					if(currentValue == current.getTrg())
+						current.getSrc().eSet(current.getType(), null);
+				}
+			}
+			
+			// Remove deleted nodes from containment
+			delta.getCreatedObjects().stream()
+				.filter(node -> node.eContainer() != null)
+				.forEach(node -> node.eContainer().eContents().remove(node));
 		}
-		return null;
+		
+		// Restore attribute values
+		currentRuleState.getAttributeDeltas().forEach(atrDelta -> {
+			atrDelta.getObject().eSet(atrDelta.getAttribute(), atrDelta.getOldValue());
+		});
+		currentState = previousState;
+		
+		if(currentState instanceof RuleState) {
+			return Optional.of((IMatch)((RuleState)currentState).getCoMatch());
+		} else {
+			return Optional.empty();
+		}
 	}
 	
 	private AttributeDelta createAttributeDelta(final IMatch match, final IBeXAttributeAssignment assignment) {
@@ -177,7 +235,11 @@ public class ModelStateManager {
 		}
 		
 		for(IBeXNode deleteNode : pattern.getDeletedNodes()) {
-			delta.getDeletedObjects().add((EObject) match.get(deleteNode.getName()));
+			EObject actualNode = (EObject) match.get(deleteNode.getName());
+			if(actualNode.eContainer() instanceof Resource) {
+				delta.getDeletedRootLevelObjects().add(actualNode);
+			}
+			delta.getDeletedObjects().add(actualNode);
 		}
 		
 		for(IBeXEdge deletedEdge : pattern.getDeletedEdges()) {
@@ -191,6 +253,27 @@ public class ModelStateManager {
 		}
 		
 		return true;
+	}
+	
+	private Set<EObject> findAllDeletedNodes(final IMatch match, final IBeXDeletePattern pattern) {
+		Set<EObject> deletedNodes = new HashSet<>();
+		if(pattern == null)
+			return deletedNodes;
+		
+		for(IBeXNode deleteNode : pattern.getDeletedNodes()) {
+			EObject current = (EObject) match.get(deleteNode.getName());
+			exploreContainmentHierarchy(deletedNodes, current);
+		}
+		for(IBeXEdge deletedEdge : pattern.getDeletedEdges()) {
+			if(deletedEdge.getType().isContainment()) {
+				EObject current = (EObject) match.get(deletedEdge.getTargetNode().getName());
+				if(deletedNodes.add(current)) {
+					exploreContainmentHierarchy(deletedNodes, current);
+				}
+			}
+		}
+		
+		return deletedNodes;
 	}
 	
 	private long recalculateHash(State state) {
@@ -219,6 +302,24 @@ public class ModelStateManager {
 			return HashUtil.objectToHash(state);
 		}
 	}
+	
+	private void exploreContainmentHierarchy(final Set<EObject> deletedObjects, final EObject container) {
+		if(container == null) 
+			return;
+		
+		deletedObjects.add(container);
+		if(container.eContents() == null || container.eContents().isEmpty())
+			return;
+		
+		Queue<EObject> frontier = new LinkedList<>();
+		frontier.addAll(container.eContents());
+		while(!frontier.isEmpty()) {
+			EObject current = frontier.poll();
+			deletedObjects.add(current);
+			if(container.eContents() != null && !container.eContents().isEmpty())
+				frontier.addAll(container.eContents());
+		}
+	}
 }
 
 class ModelStateDeleteAdapter extends EContentAdapter {
@@ -234,7 +335,7 @@ class ModelStateDeleteAdapter extends EContentAdapter {
 	
 	public void pluginAdapter(final Set<EObject> nodesToWatch) {
 		this.nodesToWatch = nodesToWatch;
-		removedLinks = new HashSet<>();
+		removedLinks = new LinkedHashSet<>();
 		resource.eAdapters().add(this);
 	}
 	
@@ -242,6 +343,10 @@ class ModelStateDeleteAdapter extends EContentAdapter {
 		resource.eAdapters().remove(this);
 		this.nodesToWatch = null;
 		removedLinks = null;
+	}
+	
+	public Set<Link> getRemovedLinks() {
+		return removedLinks;
 	}
 	
 	@Override
@@ -264,7 +369,8 @@ class ModelStateDeleteAdapter extends EContentAdapter {
 				break;
 			}
 			case Notification.REMOVING_ADAPTER: {
-				EObject container = (EObject) notification.getNotifier();
+//				We can ignore this in most cases, since restoring the removed containment edge will also restore containment
+//				TODO: Look at the deletion of root-level "Container"-Objects from resources -> this will lead to a problem, since these do not have a containment reference, they are contained in the resource itself!
 				break;
 			}
 			case Notification.SET: {
@@ -285,17 +391,5 @@ class ModelStateDeleteAdapter extends EContentAdapter {
 	
 	}
 	
-//	private void exploreContainmentHierarchy(EObject container) {
-//		if(container == null) 
-//			return;
-//		
-//		Queue<EObject> frontier = new LinkedList<>();
-//			
-//		frontier.addAll(container.eContents());
-//		while(!frontier.isEmpty()) {
-//			frontier = frontier.parallelStream().flatMap(child -> {
-//				
-//			}).collect(Collectors.toCollection(LinkedList::new));
-//		}
-//	}
+	
 }

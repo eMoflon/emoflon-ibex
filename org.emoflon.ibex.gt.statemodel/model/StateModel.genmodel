@@ -39,6 +39,7 @@
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference StateModel.ecore#//StructuralDelta/deletedObjects"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference StateModel.ecore#//StructuralDelta/createdLinks"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference StateModel.ecore#//StructuralDelta/deletedLinks"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference StateModel.ecore#//StructuralDelta/deletedRootLevelObjects"/>
     </genClasses>
     <genClasses ecoreClass="StateModel.ecore#//Link">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference StateModel.ecore#//Link/type"/>

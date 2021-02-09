@@ -34,13 +34,14 @@ import org.emoflon.ibex.gt.StateModel.StructuralDelta;
  *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.StructuralDeltaImpl#getDeletedObjects <em>Deleted Objects</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.StructuralDeltaImpl#getCreatedLinks <em>Created Links</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.StructuralDeltaImpl#getDeletedLinks <em>Deleted Links</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.StructuralDeltaImpl#getDeletedRootLevelObjects <em>Deleted Root Level Objects</em>}</li>
  * </ul>
  *
  * @generated
  */
 public class StructuralDeltaImpl extends MinimalEObjectImpl.Container implements StructuralDelta {
 	/**
-	 * The cached value of the '{@link #getCreatedObjects() <em>Created Objects</em>}' containment reference list.
+	 * The cached value of the '{@link #getCreatedObjects() <em>Created Objects</em>}' reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @see #getCreatedObjects()
@@ -80,6 +81,16 @@ public class StructuralDeltaImpl extends MinimalEObjectImpl.Container implements
 	protected EList<Link> deletedLinks;
 
 	/**
+	 * The cached value of the '{@link #getDeletedRootLevelObjects() <em>Deleted Root Level Objects</em>}' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getDeletedRootLevelObjects()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<EObject> deletedRootLevelObjects;
+
+	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -106,7 +117,7 @@ public class StructuralDeltaImpl extends MinimalEObjectImpl.Container implements
 	@Override
 	public EList<EObject> getCreatedObjects() {
 		if (createdObjects == null) {
-			createdObjects = new EObjectContainmentEList<EObject>(EObject.class, this,
+			createdObjects = new EObjectResolvingEList<EObject>(EObject.class, this,
 					StateModelPackage.STRUCTURAL_DELTA__CREATED_OBJECTS);
 		}
 		return createdObjects;
@@ -160,10 +171,22 @@ public class StructuralDeltaImpl extends MinimalEObjectImpl.Container implements
 	 * @generated
 	 */
 	@Override
+	public EList<EObject> getDeletedRootLevelObjects() {
+		if (deletedRootLevelObjects == null) {
+			deletedRootLevelObjects = new EObjectResolvingEList<EObject>(EObject.class, this,
+					StateModelPackage.STRUCTURAL_DELTA__DELETED_ROOT_LEVEL_OBJECTS);
+		}
+		return deletedRootLevelObjects;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-		case StateModelPackage.STRUCTURAL_DELTA__CREATED_OBJECTS:
-			return ((InternalEList<?>) getCreatedObjects()).basicRemove(otherEnd, msgs);
 		case StateModelPackage.STRUCTURAL_DELTA__CREATED_LINKS:
 			return ((InternalEList<?>) getCreatedLinks()).basicRemove(otherEnd, msgs);
 		case StateModelPackage.STRUCTURAL_DELTA__DELETED_LINKS:
@@ -188,6 +211,8 @@ public class StructuralDeltaImpl extends MinimalEObjectImpl.Container implements
 			return getCreatedLinks();
 		case StateModelPackage.STRUCTURAL_DELTA__DELETED_LINKS:
 			return getDeletedLinks();
+		case StateModelPackage.STRUCTURAL_DELTA__DELETED_ROOT_LEVEL_OBJECTS:
+			return getDeletedRootLevelObjects();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -217,6 +242,10 @@ public class StructuralDeltaImpl extends MinimalEObjectImpl.Container implements
 			getDeletedLinks().clear();
 			getDeletedLinks().addAll((Collection<? extends Link>) newValue);
 			return;
+		case StateModelPackage.STRUCTURAL_DELTA__DELETED_ROOT_LEVEL_OBJECTS:
+			getDeletedRootLevelObjects().clear();
+			getDeletedRootLevelObjects().addAll((Collection<? extends EObject>) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -241,6 +270,9 @@ public class StructuralDeltaImpl extends MinimalEObjectImpl.Container implements
 		case StateModelPackage.STRUCTURAL_DELTA__DELETED_LINKS:
 			getDeletedLinks().clear();
 			return;
+		case StateModelPackage.STRUCTURAL_DELTA__DELETED_ROOT_LEVEL_OBJECTS:
+			getDeletedRootLevelObjects().clear();
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -261,6 +293,8 @@ public class StructuralDeltaImpl extends MinimalEObjectImpl.Container implements
 			return createdLinks != null && !createdLinks.isEmpty();
 		case StateModelPackage.STRUCTURAL_DELTA__DELETED_LINKS:
 			return deletedLinks != null && !deletedLinks.isEmpty();
+		case StateModelPackage.STRUCTURAL_DELTA__DELETED_ROOT_LEVEL_OBJECTS:
+			return deletedRootLevelObjects != null && !deletedRootLevelObjects.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

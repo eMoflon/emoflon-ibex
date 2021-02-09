@@ -315,7 +315,12 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	
 	public Optional<IMatch> revertApply(boolean doUpdate) {
 		if(trackingStates) {
-			return stateManager.revertToPrevious();
+			Optional<IMatch> comatch = stateManager.revertToPrevious();
+			
+			if(doUpdate)
+				updateMatches();
+			
+			return comatch;
 		}else {
 			throw new UnsupportedOperationException("Graph state is currently not tracked, cannot reverse rule application.");
 		}
@@ -901,7 +906,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	}
 	
 	public void trackModelStates() {
-		stateManager = new ModelStateManager();
+		stateManager = new ModelStateManager(model.getResources().get(0));
 		trackingStates = true;
 	}
 	

@@ -19,6 +19,7 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link org.emoflon.ibex.gt.StateModel.StructuralDelta#getDeletedObjects <em>Deleted Objects</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.StructuralDelta#getCreatedLinks <em>Created Links</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.StructuralDelta#getDeletedLinks <em>Deleted Links</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.StateModel.StructuralDelta#getDeletedRootLevelObjects <em>Deleted Root Level Objects</em>}</li>
  * </ul>
  *
  * @see org.emoflon.ibex.gt.StateModel.StateModelPackage#getStructuralDelta()
@@ -27,13 +28,13 @@ import org.eclipse.emf.ecore.EObject;
  */
 public interface StructuralDelta extends EObject {
 	/**
-	 * Returns the value of the '<em><b>Created Objects</b></em>' containment reference list.
+	 * Returns the value of the '<em><b>Created Objects</b></em>' reference list.
 	 * The list contents are of type {@link org.eclipse.emf.ecore.EObject}.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Created Objects</em>' containment reference list.
+	 * @return the value of the '<em>Created Objects</em>' reference list.
 	 * @see org.emoflon.ibex.gt.StateModel.StateModelPackage#getStructuralDelta_CreatedObjects()
-	 * @model containment="true"
+	 * @model
 	 * @generated
 	 */
 	EList<EObject> getCreatedObjects();
@@ -73,5 +74,17 @@ public interface StructuralDelta extends EObject {
 	 * @generated
 	 */
 	EList<Link> getDeletedLinks();
+
+	/**
+	 * Returns the value of the '<em><b>Deleted Root Level Objects</b></em>' reference list.
+	 * The list contents are of type {@link org.eclipse.emf.ecore.EObject}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Deleted Root Level Objects</em>' reference list.
+	 * @see org.emoflon.ibex.gt.StateModel.StateModelPackage#getStructuralDelta_DeletedRootLevelObjects()
+	 * @model
+	 * @generated
+	 */
+	EList<EObject> getDeletedRootLevelObjects();
 
 } // StructuralDelta

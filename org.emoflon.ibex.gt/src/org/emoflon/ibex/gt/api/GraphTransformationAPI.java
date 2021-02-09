@@ -1,6 +1,7 @@
 package org.emoflon.ibex.gt.api;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Random;
@@ -9,6 +10,7 @@ import java.util.function.Supplier;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.common.operational.IContextPatternInterpreter;
+import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.common.operational.PushoutApproach;
 import org.emoflon.ibex.gt.StateModel.StateContainer;
 import org.emoflon.ibex.gt.StateModel.StateModelFactory;
@@ -223,5 +225,20 @@ public abstract class GraphTransformationAPI {
 	
 	public void deactivateModelStatesTracking() {
 		interpreter.deactivateModelStatesTracking();
+	}
+	
+	/**
+	 * Applies the rule on the given match.
+	 * 
+	 * @param match
+	 *            the match
+	 *            
+	 * @param doUpdate
+	 * 			  true: run pattern matching process on changed model
+	 * @return an {@link Optional} for the the match after rule application
+	 */
+	public Optional<IMatch> revertLastApply(boolean doUpdate) {
+		Optional<IMatch> comatch = interpreter.revertApply(doUpdate);
+		return comatch;
 	}
 }
