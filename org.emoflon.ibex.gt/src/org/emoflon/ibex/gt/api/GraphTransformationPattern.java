@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.operational.IMatch;
+import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
 
@@ -373,6 +374,14 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	
 	public IBeXPatternSet getPatternSet() {
 		return interpreter.getPatternSet();
+	}
+	
+	public boolean isEmptyPattern() {
+		return interpreter.getPatternSet().getContextPatterns().stream()
+				.filter(pattern -> pattern.getName().equals(patternName))
+				.filter(pattern -> IBeXPatternUtils.isEmptyPattern(pattern))
+				.findFirst()
+				.isPresent();
 	}
 
 	/**

@@ -22,7 +22,11 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EContentAdapter;
+import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.common.emf.EMFEdge;
+import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 import org.emoflon.ibex.common.operational.HashUtil;
+import org.emoflon.ibex.common.operational.IContextPatternInterpreter;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.gt.StateModel.AttributeDelta;
 import org.emoflon.ibex.gt.StateModel.Link;
@@ -40,12 +44,16 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule;
 
 public class ModelStateManager {
 	private Resource model;
+	private Resource trashResource;
+	private IContextPatternInterpreter engine;
 	private StateModelFactory factory = StateModelFactory.eINSTANCE;
 	private StateContainer modelStates;
 	private State currentState;
 	
-	public ModelStateManager(final Resource model) {
+	public ModelStateManager(final Resource model, final Resource trashResource, final IContextPatternInterpreter engine) {
 		this.model = model;
+		this.trashResource = trashResource;
+		this.engine = engine;
 		init();
 	}
 	
@@ -89,6 +97,8 @@ public class ModelStateManager {
 			return optComatch;
 		
 		IMatch comatch = optComatch.get();
+		newState.setCoMatch(comatch);
+		
 		modelStates.getStates().add(newState);
 		newState.setParent(currentState);
 		currentState = newState;
@@ -119,13 +129,15 @@ public class ModelStateManager {
 		return optComatch;
 	}
 	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Optional<IMatch> revertToPrevious() {
 		if(currentState.isInitial())
 			Optional.empty();
 		
 		RuleState currentRuleState = (RuleState)currentState;
 		State previousState = currentRuleState.getParent();
+		
+		Set<EObject> createdNodes = new HashSet<>();
 		
 		if(currentRuleState.getStructuralDelta() != null) {
 			StructuralDelta delta = currentRuleState.getStructuralDelta();
@@ -149,33 +161,37 @@ public class ModelStateManager {
 				}
 			}
 			
+//			// Check and restore if root level nodes broke
+//			delta.getDeletedRootLevelObjects().forEach(node -> {
+//				if(node.eContainer() == null)
+//					model.getContents().add(node);
+//			});
+			
 			// Delete created edges and nodes
-			LinkedList<Link> toDelete = new LinkedList<>();
-			toDelete.addAll(delta.getCreatedLinks());
-			// Ignore contents of the create pattern -> take the actual stored delta
-			while(!toDelete.isEmpty()) {
-				Link current = toDelete.poll();
-				if(current.getType().getUpperBound()<0) {
-					List<EObject> refs = (List<EObject>)current.getSrc().eGet(current.getType());
-					refs.remove(current.getTrg());
-				} else {
-					// Check if this reference has not been repaired by restoring deleted edges
-					EObject currentValue = (EObject) current.getSrc().eGet(current.getType());
-					if(currentValue == current.getTrg())
-						current.getSrc().eSet(current.getType(), null);
-				}
-			}
+			Set<EMFEdge> toDelete = delta.getCreatedLinks().stream()
+					.map(link -> new EMFEdge(link.getSrc(), link.getTrg(), link.getType()))
+					.collect(Collectors.toSet());
+			if(engine.getProperties().needs_trash_resource()) 
+				EMFManipulationUtils.delete(new HashSet(), toDelete,
+						node -> trashResource.getContents().add(EcoreUtil.getRootContainer(node)), false);
+			else
+				EMFManipulationUtils.delete(new HashSet(), toDelete, false);
 			
 			// Remove deleted nodes from containment
-			delta.getCreatedObjects().stream()
-				.filter(node -> node.eContainer() != null)
-				.forEach(node -> node.eContainer().eContents().remove(node));
+			createdNodes.addAll(delta.getCreatedObjects());
+			if(engine.getProperties().needs_trash_resource()) 
+				EMFManipulationUtils.delete(createdNodes, new HashSet(),
+						node -> trashResource.getContents().add(EcoreUtil.getRootContainer(node)), false);
+			else
+				EMFManipulationUtils.delete(createdNodes, new HashSet(), false);
 		}
 		
 		// Restore attribute values
-		currentRuleState.getAttributeDeltas().forEach(atrDelta -> {
-			atrDelta.getObject().eSet(atrDelta.getAttribute(), atrDelta.getOldValue());
-		});
+		currentRuleState.getAttributeDeltas().stream()
+			.filter(atrDelta -> !createdNodes.contains(atrDelta.getObject()))
+			.forEach(atrDelta -> {
+				atrDelta.getObject().eSet(atrDelta.getAttribute(), atrDelta.getOldValue());
+			});
 		currentState = previousState;
 		
 		if(currentState instanceof RuleState) {

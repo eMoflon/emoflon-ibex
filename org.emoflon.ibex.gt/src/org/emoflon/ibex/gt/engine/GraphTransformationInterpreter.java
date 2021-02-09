@@ -906,7 +906,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	}
 	
 	public void trackModelStates() {
-		stateManager = new ModelStateManager(model.getResources().get(0));
+		stateManager = new ModelStateManager(model.getResources().get(0), model.getResources().get(1), contextPatternInterpreter);
 		trackingStates = true;
 	}
 	
