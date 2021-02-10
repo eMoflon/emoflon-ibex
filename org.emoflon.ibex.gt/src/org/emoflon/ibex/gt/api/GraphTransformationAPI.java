@@ -1,7 +1,6 @@
 package org.emoflon.ibex.gt.api;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Random;
@@ -12,8 +11,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.common.operational.IContextPatternInterpreter;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.common.operational.PushoutApproach;
-import org.emoflon.ibex.gt.StateModel.StateContainer;
-import org.emoflon.ibex.gt.StateModel.StateModelFactory;
+import org.emoflon.ibex.gt.StateModel.State;
 import org.emoflon.ibex.gt.arithmetic.Probability;
 import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
@@ -240,5 +238,9 @@ public abstract class GraphTransformationAPI {
 	public Optional<IMatch> revertLastApply(boolean doUpdate) {
 		Optional<IMatch> comatch = interpreter.revertApply(doUpdate);
 		return comatch;
+	}
+	
+	public State getCurrentModelState() {
+		return interpreter.getCurrentModelState();
 	}
 }

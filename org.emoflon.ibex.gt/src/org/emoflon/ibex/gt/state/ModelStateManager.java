@@ -1,6 +1,5 @@
 package org.emoflon.ibex.gt.state;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -10,16 +9,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.emf.common.notify.Notification;
-import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EContentAdapter;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -208,6 +203,41 @@ public class ModelStateManager {
 		} else {
 			return Optional.empty();
 		}
+	}
+	
+	public Optional<IMatch> moveToState(final State targetState) {
+		if(!modelStates.getStates().contains(targetState)) {
+			return Optional.empty();
+		}
+			
+		Queue<State> path = findPathToTargetState(targetState);
+		while(!path.isEmpty()) {
+			State next = path.poll();
+			if(currentState.getChildren().contains(next)) {
+				moveToChildState(next);
+			} else {
+				revertToPrevious();
+			}
+		}
+		
+		if(currentState instanceof RuleState) {
+			return Optional.of((IMatch)((RuleState)currentState).getCoMatch());
+		} else {
+			return Optional.empty();
+		}
+	}
+	
+	public Optional<IMatch> moveToChildState(final State childState) {
+		if(!currentState.getChildren().contains(childState)) {
+			return Optional.empty();
+		}
+//		TODO: Implement logic...
+		return null;
+	}
+	
+	private Queue<State> findPathToTargetState(final State targetState) {
+//		TODO: Implement logic...
+		return null;
 	}
 	
 	private AttributeDelta createAttributeDelta(final IMatch match, final IBeXAttributeAssignment assignment) {
