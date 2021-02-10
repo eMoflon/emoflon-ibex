@@ -20,6 +20,7 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link org.emoflon.ibex.gt.StateModel.StructuralDelta#getCreatedLinks <em>Created Links</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.StructuralDelta#getDeletedLinks <em>Deleted Links</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.StructuralDelta#getDeletedRootLevelObjects <em>Deleted Root Level Objects</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.StateModel.StructuralDelta#getResource2EObjectContainment <em>Resource2 EObject Containment</em>}</li>
  * </ul>
  *
  * @see org.emoflon.ibex.gt.StateModel.StateModelPackage#getStructuralDelta()
@@ -86,5 +87,17 @@ public interface StructuralDelta extends EObject {
 	 * @generated
 	 */
 	EList<EObject> getDeletedRootLevelObjects();
+
+	/**
+	 * Returns the value of the '<em><b>Resource2 EObject Containment</b></em>' reference list.
+	 * The list contents are of type {@link org.eclipse.emf.ecore.EObject}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Resource2 EObject Containment</em>' reference list.
+	 * @see org.emoflon.ibex.gt.StateModel.StateModelPackage#getStructuralDelta_Resource2EObjectContainment()
+	 * @model
+	 * @generated
+	 */
+	EList<EObject> getResource2EObjectContainment();
 
 } // StructuralDelta

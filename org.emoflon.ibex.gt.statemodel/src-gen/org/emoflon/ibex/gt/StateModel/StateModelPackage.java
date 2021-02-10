@@ -386,13 +386,22 @@ public interface StateModelPackage extends EPackage {
 	int STRUCTURAL_DELTA__DELETED_ROOT_LEVEL_OBJECTS = 4;
 
 	/**
+	 * The feature id for the '<em><b>Resource2 EObject Containment</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int STRUCTURAL_DELTA__RESOURCE2_EOBJECT_CONTAINMENT = 5;
+
+	/**
 	 * The number of structural features of the '<em>Structural Delta</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int STRUCTURAL_DELTA_FEATURE_COUNT = 5;
+	int STRUCTURAL_DELTA_FEATURE_COUNT = 6;
 
 	/**
 	 * The number of operations of the '<em>Structural Delta</em>' class.
@@ -729,6 +738,17 @@ public interface StateModelPackage extends EPackage {
 	EReference getStructuralDelta_DeletedRootLevelObjects();
 
 	/**
+	 * Returns the meta object for the reference list '{@link org.emoflon.ibex.gt.StateModel.StructuralDelta#getResource2EObjectContainment <em>Resource2 EObject Containment</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference list '<em>Resource2 EObject Containment</em>'.
+	 * @see org.emoflon.ibex.gt.StateModel.StructuralDelta#getResource2EObjectContainment()
+	 * @see #getStructuralDelta()
+	 * @generated
+	 */
+	EReference getStructuralDelta_Resource2EObjectContainment();
+
+	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.gt.StateModel.Link <em>Link</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1004,6 +1024,15 @@ public interface StateModelPackage extends EPackage {
 		 */
 		EReference STRUCTURAL_DELTA__DELETED_ROOT_LEVEL_OBJECTS = eINSTANCE
 				.getStructuralDelta_DeletedRootLevelObjects();
+
+		/**
+		 * The meta object literal for the '<em><b>Resource2 EObject Containment</b></em>' reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference STRUCTURAL_DELTA__RESOURCE2_EOBJECT_CONTAINMENT = eINSTANCE
+				.getStructuralDelta_Resource2EObjectContainment();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.gt.StateModel.impl.LinkImpl <em>Link</em>}' class.

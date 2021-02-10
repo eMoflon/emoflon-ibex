@@ -87,6 +87,10 @@ public class ModelStateManager {
 		// Find all deleted nodes as well as transitively deleted nodes (containment)
 		Set<EObject> nodesToWatch = findAllDeletedNodes(match, rule.getDelete());
 		
+		// Find all nodes existing outside EObject containments but still within the resource, 
+		// which will be placed into proper containment after rule application.
+		Set<EObject> nodesInResource = findAllNodesRemovedFromResourceContainment(match, rule.getCreate());
+		
 		// Register adapter to catch all indirectly deleted edges
 		ModelStateDeleteAdapter adapter = new ModelStateDeleteAdapter(model);
 		adapter.pluginAdapter(nodesToWatch);
@@ -101,6 +105,7 @@ public class ModelStateManager {
 		
 		modelStates.getStates().add(newState);
 		newState.setParent(currentState);
+		currentState.getChildren().add(newState);
 		currentState = newState;
 		
 		// Store attribute assignments for created nodes
@@ -117,14 +122,18 @@ public class ModelStateManager {
 		
 		if(adapter.getRemovedLinks().size()>0) {
 			delta.getDeletedLinks().addAll(adapter.getRemovedLinks());
-			adapter.removeAdapter();
+			
 			if(newState.getStructuralDelta() == null) {
 				newState.setStructuralDelta(delta);
 			}
 		}
 		
+		delta.getResource2EObjectContainment().addAll(nodesInResource);
+		
 		// Calculate hash based on current state and all prior states -> see crypto currency
 //		newState.setHash(recalculateHash(newState));
+		
+		adapter.removeAdapter();
 		
 		return optComatch;
 	}
@@ -141,6 +150,7 @@ public class ModelStateManager {
 		
 		if(currentRuleState.getStructuralDelta() != null) {
 			StructuralDelta delta = currentRuleState.getStructuralDelta();
+			
 			
 			// Restore root level nodes
 			delta.getDeletedRootLevelObjects().forEach(node -> {
@@ -161,12 +171,6 @@ public class ModelStateManager {
 				}
 			}
 			
-//			// Check and restore if root level nodes broke
-//			delta.getDeletedRootLevelObjects().forEach(node -> {
-//				if(node.eContainer() == null)
-//					model.getContents().add(node);
-//			});
-			
 			// Delete created edges and nodes
 			Set<EMFEdge> toDelete = delta.getCreatedLinks().stream()
 					.map(link -> new EMFEdge(link.getSrc(), link.getTrg(), link.getType()))
@@ -184,6 +188,11 @@ public class ModelStateManager {
 						node -> trashResource.getContents().add(EcoreUtil.getRootContainer(node)), false);
 			else
 				EMFManipulationUtils.delete(createdNodes, new HashSet(), false);
+			
+//			// Restore Resource to EObject links
+			delta.getResource2EObjectContainment().forEach(node -> {
+					model.getContents().add(node);
+			});
 		}
 		
 		// Restore attribute values
@@ -240,6 +249,10 @@ public class ModelStateManager {
 			link.setTrg(trg);
 			link.setType(createdEdge.getType());
 			delta.getCreatedLinks().add(link);
+			
+			if(createdEdge.getType().isContainment() && trg.eContainer() instanceof Resource) {
+				delta.getResource2EObjectContainment().add(trg);
+			}
 		}
 		
 		return true;
@@ -290,6 +303,21 @@ public class ModelStateManager {
 		}
 		
 		return deletedNodes;
+	}
+	
+	private Set<EObject> findAllNodesRemovedFromResourceContainment(final IMatch match, final IBeXCreatePattern pattern) {
+		Set<EObject> createdNodes = new HashSet<>(pattern.getCreatedNodes());
+		Set<EObject> resourceNodes = new HashSet<>();
+		for(IBeXEdge createdEdge : pattern.getCreatedEdges()) {
+			EObject trg = (EObject) match.get(createdEdge.getTargetNode().getName());
+			if(trg == null)
+				continue;
+			
+			if(createdEdge.getType().isContainment() && trg.eContainer() == null && !createdNodes.contains(trg) && model.getContents().contains(trg)) {
+				resourceNodes.add(trg);
+			}
+		}
+		return resourceNodes;
 	}
 	
 	private long recalculateHash(State state) {
