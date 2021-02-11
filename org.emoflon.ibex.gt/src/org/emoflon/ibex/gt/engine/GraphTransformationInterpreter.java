@@ -270,7 +270,10 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			if(!rule.isPresent())
 				return Optional.empty();
 			
-			return stateManager.addNewState(rule.get(), match, () -> applyInternal(match, po, parameters, doUpdate));
+			// Deep-copy parameter map to prevent state inconsistencies caused by changed node/parameter bindings.
+			Map<String, Object> cpyParameter = new HashMap<>();
+			parameters.forEach((str, obj) -> cpyParameter.put(str, obj));
+			return stateManager.addNewState(rule.get(), match, doUpdate, (update) -> applyInternal(match, po, cpyParameter, update)); 
 		}else {
 			return applyInternal(match, po, parameters, doUpdate);
 		}
@@ -325,6 +328,18 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			throw new UnsupportedOperationException("Graph state is currently not tracked, cannot reverse rule application.");
 		}
 	} 
+	
+	public Optional<IMatch> moveToKnownModelState(final State trgState, boolean doUpdate) {
+		if(!trackingStates)
+			throw new UnsupportedOperationException("Graph state is currently not tracked, cannot move to trg state.");
+		
+		Optional<IMatch> comatch = stateManager.moveToState(trgState);
+		
+		if(doUpdate)
+			updateMatches();
+		
+		return comatch;
+	}
 	
 	/**
 	 * Finds all matches for the pattern.
@@ -921,4 +936,5 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		
 		return stateManager.getCurrentState();
 	}
+	
 }

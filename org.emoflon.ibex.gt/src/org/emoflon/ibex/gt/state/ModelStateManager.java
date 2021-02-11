@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
-import java.util.function.Supplier;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.notify.Notification;
@@ -37,6 +37,8 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule;
 
+import com.google.common.collect.Lists;
+
 public class ModelStateManager {
 	private Resource model;
 	private Resource trashResource;
@@ -44,6 +46,7 @@ public class ModelStateManager {
 	private StateModelFactory factory = StateModelFactory.eINSTANCE;
 	private StateContainer modelStates;
 	private State currentState;
+	private Map<State, Function<Boolean, Optional<IMatch>>> gtApply;
 	
 	public ModelStateManager(final Resource model, final Resource trashResource, final IContextPatternInterpreter engine) {
 		this.model = model;
@@ -53,6 +56,7 @@ public class ModelStateManager {
 	}
 	
 	private void init() {
+		gtApply = new HashMap<>();
 		modelStates = factory.createStateContainer();
 		State initialState = factory.createState();
 		modelStates.getStates().add(initialState);
@@ -66,7 +70,7 @@ public class ModelStateManager {
 		return currentState;
 	}
 	
-	public Optional<IMatch> addNewState(final IBeXRule rule, final IMatch match, Supplier<Optional<IMatch>> applyRule) {
+	public Optional<IMatch> addNewState(final IBeXRule rule, final IMatch match, boolean doUpdate, Function<Boolean, Optional<IMatch>> applyRule) {
 		RuleState newState = factory.createRuleState();
 		
 		newState.setInitial(false);
@@ -91,9 +95,10 @@ public class ModelStateManager {
 		adapter.pluginAdapter(nodesToWatch);
 		
 		// Let the rule play out
-		Optional<IMatch> optComatch = applyRule.get();
+		Optional<IMatch> optComatch = applyRule.apply(doUpdate);
 		if(!optComatch.isPresent())
 			return optComatch;
+		gtApply.put(newState, applyRule);
 		
 		IMatch comatch = optComatch.get();
 		newState.setCoMatch(comatch);
@@ -231,13 +236,84 @@ public class ModelStateManager {
 		if(!currentState.getChildren().contains(childState)) {
 			return Optional.empty();
 		}
-//		TODO: Implement logic...
-		return null;
+		
+		// Let the rule play out again
+		Optional<IMatch> optComatch = gtApply.get(childState).apply(false);
+		if(!optComatch.isPresent())
+			return optComatch;
+
+		currentState = childState;
+		
+		return optComatch;
 	}
 	
-	private Queue<State> findPathToTargetState(final State targetState) {
-//		TODO: Implement logic...
-		return null;
+	private Queue<State> findPathToTargetState(final State trgState) {
+		State srcState = currentState;
+		if(srcState.equals(trgState)) {
+			return new LinkedList<>();
+		}
+		
+		LinkedList<State> path = new LinkedList<>();
+		
+		// Find common root
+		State commonRoot = null;
+		if(!(srcState.isInitial() || trgState.isInitial())) {
+			RuleState currentSrc = (RuleState) srcState;
+			RuleState currentTrg = (RuleState) trgState;
+			int steps = 0;
+			while(commonRoot == null) {
+				if(currentSrc.getParent().equals(currentTrg)) {
+					commonRoot = currentTrg;
+				} else if(currentTrg.getParent().equals(currentSrc)) {
+					commonRoot = currentSrc;
+				} else {
+					if(steps % 2 == 0) {
+						if(currentSrc.getParent().isInitial()) {
+							commonRoot = currentSrc.getParent();
+						} else {
+							currentSrc = (RuleState) currentSrc.getParent();
+						}
+					} else {
+						if(currentTrg.getParent().isInitial()) {
+							commonRoot = currentTrg.getParent();
+						} else {
+							currentTrg = (RuleState) currentTrg.getParent();
+						}
+					}
+					steps++;
+				}
+			}
+		} else {
+			if(srcState.isInitial()) {
+				commonRoot = srcState;
+			} else {
+				commonRoot = trgState;
+			}
+		}
+		
+		// Traverse to common root and remember paths
+		State current = srcState;
+		while(!current.equals(commonRoot)) {
+			RuleState currentSrc = (RuleState) current;
+			current = currentSrc.getParent();
+			path.add(current);
+		}
+		
+		LinkedList<State> trg2commonRoot = new LinkedList<>();
+		current = trgState;
+		while(!current.equals(commonRoot)) {
+			RuleState currentTrg = (RuleState) current;
+			current = currentTrg.getParent();
+			trg2commonRoot.add(current);
+		}
+		// remove root
+		trg2commonRoot.removeLast();
+		// invert order
+		trg2commonRoot = new LinkedList<>(Lists.reverse(trg2commonRoot));
+		path.addAll(trg2commonRoot);
+		path.add(trgState);
+		
+		return path;
 	}
 	
 	private AttributeDelta createAttributeDelta(final IMatch match, final IBeXAttributeAssignment assignment) {

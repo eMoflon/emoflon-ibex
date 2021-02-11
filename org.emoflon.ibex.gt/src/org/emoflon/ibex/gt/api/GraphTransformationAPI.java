@@ -236,8 +236,11 @@ public abstract class GraphTransformationAPI {
 	 * @return an {@link Optional} for the the match after rule application
 	 */
 	public Optional<IMatch> revertLastApply(boolean doUpdate) {
-		Optional<IMatch> comatch = interpreter.revertApply(doUpdate);
-		return comatch;
+		return interpreter.revertApply(doUpdate);
+	}
+	
+	public Optional<IMatch> moveToKnownModelState(final State trgState, boolean doUpdate) {
+		return interpreter.moveToKnownModelState(trgState, doUpdate);
 	}
 	
 	public State getCurrentModelState() {
