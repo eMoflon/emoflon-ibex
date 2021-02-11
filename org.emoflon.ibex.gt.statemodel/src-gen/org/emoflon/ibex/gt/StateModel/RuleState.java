@@ -17,6 +17,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule;
  * <ul>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.RuleState#getParent <em>Parent</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.RuleState#getRule <em>Rule</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.StateModel.RuleState#getParameter <em>Parameter</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.RuleState#getMatch <em>Match</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.RuleState#getCoMatch <em>Co Match</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.RuleState#getStructuralDelta <em>Structural Delta</em>}</li>
@@ -71,6 +72,28 @@ public interface RuleState extends State {
 	 * @generated
 	 */
 	void setRule(IBeXRule value);
+
+	/**
+	 * Returns the value of the '<em><b>Parameter</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Parameter</em>' attribute.
+	 * @see #setParameter(Object)
+	 * @see org.emoflon.ibex.gt.StateModel.StateModelPackage#getRuleState_Parameter()
+	 * @model
+	 * @generated
+	 */
+	Object getParameter();
+
+	/**
+	 * Sets the value of the '{@link org.emoflon.ibex.gt.StateModel.RuleState#getParameter <em>Parameter</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Parameter</em>' attribute.
+	 * @see #getParameter()
+	 * @generated
+	 */
+	void setParameter(Object value);
 
 	/**
 	 * Returns the value of the '<em><b>Match</b></em>' attribute.

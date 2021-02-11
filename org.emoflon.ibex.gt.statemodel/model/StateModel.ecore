@@ -16,6 +16,7 @@
   <eClassifiers xsi:type="ecore:EClass" name="RuleState" eSuperTypes="#//State">
     <eStructuralFeatures xsi:type="ecore:EReference" name="parent" eType="#//State"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="rule" eType="ecore:EClass ../../org.emoflon.ibex.patternmodel/model/IBeXPatternModel.ecore#//IBeXRule"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="parameter" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="match" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="coMatch" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="structuralDelta" eType="#//StructuralDelta"

@@ -242,7 +242,7 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 	 * @generated
 	 */
 	@Override
-	public EAttribute getRuleState_Match() {
+	public EAttribute getRuleState_Parameter() {
 		return (EAttribute) ruleStateEClass.getEStructuralFeatures().get(2);
 	}
 
@@ -252,7 +252,7 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 	 * @generated
 	 */
 	@Override
-	public EAttribute getRuleState_CoMatch() {
+	public EAttribute getRuleState_Match() {
 		return (EAttribute) ruleStateEClass.getEStructuralFeatures().get(3);
 	}
 
@@ -262,8 +262,18 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 	 * @generated
 	 */
 	@Override
+	public EAttribute getRuleState_CoMatch() {
+		return (EAttribute) ruleStateEClass.getEStructuralFeatures().get(4);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EReference getRuleState_StructuralDelta() {
-		return (EReference) ruleStateEClass.getEStructuralFeatures().get(4);
+		return (EReference) ruleStateEClass.getEStructuralFeatures().get(5);
 	}
 
 	/**
@@ -273,7 +283,7 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 	 */
 	@Override
 	public EReference getRuleState_AttributeDeltas() {
-		return (EReference) ruleStateEClass.getEStructuralFeatures().get(5);
+		return (EReference) ruleStateEClass.getEStructuralFeatures().get(6);
 	}
 
 	/**
@@ -478,6 +488,7 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 		ruleStateEClass = createEClass(RULE_STATE);
 		createEReference(ruleStateEClass, RULE_STATE__PARENT);
 		createEReference(ruleStateEClass, RULE_STATE__RULE);
+		createEAttribute(ruleStateEClass, RULE_STATE__PARAMETER);
 		createEAttribute(ruleStateEClass, RULE_STATE__MATCH);
 		createEAttribute(ruleStateEClass, RULE_STATE__CO_MATCH);
 		createEReference(ruleStateEClass, RULE_STATE__STRUCTURAL_DELTA);
@@ -565,6 +576,9 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 		initEReference(getRuleState_Rule(), theIBeXPatternModelPackage.getIBeXRule(), null, "rule", null, 0, 1,
 				RuleState.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getRuleState_Parameter(), ecorePackage.getEJavaObject(), "parameter", null, 0, 1,
+				RuleState.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
 		initEAttribute(getRuleState_Match(), ecorePackage.getEJavaObject(), "match", null, 0, 1, RuleState.class,
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getRuleState_CoMatch(), ecorePackage.getEJavaObject(), "coMatch", null, 0, 1, RuleState.class,

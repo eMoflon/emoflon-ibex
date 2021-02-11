@@ -23,6 +23,7 @@
     <genClasses ecoreClass="StateModel.ecore#//RuleState">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference StateModel.ecore#//RuleState/parent"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference StateModel.ecore#//RuleState/rule"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute StateModel.ecore#//RuleState/parameter"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute StateModel.ecore#//RuleState/match"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute StateModel.ecore#//RuleState/coMatch"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference StateModel.ecore#//RuleState/structuralDelta"/>

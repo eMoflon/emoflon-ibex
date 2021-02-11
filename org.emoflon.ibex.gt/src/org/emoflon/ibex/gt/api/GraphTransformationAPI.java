@@ -212,13 +212,13 @@ public abstract class GraphTransformationAPI {
 		return interpreter;
 	}
 	
-	public void trackModelStates() {
-		interpreter.trackModelStates();
+	public void trackModelStates(boolean forceNewStates) {
+		interpreter.trackModelStates(forceNewStates);
 	}
 	
-	public void resetModelStatesTracking() {
+	public void resetModelStatesTracking(boolean forceNewStates) {
 		deactivateModelStatesTracking();
-		trackModelStates();
+		trackModelStates(forceNewStates);
 	}
 	
 	public void deactivateModelStatesTracking() {

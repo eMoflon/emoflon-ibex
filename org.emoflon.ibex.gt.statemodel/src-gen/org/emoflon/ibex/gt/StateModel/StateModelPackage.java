@@ -213,13 +213,22 @@ public interface StateModelPackage extends EPackage {
 	int RULE_STATE__RULE = STATE_FEATURE_COUNT + 1;
 
 	/**
+	 * The feature id for the '<em><b>Parameter</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int RULE_STATE__PARAMETER = STATE_FEATURE_COUNT + 2;
+
+	/**
 	 * The feature id for the '<em><b>Match</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int RULE_STATE__MATCH = STATE_FEATURE_COUNT + 2;
+	int RULE_STATE__MATCH = STATE_FEATURE_COUNT + 3;
 
 	/**
 	 * The feature id for the '<em><b>Co Match</b></em>' attribute.
@@ -228,7 +237,7 @@ public interface StateModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int RULE_STATE__CO_MATCH = STATE_FEATURE_COUNT + 3;
+	int RULE_STATE__CO_MATCH = STATE_FEATURE_COUNT + 4;
 
 	/**
 	 * The feature id for the '<em><b>Structural Delta</b></em>' containment reference.
@@ -237,7 +246,7 @@ public interface StateModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int RULE_STATE__STRUCTURAL_DELTA = STATE_FEATURE_COUNT + 4;
+	int RULE_STATE__STRUCTURAL_DELTA = STATE_FEATURE_COUNT + 5;
 
 	/**
 	 * The feature id for the '<em><b>Attribute Deltas</b></em>' containment reference list.
@@ -246,7 +255,7 @@ public interface StateModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int RULE_STATE__ATTRIBUTE_DELTAS = STATE_FEATURE_COUNT + 5;
+	int RULE_STATE__ATTRIBUTE_DELTAS = STATE_FEATURE_COUNT + 6;
 
 	/**
 	 * The number of structural features of the '<em>Rule State</em>' class.
@@ -255,7 +264,7 @@ public interface StateModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int RULE_STATE_FEATURE_COUNT = STATE_FEATURE_COUNT + 6;
+	int RULE_STATE_FEATURE_COUNT = STATE_FEATURE_COUNT + 7;
 
 	/**
 	 * The number of operations of the '<em>Rule State</em>' class.
@@ -573,6 +582,17 @@ public interface StateModelPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getRuleState_Rule();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.gt.StateModel.RuleState#getParameter <em>Parameter</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Parameter</em>'.
+	 * @see org.emoflon.ibex.gt.StateModel.RuleState#getParameter()
+	 * @see #getRuleState()
+	 * @generated
+	 */
+	EAttribute getRuleState_Parameter();
 
 	/**
 	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.gt.StateModel.RuleState#getMatch <em>Match</em>}'.
@@ -899,6 +919,14 @@ public interface StateModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference RULE_STATE__RULE = eINSTANCE.getRuleState_Rule();
+
+		/**
+		 * The meta object literal for the '<em><b>Parameter</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute RULE_STATE__PARAMETER = eINSTANCE.getRuleState_Parameter();
 
 		/**
 		 * The meta object literal for the '<em><b>Match</b></em>' attribute feature.

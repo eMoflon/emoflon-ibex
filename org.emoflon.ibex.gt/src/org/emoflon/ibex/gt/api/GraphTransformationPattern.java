@@ -2,6 +2,7 @@ package org.emoflon.ibex.gt.api;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -47,12 +48,12 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	/**
 	 * The parameters.
 	 */
-	protected Map<String, Object> parameters = new HashMap<String, Object>();
+	protected Map<String, Object> parameters = new LinkedHashMap<String, Object>();
 
 	/**
 	 * The mapping between consumers for typed and untyped consumers.
 	 */
-	private Map<Consumer<M>, Consumer<IMatch>> consumers = new HashMap<Consumer<M>, Consumer<IMatch>>();
+	private Map<Consumer<M>, Consumer<IMatch>> consumers = new LinkedHashMap<Consumer<M>, Consumer<IMatch>>();
 
 	/**
 	 * Creates a new pattern.

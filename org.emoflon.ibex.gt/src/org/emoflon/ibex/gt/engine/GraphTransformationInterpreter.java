@@ -273,7 +273,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			// Deep-copy parameter map to prevent state inconsistencies caused by changed node/parameter bindings.
 			Map<String, Object> cpyParameter = new HashMap<>();
 			parameters.forEach((str, obj) -> cpyParameter.put(str, obj));
-			return stateManager.addNewState(rule.get(), match, doUpdate, (update) -> applyInternal(match, po, cpyParameter, update)); 
+			return stateManager.addNewState(rule.get(), match, cpyParameter, doUpdate, (params, update) -> applyInternal(match, po, params, update)); 
 		}else {
 			return applyInternal(match, po, parameters, doUpdate);
 		}
@@ -333,7 +333,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		if(!trackingStates)
 			throw new UnsupportedOperationException("Graph state is currently not tracked, cannot move to trg state.");
 		
-		Optional<IMatch> comatch = stateManager.moveToState(trgState);
+		Optional<IMatch> comatch = stateManager.moveToState(trgState, false);
 		
 		if(doUpdate)
 			updateMatches();
@@ -920,8 +920,8 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		return disjointContextPatternSet.stream().anyMatch(pattern -> pattern.getName().equals(patternName));
 	}
 	
-	public void trackModelStates() {
-		stateManager = new ModelStateManager(model.getResources().get(0), model.getResources().get(1), contextPatternInterpreter);
+	public void trackModelStates(boolean forceNewStates) {
+		stateManager = new ModelStateManager(model.getResources().get(0), model.getResources().get(1), contextPatternInterpreter, forceNewStates);
 		trackingStates = true;
 	}
 	

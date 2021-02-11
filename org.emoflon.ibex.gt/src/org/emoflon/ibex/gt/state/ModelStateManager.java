@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.notify.Notification;
@@ -40,29 +40,38 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule;
 import com.google.common.collect.Lists;
 
 public class ModelStateManager {
+	
 	private Resource model;
 	private Resource trashResource;
 	private IContextPatternInterpreter engine;
+	private boolean forceNewStates;
 	private StateModelFactory factory = StateModelFactory.eINSTANCE;
 	private StateContainer modelStates;
 	private State currentState;
-	private Map<State, Function<Boolean, Optional<IMatch>>> gtApply;
+	private Map<StateID, State> allStates;
+	private Map<State, BiFunction<Map<String,Object>, Boolean, Optional<IMatch>>> gtApply;
 	
-	public ModelStateManager(final Resource model, final Resource trashResource, final IContextPatternInterpreter engine) {
+	public ModelStateManager(final Resource model, final Resource trashResource, final IContextPatternInterpreter engine, boolean forceNewStates) {
 		this.model = model;
 		this.trashResource = trashResource;
 		this.engine = engine;
+		this.forceNewStates = forceNewStates;
 		init();
 	}
 	
 	private void init() {
 		gtApply = new HashMap<>();
+		allStates = new HashMap<>();
+		
 		modelStates = factory.createStateContainer();
 		State initialState = factory.createState();
 		modelStates.getStates().add(initialState);
 		modelStates.setInitialState(initialState);
 		initialState.setInitial(true);
-//		initialState.setHash(recalculateHash(initialState));
+		if(!forceNewStates) {
+			StateID id = new StateID(initialState);
+			allStates.put(id, initialState);
+		}
 		currentState = initialState;
 	}
 	
@@ -70,13 +79,28 @@ public class ModelStateManager {
 		return currentState;
 	}
 	
-	public Optional<IMatch> addNewState(final IBeXRule rule, final IMatch match, boolean doUpdate, Function<Boolean, Optional<IMatch>> applyRule) {
+	public Optional<IMatch> addNewState(final IBeXRule rule, final IMatch match, final Map<String, Object> parameter, boolean doUpdate, BiFunction<Map<String,Object>, Boolean, Optional<IMatch>> applyRule) {
 		RuleState newState = factory.createRuleState();
 		
 		newState.setInitial(false);
 		newState.setMatch(match);
 		newState.setRule(rule);
+		newState.setParameter(parameter);
+		newState.setParent(currentState);
+		currentState.getChildren().add(newState);
 		
+		if(!forceNewStates) {
+			StateID id = new StateID(newState);
+			State existingState = allStates.get(id);
+			if(existingState == null) {
+				allStates.put(id, newState);
+			} else {
+				newState.setParent(null);
+				currentState.getChildren().remove(newState);
+				return moveToState(existingState, doUpdate);
+			}
+		}
+
 		// Store attribute assignments for context nodes
 		Map<IBeXAttributeAssignment, AttributeDelta> attributeDeltas = new HashMap<>();
 		rule.getCreate().getAttributeAssignments().stream()
@@ -95,17 +119,19 @@ public class ModelStateManager {
 		adapter.pluginAdapter(nodesToWatch);
 		
 		// Let the rule play out
-		Optional<IMatch> optComatch = applyRule.apply(doUpdate);
-		if(!optComatch.isPresent())
+		Optional<IMatch> optComatch = applyRule.apply(parameter, doUpdate);
+		if(!optComatch.isPresent()) {
+			newState.setParent(null);
+			currentState.getChildren().remove(newState);
 			return optComatch;
+		}
+
 		gtApply.put(newState, applyRule);
 		
 		IMatch comatch = optComatch.get();
 		newState.setCoMatch(comatch);
 		
 		modelStates.getStates().add(newState);
-		newState.setParent(currentState);
-		currentState.getChildren().add(newState);
 		currentState = newState;
 		
 		// Store attribute assignments for created nodes
@@ -129,10 +155,6 @@ public class ModelStateManager {
 		}
 		
 		delta.getResource2EObjectContainment().addAll(nodesInResource);
-		
-		// Calculate hash based on current state and all prior states -> see crypto currency
-//		newState.setHash(recalculateHash(newState));
-		
 		adapter.removeAdapter();
 		
 		return optComatch;
@@ -210,10 +232,18 @@ public class ModelStateManager {
 		}
 	}
 	
-	public Optional<IMatch> moveToState(final State targetState) {
-		if(!modelStates.getStates().contains(targetState)) {
-			return Optional.empty();
+	public Optional<IMatch> moveToState(final State targetState, boolean update) {
+		if(!forceNewStates) {
+			StateID id = new StateID(targetState);
+			if(!allStates.containsKey(id)) {
+				return Optional.empty();
+			}
+		} else {
+			if(!modelStates.getStates().contains(targetState)) {
+				return Optional.empty();
+			}
 		}
+		
 			
 		Queue<State> path = findPathToTargetState(targetState);
 		while(!path.isEmpty()) {
@@ -225,6 +255,10 @@ public class ModelStateManager {
 			}
 		}
 		
+		if(update) {
+			engine.updateMatches();
+		}
+		
 		if(currentState instanceof RuleState) {
 			return Optional.of((IMatch)((RuleState)currentState).getCoMatch());
 		} else {
@@ -232,19 +266,45 @@ public class ModelStateManager {
 		}
 	}
 	
-	public Optional<IMatch> moveToChildState(final State childState) {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private Optional<IMatch> moveToChildState(final State childState) {
 		if(!currentState.getChildren().contains(childState)) {
 			return Optional.empty();
 		}
 		
 		// Let the rule play out again
-		Optional<IMatch> optComatch = gtApply.get(childState).apply(false);
+		RuleState rs = (RuleState)childState;
+		Optional<IMatch> optComatch = gtApply.get(childState).apply((Map<String, Object>) rs.getParameter(), false);
 		if(!optComatch.isPresent())
 			return optComatch;
+		
+		// Fix creation of new nodes -> otherwise new nodes will not be identical to nodes created in previous iterations
+		StructuralDelta delta = rs.getStructuralDelta();
+		if(delta != null) {
+			IMatch comatch = optComatch.get();
+			
+			Set<EObject> removals = new HashSet<>();
+			rs.getRule().getCreate().getCreatedNodes().forEach(node -> {
+				removals.add((EObject) comatch.get(node.getName()));
+			});
+			
+			if(engine.getProperties().needs_trash_resource()) 
+				EMFManipulationUtils.delete(removals, new HashSet(),
+						node -> trashResource.getContents().add(EcoreUtil.getRootContainer(node)), false);
+			else
+				EMFManipulationUtils.delete(removals, new HashSet(), false);
+			
+			// TODO: redirect orignal edges..
+		}
+		
 
 		currentState = childState;
 		
-		return optComatch;
+		if(currentState instanceof RuleState) {
+			return Optional.of((IMatch)((RuleState)currentState).getCoMatch());
+		} else {
+			return Optional.empty();
+		}
 	}
 	
 	private Queue<State> findPathToTargetState(final State trgState) {
@@ -298,6 +358,9 @@ public class ModelStateManager {
 			current = currentSrc.getParent();
 			path.add(current);
 		}
+			
+		if(trgState.equals(commonRoot))
+			return path;
 		
 		LinkedList<State> trg2commonRoot = new LinkedList<>();
 		current = trgState;
@@ -307,7 +370,8 @@ public class ModelStateManager {
 			trg2commonRoot.add(current);
 		}
 		// remove root
-		trg2commonRoot.removeLast();
+		if(!trg2commonRoot.isEmpty())
+			trg2commonRoot.removeLast();
 		// invert order
 		trg2commonRoot = new LinkedList<>(Lists.reverse(trg2commonRoot));
 		path.addAll(trg2commonRoot);
@@ -426,33 +490,6 @@ public class ModelStateManager {
 		return resourceNodes;
 	}
 	
-	private long recalculateHash(State state) {
-		if(state instanceof RuleState) {
-			RuleState rState = (RuleState)state;
-			List<Object> components = new LinkedList<>();
-			components.add(rState.getParent().getHash());
-			components.add(rState);
-			components.add(rState.getMatch());
-			components.add(rState.getCoMatch());
-			if(rState.getAttributeDeltas() != null && rState.getAttributeDeltas().size()>0)
-				components.addAll(rState.getAttributeDeltas());
-			if(rState.getStructuralDelta() != null) {
-				StructuralDelta delta = rState.getStructuralDelta();
-				if(delta.getCreatedObjects() != null && delta.getCreatedObjects().size()>0);
-					components.addAll(delta.getCreatedObjects());
-				if(delta.getDeletedObjects() != null && delta.getDeletedObjects().size()>0);
-					components.addAll(delta.getDeletedObjects());
-				if(delta.getCreatedLinks() != null && delta.getCreatedLinks().size()>0);
-					components.addAll(delta.getCreatedLinks());
-				if(delta.getDeletedLinks() != null && delta.getDeletedLinks().size()>0);
-					components.addAll(delta.getDeletedLinks());
-			}
-			return HashUtil.collectionToHash(components);
-		}else {
-			return HashUtil.objectToHash(state);
-		}
-	}
-	
 	private void exploreContainmentHierarchy(final Set<EObject> deletedObjects, final EObject container) {
 		if(container == null) 
 			return;
@@ -468,6 +505,94 @@ public class ModelStateManager {
 			deletedObjects.add(current);
 			if(container.eContents() != null && !container.eContents().isEmpty())
 				frontier.addAll(container.eContents());
+		}
+	}
+}
+
+class StateID {
+	
+	public final State state;
+	public final long hashCode;
+	public final Map<String,Object> parameters;
+	
+	@SuppressWarnings("unchecked")
+	public StateID(final State state) {
+		this.state = state;
+		state.setHash(calculateHashCode(state));
+		hashCode = state.getHash();
+		if(state instanceof RuleState) {
+			RuleState rState = (RuleState) state;
+			parameters = (Map<String, Object>) rState.getParameter();
+		} else {
+			parameters = null;
+		}
+	}
+	
+	@Override
+	public int hashCode() {
+		return (int) hashCode;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(!(obj instanceof StateID))
+			return false;
+		
+		StateID other = (StateID)obj;
+		if(hashCode != other.hashCode)
+			return false;
+		
+		if(state.isInitial() != other.state.isInitial())
+			return false;
+		
+		if(state.isInitial()) {
+			return state.equals(other.state);
+		}
+		RuleState rState = (RuleState) state;
+		RuleState rStateOther = (RuleState) other.state;
+		
+		if(rState.getParent().getHash() != rStateOther.getParent().getHash())
+			return false;
+		
+		if(!rState.getRule().getName().equals(rStateOther.getRule().getName()))
+			return false;
+		
+		if(!rState.getMatch().equals(rStateOther.getMatch()))
+			return false;
+		
+		if((parameters == null || other.parameters == null) && parameters != other.parameters)
+			return false;
+		
+		if(parameters == null && other.parameters == null)
+			return true;
+		
+		if(parameters.size() != other.parameters.size())
+			return false;
+		
+		for(String name : parameters.keySet()) {
+			Object otherParam = other.parameters.get(name);
+			if(otherParam == null)
+				return false;
+			
+			Object param = parameters.get(name);
+			if(!param.equals(otherParam))
+				return false;
+		}
+		
+		return true;
+	}
+	
+	// Calculate hash based on current state and all prior states -> see crypto currency
+	public static long calculateHashCode(final State state) {
+		if(state instanceof RuleState) {
+			RuleState rState = (RuleState)state;
+			List<Object> components = new LinkedList<>();
+			components.add(rState.getParent().getHash());
+			components.add(rState.getRule());
+			components.add(rState.getMatch());
+			return HashUtil.collectionToHash(components);
+		}else {
+			return HashUtil.objectToHash(state);
 		}
 	}
 }

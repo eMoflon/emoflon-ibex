@@ -35,6 +35,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule;
  * <ul>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.RuleStateImpl#getParent <em>Parent</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.RuleStateImpl#getRule <em>Rule</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.RuleStateImpl#getParameter <em>Parameter</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.RuleStateImpl#getMatch <em>Match</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.RuleStateImpl#getCoMatch <em>Co Match</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.RuleStateImpl#getStructuralDelta <em>Structural Delta</em>}</li>
@@ -63,6 +64,26 @@ public class RuleStateImpl extends StateImpl implements RuleState {
 	 * @ordered
 	 */
 	protected IBeXRule rule;
+
+	/**
+	 * The default value of the '{@link #getParameter() <em>Parameter</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getParameter()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final Object PARAMETER_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getParameter() <em>Parameter</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getParameter()
+	 * @generated
+	 * @ordered
+	 */
+	protected Object parameter = PARAMETER_EDEFAULT;
 
 	/**
 	 * The default value of the '{@link #getMatch() <em>Match</em>}' attribute.
@@ -232,6 +253,30 @@ public class RuleStateImpl extends StateImpl implements RuleState {
 	 * @generated
 	 */
 	@Override
+	public Object getParameter() {
+		return parameter;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setParameter(Object newParameter) {
+		Object oldParameter = parameter;
+		parameter = newParameter;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, StateModelPackage.RULE_STATE__PARAMETER, oldParameter,
+					parameter));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public Object getMatch() {
 		return match;
 	}
@@ -372,6 +417,8 @@ public class RuleStateImpl extends StateImpl implements RuleState {
 			if (resolve)
 				return getRule();
 			return basicGetRule();
+		case StateModelPackage.RULE_STATE__PARAMETER:
+			return getParameter();
 		case StateModelPackage.RULE_STATE__MATCH:
 			return getMatch();
 		case StateModelPackage.RULE_STATE__CO_MATCH:
@@ -398,6 +445,9 @@ public class RuleStateImpl extends StateImpl implements RuleState {
 			return;
 		case StateModelPackage.RULE_STATE__RULE:
 			setRule((IBeXRule) newValue);
+			return;
+		case StateModelPackage.RULE_STATE__PARAMETER:
+			setParameter(newValue);
 			return;
 		case StateModelPackage.RULE_STATE__MATCH:
 			setMatch(newValue);
@@ -430,6 +480,9 @@ public class RuleStateImpl extends StateImpl implements RuleState {
 		case StateModelPackage.RULE_STATE__RULE:
 			setRule((IBeXRule) null);
 			return;
+		case StateModelPackage.RULE_STATE__PARAMETER:
+			setParameter(PARAMETER_EDEFAULT);
+			return;
 		case StateModelPackage.RULE_STATE__MATCH:
 			setMatch(MATCH_EDEFAULT);
 			return;
@@ -458,6 +511,8 @@ public class RuleStateImpl extends StateImpl implements RuleState {
 			return parent != null;
 		case StateModelPackage.RULE_STATE__RULE:
 			return rule != null;
+		case StateModelPackage.RULE_STATE__PARAMETER:
+			return PARAMETER_EDEFAULT == null ? parameter != null : !PARAMETER_EDEFAULT.equals(parameter);
 		case StateModelPackage.RULE_STATE__MATCH:
 			return MATCH_EDEFAULT == null ? match != null : !MATCH_EDEFAULT.equals(match);
 		case StateModelPackage.RULE_STATE__CO_MATCH:
@@ -481,7 +536,9 @@ public class RuleStateImpl extends StateImpl implements RuleState {
 			return super.toString();
 
 		StringBuilder result = new StringBuilder(super.toString());
-		result.append(" (match: ");
+		result.append(" (parameter: ");
+		result.append(parameter);
+		result.append(", match: ");
 		result.append(match);
 		result.append(", coMatch: ");
 		result.append(coMatch);
