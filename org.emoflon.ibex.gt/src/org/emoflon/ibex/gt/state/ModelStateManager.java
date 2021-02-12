@@ -185,7 +185,7 @@ public class ModelStateManager {
 			// Ignore contents of the delete pattern (which is incomplete anyways) -> take the ground truth from collected emf notifications
 			while(!toRestore.isEmpty()) {
 				Link current = toRestore.poll();
-				if(current.getType().getUpperBound()<0) {
+				if(current.getType().getUpperBound()<0 || current.getType().getUpperBound() > 1) {
 					List<EObject> refs = (List<EObject>)current.getSrc().eGet(current.getType());
 					refs.add(current.getTrg());
 				} else {
@@ -283,6 +283,7 @@ public class ModelStateManager {
 		if(delta != null) {
 			IMatch comatch = optComatch.get();
 			
+			// Delete new nodes that would differ from previously created nodes
 			Set<EObject> removals = new HashSet<>();
 			rs.getRule().getCreate().getCreatedNodes().forEach(node -> {
 				removals.add((EObject) comatch.get(node.getName()));
@@ -294,10 +295,29 @@ public class ModelStateManager {
 			else
 				EMFManipulationUtils.delete(removals, new HashSet(), false);
 			
-			// TODO: redirect orignal edges..
+			IMatch trueComatch = (IMatch) rs.getCoMatch();
+			// Place all originally created new nodes into resource
+			rs.getRule().getCreate().getCreatedNodes().forEach(node -> {
+				model.getContents().add((EObject) trueComatch.get(node.getName()));
+			});
+			// Redirect orignal edges and restore O.G. containment
+			rs.getRule().getCreate().getCreatedEdges().forEach(edge -> {
+				EObject src = (EObject) trueComatch.get(edge.getSourceNode().getName());
+				EObject trg = (EObject) trueComatch.get(edge.getTargetNode().getName());
+				if(edge.getType().getUpperBound()<0 || edge.getType().getUpperBound() > 1) {
+					List<EObject> refs = (List<EObject>)src.eGet(edge.getType());
+					refs.add(trg);
+				} else {
+					src.eSet(edge.getType(), trg);
+				}
+			});
 		}
 		
-
+		// Check and fix attribute values
+		rs.getAttributeDeltas().stream()
+			.filter(atrDelta -> atrDelta.getObject().eGet(atrDelta.getAttribute()) != atrDelta.getNewValue())
+			.forEach(atrDelta -> atrDelta.getObject().eSet(atrDelta.getAttribute(), atrDelta.getNewValue()));
+		
 		currentState = childState;
 		
 		if(currentState instanceof RuleState) {
