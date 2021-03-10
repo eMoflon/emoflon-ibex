@@ -9,12 +9,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 
-import delta.AttributeDelta;
-import delta.Delta;
-import delta.DeltaContainer;
-import delta.Link;
-import delta.StructuralDelta;
-
 public class ModelChangeUtil {
 
 	@SuppressWarnings("unchecked")
@@ -75,33 +69,6 @@ public class ModelChangeUtil {
 
 	public static void revertAttributeChange(AttributeChange attributeChange) {
 		attributeChange.getElement().eSet(attributeChange.getAttribute(), attributeChange.getOldValue());
-	}
-
-	public static void applyUserDelta(DeltaContainer deltas) {
-		deltas.getDeltas().forEach(delta -> apply(delta));
-	}
-
-	private static void apply(Delta delta) {
-		delta.getAttributeDeltas().forEach(attrDelta -> applyAttributeDelta(attrDelta));
-		StructuralDelta strDelta = delta.getStructuralDelta();
-		if (strDelta != null)
-			applyStructuralDelta(strDelta);
-	}
-
-	private static void applyAttributeDelta(AttributeDelta attrDelta) {
-		attrDelta.getObject().eSet(attrDelta.getAttribute(), attrDelta.getNewValue());
-	}
-
-	private static void applyStructuralDelta(StructuralDelta strDelta) {
-		strDelta.getDeletedObjects().forEach(obj -> deleteElement(obj, false));
-		strDelta.getDeletedLinks().forEach(link -> deleteEdge(createEMFEdgeFromLink(link)));
-
-		// adrianm: if there are any problems with Democles, try create containment edges first
-		strDelta.getCreatedLinks().forEach(link -> createEdge(createEMFEdgeFromLink(link)));
-	}
-
-	private static EMFEdge createEMFEdgeFromLink(Link link) {
-		return new EMFEdge(link.getSrc(), link.getTrg(), link.getType());
 	}
 
 	private static boolean isDangling(EObject object) {

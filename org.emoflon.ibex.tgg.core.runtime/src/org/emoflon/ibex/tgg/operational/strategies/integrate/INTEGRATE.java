@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.emoflon.delta.validation.DeltaValidator;
 import org.emoflon.delta.validation.InvalidDeltaException;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
@@ -56,6 +55,8 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil;
 import org.emoflon.ibex.tgg.operational.strategies.opt.CC;
 
 import com.google.common.collect.Sets;
+
+import delta.Delta;
 import delta.DeltaContainer;
 import language.BindingType;
 import language.DomainType;
@@ -74,8 +75,6 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	protected MultiplicityCounter multiplicityCounter;
 
 	//// DATA ////
-	protected DeltaContainer userDeltaContainer;
-	protected BiConsumer<EObject, EObject> userDeltaBiConsumer;
 	protected ChangeKey userDeltaKey;
 	protected ChangeKey generalDeltaKey;
 
@@ -104,6 +103,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		modelChangeProtocol = new ModelChangeProtocol( //
 				resourceHandler.getSourceResource(), resourceHandler.getTargetResource(), //
 				resourceHandler.getCorrResource(), resourceHandler.getProtocolResource());
+		userDeltaKey = new ChangeKey();
+		generalDeltaKey = new ChangeKey();
 		conflictDetector = new ConflictDetector(this);
 //		consistencyChecker = new LocalCC(options) {
 //			@Override
@@ -155,8 +156,6 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		initializeRepairStrategy(options);
 		matchDistributor.updateMatches();
 		modelChangeProtocol.attachAdapter();
-		userDeltaKey = new ChangeKey();
-		generalDeltaKey = new ChangeKey();
 		modelChangeProtocol.registerKey(generalDeltaKey);
 
 		times.addTo("run:initialize", Timer.stop());
@@ -167,9 +166,11 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 		modelChangeProtocol.deregisterKey(generalDeltaKey);
 		modelChangeProtocol.detachAdapter();
-		// TODO adrianm: cleaner reset of ModelChangeProtocol
+		// FIXME adrianm: cleaner reset of ModelChangeProtocol
 		modelChangeProtocol = new ModelChangeProtocol(resourceHandler.getSourceResource(), resourceHandler.getTargetResource(),
 				resourceHandler.getCorrResource(), resourceHandler.getProtocolResource());
+		userDeltaKey = new ChangeKey();
+		generalDeltaKey = new ChangeKey();
 		classifiedBrokenMatches = new HashMap<>();
 		conflicts = new HashSet<>();
 		match2conflicts = new HashMap<>();
@@ -685,7 +686,17 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	 * @param delta delta to be applied
 	 */
 	public void applyDelta(BiConsumer<EObject, EObject> delta) {
-		this.userDeltaBiConsumer = delta;
+		Timer.start();
+
+		matchDistributor.updateMatches();
+		modelChangeProtocol.attachAdapter();
+		modelChangeProtocol.registerKey(userDeltaKey);
+		modelChangeProtocol.registerKey(generalDeltaKey);
+		delta.accept(resourceHandler.getSourceResource().getContents().get(0), resourceHandler.getTargetResource().getContents().get(0));
+		modelChangeProtocol.deregisterKey(userDeltaKey);
+		modelChangeProtocol.deregisterKey(generalDeltaKey);
+
+		times.addTo("applyDelta", Timer.stop());
 	}
 
 	/**
@@ -700,8 +711,18 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	 *                               has an invalid structure or invalid components
 	 */
 	public void applyDelta(DeltaContainer delta) throws InvalidDeltaException {
-		DeltaValidator.validate(delta);
-		this.userDeltaContainer = delta;
+		Timer.start();
+
+		matchDistributor.updateMatches();
+		modelChangeProtocol.attachAdapter();
+		modelChangeProtocol.registerKey(userDeltaKey);
+		modelChangeProtocol.registerKey(generalDeltaKey);
+		for (Delta d : delta.getDeltas())
+			d.apply();
+		modelChangeProtocol.deregisterKey(userDeltaKey);
+		modelChangeProtocol.deregisterKey(generalDeltaKey);
+
+		times.addTo("applyDelta", Timer.stop());
 	}
 
 }
