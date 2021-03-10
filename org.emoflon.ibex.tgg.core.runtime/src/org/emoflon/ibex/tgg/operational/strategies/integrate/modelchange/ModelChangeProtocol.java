@@ -67,6 +67,14 @@ public class ModelChangeProtocol {
 		attached = false;
 	}
 
+	/**
+	 * Clears all recorded model changes, but keeps registered keys.
+	 */
+	public void clearAll() {
+		for (ModelChanges modelChanges : groupedModelChanges.values())
+			modelChanges.clearAll();
+	}
+
 	public void attachAdapter() {
 		if (attached)
 			return;

@@ -100,11 +100,15 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		match2conflicts = new HashMap<>();
 
 		matchUtil = new TGGMatchUtil(this);
+		
 		modelChangeProtocol = new ModelChangeProtocol( //
 				resourceHandler.getSourceResource(), resourceHandler.getTargetResource(), //
 				resourceHandler.getCorrResource(), resourceHandler.getProtocolResource());
 		userDeltaKey = new ChangeKey();
 		generalDeltaKey = new ChangeKey();
+		modelChangeProtocol.attachAdapter();
+		modelChangeProtocol.registerKey(generalDeltaKey);
+		
 		conflictDetector = new ConflictDetector(this);
 //		consistencyChecker = new LocalCC(options) {
 //			@Override
@@ -155,8 +159,6 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 		initializeRepairStrategy(options);
 		matchDistributor.updateMatches();
-		modelChangeProtocol.attachAdapter();
-		modelChangeProtocol.registerKey(generalDeltaKey);
 
 		times.addTo("run:initialize", Timer.stop());
 	}
@@ -164,18 +166,19 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	protected void cleanUp() {
 		Timer.start();
 
-		modelChangeProtocol.deregisterKey(generalDeltaKey);
-		modelChangeProtocol.detachAdapter();
-		// FIXME adrianm: cleaner reset of ModelChangeProtocol
-		modelChangeProtocol = new ModelChangeProtocol(resourceHandler.getSourceResource(), resourceHandler.getTargetResource(),
-				resourceHandler.getCorrResource(), resourceHandler.getProtocolResource());
-		userDeltaKey = new ChangeKey();
-		generalDeltaKey = new ChangeKey();
+		modelChangeProtocol.clearAll();
 		classifiedBrokenMatches = new HashMap<>();
 		conflicts = new HashSet<>();
 		match2conflicts = new HashMap<>();
 
 		times.addTo("run:cleanUp", Timer.stop());
+	}
+
+	@Override
+	public void terminate() throws IOException {
+		modelChangeProtocol.deregisterKey(generalDeltaKey);
+		modelChangeProtocol.detachAdapter();
+		super.terminate();
 	}
 
 	protected void classifyBrokenMatches(boolean includeImplicitBroken) {
@@ -689,12 +692,9 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		Timer.start();
 
 		matchDistributor.updateMatches();
-		modelChangeProtocol.attachAdapter();
 		modelChangeProtocol.registerKey(userDeltaKey);
-		modelChangeProtocol.registerKey(generalDeltaKey);
 		delta.accept(resourceHandler.getSourceResource().getContents().get(0), resourceHandler.getTargetResource().getContents().get(0));
 		modelChangeProtocol.deregisterKey(userDeltaKey);
-		modelChangeProtocol.deregisterKey(generalDeltaKey);
 
 		times.addTo("applyDelta", Timer.stop());
 	}
@@ -714,13 +714,10 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		Timer.start();
 
 		matchDistributor.updateMatches();
-		modelChangeProtocol.attachAdapter();
 		modelChangeProtocol.registerKey(userDeltaKey);
-		modelChangeProtocol.registerKey(generalDeltaKey);
 		for (Delta d : delta.getDeltas())
 			d.apply();
 		modelChangeProtocol.deregisterKey(userDeltaKey);
-		modelChangeProtocol.deregisterKey(generalDeltaKey);
 
 		times.addTo("applyDelta", Timer.stop());
 	}
