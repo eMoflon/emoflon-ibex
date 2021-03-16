@@ -688,6 +688,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	 * @param delta delta to be applied
 	 */
 	public void applyDelta(BiConsumer<EObject, EObject> delta) {
+		logDeltaApplication();
 		Timer.start();
 
 		modelChangeProtocol.attachAdapter();
@@ -711,6 +712,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	 *                               has an invalid structure or invalid components
 	 */
 	public void applyDelta(DeltaContainer delta) throws InvalidDeltaException {
+		logDeltaApplication();
 		Timer.start();
 
 		modelChangeProtocol.attachAdapter();
@@ -721,6 +723,10 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		modelChangeProtocol.deregisterKey(userDeltaKey);
 
 		times.addTo("applyDelta", Timer.stop());
+	}
+	
+	private void logDeltaApplication() {
+		LoggerConfig.log(LoggerConfig.log_executionStructure(), () -> "Delta Application:\n");
 	}
 
 }
