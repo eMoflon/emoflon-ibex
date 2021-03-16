@@ -106,7 +106,6 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 				resourceHandler.getCorrResource(), resourceHandler.getProtocolResource());
 		userDeltaKey = new ChangeKey();
 		generalDeltaKey = new ChangeKey();
-		modelChangeProtocol.attachAdapter();
 		modelChangeProtocol.registerKey(generalDeltaKey);
 		
 		conflictDetector = new ConflictDetector(this);
@@ -691,6 +690,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	public void applyDelta(BiConsumer<EObject, EObject> delta) {
 		Timer.start();
 
+		modelChangeProtocol.attachAdapter();
 		matchDistributor.updateMatches();
 		modelChangeProtocol.registerKey(userDeltaKey);
 		delta.accept(resourceHandler.getSourceResource().getContents().get(0), resourceHandler.getTargetResource().getContents().get(0));
@@ -713,6 +713,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	public void applyDelta(DeltaContainer delta) throws InvalidDeltaException {
 		Timer.start();
 
+		modelChangeProtocol.attachAdapter();
 		matchDistributor.updateMatches();
 		modelChangeProtocol.registerKey(userDeltaKey);
 		for (Delta d : delta.getDeltas())
