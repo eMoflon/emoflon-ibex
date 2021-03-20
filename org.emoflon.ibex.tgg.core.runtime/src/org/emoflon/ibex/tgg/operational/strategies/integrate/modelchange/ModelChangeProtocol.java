@@ -20,6 +20,7 @@ public class ModelChangeProtocol {
 	private final Resource[] observedRes;
 
 	private EContentAdapter adapter;
+	private boolean attached;
 
 	private Map<ChangeKey, ModelChanges> groupedModelChanges;
 	private Set<ChangeKey> currentKeys;
@@ -45,20 +46,17 @@ public class ModelChangeProtocol {
 						processAddNotif(n.getNotifier(), (EReference) n.getFeature(), (EObject) n.getNewValue());
 						break;
 					case Notification.ADD_MANY:
-						processAddManyNotif(n.getNotifier(), (EReference) n.getFeature(),
-								(Collection<EObject>) n.getNewValue());
+						processAddManyNotif(n.getNotifier(), (EReference) n.getFeature(), (Collection<EObject>) n.getNewValue());
 						break;
 					case Notification.REMOVE:
 						processRemoveNotif(n.getNotifier(), (EReference) n.getFeature(), (EObject) n.getOldValue());
 						break;
 					case Notification.REMOVE_MANY:
-						processRemoveManyNotif(n.getNotifier(), (EReference) n.getFeature(),
-								(Collection<EObject>) n.getOldValue());
+						processRemoveManyNotif(n.getNotifier(), (EReference) n.getFeature(), (Collection<EObject>) n.getOldValue());
 						break;
 					case Notification.SET:
 						if (n.getNotifier() instanceof EObject)
-							processSetNotif((EObject) n.getNotifier(), n.getFeature(), n.getOldValue(),
-									n.getNewValue());
+							processSetNotif((EObject) n.getNotifier(), n.getFeature(), n.getOldValue(), n.getNewValue());
 						break;
 					}
 				}
@@ -66,16 +64,35 @@ public class ModelChangeProtocol {
 				super.notifyChanged(n);
 			}
 		};
+		attached = false;
+	}
+
+	/**
+	 * Clears all recorded model changes, but keeps registered keys.
+	 */
+	public void clearAll() {
+		for (ModelChanges modelChanges : groupedModelChanges.values())
+			modelChanges.clearAll();
 	}
 
 	public void attachAdapter() {
+		if (attached)
+			return;
+
 		for (int i = 0; i < observedRes.length; i++)
 			observedRes[i].eAdapters().add(adapter);
+
+		attached = true;
 	}
 
 	public void detachAdapter() {
+		if (!attached)
+			return;
+
 		for (int i = 0; i < observedRes.length; i++)
 			observedRes[i].eAdapters().remove(adapter);
+
+		attached = false;
 	}
 
 	public void registerKey(ChangeKey key) {
@@ -115,8 +132,7 @@ public class ModelChangeProtocol {
 		if (notifier instanceof Resource) {
 			changes.forEach(c -> c.addAllCreatedElements(newValues));
 		} else if (notifier instanceof EObject) {
-			newValues.forEach(newValue -> changes
-					.forEach(c -> c.addCreatedEdge(new EMFEdge((EObject) notifier, newValue, feature))));
+			newValues.forEach(newValue -> changes.forEach(c -> c.addCreatedEdge(new EMFEdge((EObject) notifier, newValue, feature))));
 			if (feature.isContainment())
 				changes.forEach(c -> c.addAllCreatedElements(newValues));
 		}
@@ -138,11 +154,9 @@ public class ModelChangeProtocol {
 		Set<ModelChanges> changes = getCurrentModelChanges();
 
 		if (notifier instanceof Resource) {
-			oldValues.forEach(
-					oldValue -> changes.forEach(c -> c.addDelEltContainedInRes(oldValue, (Resource) notifier)));
+			oldValues.forEach(oldValue -> changes.forEach(c -> c.addDelEltContainedInRes(oldValue, (Resource) notifier)));
 		} else if (notifier instanceof EObject) {
-			oldValues.forEach(oldValue -> changes
-					.forEach(c -> c.addDeletedEdge(new EMFEdge((EObject) notifier, oldValue, feature))));
+			oldValues.forEach(oldValue -> changes.forEach(c -> c.addDeletedEdge(new EMFEdge((EObject) notifier, oldValue, feature))));
 			if (feature.isContainment())
 				changes.forEach(c -> c.addAllDeletedElements(oldValues));
 		}
@@ -164,8 +178,7 @@ public class ModelChangeProtocol {
 					changes.forEach(c -> c.addCreatedElement((EObject) newValue));
 			}
 		} else if (feature instanceof EAttribute) {
-			changes.forEach(
-					c -> c.addAttributeChange(new AttributeChange(notifier, (EAttribute) feature, oldValue, newValue)));
+			changes.forEach(c -> c.addAttributeChange(new AttributeChange(notifier, (EAttribute) feature, oldValue, newValue)));
 		}
 	}
 
