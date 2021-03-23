@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.operational.strategies.modules;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
@@ -363,7 +364,11 @@ public class TGGResourceHandler {
 
 	public Resource loadResource(String workspaceRelativePath) throws IOException {
 		Resource res = createResource(workspaceRelativePath);
-		res.load(null);
+		try {
+			res.load(null);
+		} catch (FileNotFoundException e) {
+			throw new TGGFileNotFoundException(e, res.getURI());
+		}
 		EcoreUtil.resolveAll(res);
 		return res;
 	}
@@ -404,27 +409,53 @@ public class TGGResourceHandler {
 	}
 
 	protected Resource loadTGGResource(String fileEnding) throws IOException {
-		String path = executable.getClass().getProtectionDomain().getCodeSource().getLocation().getPath().toString();
+		String projectRelativePath = "model/" + MoflonUtil.lastCapitalizedSegmentOf(options.project.name()) + fileEnding;
+		Resource res = null;
+		// first, try to load TGG resource via workspace relative path
+		try {
+			String workspaceRelativePath = options.project.path() + "/" + projectRelativePath;
+			res = loadResource(workspaceRelativePath);
+		} catch (TGGFileNotFoundException e1) {
+			// if file could not be found, try to load TGG resource via protection domain
+			try {
+				res = loadResourceViaProtectionDomain(executable.getClass(), projectRelativePath);
+			} catch (TGGFileNotFoundException e2) {
+				// if it also did not work, throw an exception
+				throw new IOException("We looked for the TGG file at the following paths, but did not find it:\n" //
+						+ "  " + e1.getUri() + "\n" //
+						+ "  " + e2.getUri() + "\n" //
+						+ "This may have two reasons:\n" //
+						+ "1. in the IbexOptions your TGG project path is incomplete\n" //
+						+ "2. your IbexExecutable stub is located out of your TGG project", //
+						e2);
+			}
+		}
+
+		EcoreUtil.resolveAll(res);
+		return res;
+	}
+
+	protected Resource loadResourceViaProtectionDomain(Class<?> clazz, String projectRelativePath) throws IOException {
+		String path = clazz.getProtectionDomain().getCodeSource().getLocation().getPath().toString();
 		// fix that is necessary if executed in an eclipse plugin context
 		if (path.endsWith("bin/"))
 			path = path.substring(0, path.length() - 4);
-		path += "model/" + MoflonUtil.lastCapitalizedSegmentOf(options.project.name()) + fileEnding;
+		path += projectRelativePath;
 
 		File file = new File(path);
-		String canonicalPath = "";
-		canonicalPath = file.getCanonicalPath();
+		String canonicalPath = file.getCanonicalPath();
 		canonicalPath = canonicalPath.replace("%20", " ");
 
 		URI uri = URI.createFileURI(canonicalPath);
-		Resource r = rs.createResource(uri);
+		Resource res = rs.createResource(uri);
 		try {
-			r.load(null);
-		} catch (IOException e) {
-			throw new IOException("We looked for the TGG file at '" + path + "', but did not find it. "
-					+ "If your IbexExecutable stub is located out of your TGG project, please move it back there!", e);
+			res.load(null);
+		} catch (FileNotFoundException e) {
+			throw new TGGFileNotFoundException(e, res.getURI());
 		}
+		EcoreUtil.resolveAll(res);
 
-		return r;
+		return res;
 	}
 
 	private void registerInternalMetamodels() {
@@ -447,5 +478,27 @@ public class TGGResourceHandler {
 
 	public Resource getTrashResource() {
 		return trash;
+	}
+
+	public static class TGGFileNotFoundException extends IOException {
+
+		private static final long serialVersionUID = 1L;
+
+		private URI uri;
+
+		public TGGFileNotFoundException(Throwable e, URI uri) {
+			super(e);
+			this.uri = uri;
+		}
+
+		public TGGFileNotFoundException(String message, Throwable e, URI uri) {
+			super(message, e);
+			this.uri = uri;
+		}
+
+		public URI getUri() {
+			return uri;
+		}
+
 	}
 }
