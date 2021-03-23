@@ -38,8 +38,12 @@ This repository contains only the part which is independent from a concrete patt
 12. Set up your runtime and test workspaces by starting a runtime Eclipse workspace
 	from your development workspace, and importing this PSF file:<br/>
 	https://raw.githubusercontent.com/eMoflon/emoflon-ibex-tests/master/testProjectSet.psf
-13. Inside the runtime workspace, build all projects (*Project &rarr; Build All*) to trigger code generation.
-14. Run the JUnit tests to ensure that all is well by right-clicking
+13. Execute MWE2
+    - Open package ```/org.emoflon.express/src/org.emoflon.express```
+    - Right-click on ```GenerateExpress.mwe2```
+    - Press ```Run As -> MWE2 Workflow```
+14. Inside the runtime workspace, build all projects (*Project &rarr; Build All*) to trigger code generation.
+15. Run the JUnit tests to ensure that all is well by right-clicking
 	one of the ```Testsuite_*.launch``` in the ```Testsuite``` project
 	and ```TestsuiteGT.launch``` in the ```TestsuiteGT``` project
 	and start the tests by selecting ```Run As/JUnit```.
