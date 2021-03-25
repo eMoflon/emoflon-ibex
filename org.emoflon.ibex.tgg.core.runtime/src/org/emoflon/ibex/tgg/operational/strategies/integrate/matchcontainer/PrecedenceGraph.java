@@ -67,9 +67,20 @@ public class PrecedenceGraph implements TimeMeasurable {
 	public void notifyAddedMatches(Collection<ITGGMatch> matches) {
 		Timer.start();
 
-		Set<ITGGMatch> addedConsMatches = Collections.synchronizedSet(cfactory.createObjectSet());
-		matches.parallelStream().forEach(m -> notifyAddedOneMatch(m, addedConsMatches));
-		addedConsMatches.parallelStream().forEach(this::killRedundantSrcTrgMatches);
+		Set<ITGGMatch> consMatches = cfactory.createObjectSet();
+		Set<ITGGMatch> srcTrgMatches = cfactory.createObjectSet();
+		for (ITGGMatch match : matches) {
+			if (match.getType() == PatternType.CONSISTENCY)
+				consMatches.add(match);
+			else if (match.getType() == PatternType.SRC || match.getType() == PatternType.TRG)
+				srcTrgMatches.add(match);
+		}
+		consMatches.parallelStream().forEach(this::addConsMatch);
+		srcTrgMatches.parallelStream().forEach(this::addSrcTrgMatch);
+
+		Timer.start();
+		consMatches.stream().forEach(this::killRedundantSrcTrgMatches);
+		times.addTo("notifyAdded:killRedMatches", Timer.stop());
 
 		times.addTo("notifyAdded", Timer.stop());
 	}
@@ -82,17 +93,12 @@ public class PrecedenceGraph implements TimeMeasurable {
 			addSrcTrgMatch(match);
 	}
 
-	private void notifyAddedOneMatch(ITGGMatch match, Set<ITGGMatch> addedConsMatches) {
-		if (match.getType() == PatternType.CONSISTENCY) {
-			addConsMatch(match);
-			addedConsMatches.add(match);
-		} else if (match.getType() == PatternType.SRC || match.getType() == PatternType.TRG)
-			addSrcTrgMatch(match);
-	}
-
 	private void addConsMatch(ITGGMatch match) {
-		if (!handleRestoredConsistencyMatch(match))
+		if (!handleRestoredConsistencyMatch(match)) {
 			addMatch(match);
+			if (!consMatch2srcTrgMatches.containsKey(match))
+				generateSrcTrgMatches(match);
+		}
 	}
 
 	private void addSrcTrgMatch(ITGGMatch match) {
