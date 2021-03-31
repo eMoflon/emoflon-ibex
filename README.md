@@ -27,7 +27,7 @@ This repository contains only the part which is independent from a concrete patt
 8. Check the encoding for Xtend files.
     - In Eclipse: Go to ```Window->Preferences->General->Workspace```.
     - Change the text file encoding to 'Other: UTF-8'.
-9. (Important!) Set standard git folder to (workspace) relative path, e.g., (Eclipse ->) Window -> Preferences -> Team -> Git -> Default Repository Folder = ${workspace_loc}\git 
+9. (Important!) Set standard git folder to (workspace) relative path, e.g., (Eclipse ->) Window -> Preferences -> Team (or Version Control) -> Git -> Default Repository Folder = ${workspace_loc}\git 
 10. Go to ```File/Import.../Team/Team Project Set```, check URL and enter in and import one of these PSF files:<br/>
    For eMoflon including everything:	<br/>
 	- https://raw.githubusercontent.com/eMoflon/emoflon-ibex-deployment/master/devProjectSet.psf <br/>
