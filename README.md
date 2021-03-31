@@ -27,23 +27,24 @@ This repository contains only the part which is independent from a concrete patt
 8. Check the encoding for Xtend files.
     - In Eclipse: Go to ```Window->Preferences->General->Workspace```.
     - Change the text file encoding to 'Other: UTF-8'.
-9. Go to ```File/Import.../Team/Team Project Set```, check URL and enter in and import one of these PSF files:<br/>
+9. (Important!) Set standard git folder to (workspace) relative path, e.g., (Eclipse ->) Window -> Preferences -> Team -> Git -> Default Repository Folder = ${workspace_loc}\git 
+10. Go to ```File/Import.../Team/Team Project Set```, check URL and enter in and import one of these PSF files:<br/>
    For eMoflon including everything:	<br/>
 	- https://raw.githubusercontent.com/eMoflon/emoflon-ibex-deployment/master/devProjectSet.psf <br/>
-10. Execute MWE2
+11. Execute MWE2
     - Open packages ```org.emoflon.ibex.gt.editor/src/org.emoflon.ibex.gt.editor```, ```org.emoflon.ibex.tgg.editor/src/org.moflon.tgg.mosl```, and ```org.emoflon.ibex.tgg.integrate/src/org.emoflon.ibex.tgg.integrate```
     - Right-click on ```GenerateGT.mwe2``` in the first package, ```GenerateTGG.mwe2``` in the second, and ```GenerateIntegrate.mwe2``` in the third.
     - Press ```Run As -> MWE2 Workflow``` respectively.
-11. Set UTF-8 as file encoding for the development workspace (*Window &rarr; Preferences &rarr; General/Workspace*) and build all projects (*Project &rarr; Build All*) to trigger code generation (and get rid of errors).
-12. Set up your runtime and test workspaces by starting a runtime Eclipse workspace
+12. Set UTF-8 as file encoding for the development workspace (*Window &rarr; Preferences &rarr; General/Workspace*) and build all projects (*Project &rarr; Build All*) to trigger code generation (and get rid of errors).
+13. Set up your runtime and test workspaces by starting a runtime Eclipse workspace
 	from your development workspace, and importing this PSF file:<br/>
 	https://raw.githubusercontent.com/eMoflon/emoflon-ibex-tests/master/testProjectSet.psf
-13. Execute MWE2
+14. Execute MWE2
     - Open package ```/org.emoflon.express/src/org.emoflon.express```
     - Right-click on ```GenerateExpress.mwe2```
     - Press ```Run As -> MWE2 Workflow```
-14. Inside the runtime workspace, build all projects (*Project &rarr; Build All*) to trigger code generation.
-15. Run the JUnit tests to ensure that all is well by right-clicking
+15. Inside the runtime workspace, build all projects (*Project &rarr; Build All*) to trigger code generation.
+16. Run the JUnit tests to ensure that all is well by right-clicking
 	one of the ```Testsuite_*.launch``` in the ```Testsuite``` project
 	and ```TestsuiteGT.launch``` in the ```TestsuiteGT``` project
 	and start the tests by selecting ```Run As/JUnit```.
