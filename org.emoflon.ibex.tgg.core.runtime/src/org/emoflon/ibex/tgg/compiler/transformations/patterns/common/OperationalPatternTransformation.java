@@ -11,6 +11,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeExpression;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCSP;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXConstant;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEnumLiteral;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternInvocation;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelFactory;
@@ -126,10 +127,9 @@ public abstract class OperationalPatternTransformation {
 				}
 				else if(param instanceof TGGEnumExpression) {
 					TGGEnumExpression tggEnumExpr = (TGGEnumExpression) param;
-					IBeXConstant constant = IBeXPatternModelFactory.eINSTANCE.createIBeXConstant();
-					iCSP.getValues().add(constant);
-					constant.setValue(tggEnumExpr.getLiteral());
-					constant.setStringValue(tggEnumExpr.getEenum().getEPackage().getNsPrefix() + "." + tggEnumExpr.getEenum().getName() + "." + tggEnumExpr.getLiteral().getName());
+					IBeXEnumLiteral literal = IBeXPatternModelFactory.eINSTANCE.createIBeXEnumLiteral();
+					iCSP.getValues().add(literal);
+					literal.setLiteral(tggEnumExpr.getLiteral());
 				}
 				else if(param instanceof TGGLiteralExpression) {
 					TGGLiteralExpression tggLiteralExpr = (TGGLiteralExpression) param;
