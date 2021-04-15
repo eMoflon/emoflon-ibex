@@ -260,9 +260,11 @@ public class PrecedenceGraph implements TimeMeasurable {
 		}
 
 		// check if implicit broken & mark node
-		for (PrecedenceNode n : node.getRequires()) {
-			if (n.isBroken() || !n.getToBeRolledBackBy().isEmpty())
-				node.addToBeRolledBackBy(n);
+		synchronized (node.getRequires()) {
+			for (PrecedenceNode n : node.getRequires()) {
+				if (n.isBroken() || !n.getToBeRolledBackBy().isEmpty())
+					node.addToBeRolledBackBy(n);
+			}
 		}
 		if (!node.getToBeRolledBackBy().isEmpty()) {
 			implicitBrokenNodes.add(node);
