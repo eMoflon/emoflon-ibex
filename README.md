@@ -37,12 +37,12 @@ This repository contains only the part which is independent from a concrete patt
     - Press ```Run As -> MWE2 Workflow``` respectively.
 12. Set UTF-8 as file encoding for the development workspace (*Window &rarr; Preferences &rarr; General/Workspace*) and manually build all projects by clicking (*Project &rarr; Clean... &rarr; Clean all projects*) to trigger code generation (and get rid of errors). Make sure to check *Project &rarr; Build Automatically*.
 13. Set up your runtime and test workspaces by starting a runtime Eclipse workspace
-	from your development workspace, and importing this PSF file:<br/>
-	https://raw.githubusercontent.com/eMoflon/emoflon-ibex-tests/master/testProjectSet.psf
+	from your development workspace:
 	- To start the runtime workspace, do the following steps inside your development workspace: *Run &rarr; Run Configurations...;* double click on *Eclipse Application*, give it a name (e.g. *test-workspace*) and click on *Run*.
 	- Inside your runtime workspace:
 		- Check and/or apply the git setting of **step 9** again.
-		- Import the PDF file as described in **step 10**.
+		- Import this PSF file:<br/>
+		https://raw.githubusercontent.com/eMoflon/emoflon-ibex-tests/master/testProjectSet.psf
 14. Execute MWE2
     - Open package ```/org.emoflon.express/src/org.emoflon.express```
     - Right-click on ```GenerateExpress.mwe2```
