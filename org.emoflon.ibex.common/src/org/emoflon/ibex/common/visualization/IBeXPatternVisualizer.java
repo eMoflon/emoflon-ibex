@@ -77,7 +77,7 @@ public class IBeXPatternVisualizer implements EMoflonDiagramTextProvider {
 		if(elements == null)
 			return false;
 
-		return !elements.stream().filter(elt -> !elt.eClass().getEPackage().getName().contains("org.emoflon.ibex.patternmodel")).findAny().isPresent();
+		return elements.stream().filter(elt -> elt.eClass().getEPackage().getName().contains("org.emoflon.ibex.patternmodel")).findAny().isPresent();
 	}
 
 	private static boolean isPatternSet(final Object object) {
