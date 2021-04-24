@@ -53,6 +53,7 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis.
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.NACOverlap;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil;
 import org.emoflon.ibex.tgg.operational.strategies.opt.CC;
+import org.emoflon.ibex.tgg.operational.strategies.opt.LocalCC;
 
 import com.google.common.collect.Sets;
 
@@ -109,12 +110,12 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		modelChangeProtocol.registerKey(generalDeltaKey);
 		
 		conflictDetector = new ConflictDetector(this);
-//		consistencyChecker = new LocalCC(options) {
-//			@Override
-//			protected void processValidMatch(ITGGMatch match) {
-//				removeBrokenMatchesAfterCCMatchApplication(match);
-//			}
-//		};
+		consistencyChecker = new LocalCC(options) {
+			@Override
+			protected void processValidMatch(ITGGMatch match) {
+				removeBrokenMatchesAfterCCMatchApplication(match);
+			}
+		};
 		options.executable(this);
 		precedenceGraph = new PrecedenceGraph(this);
 		multiplicityCounter = new MultiplicityCounter(this);
@@ -546,7 +547,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		case FWD:
 		case BWD:
 		case CONSISTENCY:
-//		case CC:
+		case CC:
 		case FILTER_NAC_SRC:
 		case FILTER_NAC_TRG:
 			return true;
