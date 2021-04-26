@@ -109,6 +109,7 @@ public class FragmentProvider {
 
 			ChangeKey key = i.revokeBrokenCorrsAndRuleApplNodes();
 			i.consistencyChecker.run();
+			i.consistencyChecker.terminate();
 			i.restoreBrokenCorrsAndRuleApplNodes(key);
 
 			i.getTimes().addTo("fragments:LocalCC", Timer.stop());

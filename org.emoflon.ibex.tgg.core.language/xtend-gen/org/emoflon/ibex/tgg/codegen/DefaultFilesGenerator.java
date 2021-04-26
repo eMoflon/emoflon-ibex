@@ -5,7 +5,6 @@ import language.TGGAttributeConstraintDefinition;
 import language.TGGAttributeConstraintParameterDefinition;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.xtend2.lib.StringConcatenation;
-import org.emoflon.ibex.tgg.codegen.UserAttrCondHelper;
 import org.moflon.core.utilities.MoflonUtil;
 import org.moflon.tgg.mosl.tgg.Import;
 import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile;
