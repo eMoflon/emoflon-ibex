@@ -53,6 +53,7 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis.
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.NACOverlap;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil;
 import org.emoflon.ibex.tgg.operational.strategies.opt.CC;
+import org.emoflon.ibex.tgg.operational.strategies.opt.LocalCC;
 
 import com.google.common.collect.Sets;
 
@@ -109,12 +110,12 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		modelChangeProtocol.registerKey(generalDeltaKey);
 		
 		conflictDetector = new ConflictDetector(this);
-//		consistencyChecker = new LocalCC(options) {
-//			@Override
-//			protected void processValidMatch(ITGGMatch match) {
-//				removeBrokenMatchesAfterCCMatchApplication(match);
-//			}
-//		};
+		consistencyChecker = new LocalCC(options) {
+			@Override
+			protected void processValidMatch(ITGGMatch match) {
+				removeBrokenMatchesAfterCCMatchApplication(match);
+			}
+		};
 		options.executable(this);
 		precedenceGraph = new PrecedenceGraph(this);
 		multiplicityCounter = new MultiplicityCounter(this);
@@ -125,9 +126,11 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	}
 
 	private void removeBrokenMatchesAfterCCMatchApplication(ITGGMatch ccMatch) {
-		Set<EObject> ccObjects = matchUtil.getObjects(ccMatch, new EltFilter().srcAndTrg());
-		for (ITGGMatch brokenMatch : brokenRuleApplications.values()) {
-			Set<EObject> brokenObjects = matchUtil.getObjects(brokenMatch, new EltFilter().srcAndTrg().deleted());
+		Set<EObject> ccObjects = matchUtil.getObjects(ccMatch, new EltFilter().srcAndTrg().create());
+		
+		Collection<ITGGMatch> brokenMatches = new HashSet<>(brokenRuleApplications.values());
+		for (ITGGMatch brokenMatch : brokenMatches) {
+			Set<EObject> brokenObjects = matchUtil.getObjects(brokenMatch, new EltFilter().srcAndTrg().create());
 			if (!Sets.intersection(ccObjects, brokenObjects).isEmpty())
 				removeBrokenMatch(brokenMatch);
 		}
@@ -546,7 +549,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		case FWD:
 		case BWD:
 		case CONSISTENCY:
-//		case CC:
+		case CC:
 		case FILTER_NAC_SRC:
 		case FILTER_NAC_TRG:
 			return true;
@@ -688,11 +691,13 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	 * @param delta delta to be applied
 	 */
 	public void applyDelta(BiConsumer<EObject, EObject> delta) {
-		logDeltaApplication();
 		Timer.start();
 
 		modelChangeProtocol.attachAdapter();
 		matchDistributor.updateMatches();
+		
+		logDeltaApplication();
+		
 		modelChangeProtocol.registerKey(userDeltaKey);
 		delta.accept(resourceHandler.getSourceResource().getContents().get(0), resourceHandler.getTargetResource().getContents().get(0));
 		modelChangeProtocol.deregisterKey(userDeltaKey);
@@ -712,11 +717,13 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	 *                               has an invalid structure or invalid components
 	 */
 	public void applyDelta(DeltaContainer delta) throws InvalidDeltaException {
-		logDeltaApplication();
 		Timer.start();
 
 		modelChangeProtocol.attachAdapter();
 		matchDistributor.updateMatches();
+		
+		logDeltaApplication();
+		
 		modelChangeProtocol.registerKey(userDeltaKey);
 		for (Delta d : delta.getDeltas())
 			d.apply();

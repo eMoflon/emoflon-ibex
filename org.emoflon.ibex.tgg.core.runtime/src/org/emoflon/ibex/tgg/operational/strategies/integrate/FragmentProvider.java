@@ -23,7 +23,7 @@ public class FragmentProvider {
 	public static final List<IntegrationFragment> DEFAULT_FRAGMENTS = Arrays.asList( //
 			APPLY_USER_DELTA, //
 			REPAIR, //
-//			CHECK_LOCAL_CONSISTENCY, //
+			CHECK_LOCAL_CONSISTENCY, //
 			RESOLVE_CONFLICTS, //
 			RESOLVE_BROKEN_MATCHES, //
 			TRANSLATE, //
@@ -109,6 +109,7 @@ public class FragmentProvider {
 
 			ChangeKey key = i.revokeBrokenCorrsAndRuleApplNodes();
 			i.consistencyChecker.run();
+			i.consistencyChecker.terminate();
 			i.restoreBrokenCorrsAndRuleApplNodes(key);
 
 			i.getTimes().addTo("fragments:LocalCC", Timer.stop());
