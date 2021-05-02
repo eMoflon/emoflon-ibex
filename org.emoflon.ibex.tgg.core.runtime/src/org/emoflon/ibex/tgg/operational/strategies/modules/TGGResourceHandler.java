@@ -6,8 +6,9 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
@@ -17,6 +18,7 @@ import org.eclipse.emf.ecore.resource.ContentHandler;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.defaults.IRegistrationHelper;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
@@ -106,35 +108,47 @@ public class TGGResourceHandler {
 
 	private void initializeCorrCaching() {
 		node2corrs = Collections.synchronizedMap(new HashMap<>());
-		corr.getContents().parallelStream().forEach(corr -> {
-			for (EObject node : corr.eCrossReferences()) {
-				Collection<EObject> nodes = null;
-				if (!node2corrs.containsKey(node)) {
-					nodes = Collections.synchronizedList(new LinkedList<>());
-					node2corrs.put(node, nodes);
-				} else
-					nodes = node2corrs.get(node);
-				nodes.add(corr);
-			}
-		});
+		corr.getContents().parallelStream().forEach(corr -> doAddCorrCachingNode(corr));
 	}
 
-	public void addCorrCaching(EObject corr) {
+	public void addCorrCachingNode(EObject corr) {
 		if (node2corrs == null)
 			initializeCorrCaching();
 
-		for (EObject node : corr.eCrossReferences()) {
-			Collection<EObject> nodes = null;
-			if (!node2corrs.containsKey(node)) {
-				nodes = Collections.synchronizedList(new LinkedList<>());
-				node2corrs.put(node, nodes);
-			} else
-				nodes = node2corrs.get(node);
-			nodes.add(corr);
-		}
+		doAddCorrCachingNode(corr);
 	}
 
-	public void removeCorrCaching(EObject corr) {
+	public void addCorrCachingEdge(EMFEdge corrEdge) {
+		EObject corrNode = null;
+		EObject node = null;
+		if (Objects.equals(corr, corrEdge.getSource().eResource())) {
+			corrNode = corrEdge.getSource();
+			node = corrEdge.getTarget();
+		} else if (Objects.equals(corr, corrEdge.getTarget().eResource())) {
+			corrNode = corrEdge.getTarget();
+			node = corrEdge.getSource();
+		} else
+			throw new RuntimeException("Inconsistent correnspondence edge found!");
+
+		doAddCorrCachingNode(corrNode, node);
+	}
+
+	private void doAddCorrCachingNode(EObject corr) {
+		for (EObject node : corr.eCrossReferences())
+			doAddCorrCachingNode(corr, node);
+	}
+
+	private void doAddCorrCachingNode(EObject corr, EObject node) {
+		Collection<EObject> corrNodes = null;
+		if (!node2corrs.containsKey(node)) {
+			corrNodes = Collections.synchronizedSet(new HashSet<>());
+			node2corrs.put(node, corrNodes);
+		} else
+			corrNodes = node2corrs.get(node);
+		corrNodes.add(corr);
+	}
+
+	public void removeCorrCachingNode(EObject corr) {
 		if (node2corrs == null)
 			initializeCorrCaching();
 
