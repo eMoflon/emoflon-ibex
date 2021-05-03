@@ -67,21 +67,45 @@ public class PrecedenceGraph implements TimeMeasurable {
 	public void notifyAddedMatches(Collection<ITGGMatch> matches) {
 		Timer.start();
 
-		matches.parallelStream().forEach(this::notifyAddedOneMatch);
+		Set<ITGGMatch> consMatches = cfactory.createObjectSet();
+		Set<ITGGMatch> srcTrgMatches = cfactory.createObjectSet();
+		for (ITGGMatch match : matches) {
+			if (match.getType() == PatternType.CONSISTENCY)
+				consMatches.add(match);
+			else if (match.getType() == PatternType.SRC || match.getType() == PatternType.TRG)
+				srcTrgMatches.add(match);
+		}
+		consMatches.parallelStream().forEach(this::addConsMatch);
+		srcTrgMatches.parallelStream().forEach(this::addSrcTrgMatch);
+
+		Timer.start();
+		consMatches.stream().forEach(this::killRedundantSrcTrgMatches);
+		times.addTo("notifyAdded:killRedMatches", Timer.stop());
 
 		times.addTo("notifyAdded", Timer.stop());
 	}
 
 	private void notifyAddedOneMatch(ITGGMatch match) {
-		if (match.getType() == PatternType.CONSISTENCY && !handleRestoredConsistencyMatch(match)) {
-			addMatch(match);
+		if (match.getType() == PatternType.CONSISTENCY) {
+			addConsMatch(match);
 			killRedundantSrcTrgMatches(match);
-		} else if (match.getType() == PatternType.SRC || match.getType() == PatternType.TRG) {
-			if (checkConsistencyOverlap(match))
-				pendingSrcTrgMatches.add(match);
-			else
-				addMatch(match);
+		} else if (match.getType() == PatternType.SRC || match.getType() == PatternType.TRG)
+			addSrcTrgMatch(match);
+	}
+
+	private void addConsMatch(ITGGMatch match) {
+		if (!handleRestoredConsistencyMatch(match)) {
+			addMatch(match);
+			if (!consMatch2srcTrgMatches.containsKey(match))
+				generateSrcTrgMatches(match);
 		}
+	}
+
+	private void addSrcTrgMatch(ITGGMatch match) {
+		if (checkConsistencyOverlap(match))
+			pendingSrcTrgMatches.add(match);
+		else
+			addMatch(match);
 	}
 
 	public void notifyRemovedMatch(ITGGMatch match) {
@@ -236,9 +260,11 @@ public class PrecedenceGraph implements TimeMeasurable {
 		}
 
 		// check if implicit broken & mark node
-		for (PrecedenceNode n : node.getRequires()) {
-			if (n.isBroken() || !n.getToBeRolledBackBy().isEmpty())
-				node.addToBeRolledBackBy(n);
+		synchronized (node.getRequires()) {
+			for (PrecedenceNode n : node.getRequires()) {
+				if (n.isBroken() || !n.getToBeRolledBackBy().isEmpty())
+					node.addToBeRolledBackBy(n);
+			}
 		}
 		if (!node.getToBeRolledBackBy().isEmpty()) {
 			implicitBrokenNodes.add(node);

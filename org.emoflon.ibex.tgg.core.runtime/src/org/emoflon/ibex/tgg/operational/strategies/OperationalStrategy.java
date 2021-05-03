@@ -177,14 +177,24 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		if (domainsHaveNoSharedTypes || options.patterns.ignoreDomainConformity())
 			return true;
 
-		return matchedNodesAreInCorrectResource(resourceHandler.getSourceResource(), //
-				getGreenFactory(match.getRuleName()).getBlackSrcNodesInRule(), match)
-				&& matchedNodesAreInCorrectResource(resourceHandler.getSourceResource(), //
-						getGreenFactory(match.getRuleName()).getGreenSrcNodesInRule(), match)
-				&& matchedNodesAreInCorrectResource(resourceHandler.getTargetResource(), //
-						getGreenFactory(match.getRuleName()).getBlackTrgNodesInRule(), match)
-				&& matchedNodesAreInCorrectResource(resourceHandler.getTargetResource(), //
-						getGreenFactory(match.getRuleName()).getGreenTrgNodesInRule(), match);
+		if(options.patterns.relaxDomainConformity()) 
+			return (matchedNodesAreInCorrectResource(resourceHandler.getSourceResource(), //
+					getGreenFactory(match.getRuleName()).getBlackSrcNodesInRule(), match)
+					|| matchedNodesAreInCorrectResource(resourceHandler.getSourceResource(), //
+							getGreenFactory(match.getRuleName()).getGreenSrcNodesInRule(), match))
+					&& (matchedNodesAreInCorrectResource(resourceHandler.getTargetResource(), //
+							getGreenFactory(match.getRuleName()).getBlackTrgNodesInRule(), match)
+					|| matchedNodesAreInCorrectResource(resourceHandler.getTargetResource(), //
+							getGreenFactory(match.getRuleName()).getGreenTrgNodesInRule(), match));
+		else
+			return matchedNodesAreInCorrectResource(resourceHandler.getSourceResource(), //
+					getGreenFactory(match.getRuleName()).getBlackSrcNodesInRule(), match)
+					&& matchedNodesAreInCorrectResource(resourceHandler.getSourceResource(), //
+							getGreenFactory(match.getRuleName()).getGreenSrcNodesInRule(), match)
+					&& matchedNodesAreInCorrectResource(resourceHandler.getTargetResource(), //
+							getGreenFactory(match.getRuleName()).getBlackTrgNodesInRule(), match)
+					&& matchedNodesAreInCorrectResource(resourceHandler.getTargetResource(), //
+							getGreenFactory(match.getRuleName()).getGreenTrgNodesInRule(), match);
 	}
 
 	private boolean matchedNodesAreInCorrectResource(Resource r, Collection<TGGRuleNode> nodes, ITGGMatch match) {

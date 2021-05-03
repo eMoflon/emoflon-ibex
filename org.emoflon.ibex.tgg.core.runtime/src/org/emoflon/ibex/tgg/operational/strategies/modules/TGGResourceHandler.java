@@ -1,11 +1,14 @@
 package org.emoflon.ibex.tgg.operational.strategies.modules;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
@@ -15,6 +18,7 @@ import org.eclipse.emf.ecore.resource.ContentHandler;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.defaults.IRegistrationHelper;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
@@ -39,7 +43,7 @@ import runtime.TempContainer;
 import runtime.impl.RuntimePackageImpl;
 
 public class TGGResourceHandler {
-	
+
 	private final static Logger logger = Logger.getLogger(OperationalStrategy.class);
 
 	protected IbexOptions options;
@@ -48,128 +52,137 @@ public class TGGResourceHandler {
 
 	protected final URI base;
 	protected ResourceSet rs;
-	
+
 	protected Resource source;
 	protected Resource target;
 	protected Resource corr;
 	protected Resource protocol;
-	
+
 	private MetamodelRelaxer relaxer = new MetamodelRelaxer();
-	
+
 	private boolean initialized = false;
-	
+
 	private Resource trash;
-	
+
 	private Map<EObject, Collection<EObject>> node2corrs;
-	
+
 	public TGGResourceHandler() throws IOException {
 		base = URI.createPlatformResourceURI("/", true);
 	}
-	
+
 	public void setOptions(IbexOptions options) {
 		this.options = options;
 	}
-	
+
 	public void setExecutable(IbexExecutable executable) {
 		this.executable = executable;
 	}
-	
+
 	public void initialize() {
-		if(initialized)
+		if (initialized)
 			return;
-		
+
 		try {
 			createAndPrepareResourceSet();
 			registerInternalMetamodels();
 			registerUserMetamodels();
 			loadTGG();
 			loadRelevantModels();
-			
+
 			trash = createResource("instances/trash.xmi");
 			trash.getContents().add(RuntimeFactory.eINSTANCE.createTempContainer());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		initialized = true;
 	}
-	
+
 	public Map<EObject, Collection<EObject>> getCorrCaching() {
-		if(node2corrs != null)
+		if (node2corrs != null)
 			return node2corrs;
-		
+
 		initializeCorrCaching();
 		return node2corrs;
 	}
-	
+
 	private void initializeCorrCaching() {
 		node2corrs = Collections.synchronizedMap(new HashMap<>());
-		corr.getContents().parallelStream().forEach(corr -> {
-			for(EObject node : corr.eCrossReferences()) {
-				Collection<EObject> nodes = null;
-				if(!node2corrs.containsKey(node)) {
-					nodes = Collections.synchronizedList(new LinkedList<>());
-					node2corrs.put(node, nodes);
-				}
-				else 
-					nodes = node2corrs.get(node);
-				nodes.add(corr);
-			}
-		});
+		corr.getContents().parallelStream().forEach(corr -> doAddCorrCachingNode(corr));
 	}
-	
-	public void addCorrCaching(EObject corr) {
-		if(node2corrs == null)
+
+	public void addCorrCachingNode(EObject corr) {
+		if (node2corrs == null)
 			initializeCorrCaching();
-		
-		for(EObject node : corr.eCrossReferences()) {
-			Collection<EObject> nodes = null;
-			if(!node2corrs.containsKey(node)) {
-				nodes = Collections.synchronizedList(new LinkedList<>());
-				node2corrs.put(node, nodes);
-			}
-			else 
-				nodes = node2corrs.get(node);
-			nodes.add(corr);
-		}
+
+		doAddCorrCachingNode(corr);
 	}
-	
-	public void removeCorrCaching(EObject corr) {
-		if(node2corrs == null)
+
+	public void addCorrCachingEdge(EMFEdge corrEdge) {
+		EObject corrNode = null;
+		EObject node = null;
+		if (Objects.equals(corr, corrEdge.getSource().eResource())) {
+			corrNode = corrEdge.getSource();
+			node = corrEdge.getTarget();
+		} else if (Objects.equals(corr, corrEdge.getTarget().eResource())) {
+			corrNode = corrEdge.getTarget();
+			node = corrEdge.getSource();
+		} else
+			throw new RuntimeException("Inconsistent correnspondence edge found!");
+
+		doAddCorrCachingNode(corrNode, node);
+	}
+
+	private void doAddCorrCachingNode(EObject corr) {
+		for (EObject node : corr.eCrossReferences())
+			doAddCorrCachingNode(corr, node);
+	}
+
+	private void doAddCorrCachingNode(EObject corr, EObject node) {
+		Collection<EObject> corrNodes = null;
+		if (!node2corrs.containsKey(node)) {
+			corrNodes = Collections.synchronizedSet(new HashSet<>());
+			node2corrs.put(node, corrNodes);
+		} else
+			corrNodes = node2corrs.get(node);
+		corrNodes.add(corr);
+	}
+
+	public void removeCorrCachingNode(EObject corr) {
+		if (node2corrs == null)
 			initializeCorrCaching();
-		
-		for(EObject node : corr.eCrossReferences()) {
-			if(node2corrs.containsKey(node)) {
+
+		for (EObject node : corr.eCrossReferences()) {
+			if (node2corrs.containsKey(node)) {
 				node2corrs.get(node).remove(corr);
-			}
-			else 
+			} else
 				throw new RuntimeException("Unkown correspondence node detected!");
 		}
 	}
 
 	public void saveRelevantModels() throws IOException {
-		if(executable instanceof FWD_OPT) {
+		if (executable instanceof FWD_OPT) {
 			// Unrelax the metamodel
 			relaxer.unrelaxReferences(options.tgg.tgg().getTrg());
 		}
-		
-		if(executable instanceof BWD_OPT) {
+
+		if (executable instanceof BWD_OPT) {
 			// Unrelax the metamodel
 			relaxer.unrelaxReferences(options.tgg.tgg().getSrc());
 		}
-		
+
 		saveModels();
 	}
-	
+
 	public void saveModels() throws IOException {
-		if(executable == null || executable instanceof MODELGEN) {
+		if (executable == null || executable instanceof MODELGEN) {
 			source.save(null);
 			target.save(null);
 			corr.save(null);
 			protocol.save(null);
 		}
-		
-		if(executable instanceof FWD_OPT) {
+
+		if (executable instanceof FWD_OPT) {
 			protocol.save(null);
 
 			// Remove adapters to avoid problems with notifications
@@ -185,8 +198,8 @@ public class TGGResourceHandler {
 			target.save(null);
 			corr.save(null);
 		}
-		
-		if(executable instanceof BWD_OPT) {
+
+		if (executable instanceof BWD_OPT) {
 			protocol.save(null);
 
 			// Remove adapters to avoid problems with notifications
@@ -202,115 +215,111 @@ public class TGGResourceHandler {
 			source.save(null);
 			corr.save(null);
 		}
-		
-		if(executable instanceof SYNC) {
-			if(executable instanceof INITIAL_FWD) {
+
+		if (executable instanceof SYNC) {
+			if (executable instanceof INITIAL_FWD) {
 				target.save(null);
 				corr.save(null);
 				protocol.save(null);
-			} else
-			if(executable instanceof INITIAL_BWD) {
+			} else if (executable instanceof INITIAL_BWD) {
 				source.save(null);
 				corr.save(null);
 				protocol.save(null);
-			}
-			else {
+			} else {
 				source.save(null);
 				target.save(null);
 				corr.save(null);
 				protocol.save(null);
 			}
 		}
-		
-		if(executable instanceof CC) {
+
+		if (executable instanceof CC) {
 			corr.save(null);
 			protocol.save(null);
 		}
-		
-		if(executable instanceof CO) {
+
+		if (executable instanceof CO) {
 			protocol.save(null);
 		}
-		
-		if(executable instanceof INTEGRATE) {
+
+		if (executable instanceof INTEGRATE) {
 			source.save(null);
 			target.save(null);
 			corr.save(null);
 			protocol.save(null);
 		}
 	}
-	
+
 	public void loadRelevantModels() throws IOException {
-		if(executable instanceof FWD_OPT) {
+		if (executable instanceof FWD_OPT) {
 			relaxer.relaxReferences(options.tgg.tgg().getTrg());
 		}
-		
-		if(executable instanceof BWD_OPT) {
+
+		if (executable instanceof BWD_OPT) {
 			relaxer.relaxReferences(options.tgg.tgg().getSrc());
 		}
-		
+
 		loadModels();
 		EcoreUtil.resolveAll(rs);
 	}
 
 	public void loadModels() throws IOException {
-		if(executable == null || executable instanceof MODELGEN) {
+		if (executable == null || executable instanceof MODELGEN) {
 			source = createResource(options.project.path() + "/instances/src.xmi");
 			target = createResource(options.project.path() + "/instances/trg.xmi");
 			corr = createResource(options.project.path() + "/instances/corr.xmi");
 			protocol = createResource(options.project.path() + "/instances/protocol.xmi");
 			return;
 		}
-		
-		if(executable instanceof FWD_OPT) {
+
+		if (executable instanceof FWD_OPT) {
 			source = loadResource(options.project.path() + "/instances/src.xmi");
 			target = createResource(options.project.path() + "/instances/trg.xmi");
 			corr = createResource(options.project.path() + "/instances/corr.xmi");
 			protocol = createResource(options.project.path() + "/instances/protocol.xmi");
 		}
-		
-		if(executable instanceof BWD_OPT) {
+
+		if (executable instanceof BWD_OPT) {
 			source = createResource(options.project.path() + "/instances/src.xmi");
 			target = loadResource(options.project.path() + "/instances/trg.xmi");
 			corr = createResource(options.project.path() + "/instances/corr.xmi");
 			protocol = createResource(options.project.path() + "/instances/protocol.xmi");
 		}
-		
-		if(executable instanceof SYNC) {
-			if(executable instanceof INITIAL_FWD) {
+
+		if (executable instanceof SYNC) {
+			if (executable instanceof INITIAL_FWD) {
 				source = loadResource(options.project.path() + "/instances/src.xmi");
 				target = createResource(options.project.path() + "/instances/trg.xmi");
 				corr = createResource(options.project.path() + "/instances/corr.xmi");
 				protocol = createResource(options.project.path() + "/instances/protocol.xmi");
-			} else
-			if(executable instanceof INITIAL_BWD) {
+			} else if (executable instanceof INITIAL_BWD) {
 				source = createResource(options.project.path() + "/instances/src.xmi");
 				target = loadResource(options.project.path() + "/instances/trg.xmi");
 				corr = createResource(options.project.path() + "/instances/corr.xmi");
 				protocol = createResource(options.project.path() + "/instances/protocol.xmi");
-			}
-			else {
+			} else {
 				source = loadResource(options.project.path() + "/instances/src.xmi");
 				target = loadResource(options.project.path() + "/instances/trg.xmi");
 				corr = loadResource(options.project.path() + "/instances/corr.xmi");
 				protocol = loadResource(options.project.path() + "/instances/protocol.xmi");
 			}
 		}
-		
-		if(executable instanceof CC) {
+
+		if (executable instanceof CC) {
 			source = loadResource(options.project.path() + "/instances/src.xmi");
 			target = loadResource(options.project.path() + "/instances/trg.xmi");
 			corr = createResource(options.project.path() + "/instances/corr.xmi");
 			protocol = createResource(options.project.path() + "/instances/protocol.xmi");
 		}
-		
-		if(executable instanceof CO) {
+
+		if (executable instanceof CO) {
 			source = loadResource(options.project.path() + "/instances/src.xmi");
 			target = loadResource(options.project.path() + "/instances/trg.xmi");
 			corr = loadResource(options.project.path() + "/instances/corr.xmi");
 			protocol = createResource(options.project.path() + "/instances/protocol.xmi");
 		}
-		
-		if(executable instanceof INTEGRATE) {
+
+		if (executable instanceof INTEGRATE) {
 			source = loadResource(options.project.path() + "/instances/src.xmi");
 			target = loadResource(options.project.path() + "/instances/trg.xmi");
 			corr = loadResource(options.project.path() + "/instances/corr.xmi");
@@ -319,7 +328,7 @@ public class TGGResourceHandler {
 
 		EcoreUtil.resolveAll(rs);
 	}
-	
+
 	protected void createAndPrepareResourceSet() {
 		rs = options.blackInterpreter().createAndPrepareResourceSet(options.project.workspacePath());
 	}
@@ -343,10 +352,10 @@ public class TGGResourceHandler {
 	public Resource getProtocolResource() {
 		return protocol;
 	}
-	
+
 	public EPackage loadAndRegisterMetamodel(String workspaceRelativePath) throws IOException {
 		String uri = URI.createURI(workspaceRelativePath).toString();
-		if(rs.getPackageRegistry().containsKey(uri)) {
+		if (rs.getPackageRegistry().containsKey(uri)) {
 			return rs.getPackageRegistry().getEPackage(uri);
 		}
 		Resource res = loadResource(workspaceRelativePath);
@@ -359,8 +368,9 @@ public class TGGResourceHandler {
 	}
 
 	public EPackage loadAndRegisterCorrMetamodel() throws IOException {
-		String relativePath = MoflonUtil.lastCapitalizedSegmentOf(options.project.name()) + "/model/" + MoflonUtil.lastCapitalizedSegmentOf(options.project.name()) + ".ecore";
-		
+		String relativePath = MoflonUtil.lastCapitalizedSegmentOf(options.project.name()) + "/model/"
+				+ MoflonUtil.lastCapitalizedSegmentOf(options.project.name()) + ".ecore";
+
 		EPackage pack = loadAndRegisterMetamodel("platform:/resource/" + relativePath);
 		options.tgg.corrMetamodel(pack);
 		return pack;
@@ -368,7 +378,11 @@ public class TGGResourceHandler {
 
 	public Resource loadResource(String workspaceRelativePath) throws IOException {
 		Resource res = createResource(workspaceRelativePath);
-		res.load(null);
+		try {
+			res.load(null);
+		} catch (FileNotFoundException e) {
+			throw new TGGFileNotFoundException(e, res.getURI());
+		}
 		EcoreUtil.resolveAll(res);
 		return res;
 	}
@@ -399,34 +413,106 @@ public class TGGResourceHandler {
 		rs.getResources().remove(res);
 		rs.getResources().remove(flattenedRes);
 	}
-	
+
 	protected Resource loadFlattenedTGGResource() throws IOException {
-		return loadResource(options.project.path() + "/model/" + MoflonUtil.lastCapitalizedSegmentOf(options.project.name()) + "_flattened.tgg.xmi");
+		return loadTGGResource("_flattened.tgg.xmi");
 	}
 
 	protected Resource loadTGGResource() throws IOException {
-		return loadResource(options.project.path() + "/model/" + MoflonUtil.lastCapitalizedSegmentOf(options.project.name()) + ".tgg.xmi");
+		return loadTGGResource(".tgg.xmi");
 	}
-	
+
+	protected Resource loadTGGResource(String fileEnding) throws IOException {
+		String projectRelativePath = "model/" + MoflonUtil.lastCapitalizedSegmentOf(options.project.name()) + fileEnding;
+		Resource res = null;
+		// first, try to load TGG resource via workspace relative path
+		try {
+			String workspaceRelativePath = options.project.path() + "/" + projectRelativePath;
+			res = loadResource(workspaceRelativePath);
+		} catch (TGGFileNotFoundException e1) {
+			// if file could not be found, try to load TGG resource via protection domain
+			try {
+				res = loadResourceViaProtectionDomain(executable.getClass(), projectRelativePath);
+			} catch (TGGFileNotFoundException e2) {
+				// if it also did not work, throw an exception
+				throw new IOException("We looked for the TGG file at the following paths, but did not find it:\n" //
+						+ "  " + e1.getUri() + "\n" //
+						+ "  " + e2.getUri() + "\n" //
+						+ "This may have two reasons:\n" //
+						+ "1. in the IbexOptions your TGG project path is incomplete\n" //
+						+ "2. your IbexExecutable stub is located out of your TGG project", //
+						e2);
+			}
+		}
+
+		EcoreUtil.resolveAll(res);
+		return res;
+	}
+
+	protected Resource loadResourceViaProtectionDomain(Class<?> clazz, String projectRelativePath) throws IOException {
+		String path = clazz.getProtectionDomain().getCodeSource().getLocation().getPath().toString();
+		// fix that is necessary if executed in an eclipse plugin context
+		if (path.endsWith("bin/"))
+			path = path.substring(0, path.length() - 4);
+		path += projectRelativePath;
+
+		File file = new File(path);
+		String canonicalPath = file.getCanonicalPath();
+		canonicalPath = canonicalPath.replace("%20", " ");
+
+		URI uri = URI.createFileURI(canonicalPath);
+		Resource res = rs.createResource(uri);
+		try {
+			res.load(null);
+		} catch (FileNotFoundException e) {
+			throw new TGGFileNotFoundException(e, res.getURI());
+		}
+		EcoreUtil.resolveAll(res);
+
+		return res;
+	}
+
 	private void registerInternalMetamodels() {
 		// Register internals for Ibex
 		LanguagePackageImpl.init();
 		RuntimePackageImpl.init();
 	}
-	
+
 	protected void registerUserMetamodels() throws IOException {
 		options.registrationHelper().registerMetamodels(rs, options.executable());
-		
+
 		// Register correspondence metamodel last
 		loadAndRegisterCorrMetamodel();
 	}
-	
+
 	public void addToTrash(EObject o) {
 		TempContainer c = (TempContainer) trash.getContents().get(0);
 		c.getObjects().add(EcoreUtil.getRootContainer(o));
 	}
-	
+
 	public Resource getTrashResource() {
 		return trash;
+	}
+
+	public static class TGGFileNotFoundException extends IOException {
+
+		private static final long serialVersionUID = 1L;
+
+		private URI uri;
+
+		public TGGFileNotFoundException(Throwable e, URI uri) {
+			super(e);
+			this.uri = uri;
+		}
+
+		public TGGFileNotFoundException(String message, Throwable e, URI uri) {
+			super(message, e);
+			this.uri = uri;
+		}
+
+		public URI getUri() {
+			return uri;
+		}
+
 	}
 }

@@ -117,7 +117,7 @@ public class IbexRedInterpreter implements IRedInterpreter {
 	}
 
 	public void revokeCorr(EObject corr, Set<EObject> nodesToRevoke, Set<EMFEdge> edgesToRevoke) {
-		resourceHandler.removeCorrCaching(corr);
+		resourceHandler.removeCorrCachingNode(corr);
 		
 		EReference srcFeature = (EReference) corr.eClass().getEStructuralFeature("source");
 		EReference trgFeature = (EReference) corr.eClass().getEStructuralFeature("target");

@@ -96,7 +96,7 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 			return null;
 		}
 		if (value instanceof TGGEnumExpression) {
-			return ((TGGEnumExpression) value).getLiteral();
+			return ((TGGEnumExpression) value).getLiteral().getInstance();
 		}
 		throw new RuntimeException("TGGAttributeConstraintVariable value could not be recognized.");
 	}

@@ -34,6 +34,10 @@ public class ModelChanges {
 	private Map<EObject, Set<EMFEdge>> trgMappedDeletedEdges;
 
 	public ModelChanges() {
+		init();
+	}
+
+	private void init() {
 		this.modified = false;
 
 		this.attributeChanges = new HashSet<>();
@@ -53,6 +57,13 @@ public class ModelChanges {
 		this.deletedEdges = new HashSet<>();
 		this.srcMappedDeletedEdges = new HashMap<>();
 		this.trgMappedDeletedEdges = new HashMap<>();
+	}
+
+	/**
+	 * Clears all recorded model changes stored in this container.
+	 */
+	public void clearAll() {
+		init();
 	}
 
 	/* ADD */
@@ -260,12 +271,12 @@ public class ModelChanges {
 		result.addAll(trgMappedCreatedEdges.getOrDefault(element, Collections.emptySet()));
 		return Collections.unmodifiableSet(result);
 	}
-	
+
 	public Set<EMFEdge> getCreatedOutgoingEdges(EObject element) {
 		cleanUp();
 		return Collections.unmodifiableSet(srcMappedCreatedEdges.getOrDefault(element, Collections.emptySet()));
 	}
-	
+
 	public Set<EMFEdge> getCreatedIncomingEdges(EObject element) {
 		cleanUp();
 		return Collections.unmodifiableSet(trgMappedCreatedEdges.getOrDefault(element, Collections.emptySet()));
@@ -278,17 +289,17 @@ public class ModelChanges {
 		result.addAll(trgMappedDeletedEdges.getOrDefault(element, Collections.emptySet()));
 		return Collections.unmodifiableSet(result);
 	}
-	
+
 	public Set<EMFEdge> getDeletedOutgoingEdges(EObject element) {
 		cleanUp();
 		return Collections.unmodifiableSet(srcMappedDeletedEdges.getOrDefault(element, Collections.emptySet()));
 	}
-	
+
 	public Set<EMFEdge> getDeletedIncomingEdges(EObject element) {
 		cleanUp();
 		return Collections.unmodifiableSet(trgMappedDeletedEdges.getOrDefault(element, Collections.emptySet()));
 	}
-	
+
 	/* INTERN */
 
 	synchronized private void cleanUp() {

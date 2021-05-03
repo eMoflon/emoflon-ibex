@@ -17,6 +17,7 @@ public class PatternOptions extends IbexSubOptions {
 	private boolean useEdgePatterns;
 	private BiPredicate<TGGRuleNode, TGGRuleNode> ignoreInjecitity;
 	private boolean ignoreDomainConformity;
+	private boolean relaxDomainConformity;
 	private boolean optimizePattern;
 	private boolean useGenPattern;
 	private boolean parallelizeMatchProcessing;
@@ -29,6 +30,7 @@ public class PatternOptions extends IbexSubOptions {
 		useEdgePatterns = false;
 		ignoreInjecitity = (x, y) -> false;
 		ignoreDomainConformity = false;
+		relaxDomainConformity = false;
 		optimizePattern = false;
 		useGenPattern = false;
 	}
@@ -66,6 +68,15 @@ public class PatternOptions extends IbexSubOptions {
 
 	public IbexOptions ignoreDomainConformity(boolean ignoreDomainConformity) {
 		this.ignoreDomainConformity = ignoreDomainConformity;
+		return options;
+	}
+	
+	public boolean relaxDomainConformity() {
+		return relaxDomainConformity;
+	}
+	
+	public IbexOptions relaxDomainConformity(boolean relaxDomainConformity) {
+		this.relaxDomainConformity = relaxDomainConformity;
 		return options;
 	}
 	

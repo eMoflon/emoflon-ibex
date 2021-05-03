@@ -80,4 +80,20 @@ public class LocalCC extends CC {
 
 		idCounter++;
 	}
+
+	@Override
+	public void terminate() {
+		idToMatch = cfactory.createIntToObjectHashMap();
+		edgeToMarkingMatches = cfactory.createEMFEdgeHashMap();
+		nodeToMarkingMatches = cfactory.createObjectToObjectHashMap();
+		nameCounter = 0;
+		matchToContextNodes = cfactory.createIntToObjectHashMap();
+		contextNodeToNeedingMatches = cfactory.createObjectToObjectHashMap();
+		contextEdgeToNeedingMatches = cfactory.createEMFEdgeHashMap();
+		matchToContextEdges = cfactory.createIntToObjectHashMap();
+		matchToWeight = cfactory.createIntToDoubleMap();
+		matchIdToRuleName = cfactory.createIntToObjectHashMap();
+		idCounter = 1;
+	}
+
 }

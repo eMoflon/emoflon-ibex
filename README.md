@@ -27,19 +27,29 @@ This repository contains only the part which is independent from a concrete patt
 8. Check the encoding for Xtend files.
     - In Eclipse: Go to ```Window->Preferences->General->Workspace```.
     - Change the text file encoding to 'Other: UTF-8'.
-9. Go to ```File/Import.../Team/Team Project Set```, check URL and enter in and import one of these PSF files:<br/>
+9. (Important!) Set standard git folder to (workspace) relative path, e.g., (Eclipse ->) Window -> Preferences -> Team (or Version Control) -> Git -> Default Repository Folder = `${workspace_loc}\git` (for Windows) or `${workspace_loc}/git` (for Linux and macOS)
+10. Go to ```File/Import.../Team/Team Project Set```, check URL and enter in and import one of these PSF files:<br/>
    For eMoflon including everything:	<br/>
 	- https://raw.githubusercontent.com/eMoflon/emoflon-ibex-deployment/master/devProjectSet.psf <br/>
-10. Execute MWE2
-    - Open packages ```org.emoflon.ibex.gt.editor/src/org.emoflon.ibex.gt.editor``` and ```org.emoflon.ibex.tgg.editor/src/org.moflon.tgg.mosl``` and ```org.emoflon.ibex.tgg.integrate/src/org.emoflon.ibex.tgg.integrate```
-    - Right-click on ```GenerateGT.mwe2``` in the first package and ```GenerateTGG.mwe2``` in the second.
-    - Press ```Run As -> MWE2 Workflow```.
-11. Set UTF-8 as file encoding for the development workspace (*Window &rarr; Preferences &rarr; General/Workspace*) and build all projects (*Project &rarr; Build All*) to trigger code generation (and get rid of errors).
-12. Set up your runtime and test workspaces by starting a runtime Eclipse workspace
-	from your development workspace, and importing this PSF file:<br/>
-	https://raw.githubusercontent.com/eMoflon/emoflon-ibex-tests/master/testProjectSet.psf
-13. Inside the runtime workspace, build all projects (*Project &rarr; Build All*) to trigger code generation.
-14. Run the JUnit tests to ensure that all is well by right-clicking
+11. Execute MWE2
+    - Open packages ```org.emoflon.ibex.gt.editor/src/org.emoflon.ibex.gt.editor```, ```org.emoflon.ibex.tgg.editor/src/org.moflon.tgg.mosl```, and ```org.emoflon.ibex.tgg.integrate/src/org.emoflon.ibex.tgg.integrate```
+    - Right-click on ```GenerateGT.mwe2``` in the first package, ```GenerateTGG.mwe2``` in the second, and ```GenerateIntegrate.mwe2``` in the third.
+    - Press ```Run As -> MWE2 Workflow``` respectively.
+12. Set UTF-8 as file encoding for the development workspace (*Window &rarr; Preferences &rarr; General/Workspace*) and manually build all projects by clicking (*Project &rarr; Clean... &rarr; Clean all projects*) to trigger code generation (and get rid of errors). Make sure to check *Project &rarr; Build Automatically*.
+13. Set up your runtime and test workspaces by starting a runtime Eclipse workspace
+	from your development workspace:
+	- To start the runtime workspace, do the following steps inside your development workspace: *Run &rarr; Run Configurations...;* double click on *Eclipse Application*, give it a name (e.g. *test-workspace*) and click on *Run*.
+	- Inside your runtime workspace:
+		- Check and/or apply the git setting of **step 9** again.
+		- Import this PSF file:<br/>
+		https://raw.githubusercontent.com/eMoflon/emoflon-ibex-tests/master/testProjectSet.psf
+14. Execute MWE2
+    - Open package ```/org.emoflon.express/src/org.emoflon.express```
+    - Right-click on ```GenerateExpress.mwe2```
+    - Press ```Run As -> MWE2 Workflow```
+15. Inside the runtime workspace, build all projects (*Project &rarr; Clean... &rarr; Clean all projects*) to trigger code generation.
+	- Hint: It may be required to trigger a full eMoflon build on all projects. Select all projects in *Package Explorer* and click on the black hammer symbol.
+16. Run the JUnit tests to ensure that all is well by right-clicking
 	one of the ```Testsuite_*.launch``` in the ```Testsuite``` project
 	and ```TestsuiteGT.launch``` in the ```TestsuiteGT``` project
 	and start the tests by selecting ```Run As/JUnit```.
@@ -56,3 +66,5 @@ Running ```Testsuite_CBC.launch``` requires Google OR tools (see installation st
 ## How to install
 
 eMoflon::IBeX can be installed via https://github.com/eMoflon/emoflon-ibex-updatesite
+
+(Please notice: This section is for *installation purpose* only. If you already setup your development workspace as described above, this section is irrelevant for you.)

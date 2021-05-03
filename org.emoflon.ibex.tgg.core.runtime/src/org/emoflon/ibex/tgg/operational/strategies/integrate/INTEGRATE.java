@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.emoflon.delta.validation.DeltaValidator;
 import org.emoflon.delta.validation.InvalidDeltaException;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
@@ -54,8 +53,11 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis.
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.NACOverlap;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil;
 import org.emoflon.ibex.tgg.operational.strategies.opt.CC;
+import org.emoflon.ibex.tgg.operational.strategies.opt.LocalCC;
 
 import com.google.common.collect.Sets;
+
+import delta.Delta;
 import delta.DeltaContainer;
 import language.BindingType;
 import language.DomainType;
@@ -74,8 +76,6 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	protected MultiplicityCounter multiplicityCounter;
 
 	//// DATA ////
-	protected DeltaContainer userDeltaContainer;
-	protected BiConsumer<EObject, EObject> userDeltaBiConsumer;
 	protected ChangeKey userDeltaKey;
 	protected ChangeKey generalDeltaKey;
 
@@ -101,16 +101,21 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		match2conflicts = new HashMap<>();
 
 		matchUtil = new TGGMatchUtil(this);
+		
 		modelChangeProtocol = new ModelChangeProtocol( //
 				resourceHandler.getSourceResource(), resourceHandler.getTargetResource(), //
 				resourceHandler.getCorrResource(), resourceHandler.getProtocolResource());
+		userDeltaKey = new ChangeKey();
+		generalDeltaKey = new ChangeKey();
+		modelChangeProtocol.registerKey(generalDeltaKey);
+		
 		conflictDetector = new ConflictDetector(this);
-//		consistencyChecker = new LocalCC(options) {
-//			@Override
-//			protected void processValidMatch(ITGGMatch match) {
-//				removeBrokenMatchesAfterCCMatchApplication(match);
-//			}
-//		};
+		consistencyChecker = new LocalCC(options) {
+			@Override
+			protected void processValidMatch(ITGGMatch match) {
+				removeBrokenMatchesAfterCCMatchApplication(match);
+			}
+		};
 		options.executable(this);
 		precedenceGraph = new PrecedenceGraph(this);
 		multiplicityCounter = new MultiplicityCounter(this);
@@ -121,9 +126,11 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	}
 
 	private void removeBrokenMatchesAfterCCMatchApplication(ITGGMatch ccMatch) {
-		Set<EObject> ccObjects = matchUtil.getObjects(ccMatch, new EltFilter().srcAndTrg());
-		for (ITGGMatch brokenMatch : brokenRuleApplications.values()) {
-			Set<EObject> brokenObjects = matchUtil.getObjects(brokenMatch, new EltFilter().srcAndTrg().deleted());
+		Set<EObject> ccObjects = matchUtil.getObjects(ccMatch, new EltFilter().srcAndTrg().create());
+		
+		Collection<ITGGMatch> brokenMatches = new HashSet<>(brokenRuleApplications.values());
+		for (ITGGMatch brokenMatch : brokenMatches) {
+			Set<EObject> brokenObjects = matchUtil.getObjects(brokenMatch, new EltFilter().srcAndTrg().create());
 			if (!Sets.intersection(ccObjects, brokenObjects).isEmpty())
 				removeBrokenMatch(brokenMatch);
 		}
@@ -154,10 +161,6 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 		initializeRepairStrategy(options);
 		matchDistributor.updateMatches();
-		modelChangeProtocol.attachAdapter();
-		userDeltaKey = new ChangeKey();
-		generalDeltaKey = new ChangeKey();
-		modelChangeProtocol.registerKey(generalDeltaKey);
 
 		times.addTo("run:initialize", Timer.stop());
 	}
@@ -165,16 +168,19 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	protected void cleanUp() {
 		Timer.start();
 
-		modelChangeProtocol.deregisterKey(generalDeltaKey);
-		modelChangeProtocol.detachAdapter();
-		// TODO adrianm: cleaner reset of ModelChangeProtocol
-		modelChangeProtocol = new ModelChangeProtocol(resourceHandler.getSourceResource(), resourceHandler.getTargetResource(),
-				resourceHandler.getCorrResource(), resourceHandler.getProtocolResource());
+		modelChangeProtocol.clearAll();
 		classifiedBrokenMatches = new HashMap<>();
 		conflicts = new HashSet<>();
 		match2conflicts = new HashMap<>();
 
 		times.addTo("run:cleanUp", Timer.stop());
+	}
+
+	@Override
+	public void terminate() throws IOException {
+		modelChangeProtocol.deregisterKey(generalDeltaKey);
+		modelChangeProtocol.detachAdapter();
+		super.terminate();
 	}
 
 	protected void classifyBrokenMatches(boolean includeImplicitBroken) {
@@ -543,7 +549,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		case FWD:
 		case BWD:
 		case CONSISTENCY:
-//		case CC:
+		case CC:
 		case FILTER_NAC_SRC:
 		case FILTER_NAC_TRG:
 			return true;
@@ -685,7 +691,18 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	 * @param delta delta to be applied
 	 */
 	public void applyDelta(BiConsumer<EObject, EObject> delta) {
-		this.userDeltaBiConsumer = delta;
+		Timer.start();
+
+		modelChangeProtocol.attachAdapter();
+		matchDistributor.updateMatches();
+		
+		logDeltaApplication();
+		
+		modelChangeProtocol.registerKey(userDeltaKey);
+		delta.accept(resourceHandler.getSourceResource().getContents().get(0), resourceHandler.getTargetResource().getContents().get(0));
+		modelChangeProtocol.deregisterKey(userDeltaKey);
+
+		times.addTo("applyDelta", Timer.stop());
 	}
 
 	/**
@@ -700,8 +717,23 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	 *                               has an invalid structure or invalid components
 	 */
 	public void applyDelta(DeltaContainer delta) throws InvalidDeltaException {
-		DeltaValidator.validate(delta);
-		this.userDeltaContainer = delta;
+		Timer.start();
+
+		modelChangeProtocol.attachAdapter();
+		matchDistributor.updateMatches();
+		
+		logDeltaApplication();
+		
+		modelChangeProtocol.registerKey(userDeltaKey);
+		for (Delta d : delta.getDeltas())
+			d.apply();
+		modelChangeProtocol.deregisterKey(userDeltaKey);
+
+		times.addTo("applyDelta", Timer.stop());
+	}
+	
+	private void logDeltaApplication() {
+		LoggerConfig.log(LoggerConfig.log_executionStructure(), () -> "Delta Application:\n");
 	}
 
 }
