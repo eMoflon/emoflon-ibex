@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?eclipse version="3.0"?><!--
 --><plugin>
-  <extension point="net.sourceforge.plantuml.eclipse.diagramTextProvider">
-    <diagramTextProvider priority="20" providerClass="org.emoflon.ibex.common.visualization.IBeXPatternVisualizer"/>
-    <diagramTextProvider
-	    id="org.emoflon.ibex.common.visualization.tgg.IBeXTggXmiVisualizer"
-	    providerClass="org.emoflon.ibex.common.visualization.tgg.IBeXTggXmiVisualizer"
-	    priority="100"
-      	label="TGG Visualization for .tgg.xmi files"
-	    >
-      </diagramTextProvider>
-  </extension>
   <extension point="org.moflon.emf.codegen.URIPreferenceExtension">
     <uri_preference_extension class="org.emoflon.ibex.common.ide.URIPreferenceExtension"/>
+  </extension>
+  <extension
+        point="org.moflon.core.ui.DiagramTextProvider">
+     <diagram_text_provider
+           class="org.emoflon.ibex.common.visualization.IBeXPatternVisualizer">
+     </diagram_text_provider>
+  </extension>
+  <extension
+        point="org.moflon.core.ui.DiagramTextProvider">
+     <diagram_text_provider
+           class="org.emoflon.ibex.common.visualization.tgg.IBeXTggXmiVisualizer">
+     </diagram_text_provider>
   </extension>
 </plugin>
