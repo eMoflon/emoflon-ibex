@@ -330,13 +330,22 @@ public interface IBeXPatternModelPackage extends EPackage {
 	int IBE_XPATTERN__NAME = IBE_XNAMED_ELEMENT__NAME;
 
 	/**
+	 * The feature id for the '<em><b>Has Count Expression</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XPATTERN__HAS_COUNT_EXPRESSION = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 0;
+
+	/**
 	 * The number of structural features of the '<em>IBe XPattern</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XPATTERN_FEATURE_COUNT = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 0;
+	int IBE_XPATTERN_FEATURE_COUNT = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 1;
 
 	/**
 	 * The number of operations of the '<em>IBe XPattern</em>' class.
@@ -365,6 +374,15 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int IBE_XCONTEXT__NAME = IBE_XPATTERN__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Has Count Expression</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XCONTEXT__HAS_COUNT_EXPRESSION = IBE_XPATTERN__HAS_COUNT_EXPRESSION;
 
 	/**
 	 * The feature id for the '<em><b>Api Pattern Dependencies</b></em>' reference list.
@@ -411,6 +429,15 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int IBE_XCONTEXT_ALTERNATIVES__NAME = IBE_XCONTEXT__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Has Count Expression</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XCONTEXT_ALTERNATIVES__HAS_COUNT_EXPRESSION = IBE_XCONTEXT__HAS_COUNT_EXPRESSION;
 
 	/**
 	 * The feature id for the '<em><b>Api Pattern Dependencies</b></em>' reference list.
@@ -475,6 +502,15 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int IBE_XCONTEXT_PATTERN__NAME = IBE_XCONTEXT__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Has Count Expression</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XCONTEXT_PATTERN__HAS_COUNT_EXPRESSION = IBE_XCONTEXT__HAS_COUNT_EXPRESSION;
 
 	/**
 	 * The feature id for the '<em><b>Api Pattern Dependencies</b></em>' reference list.
@@ -631,6 +667,15 @@ public interface IBeXPatternModelPackage extends EPackage {
 	int IBE_XCREATE_PATTERN__NAME = IBE_XPATTERN__NAME;
 
 	/**
+	 * The feature id for the '<em><b>Has Count Expression</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XCREATE_PATTERN__HAS_COUNT_EXPRESSION = IBE_XPATTERN__HAS_COUNT_EXPRESSION;
+
+	/**
 	 * The feature id for the '<em><b>Attribute Assignments</b></em>' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -702,6 +747,15 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int IBE_XDELETE_PATTERN__NAME = IBE_XPATTERN__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Has Count Expression</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XDELETE_PATTERN__HAS_COUNT_EXPRESSION = IBE_XPATTERN__HAS_COUNT_EXPRESSION;
 
 	/**
 	 * The feature id for the '<em><b>Context Nodes</b></em>' reference list.
@@ -2173,6 +2227,15 @@ public interface IBeXPatternModelPackage extends EPackage {
 	int IBE_XDISJOINT_CONTEXT_PATTERN__NAME = IBE_XCONTEXT__NAME;
 
 	/**
+	 * The feature id for the '<em><b>Has Count Expression</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XDISJOINT_CONTEXT_PATTERN__HAS_COUNT_EXPRESSION = IBE_XCONTEXT__HAS_COUNT_EXPRESSION;
+
+	/**
 	 * The feature id for the '<em><b>Api Pattern Dependencies</b></em>' reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -2682,6 +2745,17 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @generated
 	 */
 	EClass getIBeXPattern();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPattern#isHasCountExpression <em>Has Count Expression</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Has Count Expression</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPattern#isHasCountExpression()
+	 * @see #getIBeXPattern()
+	 * @generated
+	 */
+	EAttribute getIBeXPattern_HasCountExpression();
 
 	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext <em>IBe XContext</em>}'.
@@ -4335,6 +4409,14 @@ public interface IBeXPatternModelPackage extends EPackage {
 		 * @generated
 		 */
 		EClass IBE_XPATTERN = eINSTANCE.getIBeXPattern();
+
+		/**
+		 * The meta object literal for the '<em><b>Has Count Expression</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute IBE_XPATTERN__HAS_COUNT_EXPRESSION = eINSTANCE.getIBeXPattern_HasCountExpression();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXContextImpl <em>IBe XContext</em>}' class.

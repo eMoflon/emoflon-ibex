@@ -196,6 +196,14 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 		return true;
 	}
 	
+	public boolean containsArithmeticExpressions() {
+		return false;
+	}
+	
+	public boolean containsCountExpressions() {
+		return false;
+	}
+	
 	/**
 	 * Finds and returns all matches for the pattern as a Stream.
 	 * 

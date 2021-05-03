@@ -40,7 +40,10 @@
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="IBeXPattern" abstract="true" eSuperTypes="#//IBeXNamedElement"/>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXPattern" abstract="true" eSuperTypes="#//IBeXNamedElement">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="hasCountExpression" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
+        defaultValueLiteral="false"/>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBeXContext" abstract="true" eSuperTypes="#//IBeXPattern">
     <eStructuralFeatures xsi:type="ecore:EReference" name="apiPatternDependencies"
         upperBound="-1" eType="#//IBeXContext"/>
