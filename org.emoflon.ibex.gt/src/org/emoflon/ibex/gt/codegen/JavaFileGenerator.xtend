@@ -86,7 +86,7 @@ class JavaFileGenerator {
 			.filter [pattern  | !((pattern instanceof IBeXContextPattern) && (pattern as IBeXContextPattern).isSubpattern())]
 			.filter [pattern   | !((pattern instanceof IBeXContextPattern) && (pattern as IBeXContextPattern).isOptimizedDisjoint())]
 			.filter [pattern  | !((pattern instanceof IBeXDisjointContextPattern) && rulePreconditions.contains((pattern as IBeXDisjointContextPattern).getNonOptimizedPattern()))]
-			.forEach [ pattern |
+			.forEach [ pattern | 
 				imports.add('''«getSubPackageName('api.rules')».«getPatternClassName(pattern)»''')
 				if(pattern instanceof IBeXContextPattern) {
 					val context = pattern as IBeXContextPattern

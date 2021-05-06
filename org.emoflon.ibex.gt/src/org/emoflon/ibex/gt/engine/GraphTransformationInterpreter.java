@@ -44,6 +44,8 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRuleSet;
 
+import persistence.XtendXMIResourceFactoryImpl;
+
 /**
  * The GraphTransformationInterpreter implements rule application based on a
  * pattern matching engine.
@@ -230,7 +232,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 */
 	public void loadPatternSet(final URI uri) {
 		ResourceSet rs = new ResourceSetImpl();
-		rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());
+		rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put("xmi", new XtendXMIResourceFactoryImpl());
 		rs.getPackageRegistry().putAll(model.getPackageRegistry());
 		rs.getPackageRegistry().put(IBeXPatternModelPackage.eNS_URI, IBeXPatternModelPackage.eINSTANCE);
 		Resource ibexPatternResource = rs.getResource(uri, true);

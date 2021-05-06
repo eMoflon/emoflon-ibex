@@ -10,6 +10,9 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.emoflon.ibex.common.operational.IContextPatternInterpreter;
 
+import persistence.XtendXMIResource;
+import persistence.XtendXMIResourceFactoryImpl;
+
 /**
  * An application using an {@link GraphTransformationAPI}.
  */
@@ -68,7 +71,8 @@ public abstract class GraphTransformationApp<API extends GraphTransformationAPI>
 	 */
 	public Resource createModel(final URI uri) {
 		prepareResourceSet();
-		return resourceSet.createResource(uri);
+		//return resourceSet.createResource(uri);
+		return resourceSet.getResource(uri, true);
 	}
 
 	/**
@@ -118,7 +122,7 @@ public abstract class GraphTransformationApp<API extends GraphTransformationAPI>
 	 */
 	private void prepareResourceSet() {
 		Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
-		reg.getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());
+		reg.getExtensionToFactoryMap().put("xmi", new XtendXMIResourceFactoryImpl());
 		registerMetaModels();
 	}
 
