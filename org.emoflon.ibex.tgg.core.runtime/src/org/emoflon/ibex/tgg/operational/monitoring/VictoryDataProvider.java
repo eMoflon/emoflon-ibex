@@ -10,12 +10,15 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
+import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -56,6 +59,30 @@ public class VictoryDataProvider implements IVictoryDataProvider {
 			logger.error(e);
 			return null;
 		}
+	}
+	
+	@Override
+	public Collection<EObject> getSourceModelNodes() {
+		return getModelNodes(this.op.getResourceHandler().getSourceResource());
+	}
+	
+	@Override
+	public Collection<EObject> getTargetModelNodes() {
+		return getModelNodes(this.op.getResourceHandler().getTargetResource());
+	}
+	
+	@Override
+	public Collection<EObject> getCorrModelNodes() {
+		return getModelNodes(this.op.getResourceHandler().getCorrResource());
+	}
+		
+	private Collection<EObject> getModelNodes(Resource r) {
+		List<EObject> nodeList = new LinkedList<EObject>();
+		TreeIterator<EObject> treeIterator = r.getAllContents();
+		while (treeIterator.hasNext()) {
+			nodeList.add(treeIterator.next());
+		}
+		return nodeList;
 	}
 
 	@Override

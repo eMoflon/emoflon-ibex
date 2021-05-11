@@ -14,12 +14,13 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.operational.monitoring.data.ProtocolStep;
 import org.emoflon.ibex.tgg.operational.monitoring.data.TGGObjectGraph;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
+
+import language.TGGRule;
 
 public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 
@@ -30,6 +31,7 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 	private Map<ITGGMatch, IbexMatch> matchMapping = new HashMap<>();
 	private String previouslyAppliedRule;
 	private TGGResourceHandler resourceHandler;
+	private int lastProtocolSize = 0;
 
 	public void register(OperationalStrategy pOperationalStrategy) {
 		operationalStrategy = pOperationalStrategy;
@@ -38,16 +40,44 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 		pOperationalStrategy.registerObserver(this);
 		pOperationalStrategy.setUpdatePolicy(this);
 	}
+//
+//	@Override
+//	public final ITGGMatch chooseOneMatch(ImmutableMatchContainer matchContainer) {
+//
+//		DataPackage dataPackage = this.createDataPackage(matchContainer.getMatches());
+//
+//		ITGGMatch chosenMatch = chooseOneMatch(new DataPackage(matchMapping.values(), protocolsStepList));
+//		previouslyAppliedRule = chosenMatch.getRuleName();
+//		return chosenMatch;
+//	}
+	
+	protected String getPreviouslyAppliedRule() {
+		return previouslyAppliedRule;
+	}
 
-	@Override
-	public final ITGGMatch chooseOneMatch(ImmutableMatchContainer matchContainer) {
-
-		updateMatchMapping(matchContainer.getMatches());
+	protected void setPreviouslyAppliedRule(String previouslyAppliedRule) {
+		this.previouslyAppliedRule = previouslyAppliedRule;
+	}
+	
+	protected IbexMatch getIbexMatchForTggMatch(ITGGMatch match) {
+		return matchMapping.get(match);
+	}
+	
+	protected DataPackage createDataPackage(
+			Set<ITGGMatch> matches,
+			Collection<EObject> sourceNodes,
+			Collection<EObject> targetNodes,
+			Collection<EObject> corrNodes
+			) {
+		updateMatchMapping(matches);
 		updateProtocols(previouslyAppliedRule);
-
-		ITGGMatch chosenMatch = chooseOneMatch(new DataPackage(matchMapping.values(), protocolsStepList));
-		previouslyAppliedRule = chosenMatch.getRuleName();
-		return chosenMatch;
+		
+		TGGObjectGraph tripleGraph = new TGGObjectGraph(sourceNodes, targetNodes, corrNodes);
+		
+		return new DataPackage(
+				matchMapping.values(),
+				protocolsStepList,
+				tripleGraph);
 	}
 
 	public Collection<IbexMatch> getMoreMatches(int amount) {
@@ -67,15 +97,20 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 		EList<EObject> protocols = resourceHandler.getProtocolResource().getContents();
 		if (protocols.isEmpty())
 			return;
+		if (protocols.size() == lastProtocolSize) {
+			return;
+		}
+		lastProtocolSize = protocols.size();
 
 		int index = protocols.size() - 1;
 		EList<EObject> items = protocols.get(index).eCrossReferences();
+		TGGRule appliedRule = options.tgg.tgg().getRules().stream().filter(rule -> rule.getName().equals(appliedRuleName))
+				.findFirst().orElse(null);
 		ProtocolStep protocolStep = new ProtocolStep(index,
 				new TGGObjectGraph(filterResourceItems(items, resourceHandler.getSourceResource()),
 						filterResourceItems(items, resourceHandler.getTargetResource()),
 						filterResourceItems(items, resourceHandler.getCorrResource())),
-				options.tgg.tgg().getRules().stream().filter(rule -> rule.getName().equals(appliedRuleName))
-						.findFirst().orElse(null));
+				appliedRule);
 		protocolsStepList.add(protocolStep);
 	}
 
@@ -121,6 +156,4 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 	public void update(ObservableEvent pEventType, Object... pAdditionalInformation) {
 		// ignore by default
 	}
-
-	public abstract ITGGMatch chooseOneMatch(DataPackage pDataPackage);
 }

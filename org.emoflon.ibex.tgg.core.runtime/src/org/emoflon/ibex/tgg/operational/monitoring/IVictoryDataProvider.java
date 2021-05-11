@@ -22,6 +22,12 @@ public interface IVictoryDataProvider {
 	public Collection<EObject> getMatchNeighbourhoods(Collection<EObject> nodes, int k);
 
 	public Collection<EObject> getMatchNeighbourhood(EObject node, int k);
+	
+	public Collection<EObject> getSourceModelNodes();
+	
+	public Collection<EObject> getTargetModelNodes();
+	
+	public Collection<EObject> getCorrModelNodes();
 
 	abstract public Set<URI> saveModels(String[] pLocations) throws IOException;
 
