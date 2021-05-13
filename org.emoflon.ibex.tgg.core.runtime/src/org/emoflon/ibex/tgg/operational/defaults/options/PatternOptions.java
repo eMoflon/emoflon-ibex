@@ -34,7 +34,7 @@ public class PatternOptions extends IbexSubOptions {
 		relaxDomainConformity = false;
 		optimizePattern = false;
 		useGenPattern = false;
-		optimizeCSPs = true;
+		optimizeCSPs = false;
 	}
 	
 	public ACStrategy acStrategy() {
