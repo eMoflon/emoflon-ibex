@@ -353,10 +353,45 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			patternMatches.add(match);
 		} else {
 			GraphTransformationPattern<?,?> gtPattern = name2GTPattern.get(patternName);
+			
+			// If pattern is a non disjoint sub-pattern it will not have a rule api class
 			if(gtPattern != null) {
-				patternMatches.addAll(MatchFilter.getFilteredMatchStream(pattern, parameters, matches, disjointPatternInterpreter)
-						.filter(match -> gtPattern.isMatchValid(match))
-						.collect(Collectors.toSet()));
+				// Check for PM capabilities
+				if(!gtPattern.containsArithmeticExpressions() && !gtPattern.containsCountExpressions() && ! (pattern instanceof IBeXDisjointContextPattern)) {
+					patternMatches.addAll(MatchFilter.getFilteredMatchStream(pattern, parameters, matches, disjointPatternInterpreter)
+							.collect(Collectors.toSet()));
+				} else if (gtPattern.containsArithmeticExpressions() && !gtPattern.containsCountExpressions() && ! (pattern instanceof IBeXDisjointContextPattern)) {
+					if(contextPatternInterpreter.getProperties().supports_arithmetic_attr_constraints()) {
+						patternMatches.addAll(MatchFilter.getFilteredMatchStream(pattern, parameters, matches, disjointPatternInterpreter)
+								.collect(Collectors.toSet()));
+					} else {
+						patternMatches.addAll(MatchFilter.getFilteredMatchStream(pattern, parameters, matches, disjointPatternInterpreter)
+								.filter(match -> gtPattern.isMatchValid(match))
+								.collect(Collectors.toSet()));
+					}
+				} else if (!gtPattern.containsArithmeticExpressions() && gtPattern.containsCountExpressions() && ! (pattern instanceof IBeXDisjointContextPattern)) {
+					if(contextPatternInterpreter.getProperties().supports_count_matches()) {
+						patternMatches.addAll(MatchFilter.getFilteredMatchStream(pattern, parameters, matches, disjointPatternInterpreter)
+								.collect(Collectors.toSet()));
+					} else {
+						patternMatches.addAll(MatchFilter.getFilteredMatchStream(pattern, parameters, matches, disjointPatternInterpreter)
+								.filter(match -> gtPattern.isMatchValid(match))
+								.collect(Collectors.toSet()));
+					}
+				} else if (gtPattern.containsArithmeticExpressions() && gtPattern.containsCountExpressions() && ! (pattern instanceof IBeXDisjointContextPattern)) {
+					if(contextPatternInterpreter.getProperties().supports_arithmetic_attr_constraints() && contextPatternInterpreter.getProperties().supports_count_matches()) {
+						patternMatches.addAll(MatchFilter.getFilteredMatchStream(pattern, parameters, matches, disjointPatternInterpreter)
+								.collect(Collectors.toSet()));
+					} else {
+						patternMatches.addAll(MatchFilter.getFilteredMatchStream(pattern, parameters, matches, disjointPatternInterpreter)
+								.filter(match -> gtPattern.isMatchValid(match))
+								.collect(Collectors.toSet()));
+					}
+				} else {
+					patternMatches.addAll(MatchFilter.getFilteredMatchStream(pattern, parameters, matches, disjointPatternInterpreter)
+							.filter(match -> gtPattern.isMatchValid(match))
+							.collect(Collectors.toSet()));
+				}
 			} else {
 				patternMatches.addAll(MatchFilter.getFilteredMatchStream(pattern, parameters, matches, disjointPatternInterpreter)
 						.collect(Collectors.toSet()));
