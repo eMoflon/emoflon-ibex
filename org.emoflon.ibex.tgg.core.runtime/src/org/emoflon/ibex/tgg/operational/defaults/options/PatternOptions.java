@@ -21,6 +21,7 @@ public class PatternOptions extends IbexSubOptions {
 	private boolean optimizePattern;
 	private boolean useGenPattern;
 	private boolean parallelizeMatchProcessing;
+	private boolean optimizeCSPs;
 
 	public PatternOptions(IbexOptions options) {
 		super(options);
@@ -33,6 +34,7 @@ public class PatternOptions extends IbexSubOptions {
 		relaxDomainConformity = false;
 		optimizePattern = false;
 		useGenPattern = false;
+		optimizeCSPs = true;
 	}
 	
 	public ACStrategy acStrategy() {
@@ -104,6 +106,15 @@ public class PatternOptions extends IbexSubOptions {
 
 	public IbexOptions parallelizeMatchProcessing(boolean parallelizeMatchProcessing) {
 		this.parallelizeMatchProcessing = parallelizeMatchProcessing;
+		return options;
+	}
+	
+	public boolean optimizeCSPs() {
+		return optimizeCSPs;
+	}
+
+	public IbexOptions optimizeCSPs(boolean optimizeCSPs) {
+		this.optimizeCSPs = optimizeCSPs;
 		return options;
 	}
 

@@ -154,6 +154,9 @@ public abstract class OperationalPatternTransformation {
 	
 	
 	private boolean tryTransformingCEPToRelationalConstraint(IBeXContextPattern ibexPattern, TGGAttributeConstraint csp) {
+		if(!options.patterns.optimizeCSPs())
+			return false;
+		
 		if(csp.getDefinition().isUserDefined())
 			return false;
 		
