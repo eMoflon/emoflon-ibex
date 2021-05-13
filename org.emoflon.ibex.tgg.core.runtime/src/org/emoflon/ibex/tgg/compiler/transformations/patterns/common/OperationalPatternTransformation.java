@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeConstraint;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeExpression;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCSP;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXConstant;
@@ -15,6 +16,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEnumLiteral;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternInvocation;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelFactory;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRelation;
 import org.emoflon.ibex.tgg.compiler.patterns.ACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.IBeXPatternOptimiser;
 import org.emoflon.ibex.tgg.compiler.transformations.patterns.ContextPatternTransformation;
@@ -94,13 +96,17 @@ public abstract class OperationalPatternTransformation {
 		transformEdges(ibexPattern);
 		
 		// Transform CEPs
-		transformCEPs(ibexPattern);
+		transformCSPs(ibexPattern);
 
 		return ibexPattern;
 	}
 
-	private void transformCEPs(IBeXContextPattern ibexPattern) {
+	private void transformCSPs(IBeXContextPattern ibexPattern) {
 		for(TGGAttributeConstraint csp : rule.getAttributeConditionLibrary().getTggAttributeConstraints()) {
+			
+			if(tryTransformingCEPToRelationalConstraint(ibexPattern, csp))
+				continue;
+			
 			IBeXCSP iCSP = IBeXPatternModelFactory.eINSTANCE.createIBeXCSP();
 			iCSP.setName(csp.getDefinition().getName());
 			if(csp.getDefinition().isUserDefined()) {
@@ -147,6 +153,64 @@ public abstract class OperationalPatternTransformation {
 
 	
 	
+	private boolean tryTransformingCEPToRelationalConstraint(IBeXContextPattern ibexPattern, TGGAttributeConstraint csp) {
+		if(csp.getDefinition().isUserDefined())
+			return false;
+		
+		if(csp.getParameters().size() != 2)
+			return false;
+		
+		if(!csp.getDefinition().getName().startsWith("eq_"))
+			return false;
+		
+		IBeXAttributeConstraint ac = IBeXPatternModelFactory.eINSTANCE.createIBeXAttributeConstraint();
+		ac.setRelation(IBeXRelation.EQUAL);
+		
+		for(TGGParamValue param : csp.getParameters()) {
+			if(param instanceof TGGAttributeExpression) {
+				TGGAttributeExpression tggAttrExpr = (TGGAttributeExpression) param;
+				if (tggAttrExpr.isDerived() && !this.includeDerivedCSPParams())
+					return false;
+				IBeXAttributeExpression attrExpr = IBeXPatternModelFactory.eINSTANCE.createIBeXAttributeExpression();
+				Optional<IBeXNode> iBeXNode = IBeXPatternUtils.findIBeXNodeWithName(ibexPattern, tggAttrExpr.getObjectVar().getName());
+				if(iBeXNode.isPresent())
+					attrExpr.setNode(iBeXNode.get());
+				else
+					return false;
+				attrExpr.setAttribute(tggAttrExpr.getAttribute());
+				
+				if(ac.getLhs() == null)
+					ac.setLhs(attrExpr);
+				else
+					ac.setRhs(attrExpr);
+			}
+			else if(param instanceof TGGEnumExpression) {
+				TGGEnumExpression tggEnumExpr = (TGGEnumExpression) param;
+				IBeXEnumLiteral literal = IBeXPatternModelFactory.eINSTANCE.createIBeXEnumLiteral();
+				literal.setLiteral(tggEnumExpr.getLiteral());
+				
+				if(ac.getLhs() == null)
+					ac.setLhs(literal);
+				else
+					ac.setRhs(literal);
+			}
+			else if(param instanceof TGGLiteralExpression) {
+				TGGLiteralExpression tggLiteralExpr = (TGGLiteralExpression) param;
+				IBeXConstant constant = IBeXPatternModelFactory.eINSTANCE.createIBeXConstant();
+				constant.setValue(tggLiteralExpr.getValue());
+				constant.setStringValue(tggLiteralExpr.getValue());
+
+				if(ac.getLhs() == null)
+					ac.setLhs(constant);
+				else
+					ac.setRhs(constant);
+			}
+		}
+		ibexPattern.getAttributeConstraint().add(ac);
+		
+		return true;
+	}
+
 	protected void createInvocation(IBeXContextPattern invoker, IBeXContextPattern invokee, boolean isPositive) {
 		IBeXPatternInvocation invocation = IBeXPatternModelFactory.eINSTANCE.createIBeXPatternInvocation();
 		invocation.setPositive(isPositive);
