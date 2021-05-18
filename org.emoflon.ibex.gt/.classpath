@@ -8,5 +8,9 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="xtend-gen"/>
+	<classpathentry kind="lib" path="C:/Users/Thomas/Downloads/gs-ui-swing-2.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Thomas/Downloads/gs-algo-2.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Thomas/Downloads/gs-ui-javafx-2.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Thomas/Downloads/gs-core-2.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

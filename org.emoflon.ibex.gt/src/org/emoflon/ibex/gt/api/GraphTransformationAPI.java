@@ -225,6 +225,10 @@ public abstract class GraphTransformationAPI {
 		interpreter.deactivateModelStatesTracking();
 	}
 	
+	public void displayModelStates() {
+		interpreter.displayModelStates();
+	}
+	
 	/**
 	 * Applies the rule on the given match.
 	 * 

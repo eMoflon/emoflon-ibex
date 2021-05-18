@@ -2,6 +2,7 @@
  */
 package org.emoflon.ibex.gt.StateModel.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.eclipse.emf.common.notify.NotificationChain;
@@ -21,6 +22,8 @@ import org.eclipse.emf.ecore.util.InternalEList;
 import org.emoflon.ibex.gt.StateModel.Link;
 import org.emoflon.ibex.gt.StateModel.StateModelPackage;
 import org.emoflon.ibex.gt.StateModel.StructuralDelta;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 
 /**
  * <!-- begin-user-doc -->
@@ -41,6 +44,13 @@ import org.emoflon.ibex.gt.StateModel.StructuralDelta;
  * @generated
  */
 public class StructuralDeltaImpl extends MinimalEObjectImpl.Container implements StructuralDelta {
+	
+	protected ArrayList<IBeXNode> deltaNodes;
+	protected ArrayList<IBeXNode> createdNodes;
+	protected ArrayList<IBeXNode> deletedNodes;
+	protected ArrayList<IBeXEdge> createdEdges;
+	protected ArrayList<IBeXEdge> deletedEdges;
+	
 	/**
 	 * The cached value of the '{@link #getCreatedObjects() <em>Created Objects</em>}' reference list.
 	 * <!-- begin-user-doc -->
@@ -333,6 +343,46 @@ public class StructuralDeltaImpl extends MinimalEObjectImpl.Container implements
 			return resource2EObjectContainment != null && !resource2EObjectContainment.isEmpty();
 		}
 		return super.eIsSet(featureID);
+	}
+
+	@Override
+	public ArrayList<IBeXNode> getDeltaNodes() {
+		if (deltaNodes == null) {
+			deltaNodes = new ArrayList<IBeXNode>();
+		}
+		return deltaNodes;
+	}
+
+	@Override
+	public ArrayList<IBeXNode> getCreatedNodes() {
+		if (createdNodes == null) {
+			createdNodes = new ArrayList<IBeXNode>();
+		}
+		return createdNodes;
+	}
+	
+	@Override
+	public ArrayList<IBeXNode> getDeletedNodes() {
+		if (deletedNodes == null) {
+			deletedNodes = new ArrayList<IBeXNode>();
+		}
+		return deletedNodes;
+	}
+	
+	@Override
+	public ArrayList<IBeXEdge> getCreatedEdges() {
+		if (createdEdges == null) {
+			createdEdges = new ArrayList<IBeXEdge>();
+		}
+		return createdEdges;
+	}
+	
+	@Override
+	public ArrayList<IBeXEdge> getDeletedEdges() {
+		if (deletedEdges == null) {
+			deletedEdges = new ArrayList<IBeXEdge>();
+		}
+		return deletedEdges;
 	}
 
 } //StructuralDeltaImpl

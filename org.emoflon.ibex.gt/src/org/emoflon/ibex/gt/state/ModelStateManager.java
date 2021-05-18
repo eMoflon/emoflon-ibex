@@ -46,7 +46,7 @@ public class ModelStateManager {
 	private IContextPatternInterpreter engine;
 	private boolean forceNewStates;
 	private StateModelFactory factory = StateModelFactory.eINSTANCE;
-	private StateContainer modelStates;
+	public StateContainer modelStates;
 	private State currentState;
 	private Map<StateID, State> allStates;
 	private Map<State, BiFunction<Map<String,Object>, Boolean, Optional<IMatch>>> gtApply;
@@ -89,7 +89,7 @@ public class ModelStateManager {
 		newState.setParent(currentState);
 		currentState.getChildren().add(newState);
 		
-		if(!forceNewStates) {
+		if(!forceNewStates) {			
 			StateID id = new StateID(newState);
 			State existingState = allStates.get(id);
 			if(existingState == null) {
@@ -300,6 +300,7 @@ public class ModelStateManager {
 			rs.getRule().getCreate().getCreatedNodes().forEach(node -> {
 				model.getContents().add((EObject) trueComatch.get(node.getName()));
 			});
+			
 			// Redirect orignal edges and restore O.G. containment
 			rs.getRule().getCreate().getCreatedEdges().forEach(edge -> {
 				EObject src = (EObject) trueComatch.get(edge.getSourceNode().getName());
@@ -429,6 +430,7 @@ public class ModelStateManager {
 		
 		for(IBeXNode createdNode : pattern.getCreatedNodes()) {
 			delta.getCreatedObjects().add((EObject) match.get(createdNode.getName()));
+			delta.getCreatedNodes().add(createdNode);
 		}
 		
 		for(IBeXEdge createdEdge : pattern.getCreatedEdges()) {
@@ -439,7 +441,7 @@ public class ModelStateManager {
 			link.setTrg(trg);
 			link.setType(createdEdge.getType());
 			delta.getCreatedLinks().add(link);
-			
+			delta.getCreatedEdges().add(createdEdge);
 			if(createdEdge.getType().isContainment() && trg.eContainer() instanceof Resource) {
 				delta.getResource2EObjectContainment().add(trg);
 			}
@@ -459,6 +461,7 @@ public class ModelStateManager {
 				delta.getDeletedRootLevelObjects().add(actualNode);
 			}
 			delta.getDeletedObjects().add(actualNode);
+			delta.getDeletedNodes().add(deleteNode);
 		}
 		
 		for(IBeXEdge deletedEdge : pattern.getDeletedEdges()) {
@@ -469,6 +472,7 @@ public class ModelStateManager {
 			link.setTrg(trg);
 			link.setType(deletedEdge.getType());
 			delta.getDeletedLinks().add(link);
+			delta.getDeletedEdges().add(deletedEdge);
 		}
 		
 		return true;

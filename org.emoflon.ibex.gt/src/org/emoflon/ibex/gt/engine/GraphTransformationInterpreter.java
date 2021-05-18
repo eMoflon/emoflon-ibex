@@ -35,6 +35,7 @@ import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.gt.api.GraphTransformationPattern;
 import org.emoflon.ibex.gt.disjointpatterns.GraphTransformationDisjointPatternInterpreter;
 import org.emoflon.ibex.gt.state.ModelStateManager;
+import org.emoflon.ibex.gt.ui.test;
 import org.emoflon.ibex.gt.StateModel.State;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextAlternatives;
@@ -46,6 +47,8 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRuleSet;
+import org.emoflon.ibex.ui.SimVis;
+import org.emoflon.ibex.ui.displayTest;
 
 /**
  * The GraphTransformationInterpreter implements rule application based on a
@@ -91,6 +94,8 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	
 	private ModelStateManager stateManager;
 	private boolean trackingStates = false;
+	
+	private SimVis gtVisualisation;
 	
 	/**
 	 * the pattern interpreter for disjoint patterns
@@ -922,6 +927,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	
 	public void trackModelStates(boolean forceNewStates) {
 		stateManager = new ModelStateManager(model.getResources().get(0), model.getResources().get(1), contextPatternInterpreter, forceNewStates);
+		gtVisualisation = new SimVis(model.getResources().get(0));
 		trackingStates = true;
 	}
 	
@@ -935,6 +941,10 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			throw new UnsupportedOperationException("Graph state is currently not tracked, cannot return current state.");
 		
 		return stateManager.getCurrentState();
+	}
+	
+	public void displayModelStates() {
+		gtVisualisation.openDisplay(stateManager);
 	}
 	
 }
