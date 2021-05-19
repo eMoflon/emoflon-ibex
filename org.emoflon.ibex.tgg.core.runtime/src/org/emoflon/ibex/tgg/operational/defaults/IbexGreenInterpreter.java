@@ -89,7 +89,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		for (TGGRuleCorr c : greenCorrs) {
 			EObject createCorr = createCorr(comatch, c, comatch.get(c.getSource().getName()),
 					comatch.get(c.getTarget().getName()));
-			resourceHandler.addCorrCaching(createCorr);
+			resourceHandler.addCorrCachingNode(createCorr);
 			comatch.put(c.getName(), createCorr);
 		}
 	}
@@ -202,23 +202,24 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 
 		cspContainer.applyCSPValues(comatch);
 
-		if(!optimizeCreation) {
-			greenPattern.getSrcNodes().forEach(n -> handlePlacementInResource(n, resourceHandler.getSourceResource(), (EObject) comatch.get(n.getName())));	
-			greenPattern.getCorrNodes().forEach(n -> handlePlacementInResource(n, resourceHandler.getCorrResource(), (EObject) comatch.get(n.getName())));	
-			greenPattern.getTrgNodes().forEach(n -> handlePlacementInResource(n, resourceHandler.getTargetResource(), (EObject) comatch.get(n.getName())));	
+		if (!optimizeCreation) {
+			greenPattern.getSrcNodes().forEach(n -> handlePlacementInResource(n, resourceHandler.getSourceResource(), (EObject) comatch.get(n.getName())));
+			greenPattern.getCorrNodes().forEach(n -> handlePlacementInResource(n, resourceHandler.getCorrResource(), (EObject) comatch.get(n.getName())));
+			greenPattern.getTrgNodes().forEach(n -> handlePlacementInResource(n, resourceHandler.getTargetResource(), (EObject) comatch.get(n.getName())));
 
 			createEdges(comatch, greenPattern.getSrcEdges(), true);
 			createEdges(comatch, greenPattern.getTrgEdges(), true);
-			createEdges(comatch, greenPattern.getCorrEdges(), true);
-		}
-		else {
+			createEdges(comatch, greenPattern.getCorrEdges(), true).forEach(resourceHandler::addCorrCachingEdge);
+		} else {
 			createEdges(comatch, greenPattern.getSrcEdges(), true);
 			createEdges(comatch, greenPattern.getTrgEdges(), true);
-			createEdges(comatch, greenPattern.getCorrEdges(), true);
-			
-			greenPattern.getSrcNodes().forEach(n -> handlePlacementInResource(n, resourceHandler.getSourceResource(), (EObject) comatch.get(n.getName())));	
-			greenPattern.getCorrNodes().forEach(n -> handlePlacementInResource(n, resourceHandler.getCorrResource(), (EObject) comatch.get(n.getName())));	
-			greenPattern.getTrgNodes().forEach(n -> handlePlacementInResource(n, resourceHandler.getTargetResource(), (EObject) comatch.get(n.getName())));	
+			Collection<EMFEdge> corrEdges = createEdges(comatch, greenPattern.getCorrEdges(), true);
+
+			greenPattern.getSrcNodes().forEach(n -> handlePlacementInResource(n, resourceHandler.getSourceResource(), (EObject) comatch.get(n.getName())));
+			greenPattern.getCorrNodes().forEach(n -> handlePlacementInResource(n, resourceHandler.getCorrResource(), (EObject) comatch.get(n.getName())));
+			greenPattern.getTrgNodes().forEach(n -> handlePlacementInResource(n, resourceHandler.getTargetResource(), (EObject) comatch.get(n.getName())));
+
+			corrEdges.forEach(resourceHandler::addCorrCachingEdge);
 		}
 		
 		return Optional.of(comatch);
