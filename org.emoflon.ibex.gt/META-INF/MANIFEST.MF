@@ -30,7 +30,8 @@ Require-Bundle: org.apache.log4j,
  org.eclipse.swt,
  org.eclipse.jface,
  org.emoflon.ibex.patternmodel;visibility:=reexport,
- org.emoflon.ibex.gt.ui;bundle-version="1.0.0";visibility:=reexport
+ org.emoflon.ibex.gt.ui;bundle-version="1.0.0";visibility:=reexport,
+ org.eclipse.fx.ui.workbench3;bundle-version="3.7.0";visibility:=reexport
 Bundle-ClassPath: .
 Automatic-Module-Name: org.emoflon.ibex.gt
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

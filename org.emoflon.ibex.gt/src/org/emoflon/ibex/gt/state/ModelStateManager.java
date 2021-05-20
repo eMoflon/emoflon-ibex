@@ -430,7 +430,6 @@ public class ModelStateManager {
 		
 		for(IBeXNode createdNode : pattern.getCreatedNodes()) {
 			delta.getCreatedObjects().add((EObject) match.get(createdNode.getName()));
-			delta.getCreatedNodes().add(createdNode);
 		}
 		
 		for(IBeXEdge createdEdge : pattern.getCreatedEdges()) {
@@ -441,7 +440,6 @@ public class ModelStateManager {
 			link.setTrg(trg);
 			link.setType(createdEdge.getType());
 			delta.getCreatedLinks().add(link);
-			delta.getCreatedEdges().add(createdEdge);
 			if(createdEdge.getType().isContainment() && trg.eContainer() instanceof Resource) {
 				delta.getResource2EObjectContainment().add(trg);
 			}
@@ -461,7 +459,6 @@ public class ModelStateManager {
 				delta.getDeletedRootLevelObjects().add(actualNode);
 			}
 			delta.getDeletedObjects().add(actualNode);
-			delta.getDeletedNodes().add(deleteNode);
 		}
 		
 		for(IBeXEdge deletedEdge : pattern.getDeletedEdges()) {
@@ -472,7 +469,6 @@ public class ModelStateManager {
 			link.setTrg(trg);
 			link.setType(deletedEdge.getType());
 			delta.getDeletedLinks().add(link);
-			delta.getDeletedEdges().add(deletedEdge);
 		}
 		
 		return true;

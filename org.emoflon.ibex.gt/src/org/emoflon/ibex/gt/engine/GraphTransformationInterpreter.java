@@ -35,7 +35,7 @@ import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.gt.api.GraphTransformationPattern;
 import org.emoflon.ibex.gt.disjointpatterns.GraphTransformationDisjointPatternInterpreter;
 import org.emoflon.ibex.gt.state.ModelStateManager;
-import org.emoflon.ibex.gt.ui.test;
+import org.emoflon.ibex.gt.ui.views.MyViewPart;
 import org.emoflon.ibex.gt.StateModel.State;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextAlternatives;
@@ -928,7 +928,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	public void trackModelStates(boolean forceNewStates) {
 		stateManager = new ModelStateManager(model.getResources().get(0), model.getResources().get(1), contextPatternInterpreter, forceNewStates);
 		gtVisualisation = new SimVis(model.getResources().get(0));
-		trackingStates = true;
+		trackingStates = true;	
 	}
 	
 	public void deactivateModelStatesTracking() {

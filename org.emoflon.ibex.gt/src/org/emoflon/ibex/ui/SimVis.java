@@ -2,7 +2,6 @@ package org.emoflon.ibex.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Event;
 import java.awt.Frame;
 import java.awt.Panel;
 import java.awt.event.MouseEvent;
@@ -14,23 +13,16 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-
 import javax.swing.JRootPane;
 
-import org.eclipse.emf.common.notify.Adapter;
+import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EAttribute;
-import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
-import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
@@ -39,10 +31,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.emoflon.ibex.common.emf.EMFEdge;
-import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.gt.StateModel.AttributeDelta;
 import org.emoflon.ibex.gt.StateModel.Link;
 import org.emoflon.ibex.gt.StateModel.RuleState;
@@ -50,21 +40,13 @@ import org.emoflon.ibex.gt.StateModel.State;
 import org.emoflon.ibex.gt.StateModel.StateContainer;
 import org.emoflon.ibex.gt.StateModel.StateModelFactory;
 import org.emoflon.ibex.gt.state.ModelStateManager;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNodeSet;
-import org.graphstream.algorithm.generator.BarabasiAlbertGenerator;
 import org.graphstream.graph.Edge;
-import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
-import org.graphstream.graph.implementations.Graphs;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.ui.geom.Point2;
 import org.graphstream.ui.geom.Point3;
 import org.graphstream.ui.graphicGraph.GraphicElement;
 import org.graphstream.ui.swing_viewer.SwingViewer;
-import org.graphstream.ui.swing_viewer.ViewPanel;
 import org.graphstream.ui.view.View;
 import org.graphstream.ui.view.Viewer;
 import org.graphstream.ui.view.camera.Camera;
@@ -82,81 +64,28 @@ public class SimVis {
 	private int edgeID = 0;
 	
 	private Map<EObject, Node> nodeMap;
-	private Map<EObject, Edge> edgeMap;
+	private Map<Link, Edge> edgeMap;
 	
-	private Map<EObject, Node> initialNodeMap;
-	private Map<EObject, Edge>  initialEdgeMap;
+	private EList<EObject> initialResourceContents;
+	
+	private boolean rootActivated = true;
+	
+	private EObject rootNode;
+	private EList<Link> rootEdges;
+	
+	private Label nodeInfo;
 	
 	public SimVis(Resource resource) {
 		nodeMap = new HashMap<EObject, Node>();
-		edgeMap = new HashMap<EObject, Edge>();
+		edgeMap = new HashMap<Link, Edge>();
+		rootEdges = new BasicEList<Link>();
 		
 		graph = new SingleGraph("");
 		graph.setStrict(false);
 		graph.setAutoCreate(false);
 		
-	
+		initialResourceContents = new BasicEList<EObject>(resource.getContents());
 		createNodesFromList(resource.getContents());
-//		for(EObject node : resource.getContents()) {
-//			if(!nodeMap.keySet().contains(node)) {
-//				createGraphNode(node);
-//			}
-//			 //EObjectContainmentEList.class;
-//			EReference subNodes;
-//			while(!node.eClass().getEReferences().isEmpty()) {
-//				
-//			}
-//			
-//			
-//			for(EReference ref : node.eClass().getEReferences()) {
-//				System.out.println(ref.getName());
-//				EObjectContainmentEList<EObject> test = (EObjectContainmentEList<EObject>) node.eGet(ref);
-//				for(EObject obj : test) {
-//					obj.eClass().getEReferences().isEmpty();
-//					for(EReference ref2 : obj.eClass().getEReferences()) {
-//						System.out.println(ref2.getName());
-//					}
-//				}
-////				EList<EReference> ref2 = ref.eClass().getEReferences();
-//				System.out.print("stop");
-//			}
-//			
-//			for(EReference ref : node.eClass().getEAllContainments()) {
-//				System.out.println(ref.getName());
-//			}
-//			
-//			
-//			//EReferenceImpl
-////			for(EObject nodes : node.eClass().eContents()) {
-////				System.out.println(nodes.eClass().getInstanceClassName());
-////			}
-////			TreeIterator<EObject> it = node.eClass().eAllContents();
-////			while(it.hasNext()) {
-////				EObject s = it.next();
-////				System.out.println(s.eClass().getInstanceTypeName());
-////			}
-//
-//		}
-////		for(IBeXEdge edge : resource.getEdgeSet().getEdges()) {
-////			if(!(nodeMap.keySet().contains(edge.getTargetNode())) && !(nodeMap.keySet().contains(edge.getSourceNode()))) {
-////				newGraphNode(edge.getTargetNode());
-////				newGraphNode(edge.getSourceNode());
-////			} else if (nodeMap.keySet().contains(edge.getTargetNode()) && !(nodeMap.keySet().contains(edge.getSourceNode()))) {
-////				newGraphNode(edge.getSourceNode());
-////			} else if (!(nodeMap.keySet().contains(edge.getTargetNode())) && nodeMap.keySet().contains(edge.getSourceNode())) {
-////				newGraphNode(edge.getTargetNode());
-////			}
-////			createGraphEdge(edge);
-////		}
-//		for(EObject node : resource.getContents()) {
-//			if(!nodeMap.keySet().contains(node)) {
-//				System.out.println(node.eClass().getInstanceClassName());
-//				createGraphNode(node);
-//			}
-//		}
-		
-		initialNodeMap = new HashMap<EObject, Node>(nodeMap);
-		initialEdgeMap = new HashMap<EObject, Edge>(edgeMap);
 		
 	}
 	
@@ -164,67 +93,73 @@ public class SimVis {
 	public List<EObject> createNodesFromList(EList<EObject> list) {
 		List<EObject> createdOrOldNodes = new ArrayList<EObject>();
 		for(EObject node : list) {
+			createdOrOldNodes.add(node);
 			if(!nodeMap.keySet().contains(node)) {
 				createGraphNode(node);
-			}
-			createdOrOldNodes.add(node);
-			if(!node.eClass().getEReferences().isEmpty()) {
-				for(EReference ref : node.eClass().getEReferences()) {
-					List<EObject> createdSubNodes = createNodesFromList((EList<EObject>)node.eGet(ref));
-					for(EObject createdSubNode : createdSubNodes) {
-						Link link = factory.createLink();
-						link.setSrc(node);
-						link.setTrg(createdSubNode);
-						createGraphEdge(link);
+				if(!node.eClass().getEReferences().isEmpty()) {
+					for(EReference ref : node.eClass().getEReferences()) {
+						EList<EObject> newList = new BasicEList<EObject>();
+						if(!(node.eGet(ref) instanceof EList)) {
+							if(node.eGet(ref) != null)
+								newList.add((EObject) node.eGet(ref));
+						} else {
+							newList = (EList<EObject>)(node.eGet(ref));
+						}
+						//List<EObject> createdSubNodes = createNodesFromList((EList<EObject>)(node.eGet(ref)));
+						List<EObject> createdSubNodes = createNodesFromList(newList);
+						for(EObject createdSubNode : createdSubNodes) {
+							Link link = factory.createLink();
+							link.setSrc(node);
+							link.setTrg(createdSubNode);
+							createGraphEdge(link);
+						}
 					}
 				}
-			}
+			}	
 		}
 		return createdOrOldNodes;
 	}
 	
 	public void UpdateGraphForwards() {
-		localStateManager.moveToState(localStateManager.getCurrentState().getChildren().get(0), false);
-		RuleState currentRuleState = (RuleState)localStateManager.getCurrentState();
-
-		for(EObject newNode : currentRuleState.getStructuralDelta().getCreatedObjects()) {
-			createGraphNode(newNode);
-		}
-		
-		for(AttributeDelta attributeDelta : currentRuleState.getAttributeDeltas()) {
-			for(EObject node : nodeMap.keySet()) {
-				if(node.equals(attributeDelta.getObject())) {
-					for(EAttribute attribute : node.eClass().getEAttributes()) {
-						if(attributeDelta.getAttribute().equals(attribute)) {
-							node.eSet(attribute, attributeDelta.getNewValue());
+		if(rootActivated) {
+			localStateManager.moveToState(localStateManager.getCurrentState().getChildren().get(0), false);
+			RuleState currentRuleState = (RuleState)localStateManager.getCurrentState();
+	
+			for(EObject newNode : currentRuleState.getStructuralDelta().getCreatedObjects()) {
+				createGraphNode(newNode);
+			}
+			
+			for(AttributeDelta attributeDelta : currentRuleState.getAttributeDeltas()) {
+				for(EObject node : nodeMap.keySet()) {
+					if(node.equals(attributeDelta.getObject())) {
+						for(EAttribute attribute : node.eClass().getEAttributes()) {
+							if(attributeDelta.getAttribute().equals(attribute)) {
+								node.eSet(attribute, attributeDelta.getNewValue());
+							}
+							
 						}
-						
 					}
 				}
 			}
-		}
-		
-		for(Link newLink : currentRuleState.getStructuralDelta().getCreatedLinks()) {
-			createGraphEdge(newLink);
-		}
-		
-		for(Link deleteLink : currentRuleState.getStructuralDelta().getDeletedLinks()) {
-			deleteGraphEdge(deleteLink);
-		}
-		
-		for(EObject deleteNode : currentRuleState.getStructuralDelta().getDeletedObjects()) {
-			deleteGraphNode(deleteNode);
-		}
-		
-		
+			
+			for(Link newLink : currentRuleState.getStructuralDelta().getCreatedLinks()) {
+				createGraphEdge(newLink);
+			}
+			
+			for(Link deleteLink : currentRuleState.getStructuralDelta().getDeletedLinks()) {
+				deleteGraphEdge(deleteLink);
+			}
+			
+			for(EObject deleteNode : currentRuleState.getStructuralDelta().getDeletedObjects()) {
+				deleteGraphNode(deleteNode);
+			}
+		}	
 	}
 	
 
 	
 	public void UpdateGraphBackwards() {
-//		if(localStateManager.getCurrentState().isInitial()) {
-//			setInitial();	
-//		} else {
+		if(rootActivated) {
 			RuleState currentRuleState = (RuleState)localStateManager.getCurrentState();
 
 			for(Link newLink : currentRuleState.getStructuralDelta().getCreatedLinks()) {
@@ -257,8 +192,8 @@ public class SimVis {
 			for(Link deleteLink : currentRuleState.getStructuralDelta().getDeletedLinks()) {
 				createGraphEdge(deleteLink);
 			}
-//		}
-		localStateManager.revertToPrevious();
+			localStateManager.revertToPrevious();
+		}
 	}
 	
 //	public void UpdateGraph() {
@@ -299,31 +234,23 @@ public class SimVis {
 //	}
 	
 	private void setInitial() {
-
-		List<EObject> deleteList = new ArrayList<EObject>();
-		for(EObject node : nodeMap.keySet()) {
-			if(!initialNodeMap.containsKey(node))
-				deleteList.add(node);
+		if(rootActivated) {
+			graph.clear();
+			nodeMap.clear();
+			edgeMap.clear();
+			rootNode = null;
+			rootEdges.clear();
+			nodeID = 0;
+			edgeID = 0;
+			localStateManager.moveToState(localStateManager.modelStates.getInitialState(),false);
+			createNodesFromList(initialResourceContents);
 		}
-		for(EObject node : deleteList) {
-			deleteGraphNode(node);
-		}
-		
-		deleteList = new ArrayList<EObject>();
-		for(EObject edge : edgeMap.keySet()) {
-			if(!initialEdgeMap.containsKey(edge));
-				deleteList.add(edge);
-		}
-		for(EObject edge : deleteList) {
-			deleteGraphEdge(edge);
-		}
-		
-		nodeMap = new HashMap<EObject, Node>(initialNodeMap);
-		edgeMap = new HashMap<EObject, Edge>(initialEdgeMap);
-
 	}
 	
 	private void createGraphNode(EObject node) {
+		if(rootNode == null) {
+			rootNode = node;
+		}
 		graph.addNode(Integer.toString(nodeID));
 		nodeMap.put(node, graph.getNode(Integer.toString(nodeID)));
 		graph.getNode(Integer.toString(nodeID)).setAttribute("ui.label", node.eClass().getInstanceClassName());
@@ -339,29 +266,48 @@ public class SimVis {
 		Edge createdEdge = graph.addEdge(Integer.toString(edgeID), nodeMap.get(newLink.getSrc()),  nodeMap.get(newLink.getTrg()), true);
 		if(createdEdge!=null) {
 			edgeMap.put(newLink, createdEdge);
+			if(newLink.getSrc().equals(rootNode) || newLink.getTrg().equals(rootNode)) {
+				rootEdges.add(newLink);
+			}
 			edgeID++;
 		}
 	}
 
-	private void deleteGraphEdge(EObject deletedEdge) {
-		graph.removeEdge(edgeMap.remove(deletedEdge));	
+	private void deleteGraphEdge(Link deletedLink) {
+		graph.removeEdge(edgeMap.remove(deletedLink));
+		if(deletedLink.getSrc().equals(rootNode) || deletedLink.getTrg().equals(rootNode)) {
+			rootEdges.remove(deletedLink);
+		}
 	}
 
+	private void deactivateRootNode() {
+		for(Link rootLink : rootEdges) {
+			graph.removeEdge(edgeMap.get(rootLink));
+		}
+		graph.removeNode(nodeMap.get(rootNode));
+		rootActivated = false;
+	}
 	
+	private void activateRootNode() {
+//		graph.addNode("0");
+//		graph.getNode(0).setAttribute("ui.label", rootNode.eClass().getInstanceClassName());
+////		for(Link rootLink : rootEdges) {
+////			graph.addE
+////		}
+////		deleteGraphNode(rootNode);
+		createGraphNode(rootNode);
+		for(Link rootLink : rootEdges) {
+			Edge createdEdge = graph.addEdge(Integer.toString(edgeID), nodeMap.get(rootLink.getSrc()),  nodeMap.get(rootLink.getTrg()), true);
+			if(createdEdge!=null) {
+				edgeMap.put(rootLink, createdEdge);
+				edgeID++;
+			}
+		}
+		
+		rootActivated = true;
+	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	public void openDisplay(ModelStateManager stateManager) {
 		Display display = new Display();
 		final Shell shell = new Shell(display);
@@ -370,9 +316,60 @@ public class SimVis {
         fillLayout.type = SWT.VERTICAL;
         shell.setLayout(fillLayout);
         
+//        GridLayout gridLayout = new GridLayout(2, true);
+//
+//        shell.setLayout(gridLayout);
+        
 		Composite composite = new Composite(shell, SWT.NO_BACKGROUND | SWT.EMBEDDED);
+		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		
+		Composite buttons = new Composite(shell, SWT.BORDER);
+		buttons.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		buttons.setLayout(new GridLayout(2, true));
+		
+		final Button setInitial = new Button(buttons, SWT.PUSH);
+		setInitial.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		setInitial.setText("Set Initial");
+		setInitial.addSelectionListener(new SelectionListener() {
 
-		final Button stepForward = new Button(shell, SWT.PUSH);
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				setInitial();
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// Auto-generated method stub
+			}
+			
+		});
+		
+		
+		
+		final Button rootNode = new Button(buttons, SWT.PUSH);
+		rootNode.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		rootNode.setText("Root Node");
+		rootNode.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if(rootActivated) {
+					deactivateRootNode();
+				}
+				else { 
+					activateRootNode();
+				}
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// Auto-generated method stub
+			}
+			
+		});
+		
+		final Button stepForward = new Button(buttons, SWT.PUSH);
+		stepForward.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		stepForward.setText("StepForward");
 		stepForward.addSelectionListener(new SelectionListener() {
 
@@ -385,46 +382,43 @@ public class SimVis {
 
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
-//				if(!localStateManager.getCurrentState().getChildren().isEmpty()) {
-//					localStateManager.moveToState(localStateManager.getCurrentState().getChildren().get(0), false);
-//					UpdateGraphForwards();
-//				}
+				// Auto-generated method stub
 			}
 			
 		});
 		
-		final Button stepBack = new Button(shell, SWT.PUSH);
+		final Button stepBack = new Button(buttons, SWT.PUSH);
+		stepBack.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		stepBack.setText("StepBackward");
-	
 		stepBack.addSelectionListener(new SelectionListener() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if(!localStateManager.getCurrentState().isInitial()) {
-					//localStateManager.revertToPrevious();
 					UpdateGraphBackwards();	
 				}
 			}
 
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
-//				if(!localStateManager.getCurrentState().isInitial()) {
-//					//localStateManager.revertToPrevious();
-//					UpdateGraphBackwards();	
-//				}
+				// Auto-generated method stub
 			}
 			
 		});
 		
+		nodeInfo = new Label(buttons, SWT.EMBEDDED);
+		nodeInfo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		nodeInfo.setText("");
 		
         try {
 			System.setProperty("sun.awt.noerasebackground","true");
 		} catch (NoSuchMethodError error) {}
         
 		Frame f = SWT_AWT.new_Frame(composite);
-
+		
 		//generateGraph(f,"");
 		localStateManager = stateManager;
+		localStateManager.moveToState(localStateManager.modelStates.getInitialState(), false);
 		generatePatternGraph(f, stateManager.modelStates);
 
 		shell.open();
@@ -477,14 +471,25 @@ public class SimVis {
 				types = EnumSet.of(InteractiveElement.NODE);
 				GraphicElement element = graphstreamView.findGraphicElementAt(types, e.getX(), e.getY());
 		        if(element != null){
-		        	for(EObject node : nodeMap.keySet()) {
+		        	for(EObject node : nodeMap.keySet()) {	
 		        		if(nodeMap.get(node).getId() == element.getId()) {
-		        			System.out.println("---------------------------");
-	        				System.out.println("NodeID: " + element.getId());
-		        			for(EAttribute attribute : node.eClass().getEAllAttributes()) {
-		        				System.out.println(attribute.getName() + ": " + node.eGet(attribute));
-		        			}
-		        			System.out.println("---------------------------");
+		        			Display.getDefault().asyncExec(new Runnable() {
+								@Override
+								public void run() {
+									nodeInfo.setText("---------------------------\n" + "NodeID: " + element.getId());
+									for(EAttribute attribute : node.eClass().getEAllAttributes()) {
+										nodeInfo.setText(nodeInfo.getText() + "\n" + attribute.getName() + ": " + node.eGet(attribute));
+				 
+				        			}
+									nodeInfo.setText(nodeInfo.getText() + "\n" + "---------------------------");
+								}
+			        		});
+//		        			System.out.println("---------------------------");
+//	        				System.out.println("NodeID: " + element.getId());
+//		        			for(EAttribute attribute : node.eClass().getEAllAttributes()) {
+//		        				System.out.println(attribute.getName() + ": " + node.eGet(attribute));
+//		        			}
+//		        			System.out.println("---------------------------");
 		        		}
 		        	}
 		        }
@@ -533,5 +538,7 @@ public class SimVis {
 	}
 
 }
-
+/*
+ * Step Forward bis Edge da ist -> set initial -> step forward bis edge da ist --> root node --> absturz (Fixed)
+ */
 

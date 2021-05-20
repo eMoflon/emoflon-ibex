@@ -104,10 +104,6 @@ public interface StructuralDelta extends EObject {
 	 */
 	EList<EObject> getResource2EObjectContainment();
 
-	ArrayList<IBeXNode> getDeltaNodes();
-	ArrayList<IBeXNode> getCreatedNodes();
-	ArrayList<IBeXNode> getDeletedNodes();
-	ArrayList<IBeXEdge> getCreatedEdges();
-	ArrayList<IBeXEdge> getDeletedEdges();
+
 
 } // StructuralDelta
