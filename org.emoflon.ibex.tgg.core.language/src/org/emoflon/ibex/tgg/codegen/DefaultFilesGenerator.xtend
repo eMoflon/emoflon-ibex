@@ -92,8 +92,6 @@ class DefaultFilesGenerator {
 			import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 			
 			import org.emoflon.ibex.tgg.run.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase».config.*;
-			
-			import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 			«additionalImports»
 			
 			public class «fileName» extends «strategy» {
@@ -149,10 +147,7 @@ class DefaultFilesGenerator {
 			import org.apache.log4j.Logger;
 			import org.apache.log4j.BasicConfigurator;
 			
-			import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
-			
 			import org.emoflon.ibex.tgg.compiler.defaults.IRegistrationHelper;
-			import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 			
 			import org.emoflon.ibex.tgg.ui.debug.adapter.TGGAdapter.IBeXOperation;
 			import org.emoflon.ibex.tgg.ui.debug.adapter.TGGAdapter.VictoryIBeXAdapter;
@@ -381,8 +376,6 @@ class DefaultFilesGenerator {
 		return generateBasicStructure(
 			'''
 				import org.emoflon.ibex.tgg.operational.strategies.sync.INITIAL_FWD;
-				import org.eclipse.emf.ecore.util.EcoreUtil;
-				import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 			''',
 			fileName,
 			"INITIAL_FWD",
@@ -450,8 +443,6 @@ class DefaultFilesGenerator {
 		return generateBasicStructure(
 			'''
 				import org.emoflon.ibex.tgg.operational.strategies.sync.INITIAL_BWD;
-				import org.eclipse.emf.ecore.util.EcoreUtil;
-				import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 			''',
 			fileName,
 			"INITIAL_BWD",
@@ -562,7 +553,7 @@ class DefaultFilesGenerator {
 			
 				/** Create default options **/
 				public IbexOptions createIbexOptions() {
-					return new DemoclesRegistrationHelper().createIbexOptions();
+					return new HiPERegistrationHelper().createIbexOptions();
 				}
 			}
 		'''
