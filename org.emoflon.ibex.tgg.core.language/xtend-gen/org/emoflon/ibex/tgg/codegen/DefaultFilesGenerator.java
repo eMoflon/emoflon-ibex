@@ -1050,7 +1050,7 @@ public class DefaultFilesGenerator {
     _builder.append("// Replace to register generated code or handle other URI-related requirements");
     _builder.newLine();
     _builder.append("\t\t");
-    _builder.append("new DemoclesRegistrationHelper().registerMetamodels(rs, executable);");
+    _builder.append("new HiPERegistrationHelper().registerMetamodels(rs, executable);");
     _builder.newLine();
     _builder.append("\t");
     _builder.append("}");
