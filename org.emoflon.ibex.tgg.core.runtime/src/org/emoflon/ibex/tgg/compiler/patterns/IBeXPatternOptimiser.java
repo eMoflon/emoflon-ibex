@@ -24,6 +24,7 @@ public class IBeXPatternOptimiser {
 
 	/**
 	 * Simple String comparison
+	 * 
 	 * @author NilsWeidmann
 	 *
 	 */
@@ -36,16 +37,15 @@ public class IBeXPatternOptimiser {
 	}
 
 	/**
-	 * This method takes a pair of nodes which potentially need an
-	 * unequal-constraint and checks if this is really necessary.
+	 * This method takes a pair of nodes which potentially need an unequal-constraint and checks if this
+	 * is really necessary.
 	 * 
-	 * @param nodes
-	 *            The pair of nodes between which a unequal-constraint might be
-	 *            necessary.
+	 * @param nodes The pair of nodes between which a unequal-constraint might be necessary.
 	 * @return true, if the pair requires an unequal-constraint.
 	 */
 	public static boolean unequalConstraintNecessary(TGGRuleNode left, TGGRuleNode right) {
-		return !unequalConstantAttributeValues(left, right) && !transitiveContainment(left, right)
+		return !unequalConstantAttributeValues(left, right) //
+				&& !transitiveContainment(left, right) //
 				&& !differentContainmentSubTrees(left, right);
 	}
 
@@ -97,12 +97,12 @@ public class IBeXPatternOptimiser {
 			return false;
 
 		// if the parents of both nodes are equal,
-		// they have to take care of checking unequality
+		// they have to take care of checking inequality
 		if (leftHierarchy.get(1).equals(rightHierarchy.get(1)))
 			return false;
 
 		// in the remaining cases, the nodes are in different but connected sub-trees
-		// and their parent nodes transitively take care of the unequality
+		// and their parent nodes transitively take care of the inequality
 		return true;
 	}
 
@@ -114,15 +114,16 @@ public class IBeXPatternOptimiser {
 			TGGRuleNode currentNode = possibleCurrentNode.get();
 			hierarchy.add(currentNode);
 
-			Optional<TGGRuleEdge> possibleContainmentEdge = currentNode.getIncomingEdges().stream()
-					.filter(e -> e.getType().isContainment()).findAny();
+			Optional<TGGRuleEdge> possibleContainmentEdge = currentNode.getIncomingEdges().stream() //
+					.filter(e -> e.getType().isContainment()) //
+					.findAny();
 
 			possibleCurrentNode = possibleContainmentEdge.map(e -> e.getSrcNode());
 		}
 
 		return hierarchy;
 	}
-	
+
 	public static void optimizeIBeXPattern(IBeXContextPattern invoker, IBeXContextPattern invokee) {
 		optimizeEdges(invoker, invokee);
 		optimizeInjectivityConstraints(invoker, invokee);
@@ -131,11 +132,12 @@ public class IBeXPatternOptimiser {
 
 	private static void optimizeAttributeConstraints(IBeXContextPattern invoker, IBeXContextPattern invokee) {
 		Collection<IBeXAttributeConstraint> revokedConstraints = new ArrayList<>();
-		for (IBeXAttributeConstraint constraint : invoker.getAttributeConstraint().stream()
-				.filter(constraint -> (constraint.getLhs() instanceof IBeXAttributeExpression))
-				.collect(Collectors.toList())) {
-			if(invokee.getSignatureNodes().stream()
-					.anyMatch(n -> n.getName().equals(((IBeXAttributeExpression)constraint.getLhs()).getNode().getName()))) {
+		List<IBeXAttributeConstraint> constraints = invoker.getAttributeConstraint().stream() //
+				.filter(constraint -> (constraint.getLhs() instanceof IBeXAttributeExpression)) //
+				.collect(Collectors.toList());
+		for (IBeXAttributeConstraint constraint : constraints) {
+			if (invokee.getSignatureNodes().stream()
+					.anyMatch(n -> n.getName().equals(((IBeXAttributeExpression) constraint.getLhs()).getNode().getName()))) {
 				revokedConstraints.add(constraint);
 			}
 		}
@@ -146,13 +148,13 @@ public class IBeXPatternOptimiser {
 	private static void optimizeInjectivityConstraints(IBeXContextPattern invoker, IBeXContextPattern invokee) {
 		Collection<IBeXInjectivityConstraint> revokedPairs = new ArrayList<>();
 
-		for(IBeXInjectivityConstraint injPair : invoker.getInjectivityConstraints()) {
+		for (IBeXInjectivityConstraint injPair : invoker.getInjectivityConstraints()) {
 			IBeXNode first = injPair.getValues().get(0);
 			IBeXNode second = injPair.getValues().get(1);
 			boolean firstFoundInInvokee = invokee.getSignatureNodes().stream().anyMatch(n -> n.getName().equals(first.getName()));
 			boolean secondFoundInInvokee = invokee.getSignatureNodes().stream().anyMatch(n -> n.getName().equals(second.getName()));
-			
-			if(firstFoundInInvokee && secondFoundInInvokee) {
+
+			if (firstFoundInInvokee && secondFoundInInvokee) {
 				revokedPairs.add(injPair);
 			}
 		}
@@ -163,21 +165,19 @@ public class IBeXPatternOptimiser {
 	private static void optimizeEdges(IBeXContextPattern invoker, IBeXContextPattern invokee) {
 		Collection<IBeXEdge> revokedEdges = new ArrayList<>();
 
-		for(IBeXEdge edge : invoker.getLocalEdges()) {
+		for (IBeXEdge edge : invoker.getLocalEdges()) {
 			IBeXNode srcNode = edge.getSourceNode();
 			IBeXNode trgNode = edge.getTargetNode();
-			
-			boolean foundInInvokee = invokee.getLocalEdges()
-					.stream()
+
+			boolean foundInInvokee = invokee.getLocalEdges().stream() //
 					.anyMatch(e -> e.getSourceNode().getName().equals(srcNode.getName()) && e.getTargetNode().getName().equals(trgNode.getName()));
-			
-			if(foundInInvokee) {
+
+			if (foundInInvokee) {
 				revokedEdges.add(edge);
 			}
 		}
 		EcoreUtil.deleteAll(revokedEdges, true);
 		invoker.getLocalEdges().removeAll(revokedEdges);
 	}
-	
-	
+
 }

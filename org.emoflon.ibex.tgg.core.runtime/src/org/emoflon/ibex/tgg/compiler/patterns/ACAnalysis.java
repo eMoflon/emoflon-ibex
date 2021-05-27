@@ -25,24 +25,24 @@ public class ACAnalysis {
 	private DomainType domain;
 	private TGG tgg;
 	private IbexOptions options;
-	
+
 	protected Map<EReference, Collection<TGGRule>> ref2rules = new HashMap<>();
 
 	public ACAnalysis(TGG tgg, IbexOptions options) {
 		this.tgg = tgg;
 		this.options = options;
-		
+
 		initializeCaching();
 	}
 
 	protected void initializeCaching() {
-		for(TGGRule rule : tgg.getRules()) {
-			for(TGGRuleEdge edge : rule.getEdges()) {
-				if(!ref2rules.containsKey(edge.getType())) {
+		for (TGGRule rule : tgg.getRules()) {
+			for (TGGRuleEdge edge : rule.getEdges()) {
+				if (!ref2rules.containsKey(edge.getType())) {
 					Collection<TGGRule> rules = new HashSet<>();
 					ref2rules.put(edge.getType(), rules);
 				}
-				
+
 				ref2rules.get(edge.getType()).add(rule);
 			}
 		}
@@ -73,7 +73,7 @@ public class ACAnalysis {
 						continue;
 					if (edgeIsNeverTranslatedInTGG(domain, eType, eDirection, tgg))
 						continue;
-					
+
 					// Collect all Filter NACs, but do not add them yet as negative invocations
 					if (thereIsNoSavingRule(domain, eType, eDirection, tgg))
 						filterNACs.add(new FilterNACCandidate(n, eType, eDirection));
@@ -82,7 +82,9 @@ public class ACAnalysis {
 		}
 
 		// Use optimiser to remove some of the filter NACs
-		final Collection<FilterNACCandidate> optimisedFilterNACs = filterNACs.stream().filter(nac -> !isRedundantDueToEMFContainmentSemantics(rule, nac)).collect(Collectors.toList());
+		final Collection<FilterNACCandidate> optimisedFilterNACs = filterNACs.stream() //
+				.filter(nac -> !isRedundantDueToEMFContainmentSemantics(rule, nac)) //
+				.collect(Collectors.toList());
 
 		optimisedFilterNACs.removeAll(ignoreDueToEOppositeSemantics(optimisedFilterNACs));
 
@@ -102,31 +104,31 @@ public class ACAnalysis {
 				if (filterNAC.getEDirection().equals(EdgeDirection.INCOMING) && edge.getTrgNode().equals(filterNAC.getNodeInRule()))
 					return true;
 			}
-			if(eOpposite != null && eOpposite.isContainment()) {
+			if (eOpposite != null && eOpposite.isContainment()) {
 				if (filterNAC.getEDirection().equals(EdgeDirection.OUTGOING) && edge.getSrcNode().equals(filterNAC.getNodeInRule()))
 					return true;
 			}
 		}
-		
+
 		return false;
 	}
 
 	private Collection<FilterNACCandidate> ignoreDueToEOppositeSemantics(Collection<FilterNACCandidate> allFilterNACs) {
-		return allFilterNACs.stream()//
+		return allFilterNACs.stream() //
 				.filter(nac -> {
 					return allFilterNACs.stream().anyMatch(otherNAC -> isGreaterEOpposite(otherNAC, nac));
-				})//
+				}) //
 				.collect(Collectors.toList());
 	}
 
 	protected boolean isGreaterEOpposite(FilterNACCandidate nac1, FilterNACCandidate nac2) {
 		if (nac2.getEdgeType().equals(nac1.getEdgeType().getEOpposite())) {
-			if (nac1.getNodeInRule().getName().equals(nac2.getNodeInRule().getName()))
+			if (nac1.getNodeInRule().getName().equals(nac2.getNodeInRule().getName())) {
 				if (nac1.getEDirection() != nac2.getEDirection()) {
 					return nac1.getEdgeType().getName().compareTo(nac2.getEdgeType().getName()) >= 0;
 				}
+			}
 		}
-
 		return false;
 	}
 
@@ -156,8 +158,9 @@ public class ACAnalysis {
 	}
 
 	protected List<TGGRule> determineSavingRules(DomainType domain, EReference eType, EdgeDirection eDirection, TGG tgg) {
-//		return tgg.getRules().stream().filter(r -> isSavingRule(domain, eType, eDirection, r)).collect(Collectors.toList());
-		return ref2rules.get(eType).stream().filter(r -> isSavingRule(domain, eType, eDirection, r)).collect(Collectors.toList());
+		return ref2rules.get(eType).stream() //
+				.filter(r -> isSavingRule(domain, eType, eDirection, r)) //
+				.collect(Collectors.toList());
 	}
 
 	private boolean isSavingRule(DomainType domain, EReference eType, EdgeDirection eDirection, TGGRule r) {
@@ -165,50 +168,76 @@ public class ACAnalysis {
 	}
 
 	/*
-	 * These edge counting rules only work in the context of dec because we filter
-	 * those rules where our entry point is not set to context
+	 * These edge counting rules only work in the context of dec because we filter those rules where our
+	 * entry point is not set to context
 	 */
 	private boolean isEdgeInTGG(TGG tgg, EReference eType, EdgeDirection eDirection, boolean findRescuePattern, DomainType mode) {
 		return ref2rules.containsKey(eType);
 	}
 
-	private MaxIncidentEdgeCount countEdgeInRule(TGGRule rule, EReference edgeType, EdgeDirection eDirection, boolean findRescuePattern, DomainType mode) {
-		return rule.getNodes().stream().map(n -> countEdgeInRule(rule, n, edgeType, eDirection, findRescuePattern, mode)).max((t1, t2) -> Integer.compare(t1.getEdgeCount(), t2.getEdgeCount()))
+	private MaxIncidentEdgeCount countEdgeInRule(TGGRule rule, EReference edgeType, EdgeDirection eDirection, boolean findRescuePattern,
+			DomainType domain) {
+		return rule.getNodes().stream() //
+				.map(n -> countEdgeInRule(rule, n, edgeType, eDirection, findRescuePattern, domain)) //
+				.max((t1, t2) -> Integer.compare(t1.getEdgeCount(), t2.getEdgeCount())) //
 				.orElseGet(() -> new MaxIncidentEdgeCount(0, null, null));
 	}
 
-	private MaxIncidentEdgeCount countEdgeInRule(TGGRule rule, TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection, boolean findRescuePattern, DomainType mode) {
-		return eDirection == EdgeDirection.INCOMING ? countIncomingEdgeInRule(rule, edgeType, findRescuePattern, mode) : countOutgoingEdgeInRule(rule, edgeType, findRescuePattern, mode);
+	private MaxIncidentEdgeCount countEdgeInRule(TGGRule rule, TGGRuleNode entryPoint, EReference edgeType, EdgeDirection eDirection,
+			boolean findRescuePattern, DomainType domain) {
+		return eDirection == EdgeDirection.INCOMING ? //
+				countIncomingEdgeInRule(rule, edgeType, findRescuePattern, domain) : //
+				countOutgoingEdgeInRule(rule, edgeType, findRescuePattern, domain);
 	}
 
-	private MaxIncidentEdgeCount countIncomingEdgeInRule(TGGRule rule, EReference edgeType, boolean findRescuePattern, DomainType mode) {
-		Stream<TGGRuleNode> stream = rule.getNodes().stream().filter(n -> n.getDomainType() == mode);
+	private MaxIncidentEdgeCount countIncomingEdgeInRule(TGGRule rule, EReference edgeType, boolean findRescuePattern, DomainType domain) {
+		Stream<TGGRuleNode> nodeStream = rule.getNodes().stream().filter(n -> n.getDomainType() == domain);
 		if (!findRescuePattern)
-			return stream.map(n -> countOutgoingEdgeInRule(rule, n, edgeType, findRescuePattern)).max((t1, t2) -> Integer.compare(t1.getEdgeCount(), t2.getEdgeCount())).orElse(new MaxIncidentEdgeCount(0, null, null));
+			return nodeStream //
+					.map(n -> countOutgoingEdgeInRule(rule, n, edgeType, findRescuePattern)) //
+					.max((t1, t2) -> Integer.compare(t1.getEdgeCount(), t2.getEdgeCount())) //
+					.orElse(new MaxIncidentEdgeCount(0, null, null));
 
-		return stream.map(n -> countIncomingEdgeInRule(rule, n, edgeType, findRescuePattern)).max((t1, t2) -> Integer.compare(t1.getEdgeCount(), t2.getEdgeCount())).orElse(new MaxIncidentEdgeCount(0, null, null));
+		return nodeStream //
+				.map(n -> countIncomingEdgeInRule(rule, n, edgeType, findRescuePattern)) //
+				.max((t1, t2) -> Integer.compare(t1.getEdgeCount(), t2.getEdgeCount())) //
+				.orElse(new MaxIncidentEdgeCount(0, null, null));
 	}
 
-	private MaxIncidentEdgeCount countOutgoingEdgeInRule(TGGRule rule, EReference edgeType, boolean findRescuePattern, DomainType mode) {
-		Stream<TGGRuleNode> stream = rule.getNodes().stream().filter(n -> n.getDomainType() == mode);
+	private MaxIncidentEdgeCount countOutgoingEdgeInRule(TGGRule rule, EReference edgeType, boolean findRescuePattern, DomainType domain) {
+		Stream<TGGRuleNode> nodeStream = rule.getNodes().stream().filter(n -> n.getDomainType() == domain);
 		if (!findRescuePattern)
-			return stream.map(n -> countIncomingEdgeInRule(rule, n, edgeType, findRescuePattern)).max((t1, t2) -> Integer.compare(t1.getEdgeCount(), t2.getEdgeCount())).orElse(new MaxIncidentEdgeCount(0, null, null));
+			return nodeStream //
+					.map(n -> countIncomingEdgeInRule(rule, n, edgeType, findRescuePattern)) //
+					.max((t1, t2) -> Integer.compare(t1.getEdgeCount(), t2.getEdgeCount())) //
+					.orElse(new MaxIncidentEdgeCount(0, null, null));
 
-		return stream.map(n -> countOutgoingEdgeInRule(rule, n, edgeType, findRescuePattern)).max((t1, t2) -> Integer.compare(t1.getEdgeCount(), t2.getEdgeCount())).orElse(new MaxIncidentEdgeCount(0, null, null));
+		return nodeStream //
+				.map(n -> countOutgoingEdgeInRule(rule, n, edgeType, findRescuePattern)) //
+				.max((t1, t2) -> Integer.compare(t1.getEdgeCount(), t2.getEdgeCount())) //
+				.orElse(new MaxIncidentEdgeCount(0, null, null));
 	}
 
 	private MaxIncidentEdgeCount countIncomingEdgeInRule(TGGRule rule, TGGRuleNode entryPoint, EReference edgeType, boolean findRescuePattern) {
-		List<TGGRuleEdge> edges = entryPoint.getIncomingEdges().stream()
-				.filter(e -> (!findRescuePattern || e.getTrgNode().getBindingType() == BindingType.CONTEXT) && e.getBindingType() == BindingType.CREATE && e.getType().equals(edgeType))
+		List<TGGRuleEdge> edges = entryPoint.getIncomingEdges().stream() //
+				.filter(e -> !findRescuePattern || e.getTrgNode().getBindingType() == BindingType.CONTEXT) //
+				.filter(e -> e.getBindingType() == BindingType.CREATE && e.getType().equals(edgeType)) //
 				.collect(Collectors.toList());
-		return new MaxIncidentEdgeCount(edges.size(), edges.size() == 0 ? null : edges.get(0).getTrgNode(), edges.size() == 0 ? null : edges.get(0).getSrcNode());
+		return new MaxIncidentEdgeCount( //
+				edges.size(), edges.size() == 0 ? null : edges.get(0).getTrgNode(), //
+				edges.size() == 0 ? null : edges.get(0).getSrcNode() //
+		);
 	}
 
 	private MaxIncidentEdgeCount countOutgoingEdgeInRule(TGGRule rule, TGGRuleNode entryPoint, EReference edgeType, boolean findRescuePattern) {
-		List<TGGRuleEdge> edges = entryPoint.getOutgoingEdges().stream()
-				.filter(e -> (!findRescuePattern || e.getSrcNode().getBindingType() == BindingType.CONTEXT) && e.getBindingType().equals(BindingType.CREATE) && e.getType().equals(edgeType))
+		List<TGGRuleEdge> edges = entryPoint.getOutgoingEdges().stream() //
+				.filter(e -> !findRescuePattern || e.getSrcNode().getBindingType() == BindingType.CONTEXT) //
+				.filter(e -> e.getBindingType().equals(BindingType.CREATE) && e.getType().equals(edgeType)) //
 				.collect(Collectors.toList());
-		return new MaxIncidentEdgeCount(edges.size(), edges.size() == 0 ? null : edges.get(0).getSrcNode(), edges.size() == 0 ? null : edges.get(0).getTrgNode());
+		return new MaxIncidentEdgeCount( //
+				edges.size(), edges.size() == 0 ? null : edges.get(0).getSrcNode(), //
+				edges.size() == 0 ? null : edges.get(0).getTrgNode() //
+		);
 	}
 
 	/**
@@ -222,9 +251,12 @@ public class ACAnalysis {
 		EPackage pkg = (EPackage) nodeClass.eContainer();
 
 		if (pkg == null)
-			throw new IllegalArgumentException("Unable to resolve the container of " + nodeClass + ".  Please check your metamodel registration code.");
+			throw new IllegalArgumentException(
+					"Unable to resolve the container of " + nodeClass + ".  Please check your metamodel registration code.");
 
-		return pkg.getEClassifiers().stream().filter(c -> (c instanceof EClass)).flatMap(c -> ((EClass) c).getEReferences().stream()).filter(r -> r.getEType().equals(nodeClass) || r.eContainer().equals(nodeClass))
+		return pkg.getEClassifiers().stream() //
+				.filter(c -> (c instanceof EClass)).flatMap(c -> ((EClass) c).getEReferences().stream()) //
+				.filter(r -> r.getEType().equals(nodeClass) || r.eContainer().equals(nodeClass)) //
 				.collect(Collectors.toList());
 	}
 }
