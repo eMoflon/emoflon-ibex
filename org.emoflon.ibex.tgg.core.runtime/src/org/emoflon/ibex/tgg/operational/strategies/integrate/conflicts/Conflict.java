@@ -20,7 +20,7 @@ import org.emoflon.ibex.tgg.operational.repair.ShortcutRepairStrategy.Repairable
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.BrokenMatch;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.ClassifiedMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.util.ConflictElements;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.util.ConflictEltFilter;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
@@ -92,14 +92,14 @@ public abstract class Conflict {
 		return new ConflictElements(this, filter, includeScope);
 	}
 
-	protected void restoreMatch(BrokenMatch brokenMatch) {
-		// FIXME adrianm: wrong deletion order may lead to not perceived deletions! (ModelChangeProtocol)
+	protected void restoreMatch(ITGGMatch match) {
+		// FIXME adrianm: wrong deletion order may lead to non perceived deletions! (ModelChangeProtocol)
 		Set<EMFEdge> deletedContainmentEdges = new HashSet<>();
 		Set<EObject> deletedNodes = new HashSet<>();
 		Set<EMFEdge> deletedCrossEdges = new HashSet<>();
 
 		EltFilter filter = new EltFilter().create();
-		integrate().getMatchUtil().getEMFEdges(brokenMatch.getMatch(), filter).forEach(edge -> {
+		integrate().getMatchUtil().getEMFEdges(match, filter).forEach(edge -> {
 			if (!integrate().getGeneralModelChanges().isDeleted(edge))
 				return;
 			if (edge.getType().isContainment())
@@ -107,17 +107,17 @@ public abstract class Conflict {
 			else
 				deletedCrossEdges.add(edge);
 		});
-		integrate().getMatchUtil().getObjects(brokenMatch.getMatch(), filter).forEach(node -> {
+		integrate().getMatchUtil().getObjects(match, filter).forEach(node -> {
 			if (integrate().getGeneralModelChanges().isDeleted(node))
 				deletedNodes.add(node);
 		});
-		TGGRuleApplication ruleApplication = integrate().getRuleApplicationNode(brokenMatch.getMatch());
+		TGGRuleApplication ruleApplication = integrate().getRuleApplicationNode(match);
 		deletedCrossEdges.addAll(integrate().getGeneralModelChanges().getDeletedEdges(ruleApplication));
 
 		recreateElements(deletedNodes, deletedContainmentEdges, deletedCrossEdges);
 	}
 
-	protected void restoreDomain(BrokenMatch brokenMatch, DomainType domain) {
+	protected void restoreDomain(ClassifiedMatch brokenMatch, DomainType domain) {
 		// TODO adrianm: fix filterNAC violations!
 
 		Set<EMFEdge> deletedContainmentEdges = new HashSet<>();

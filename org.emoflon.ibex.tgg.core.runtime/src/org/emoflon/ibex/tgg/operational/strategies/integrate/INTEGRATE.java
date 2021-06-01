@@ -35,10 +35,11 @@ import org.emoflon.ibex.tgg.operational.repair.AbstractRepairStrategy;
 import org.emoflon.ibex.tgg.operational.repair.AttributeRepairStrategy;
 import org.emoflon.ibex.tgg.operational.repair.ShortcutRepairStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.BrokenMatch;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.ClassifiedMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DeletionPattern;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DeletionType;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DomainModification;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassifier;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.ConflictContainer;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.detection.ConflictDetector;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.detection.MultiplicityCounter;
@@ -71,6 +72,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	//// TOOLS ////
 	protected TGGMatchUtil matchUtil;
 	protected ModelChangeProtocol modelChangeProtocol;
+	protected MatchClassifier matchClassifier;
 	protected ConflictDetector conflictDetector;
 	protected CC consistencyChecker;
 	protected PrecedenceGraph precedenceGraph;
@@ -83,7 +85,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	protected Map<String, Collection<String>> ruleName2filterNacPatternNames;
 	protected Map<String, Map<NACOverlap, Collection<ITGGMatch>>> pattern2filterNacMatches;
 	protected Map<String, Collection<String>> filterNacPattern2nodeNames;
-	protected Map<ITGGMatch, BrokenMatch> classifiedBrokenMatches;
+	protected Map<ITGGMatch, ClassifiedMatch> classifiedBrokenMatches;
 	protected Set<ConflictContainer> conflicts;
 	protected Map<ITGGMatch, ConflictContainer> match2conflicts;
 
@@ -109,6 +111,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		userDeltaKey = new ChangeKey();
 		generalDeltaKey = new ChangeKey();
 		modelChangeProtocol.registerKey(generalDeltaKey);
+
+		matchClassifier = new MatchClassifier(this);
 
 		conflictDetector = new ConflictDetector(this);
 		consistencyChecker = new LocalCC(options) {
@@ -200,7 +204,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		classifiedBrokenMatches = brokenNodes.parallelStream().collect( //
 				Collectors.toMap( //
 						node -> node.getMatch(), //
-						node -> new BrokenMatch(this, node.getMatch(), !node.isBroken())));
+						node -> new ClassifiedMatch(this, node.getMatch(), !node.isBroken())));
 
 		times.addTo("operations:classifyBrokenMatches", Timer.stop());
 	}
@@ -442,7 +446,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 					continue;
 
 				boolean repairedSth = false;
-				BrokenMatch brokenMatch = classifiedBrokenMatches.get(repairCandidate);
+				ClassifiedMatch brokenMatch = classifiedBrokenMatches.get(repairCandidate);
 
 				ITGGMatch repairedMatch = repairAttributes(brokenMatch);
 				if (repairedMatch != null) {
@@ -479,7 +483,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		return !alreadyProcessed.isEmpty();
 	}
 
-	private ITGGMatch repairAttributes(BrokenMatch brokenMatch) {
+	private ITGGMatch repairAttributes(ClassifiedMatch brokenMatch) {
 		Set<ConstrainedAttributeChanges> attrChanges = brokenMatch.getConstrainedAttrChanges();
 		if (attrChanges.isEmpty())
 			return null;
@@ -512,7 +516,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		return repairedSth ? brokenMatch.getMatch() : null;
 	}
 
-	private ITGGMatch repairViaShortcut(BrokenMatch brokenMatch) {
+	private ITGGMatch repairViaShortcut(ClassifiedMatch brokenMatch) {
 		DeletionType delType = brokenMatch.getDeletionType();
 		if (DeletionType.getShortcutCCCandidates().contains(delType)) {
 			return getShortcutRepairStrat().repair(brokenMatch.getMatch(), PatternType.CC);
@@ -662,7 +666,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		return filterNacMatches;
 	}
 
-	public Map<ITGGMatch, BrokenMatch> getClassifiedBrokenMatches() {
+	public Map<ITGGMatch, ClassifiedMatch> getClassifiedBrokenMatches() {
 		return classifiedBrokenMatches;
 	}
 

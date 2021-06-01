@@ -59,7 +59,7 @@ public abstract class DeletePreserveConflict extends Conflict
 	@Override
 	public void crs_mergeAndPreserve() {
 		for (ITGGMatch causingMatch : causingMatches)
-			restoreMatch(integrate().getClassifiedBrokenMatches().get(causingMatch));
+			restoreMatch(causingMatch);
 
 		// Do not remove elements above conflict match due to new explicit/implicit user deletion handling approach!
 
@@ -91,6 +91,7 @@ public abstract class DeletePreserveConflict extends Conflict
 			break;
 		case TRG:
 			revokeAddition();
+			break;
 		default:
 			break;
 		}
@@ -107,6 +108,7 @@ public abstract class DeletePreserveConflict extends Conflict
 			break;
 		case TRG:
 			revokeDeletion();
+			break;
 		default:
 			break;
 		}
@@ -145,7 +147,7 @@ public abstract class DeletePreserveConflict extends Conflict
 		tmp_restored = new HashSet<>();
 		for (ITGGMatch match : causingMatches) {
 			if (!tmp_restored.contains(match)) {
-				restoreMatch(integrate().getClassifiedBrokenMatches().get(match));
+				restoreMatch(match);
 				tmp_restored.add(match);
 				// restore other branches based on this match below the conflict match
 				if (!match.equals(getMatch()))
@@ -160,7 +162,7 @@ public abstract class DeletePreserveConflict extends Conflict
 			if (n.isBroken()) {
 				ITGGMatch m = n.getMatch();
 				if (!tmp_restored.contains(m)) {
-					restoreMatch(integrate().getClassifiedBrokenMatches().get(m));
+					restoreMatch(m);
 					tmp_restored.add(m);
 					restoreMatchesBasedOn(m);
 				}

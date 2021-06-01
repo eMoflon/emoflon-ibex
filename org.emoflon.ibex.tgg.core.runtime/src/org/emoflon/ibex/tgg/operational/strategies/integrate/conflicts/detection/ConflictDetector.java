@@ -16,7 +16,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.BrokenMatch;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.ClassifiedMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DeletionType;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DomainModification;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.AttributeConflict;
@@ -231,9 +231,9 @@ public class ConflictDetector {
 	}
 
 	private boolean hasDomainSpecificViolations(ITGGMatch match, DomainType domain) {
-		BrokenMatch brokenMatch = integrate.getClassifiedBrokenMatches().get(match);
+		ClassifiedMatch brokenMatch = integrate.getClassifiedBrokenMatches().get(match);
 		if (brokenMatch == null)
-			brokenMatch = new BrokenMatch(integrate, match, false);
+			brokenMatch = new ClassifiedMatch(integrate, match, false);
 
 		switch (domain) {
 		case SRC:
@@ -274,7 +274,7 @@ public class ConflictDetector {
 				.forEach(brokenMatch -> detectBrokenMatchBasedConflicts(brokenMatch));
 	}
 
-	private void detectBrokenMatchBasedConflicts(BrokenMatch brokenMatch) {
+	private void detectBrokenMatchBasedConflicts(ClassifiedMatch brokenMatch) {
 		ConflictContainer container = match2conflictContainer.computeIfAbsent(brokenMatch.getMatch(), //
 				key -> new ConflictContainer(integrate, brokenMatch.getMatch()));
 
@@ -282,7 +282,7 @@ public class ConflictDetector {
 		detectAttributeConflicts(container, brokenMatch);
 	}
 
-	private void detectAttributeConflicts(ConflictContainer container, BrokenMatch brokenMatch) {
+	private void detectAttributeConflicts(ConflictContainer container, ClassifiedMatch brokenMatch) {
 		for (ConstrainedAttributeChanges constrAttrChanges : brokenMatch.getConstrainedAttrChanges()) {
 			TGGAttributeConstraintDefinition def = constrAttrChanges.constraint.getDefinition();
 			if (def.isUserDefined() || !def.getName().startsWith("eq_")) {
@@ -318,7 +318,7 @@ public class ConflictDetector {
 		}
 	}
 
-	private boolean detectConflictsCausedByContradictoryChanges(ConflictContainer container, BrokenMatch brokenMatch) {
+	private boolean detectConflictsCausedByContradictoryChanges(ConflictContainer container, ClassifiedMatch brokenMatch) {
 		DomainModification domainModSrc = brokenMatch.getDeletionPattern().getModType(DomainType.SRC, BindingType.CREATE);
 		DomainModification domainModTrg = brokenMatch.getDeletionPattern().getModType(DomainType.TRG, BindingType.CREATE);
 

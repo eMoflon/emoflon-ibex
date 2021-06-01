@@ -16,7 +16,7 @@ import org.emoflon.ibex.tgg.util.ConsoleUtil;
 
 import language.DomainType;
 
-public class BrokenMatch {
+public class ClassifiedMatch {
 
 	private final INTEGRATE integrate;
 
@@ -31,7 +31,7 @@ public class BrokenMatch {
 	private final Set<ConstrainedAttributeChanges> constrainedAttrChanges;
 	// TODO adrianm: add violated in-place attribute expressions
 
-	public BrokenMatch(INTEGRATE integrate, ITGGMatch match, boolean implicitBroken) {
+	public ClassifiedMatch(INTEGRATE integrate, ITGGMatch match, boolean implicitBroken) {
 		this.integrate = integrate;
 		this.match = match;
 		this.implicitBroken = implicitBroken;

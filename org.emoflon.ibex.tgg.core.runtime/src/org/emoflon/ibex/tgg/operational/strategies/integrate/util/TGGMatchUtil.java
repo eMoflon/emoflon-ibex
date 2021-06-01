@@ -44,7 +44,7 @@ public class TGGMatchUtil {
 	}
 
 	private MatchAnalysis getRawAnalysis(ITGGMatch match) {
-		if(!matchToAnalysis.containsKey(match)) {
+		if (!matchToAnalysis.containsKey(match)) {
 			MatchAnalysis analyseMatch = analyseMatch(match);
 			matchToAnalysis.put(match, analyseMatch);
 			return analyseMatch;
@@ -61,14 +61,14 @@ public class TGGMatchUtil {
 		for (DomainType domain : filter.domainTypes) {
 			for (BindingType binding : filter.bindingTypes) {
 				Map<BindingType, List<TGGRuleElement>> map = analysis.groupedElements.get(domain);
-				if(map == null)
+				if (map == null)
 					continue;
-				
+
 				List<TGGRuleElement> group = map.get(binding);
-				if(group == null)
+				if (group == null)
 					continue;
-				
-				if(filter.all)
+
+				if (filter.all)
 					filtered.addAll(group);
 				else
 					group.forEach(elt -> {
@@ -97,7 +97,7 @@ public class TGGMatchUtil {
 	public Set<TGGRuleNode> getNodes(ITGGMatch match, EltFilter filter) {
 		return getNodeStream(match, filter).collect(Collectors.toSet());
 	}
-	
+
 	public Stream<EObject> getObjectStream(ITGGMatch match, EltFilter filter) {
 		return getNodeStream(match, filter).map(n -> (EObject) match.get(n.getName()));
 	}
@@ -115,7 +115,7 @@ public class TGGMatchUtil {
 	public Set<TGGRuleEdge> getEdges(ITGGMatch match, EltFilter filter) {
 		return getEdgeStream(match, filter).collect(Collectors.toSet());
 	}
-	
+
 	public Stream<EMFEdge> getEMFEdgeStream(ITGGMatch match, EltFilter filter) {
 		MatchAnalysis analysis = getRawAnalysis(match);
 		return getEdgeStream(match, filter).map(e -> analysis.getEMFEdge(e));
