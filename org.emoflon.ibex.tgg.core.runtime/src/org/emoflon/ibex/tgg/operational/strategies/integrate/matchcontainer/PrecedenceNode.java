@@ -19,7 +19,7 @@ public class PrecedenceNode {
 	private Set<PrecedenceNode> requires = Collections.synchronizedSet(cfactory.createObjectSet());
 	private Set<PrecedenceNode> requiredBy = Collections.synchronizedSet(cfactory.createObjectSet());
 
-	private Set<PrecedenceNode> toBeRolledBackBy = cfactory.createObjectSet();
+	private Set<PrecedenceNode> toBeRolledBackBy = Collections.synchronizedSet(cfactory.createObjectSet());
 
 	public PrecedenceNode(ITGGMatch match) {
 		this.match = match;

@@ -651,6 +651,16 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 	 * @generated
 	 */
 	@Override
+	public EAttribute getIBeXPattern_HasCountExpression() {
+		return (EAttribute) iBeXPatternEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EClass getIBeXContext() {
 		return iBeXContextEClass;
 	}
@@ -2087,6 +2097,7 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 		createEAttribute(iBeXNamedElementEClass, IBE_XNAMED_ELEMENT__NAME);
 
 		iBeXPatternEClass = createEClass(IBE_XPATTERN);
+		createEAttribute(iBeXPatternEClass, IBE_XPATTERN__HAS_COUNT_EXPRESSION);
 
 		iBeXContextEClass = createEClass(IBE_XCONTEXT);
 		createEReference(iBeXContextEClass, IBE_XCONTEXT__API_PATTERN_DEPENDENCIES);
@@ -2377,6 +2388,9 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 
 		initEClass(iBeXPatternEClass, IBeXPattern.class, "IBeXPattern", IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getIBeXPattern_HasCountExpression(), ecorePackage.getEBoolean(), "hasCountExpression", "false",
+				0, 1, IBeXPattern.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
 
 		initEClass(iBeXContextEClass, IBeXContext.class, "IBeXContext", IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);

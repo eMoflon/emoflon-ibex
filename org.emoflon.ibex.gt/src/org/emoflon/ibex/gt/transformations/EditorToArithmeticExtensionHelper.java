@@ -214,6 +214,11 @@ public class EditorToArithmeticExtensionHelper {
 		matchCount.setInvocation(invocation);
 		
 		invokingContext.getApiPatternDependencies().add(invokedContext);
+		
+		ibexPattern.setHasCountExpression(true);
+		invokingPattern.setHasCountExpression(true);
+		invokingContext.setHasCountExpression(true);
+		
 		return matchCount;
 	}
 }

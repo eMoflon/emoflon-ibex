@@ -231,9 +231,6 @@ public class DefaultFilesGenerator {
     _builder.append(_lowerCase_1);
     _builder.append(".config.*;");
     _builder.newLineIfNotEmpty();
-    _builder.newLine();
-    _builder.append("import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;");
-    _builder.newLine();
     _builder.append(additionalImports);
     _builder.newLineIfNotEmpty();
     _builder.newLine();
@@ -368,12 +365,7 @@ public class DefaultFilesGenerator {
     _builder.append("import org.apache.log4j.BasicConfigurator;");
     _builder.newLine();
     _builder.newLine();
-    _builder.append("import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;");
-    _builder.newLine();
-    _builder.newLine();
     _builder.append("import org.emoflon.ibex.tgg.compiler.defaults.IRegistrationHelper;");
-    _builder.newLine();
-    _builder.append("import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;");
     _builder.newLine();
     _builder.newLine();
     _builder.append("import org.emoflon.ibex.tgg.ui.debug.adapter.TGGAdapter.IBeXOperation;");
@@ -744,10 +736,6 @@ public class DefaultFilesGenerator {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("import org.emoflon.ibex.tgg.operational.strategies.sync.INITIAL_FWD;");
     _builder.newLine();
-    _builder.append("import org.eclipse.emf.ecore.util.EcoreUtil;");
-    _builder.newLine();
-    _builder.append("import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;");
-    _builder.newLine();
     StringConcatenation _builder_1 = new StringConcatenation();
     _builder_1.append("logger.info(\"Starting INITIAL FWD\");");
     _builder_1.newLine();
@@ -871,10 +859,6 @@ public class DefaultFilesGenerator {
   public static String generateInitialBwdAppFile(final String projectName, final String fileName) {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("import org.emoflon.ibex.tgg.operational.strategies.sync.INITIAL_BWD;");
-    _builder.newLine();
-    _builder.append("import org.eclipse.emf.ecore.util.EcoreUtil;");
-    _builder.newLine();
-    _builder.append("import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;");
     _builder.newLine();
     StringConcatenation _builder_1 = new StringConcatenation();
     _builder_1.append("logger.info(\"Starting INITIAL BWD\");");
@@ -1066,7 +1050,7 @@ public class DefaultFilesGenerator {
     _builder.append("// Replace to register generated code or handle other URI-related requirements");
     _builder.newLine();
     _builder.append("\t\t");
-    _builder.append("new DemoclesRegistrationHelper().registerMetamodels(rs, executable);");
+    _builder.append("new HiPERegistrationHelper().registerMetamodels(rs, executable);");
     _builder.newLine();
     _builder.append("\t");
     _builder.append("}");
@@ -1079,7 +1063,7 @@ public class DefaultFilesGenerator {
     _builder.append("public IbexOptions createIbexOptions() {");
     _builder.newLine();
     _builder.append("\t\t");
-    _builder.append("return new DemoclesRegistrationHelper().createIbexOptions();");
+    _builder.append("return new HiPERegistrationHelper().createIbexOptions();");
     _builder.newLine();
     _builder.append("\t");
     _builder.append("}");

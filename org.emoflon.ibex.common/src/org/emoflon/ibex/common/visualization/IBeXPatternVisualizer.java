@@ -1,7 +1,9 @@
 package org.emoflon.ibex.common.visualization;
 
+import java.util.Collection;
 import java.util.Optional;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.presentation.EcoreEditor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -11,16 +13,17 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
-import org.moflon.core.ui.visualisation.common.EMoflonVisualiser;
+import org.moflon.core.ui.VisualiserUtilities;
+import org.moflon.core.ui.visualisation.common.EMoflonDiagramTextProvider;
 
 /**
  * The IBeXPatternVisualizer provides a PlantUML visualization of an
  * IBeXPatternSet or a single pattern.
  */
-public class IBeXPatternVisualizer extends EMoflonVisualiser {
+public class IBeXPatternVisualizer implements EMoflonDiagramTextProvider {
 
 	@Override
-	protected String getDiagramBody(final IEditorPart editor, final ISelection selection) {
+	public String getDiagramBody(final IEditorPart editor, final ISelection selection) {
 		if (selection instanceof IStructuredSelection) {
 			return visualizeSelection((IStructuredSelection) selection);
 		}
@@ -67,6 +70,15 @@ public class IBeXPatternVisualizer extends EMoflonVisualiser {
 				.filter(o -> isPatternSet(o) || isContextPattern(o) || isCreatePattern(o) || isDeletePattern(o)) //
 				.isPresent();
 	}
+	
+	@Override
+	public boolean supportsSelection(ISelection selection) {
+		Collection<EObject> elements = VisualiserUtilities.extractEcoreSelection(selection);
+		if(elements == null)
+			return false;
+
+		return elements.stream().filter(elt -> elt.eClass().getEPackage().getName().contains("org.emoflon.ibex.patternmodel")).findAny().isPresent();
+	}
 
 	private static boolean isPatternSet(final Object object) {
 		return object instanceof IBeXPatternSet;
@@ -83,4 +95,5 @@ public class IBeXPatternVisualizer extends EMoflonVisualiser {
 	private static boolean isDeletePattern(final Object object) {
 		return object instanceof IBeXDeletePattern;
 	}
+
 }

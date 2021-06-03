@@ -43,6 +43,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticValueLiteral
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeAssignment;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeConstraint;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeExpression;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeParameter;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeValue;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXConstant;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
@@ -53,6 +54,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjointContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdgeSet;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEnumLiteral;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNodeSet;
@@ -580,12 +582,38 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 	 */
 	private void transformAttributeCondition(final EditorPattern editorPattern, final EditorAttributeConstraint editorAttribute, 
 			final IBeXContextPattern ibexContextPattern) {
+		if(!(isSimpleAttributeValue(editorAttribute.getLhs()) && isSimpleAttributeValue(editorAttribute.getRhs()))) {
+			return;
+		}
 		IBeXAttributeConstraint ibexAttrConstraint = IBeXPatternModelFactory.eINSTANCE.createIBeXAttributeConstraint();
 		IBeXRelation ibexRelation = EditorToIBeXPatternHelper.convertRelation(editorAttribute.getRelation());
 		ibexAttrConstraint.setRelation(ibexRelation);
 		convertAttributeValue(editorPattern, editorAttribute.getLhs(), ibexContextPattern).ifPresent(v -> ibexAttrConstraint.setLhs(v));
 		convertAttributeValue(editorPattern, editorAttribute.getRhs(), ibexContextPattern).ifPresent(v -> ibexAttrConstraint.setRhs(v));
 		ibexContextPattern.getAttributeConstraint().add(ibexAttrConstraint);
+	}
+	
+	public boolean isSimpleAttributeValue(EditorExpression value) {
+		if(value instanceof EditorAttributeExpression)
+			return true;
+		else if(value instanceof EditorEnumExpression)
+			return true;
+		else if(value instanceof EditorLiteralExpression)
+			return true;
+		else if(value instanceof EditorParameterExpression)
+			return true;
+		else if(value instanceof ArithmeticCalculationExpression) {
+			ArithmeticCalculationExpression ace = (ArithmeticCalculationExpression)value;
+			if(ace.getExpression() instanceof EditorAttributeExpression) {
+				return true;
+			} else if(ace.getExpression() instanceof EditorLiteralExpression) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
 	}
 	
 	/**
