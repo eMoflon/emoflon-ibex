@@ -944,7 +944,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	}
 	
 	public void displayModelStates() {
-		gtVisualisation.openDisplay(stateManager);
+		gtVisualisation.openDisplay(stateManager, this);
 	}
 	
 }

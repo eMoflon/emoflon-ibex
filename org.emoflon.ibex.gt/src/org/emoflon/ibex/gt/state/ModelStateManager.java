@@ -93,14 +93,16 @@ public class ModelStateManager {
 			StateID id = new StateID(newState);
 			State existingState = allStates.get(id);
 			if(existingState == null) {
+				System.out.println("new");
 				allStates.put(id, newState);
 			} else {
+				System.out.println("existing");
 				newState.setParent(null);
 				currentState.getChildren().remove(newState);
 				return moveToState(existingState, doUpdate);
 			}
 		}
-
+		System.out.println("method");
 		// Store attribute assignments for context nodes
 		Map<IBeXAttributeAssignment, AttributeDelta> attributeDeltas = new HashMap<>();
 		rule.getCreate().getAttributeAssignments().stream()
@@ -119,6 +121,12 @@ public class ModelStateManager {
 		adapter.pluginAdapter(nodesToWatch);
 		
 		// Let the rule play out
+		// While using autoApply method this recursive call leads to an error
+		// To avoid this, set doUpdate to false manually or use normal apply method
+		// Error description: states are generated in parallel not in consecutive order because 
+		// "modelStates.getStates().add(newState);"
+		// "currentState = newState;"
+		// is never reached
 		Optional<IMatch> optComatch = applyRule.apply(parameter, doUpdate);
 		if(!optComatch.isPresent()) {
 			newState.setParent(null);
