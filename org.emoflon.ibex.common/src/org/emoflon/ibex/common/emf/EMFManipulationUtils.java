@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 
 /**
@@ -161,11 +162,17 @@ public class EMFManipulationUtils {
 			}
 		}
 		else {
+			boolean smartemf = false;
 			for (EObject node : nodesToDelete) {
 				if(!node.eContents().isEmpty() && recursive)
 					deleteNodes(node.eContents().stream().collect(Collectors.toSet()), recursive, optimize);
+				//for smartemf
+				else if (!(node instanceof InternalEObject)) {
+					smartemf = true;
+					
+				}
 			}
-			EcoreUtil.deleteAll(nodesToDelete, false);
+			if(!smartemf) EcoreUtil.deleteAll(nodesToDelete, false);
 		}
 	}
 
@@ -197,7 +204,10 @@ public class EMFManipulationUtils {
 				if(!node.eContents().isEmpty() && recursive)
 					deleteNodes(node.eContents().stream().collect(Collectors.toSet()), danglingNodeAction, recursive, optimize);
 			}
-			EcoreUtil.deleteAll(nodesToDelete, false);
+			//temporary solution
+			if(!nodesToDelete.isEmpty() && nodesToDelete.iterator().next() instanceof InternalEObject) {
+				EcoreUtil.deleteAll(nodesToDelete, false);
+			}
 		}
 		
 	}
@@ -252,4 +262,6 @@ public class EMFManipulationUtils {
 	private static boolean isContainment(final EReference reference) {
 		return reference.isContainment() || reference.isContainer();
 	}
+	
+	
 }
