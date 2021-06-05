@@ -71,8 +71,8 @@ public abstract class GraphTransformationApp<API extends GraphTransformationAPI>
 	 */
 	public Resource createModel(final URI uri) {
 		prepareResourceSet();
-		//return resourceSet.createResource(uri);
-		return resourceSet.getResource(uri, true);
+		return resourceSet.createResource(uri);
+//		return resourceSet.getResource(uri, true);
 	}
 
 	/**
