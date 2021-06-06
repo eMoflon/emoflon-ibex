@@ -93,16 +93,13 @@ public class ModelStateManager {
 			StateID id = new StateID(newState);
 			State existingState = allStates.get(id);
 			if(existingState == null) {
-				System.out.println("new");
 				allStates.put(id, newState);
 			} else {
-				System.out.println("existing");
 				newState.setParent(null);
 				currentState.getChildren().remove(newState);
 				return moveToState(existingState, doUpdate);
 			}
 		}
-		System.out.println("method");
 		// Store attribute assignments for context nodes
 		Map<IBeXAttributeAssignment, AttributeDelta> attributeDeltas = new HashMap<>();
 		rule.getCreate().getAttributeAssignments().stream()
