@@ -69,7 +69,6 @@ import org.emoflon.ibex.gt.StateModel.StateModelFactory;
 import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
 import org.emoflon.ibex.gt.state.ModelStateManager;
 
-
 /**
 * 
 * @author Thomas
@@ -80,7 +79,7 @@ public class GraphVisualizer {
 	private StateModelFactory factory = StateModelFactory.eINSTANCE;
 	private ModelStateManager localStateManager;
 	private GraphTransformationInterpreter localGraphTransformationInterpreter;
-	
+
 	// Intern variables
 	private int nodeID = 0;
 	private int edgeID = 0;
@@ -143,6 +142,7 @@ public class GraphVisualizer {
 	 * @param resource	Model resources with initial nodes
 	 * @param stateManager Statemanager with all states and helper functions
 	 * @param graphTransformationInterpreter Interpreter used to find matches
+	 * @param edgeTypes 
 	 */
 	public GraphVisualizer(Resource resource, ModelStateManager stateManager, GraphTransformationInterpreter graphTransformationInterpreter) {
 		initialResourceContents = new BasicEList<EObject>(resource.getContents());
@@ -168,6 +168,396 @@ public class GraphVisualizer {
 	}
 	
 	/**
+	 *  Generates the UI and embeds the graph from graphstream
+	 */
+	private void generateUI() {
+		//Display
+		Display display = new Display();
+		Shell shell = new Shell(display);
+		GridLayout gridLayout = new GridLayout();
+		gridLayout.numColumns = 2;
+		shell.setLayout(gridLayout);
+		shell.setSize(1550, 800);
+		     
+		// Graphstream
+		Composite composite = new Composite(shell, SWT.NO_BACKGROUND | SWT.EMBEDDED);
+		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+		gd.widthHint = 1180;
+		gd.heightHint = 720;
+		composite.setLayoutData(gd);
+		Frame frame = SWT_AWT.new_Frame(composite);
+		frame.add(generateGraphPanel());
+		frame.setVisible(true);
+		    
+		// Matches and Rules
+		Composite textsAndList = new Composite(shell, SWT.BORDER);
+		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+		gd.widthHint = 300;
+		gd.heightHint = 720;
+		textsAndList.setLayoutData(gd);
+		RowData rd = new RowData();
+		rd.width = 300;
+		rd.height = 50;
+		textsAndList.setLayout(new RowLayout(SWT.VERTICAL));
+ 	
+		currentApplyLabel = new Label(textsAndList, SWT.BORDER);
+		currentApplyLabel.setLayoutData(rd);
+		futureApplyLabel = new Label(textsAndList, SWT.BORDER);
+		futureApplyLabel.setLayoutData(rd);
+		 	
+		 	
+		matchList = new org.eclipse.swt.widgets.List (textsAndList, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL);
+		rd = new RowData();
+		rd.width = 275;
+		rd.height = 350;
+		matchList.setLayoutData(rd);
+		 	
+		// Slider and Buttons
+		Composite sliderAndButtons = new Composite(shell, SWT.BORDER);
+		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+		gd.widthHint = 1180;
+		gd.heightHint = 300;
+		sliderAndButtons.setLayoutData(gd);
+		sliderAndButtons.setLayout(new RowLayout(SWT.VERTICAL));
+		 	
+		slider = new Scale(sliderAndButtons, SWT.HORIZONTAL);
+		slider.setMaximum(localStateManager.modelStates.getStates().size()-1);
+		slider.setMinimum(0);
+		slider.setIncrement(1);
+		slider.setSelection(0);
+		slider.setPageIncrement(1);
+		rd = new RowData();
+		rd.width = 1180;
+		rd.height = 50;
+		slider.setLayoutData(rd);
+	
+		Composite buttons = new Composite(sliderAndButtons, SWT.NONE);
+		rd = new RowData();
+		rd.width = 1180;
+		rd.height = 40;
+		buttons.setLayoutData(rd);
+		buttons.setLayout(new RowLayout(SWT.HORIZONTAL));	 	
+		 	
+		stepForward = new Button(buttons, SWT.PUSH);
+		stepForward.setText("StepForward");
+			
+		stepBackward = new Button(buttons, SWT.PUSH);
+		stepBackward.setText("StepBackward");
+			
+		setInitial = new Button(buttons, SWT.PUSH);
+		setInitial.setText("Set Initial");
+			
+		resetSelection = new Button(buttons, SWT.PUSH);
+		resetSelection.setText("Reset Selection");
+		    
+		Group radioButtons = new Group(sliderAndButtons, SWT.NONE);
+		rd = new RowData();
+		rd.width = 1180;
+		rd.height = 40;
+		radioButtons.setLayoutData(rd);
+		radioButtons.setLayout(new RowLayout(SWT.HORIZONTAL));
+			
+		showNoApply = new Button(radioButtons, SWT.RADIO);
+		showNoApply.setSelection(true);
+		showNoApply.setText("Show No Apply");
+			
+		showCurrentApply = new Button(radioButtons, SWT.RADIO);
+		showCurrentApply.setText("Show Current Apply");
+			
+		showFutureApply = new Button(radioButtons, SWT.RADIO);
+		showFutureApply.setText("Show Future");
+		
+		// Node Information
+		Composite nodeInfoComp = new Composite(shell, SWT.BORDER);
+		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+		gd.widthHint = 300;
+		gd.heightHint = 300;
+		nodeInfoComp.setLayoutData(gd);
+		nodeInfoComp.setLayout(new RowLayout(SWT.VERTICAL));
+		nodeInfoLabel = new Label(nodeInfoComp, SWT.BORDER);
+		rd = new RowData();
+		rd.width = 300;
+		rd.height = 300;
+		nodeInfoLabel.setLayoutData(rd);
+		    
+		// Initialize listeners
+		setListeners();
+		
+		// Initialize labels
+		setMatchRuleInfo();
+			
+		// Open shell and keep open while program is running
+		shell.open();
+		while (!shell.isDisposed()) {
+			if (!display.readAndDispatch())
+				display.sleep();
+		}
+		// Free resources after closing
+		display.dispose();
+		}
+
+	/**
+	 * Initializes listeners for gui components like buttons, slider and graph
+	 */
+	private void setListeners() {
+		stepForward.addSelectionListener(new SelectionListener() {
+	
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+					UpdateGraphForwards();
+			}
+	
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// Auto-generated method stub
+			}
+			
+		});
+		
+		stepBackward.addSelectionListener(new SelectionListener() {
+	
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+					UpdateGraphBackwards();	
+			}
+	
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// Auto-generated method stub
+			}
+			
+		});
+		
+		setInitial.addSelectionListener(new SelectionListener() {
+	
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				setInitial();
+			}
+	
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// Auto-generated method stub
+			}
+			
+		});
+		
+		resetSelection.addSelectionListener(new SelectionListener() {
+	
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				// Auto-generated method stub
+			}
+	
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// Auto-generated method stub
+			}
+			
+		});
+		
+		showNoApply.addSelectionListener(new SelectionAdapter() {
+	
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if(showNoApply.getSelection()) {
+					if(showCurrent) {
+						resetApplyVis();
+						showCurrent = false;
+					}
+					if(showFuture) {
+						revertFutureObjects();
+						showFuture = false;
+					}
+				}
+			}
+	
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// Auto-generated method stub
+			}
+			
+		});
+		
+		showCurrentApply.addSelectionListener(new SelectionAdapter() {
+	
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if(showCurrentApply.getSelection()) {
+					if(!showCurrent) {
+						if(showFuture) {
+							revertFutureObjects();
+							showFuture = false;
+						}
+						showCurrent = true;
+						showCurrentObjects();
+					}
+				}
+			}
+	
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// Auto-generated method stub
+			}
+			
+		});
+		
+		showFutureApply.addSelectionListener(new SelectionAdapter() {
+	
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if(showFutureApply.getSelection()) {
+					if(!showFuture) {
+						if(showCurrent) {
+							resetApplyVis();
+							showCurrent = false;
+						}
+						showFuture = true;
+						showFutureObjects();
+					}
+				}
+			}
+	
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// Auto-generated method stub
+			}
+			
+		});
+		
+		slider.addListener(SWT.Selection, new Listener() {
+	
+			@Override
+			public void handleEvent(Event event) {
+				stateChangeBySlider(slider.getSelection());
+			}
+			
+		});
+		
+		matchList.addSelectionListener(new SelectionListener() {
+	
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				// Check if something is selected and it´s not just a click on the list
+				if(matchList.getSelection().length != 0) {
+					// At first selection just highlight the match
+					// else: check if new match is selected or deselect the old one
+					if(oldSelection==-1) {
+						highlightMatch(listedMatches.get(matchList.getSelectionIndex()));
+					} else {
+						resetHighlightVis();
+						if(!(matchList.getSelectionIndex() == oldSelection)) {
+							highlightMatch(listedMatches.get(matchList.getSelectionIndex()));
+						} else {
+							matchList.deselectAll();
+						}
+					}
+					// Remember old selection
+					oldSelection = matchList.getSelectionIndex();
+				}
+			}
+	
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// Auto-generated method stub
+			}
+			
+		});
+	}
+
+	/**
+	 * Crates the panel to embed the graph from graphstream into swt
+	 * @return panel with the graph from graphstream
+	 */
+	private Panel generateGraphPanel() {
+		Viewer graphstreamViewer = new SwingViewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
+	
+		graphstreamViewer.enableAutoLayout();
+		View graphstreamView = graphstreamViewer.addDefaultView(false);
+		
+		// Initialize graph listeners to enable zoom and clicks on nodes
+		addGraphListeners(graphstreamView);
+		
+		@SuppressWarnings("serial")
+		Panel panel = new Panel(new BorderLayout()) {
+			public void update(java.awt.Graphics g) {
+				/* Do not erase the background */ 
+				paint(g);
+			}
+		};
+		JRootPane root = new JRootPane();
+		panel.add(root);
+		root.getContentPane().add((Component) graphstreamView);
+		return panel;
+		
+	}
+
+	/**
+	 * Initializes graph listeners
+	 * @param graphstreamView
+	 */
+	private void addGraphListeners(View graphstreamView) {
+		// Enables zoom function
+		((Component) graphstreamView).addMouseWheelListener(new MouseWheelListener() {
+		    @Override
+		    public void mouseWheelMoved(MouseWheelEvent e) {
+		        e.consume();
+		        int i = e.getWheelRotation();
+		        double factor = Math.pow(1.25, i);
+		        Camera cam = graphstreamView.getCamera();
+		        double zoom = cam.getViewPercent() * factor;
+		        Point2 pxCenter  = cam.transformGuToPx(cam.getViewCenter().x, cam.getViewCenter().y, 0);
+		        Point3 guClicked = cam.transformPxToGu(e.getX(), e.getY());
+		        double newRatioPx2Gu = cam.getMetrics().ratioPx2Gu/factor;
+		        double x = guClicked.x + (pxCenter.x - e.getX())/newRatioPx2Gu;
+		        double y = guClicked.y - (pxCenter.y - e.getY())/newRatioPx2Gu;
+		        cam.setViewCenter(x, y, 0);
+		        cam.setViewPercent(zoom);
+		    }
+		});
+		
+		// mouse listener enables to click on nodes 
+		((Component) graphstreamView).addMouseListener(new MouseListener() {
+			EnumSet<InteractiveElement> types;
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				types = EnumSet.of(InteractiveElement.NODE);
+				GraphicElement element = graphstreamView.findGraphicElementAt(types, e.getX(), e.getY());
+		        if(element != null){
+		        	Display.getDefault().syncExec(new Runnable() {
+						@Override
+						public void run() {
+							showAttributes(element.getId());	
+						}
+	        		});
+		        }
+	      }
+	
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// Auto-generated method stub
+			}
+	
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// Auto-generated method stub
+	
+			}
+	
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// Auto-generated method stub
+					
+			}
+	
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// Auto-generated method stub	
+			}
+		});		
+	}
+
+	/**
 	 * Creates the nodes of the graph. Nodes parenting other nodes indicate edges between these objects
 	 * recursive call to start at the bottom of the parenting hierarchy
 	 * @param list Contains all nodes to create
@@ -185,6 +575,7 @@ public class GraphVisualizer {
 				if(!node.eClass().getEReferences().isEmpty()) {
 					for(EReference ref : node.eClass().getEReferences()) {
 						EList<EObject> newList = new BasicEList<EObject>();
+						// If there is only one sub-node its not saved as list 
 						if(!(node.eGet(ref) instanceof EList)) {
 							if(node.eGet(ref) != null)
 								newList.add((EObject) node.eGet(ref));
@@ -208,52 +599,243 @@ public class GraphVisualizer {
 	}
 	
 	/**
-	 * Creates an info node and connects it to the respective node
-	 * @param targetNode Node to create an info node for
+	 * Changes to the next state and calls updates for the gui
 	 */
-	private void createInfoNode(EObject targetNode) {
-		// Check if target node already has an info node
-		if(!infoNodes.keySet().contains(targetNode)) {
-			Node addedNode = graph.addNode(Integer.toString(nodeID));
-			Edge addedEdge = graph.addEdge(Integer.toString(edgeID), addedNode, nodeMap.get(targetNode));
-			nodeID++;
-			edgeID++;
+	private void UpdateGraphForwards() {
+		// Checks if next state exists
+		if(!localStateManager.getCurrentState().getChildren().isEmpty()) {
+			// Reset info label
+			nodeInfoLabel.setText("");
+			// Reset coloring and highlighting
+			resetApplyVis();
+			resetHighlightVis();
+			// Move to next state and change slider value
+			localStateManager.moveToState(localStateManager.getCurrentState().getChildren().get(0), false);
+			RuleState currentRuleState = (RuleState)localStateManager.getCurrentState();
+			slider.setSelection(localStateManager.modelStates.getStates().indexOf(currentRuleState));
 			
-			addedNode.setAttribute("ui.style", 
-					"fill-color: grey;"
-					+ "shape: circle;"
-					+ "text-background-color: grey;"
-					+ "stroke-mode: plain;"
-					+ "stroke-color: rgba(0,150,0,255);"
-					+ "stroke-width: 2.0px;");
-			addedNode.setAttribute("ui.label", "++");
-			
-			addedEdge.setAttribute("ui.style", 
-					"fill-color: white;"
-					+ "stroke-mode: dashes;"
-					+ "stroke-color: black;"
-					+ "stroke-width: 2.0px;");
-			
-			infoNodes.put(targetNode, addedNode);
-		}
-	}
-	
-	/**
-	 * Changes the state depending of the slider value
-	 * @param stateValue value of the slider indicating the new state
-	 */
-	private void stateChangeBySlider(int stateValue) {
-		int indexOfCurrentState = localStateManager.modelStates.getStates().indexOf(localStateManager.getCurrentState());
-		while(stateValue != indexOfCurrentState) {
-			if(stateValue > indexOfCurrentState) {
-				UpdateGraphForwards();
-			} else {
-				UpdateGraphBackwards();
+			// Create new nodes
+			for(EObject newNode : currentRuleState.getStructuralDelta().getCreatedObjects()) {
+				createGraphNode(newNode);
 			}
-			indexOfCurrentState = localStateManager.modelStates.getStates().indexOf(localStateManager.getCurrentState());
+			// Change attributes
+			for(AttributeDelta attributeDelta : currentRuleState.getAttributeDeltas()) {
+				for(EObject node : nodeMap.keySet()) {
+					if(node.equals(attributeDelta.getObject())) {
+						for(EAttribute attribute : node.eClass().getEAttributes()) {
+							if(attributeDelta.getAttribute().equals(attribute)) {
+								node.eSet(attribute, attributeDelta.getNewValue());
+							}
+							
+						}
+					}
+				}
+			}
+			// Create new links	
+			for(Link newLink : currentRuleState.getStructuralDelta().getCreatedLinks()) {
+				createGraphEdge(newLink);
+			}
+			// Delete links
+			for(Link deleteLink : currentRuleState.getStructuralDelta().getDeletedLinks()) {
+				deleteGraphEdge(deleteLink);
+			}
+			// Delete nodes
+			for(EObject deleteNode : currentRuleState.getStructuralDelta().getDeletedObjects()) {
+				deleteGraphNode(deleteNode);
+			}
+				
+			// Set rule and match label
+			setMatchRuleInfo();
+			
+			// If coloring was activated apply it on new state
+			if(showCurrent) 
+				showCurrentObjects();
+			else if(showFuture) 
+				showFutureObjects();
+		}
+			
+	}
+
+	/**
+	 * Changes to the previous state and calls updates for the gui
+	 */
+	private void UpdateGraphBackwards() {
+		// Check if current state is initial
+		if(!localStateManager.getCurrentState().isInitial()) {
+			// Reset info label
+			nodeInfoLabel.setText("");
+			// Reset coloring and highlighting
+			resetApplyVis();
+			resetHighlightVis();
+			// Delete objects created for visualization of future rule apply
+			revertFutureObjects();	
+			
+			RuleState currentRuleState = (RuleState)localStateManager.getCurrentState();
+			// Adjust slider value
+			slider.setSelection(localStateManager.modelStates.getStates().indexOf(currentRuleState)-1);
+			// Delete links created in current state
+			for(Link newLink : currentRuleState.getStructuralDelta().getCreatedLinks()) {
+				deleteGraphEdge(newLink);
+			}
+			// Delete nodes created in current state
+			for(EObject newNode : currentRuleState.getStructuralDelta().getCreatedObjects()) {
+				deleteGraphNode(newNode);
+			}
+			// Revert attribute changes
+			for(AttributeDelta attributeDelta : currentRuleState.getAttributeDeltas()) {
+				for(EObject node : nodeMap.keySet()) {
+					if(node.equals(attributeDelta.getObject())) {
+						for(EAttribute attribute : node.eClass().getEAttributes()) {
+							if(attributeDelta.getAttribute().equals(attribute)) {
+								node.eSet(attribute, attributeDelta.getNewValue());
+							}
+								
+						}
+					}
+				}
+			}
+			// Recreate deleted nodes
+			for(EObject deleteNode : currentRuleState.getStructuralDelta().getDeletedObjects()) {
+				createGraphNode(deleteNode);
+			}
+			// Recreate deleted links
+			for(Link deleteLink : currentRuleState.getStructuralDelta().getDeletedLinks()) {
+				createGraphEdge(deleteLink);
+			}	
+			// Change to previous state
+			localStateManager.revertToPrevious();
+			
+			// Set rule and match label
+			setMatchRuleInfo();
+			
+			// If coloring was activated apply it on new state
+			if(showCurrent) 
+				showCurrentObjects();
+			else if(showFuture) 
+				showFutureObjects();
 		}
 	}
+
+	/**
+	 * Sets the graph to its initial state
+	 */
+	private void setInitial() {
+		// Reset coloring and highlighting
+		resetApplyVis();
+		resetHighlightVis();
+		
+		// Clear and re-initialize graph
+		graph.clear();
+		graph.setAttribute("ui.stylesheet", styleSheet);
+		
+		// Clear variables
+		nodeMap.clear();
+		edgeMap.clear();
+		nodeID = 0;
+		edgeID = 0;
+			
+		// Move to initial state and create initial nodes and edges
+		localStateManager.moveToState(localStateManager.modelStates.getInitialState(),false);
+		createNodesFromList(initialResourceContents);
+		
+		// Clean info label
+		nodeInfoLabel.setText("");
 	
+		// Reset radio button selection
+		showNoApply.setSelection(true);
+		showFutureApply.setSelection(false);
+		showCurrentApply.setSelection(false);
+		showCurrent = false;
+		showFuture = false;
+		
+		// Reset slider
+		slider.setSelection(0);
+		
+		// Reset rule and match labels
+		setMatchRuleInfo();
+			
+	}
+
+	/**
+	 * Sets the rule and match labels
+	 */
+	private void setMatchRuleInfo() {
+		// Clear listes matches 
+		matchList.removeAll();
+		listedMatches.clear();
+		
+		//Check if in initial state
+		if(!localStateManager.getCurrentState().isInitial()) {
+			RuleState currentRuleState = (RuleState)localStateManager.getCurrentState();
+			currentApplyLabel.setText("Current Apply: \n" + currentRuleState.getRule().getName());		
+		} else {
+			currentApplyLabel.setText("Current Apply: \nNo apply in initial state!");
+		}
+		
+		// Check if there is a next state
+		if(!localStateManager.getCurrentState().getChildren().isEmpty()) {
+			RuleState nextRuleState = (RuleState)localStateManager.getCurrentState().getChildren().get(0);
+			// Use pattern matcher to find matches and list them in gui
+			@SuppressWarnings("unchecked")
+			List<IMatch> matchStream = localGraphTransformationInterpreter.matchStream(nextRuleState.getRule().getName(), (Map<String, Object>) nextRuleState.getParameter() , true).collect(Collectors.toList());
+			int index = 0;
+			for(IMatch match : matchStream) {
+				if(match.equals(nextRuleState.getMatch())) {
+					matchList.add(match.getPatternName() + " (Next)");
+				} else {
+					matchList.add(match.getPatternName());
+				}
+				
+				listedMatches.put(index, match);
+				index++;
+			}
+			futureApplyLabel.setText("Next Apply: \n" + nextRuleState.getRule().getName() + "\nMatches: " + matchStream.size());
+		} else {
+			futureApplyLabel.setText("Next Apply: \nNo further state available!");
+		}
+		
+	}
+
+	/**
+	 * Prints the attributes of node with given ID in the gui 
+	 * @param nodeID ID of the node which attributes should be shown
+	 */
+	private void showAttributes(String nodeID) {
+		EObject node = null;
+		boolean infoNode = true;
+		// Check if normal node or info node
+		for(EObject n : nodeMap.keySet()) {
+			if(nodeMap.get(n).getId()==nodeID) {
+				node = n;
+				infoNode = false;
+			}
+		}
+		if(infoNode)
+			for(EObject n : infoNodes.keySet()) {
+				if(infoNodes.get(n).getId()==nodeID)
+					node = n;
+			}
+		
+		// If node exists show print out attributes
+		if(node!=null) {
+			String info = node.eClass().getInstanceClassName();
+			for(EAttribute attribute : node.eClass().getEAllAttributes()) {
+				info = info + "\n" + attribute.getName() + ": " + node.eGet(attribute);
+				// If node is info node also print out attribute changes
+				// No need to check if next state is available because if info node exist this is already true
+				if(infoNode) {
+					for(AttributeDelta delta : ((RuleState)localStateManager.getCurrentState().getChildren().get(0)).getAttributeDeltas()) {
+						if(delta.getObject().equals(node) && delta.getAttribute().equals(attribute)) {
+							info = info + " --> " + delta.getNewValue();
+						}
+					}
+				}
+			}
+			nodeInfoLabel.setText(info);
+		}
+		
+	}
+
 	/**
 	 * Colors and labels all nodes and edges effected by the apply of the current rule
 	 * Structural changes are indicates by coloring the whole node / edge
@@ -355,6 +937,17 @@ public class GraphVisualizer {
 	}
 	
 	/**
+	 * Highlights parameter of given match with orange shadow
+	 * @param selectedMatch Match which should be highlighted
+	 */
+	private void highlightMatch(IMatch selectedMatch) {
+		// TODO: Differenzierung zwischen Edge und Node
+		for(Object matchNode : selectedMatch.getObjects()) {
+			nodeMap.get((EObject)matchNode).setAttribute("ui.style", "shadow-mode: gradient-radial; shadow-width: 10px; shadow-color: orange;");
+		}
+	}
+
+	/**
 	 * Reverts coloring of all graph objects 
 	 * Does not revert highlighting of matches (shadow of nodes)
 	 */
@@ -383,7 +976,7 @@ public class GraphVisualizer {
 	}
 	
 	/**
-	 * Reverts highlighting of all graph objects 
+	 * Reverts highlighting of all graph objects (disables shadow)
 	 */
 	private void resetHighlightVis() {
 		
@@ -395,169 +988,60 @@ public class GraphVisualizer {
 			e.setAttribute("ui.style", "shadow-mode: none;");
 		}
 	}
-	
-	/**
-	 * 
-	 */
-	private void UpdateGraphForwards() {
-		if(!localStateManager.getCurrentState().getChildren().isEmpty()) {
-			nodeInfoLabel.setText("");
-			resetApplyVis();
-			resetHighlightVis();
-			localStateManager.moveToState(localStateManager.getCurrentState().getChildren().get(0), false);
-			RuleState currentRuleState = (RuleState)localStateManager.getCurrentState();
-			slider.setSelection(localStateManager.modelStates.getStates().indexOf(currentRuleState));
-			for(EObject newNode : currentRuleState.getStructuralDelta().getCreatedObjects()) {
-				createGraphNode(newNode);
-			}
-	
-			for(AttributeDelta attributeDelta : currentRuleState.getAttributeDeltas()) {
-				for(EObject node : nodeMap.keySet()) {
-					if(node.equals(attributeDelta.getObject())) {
-						for(EAttribute attribute : node.eClass().getEAttributes()) {
-							if(attributeDelta.getAttribute().equals(attribute)) {
-								node.eSet(attribute, attributeDelta.getNewValue());
-							}
-							
-						}
-					}
-				}
-			}
-				
-			for(Link newLink : currentRuleState.getStructuralDelta().getCreatedLinks()) {
-				createGraphEdge(newLink);
-			}
-			
-			for(Link deleteLink : currentRuleState.getStructuralDelta().getDeletedLinks()) {
-				deleteGraphEdge(deleteLink);
-			}
-				
-			for(EObject deleteNode : currentRuleState.getStructuralDelta().getDeletedObjects()) {
-				deleteGraphNode(deleteNode);
-			}
-				
-			setMatchRuleInfo();
-			
-			if(showCurrent) 
-				showCurrentObjects();
-			else if(showFuture) 
-				showFutureObjects();
-		}
-			
-	}
-	
-	private void UpdateGraphBackwards() {
-		if(!localStateManager.getCurrentState().isInitial()) {
-			nodeInfoLabel.setText("");
-			resetApplyVis();
-			resetHighlightVis();
-			revertFutureObjects();	
-			
-			RuleState currentRuleState = (RuleState)localStateManager.getCurrentState();
-			slider.setSelection(localStateManager.modelStates.getStates().indexOf(currentRuleState)-1);
-			for(Link newLink : currentRuleState.getStructuralDelta().getCreatedLinks()) {
-				deleteGraphEdge(newLink);
-			}
-				
-			for(EObject newNode : currentRuleState.getStructuralDelta().getCreatedObjects()) {
-				deleteGraphNode(newNode);
-			}
-				
-			for(AttributeDelta attributeDelta : currentRuleState.getAttributeDeltas()) {
-				for(EObject node : nodeMap.keySet()) {
-					if(node.equals(attributeDelta.getObject())) {
-						for(EAttribute attribute : node.eClass().getEAttributes()) {
-							if(attributeDelta.getAttribute().equals(attribute)) {
-								node.eSet(attribute, attributeDelta.getNewValue());
-							}
-								
-						}
-					}
-				}
-			}
-			
-			for(EObject deleteNode : currentRuleState.getStructuralDelta().getDeletedObjects()) {
-				createGraphNode(deleteNode);
-			}
-				
-			for(Link deleteLink : currentRuleState.getStructuralDelta().getDeletedLinks()) {
-				createGraphEdge(deleteLink);
-			}	
-			
-			localStateManager.revertToPrevious();
-			
-			setMatchRuleInfo();
-			
-			if(showCurrent) 
-				showCurrentObjects();
-			else if(showFuture) 
-				showFutureObjects();
-		}
-	}
-	
-	private void setMatchRuleInfo() {
-		matchList.removeAll();
-		listedMatches.clear();
-		if(!localStateManager.getCurrentState().isInitial()) {
-			RuleState currentRuleState = (RuleState)localStateManager.getCurrentState();
-			currentApplyLabel.setText("Current Apply: \n" + currentRuleState.getRule().getName());		
-		} else {
-			currentApplyLabel.setText("Current Apply: \nNo apply in initial state!");
-		}
-		
-		if(!localStateManager.getCurrentState().getChildren().isEmpty()) {
-				
-			RuleState nextRuleState = (RuleState)localStateManager.getCurrentState().getChildren().get(0);
-			@SuppressWarnings("unchecked")
-			List<IMatch> matchStream = localGraphTransformationInterpreter.matchStream(nextRuleState.getRule().getName(), (Map<String, Object>) nextRuleState.getParameter() , true).collect(Collectors.toList());
-			int index = 0;
-			for(IMatch match : matchStream) {
-				if(match.equals(nextRuleState.getMatch())) {
-					matchList.add(match.getPatternName() + " (Next)");
-				} else {
-					matchList.add(match.getPatternName());
-				}
-				
-				listedMatches.put(index, match);
-				index++;
-			}
-			futureApplyLabel.setText("Next Apply: \n" + nextRuleState.getRule().getName() + "\nMatches: " + matchStream.size());
-		} else {
-			futureApplyLabel.setText("Next Apply: \nNo further state available!");
-		}
-		
-	}
-	
-	private void setInitial() {
-			resetApplyVis();
-			resetHighlightVis();
-			graph.clear();
-			graph.setAttribute("ui.stylesheet", styleSheet);
-			
-			nodeMap.clear();
-			edgeMap.clear();
-			nodeID = 0;
-			edgeID = 0;
-			
-			localStateManager.moveToState(localStateManager.modelStates.getInitialState(),false);
-			createNodesFromList(initialResourceContents);
-			
-			nodeInfoLabel.setText("");
 
-			showNoApply.setSelection(true);
-			showFutureApply.setSelection(false);
-			showCurrentApply.setSelection(false);
-			showCurrent = false;
-			showFuture = false;
-			
-			slider.setSelection(0);
-			setMatchRuleInfo();
-			
+	/**
+	 * Changes the state depending of the slider value
+	 * @param stateValue value of the slider indicating the new state
+	 */
+	private void stateChangeBySlider(int stateValue) {
+		int indexOfCurrentState = localStateManager.modelStates.getStates().indexOf(localStateManager.getCurrentState());
+		while(stateValue != indexOfCurrentState) {
+			if(stateValue > indexOfCurrentState) {
+				UpdateGraphForwards();
+			} else {
+				UpdateGraphBackwards();
+			}
+			indexOfCurrentState = localStateManager.modelStates.getStates().indexOf(localStateManager.getCurrentState());
+		}
 	}
-	
+
+	/**
+	 * Creates an info node and connects it to the respective node
+	 * @param targetNode Node to create an info node for
+	 */
+	private void createInfoNode(EObject targetNode) {
+		// Check if target node already has an info node
+		if(!infoNodes.keySet().contains(targetNode)) {
+			Node addedNode = graph.addNode(Integer.toString(nodeID));
+			Edge addedEdge = graph.addEdge(Integer.toString(edgeID), addedNode, nodeMap.get(targetNode));
+			nodeID++;
+			edgeID++;
+			
+			addedNode.setAttribute("ui.style", 
+					"fill-color: grey;"
+					+ "shape: circle;"
+					+ "text-background-color: grey;"
+					+ "stroke-mode: plain;"
+					+ "stroke-color: rgba(0,150,0,255);"
+					+ "stroke-width: 2.0px;");
+			addedNode.setAttribute("ui.label", "++");
+			
+			addedEdge.setAttribute("ui.style", 
+					"fill-color: white;"
+					+ "stroke-mode: dashes;"
+					+ "stroke-color: black;"
+					+ "stroke-width: 2.0px;");
+			
+			infoNodes.put(targetNode, addedNode);
+		}
+	}
+
+	/**
+	 * Adds node to the graph and map graph node to EObject node
+	 * @param node Node to add
+	 */
 	private void createGraphNode(EObject node) {
 		if(!nodeMap.keySet().contains(node)) {
-			// Add node to the graph and map graph node to EObject node
 			nodeMap.put(node, graph.addNode(Integer.toString(nodeID)));
 			
 			// Label node
@@ -570,12 +1054,20 @@ public class GraphVisualizer {
 			nodeID++;
 		}	
 	}
-	
+
+	/**
+	 * Deletes graph node and its mapping
+	 * @param node Node to delete
+	 */
 	private void deleteGraphNode(EObject node) {
-		// Delete graph node and mapping
 		graph.removeNode(nodeMap.remove(node));
 	}
-	
+
+	/**
+	 * Creates new graph edge and its mapping
+	 * @param newLink Edge to create
+	 * @return created edge
+	 */
 	private Edge createGraphEdge(Link newLink) {
 		// No check with edgeMap because different Link-objects can have same target and source
 		// Instead check if link is already in graph
@@ -596,437 +1088,12 @@ public class GraphVisualizer {
 		return null;
 	}
 
+	/**
+	 * Deletes graph edge and its mapping
+	 * @param deletedLink edge to delete
+	 */
 	private void deleteGraphEdge(Link deletedLink) {
-		// Delete graph edge and mapping
 		graph.removeEdge(edgeMap.remove(deletedLink));
 	}
-	
-	private void showAttributes(String nodeID) {
-		EObject node = null;
-		boolean infoNode = true;
-		for(EObject n : nodeMap.keySet()) {
-			if(nodeMap.get(n).getId()==nodeID) {
-				node = n;
-				infoNode = false;
-			}
-		}
-		if(infoNode)
-			for(EObject n : infoNodes.keySet()) {
-				if(infoNodes.get(n).getId()==nodeID)
-					node = n;
-			}
-		
-		if(node!=null) {
-			String info = node.eClass().getInstanceClassName();
-			for(EAttribute attribute : node.eClass().getEAllAttributes()) {
-				info = info + "\n" + attribute.getName() + ": " + node.eGet(attribute);
-				if(infoNode) {
-					for(AttributeDelta delta : ((RuleState)localStateManager.getCurrentState().getChildren().get(0)).getAttributeDeltas()) {
-						if(delta.getObject().equals(node) && delta.getAttribute().equals(attribute)) {
-							info = info + " --> " + delta.getNewValue();
-						}
-					}
-				}
-			}
-			nodeInfoLabel.setText(info);
-		}
-		
-	}
-
-	
-	
-
-	
-	private Panel generateGraphPanel() {
-		Viewer graphstreamViewer = new SwingViewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
-
-		graphstreamViewer.enableAutoLayout();
-		View graphstreamView = graphstreamViewer.addDefaultView(false);
-		
-		addGraphListeners(graphstreamView);
-
-		
-		Panel panel = new Panel(new BorderLayout()) {
-			public void update(java.awt.Graphics g) {
-				/* Do not erase the background */ 
-				paint(g);
-			}
-		};
-		JRootPane root = new JRootPane();
-		panel.add(root);
-		root.getContentPane().add((Component) graphstreamView);
-		return panel;
-		
-	}
-	
-	
-	
-	private void generateUI() {
-		Display display = new Display();
-	    Shell shell = new Shell(display);
-	    GridLayout gridLayout = new GridLayout();
-	    gridLayout.numColumns = 2;
-	    shell.setLayout(gridLayout);
-	    shell.setSize(1550, 800);
-	     
-	    // Graphstream
-	    Composite composite = new Composite(shell, SWT.NO_BACKGROUND | SWT.EMBEDDED);
-	    GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-	    gd.widthHint = 1180;
-	    gd.heightHint = 720;
-	    composite.setLayoutData(gd);
-	 	Frame frame = SWT_AWT.new_Frame(composite);
-	 	frame.add(generateGraphPanel());
-	 	frame.setVisible(true);
-	    
-	 	// Matches and Rules
-	 	Composite textsAndList = new Composite(shell, SWT.BORDER);
-	 	gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-	 	gd.widthHint = 300;
-		gd.heightHint = 720;
-	 	textsAndList.setLayoutData(gd);
-	 	RowData rd = new RowData();
-	 	rd.width = 300;
-	 	rd.height = 50;
-	 	textsAndList.setLayout(new RowLayout(SWT.VERTICAL));
-//	 	
-	 	currentApplyLabel = new Label(textsAndList, SWT.BORDER);
-	 	currentApplyLabel.setLayoutData(rd);
-	 	futureApplyLabel = new Label(textsAndList, SWT.BORDER);
-	 	futureApplyLabel.setLayoutData(rd);
-	 	
-	 	
-	 	matchList = new org.eclipse.swt.widgets.List (textsAndList, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL);
-	 	rd = new RowData();
-	 	rd.width = 275;
-	 	rd.height = 350;
-	 	matchList.setLayoutData(rd);
-	 	
-	 	// Slider and Buttons
-	 	Composite sliderAndButtons = new Composite(shell, SWT.BORDER);
-	 	gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-	 	gd.widthHint = 1180;
-		gd.heightHint = 300;
-	 	sliderAndButtons.setLayoutData(gd);
-	 	sliderAndButtons.setLayout(new RowLayout(SWT.VERTICAL));
-	 	
-	 	slider = new Scale(sliderAndButtons, SWT.HORIZONTAL);
-	 	slider.setMaximum(localStateManager.modelStates.getStates().size()-1);
-		slider.setMinimum(0);
-		slider.setIncrement(1);
-	 	slider.setSelection(0);
-	 	slider.setPageIncrement(1);
-	 	rd = new RowData();
-	 	rd.width = 1180;
-	 	rd.height = 50;
-	 	slider.setLayoutData(rd);
-		
-//	    RowLayout buttonRowLayout = new RowLayout();
-//	    buttonRowLayout.wrap = false;
-//	    buttonRowLayout.pack = false;
-//	    buttonRowLayout.marginLeft = 5;
-//	    buttonRowLayout.marginTop = 5;
-//	    buttonRowLayout.marginRight = 5;
-//	    buttonRowLayout.marginBottom = 5;
-//	    buttonRowLayout.spacing = 0;
-
-	    Composite buttons = new Composite(sliderAndButtons, SWT.NONE);
-	    rd = new RowData();
-	 	rd.width = 1180;
-	 	rd.height = 40;
-	 	buttons.setLayoutData(rd);
-	 	buttons.setLayout(new RowLayout(SWT.HORIZONTAL));	 	
-	 	
-		stepForward = new Button(buttons, SWT.PUSH);
-		stepForward.setText("StepForward");
-		
-		stepBackward = new Button(buttons, SWT.PUSH);
-		stepBackward.setText("StepBackward");
-		
-	    setInitial = new Button(buttons, SWT.PUSH);
-		setInitial.setText("Set Initial");
-		
-		resetSelection = new Button(buttons, SWT.PUSH);
-		resetSelection.setText("Toggle Root Node");
-	    
-		Group radioButtons = new Group(sliderAndButtons, SWT.NONE);
-		rd = new RowData();
-	 	rd.width = 1180;
-	 	rd.height = 40;
-	 	radioButtons.setLayoutData(rd);
-		radioButtons.setLayout(new RowLayout(SWT.HORIZONTAL));
-		
-		showNoApply = new Button(radioButtons, SWT.RADIO);
-		showNoApply.setSelection(true);
-		showNoApply.setText("Show No Apply");
-		
-		showCurrentApply = new Button(radioButtons, SWT.RADIO);
-		showCurrentApply.setText("Show Current Apply");
-		
-		showFutureApply = new Button(radioButtons, SWT.RADIO);
-		showFutureApply.setText("Show Future");
-	
-		// Node Information
-		Composite nodeInfoComp = new Composite(shell, SWT.BORDER);
-		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-		gd.widthHint = 300;
-		gd.heightHint = 300;
-		nodeInfoComp.setLayoutData(gd);
-		nodeInfoComp.setLayout(new RowLayout(SWT.VERTICAL));
-	    nodeInfoLabel = new Label(nodeInfoComp, SWT.BORDER);
-	    rd = new RowData();
-	 	rd.width = 300;
-	 	rd.height = 300;
-	 	nodeInfoLabel.setLayoutData(rd);
-	    
-		// Initialize listeners
-		setListeners();
-		
-		// Initialize labels
-		setMatchRuleInfo();
-		
-		// Open shell and keep open while program is running
-		// After closing, free resources
-		shell.open();
-		while (!shell.isDisposed()) {
-			if (!display.readAndDispatch())
-				display.sleep();
-		}
-		display.dispose();
-	}
-	
-	private void setListeners() {
-		stepForward.addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-					UpdateGraphForwards();
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// Auto-generated method stub
-			}
-			
-		});
-		
-		stepBackward.addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-					UpdateGraphBackwards();	
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// Auto-generated method stub
-			}
-			
-		});
-		
-		setInitial.addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				setInitial();
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// Auto-generated method stub
-			}
-			
-		});
-		
-		resetSelection.addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				// Auto-generated method stub
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// Auto-generated method stub
-			}
-			
-		});
-		
-		showNoApply.addSelectionListener(new SelectionAdapter() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if(showNoApply.getSelection()) {
-					if(showCurrent) {
-						resetApplyVis();
-						showCurrent = false;
-					}
-					if(showFuture) {
-						revertFutureObjects();
-						showFuture = false;
-					}
-				}
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// Auto-generated method stub
-			}
-			
-		});
-		
-		showCurrentApply.addSelectionListener(new SelectionAdapter() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if(showCurrentApply.getSelection()) {
-					if(!showCurrent) {
-						if(showFuture) {
-							revertFutureObjects();
-							showFuture = false;
-						}
-						showCurrent = true;
-						showCurrentObjects();
-					}
-				}
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// Auto-generated method stub
-			}
-			
-		});
-		
-		showFutureApply.addSelectionListener(new SelectionAdapter() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if(showFutureApply.getSelection()) {
-					if(!showFuture) {
-						if(showCurrent) {
-							resetApplyVis();
-							showCurrent = false;
-						}
-						showFuture = true;
-						showFutureObjects();
-					}
-				}
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// Auto-generated method stub
-			}
-			
-		});
-		
-		slider.addListener(SWT.Selection, new Listener() {
-
-			@Override
-			public void handleEvent(Event event) {
-				stateChangeBySlider(slider.getSelection());
-				
-			}
-			
-		});
-		
-		matchList.addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if(matchList.getSelection().length != 0) {
-					if(oldSelection==-1) {
-						highlightMatch(listedMatches.get(matchList.getSelectionIndex()));
-					} else {
-						resetHighlightVis();
-						if(!(matchList.getSelectionIndex() == oldSelection)) {
-							highlightMatch(listedMatches.get(matchList.getSelectionIndex()));
-						} else {
-							matchList.deselectAll();
-						}
-					}
-					oldSelection = matchList.getSelectionIndex();
-				}
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// Auto-generated method stub
-			}
-			
-		});
-	}
-	
-	private void highlightMatch(IMatch selectedMatch) {
-		// TODO: Differenzierung zwischen Edge und Node
-		for(Object matchNode : selectedMatch.getObjects()) {
-			nodeMap.get((EObject)matchNode).setAttribute("ui.style", "shadow-mode: gradient-radial; shadow-width: 10px; shadow-color: orange;");
-		}
-	}
-
-	private void addGraphListeners(View graphstreamView) {
-		((Component) graphstreamView).addMouseWheelListener(new MouseWheelListener() {
-		    @Override
-		    public void mouseWheelMoved(MouseWheelEvent e) {
-		        e.consume();
-		        int i = e.getWheelRotation();
-		        double factor = Math.pow(1.25, i);
-		        Camera cam = graphstreamView.getCamera();
-		        double zoom = cam.getViewPercent() * factor;
-		        Point2 pxCenter  = cam.transformGuToPx(cam.getViewCenter().x, cam.getViewCenter().y, 0);
-		        Point3 guClicked = cam.transformPxToGu(e.getX(), e.getY());
-		        double newRatioPx2Gu = cam.getMetrics().ratioPx2Gu/factor;
-		        double x = guClicked.x + (pxCenter.x - e.getX())/newRatioPx2Gu;
-		        double y = guClicked.y - (pxCenter.y - e.getY())/newRatioPx2Gu;
-		        cam.setViewCenter(x, y, 0);
-		        cam.setViewPercent(zoom);
-		    }
-		});
-		((Component) graphstreamView).addMouseListener(new MouseListener() {
-
-			EnumSet<InteractiveElement> types;
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				types = EnumSet.of(InteractiveElement.NODE);
-				GraphicElement element = graphstreamView.findGraphicElementAt(types, e.getX(), e.getY());
-		        if(element != null){
-		        	Display.getDefault().syncExec(new Runnable() {
-						@Override
-						public void run() {
-							showAttributes(element.getId());	
-						}
-	        		});
-		        }
-				
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-				// Auto-generated method stub
-				
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				// Auto-generated method stub
-				
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				// Auto-generated method stub
-				
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-				// Auto-generated method stub
-				
-			}
-		});
-	}
 }
-
-
 
