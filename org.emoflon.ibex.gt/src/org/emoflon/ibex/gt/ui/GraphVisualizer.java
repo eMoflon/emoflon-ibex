@@ -68,6 +68,8 @@ import org.emoflon.ibex.gt.StateModel.RuleState;
 import org.emoflon.ibex.gt.StateModel.StateModelFactory;
 import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
 import org.emoflon.ibex.gt.state.ModelStateManager;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdgeSet;
 
 /**
 * 
@@ -136,19 +138,21 @@ public class GraphVisualizer {
 		+ "text-background-mode: plain;"
 		+ "fill-mode: dyn-plain;"
 		+ "}";
-	
+ 		private EList<IBeXEdge> edgeTypes;
 	/**
 	 * Constructor, initializes variables and creates initial graph and gui
 	 * @param resource	Model resources with initial nodes
 	 * @param stateManager Statemanager with all states and helper functions
 	 * @param graphTransformationInterpreter Interpreter used to find matches
+	 * @param iBeXEdgeSet 
 	 * @param edgeTypes 
 	 */
-	public GraphVisualizer(Resource resource, ModelStateManager stateManager, GraphTransformationInterpreter graphTransformationInterpreter) {
+	public GraphVisualizer(Resource resource, ModelStateManager stateManager, GraphTransformationInterpreter graphTransformationInterpreter, IBeXEdgeSet iBeXEdgeSet) {
 		initialResourceContents = new BasicEList<EObject>(resource.getContents());
 		localStateManager = stateManager;
 		localGraphTransformationInterpreter = graphTransformationInterpreter;
 		localStateManager.moveToState(localStateManager.modelStates.getInitialState(), false);
+		edgeTypes = iBeXEdgeSet.getEdges();
 		
 		nodeMap = new HashMap<EObject, Node>();
 		edgeMap = new HashMap<Link, Edge>();
@@ -588,6 +592,25 @@ public class GraphVisualizer {
 							Link link = factory.createLink();
 							link.setSrc(node);
 							link.setTrg(createdSubNode);
+							for(IBeXEdge edgeType : edgeTypes) {
+								String sourceName = edgeType.getSourceNode().getType().getName();
+								String targetName = edgeType.getTargetNode().getType().getName();
+								
+								if(node.eClass().getInstanceClassName().indexOf(".") != -1)
+									sourceName = node.eClass().getInstanceClassName().substring(node.eClass().getInstanceClassName().indexOf(".") + 1);
+								else
+									sourceName = node.eClass().getInstanceClassName();
+								if(createdSubNode.eClass().getInstanceClassName().indexOf(".") != -1)
+									targetName = createdSubNode.eClass().getInstanceClassName().substring(createdSubNode.eClass().getInstanceClassName().indexOf(".") + 1);
+								else
+									targetName = createdSubNode.eClass().getInstanceClassName();
+								
+								if(sourceName.equals(edgeType.getSourceNode().getType().getName()) && targetName.equals(edgeType.getTargetNode().getType().getName())) {
+									link.setType(edgeType.getType());
+									break;
+								}
+								
+							}
 							// TODO: Link-Typ zuweisen
 							createGraphEdge(link);
 						}
@@ -899,8 +922,16 @@ public class GraphVisualizer {
 			
 			// Color edges which will be deleted red and add -- to label
 			for(Link deleteLink : nextRuleState.getStructuralDelta().getDeletedLinks()) {
-				edgeMap.get(deleteLink).setAttribute("ui.style", "fill-color: rgba(150,0,0,255);");
-				edgeMap.get(deleteLink).setAttribute("ui.label", deleteLink.getType().getName() + " --");
+				Link toColor = deleteLink;
+				for(Link link : edgeMap.keySet()) {
+					if(equalEdge(deleteLink, link)) {
+						toColor = link;
+						break;
+					}
+				}
+				edgeMap.get(toColor).setAttribute("ui.style", "fill-color: rgba(150,0,0,255);");
+				edgeMap.get(toColor).setAttribute("ui.label", deleteLink.getType().getName() + " --");
+				
 			}
 			// create info nodes for nodes whose attributes have changed
 			for(AttributeDelta attributeDelta : nextRuleState.getAttributeDeltas()) {
@@ -968,9 +999,12 @@ public class GraphVisualizer {
 		
 		for(Edge e : graph.edges().collect(Collectors.toList())) {
 			e.setAttribute("ui.style", "fill-color: black;");
-			String label = (String) e.getAttribute("ui.label");
-			if(label.contains("++")) {
-				e.setAttribute("ui.label", label.subSequence(0, label.length()-2));
+			// TODO WARNING
+			if(e.hasAttribute("ui.label")) {
+				String label = (String) e.getAttribute("ui.label");
+				if(label.contains("++")) {
+					e.setAttribute("ui.label", label.subSequence(0, label.length()-2));
+				}
 			}
 		}
 	}
@@ -1071,14 +1105,16 @@ public class GraphVisualizer {
 	private Edge createGraphEdge(Link newLink) {
 		// No check with edgeMap because different Link-objects can have same target and source
 		// Instead check if link is already in graph
-		Edge createdEdge = graph.addEdge(Integer.toString(edgeID), nodeMap.get(newLink.getSrc()),  nodeMap.get(newLink.getTrg()), true);
+		Edge createdEdge = graph.addEdge(Integer.toString(edgeID), nodeMap.get(newLink.getSrc()), nodeMap.get(newLink.getTrg()), true);
 		if(createdEdge!=null) {
 			
 			// Map graph edge to EObject edge
 			edgeMap.put(newLink, createdEdge);
 			
 			// Label edge
-			createdEdge.setAttribute("ui.label", newLink.getType().getName());
+			// TODO WARNING
+			if(newLink.getType()!=null)
+				createdEdge.setAttribute("ui.label", newLink.getType().getName());
 			
 			// Increment edgeID;
 			edgeID++;	
@@ -1093,7 +1129,25 @@ public class GraphVisualizer {
 	 * @param deletedLink edge to delete
 	 */
 	private void deleteGraphEdge(Link deletedLink) {
-		graph.removeEdge(edgeMap.remove(deletedLink));
+		Link toDelete = deletedLink;
+		for(Link link : edgeMap.keySet()) {
+			if(equalEdge(deletedLink, link)) {
+				toDelete = link;
+				break;
+			}
+		}
+		graph.removeEdge(edgeMap.remove(toDelete));
+		
+	}
+	
+	/**
+	 * Checks if two link objects are equal
+	 * @param one first link object
+	 * @param two second link object
+	 * @return true if links are equal else false
+	 */
+	private boolean equalEdge(Link one, Link two) {
+		return(one.getSrc().equals(two.getSrc()) && one.getTrg().equals(two.getTrg()) && one.getType().equals(two.getType()));
 	}
 }
 
