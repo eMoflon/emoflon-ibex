@@ -2,10 +2,10 @@
  */
 package language.impl;
 
+import org.eclipse.emf.ecore.EClass;
+
 import language.LanguagePackage;
 import language.TGGExpression;
-
-import org.eclipse.emf.ecore.EClass;
 
 /**
  * <!-- begin-user-doc -->

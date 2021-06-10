@@ -12,9 +12,9 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.BrokenMatch;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_CustomizedOpMultiResolution;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_PreferSource;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_PreferTarget;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_CustomizedOpMultiResolution;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.util.OpMultiConflictSolution;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceNode;
 

@@ -17,9 +17,9 @@ import java.util.stream.Collectors;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.gt.transformations.Pair;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInterdependentAttributes;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjointAttribute;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjointContextPattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInterdependentAttributes;
 
 /**
  * Helper class for attribute conditions for disjunct patterns

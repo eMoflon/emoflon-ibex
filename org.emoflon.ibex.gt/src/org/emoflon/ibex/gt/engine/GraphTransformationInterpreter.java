@@ -231,7 +231,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 */
 	public void loadPatternSet(final URI uri) {
 		ResourceSet rs = new ResourceSetImpl();
-		rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put("xmi", new SmartEMFResourceFactoryImpl());
+		rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());
 		rs.getPackageRegistry().putAll(model.getPackageRegistry());
 		rs.getPackageRegistry().put(IBeXPatternModelPackage.eNS_URI, IBeXPatternModelPackage.eINSTANCE);
 		Resource ibexPatternResource = rs.getResource(uri, true);

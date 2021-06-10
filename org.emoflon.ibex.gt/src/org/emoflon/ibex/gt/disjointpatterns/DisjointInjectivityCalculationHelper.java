@@ -16,9 +16,9 @@ import java.util.stream.Collectors;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.gt.transformations.Pair;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjointContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInterdependentAttributes;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInterdependentInjectivityConstraints;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjointContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBexDisjointInjectivityConstraint;
 
 public class DisjointInjectivityCalculationHelper {

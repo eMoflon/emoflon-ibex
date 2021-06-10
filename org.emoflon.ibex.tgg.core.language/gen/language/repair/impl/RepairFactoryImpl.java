@@ -2,15 +2,16 @@
  */
 package language.repair.impl;
 
-import language.repair.*;
-
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
-
 import org.eclipse.emf.ecore.impl.EFactoryImpl;
-
 import org.eclipse.emf.ecore.plugin.EcorePlugin;
+
+import language.repair.ExternalShortcutRule;
+import language.repair.RepairFactory;
+import language.repair.RepairPackage;
+import language.repair.TGGRuleElementMapping;
 
 /**
  * <!-- begin-user-doc -->

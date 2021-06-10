@@ -2,12 +2,32 @@
  */
 package language.util;
 
-import language.*;
-
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
-
 import org.eclipse.emf.ecore.util.Switch;
+
+import language.LanguagePackage;
+import language.NAC;
+import language.TGG;
+import language.TGGAttributeConstraint;
+import language.TGGAttributeConstraintAdornment;
+import language.TGGAttributeConstraintDefinition;
+import language.TGGAttributeConstraintDefinitionLibrary;
+import language.TGGAttributeConstraintLibrary;
+import language.TGGAttributeConstraintParameterDefinition;
+import language.TGGAttributeExpression;
+import language.TGGAttributeVariable;
+import language.TGGEnumExpression;
+import language.TGGExpression;
+import language.TGGInplaceAttributeExpression;
+import language.TGGLiteralExpression;
+import language.TGGNamedElement;
+import language.TGGParamValue;
+import language.TGGRule;
+import language.TGGRuleCorr;
+import language.TGGRuleEdge;
+import language.TGGRuleElement;
+import language.TGGRuleNode;
 
 /**
  * <!-- begin-user-doc -->

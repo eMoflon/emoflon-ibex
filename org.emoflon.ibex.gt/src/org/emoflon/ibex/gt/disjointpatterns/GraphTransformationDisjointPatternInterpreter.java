@@ -14,7 +14,6 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.common.operational.SimpleMatch;
@@ -22,10 +21,10 @@ import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
 import org.emoflon.ibex.gt.transformations.Pair;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXConstraint;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInterdependentAttributes;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInterdependentInjectivityConstraints;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjointAttribute;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjointContextPattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInterdependentAttributes;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInterdependentInjectivityConstraints;
 
 
 /**

@@ -2,17 +2,15 @@
  */
 package language.impl;
 
-import language.LanguagePackage;
-import language.TGGAttributeExpression;
-import language.TGGRuleNode;
-
 import org.eclipse.emf.common.notify.Notification;
-
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
-
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+
+import language.LanguagePackage;
+import language.TGGAttributeExpression;
+import language.TGGRuleNode;
 
 /**
  * <!-- begin-user-doc -->

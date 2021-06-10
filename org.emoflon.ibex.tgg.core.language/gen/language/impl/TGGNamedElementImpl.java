@@ -2,15 +2,13 @@
  */
 package language.impl;
 
-import language.LanguagePackage;
-import language.TGGNamedElement;
-
 import org.eclipse.emf.common.notify.Notification;
-
 import org.eclipse.emf.ecore.EClass;
-
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
+
+import language.LanguagePackage;
+import language.TGGNamedElement;
 
 /**
  * <!-- begin-user-doc -->

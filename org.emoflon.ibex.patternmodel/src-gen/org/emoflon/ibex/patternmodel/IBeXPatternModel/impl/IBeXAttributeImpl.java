@@ -3,9 +3,7 @@
 package org.emoflon.ibex.patternmodel.IBeXPatternModel.impl;
 
 import org.eclipse.emf.ecore.EClass;
-
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
-
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttribute;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage;
 

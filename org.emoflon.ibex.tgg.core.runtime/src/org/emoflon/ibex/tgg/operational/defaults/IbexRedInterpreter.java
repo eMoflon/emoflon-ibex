@@ -1,5 +1,7 @@
 package org.emoflon.ibex.tgg.operational.defaults;
 
+import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
+
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -15,8 +17,6 @@ import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
-
-import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
 
 import language.TGGRuleNode;
 import runtime.TGGRuleApplication;
