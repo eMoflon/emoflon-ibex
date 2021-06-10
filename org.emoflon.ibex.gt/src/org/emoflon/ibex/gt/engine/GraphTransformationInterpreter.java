@@ -43,8 +43,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRuleSet;
-
-import persistence.XtendXMIResourceFactoryImpl;
+import org.moflon.smartemf.persistence.SmartEMFResourceFactoryImpl;
 
 /**
  * The GraphTransformationInterpreter implements rule application based on a
@@ -232,7 +231,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 */
 	public void loadPatternSet(final URI uri) {
 		ResourceSet rs = new ResourceSetImpl();
-		rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put("xmi", new XtendXMIResourceFactoryImpl());
+		rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put("xmi", new SmartEMFResourceFactoryImpl());
 		rs.getPackageRegistry().putAll(model.getPackageRegistry());
 		rs.getPackageRegistry().put(IBeXPatternModelPackage.eNS_URI, IBeXPatternModelPackage.eINSTANCE);
 		Resource ibexPatternResource = rs.getResource(uri, true);
