@@ -12,6 +12,8 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.moflon.smartemf.runtime.SmartObject;
+import org.moflon.smartemf.runtime.util.SmartEMFUtil;
 
 /**
  * Utility methods for manipulating EMF models.
@@ -150,6 +152,11 @@ public class EMFManipulationUtils {
 	 *            the action to execute for dangling nodes
 	 */
 	private static void deleteNodes(final Set<EObject> nodesToDelete, boolean recursive, boolean optimize) {
+		if(!nodesToDelete.isEmpty() && nodesToDelete.iterator().next() instanceof SmartObject) {
+			SmartEMFUtil.deleteNodes(nodesToDelete, recursive);
+			return;
+		}
+		
 		if(optimize) {
 			for (EObject eObject : nodesToDelete) {
 				for (EReference ref : eObject.eClass().getEAllReferences()) {
@@ -162,17 +169,11 @@ public class EMFManipulationUtils {
 			}
 		}
 		else {
-			boolean smartemf = false;
 			for (EObject node : nodesToDelete) {
 				if(!node.eContents().isEmpty() && recursive)
 					deleteNodes(node.eContents().stream().collect(Collectors.toSet()), recursive, optimize);
-				//for smartemf
-				else if (!(node instanceof InternalEObject)) {
-					smartemf = true;
-					
-				}
 			}
-			if(!smartemf) EcoreUtil.deleteAll(nodesToDelete, false);
+			EcoreUtil.deleteAll(nodesToDelete, false);
 		}
 	}
 
