@@ -107,6 +107,27 @@ public class GraphTransformationDeleteInterpreter implements IDeletePatternInter
 				}
 			}
 
+			// Check other outgoing edges
+			for(EReference ref : eObject.eClass().getEAllReferences()) {
+				if(ref.isContainment())
+					continue;
+				
+				if(ref.isMany()) {
+					for(EObject target : (Collection<? extends EObject>) eObject.eGet(ref)) {
+						if (!patternDeletesEdge(deletePattern, match, eObject, target, ref)) {
+							return false;
+						}
+					}
+					
+				}
+				else {
+					if (!patternDeletesEdge(deletePattern, match, eObject, (EObject) eObject.eGet(ref), ref)) {
+						return false;
+					}
+				}
+				
+			}
+			
 			// Check other outgoing edges.
 			for (EContentsEList.FeatureIterator featureIterator = (EContentsEList.FeatureIterator) eObject
 					.eCrossReferences().iterator(); featureIterator.hasNext();) {
