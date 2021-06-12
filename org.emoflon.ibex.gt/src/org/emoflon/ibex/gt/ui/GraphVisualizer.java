@@ -102,6 +102,7 @@ public class GraphVisualizer {
 	private EList<EObject> initialResourceContents;
 	private Map<Integer,IMatch> listedMatches;
 	private Map<EObject, Node> infoNodes;
+	private Node matchHiglightNode;
 	private int matchCount;
 	
 	// GUI
@@ -116,6 +117,8 @@ public class GraphVisualizer {
 	private Button showCurrentApply;
 	private Button showFutureApply;
 	private Button showNoApply;
+	
+	private Button help;
 	
 	private Label currentApplyLabel;
 	private Label futureApplyLabel;
@@ -308,7 +311,7 @@ public class GraphVisualizer {
 		slider = new Slider(sliderAndButtons, SWT.HORIZONTAL);
 		slider.setValues(0, 0, localStateManager.modelStates.getStates().size()-1, 1, 1, 1);
 		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-		gd.heightHint = 40;
+		gd.heightHint = 20;
 		slider.setLayoutData(gd);
 	
 		Composite buttons = new Composite(sliderAndButtons, SWT.NONE);
@@ -327,11 +330,11 @@ public class GraphVisualizer {
 		setInitial.setText("Set Initial");
 			
 		toggleFreeze = new Button(buttons, SWT.CHECK);
-		toggleFreeze.setText("Reset Selection");
+		toggleFreeze.setText("Freeze Graph");
 		    
 		Group radioButtons = new Group(sliderAndButtons, SWT.NONE);
 		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-		gd.heightHint = 20;
+		gd.heightHint = 30;
 		radioButtons.setLayoutData(gd);
 		radioButtons.setLayout(new RowLayout(SWT.HORIZONTAL));
 			
@@ -344,6 +347,26 @@ public class GraphVisualizer {
 			
 		showFutureApply = new Button(radioButtons, SWT.RADIO);
 		showFutureApply.setText("Show Future");
+		
+		// Init help shell
+		Shell helpShell = new Shell(shell);
+		helpShell.setText("Help");
+		helpShell.setSize(400, 200);
+	    Label helpLabel = new Label(helpShell,SWT.BORDER);
+	    helpLabel.setText(
+	    		"Green/++: Creation or change"
+	    		+ "\nRed: Deletion"
+	    		);
+	    
+	    GridLayout helpShellLayout = new GridLayout();
+	    helpShellLayout.numColumns = 1;
+		helpShell.setLayout(helpShellLayout);
+	    
+		help = new Button(sliderAndButtons, SWT.PUSH);
+		help.setText("Help");
+		gd = new GridData(SWT.NONE, SWT.FILL, true, true);
+		gd.heightHint = 10;
+		help.setLayoutData(gd);
 		
 		// Node Information
 		Composite nodeInfoComp = new Composite(shell, SWT.BORDER);
@@ -358,7 +381,7 @@ public class GraphVisualizer {
 		nodeInfoLabel.setLayoutData(gd);
 		
 		// Initialize listeners
-		setListeners();
+		setListeners(helpShell);
 		
 		// Initialize labels
 		setMatchRuleInfo();
@@ -376,7 +399,22 @@ public class GraphVisualizer {
 	/**
 	 * Initializes listeners for gui components like buttons, slider and graph
 	 */
-	private void setListeners() {
+	private void setListeners(Shell helpShell) {
+		
+		help.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+					helpShell.open();
+			}
+	
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// Auto-generated method stub
+			}
+			
+		});
+		
 		stepForward.addSelectionListener(new SelectionListener() {
 	
 			@Override
@@ -1131,11 +1169,35 @@ public class GraphVisualizer {
 	 * @param selectedMatch Match which should be highlighted
 	 */
 	private void highlightMatch(IMatch selectedMatch) {
+		matchHiglightNode = graph.addNode(Integer.toString(nodeID));
+		matchHiglightNode.setAttribute("ui.style", 
+				"fill-color: orange;"
+				+ "fill-mode: dyn-plain;"
+				+ "size: 2px;"
+				+ "shape: box;"
+//				+ "shadow-mode: gradient-radial;"
+//				+ "shadow-width: 5px;"
+//				+ "shadow-color: orange;"
+//				+ "stroke-mode: plain;"
+//				+ "stroke-width: 2.0px;"
+);
+		matchHiglightNode.setAttribute("ui.label", "");
+		nodeID++;
+		
 		for(Object matchNode : selectedMatch.getObjects()) {
 			try {
 				nodeMap.get((EObject)matchNode).setAttribute("ui.style", "shadow-mode: gradient-radial; shadow-width: 10px; shadow-color: orange;");
+				Edge matchHighlightEdge = graph.addEdge(Integer.toString(edgeID), matchHiglightNode, nodeMap.get((EObject)matchNode));
+				matchHighlightEdge.setAttribute("ui.label", "");
+				matchHighlightEdge.setAttribute("ui.style", 
+						"fill-color: white;"
+						+ "stroke-mode: dashes;"
+						+ "stroke-color: black;"
+						+ "stroke-width: 2.0px;");
+				
+				edgeID++;
 			} catch (Exception ex) {
-				System.out.println("Cast error when highlighting matches");
+				System.out.println("Error when highlighting matches");
 			}
 			
 		}
@@ -1151,7 +1213,6 @@ public class GraphVisualizer {
 		}
 		infoNodes.clear();
 		
-		//for(Node n : graph.nodes().toList()) {
 		for(Node n : graph.nodes().collect(Collectors.toList())) {
 			n.setAttribute("ui.style", "fill-color: grey; text-background-color: grey;");
 			String label = (String) n.getAttribute("ui.label");
@@ -1174,7 +1235,12 @@ public class GraphVisualizer {
 	 * Reverts highlighting of all graph objects (disables shadow)
 	 */
 	private void resetHighlightVis() {
+		if(matchHiglightNode != null) {
+			graph.removeNode(matchHiglightNode);
+			matchHiglightNode = null;
+		}
 		
+		List<Node> test = graph.nodes().collect(Collectors.toList());
 		for(Node n : graph.nodes().collect(Collectors.toList())) {
 			n.setAttribute("ui.style", "shadow-mode: none;");
 		}
@@ -1182,6 +1248,8 @@ public class GraphVisualizer {
 		for(Edge e : graph.edges().collect(Collectors.toList())) {
 			e.setAttribute("ui.style", "shadow-mode: none;");
 		}
+		
+		
 	}
 	
 	/**
