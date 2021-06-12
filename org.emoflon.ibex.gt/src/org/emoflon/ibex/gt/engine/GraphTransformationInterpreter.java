@@ -942,7 +942,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	}
 	
 	public void displayModelStates() {
-		graphVis = new GraphVisualizer(model.getResources().get(0), stateManager, this, ibexModel.getEdgeSet());
+		graphVis = new GraphVisualizer(model.getResources().get(0), stateManager, this, ibexModel.getRuleSet());
 		
 		//gtVisualisation = new SimVis(model.getResources().get(0), stateManager, this);
 	}
