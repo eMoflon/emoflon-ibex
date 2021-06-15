@@ -1,8 +1,10 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -18,7 +20,7 @@ import org.moflon.smartemf.runtime.notification.SmartContentAdapter;
 
 public class ModelChangeProtocol {
 
-	private final Resource[] observedRes;
+	private final List<Resource> observedRes;
 
 	private EContentAdapter adapter;
 	private boolean attached;
@@ -32,7 +34,7 @@ public class ModelChangeProtocol {
 	}
 
 	public ModelChangeProtocol(Resource... observedRes) {
-		this.observedRes = observedRes;
+		this.observedRes = Arrays.asList(observedRes);
 
 		groupedModelChanges = new HashMap<>();
 		currentKeys = new HashSet<>();
@@ -59,6 +61,8 @@ public class ModelChangeProtocol {
 						if (n.getNotifier() instanceof EObject)
 							processSetNotif((EObject) n.getNotifier(), n.getFeature(), n.getOldValue(), n.getNewValue());
 						break;
+					case Notification.REMOVING_ADAPTER:
+						processRemovingAdapterNotif((EObject) n.getNotifier());
 					}
 				}
 
@@ -80,8 +84,8 @@ public class ModelChangeProtocol {
 		if (attached)
 			return;
 
-		for (int i = 0; i < observedRes.length; i++)
-			observedRes[i].eAdapters().add(adapter);
+		for (Resource res : observedRes)
+			res.eAdapters().add(adapter);
 
 		attached = true;
 	}
@@ -90,8 +94,8 @@ public class ModelChangeProtocol {
 		if (!attached)
 			return;
 
-		for (int i = 0; i < observedRes.length; i++)
-			observedRes[i].eAdapters().remove(adapter);
+		for (Resource res : observedRes)
+			res.eAdapters().remove(adapter);
 
 		attached = false;
 	}
@@ -122,8 +126,11 @@ public class ModelChangeProtocol {
 			changes.forEach(c -> c.addCreatedElement(newValue));
 		} else if (notifier instanceof EObject) {
 			changes.forEach(c -> c.addCreatedEdge(new EMFEdge((EObject) notifier, newValue, feature)));
-			if (feature.isContainment())
+			if (feature.isContainment()) {
 				changes.forEach(c -> c.addCreatedElement(newValue));
+				if (feature.getEOpposite() != null)
+					changes.forEach(c -> c.addCreatedEdge(new EMFEdge(newValue, (EObject) notifier, feature.getEOpposite())));
+			}
 		}
 	}
 
@@ -142,25 +149,19 @@ public class ModelChangeProtocol {
 	private void processRemoveNotif(Object notifier, EReference feature, EObject oldValue) {
 		Set<ModelChanges> changes = getCurrentModelChanges();
 
-		if (notifier instanceof Resource) {
-			changes.forEach(c -> c.addDelEltContainedInRes(oldValue, (Resource) notifier));
-		} else if (notifier instanceof EObject) {
+		if (notifier instanceof Resource)
+			changes.forEach(c -> c.addDeletedEltContainedInRes(oldValue, (Resource) notifier));
+		else if (notifier instanceof EObject)
 			changes.forEach(c -> c.addDeletedEdge(new EMFEdge((EObject) notifier, oldValue, feature)));
-			if (feature.isContainment())
-				changes.forEach(c -> c.addDeletedElement(oldValue));
-		}
 	}
 
 	private void processRemoveManyNotif(Object notifier, EReference feature, Collection<EObject> oldValues) {
 		Set<ModelChanges> changes = getCurrentModelChanges();
 
-		if (notifier instanceof Resource) {
-			oldValues.forEach(oldValue -> changes.forEach(c -> c.addDelEltContainedInRes(oldValue, (Resource) notifier)));
-		} else if (notifier instanceof EObject) {
+		if (notifier instanceof Resource)
+			oldValues.forEach(oldValue -> changes.forEach(c -> c.addDeletedEltContainedInRes(oldValue, (Resource) notifier)));
+		else if (notifier instanceof EObject)
 			oldValues.forEach(oldValue -> changes.forEach(c -> c.addDeletedEdge(new EMFEdge((EObject) notifier, oldValue, feature))));
-			if (feature.isContainment())
-				changes.forEach(c -> c.addAllDeletedElements(oldValues));
-		}
 	}
 
 	private void processSetNotif(EObject notifier, Object feature, Object oldValue, Object newValue) {
@@ -170,8 +171,6 @@ public class ModelChangeProtocol {
 			EReference reference = (EReference) feature;
 			if (oldValue != null) {
 				changes.forEach(c -> c.addDeletedEdge(new EMFEdge(notifier, (EObject) oldValue, reference)));
-				if (reference.isContainment())
-					changes.forEach(c -> c.addDeletedElement((EObject) oldValue));
 			}
 			if (newValue != null) {
 				changes.forEach(c -> c.addCreatedEdge(new EMFEdge(notifier, (EObject) newValue, reference)));
@@ -181,6 +180,13 @@ public class ModelChangeProtocol {
 		} else if (feature instanceof EAttribute) {
 			changes.forEach(c -> c.addAttributeChange(new AttributeChange(notifier, (EAttribute) feature, oldValue, newValue)));
 		}
+	}
+
+	private void processRemovingAdapterNotif(EObject notifier) {
+		Set<ModelChanges> changes = getCurrentModelChanges();
+
+		changes.forEach(c -> c.addDeletedElement(notifier));
+
 	}
 
 }
