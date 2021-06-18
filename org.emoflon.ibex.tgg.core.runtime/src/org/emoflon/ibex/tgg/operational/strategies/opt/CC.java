@@ -5,11 +5,13 @@ import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.emf.EMFEdge;
+import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
@@ -58,7 +60,7 @@ public class CC extends OPT {
 
 	@Override
 	protected void wrapUp() {
-		ArrayList<EObject> objectsToDelete = new ArrayList<EObject>();
+		Set<EObject> objectsToDelete = new HashSet<EObject>();
 
 		for (int v : chooseTGGRuleApplications()) {
 			int id = v < 0 ? -v : v;
@@ -72,7 +74,7 @@ public class CC extends OPT {
 				processValidMatch(comatch);
 		}
 
-		EcoreUtil.deleteAll(objectsToDelete, true);
+		EMFManipulationUtils.deleteNodes(objectsToDelete, true);
 		consistencyReporter.init(this);
 	}
 

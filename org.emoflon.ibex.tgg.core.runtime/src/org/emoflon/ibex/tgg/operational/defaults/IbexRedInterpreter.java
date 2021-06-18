@@ -50,7 +50,7 @@ public class IbexRedInterpreter implements IRedInterpreter {
 		// Revoke nodes and edges in the source and target model.
 		revoke(getNodesToRevoke(match, pattern), getEdgesToRevoke(match, pattern));
 
-		EcoreUtil.delete(ra);
+		EMFManipulationUtils.delete(ra);
 	}
 
 	/**

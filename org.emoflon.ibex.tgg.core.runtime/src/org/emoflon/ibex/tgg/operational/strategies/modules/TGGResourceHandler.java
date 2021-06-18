@@ -89,8 +89,10 @@ public class TGGResourceHandler {
 			loadTGG();
 			loadRelevantModels();
 
-			trash = createResource("instances/trash.xmi");
-			trash.getContents().add(RuntimeFactory.eINSTANCE.createTempContainer());
+			if(options.blackInterpreter() != null && options.blackInterpreter().getClass().getName().contains("Democles")) {
+				trash = createResource("instances/trash.xmi");
+				trash.getContents().add(RuntimeFactory.eINSTANCE.createTempContainer());
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -486,8 +488,10 @@ public class TGGResourceHandler {
 	}
 
 	public void addToTrash(EObject o) {
-		TempContainer c = (TempContainer) trash.getContents().get(0);
-		c.getObjects().add(EcoreUtil.getRootContainer(o));
+		if(trash != null) {
+			TempContainer c = (TempContainer) trash.getContents().get(0);
+			c.getObjects().add(EcoreUtil.getRootContainer(o));
+		}
 	}
 
 	public Resource getTrashResource() {
