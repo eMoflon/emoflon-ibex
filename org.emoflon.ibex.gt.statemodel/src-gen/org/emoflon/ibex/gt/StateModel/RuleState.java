@@ -2,8 +2,11 @@
  */
 package org.emoflon.ibex.gt.StateModel;
 
-import org.eclipse.emf.common.util.EList;
+import java.util.Collection;
+import java.util.Map;
 
+import org.eclipse.emf.common.util.EList;
+import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule;
 
 /**
@@ -172,5 +175,6 @@ public interface RuleState extends State {
 	 * @generated
 	 */
 	EList<AttributeDelta> getAttributeDeltas();
+
 
 } // RuleState

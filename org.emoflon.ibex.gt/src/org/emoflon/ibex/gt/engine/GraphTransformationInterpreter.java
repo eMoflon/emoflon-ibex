@@ -277,7 +277,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			// Deep-copy parameter map to prevent state inconsistencies caused by changed node/parameter bindings.
 			Map<String, Object> cpyParameter = new HashMap<>();
 			parameters.forEach((str, obj) -> cpyParameter.put(str, obj));
-			return stateManager.addNewState(rule.get(), match, cpyParameter, doUpdate, (params, update) -> applyInternal(match, po, params, update)); 
+			return stateManager.addNewState(rule.get(), match, cpyParameter, matches, doUpdate, (params, update) -> applyInternal(match, po, params, update)); 
 		}else {
 			return applyInternal(match, po, parameters, doUpdate);
 		}
@@ -942,9 +942,8 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	}
 	
 	public void displayModelStates() {
-		graphVis = new GraphVisualizer(model.getResources().get(0), stateManager, this, ibexModel.getRuleSet());
-		
-		//gtVisualisation = new SimVis(model.getResources().get(0), stateManager, this);
+		graphVis = new GraphVisualizer(model.getResources().get(0), stateManager, this, ibexModel.getRuleSet(), ibexModel.getPatternSet());
 	}
+
 	
 }

@@ -1,5 +1,6 @@
 package org.emoflon.ibex.gt.state;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -79,7 +80,7 @@ public class ModelStateManager {
 		return currentState;
 	}
 	
-	public Optional<IMatch> addNewState(final IBeXRule rule, final IMatch match, final Map<String, Object> parameter, boolean doUpdate, BiFunction<Map<String,Object>, Boolean, Optional<IMatch>> applyRule) {
+	public Optional<IMatch> addNewState(final IBeXRule rule, final IMatch match, final Map<String, Object> parameter,Map<String, Collection<IMatch>> matches, boolean doUpdate, BiFunction<Map<String,Object>, Boolean, Optional<IMatch>> applyRule) {
 		RuleState newState = factory.createRuleState();
 		
 		newState.setInitial(false);
@@ -157,6 +158,10 @@ public class ModelStateManager {
 			if(newState.getStructuralDelta() == null) {
 				newState.setStructuralDelta(delta);
 			}
+		}
+		// Maybe wrong but need to avoid that structuralDelta is null
+		if(newState.getStructuralDelta() == null) {
+			newState.setStructuralDelta(delta);
 		}
 		
 		delta.getResource2EObjectContainment().addAll(nodesInResource);

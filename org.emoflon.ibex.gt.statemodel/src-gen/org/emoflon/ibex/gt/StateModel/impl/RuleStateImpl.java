@@ -3,6 +3,7 @@
 package org.emoflon.ibex.gt.StateModel.impl;
 
 import java.util.Collection;
+import java.util.Map;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
@@ -16,7 +17,7 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
-
+import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.gt.StateModel.AttributeDelta;
 import org.emoflon.ibex.gt.StateModel.RuleState;
 import org.emoflon.ibex.gt.StateModel.State;
@@ -546,4 +547,5 @@ public class RuleStateImpl extends StateImpl implements RuleState {
 		return result.toString();
 	}
 
+	
 } //RuleStateImpl

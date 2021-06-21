@@ -13,5 +13,6 @@ Export-Package: org.emoflon.ibex.gt.StateModel,
  org.emoflon.ibex.gt.StateModel.util
 Require-Bundle: org.eclipse.emf.ecore;visibility:=reexport,
  org.emoflon.ibex.patternmodel;visibility:=reexport,
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ org.emoflon.ibex.common
 Bundle-ActivationPolicy: lazy

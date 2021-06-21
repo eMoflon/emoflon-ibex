@@ -26,6 +26,7 @@ import org.graphstream.ui.view.util.InteractiveElement;
 
 //Util imports
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +50,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 //SWT imports
 import org.eclipse.swt.widgets.Button;
@@ -59,7 +59,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Scale;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Slider;
 //IBeX imports
@@ -71,8 +71,8 @@ import org.emoflon.ibex.gt.StateModel.State;
 import org.emoflon.ibex.gt.StateModel.StateModelFactory;
 import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
 import org.emoflon.ibex.gt.state.ModelStateManager;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdgeSet;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRuleSet;
 
@@ -99,16 +99,20 @@ public class GraphVisualizer {
 	private Map<EObject, Node> nodeMap;
 	private Map<Link, Edge> edgeMap;
 	private EList<IBeXRule> ruleSet;
+	private EList<IBeXContext> patternSet;
 	private EList<EObject> initialResourceContents;
 	private Map<Integer,IMatch> listedMatches;
 	private Map<EObject, Node> infoNodes;
 	private Node matchHiglightNode;
-	private int matchCount;
+	private Node lastSelectedNode;
+	private EList<EObject> nodeBlacklist;
+	private EList<Link> edgeBlacklist;
 	
 	// GUI
 	private Button stepForward;
 	private Button stepBackward;
 	private Button setInitial;
+	private Button deleteSelectedNode;
 	private Button toggleFreeze;
 	
 	private Button jumpRule;
@@ -125,20 +129,23 @@ public class GraphVisualizer {
 	private Label nodeInfoLabel;
 	private Label jumpRuleInfo;
 	private Label jumpRuleHead;
-	private Label jumpMatchChangeInfo;
 	private Label info;
+	private Label curState;
 	private String selectedRuleInList;
+	private String selectedPatternInList;
 	private int oldSelectionRule = -1;
 	
 	private Slider slider;
 	
 	private org.eclipse.swt.widgets.List matchList;
 	private org.eclipse.swt.widgets.List ruleList;
+	private org.eclipse.swt.widgets.List patternList;
 	
 	// Graphstream variables
 	private SingleGraph graph;
 	private MouseEvent last;	//Used for camera movement -> not implemented
 	private Viewer graphstreamViewer;
+	
 
  protected static String styleSheet =
 		"edge {"
@@ -169,19 +176,23 @@ public class GraphVisualizer {
 	 * @param stateManager Statemanager with all states and helper functions
 	 * @param graphTransformationInterpreter Interpreter used to find matches
 	 * @param iBeXRuleSet 
+	 * @param iBeXPatternSet 
 	 * @param edgeTypes 
 	 */
-	public GraphVisualizer(Resource resource, ModelStateManager stateManager, GraphTransformationInterpreter graphTransformationInterpreter, IBeXRuleSet iBeXRuleSet) {
+	public GraphVisualizer(Resource resource, ModelStateManager stateManager, GraphTransformationInterpreter graphTransformationInterpreter, IBeXRuleSet iBeXRuleSet, IBeXPatternSet iBeXPatternSet) {
 		initialResourceContents = new BasicEList<EObject>(resource.getContents());
 		localStateManager = stateManager;
 		localGraphTransformationInterpreter = graphTransformationInterpreter;
 		localStateManager.moveToState(localStateManager.modelStates.getInitialState(), false);
 		ruleSet = iBeXRuleSet.getRules();
+		patternSet = iBeXPatternSet.getContextPatterns();
 		
 		nodeMap = new HashMap<EObject, Node>();
 		edgeMap = new HashMap<Link, Edge>();
 		infoNodes = new HashMap<EObject, Node>();
 		listedMatches = new HashMap<Integer, IMatch>();
+		nodeBlacklist = new BasicEList<EObject>();
+		edgeBlacklist = new BasicEList<Link>();
 		graph = new SingleGraph("");
 		graph.setStrict(false);
 		graph.setAutoCreate(false);
@@ -222,21 +233,52 @@ public class GraphVisualizer {
 		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
 		gd.heightHint = 50;
 		jumpRuleHead.setLayoutData(gd);
-		jumpRuleHead.setText("Rules:");
+		jumpRuleHead.setText("Pattern && Rules:");
  		
+		patternList = new org.eclipse.swt.widgets.List (rules, SWT.FILL | SWT.SINGLE | SWT.V_SCROLL);
+		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+		gd.heightHint = 225;
+		patternList.setLayoutData(gd);
+		
 		ruleList = new org.eclipse.swt.widgets.List (rules, SWT.FILL | SWT.SINGLE | SWT.V_SCROLL);
 		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-		gd.heightHint = 450;
+		gd.heightHint = 225;
 		ruleList.setLayoutData(gd);
-		//Add rules to gui list
-		for(IBeXRule rule : ruleSet) {
-			ruleList.add(rule.getName());
+
+		// Add pattern and rules to gui list
+		for(IBeXContext pattern : patternSet) {
+			boolean isRule = false;
+			for(IBeXRule rule : ruleSet) {
+				if(pattern.getName().equals(rule.getName())) {
+					isRule = true;
+					break;
+				}
+			}
+			if(isRule) {
+				ruleList.add(pattern.getName());
+			} else {
+				patternList.add(pattern.getName());
+			}
 		}
-		jumpRule = new Button(rules, SWT.PUSH);
-		jumpRule.setText("Jump To Selected Rule");
+		
+		Composite jumpButtons = new Composite(rules, SWT.BORDER);
+		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+		gd.widthHint = 250;
+		gd.heightHint = 50;
+		jumpButtons.setLayoutData(gd);
+		jumpButtons.setLayout(new GridLayout(2, true));
+		
+		jumpRule = new Button(jumpButtons, SWT.PUSH);
+		jumpRule.setText("Jump To Apply");
 		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
 		gd.heightHint = 50;
 		jumpRule.setLayoutData(gd);
+		
+		jumpMatchChange = new Button(jumpButtons, SWT.PUSH);
+		jumpMatchChange.setText("Jump To Change");
+		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+		gd.heightHint = 50;
+		jumpMatchChange.setLayoutData(gd);
 		
 		jumpRuleInfo = new Label(rules, SWT.BORDER);
 		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
@@ -273,19 +315,8 @@ public class GraphVisualizer {
 		 	
 		matchList = new org.eclipse.swt.widgets.List (textsAndList, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL);
 		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-		gd.heightHint = 375;
+		gd.heightHint = 475;
 		matchList.setLayoutData(gd);
-		
-		jumpMatchChange = new Button(textsAndList, SWT.PUSH);
-		jumpMatchChange.setText("Jump To Match Count Change");
-		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-		gd.heightHint = 50;
-		jumpMatchChange.setLayoutData(gd);
-		
-		jumpMatchChangeInfo = new Label(textsAndList, SWT.BORDER);
-		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-		gd.heightHint = 50;
-		jumpMatchChangeInfo.setLayoutData(gd);
 		
 		// Information
 		Composite infoComp = new Composite(shell, SWT.BORDER);
@@ -309,11 +340,31 @@ public class GraphVisualizer {
 		sliderAndButtons.setLayout(new GridLayout(1, true));
 		 	
 		slider = new Slider(sliderAndButtons, SWT.HORIZONTAL);
-		slider.setValues(0, 0, localStateManager.modelStates.getStates().size()-1, 1, 1, 1);
+		slider.setValues(0, 0, localStateManager.modelStates.getStates().size(), 1, 1, 1);
 		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
 		gd.heightHint = 20;
 		slider.setLayoutData(gd);
+		
 	
+		Composite stateLabels = new Composite(sliderAndButtons, SWT.NONE);
+		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+		gd.heightHint = 20;
+		gd.widthHint = 1080;
+		stateLabels.setLayoutData(gd);
+		stateLabels.setLayout(new GridLayout(3, true));
+		
+		Label minState = new Label(stateLabels, SWT.BEGINNING);
+		minState.setText("0");
+		minState.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, true, true));
+		
+		curState = new Label(stateLabels, SWT.CENTER);
+		curState.setText("Current State: 0         \n         ");
+		curState.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, true, true));
+		
+		Label maxState = new Label(stateLabels, SWT.END);
+		maxState.setText(Integer.toString(localStateManager.modelStates.getStates().size()-1));
+		maxState.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, true, true));
+		
 		Composite buttons = new Composite(sliderAndButtons, SWT.NONE);
 		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
 		gd.heightHint = 20;
@@ -328,7 +379,10 @@ public class GraphVisualizer {
 			
 		setInitial = new Button(buttons, SWT.PUSH);
 		setInitial.setText("Set Initial");
-			
+		
+		deleteSelectedNode = new Button(buttons, SWT.PUSH);
+		deleteSelectedNode.setText("Delete Selected Node");
+		
 		toggleFreeze = new Button(buttons, SWT.CHECK);
 		toggleFreeze.setText("Freeze Graph");
 		    
@@ -348,20 +402,6 @@ public class GraphVisualizer {
 		showFutureApply = new Button(radioButtons, SWT.RADIO);
 		showFutureApply.setText("Show Future");
 		
-		// Init help shell
-		Shell helpShell = new Shell(shell);
-		helpShell.setText("Help");
-		helpShell.setSize(400, 200);
-	    Label helpLabel = new Label(helpShell,SWT.BORDER);
-	    helpLabel.setText(
-	    		"Green/++: Creation or change"
-	    		+ "\nRed: Deletion"
-	    		);
-	    
-	    GridLayout helpShellLayout = new GridLayout();
-	    helpShellLayout.numColumns = 1;
-		helpShell.setLayout(helpShellLayout);
-	    
 		help = new Button(sliderAndButtons, SWT.PUSH);
 		help.setText("Help");
 		gd = new GridData(SWT.NONE, SWT.FILL, true, true);
@@ -381,7 +421,7 @@ public class GraphVisualizer {
 		nodeInfoLabel.setLayoutData(gd);
 		
 		// Initialize listeners
-		setListeners(helpShell);
+		setListeners();
 		
 		// Initialize labels
 		setMatchRuleInfo();
@@ -399,13 +439,25 @@ public class GraphVisualizer {
 	/**
 	 * Initializes listeners for gui components like buttons, slider and graph
 	 */
-	private void setListeners(Shell helpShell) {
+	private void setListeners() {
 		
 		help.addSelectionListener(new SelectionListener() {
 			
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-					helpShell.open();
+				Shell helpShell = new Shell();
+				helpShell.setText("Help");
+				helpShell.setSize(400, 200);
+			    Label helpLabel = new Label(helpShell,SWT.FILL);
+			    helpLabel.setText(
+			    		"Green/++: \nCreation or change"
+			    		+ "\nRed/--: \nDeletion"
+			    		);
+			    
+			    GridLayout helpShellLayout = new GridLayout();
+			    helpShellLayout.numColumns = 1;
+				helpShell.setLayout(helpShellLayout);
+				helpShell.open();
 			}
 	
 			@Override
@@ -457,6 +509,49 @@ public class GraphVisualizer {
 			
 		});
 		
+		deleteSelectedNode.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent event) {
+				if(lastSelectedNode != null) {
+					Shell warningShell = new Shell();
+					MessageBox dialog = new MessageBox(warningShell, SWT.ICON_WARNING | SWT.OK| SWT.CANCEL);
+					dialog.setText("WARNING!");
+					dialog.setMessage("Do you really want to delete the last selected node?\nDeletion can cause errors and only be undone by \"Set Initial\"\nOperations will not be executed on deleted Objects");
+					
+					if(dialog.open() == 32) {
+						for(Edge e : lastSelectedNode.edges().toList()) {
+							for(Link l : edgeMap.keySet()) {
+								if(edgeMap.get(l).equals(e)) {
+									edgeBlacklist.add(l);
+								}
+							}	
+						}
+						for(EObject n : nodeMap.keySet()) {
+							if(nodeMap.get(n).equals(lastSelectedNode)) {
+								nodeBlacklist.add(n);
+								if(infoNodes.get(n) != null) {
+									graph.removeNode(infoNodes.get(n));
+									infoNodes.remove(n, infoNodes.get(n));
+							}
+								graph.removeNode(lastSelectedNode);
+								lastSelectedNode = null;
+								break;
+							}
+						}	
+					}
+				}
+			
+				
+			}
+	
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// Auto-generated method stub
+			}
+			
+		});
+		
 		toggleFreeze.addSelectionListener(new SelectionListener() {
 	
 			@Override
@@ -481,7 +576,10 @@ public class GraphVisualizer {
 			
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				jumpRuleApply(selectedRuleInList);
+				if(selectedRuleInList != null)
+					jumpRuleApply(selectedRuleInList);
+				else if(selectedPatternInList != null)
+					jumpRuleInfo.setText("Only rules can be applied");
 			}
 	
 			@Override
@@ -490,12 +588,15 @@ public class GraphVisualizer {
 			}
 			
 		});
-		
+
 		jumpMatchChange.addSelectionListener(new SelectionListener() {
 			
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				jumpMatchCountChanged();
+				if(selectedRuleInList != null)
+					jumpMatchCountChanged(selectedRuleInList);
+				else if(selectedPatternInList != null)
+					jumpMatchCountChanged(selectedPatternInList);
 			}
 	
 			@Override
@@ -589,6 +690,7 @@ public class GraphVisualizer {
 			public void widgetSelected(SelectionEvent e) {
 				// Check if something is selected and it´s not just a click on the list
 				if(matchList.getSelectionIndex() != -1) {
+					ruleList.deselectAll();
 					resetHighlightVis();
 					if(oldSelection == matchList.getSelectionIndex()) {
 						oldSelection = -1;
@@ -614,6 +716,8 @@ public class GraphVisualizer {
 			public void widgetSelected(SelectionEvent e) {
 				// Check if something is selected and it´s not just a click on the list
 				if(ruleList.getSelectionIndex() != -1) {
+					patternList.deselectAll();
+					selectedPatternInList = null;
 					jumpRuleInfo.setText("");
 					if(oldSelectionRule == ruleList.getSelectionIndex()) {
 						ruleList.deselect(oldSelectionRule);
@@ -625,6 +729,38 @@ public class GraphVisualizer {
 						oldSelectionRule = ruleList.getSelectionIndex();
 					}
 				}
+				
+				
+			}
+	
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// Auto-generated method stub
+			}
+			
+		});
+		
+		patternList.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				// Check if something is selected and it´s not just a click on the list
+				if(patternList.getSelectionIndex() != -1) {
+					ruleList.deselectAll();
+					selectedRuleInList = null;
+					jumpRuleInfo.setText("");
+					if(oldSelectionRule == patternList.getSelectionIndex()) {
+						patternList.deselect(oldSelectionRule);
+						selectedPatternInList = null;
+						oldSelectionRule = -1;
+					} else {
+						selectedPatternInList = patternList.getItem(patternList.getSelectionIndex());
+						// Remember old selection
+						oldSelectionRule = patternList.getSelectionIndex();
+					}
+				}
+				
+				
 			}
 	
 			@Override
@@ -729,7 +865,8 @@ public class GraphVisualizer {
 		        	Display.getDefault().syncExec(new Runnable() {
 						@Override
 						public void run() {
-							showAttributes(element.getId());	
+							showAttributes(element.getId());
+							lastSelectedNode = graph.getNode(element.getId());
 						}
 	        		});
 		        }
@@ -824,7 +961,7 @@ public class GraphVisualizer {
 			localStateManager.moveToState(localStateManager.getCurrentState().getChildren().get(0), false);
 			RuleState currentRuleState = (RuleState)localStateManager.getCurrentState();
 			slider.setSelection(localStateManager.modelStates.getStates().indexOf(currentRuleState));
-			
+			curState.setText("Current State: " + Integer.toString(localStateManager.modelStates.getStates().indexOf(currentRuleState)));
 			// Create new nodes
 			for(EObject newNode : currentRuleState.getStructuralDelta().getCreatedObjects()) {
 				createGraphNode(newNode);
@@ -842,7 +979,7 @@ public class GraphVisualizer {
 					}
 				}
 			}
-			// Create new links	
+			// Create new links
 			for(Link newLink : currentRuleState.getStructuralDelta().getCreatedLinks()) {
 				createGraphEdge(newLink);
 			}
@@ -885,6 +1022,7 @@ public class GraphVisualizer {
 			RuleState currentRuleState = (RuleState)localStateManager.getCurrentState();
 			// Adjust slider value
 			slider.setSelection(localStateManager.modelStates.getStates().indexOf(currentRuleState)-1);
+			curState.setText("Current State: " + Integer.toString(localStateManager.modelStates.getStates().indexOf(currentRuleState)-1));
 			// Delete links created in current state
 			for(Link newLink : currentRuleState.getStructuralDelta().getCreatedLinks()) {
 				deleteGraphEdge(newLink);
@@ -946,6 +1084,8 @@ public class GraphVisualizer {
 		// Clear variables
 		nodeMap.clear();
 		edgeMap.clear();
+		nodeBlacklist.clear();
+		edgeBlacklist.clear();
 		nodeID = 0;
 		edgeID = 0;
 			
@@ -965,6 +1105,7 @@ public class GraphVisualizer {
 		
 		// Reset slider
 		slider.setSelection(0);
+		curState.setText("Current State: 0");
 		
 		// Reset rule and match labels
 		setMatchRuleInfo();
@@ -993,7 +1134,9 @@ public class GraphVisualizer {
 			// Use pattern matcher to find matches and list them in gui
 			@SuppressWarnings("unchecked")
 			List<IMatch> matchStream = localGraphTransformationInterpreter.matchStream(nextRuleState.getRule().getName(), (Map<String, Object>) nextRuleState.getParameter() , true).collect(Collectors.toList());
-			matchCount = matchStream.size();
+//			for(int i = 0; i< matchStream.size(); i++) {
+//				matchList.add(nextRuleState.getRule().getName());
+//			}
 			int index = 0;
 			for(IMatch match : matchStream) {
 				if(match.equals(nextRuleState.getMatch())) {
@@ -1068,18 +1211,24 @@ public class GraphVisualizer {
 			RuleState currentRuleState = (RuleState)localStateManager.getCurrentState();
 			// Color new nodes green and add ++ to label
 			for(EObject newNode : currentRuleState.getStructuralDelta().getCreatedObjects()) {
+				if(!nodeBlacklist.contains(newNode) ) {
 				nodeMap.get(newNode).setAttribute("ui.style", "fill-color: rgba(0,150,0,255); text-background-color: rgba(0,150,0,255);");
 				nodeMap.get(newNode).setAttribute("ui.label", nodeMap.get(newNode).getAttribute("ui.label") + " ++");
+				}
 			}
 			// create info nodes for nodes whose attributes have changed
 			for(AttributeDelta attributeDelta : currentRuleState.getAttributeDeltas()) {
-				createInfoNode(attributeDelta.getObject());
+				if(!nodeBlacklist.contains(attributeDelta.getObject()) ) {
+					createInfoNode(attributeDelta.getObject());
+				}
 			}
 			// Color new edges green and add ++ to label
 			for(Link newLink : currentRuleState.getStructuralDelta().getCreatedLinks()) {
-				if(edgeMap.containsKey(newLink)) {
-					edgeMap.get(newLink).setAttribute("ui.style", "fill-color: rgba(0,150,0,255);");
-					edgeMap.get(newLink).setAttribute("ui.label", newLink.getType().getName() + " ++");
+				if(!(nodeBlacklist.contains(newLink.getTrg()) || nodeBlacklist.contains(newLink.getSrc()))) {
+					if(edgeMap.containsKey(newLink)) {
+						edgeMap.get(newLink).setAttribute("ui.style", "fill-color: rgba(0,150,0,255);");
+						edgeMap.get(newLink).setAttribute("ui.label", newLink.getType().getName() + " ++");
+					}
 				}
 			}
 		}
@@ -1105,20 +1254,25 @@ public class GraphVisualizer {
 			}
 			// Color nodes which will be deleted red and add -- to label
 			for(EObject deletedNode : nextRuleState.getStructuralDelta().getDeletedObjects()) {
+				if(!nodeBlacklist.contains(deletedNode) ) {
 				nodeMap.get(deletedNode).setAttribute("ui.style", "fill-color: rgba(150,0,0,255); text-background-color: rgba(255,0,0,128);");
 				nodeMap.get(deletedNode).setAttribute("ui.label", nodeMap.get(deletedNode).getAttribute("ui.label") + " --");
+				}
 			}
 			// Create and color new edges green and add ++ to label
 			for(Link createdLink : nextRuleState.getStructuralDelta().getCreatedLinks()) {
-				Edge edge = createGraphEdge(createdLink);
-				if(edge!=null) {
-					edge.setAttribute("ui.style", "fill-color: rgba(0,150,0,255);");
-					edge.setAttribute("ui.label", createdLink.getType().getName() + " ++");
+				if(!(nodeBlacklist.contains(createdLink.getTrg()) || nodeBlacklist.contains(createdLink.getSrc()))) {
+					Edge edge = createGraphEdge(createdLink);
+					if(edge!=null) {
+						edge.setAttribute("ui.style", "fill-color: rgba(0,150,0,255);");
+						edge.setAttribute("ui.label", createdLink.getType().getName() + " ++");
+					}
 				}
 			}
 			
 			// Color edges which will be deleted red and add -- to label
 			for(Link deleteLink : nextRuleState.getStructuralDelta().getDeletedLinks()) {
+				if(!(nodeBlacklist.contains(deleteLink.getTrg()) || nodeBlacklist.contains(deleteLink.getSrc()))) {
 				Link toColor = deleteLink;
 				for(Link link : edgeMap.keySet()) {
 					if(equalEdge(deleteLink, link)) {
@@ -1128,11 +1282,13 @@ public class GraphVisualizer {
 				}
 				edgeMap.get(toColor).setAttribute("ui.style", "fill-color: rgba(150,0,0,255);");
 				edgeMap.get(toColor).setAttribute("ui.label", deleteLink.getType().getName() + " --");
-				
+				}
 			}
 			// create info nodes for nodes whose attributes have changed
 			for(AttributeDelta attributeDelta : nextRuleState.getAttributeDeltas()) {
-				createInfoNode(attributeDelta.getObject());
+				if(!nodeBlacklist.contains(attributeDelta.getObject()) ) {
+					createInfoNode(attributeDelta.getObject());
+				}
 			}
 		}
 	}
@@ -1175,27 +1331,25 @@ public class GraphVisualizer {
 				+ "fill-mode: dyn-plain;"
 				+ "size: 2px;"
 				+ "shape: box;"
-//				+ "shadow-mode: gradient-radial;"
-//				+ "shadow-width: 5px;"
-//				+ "shadow-color: orange;"
-//				+ "stroke-mode: plain;"
-//				+ "stroke-width: 2.0px;"
-);
+				// Bug: Node does not change in size
+				);
 		matchHiglightNode.setAttribute("ui.label", "");
 		nodeID++;
 		
 		for(Object matchNode : selectedMatch.getObjects()) {
 			try {
-				nodeMap.get((EObject)matchNode).setAttribute("ui.style", "shadow-mode: gradient-radial; shadow-width: 10px; shadow-color: orange;");
-				Edge matchHighlightEdge = graph.addEdge(Integer.toString(edgeID), matchHiglightNode, nodeMap.get((EObject)matchNode));
-				matchHighlightEdge.setAttribute("ui.label", "");
-				matchHighlightEdge.setAttribute("ui.style", 
-						"fill-color: white;"
-						+ "stroke-mode: dashes;"
-						+ "stroke-color: black;"
-						+ "stroke-width: 2.0px;");
-				
-				edgeID++;
+				if(!nodeBlacklist.contains((EObject)matchNode)) {
+					nodeMap.get((EObject)matchNode).setAttribute("ui.style", "shadow-mode: gradient-radial; shadow-width: 10px; shadow-color: orange;");
+					Edge matchHighlightEdge = graph.addEdge(Integer.toString(edgeID), matchHiglightNode, nodeMap.get((EObject)matchNode));
+					matchHighlightEdge.setAttribute("ui.label", "");
+					matchHighlightEdge.setAttribute("ui.style", 
+							"fill-color: white;"
+							+ "stroke-mode: dashes;"
+							+ "stroke-color: black;"
+							+ "stroke-width: 2.0px;");
+					
+					edgeID++;
+				} 
 			} catch (Exception ex) {
 				System.out.println("Error when highlighting matches");
 			}
@@ -1240,7 +1394,6 @@ public class GraphVisualizer {
 			matchHiglightNode = null;
 		}
 		
-		List<Node> test = graph.nodes().collect(Collectors.toList());
 		for(Node n : graph.nodes().collect(Collectors.toList())) {
 			n.setAttribute("ui.style", "shadow-mode: none;");
 		}
@@ -1296,28 +1449,30 @@ public class GraphVisualizer {
 	 */
 	private void createInfoNode(EObject targetNode) {
 		// Check if target node already has an info node
-		if(!infoNodes.keySet().contains(targetNode)) {
-			Node addedNode = graph.addNode(Integer.toString(nodeID));
-			Edge addedEdge = graph.addEdge(Integer.toString(edgeID), addedNode, nodeMap.get(targetNode));
-			nodeID++;
-			edgeID++;
-			
-			addedNode.setAttribute("ui.style", 
-					"fill-color: grey;"
-					+ "shape: circle;"
-					+ "text-background-color: grey;"
-					+ "stroke-mode: plain;"
-					+ "stroke-color: rgba(0,150,0,255);"
-					+ "stroke-width: 2.0px;");
-			addedNode.setAttribute("ui.label", "++");
-			
-			addedEdge.setAttribute("ui.style", 
-					"fill-color: white;"
-					+ "stroke-mode: dashes;"
-					+ "stroke-color: black;"
-					+ "stroke-width: 2.0px;");
-			
-			infoNodes.put(targetNode, addedNode);
+		if(!nodeBlacklist.contains(targetNode)) {
+			if(!infoNodes.keySet().contains(targetNode)) {
+				Node addedNode = graph.addNode(Integer.toString(nodeID));
+				Edge addedEdge = graph.addEdge(Integer.toString(edgeID), addedNode, nodeMap.get(targetNode));
+				nodeID++;
+				edgeID++;
+				
+				addedNode.setAttribute("ui.style", 
+						"fill-color: grey;"
+						+ "shape: circle;"
+						+ "text-background-color: grey;"
+						+ "stroke-mode: plain;"
+						+ "stroke-color: rgba(0,150,0,255);"
+						+ "stroke-width: 2.0px;");
+				addedNode.setAttribute("ui.label", "++");
+				
+				addedEdge.setAttribute("ui.style", 
+						"fill-color: white;"
+						+ "stroke-mode: dashes;"
+						+ "stroke-color: black;"
+						+ "stroke-width: 2.0px;");
+				
+				infoNodes.put(targetNode, addedNode);
+			}
 		}
 	}
 
@@ -1333,7 +1488,6 @@ public class GraphVisualizer {
 				graph.getNode(Integer.toString(nodeID)).setAttribute("ui.label", node.eClass().getInstanceClassName().substring(node.eClass().getInstanceClassName().indexOf(".") + 1));
 			else
 				graph.getNode(Integer.toString(nodeID)).setAttribute("ui.label", node.eClass().getInstanceClassName());
-			
 			// Increment nodeID
 			nodeID++;
 		}	
@@ -1344,7 +1498,12 @@ public class GraphVisualizer {
 	 * @param node Node to delete
 	 */
 	private void deleteGraphNode(EObject node) {
-		graph.removeNode(nodeMap.remove(node));
+		if(nodeBlacklist.contains(node)) {
+			nodeMap.remove(node);
+		} else {
+			graph.removeNode(nodeMap.remove(node));
+		}
+		
 	}
 
 	/**
@@ -1355,20 +1514,24 @@ public class GraphVisualizer {
 	private Edge createGraphEdge(Link newLink) {
 		// No check with edgeMap because different Link-objects can have same target and source
 		// Instead check if link is already in graph
-		Edge createdEdge = graph.addEdge(Integer.toString(edgeID), nodeMap.get(newLink.getSrc()), nodeMap.get(newLink.getTrg()), true);
-		if(createdEdge!=null) {
-			
-			// Map graph edge to EObject edge
-			edgeMap.put(newLink, createdEdge);
-			
-			// Label edge
-			if(newLink.getType()!=null)
-				createdEdge.setAttribute("ui.label", newLink.getType().getName());
-			
-			// Increment edgeID;
-			edgeID++;	
-			
-			return createdEdge;
+		if(nodeBlacklist.contains(newLink.getSrc()) || nodeBlacklist.contains(newLink.getTrg())) {
+			edgeMap.put(newLink, null);
+		} else {
+			Edge createdEdge = graph.addEdge(Integer.toString(edgeID), nodeMap.get(newLink.getSrc()), nodeMap.get(newLink.getTrg()), true);
+			if(createdEdge!=null) {
+				
+				// Map graph edge to EObject edge
+				edgeMap.put(newLink, createdEdge);
+				
+				// Label edge
+				if(newLink.getType()!=null)
+					createdEdge.setAttribute("ui.label", newLink.getType().getName());
+				
+				// Increment edgeID;
+				edgeID++;	
+				
+				return createdEdge;
+			}
 		}
 		return null;
 	}
@@ -1379,14 +1542,18 @@ public class GraphVisualizer {
 	 */
 	private void deleteGraphEdge(Link deletedLink) {
 		Link toDelete = deletedLink;
+		// Sometimes links should be the same but are not the same object
 		for(Link link : edgeMap.keySet()) {
 			if(equalEdge(deletedLink, link)) {
 				toDelete = link;
 				break;
 			}
 		}
-		graph.removeEdge(edgeMap.remove(toDelete));
-		
+		if(edgeBlacklist.contains(deletedLink)) {
+			edgeMap.remove(toDelete);
+		} else {
+			graph.removeEdge(edgeMap.remove(toDelete));
+		}
 	}
 	
 	private boolean equalEdge(Link one, Link two) {
@@ -1394,27 +1561,30 @@ public class GraphVisualizer {
 	}
 
 	/**
-	 * Jumps to next state where match count in comparison to current match count changes
+	 * Jumps to next state where pattern count in comparison to current pattern count changes
+	 * @param selectedPatternInList 
 	 */
-	private void jumpMatchCountChanged() {
+	private void jumpMatchCountChanged(String selectedPatternInList) {
+		float currentCount = localGraphTransformationInterpreter.countMatches(selectedPatternInList, new HashMap<String, Object>(), false);
 		State curr = localStateManager.getCurrentState();
 		boolean found = false;
+	
 		while(!localStateManager.getCurrentState().getChildren().isEmpty()) {
 			localStateManager.moveToState(localStateManager.getCurrentState().getChildren().get(0), false);
-			RuleState movedState = (RuleState) localStateManager.getCurrentState();
-			@SuppressWarnings("unchecked")
-			List<IMatch> matchStream = localGraphTransformationInterpreter.matchStream(movedState.getRule().getName(), (Map<String, Object>) movedState.getParameter() , true).collect(Collectors.toList());
-			if(matchCount != matchStream.size()) {
-				int index = localStateManager.modelStates.getStates().indexOf(movedState);
+			float newCount = localGraphTransformationInterpreter.countMatches(selectedPatternInList, new HashMap<String, Object>(), true);
+		
+			if(newCount != currentCount) {
+				int index = localStateManager.modelStates.getStates().indexOf(localStateManager.getCurrentState());
 				found = true;
 				localStateManager.moveToState(curr, false);
 				stateChanged(index);
+				jumpRuleInfo.setText("Pattern count changed from " + currentCount + " to " + newCount);
 				break;
 			}
 		}
 		if(!found) {
 			localStateManager.moveToState(curr, false);
-			jumpMatchChangeInfo.setText("No further change in match count!");
+			jumpRuleInfo.setText("No further changes!");
 		}
 	}
 	
@@ -1423,7 +1593,6 @@ public class GraphVisualizer {
 	 * @param selectedRule rule of searched state
 	 */
 	private void jumpRuleApply(String selectedRule) {
-		if(selectedRule != null) {
 			State curr = localStateManager.getCurrentState();
 			boolean found = false;
 			while(!localStateManager.getCurrentState().getChildren().isEmpty()) {
@@ -1444,7 +1613,6 @@ public class GraphVisualizer {
 				localStateManager.moveToState(curr, false);
 				jumpRuleInfo.setText("No further apply!");
 			}
-		}	
 	}
 }
 
