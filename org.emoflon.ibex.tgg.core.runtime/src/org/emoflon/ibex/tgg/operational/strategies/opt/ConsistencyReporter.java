@@ -140,6 +140,10 @@ public class ConsistencyReporter {
 							domain, specificationEdge.getSrcNode().getName());
 					EObject trgOfEdge = TGGPatternUtil.getNode(ra, specificationEdge.getTrgNode().getBindingType(),
 							domain, specificationEdge.getTrgNode().getName());
+					if(srcOfEdge == null || trgOfEdge == null)
+						throw new NullPointerException("Source and/or target of tggRuleEdge<"+specificationEdge+"> must not be null!");
+					
+					
 					EReference refOfEdge = specificationEdge.getType();
 					EMFEdge edge = new EMFEdge(srcOfEdge, trgOfEdge, refOfEdge);
 					edges.remove(edge);
