@@ -152,8 +152,7 @@ public class EMFManipulationUtils {
 			SmartEMFUtil.deleteNode(node, recursive);
 		}
 		else
-			if(recursive && !node.eContents().isEmpty())
-				deleteNodes(node.eContents().stream().collect(Collectors.toSet()), recursive, false);
+			EcoreUtil.delete(node, recursive);
 	}
 	
 	public static void deleteNodes(final Set<EObject> nodeToDelete, boolean recursive) {
