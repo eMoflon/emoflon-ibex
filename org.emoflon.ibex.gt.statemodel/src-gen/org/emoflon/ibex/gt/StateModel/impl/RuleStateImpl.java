@@ -145,7 +145,11 @@ public class RuleStateImpl extends StateImpl implements RuleState {
 	 * @ordered
 	 */
 	protected EList<AttributeDelta> attributeDeltas;
-
+	
+	protected Map<String, Collection<IMatch>> matches;
+	protected Map<String, Double> staticRuleRates;
+	protected Map<String, Double> dynamicRuleRates;
+	
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -547,5 +551,35 @@ public class RuleStateImpl extends StateImpl implements RuleState {
 		return result.toString();
 	}
 
+	@Override
+	public void setMatches(Map<String, Collection<IMatch>> matches) {
+		this.matches = matches;
+		
+	}
+
+	@Override
+	public Map<String, Collection<IMatch>> getMatches() {
+		return matches;
+	}
+
+	@Override
+	public void setStaticRules(Map<String, Double> sRR) {
+		this.staticRuleRates = sRR;
+	}
+	
+	@Override
+	public Map<String, Double> getStaticRules() {
+		return this.staticRuleRates;
+	}
+	
+	@Override
+	public void setDynamicRules(Map<String, Double> dRR) {
+		this.dynamicRuleRates = dRR;
+	}
+	
+	@Override
+	public Map<String, Double> getDynamicRules() {
+		return this.dynamicRuleRates;
+	}
 	
 } //RuleStateImpl

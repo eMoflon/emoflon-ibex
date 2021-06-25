@@ -14,7 +14,7 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 
 import org.eclipse.emf.ecore.util.EObjectResolvingEList;
-
+import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.gt.StateModel.RuleState;
 import org.emoflon.ibex.gt.StateModel.State;
 import org.emoflon.ibex.gt.StateModel.StateModelPackage;
@@ -85,11 +85,12 @@ public class StateImpl extends MinimalEObjectImpl.Container implements State {
 	 */
 	protected long hash = HASH_EDEFAULT;
 
+	
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
-	 */
+	 */	
 	protected StateImpl() {
 		super();
 	}
@@ -262,5 +263,7 @@ public class StateImpl extends MinimalEObjectImpl.Container implements State {
 		result.append(')');
 		return result.toString();
 	}
+
+
 
 } //StateImpl

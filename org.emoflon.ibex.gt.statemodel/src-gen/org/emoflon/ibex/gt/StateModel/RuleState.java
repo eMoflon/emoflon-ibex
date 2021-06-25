@@ -176,5 +176,16 @@ public interface RuleState extends State {
 	 */
 	EList<AttributeDelta> getAttributeDeltas();
 
+	void setMatches(Map<String, Collection<IMatch>> matches);
+	
+	Map<String, Collection<IMatch>> getMatches();
+
+	Map<String, Double> getStaticRules();
+
+	Map<String, Double> getDynamicRules();
+
+	void setDynamicRules(Map<String, Double> dRR);
+
+	void setStaticRules(Map<String, Double> sRR);
 
 } // RuleState

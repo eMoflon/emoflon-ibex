@@ -14,6 +14,7 @@ import org.emoflon.ibex.common.operational.PushoutApproach;
 import org.emoflon.ibex.gt.StateModel.State;
 import org.emoflon.ibex.gt.arithmetic.Probability;
 import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
+import org.emoflon.ibex.gt.state.ModelStateManager;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
 
 
@@ -98,6 +99,14 @@ public abstract class GraphTransformationAPI {
 	 */
 	public final void updateMatches() {
 		interpreter.updateMatches();
+	}
+	
+	/**
+	 * Returns the model state manager
+	 * @return ModelStateManager
+	 */
+	public final ModelStateManager getStateManager() {
+		return interpreter.getStateManager();
 	}
 	
 	/**

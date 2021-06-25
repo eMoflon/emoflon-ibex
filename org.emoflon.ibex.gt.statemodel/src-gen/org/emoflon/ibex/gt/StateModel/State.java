@@ -2,9 +2,13 @@
  */
 package org.emoflon.ibex.gt.StateModel;
 
+import java.util.Collection;
+import java.util.Map;
+
 import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EObject;
+import org.emoflon.ibex.common.operational.IMatch;
 
 /**
  * <!-- begin-user-doc -->
@@ -25,6 +29,7 @@ import org.eclipse.emf.ecore.EObject;
  * @generated
  */
 public interface State extends EObject {
+	
 	/**
 	 * Returns the value of the '<em><b>Initial</b></em>' attribute.
 	 * <!-- begin-user-doc -->
@@ -36,7 +41,7 @@ public interface State extends EObject {
 	 * @generated
 	 */
 	boolean isInitial();
-
+	
 	/**
 	 * Sets the value of the '{@link org.emoflon.ibex.gt.StateModel.State#isInitial <em>Initial</em>}' attribute.
 	 * <!-- begin-user-doc -->
@@ -80,5 +85,7 @@ public interface State extends EObject {
 	 * @generated
 	 */
 	void setHash(long value);
+	
+	
 
 } // State

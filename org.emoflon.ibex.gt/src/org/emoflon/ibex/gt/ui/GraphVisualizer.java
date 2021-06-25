@@ -84,7 +84,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRuleSet;
 public class GraphVisualizer {
 	// IBeX variables
 	private StateModelFactory factory = StateModelFactory.eINSTANCE;
-	private ModelStateManager localStateManager;
+	protected ModelStateManager localStateManager;
 	private GraphTransformationInterpreter localGraphTransformationInterpreter;
 
 	// Intern variables
@@ -95,11 +95,12 @@ public class GraphVisualizer {
 	private boolean showFuture = false;
 	private boolean showCurrent = false;
 	private boolean freeze = false;
+	private boolean allMatchesShown = false;
 	
 	private Map<EObject, Node> nodeMap;
 	private Map<Link, Edge> edgeMap;
-	private EList<IBeXRule> ruleSet;
-	private EList<IBeXContext> patternSet;
+	protected EList<IBeXRule> ruleSet;
+	protected EList<IBeXContext> patternSet;
 	private EList<EObject> initialResourceContents;
 	private Map<Integer,IMatch> listedMatches;
 	private Map<EObject, Node> infoNodes;
@@ -113,6 +114,7 @@ public class GraphVisualizer {
 	private Button stepBackward;
 	private Button setInitial;
 	private Button deleteSelectedNode;
+	private Button showAllMatches;
 	private Button toggleFreeze;
 	
 	private Button jumpRule;
@@ -129,7 +131,7 @@ public class GraphVisualizer {
 	private Label nodeInfoLabel;
 	private Label jumpRuleInfo;
 	private Label jumpRuleHead;
-	private Label info;
+	protected Label info;
 	private Label curState;
 	private String selectedRuleInList;
 	private String selectedPatternInList;
@@ -138,8 +140,8 @@ public class GraphVisualizer {
 	private Slider slider;
 	
 	private org.eclipse.swt.widgets.List matchList;
-	private org.eclipse.swt.widgets.List ruleList;
-	private org.eclipse.swt.widgets.List patternList;
+	protected org.eclipse.swt.widgets.List ruleList;
+	protected org.eclipse.swt.widgets.List patternList;
 	
 	// Graphstream variables
 	private SingleGraph graph;
@@ -204,15 +206,57 @@ public class GraphVisualizer {
 		// Generate gui
 		generateUI();
 		
+		// Open shell
+		runApp();
 	}
 	
+	/**
+	 * Second constructor for simsg use
+	 * @param resource	Model resources with initial nodes
+	 * @param stateManager Statemanager with all states and helper functions
+	 * @param graphTransformationInterpreter Interpreter used to find matches
+	 * @param iBeXRuleSet 
+	 * @param iBeXPatternSet 
+	 * @param edgeTypes 
+	 */
+	public GraphVisualizer(Resource resource, ModelStateManager stateManager, GraphTransformationInterpreter graphTransformationInterpreter, IBeXRuleSet iBeXRuleSet, IBeXPatternSet iBeXPatternSet, String modelName) {
+		initialResourceContents = new BasicEList<EObject>(resource.getContents());
+		localStateManager = stateManager;
+		localGraphTransformationInterpreter = graphTransformationInterpreter;
+		localStateManager.moveToState(localStateManager.modelStates.getInitialState(), false);
+		ruleSet = iBeXRuleSet.getRules();
+		patternSet = iBeXPatternSet.getContextPatterns();
+		
+		nodeMap = new HashMap<EObject, Node>();
+		edgeMap = new HashMap<Link, Edge>();
+		infoNodes = new HashMap<EObject, Node>();
+		listedMatches = new HashMap<Integer, IMatch>();
+		nodeBlacklist = new BasicEList<EObject>();
+		edgeBlacklist = new BasicEList<Link>();
+		graph = new SingleGraph("");
+		graph.setStrict(false);
+		graph.setAutoCreate(false);
+		graph.setAttribute("ui.stylesheet", styleSheet);	
+
+		// Create initial graph with resources
+		createNodesFromList(resource.getContents());
+		
+		// Generate gui
+		generateUI();
+		
+		shell.setText(modelName);
+
+	}
+
+protected Shell shell;
+private Display display;
 	/**
 	 *  Generates the UI and embeds the graph from graphstream
 	 */
 	private void generateUI() {
 		//Display
-		Display display = new Display();
-		Shell shell = new Shell(display);
+		display = new Display();
+		shell = new Shell(display);
 		GridLayout gridLayout = new GridLayout();
 		gridLayout.numColumns = 3;
 		shell.setLayout(gridLayout);
@@ -315,8 +359,14 @@ public class GraphVisualizer {
 		 	
 		matchList = new org.eclipse.swt.widgets.List (textsAndList, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL);
 		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-		gd.heightHint = 475;
+		gd.heightHint = 425;
 		matchList.setLayoutData(gd);
+		
+		showAllMatches = new Button(textsAndList, SWT.PUSH);
+		showAllMatches.setText("Show All Matches");
+		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+		gd.heightHint = 50;
+		showAllMatches.setLayoutData(gd);
 		
 		// Information
 		Composite infoComp = new Composite(shell, SWT.BORDER);
@@ -324,12 +374,11 @@ public class GraphVisualizer {
 		gd.widthHint = 250;
 		gd.heightHint = 250;
 		infoComp.setLayoutData(gd);
-		
+		infoComp.setLayout(new GridLayout(1, true));
 		info = new Label(infoComp, SWT.BORDER);
 		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
 		gd.heightHint = 250;
 		info.setLayoutData(gd);
-
 		
 		// Slider and Buttons
 		Composite sliderAndButtons = new Composite(shell, SWT.BORDER);
@@ -426,6 +475,10 @@ public class GraphVisualizer {
 		// Initialize labels
 		setMatchRuleInfo();
 			
+
+	}
+
+	protected void runApp() {
 		// Open shell and keep open while program is running
 		shell.open();
 		while (!shell.isDisposed()) {
@@ -435,7 +488,14 @@ public class GraphVisualizer {
 		// Free resources after closing
 		display.dispose();
 	}
-
+	
+	/**
+	 * Prepares info label for rule rates
+	 */
+	protected void printRuleRates() {
+		info.setText("No rates without SimSG");
+	}
+	
 	/**
 	 * Initializes listeners for gui components like buttons, slider and graph
 	 */
@@ -458,6 +518,20 @@ public class GraphVisualizer {
 			    helpShellLayout.numColumns = 1;
 				helpShell.setLayout(helpShellLayout);
 				helpShell.open();
+			}
+	
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// Auto-generated method stub
+			}
+			
+		});
+		
+		showAllMatches.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+					showAllMatches();
 			}
 	
 			@Override
@@ -770,7 +844,6 @@ public class GraphVisualizer {
 			
 		});
 	}
-	
 
 	/**
 	 * Crates the panel to embed the graph from graphstream into swt
@@ -954,6 +1027,7 @@ public class GraphVisualizer {
 			defreezeGraph();
 			// Reset info label
 			nodeInfoLabel.setText("");
+			
 			// Reset coloring and highlighting
 			resetApplyVis();
 			resetHighlightVis();
@@ -994,7 +1068,7 @@ public class GraphVisualizer {
 				
 			// Set rule and match label
 			setMatchRuleInfo();
-			
+			printRuleRates();
 			// If coloring was activated apply it on new state
 			if(showCurrent) 
 				showCurrentObjects();
@@ -1013,6 +1087,7 @@ public class GraphVisualizer {
 			defreezeGraph();
 			// Reset info label
 			nodeInfoLabel.setText("");
+	
 			// Reset coloring and highlighting
 			resetApplyVis();
 			resetHighlightVis();
@@ -1057,7 +1132,7 @@ public class GraphVisualizer {
 			
 			// Set rule and match label
 			setMatchRuleInfo();
-			
+			printRuleRates();
 			// If coloring was activated apply it on new state
 			if(showCurrent) 
 				showCurrentObjects();
@@ -1095,7 +1170,8 @@ public class GraphVisualizer {
 		
 		// Clean info label
 		nodeInfoLabel.setText("");
-	
+		printRuleRates();
+		
 		// Reset radio button selection
 		showNoApply.setSelection(true);
 		showFutureApply.setSelection(false);
@@ -1119,6 +1195,7 @@ public class GraphVisualizer {
 		// Clear listes matches 
 		matchList.removeAll();
 		listedMatches.clear();
+		allMatchesShown = false;
 		
 		//Check if in initial state
 		if(!localStateManager.getCurrentState().isInitial()) {
@@ -1131,30 +1208,37 @@ public class GraphVisualizer {
 		// Check if there is a next state
 		if(!localStateManager.getCurrentState().getChildren().isEmpty()) {
 			RuleState nextRuleState = (RuleState)localStateManager.getCurrentState().getChildren().get(0);
-			// Use pattern matcher to find matches and list them in gui
-			@SuppressWarnings("unchecked")
-			List<IMatch> matchStream = localGraphTransformationInterpreter.matchStream(nextRuleState.getRule().getName(), (Map<String, Object>) nextRuleState.getParameter() , true).collect(Collectors.toList());
-//			for(int i = 0; i< matchStream.size(); i++) {
-//				matchList.add(nextRuleState.getRule().getName());
-//			}
-			int index = 0;
-			for(IMatch match : matchStream) {
-				if(match.equals(nextRuleState.getMatch())) {
-					matchList.add(match.getPatternName() + " (Next)");
-				} else {
-					matchList.add(match.getPatternName());
-				}
-				
-				listedMatches.put(index, match);
-				index++;
-			}
-			futureApplyLabel.setText("Next Apply: \n" + nextRuleState.getRule().getName() + "\nMatches: " + matchStream.size());
+			
+			// Just list applied match/rule to ensure performance
+			// GUI can not handle listing of thousands of matches in an appropriate time
+			matchList.add(nextRuleState.getRule().getName() + " (Next)");
+			listedMatches.put(0, (IMatch) nextRuleState.getMatch());
+			futureApplyLabel.setText("Next Apply: \n" + nextRuleState.getRule().getName() + "\nMatches: " + nextRuleState.getMatches().get(nextRuleState.getRule().getName()).size());
+			
 		} else {
 			futureApplyLabel.setText("Next Apply: \nNo further state available!");
 		}
 		
 	}
 
+	/**
+	 * Lists all matches 
+	 */
+	private void showAllMatches() {
+		if(!localStateManager.getCurrentState().getChildren().isEmpty() && !allMatchesShown) {
+			allMatchesShown = true;
+			RuleState nextRuleState = (RuleState)localStateManager.getCurrentState().getChildren().get(0);
+			Collection<IMatch> matchStream = nextRuleState.getMatches().get(nextRuleState.getRule().getName());
+			matchStream.remove(nextRuleState.getMatch());
+			int index = 1;
+			for(IMatch match : matchStream) {
+				matchList.add(match.getPatternName());
+				listedMatches.put(index, match);
+				index++;
+			}
+		}
+	}
+	
 	/**
 	 * Prints the attributes of node with given ID in the gui 
 	 * @param nodeID ID of the node which attributes should be shown
@@ -1565,14 +1649,18 @@ public class GraphVisualizer {
 	 * @param selectedPatternInList 
 	 */
 	private void jumpMatchCountChanged(String selectedPatternInList) {
-		float currentCount = localGraphTransformationInterpreter.countMatches(selectedPatternInList, new HashMap<String, Object>(), false);
+		float currentCount;
+		if(localStateManager.getCurrentState().isInitial())
+			currentCount = localGraphTransformationInterpreter.countMatches(selectedPatternInList, new HashMap<String, Object>(), false);
+		else 
+			currentCount = ((RuleState) localStateManager.getCurrentState()).getMatches().get(selectedPatternInList).size();
+		
 		State curr = localStateManager.getCurrentState();
 		boolean found = false;
 	
 		while(!localStateManager.getCurrentState().getChildren().isEmpty()) {
 			localStateManager.moveToState(localStateManager.getCurrentState().getChildren().get(0), false);
-			float newCount = localGraphTransformationInterpreter.countMatches(selectedPatternInList, new HashMap<String, Object>(), true);
-		
+			float newCount = ((RuleState) localStateManager.getCurrentState()).getMatches().get(selectedPatternInList).size();
 			if(newCount != currentCount) {
 				int index = localStateManager.modelStates.getStates().indexOf(localStateManager.getCurrentState());
 				found = true;
@@ -1589,7 +1677,7 @@ public class GraphVisualizer {
 	}
 	
 	/**
-	 * Jumps to state where give rule is applied
+	 * Jumps to state where given rule is applied
 	 * @param selectedRule rule of searched state
 	 */
 	private void jumpRuleApply(String selectedRule) {

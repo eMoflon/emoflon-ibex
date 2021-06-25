@@ -1,5 +1,6 @@
 package org.emoflon.ibex.gt.engine;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -277,7 +278,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			// Deep-copy parameter map to prevent state inconsistencies caused by changed node/parameter bindings.
 			Map<String, Object> cpyParameter = new HashMap<>();
 			parameters.forEach((str, obj) -> cpyParameter.put(str, obj));
-			return stateManager.addNewState(rule.get(), match, cpyParameter, matches, doUpdate, (params, update) -> applyInternal(match, po, params, update)); 
+			return stateManager.addNewState(rule.get(), match, cpyParameter, copyMatches(), doUpdate, (params, update) -> applyInternal(match, po, params, update)); 
 		}else {
 			return applyInternal(match, po, parameters, doUpdate);
 		}
@@ -943,6 +944,18 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	
 	public void displayModelStates() {
 		graphVis = new GraphVisualizer(model.getResources().get(0), stateManager, this, ibexModel.getRuleSet(), ibexModel.getPatternSet());
+	}
+	
+	public ModelStateManager getStateManager() {
+		return stateManager;
+	}
+	
+	private Map<String, Collection<IMatch>> copyMatches() {
+		Map<String, Collection<IMatch>> cpyMatches = new HashMap<String, Collection<IMatch>>();
+		for(String entry : matches.keySet()) {
+			cpyMatches.put(entry, new ArrayList<IMatch>(matches.get(entry)));
+		}
+		return cpyMatches;
 	}
 
 	

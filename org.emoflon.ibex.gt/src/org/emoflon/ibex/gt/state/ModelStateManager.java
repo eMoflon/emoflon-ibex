@@ -80,9 +80,10 @@ public class ModelStateManager {
 		return currentState;
 	}
 	
-	public Optional<IMatch> addNewState(final IBeXRule rule, final IMatch match, final Map<String, Object> parameter,Map<String, Collection<IMatch>> matches, boolean doUpdate, BiFunction<Map<String,Object>, Boolean, Optional<IMatch>> applyRule) {
+	public Optional<IMatch> addNewState(final IBeXRule rule, final IMatch match, final Map<String, Object> parameter,final Map<String, Collection<IMatch>> matches, boolean doUpdate, BiFunction<Map<String,Object>, Boolean, Optional<IMatch>> applyRule) {
 		RuleState newState = factory.createRuleState();
-		
+
+		newState.setMatches(matches);
 		newState.setInitial(false);
 		newState.setMatch(match);
 		newState.setRule(rule);
