@@ -14,13 +14,16 @@ import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
+import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 
+import org.eclipse.emf.ecore.util.InternalEList;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticConstraint;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXForEachExpression;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXParameter;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXProbability;
@@ -39,6 +42,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule;
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXRuleImpl#getRhs <em>Rhs</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXRuleImpl#getCreate <em>Create</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXRuleImpl#getDelete <em>Delete</em>}</li>
+ *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXRuleImpl#getForEach <em>For Each</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXRuleImpl#getParameters <em>Parameters</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXRuleImpl#getArithmeticConstraints <em>Arithmetic Constraints</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXRuleImpl#getProbability <em>Probability</em>}</li>
@@ -106,6 +110,16 @@ public class IBeXRuleImpl extends IBeXNamedElementImpl implements IBeXRule {
 	 * @ordered
 	 */
 	protected IBeXDeletePattern delete;
+
+	/**
+	 * The cached value of the '{@link #getForEach() <em>For Each</em>}' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getForEach()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<IBeXForEachExpression> forEach;
 
 	/**
 	 * The cached value of the '{@link #getParameters() <em>Parameters</em>}' reference list.
@@ -383,6 +397,20 @@ public class IBeXRuleImpl extends IBeXNamedElementImpl implements IBeXRule {
 	 * @generated
 	 */
 	@Override
+	public EList<IBeXForEachExpression> getForEach() {
+		if (forEach == null) {
+			forEach = new EObjectContainmentEList<IBeXForEachExpression>(IBeXForEachExpression.class, this,
+					IBeXPatternModelPackage.IBE_XRULE__FOR_EACH);
+		}
+		return forEach;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EList<IBeXParameter> getParameters() {
 		if (parameters == null) {
 			parameters = new EObjectResolvingEList<IBeXParameter>(IBeXParameter.class, this,
@@ -471,6 +499,8 @@ public class IBeXRuleImpl extends IBeXNamedElementImpl implements IBeXRule {
 			return basicSetCreate(null, msgs);
 		case IBeXPatternModelPackage.IBE_XRULE__DELETE:
 			return basicSetDelete(null, msgs);
+		case IBeXPatternModelPackage.IBE_XRULE__FOR_EACH:
+			return ((InternalEList<?>) getForEach()).basicRemove(otherEnd, msgs);
 		case IBeXPatternModelPackage.IBE_XRULE__PROBABILITY:
 			return basicSetProbability(null, msgs);
 		}
@@ -497,6 +527,8 @@ public class IBeXRuleImpl extends IBeXNamedElementImpl implements IBeXRule {
 			return getCreate();
 		case IBeXPatternModelPackage.IBE_XRULE__DELETE:
 			return getDelete();
+		case IBeXPatternModelPackage.IBE_XRULE__FOR_EACH:
+			return getForEach();
 		case IBeXPatternModelPackage.IBE_XRULE__PARAMETERS:
 			return getParameters();
 		case IBeXPatternModelPackage.IBE_XRULE__ARITHMETIC_CONSTRAINTS:
@@ -530,6 +562,10 @@ public class IBeXRuleImpl extends IBeXNamedElementImpl implements IBeXRule {
 			return;
 		case IBeXPatternModelPackage.IBE_XRULE__DELETE:
 			setDelete((IBeXDeletePattern) newValue);
+			return;
+		case IBeXPatternModelPackage.IBE_XRULE__FOR_EACH:
+			getForEach().clear();
+			getForEach().addAll((Collection<? extends IBeXForEachExpression>) newValue);
 			return;
 		case IBeXPatternModelPackage.IBE_XRULE__PARAMETERS:
 			getParameters().clear();
@@ -569,6 +605,9 @@ public class IBeXRuleImpl extends IBeXNamedElementImpl implements IBeXRule {
 		case IBeXPatternModelPackage.IBE_XRULE__DELETE:
 			setDelete((IBeXDeletePattern) null);
 			return;
+		case IBeXPatternModelPackage.IBE_XRULE__FOR_EACH:
+			getForEach().clear();
+			return;
 		case IBeXPatternModelPackage.IBE_XRULE__PARAMETERS:
 			getParameters().clear();
 			return;
@@ -601,6 +640,8 @@ public class IBeXRuleImpl extends IBeXNamedElementImpl implements IBeXRule {
 			return create != null;
 		case IBeXPatternModelPackage.IBE_XRULE__DELETE:
 			return delete != null;
+		case IBeXPatternModelPackage.IBE_XRULE__FOR_EACH:
+			return forEach != null && !forEach.isEmpty();
 		case IBeXPatternModelPackage.IBE_XRULE__PARAMETERS:
 			return parameters != null && !parameters.isEmpty();
 		case IBeXPatternModelPackage.IBE_XRULE__ARITHMETIC_CONSTRAINTS:
