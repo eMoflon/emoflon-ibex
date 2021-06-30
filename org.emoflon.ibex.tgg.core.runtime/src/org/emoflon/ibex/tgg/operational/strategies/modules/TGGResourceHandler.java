@@ -35,6 +35,7 @@ import org.emoflon.ibex.tgg.operational.strategies.sync.INITIAL_BWD;
 import org.emoflon.ibex.tgg.operational.strategies.sync.INITIAL_FWD;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 import org.moflon.core.utilities.MoflonUtil;
+import org.moflon.smartemf.runtime.util.SmartEMFUtil;
 
 import language.TGG;
 import language.impl.LanguagePackageImpl;
@@ -262,7 +263,7 @@ public class TGGResourceHandler {
 		}
 
 		loadModels();
-		EcoreUtil.resolveAll(rs);
+		SmartEMFUtil.resolveAll(rs);
 	}
 
 	public void loadModels() throws IOException {
@@ -328,7 +329,7 @@ public class TGGResourceHandler {
 			protocol = loadResource(options.project.path() + "/instances/protocol.xmi");
 		}
 
-		EcoreUtil.resolveAll(rs);
+		SmartEMFUtil.resolveAll(rs);
 	}
 
 	protected void createAndPrepareResourceSet() {
@@ -385,7 +386,7 @@ public class TGGResourceHandler {
 		} catch (FileNotFoundException e) {
 			throw new TGGFileNotFoundException(e, res.getURI());
 		}
-		EcoreUtil.resolveAll(res);
+		SmartEMFUtil.resolveAll(res);
 		return res;
 	}
 
