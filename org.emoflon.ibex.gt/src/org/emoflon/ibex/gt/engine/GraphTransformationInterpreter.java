@@ -25,8 +25,6 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.emoflon.ibex.common.operational.IContextPatternInterpreter;
-import org.emoflon.ibex.common.operational.ICreatePatternInterpreter;
-import org.emoflon.ibex.common.operational.IDeletePatternInterpreter;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.common.operational.IMatchObserver;
 import org.emoflon.ibex.common.operational.PushoutApproach;
@@ -70,12 +68,17 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	/**
 	 * The interpreter for creation of elements.
 	 */
-	private ICreatePatternInterpreter createPatternInterpreter;
+	private GraphTransformationCreateInterpreter createPatternInterpreter;
 
 	/**
 	 * The interpreter for deletion of elements.
 	 */
-	private IDeletePatternInterpreter deletePatternInterpreter;
+	private GraphTransformationDeleteInterpreter deletePatternInterpreter;
+	
+	/**
+	 * The interpreter for iteration of elements.
+	 */
+	private GraphTransformationIterationInterpreter iteratePatternInterpreter;
 
 	/**
 	 * The resource set containing the model file.
@@ -177,6 +180,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		name2Pattern = new HashMap<>();
 		createPatternInterpreter = new GraphTransformationCreateInterpreter(defaultResource, this);
 		deletePatternInterpreter = new GraphTransformationDeleteInterpreter(trashResource, engine);
+		iteratePatternInterpreter = new GraphTransformationIterationInterpreter(defaultResource, trashResource, this);
 	}
 
 
