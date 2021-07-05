@@ -111,6 +111,8 @@ public class IBeXPatternModelFactoryImpl extends EFactoryImpl implements IBeXPat
 			return createIBeXCSP();
 		case IBeXPatternModelPackage.IBE_XRULE:
 			return createIBeXRule();
+		case IBeXPatternModelPackage.IBE_XFOR_EACH_EXPRESSION:
+			return createIBeXForEachExpression();
 		case IBeXPatternModelPackage.IBE_XPROBABILITY:
 			return createIBeXProbability();
 		case IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT:
@@ -471,6 +473,17 @@ public class IBeXPatternModelFactoryImpl extends EFactoryImpl implements IBeXPat
 	public IBeXRule createIBeXRule() {
 		IBeXRuleImpl iBeXRule = new IBeXRuleImpl();
 		return iBeXRule;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public IBeXForEachExpression createIBeXForEachExpression() {
+		IBeXForEachExpressionImpl iBeXForEachExpression = new IBeXForEachExpressionImpl();
+		return iBeXForEachExpression;
 	}
 
 	/**

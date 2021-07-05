@@ -9,11 +9,13 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.eclipse.emf.common.util.EList;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjointContextPattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXForEachExpression;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNamedElement;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPattern;
@@ -136,71 +138,6 @@ public class IBeXPatternUtils {
 		} else {
 			return findIBeXNodeWithName(nodes2, name);
 		}
-	}
-
-	/**
-
-	 * Returns the context pattern with the given name.
-	 * 
-	 * @param patternSet the pattern set
-	 * @param name       the name to search
-	 * @return the context pattern with the given name
-	 * @throws NoSuchElementException if no context pattern with the given name
-	 *                                exists
-	 */
-	public static IBeXContext getContextPattern(final IBeXPatternSet patternSet, final List<IBeXDisjointContextPattern> disjointContextPatterns , final String name) {
-		Optional<IBeXContext> pattern = patternSet.getContextPatterns().stream() //
-				.filter(p -> p.getName().equals(name)) //
-				.findAny();
-		if (!pattern.isPresent()) {
-			//maybe it is an IBeXDisjointPattern
-			Optional<IBeXDisjointContextPattern> disjointPattern = disjointContextPatterns.stream().filter(p -> p.getName().equals(name)).findAny();
-			if(!disjointPattern.isPresent()) {
-				throw new NoSuchElementException(String.format("No context pattern called %s", name));
-			}
-			return disjointPattern.get();
-		}
-		return pattern.get();
-	}
-
-	/**
-	 * Returns the create pattern with the given name.
-	 * 
-	 * @param ruleSet the pattern set
-	 * @param name       the name to search
-	 * @return the create pattern with the given name
-	 * @throws NoSuchElementException if no create pattern with the given name
-	 *                                exists
-	 */
-	public static IBeXCreatePattern getCreatePattern(final IBeXRuleSet ruleSet, final String name) {
-		Optional<IBeXCreatePattern> pattern = ruleSet.getRules().stream() //
-				.map(rule -> rule.getCreate()) //
-				.filter(p -> p.getName().equals(name)) //
-				.findAny();
-		if (!pattern.isPresent()) {
-			throw new NoSuchElementException(String.format("No create pattern called %s", name));
-		}
-		return pattern.get();
-	}
-
-	/**
-	 * Returns the a delete pattern with the given name.
-	 * 
-	 * @param ruleSet the pattern set
-	 * @param name       the name to search
-	 * @return the delete pattern with the given name
-	 * @throws NoSuchElementException if no delete pattern with the given name
-	 *                                exists
-	 */
-	public static IBeXDeletePattern getDeletePattern(final IBeXRuleSet ruleSet, final String name) {
-		Optional<IBeXDeletePattern> pattern = ruleSet.getRules().stream() //
-				.map(rule -> rule.getDelete()) //
-				.filter(p -> p.getName().equals(name)) //
-				.findAny();
-		if (!pattern.isPresent()) {
-			throw new NoSuchElementException(String.format("No delete pattern called %s", name));
-		}
-		return pattern.get();
 	}
 
 	/**

@@ -25,8 +25,6 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.emoflon.ibex.common.operational.IContextPatternInterpreter;
-import org.emoflon.ibex.common.operational.ICreatePatternInterpreter;
-import org.emoflon.ibex.common.operational.IDeletePatternInterpreter;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.common.operational.IMatchObserver;
 import org.emoflon.ibex.common.operational.PushoutApproach;
@@ -39,9 +37,11 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextAlternatives;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjointContextPattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXForEachExpression;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRuleSet;
 
 /**
@@ -58,6 +58,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * The pattern set containing the disjoint patterns.
 	 */
 	private List<IBeXDisjointContextPattern> disjointContextPatternSet;
+	private Map<String, IBeXRule> name2Rule;
 	private IBeXRuleSet ruleSet;
 	
 	private Map<String, IBeXContext> name2Pattern;
@@ -70,12 +71,17 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	/**
 	 * The interpreter for creation of elements.
 	 */
-	private ICreatePatternInterpreter createPatternInterpreter;
+	private GraphTransformationCreateInterpreter createPatternInterpreter;
 
 	/**
 	 * The interpreter for deletion of elements.
 	 */
-	private IDeletePatternInterpreter deletePatternInterpreter;
+	private GraphTransformationDeleteInterpreter deletePatternInterpreter;
+	
+	/**
+	 * The interpreter for iteration of elements.
+	 */
+	private GraphTransformationIterationInterpreter iteratePatternInterpreter;
 
 	/**
 	 * The resource set containing the model file.
@@ -177,6 +183,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		name2Pattern = new HashMap<>();
 		createPatternInterpreter = new GraphTransformationCreateInterpreter(defaultResource, this);
 		deletePatternInterpreter = new GraphTransformationDeleteInterpreter(trashResource, engine);
+		iteratePatternInterpreter = new GraphTransformationIterationInterpreter(defaultResource, trashResource, this);
 	}
 
 
@@ -206,6 +213,8 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 				name2Pattern.put(pattern.getName(), pattern);
 			});
 			ruleSet = ibexModel.getRuleSet();
+			name2Rule = new HashMap<>();
+			ruleSet.getRules().forEach(rule->name2Rule.put(rule.getName(), rule));
 
 			//changes the pattern that is given to the interpreter; only gives the subpatterns of the IBeXDisjointPatternContextPattern to the interpreter
 			disjointContextPatternSet = IBeXPatternUtils.transformIBeXPatternSet(patternSet);
@@ -270,9 +279,9 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	public Optional<IMatch> apply(final IMatch match, final PushoutApproach po, final Map<String, Object> parameters, boolean doUpdate) {
 		String patternName = match.getPatternName();
 
-		IBeXCreatePattern createPattern = IBeXPatternUtils.getCreatePattern(ruleSet, patternName);
-		IBeXDeletePattern deletePattern = IBeXPatternUtils.getDeletePattern(ruleSet, patternName);
-
+		IBeXCreatePattern createPattern = name2Rule.get(patternName).getCreate();
+		IBeXDeletePattern deletePattern = name2Rule.get(patternName).getDelete();
+		List<IBeXForEachExpression> iteratorPatterns = name2Rule.get(patternName).getForEach();
 		// Execute deletion.
 		IMatch originalMatch = new SimpleMatch(match);
 		Optional<IMatch> comatch = deletePatternInterpreter.apply(deletePattern, originalMatch, po);
@@ -280,6 +289,11 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		// Execute creation.
 		if (comatch.isPresent()) {
 			comatch = createPatternInterpreter.apply(createPattern, comatch.get(), parameters);
+		}
+		
+		// Execute iterator patterns
+		if (comatch.isPresent()) {
+			comatch = iteratePatternInterpreter.apply(iteratorPatterns, originalMatch, parameters);
 		}
 
 		// Rule application may invalidate existing or lead to new matches. 
@@ -783,7 +797,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	 * @return the created match
 	 */
 	private IMatch createEmptyMatchForCreatePattern(final String patternName) {
-		IBeXCreatePattern pattern = IBeXPatternUtils.getCreatePattern(ruleSet, patternName);
+		IBeXCreatePattern pattern = name2Rule.get(patternName).getCreate();
 		if (pattern != null) {
 			IMatch match = new SimpleMatch(patternName);
 			pattern.getCreatedNodes().forEach(node -> match.put(node.getName(), null));

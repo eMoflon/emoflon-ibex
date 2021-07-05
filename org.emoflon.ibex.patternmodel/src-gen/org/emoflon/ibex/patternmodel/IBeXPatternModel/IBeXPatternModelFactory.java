@@ -248,6 +248,15 @@ public interface IBeXPatternModelFactory extends EFactory {
 	IBeXRule createIBeXRule();
 
 	/**
+	 * Returns a new object of class '<em>IBe XFor Each Expression</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>IBe XFor Each Expression</em>'.
+	 * @generated
+	 */
+	IBeXForEachExpression createIBeXForEachExpression();
+
+	/**
 	 * Returns a new object of class '<em>IBe XProbability</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

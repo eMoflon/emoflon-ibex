@@ -219,6 +219,11 @@ public class IBeXPatternModelAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
+		public Adapter caseIBeXForEachExpression(IBeXForEachExpression object) {
+			return createIBeXForEachExpressionAdapter();
+		}
+
+		@Override
 		public Adapter caseIBeXProbability(IBeXProbability object) {
 			return createIBeXProbabilityAdapter();
 		}
@@ -729,6 +734,20 @@ public class IBeXPatternModelAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createIBeXRuleAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXForEachExpression <em>IBe XFor Each Expression</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXForEachExpression
+	 * @generated
+	 */
+	public Adapter createIBeXForEachExpressionAdapter() {
 		return null;
 	}
 
