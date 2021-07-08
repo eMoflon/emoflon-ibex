@@ -7,10 +7,8 @@ import java.awt.Frame;
 import java.awt.Panel;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-
 //Graphstream imports
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Node;
@@ -23,7 +21,6 @@ import org.graphstream.ui.view.View;
 import org.graphstream.ui.view.Viewer;
 import org.graphstream.ui.view.camera.Camera;
 import org.graphstream.ui.view.util.InteractiveElement;
-
 //Util imports
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,10 +29,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 //SWING imports
 import javax.swing.JRootPane;
-
 //emf imports
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
@@ -43,6 +38,7 @@ import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
+//SWT imports
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -51,7 +47,6 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
-//SWT imports
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -62,6 +57,9 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Slider;
+import org.eclipse.swt.widgets.Spinner;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.TabItem;
 //IBeX imports
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.gt.StateModel.AttributeDelta;
@@ -110,6 +108,11 @@ public class GraphVisualizer {
 	private EList<Link> edgeBlacklist;
 	
 	// GUI
+	protected Shell shell;
+	private Display display;
+	protected TabItem tab2;
+	protected TabFolder folder;
+	
 	private Button stepForward;
 	private Button stepBackward;
 	private Button setInitial;
@@ -138,14 +141,18 @@ public class GraphVisualizer {
 	private int oldSelectionRule = -1;
 	
 	private Slider slider;
+	private Spinner spinner;
+	private Button jumpState;
 	
 	private org.eclipse.swt.widgets.List matchList;
 	protected org.eclipse.swt.widgets.List ruleList;
 	protected org.eclipse.swt.widgets.List patternList;
 	
+	
+	
 	// Graphstream variables
 	private SingleGraph graph;
-	private MouseEvent last;	//Used for camera movement -> not implemented
+//	private MouseEvent last;		//Used for camera movement -> not implemented
 	private Viewer graphstreamViewer;
 	
 
@@ -248,8 +255,7 @@ public class GraphVisualizer {
 
 	}
 
-protected Shell shell;
-private Display display;
+
 	/**
 	 *  Generates the UI and embeds the graph from graphstream
 	 */
@@ -329,16 +335,43 @@ private Display display;
 		gd.heightHint = 50;
 		jumpRuleInfo.setLayoutData(gd);
 	
-		// Graphstream
+		// Graphstream and Plot
+		
+		
 		Composite composite = new Composite(shell, SWT.NO_BACKGROUND | SWT.EMBEDDED);
 		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
 		gd.widthHint = 1080;
 		gd.heightHint = 600;
 		composite.setLayoutData(gd);
-		Frame frame = SWT_AWT.new_Frame(composite);
+		composite.setLayout(new GridLayout(1, false));
+		folder = new TabFolder(composite, SWT.FILL);
+		folder.setLayoutData(gd);
+		
+		TabItem tab1 = new TabItem(folder, SWT.NONE);
+        tab1.setText("Graph");
+
+        tab2 = new TabItem(folder, SWT.NONE);
+        tab2.setText("Plot");
+        
+        
+        
+        Group graphGroup = new Group(folder, SWT.NO_BACKGROUND | SWT.EMBEDDED);
+        tab1.setControl(graphGroup);
+		Frame frame = SWT_AWT.new_Frame(graphGroup);
 		frame.add(generateGraphPanel());
 		frame.setVisible(true);
-		    
+
+		
+		
+		folder.addSelectionListener(new SelectionAdapter() {
+		      public void widgetSelected(org.eclipse.swt.events.SelectionEvent event) {
+		       
+		        if(folder.getSelection()[0].getText().equals("Plot")) {
+		        	displayData();
+		        }
+		      }
+		    });
+		
 		// Matches and apply
 		Composite textsAndList = new Composite(shell, SWT.BORDER);
 		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
@@ -406,9 +439,19 @@ private Display display;
 		minState.setText("0");
 		minState.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, true, true));
 		
-		curState = new Label(stateLabels, SWT.CENTER);
-		curState.setText("Current State: 0         \n         ");
-		curState.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, true, true));
+		Composite stateComp = new Composite(stateLabels, SWT.CENTER);
+		stateComp.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, true, true));
+		stateComp.setLayout(new RowLayout());
+		
+		curState = new Label(stateComp, SWT.CENTER);
+		curState.setText("Current State: ");
+		
+		spinner = new Spinner (stateComp, SWT.CENTER);
+		spinner.setMinimum(0);
+		spinner.setMaximum(localStateManager.modelStates.getStates().size()-1);
+		spinner.setSelection(0);
+		spinner.setIncrement(1);
+		spinner.setPageIncrement(1);
 		
 		Label maxState = new Label(stateLabels, SWT.END);
 		maxState.setText(Integer.toString(localStateManager.modelStates.getStates().size()-1));
@@ -430,11 +473,14 @@ private Display display;
 		setInitial.setText("Set Initial");
 		
 		deleteSelectedNode = new Button(buttons, SWT.PUSH);
-		deleteSelectedNode.setText("Delete Selected Node");
+		deleteSelectedNode.setText("Hide Selected Node");
+		
+		jumpState = new Button(buttons, SWT.PUSH);
+		jumpState.setText("Jump To State");
 		
 		toggleFreeze = new Button(buttons, SWT.CHECK);
 		toggleFreeze.setText("Freeze Graph");
-		    
+		
 		Group radioButtons = new Group(sliderAndButtons, SWT.NONE);
 		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
 		gd.heightHint = 30;
@@ -474,10 +520,38 @@ private Display display;
 		
 		// Initialize labels
 		setMatchRuleInfo();
+		
+		// Initialize plot
+		displayData();
+		
+		
+		// Initialize rule rates
+		printRuleRates();
 			
 
 	}
 
+	/**
+	 * Displays the plot
+	 */
+	protected void displayData() {
+		// TODO
+		Label noDataLabel = new Label(folder, SWT.NONE);
+		noDataLabel.setText("No plot data available!");
+		tab2.setControl(noDataLabel);
+	}
+	
+	/**
+	 * Updates the plot
+	 */
+	protected void updatePlot() {
+		// Nothing to do here
+		// Overwritten by SimSG
+	}
+	
+	/**
+	 * Opens the display
+	 */
 	protected void runApp() {
 		// Open shell and keep open while program is running
 		shell.open();
@@ -594,7 +668,7 @@ private Display display;
 					dialog.setMessage("Do you really want to delete the last selected node?\nDeletion can cause errors and only be undone by \"Set Initial\"\nOperations will not be executed on deleted Objects");
 					
 					if(dialog.open() == 32) {
-						for(Edge e : lastSelectedNode.edges().toList()) {
+						for(Edge e : lastSelectedNode.edges().collect(Collectors.toList())) {
 							for(Link l : edgeMap.keySet()) {
 								if(edgeMap.get(l).equals(e)) {
 									edgeBlacklist.add(l);
@@ -622,6 +696,25 @@ private Display display;
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 				// Auto-generated method stub
+			}
+			
+		});
+		
+		jumpState.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if(spinner.getSelection() == localStateManager.modelStates.getStates().size()-1) {
+					spinner.setSelection(spinner.getMaximum());
+				}
+				stateChanged(spinner.getSelection());
+				
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// Auto-generated method stub
+				
 			}
 			
 		});
@@ -757,7 +850,7 @@ private Display display;
 			}
 			
 		});
-		
+
 		matchList.addSelectionListener(new SelectionListener() {
 	
 			@Override
@@ -799,6 +892,8 @@ private Display display;
 						oldSelectionRule = -1;
 					} else {
 						selectedRuleInList = ruleList.getItem(ruleList.getSelectionIndex());
+						resetHighlightVis();
+						listOtherMatches(selectedRuleInList);
 						// Remember old selection
 						oldSelectionRule = ruleList.getSelectionIndex();
 					}
@@ -829,6 +924,8 @@ private Display display;
 						oldSelectionRule = -1;
 					} else {
 						selectedPatternInList = patternList.getItem(patternList.getSelectionIndex());
+						resetHighlightVis();
+						listOtherMatches(selectedPatternInList);
 						// Remember old selection
 						oldSelectionRule = patternList.getSelectionIndex();
 					}
@@ -1035,7 +1132,8 @@ private Display display;
 			localStateManager.moveToState(localStateManager.getCurrentState().getChildren().get(0), false);
 			RuleState currentRuleState = (RuleState)localStateManager.getCurrentState();
 			slider.setSelection(localStateManager.modelStates.getStates().indexOf(currentRuleState));
-			curState.setText("Current State: " + Integer.toString(localStateManager.modelStates.getStates().indexOf(currentRuleState)));
+			spinner.setSelection(localStateManager.modelStates.getStates().indexOf(currentRuleState));
+			//curState.setText("Current State: " + Integer.toString(localStateManager.modelStates.getStates().indexOf(currentRuleState)));
 			// Create new nodes
 			for(EObject newNode : currentRuleState.getStructuralDelta().getCreatedObjects()) {
 				createGraphNode(newNode);
@@ -1074,6 +1172,8 @@ private Display display;
 				showCurrentObjects();
 			else if(showFuture) 
 				showFutureObjects();
+			
+			updatePlot();
 		}
 	}
 
@@ -1097,7 +1197,8 @@ private Display display;
 			RuleState currentRuleState = (RuleState)localStateManager.getCurrentState();
 			// Adjust slider value
 			slider.setSelection(localStateManager.modelStates.getStates().indexOf(currentRuleState)-1);
-			curState.setText("Current State: " + Integer.toString(localStateManager.modelStates.getStates().indexOf(currentRuleState)-1));
+			spinner.setSelection(localStateManager.modelStates.getStates().indexOf(currentRuleState)-1);
+//			curState.setText("Current State: " + Integer.toString(localStateManager.modelStates.getStates().indexOf(currentRuleState)-1));
 			// Delete links created in current state
 			for(Link newLink : currentRuleState.getStructuralDelta().getCreatedLinks()) {
 				deleteGraphEdge(newLink);
@@ -1138,6 +1239,8 @@ private Display display;
 				showCurrentObjects();
 			else if(showFuture) 
 				showFutureObjects();
+			
+			updatePlot();
 		}
 	}
 
@@ -1181,10 +1284,13 @@ private Display display;
 		
 		// Reset slider
 		slider.setSelection(0);
-		curState.setText("Current State: 0");
+		spinner.setSelection(0);
+//		curState.setText("Current State: 0");
 		
 		// Reset rule and match labels
 		setMatchRuleInfo();
+		
+		updatePlot();
 			
 	}
 
@@ -1221,6 +1327,34 @@ private Display display;
 		
 	}
 
+	/**
+	 * Adds all matches of given pattern name to ui list
+	 * @param patternName pattern name
+	 */
+	private void listOtherMatches(String patternName) {
+		if(!localStateManager.getCurrentState().getChildren().isEmpty()) {
+			matchList.removeAll();
+			listedMatches.clear();
+			allMatchesShown = true;
+			RuleState nextRuleState = (RuleState)localStateManager.getCurrentState().getChildren().get(0);
+			Collection<IMatch> matchStream = nextRuleState.getMatches().get(patternName);
+			futureApplyLabel.setText("Next Apply: \n" + nextRuleState.getRule().getName() + "\nMatches: " + matchStream.size());
+			int index = 0;
+			if(patternName.equals(nextRuleState.getRule().getName())) {
+				matchList.add(nextRuleState.getRule().getName() + " (Next)");
+				listedMatches.put(0, (IMatch) nextRuleState.getMatch());
+				matchStream.remove(nextRuleState.getMatch());
+				index = 1;
+			}
+			
+			for(IMatch match : matchStream) {
+				matchList.add(match.getPatternName());
+				listedMatches.put(index, match);
+				index++;
+			}
+		}
+	}
+	
 	/**
 	 * Lists all matches 
 	 */
@@ -1494,7 +1628,7 @@ private Display display;
 	 */
 	private void freezeGraph() {
 		graphstreamViewer.disableAutoLayout();
-		for(Node n : graph.nodes().toList()) {
+		for(Node n : graph.nodes().collect(Collectors.toList())) {
 			n.setAttribute("layout.frozen");
 		}
 	}
@@ -1504,7 +1638,7 @@ private Display display;
 	 */
 	private void defreezeGraph() {
 		graphstreamViewer.enableAutoLayout();
-		for(Node n : graph.nodes().toList()) {
+		for(Node n : graph.nodes().collect(Collectors.toList())) {
 			n.removeAttribute("layout.frozen");
 		}
 		toggleFreeze.setSelection(false);
