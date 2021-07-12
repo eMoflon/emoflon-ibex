@@ -90,7 +90,7 @@ public class TGGResourceHandler {
 			loadTGG();
 			loadRelevantModels();
 
-			if(options.blackInterpreter() != null && options.blackInterpreter().getClass().getName().contains("Democles")) {
+			if (options.blackInterpreter() != null && options.blackInterpreter().getClass().getName().contains("Democles")) {
 				trash = createResource("instances/trash.xmi");
 				trash.getContents().add(RuntimeFactory.eINSTANCE.createTempContainer());
 			}
@@ -122,6 +122,9 @@ public class TGGResourceHandler {
 	}
 
 	public void addCorrCachingEdge(EMFEdge corrEdge) {
+		if (node2corrs == null)
+			initializeCorrCaching();
+
 		EObject corrNode = null;
 		EObject node = null;
 		if (Objects.equals(corr, corrEdge.getSource().eResource())) {
@@ -489,7 +492,7 @@ public class TGGResourceHandler {
 	}
 
 	public void addToTrash(EObject o) {
-		if(trash != null) {
+		if (trash != null) {
 			TempContainer c = (TempContainer) trash.getContents().get(0);
 			c.getObjects().add(EcoreUtil.getRootContainer(o));
 		}
