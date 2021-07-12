@@ -8,6 +8,7 @@ import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.notify.impl.AdapterFactoryImpl;
 import org.eclipse.emf.ecore.EObject;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.*;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticAttribute;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticConstraint;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticExpression;
@@ -257,6 +258,11 @@ public class IBeXPatternModelAdapterFactory extends AdapterFactoryImpl {
 		@Override
 		public Adapter caseIBeXRule(IBeXRule object) {
 			return createIBeXRuleAdapter();
+		}
+
+		@Override
+		public Adapter caseIBeXForEachExpression(IBeXForEachExpression object) {
+			return createIBeXForEachExpressionAdapter();
 		}
 
 		@Override
@@ -770,6 +776,20 @@ public class IBeXPatternModelAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createIBeXRuleAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXForEachExpression <em>IBe XFor Each Expression</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXForEachExpression
+	 * @generated
+	 */
+	public Adapter createIBeXForEachExpressionAdapter() {
 		return null;
 	}
 

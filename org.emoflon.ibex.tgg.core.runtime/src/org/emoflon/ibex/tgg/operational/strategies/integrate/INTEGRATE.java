@@ -101,14 +101,14 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		match2conflicts = new HashMap<>();
 
 		matchUtil = new TGGMatchUtil(this);
-		
+
 		modelChangeProtocol = new ModelChangeProtocol( //
 				resourceHandler.getSourceResource(), resourceHandler.getTargetResource(), //
 				resourceHandler.getCorrResource(), resourceHandler.getProtocolResource());
 		userDeltaKey = new ChangeKey();
 		generalDeltaKey = new ChangeKey();
 		modelChangeProtocol.registerKey(generalDeltaKey);
-		
+
 		conflictDetector = new ConflictDetector(this);
 		consistencyChecker = new LocalCC(options) {
 			@Override
@@ -127,7 +127,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 	private void removeBrokenMatchesAfterCCMatchApplication(ITGGMatch ccMatch) {
 		Set<EObject> ccObjects = matchUtil.getObjects(ccMatch, new EltFilter().srcAndTrg().create());
-		
+
 		Collection<ITGGMatch> brokenMatches = new HashSet<>(brokenRuleApplications.values());
 		for (ITGGMatch brokenMatch : brokenMatches) {
 			Set<EObject> brokenObjects = matchUtil.getObjects(brokenMatch, new EltFilter().srcAndTrg().create());
@@ -243,6 +243,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	}
 
 	protected void detectAndResolveOpMultiplicityConflicts() {
+		matchDistributor.updateMatches();
+
 		Set<ConflictContainer> opMultiConflicts = buildContainerHierarchy(conflictDetector.detectOpMultiplicityConflicts());
 		for (ConflictContainer c : opMultiConflicts)
 			options.integration.conflictSolver().resolveConflict(c);
@@ -325,7 +327,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	 * @param edgesToRevoke
 	 */
 	private void prepareGreenCorrDeletion(ITGGMatch match, Set<EObject> nodesToRevoke, Set<EMFEdge> edgesToRevoke) {
-		matchUtil.getObjects(match, new EltFilter().corr().create()).forEach(obj -> getIbexRedInterpreter().revokeCorr(obj, nodesToRevoke, edgesToRevoke));
+		matchUtil.getObjects(match, new EltFilter().corr().create()) //
+				.forEach(obj -> getIbexRedInterpreter().revokeCorr(obj, nodesToRevoke, edgesToRevoke));
 	}
 
 	protected void restoreBrokenCorrsAndRuleApplNodes(ChangeKey key) {
@@ -695,9 +698,9 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 		modelChangeProtocol.attachAdapter();
 		matchDistributor.updateMatches();
-		
+
 		logDeltaApplication();
-		
+
 		modelChangeProtocol.registerKey(userDeltaKey);
 		delta.accept(resourceHandler.getSourceResource().getContents().get(0), resourceHandler.getTargetResource().getContents().get(0));
 		modelChangeProtocol.deregisterKey(userDeltaKey);
@@ -721,9 +724,9 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 		modelChangeProtocol.attachAdapter();
 		matchDistributor.updateMatches();
-		
+
 		logDeltaApplication();
-		
+
 		modelChangeProtocol.registerKey(userDeltaKey);
 		for (Delta d : delta.getDeltas())
 			d.apply();
@@ -731,7 +734,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 		times.addTo("applyDelta", Timer.stop());
 	}
-	
+
 	private void logDeltaApplication() {
 		LoggerConfig.log(LoggerConfig.log_executionStructure(), () -> "Delta Application:\n");
 	}

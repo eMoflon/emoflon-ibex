@@ -7,6 +7,7 @@ import java.util.Map;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.util.Switch;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.*;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticAttribute;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticConstraint;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticExpression;
@@ -371,6 +372,13 @@ public class IBeXPatternModelSwitch<T> extends Switch<T> {
 			T result = caseIBeXRule(iBeXRule);
 			if (result == null)
 				result = caseIBeXNamedElement(iBeXRule);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case IBeXPatternModelPackage.IBE_XFOR_EACH_EXPRESSION: {
+			IBeXForEachExpression iBeXForEachExpression = (IBeXForEachExpression) theEObject;
+			T result = caseIBeXForEachExpression(iBeXForEachExpression);
 			if (result == null)
 				result = defaultCase(theEObject);
 			return result;
@@ -956,6 +964,21 @@ public class IBeXPatternModelSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseIBeXRule(IBeXRule object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>IBe XFor Each Expression</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>IBe XFor Each Expression</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseIBeXForEachExpression(IBeXForEachExpression object) {
 		return null;
 	}
 

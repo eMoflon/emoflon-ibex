@@ -14,7 +14,6 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 import org.emoflon.ibex.common.operational.IContextPatternInterpreter;
-import org.emoflon.ibex.common.operational.IDeletePatternInterpreter;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.common.operational.PushoutApproach;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern;
@@ -24,7 +23,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 /**
  * Interpreter applying deletion of elements for graph transformation.
  */
-public class GraphTransformationDeleteInterpreter implements IDeletePatternInterpreter {
+public class GraphTransformationDeleteInterpreter {
 	/**
 	 * The trash resource.
 	 */
@@ -34,16 +33,14 @@ public class GraphTransformationDeleteInterpreter implements IDeletePatternInter
 	/**
 	 * Creates a new GraphTransformationDeleteInterpreter.
 	 * 
-	 * @param trashResource
-	 *            the resource containing trash objects
-	 * @param graphTransformationInterpreter 
+	 * @param trashResource                  the resource containing trash objects
+	 * @param graphTransformationInterpreter
 	 */
-	public GraphTransformationDeleteInterpreter(final Resource trashResource,final IContextPatternInterpreter engine) {
+	public GraphTransformationDeleteInterpreter(final Resource trashResource, final IContextPatternInterpreter engine) {
 		this.trashResource = trashResource;
 		this.engine = engine;
 	}
 
-	@Override
 	public Optional<IMatch> apply(final IBeXDeletePattern deletePattern, final IMatch match, final PushoutApproach po) {
 		// Check applicability with DPO semantics.
 		if (po == PushoutApproach.DPO && !isApplicableDPO(deletePattern, match)) {
@@ -57,10 +54,8 @@ public class GraphTransformationDeleteInterpreter implements IDeletePatternInter
 	/**
 	 * Executes the deletion.
 	 * 
-	 * @param deletePattern
-	 *            the pattern defining which elements are deleted
-	 * @param match
-	 *            the match
+	 * @param deletePattern the pattern defining which elements are deleted
+	 * @param match         the match
 	 */
 	private void delete(final IBeXDeletePattern deletePattern, final IMatch match) {
 		Set<EObject> nodesToDelete = new HashSet<EObject>();
@@ -73,8 +68,8 @@ public class GraphTransformationDeleteInterpreter implements IDeletePatternInter
 			EObject trg = (EObject) match.get(edge.getTargetNode().getName());
 			edgesToDelete.add(new EMFEdge(src, trg, edge.getType()));
 		});
-		
-		if(engine.getProperties().needs_trash_resource()) 
+
+		if (engine.getProperties().needs_trash_resource())
 			EMFManipulationUtils.delete(nodesToDelete, edgesToDelete,
 					node -> trashResource.getContents().add(EcoreUtil.getRootContainer(node)), false);
 		else
@@ -85,10 +80,8 @@ public class GraphTransformationDeleteInterpreter implements IDeletePatternInter
 	 * Checks whether the delete pattern can be applied to the given match according
 	 * to DPO semantics.
 	 * 
-	 * @param deletePattern
-	 *            the delete pattern
-	 * @param match
-	 *            the match
+	 * @param deletePattern the delete pattern
+	 * @param match         the match
 	 * @return true if and only if all dangling edges must be explicitly deleted by
 	 *         the pattern.
 	 */
@@ -162,16 +155,11 @@ public class GraphTransformationDeleteInterpreter implements IDeletePatternInter
 	 * Checks whether the edge between the given source and target object of the
 	 * given type is deleted by the delete pattern on the given match
 	 * 
-	 * @param deletePattern
-	 *            the delete pattern
-	 * @param match
-	 *            the match
-	 * @param source
-	 *            the source object of the edge
-	 * @param target
-	 *            the target object of the edge
-	 * @param type
-	 *            the type of the edge
+	 * @param deletePattern the delete pattern
+	 * @param match         the match
+	 * @param source        the source object of the edge
+	 * @param target        the target object of the edge
+	 * @param type          the type of the edge
 	 * @return <code>true</code> if and only if the pattern specifies to delete the
 	 *         given edge
 	 */

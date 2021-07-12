@@ -43,6 +43,7 @@ public class IBeXPatternFactory {
 		edge.setSourceNode(sourceNode);
 		edge.setTargetNode(targetNode);
 		edge.setType(type);
+		edge.setName("("+sourceNode.getName()+")-"+type.getName()+"->("+targetNode.getName()+")");
 		return edge;
 	}
 }

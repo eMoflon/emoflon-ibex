@@ -38,6 +38,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDistributionType;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdgeSet;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEnumLiteral;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXForEachExpression;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInjectivityConstraint;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInterdependentAttributes;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInterdependentInjectivityConstraints;
@@ -278,6 +279,13 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 	 * @generated
 	 */
 	private EClass iBeXRuleEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass iBeXForEachExpressionEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -1469,7 +1477,7 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 	 * @generated
 	 */
 	@Override
-	public EReference getIBeXRule_Parameters() {
+	public EReference getIBeXRule_ForEach() {
 		return (EReference) iBeXRuleEClass.getEStructuralFeatures().get(5);
 	}
 
@@ -1479,7 +1487,7 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 	 * @generated
 	 */
 	@Override
-	public EReference getIBeXRule_ArithmeticConstraints() {
+	public EReference getIBeXRule_Parameters() {
 		return (EReference) iBeXRuleEClass.getEStructuralFeatures().get(6);
 	}
 
@@ -1489,8 +1497,98 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 	 * @generated
 	 */
 	@Override
-	public EReference getIBeXRule_Probability() {
+	public EReference getIBeXRule_ArithmeticConstraints() {
 		return (EReference) iBeXRuleEClass.getEStructuralFeatures().get(7);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBeXRule_Probability() {
+		return (EReference) iBeXRuleEClass.getEStructuralFeatures().get(8);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EClass getIBeXForEachExpression() {
+		return iBeXForEachExpressionEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBeXForEachExpression_Create() {
+		return (EReference) iBeXForEachExpressionEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBeXForEachExpression_Delete() {
+		return (EReference) iBeXForEachExpressionEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBeXForEachExpression_Source() {
+		return (EReference) iBeXForEachExpressionEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBeXForEachExpression_TrgIterator() {
+		return (EReference) iBeXForEachExpressionEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBeXForEachExpression_Edge() {
+		return (EReference) iBeXForEachExpressionEClass.getEStructuralFeatures().get(4);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBeXForEachExpression_CreatedEdges() {
+		return (EReference) iBeXForEachExpressionEClass.getEStructuralFeatures().get(5);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBeXForEachExpression_DeletedEdges() {
+		return (EReference) iBeXForEachExpressionEClass.getEStructuralFeatures().get(6);
 	}
 
 	/**
@@ -2200,9 +2298,19 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 		createEReference(iBeXRuleEClass, IBE_XRULE__RHS);
 		createEReference(iBeXRuleEClass, IBE_XRULE__CREATE);
 		createEReference(iBeXRuleEClass, IBE_XRULE__DELETE);
+		createEReference(iBeXRuleEClass, IBE_XRULE__FOR_EACH);
 		createEReference(iBeXRuleEClass, IBE_XRULE__PARAMETERS);
 		createEReference(iBeXRuleEClass, IBE_XRULE__ARITHMETIC_CONSTRAINTS);
 		createEReference(iBeXRuleEClass, IBE_XRULE__PROBABILITY);
+
+		iBeXForEachExpressionEClass = createEClass(IBE_XFOR_EACH_EXPRESSION);
+		createEReference(iBeXForEachExpressionEClass, IBE_XFOR_EACH_EXPRESSION__CREATE);
+		createEReference(iBeXForEachExpressionEClass, IBE_XFOR_EACH_EXPRESSION__DELETE);
+		createEReference(iBeXForEachExpressionEClass, IBE_XFOR_EACH_EXPRESSION__SOURCE);
+		createEReference(iBeXForEachExpressionEClass, IBE_XFOR_EACH_EXPRESSION__TRG_ITERATOR);
+		createEReference(iBeXForEachExpressionEClass, IBE_XFOR_EACH_EXPRESSION__EDGE);
+		createEReference(iBeXForEachExpressionEClass, IBE_XFOR_EACH_EXPRESSION__CREATED_EDGES);
+		createEReference(iBeXForEachExpressionEClass, IBE_XFOR_EACH_EXPRESSION__DELETED_EDGES);
 
 		iBeXProbabilityEClass = createEClass(IBE_XPROBABILITY);
 		createEReference(iBeXProbabilityEClass, IBE_XPROBABILITY__DISTRIBUTION);
@@ -2630,6 +2738,9 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 		initEReference(getIBeXRule_Delete(), this.getIBeXDeletePattern(), null, "delete", null, 0, 1, IBeXRule.class,
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getIBeXRule_ForEach(), this.getIBeXForEachExpression(), null, "forEach", null, 0, -1,
+				IBeXRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getIBeXRule_Parameters(), this.getIBeXParameter(), null, "parameters", null, 0, -1,
 				IBeXRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -2639,6 +2750,30 @@ public class IBeXPatternModelPackageImpl extends EPackageImpl implements IBeXPat
 		initEReference(getIBeXRule_Probability(), this.getIBeXProbability(), null, "probability", null, 0, 1,
 				IBeXRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(iBeXForEachExpressionEClass, IBeXForEachExpression.class, "IBeXForEachExpression", !IS_ABSTRACT,
+				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getIBeXForEachExpression_Create(), this.getIBeXCreatePattern(), null, "create", null, 0, 1,
+				IBeXForEachExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
+				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getIBeXForEachExpression_Delete(), this.getIBeXDeletePattern(), null, "delete", null, 0, 1,
+				IBeXForEachExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
+				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getIBeXForEachExpression_Source(), this.getIBeXNode(), null, "source", null, 1, 1,
+				IBeXForEachExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
+				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getIBeXForEachExpression_TrgIterator(), this.getIBeXNode(), null, "trgIterator", null, 1, 1,
+				IBeXForEachExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
+				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getIBeXForEachExpression_Edge(), this.getIBeXEdge(), null, "edge", null, 1, 1,
+				IBeXForEachExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
+				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getIBeXForEachExpression_CreatedEdges(), this.getIBeXEdge(), null, "createdEdges", null, 0, -1,
+				IBeXForEachExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
+				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getIBeXForEachExpression_DeletedEdges(), this.getIBeXEdge(), null, "deletedEdges", null, 0, -1,
+				IBeXForEachExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
+				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(iBeXProbabilityEClass, IBeXProbability.class, "IBeXProbability", !IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);

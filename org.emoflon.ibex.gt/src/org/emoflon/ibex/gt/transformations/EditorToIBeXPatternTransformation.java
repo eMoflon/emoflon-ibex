@@ -7,11 +7,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Queue;
-import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import java.util.Queue;
+import java.util.Set;
+
 import org.emoflon.ibex.common.patterns.IBeXPatternFactory;
 import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.gt.editor.gT.ArithmeticCalculationExpression;
@@ -24,6 +26,11 @@ import org.emoflon.ibex.gt.editor.gT.EditorCondition;
 import org.emoflon.ibex.gt.editor.gT.EditorEnumExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorGTFile;
+import org.emoflon.ibex.gt.editor.gT.EditorIteratorAttributeAssignment;
+import org.emoflon.ibex.gt.editor.gT.EditorIteratorAttributeAssignmentItr;
+import org.emoflon.ibex.gt.editor.gT.EditorIteratorAttributeAssignmentNode;
+import org.emoflon.ibex.gt.editor.gT.EditorIteratorAttributeExpression;
+import org.emoflon.ibex.gt.editor.gT.EditorIteratorReference;
 import org.emoflon.ibex.gt.editor.gT.EditorLiteralExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorNode;
 import org.emoflon.ibex.gt.editor.gT.EditorOperator;
@@ -31,6 +38,7 @@ import org.emoflon.ibex.gt.editor.gT.EditorParameterExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorPattern;
 import org.emoflon.ibex.gt.editor.gT.EditorPatternType;
 import org.emoflon.ibex.gt.editor.gT.EditorReference;
+import org.emoflon.ibex.gt.editor.gT.EditorReferenceIterator;
 import org.emoflon.ibex.gt.editor.gT.StochasticFunctionExpression;
 import org.emoflon.ibex.gt.editor.utils.GTCommentExtractor;
 import org.emoflon.ibex.gt.editor.utils.GTEditorModelUtils;
@@ -51,6 +59,8 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjointContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdgeSet;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEnumLiteral;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXForEachExpression;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNodeSet;
@@ -639,6 +649,8 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 				return convertAttributeValue(editorPattern, (EditorAttributeExpression) ace.getExpression(), ibexPattern);
 			} else if(ace.getExpression() instanceof EditorLiteralExpression) {
 				return Optional.of(EditorToIBeXPatternHelper.convertAttributeValue((EditorLiteralExpression) ace.getExpression()));
+			} else if(ace.getExpression() instanceof EditorIteratorAttributeExpression) {
+				return convertIteratorAttributeValue(editorPattern, (EditorIteratorAttributeExpression) ace.getExpression(), ibexPattern);
 			} else {
 				return Optional.of(EditorToIBeXPatternHelper.convertAttributeValue(data, ibexPattern, (ArithmeticCalculationExpression) value));
 			}
@@ -741,6 +753,25 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		});
 	}
 	
+	private Optional<IBeXAttributeValue> convertIteratorAttributeValue(final EditorPattern editorPattern, final EditorIteratorAttributeExpression editorExpression,
+			final IBeXPattern ibexPattern) {
+		IBeXAttributeExpression ibexAttributeExpression = IBeXPatternModelFactory.eINSTANCE.createIBeXAttributeExpression();
+		ibexAttributeExpression.setAttribute(editorExpression.getAttribute());
+		Optional<IBeXNode> ibexExistingNode = Optional.of(data.iterator2ibexNode.get(ibexPattern.getName()).get(editorExpression.getIterator()));
+
+		if (!ibexExistingNode.isPresent() && ibexPattern instanceof IBeXCreatePattern) {
+			IBeXNode ibexNode = IBeXPatternFactory.createNode(editorExpression.getIterator().getName(), (EClass)editorExpression.getIterator().getType().getEType());
+			data.iterator2ibexNode.get(ibexPattern.getName()).put(editorExpression.getIterator(), ibexNode);
+			((IBeXCreatePattern) ibexPattern).getContextNodes().add(ibexNode);
+			Optional.of(ibexNode);
+		}
+
+		return ibexExistingNode.map(ibexNode -> {
+			ibexAttributeExpression.setNode(ibexNode);
+			return ibexAttributeExpression;
+		});
+	}
+	
 	/**
 	 * Transforms the arithmetic expressions to pattern constraints; only used on context patterns
 	 * @param editorPattern
@@ -803,6 +834,12 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 	private void transformToRule(final EditorPattern editorPattern) {
 		IBeXCreatePattern ibexCreatePattern = transformToCreatePattern(editorPattern);
 		IBeXDeletePattern ibexDeletePattern = transformToDeletePattern(editorPattern);
+		List<IBeXForEachExpression> forEachExpressions = new LinkedList<>();
+		for(EditorReferenceIterator iterator : editorPattern.getNodes().stream()
+				.flatMap(node -> node.getIterators().stream())
+				.collect(Collectors.toList()) ) {
+			forEachExpressions.add(transformToForEachExpression(editorPattern, iterator));
+		}
 		
 		IBeXRule ibexRule = IBeXPatternModelFactory.eINSTANCE.createIBeXRule();
 		ibexRule.setName(editorPattern.getName());
@@ -817,6 +854,8 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		if(ibexDeletePattern != null) {
 			ibexRule.setDelete(ibexDeletePattern);
 		}
+		
+		ibexRule.getForEach().addAll(forEachExpressions);
 		
 		// fetch lhs
 		IBeXContextPattern lhs = null;
@@ -846,6 +885,72 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		ibexRule.setRhs(rhs);
 		
 		data.ibexRules.put(ibexRule, editorPattern);
+	}
+
+	private IBeXForEachExpression transformToForEachExpression(EditorPattern editorPattern, EditorReferenceIterator iterator) {
+		IBeXForEachExpression forEachExpr = IBeXPatternModelFactory.eINSTANCE.createIBeXForEachExpression();
+		forEachExpr.setSource(data.node2ibexNode.get(editorPattern.getName()).get(iterator.eContainer()));
+		
+		IBeXNode trgIterator = IBeXPatternFactory.createNode(iterator.getName(), (EClass)iterator.getType().getEType());
+		forEachExpr.setTrgIterator(trgIterator);
+		Map<EditorReferenceIterator, IBeXNode> itr2node = data.iterator2ibexNode.get(editorPattern.getName());
+		if(itr2node == null) {
+			itr2node = new HashMap<>();
+			data.iterator2ibexNode.put(editorPattern.getName(), itr2node);
+		}
+		itr2node.put(iterator, trgIterator);
+		
+		IBeXEdge edge = IBeXPatternFactory.createEdge(forEachExpr.getSource(), trgIterator, iterator.getType());
+		forEachExpr.setEdge(edge);
+		
+		IBeXCreatePattern ibexCreatePattern = IBeXPatternModelFactory.eINSTANCE.createIBeXCreatePattern();
+		ibexCreatePattern.setName(editorPattern.getName()+"_ForEachCreate("+edge.getName()+")");
+		
+		IBeXDeletePattern ibexDeletePattern = IBeXPatternModelFactory.eINSTANCE.createIBeXDeletePattern();
+		ibexDeletePattern.setName(editorPattern.getName()+"_ForEachDelete("+edge.getName()+")");
+		
+		for(EditorIteratorReference refItr : iterator.getReferences()) {
+			if(refItr.getOperator() == EditorOperator.CREATE) {
+				ibexCreatePattern.getContextNodes().add(data.node2ibexNode.get(editorPattern.getName()).get(refItr.getSource()));
+				ibexCreatePattern.getContextNodes().add(trgIterator);
+				IBeXEdge createdEdge = IBeXPatternFactory.createEdge(data.node2ibexNode.get(editorPattern.getName()).get(refItr.getSource()), trgIterator, refItr.getType());
+				ibexCreatePattern.getCreatedEdges().add(createdEdge);
+				forEachExpr.getCreatedEdges().add(createdEdge);
+			} else {
+				ibexDeletePattern.getContextNodes().add(data.node2ibexNode.get(editorPattern.getName()).get(refItr.getSource()));
+				ibexDeletePattern.getContextNodes().add(trgIterator);
+				IBeXEdge deletedEdge = IBeXPatternFactory.createEdge(data.node2ibexNode.get(editorPattern.getName()).get(refItr.getSource()), trgIterator, refItr.getType());
+				ibexDeletePattern.getDeletedEdges().add(deletedEdge);
+				forEachExpr.getDeletedEdges().add(deletedEdge);
+			}
+		}
+		
+		for(EditorIteratorAttributeAssignment atrItr : iterator.getIteratorAttributes()) {
+			if(atrItr instanceof EditorIteratorAttributeAssignmentItr) {
+				EditorIteratorAttributeAssignmentItr toIterator = (EditorIteratorAttributeAssignmentItr)atrItr;
+				IBeXAttributeAssignment ibexAssignment = IBeXPatternModelFactory.eINSTANCE.createIBeXAttributeAssignment();
+				ibexAssignment.setNode(trgIterator);
+				ibexAssignment.setType(toIterator.getIteratorAttribute().getAttribute());
+				convertAttributeValue(editorPattern, toIterator.getValue(), ibexCreatePattern).ifPresent(v -> ibexAssignment.setValue(v));
+				ibexCreatePattern.getAttributeAssignments().add(ibexAssignment);
+			} else {
+				EditorIteratorAttributeAssignmentNode toNode = (EditorIteratorAttributeAssignmentNode)atrItr;
+				IBeXAttributeAssignment ibexAssignment = IBeXPatternModelFactory.eINSTANCE.createIBeXAttributeAssignment();
+				ibexAssignment.setNode(data.node2ibexNode.get(editorPattern.getName()).get(toNode.getNodeAttribute().getNode()));
+				ibexAssignment.setType(toNode.getNodeAttribute().getAttribute());
+				convertAttributeValue(editorPattern, toNode.getValue(), ibexCreatePattern).ifPresent(v -> ibexAssignment.setValue(v));
+				ibexCreatePattern.getAttributeAssignments().add(ibexAssignment);
+			}
+		}
+		
+		if(!ibexCreatePattern.getCreatedEdges().isEmpty() || !ibexCreatePattern.getAttributeAssignments().isEmpty()) {
+			forEachExpr.setCreate(ibexCreatePattern);
+		}
+		if(!ibexDeletePattern.getDeletedEdges().isEmpty()) {
+			forEachExpr.setDelete(ibexDeletePattern);
+		}
+		
+		return forEachExpr;
 	}
 
 	/**
