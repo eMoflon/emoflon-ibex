@@ -144,7 +144,11 @@ public class EMFManipulationUtils {
 	}
 	
 	public static void delete(EObject node) {
-		delete(node, false);
+		if(node instanceof SmartObject) {
+			SmartEMFUtil.deleteNode(node, false);
+		} else {
+			delete(node, false);
+		}
 	}
 	
 	public static void delete(EObject node, boolean recursive) {
