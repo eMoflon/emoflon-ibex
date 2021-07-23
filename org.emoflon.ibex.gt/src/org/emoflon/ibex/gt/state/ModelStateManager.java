@@ -149,7 +149,7 @@ public class ModelStateManager {
 		
 		// Store created and deleted nodes/edges
 		StructuralDelta delta = factory.createStructuralDelta();
-		if(addCreateDelta(delta, comatch, rule.getCreate()) || addDeleteDelta(delta, match, rule.getDelete())) {
+		if(addDeleteDelta(delta, match, rule.getDelete()) | addCreateDelta(delta, comatch, rule.getCreate()) ) {
 			newState.setStructuralDelta(delta);
 		}
 		
@@ -458,7 +458,7 @@ public class ModelStateManager {
 		
 		return true;
 	}
-	
+	//TODO
 	private boolean addDeleteDelta(StructuralDelta delta, final IMatch match, final IBeXDeletePattern pattern) {
 		if(pattern.getDeletedNodes().size() == 0 && pattern.getDeletedEdges().size() == 0) {
 			return false;

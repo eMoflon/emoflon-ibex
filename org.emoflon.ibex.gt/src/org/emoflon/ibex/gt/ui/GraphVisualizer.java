@@ -80,6 +80,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRuleSet;
 *
 */
 public class GraphVisualizer {
+	protected static final double VERSION = 1.0;
 	// IBeX variables
 	private StateModelFactory factory = StateModelFactory.eINSTANCE;
 	protected ModelStateManager localStateManager;
@@ -214,7 +215,7 @@ public class GraphVisualizer {
 		generateUI();
 		
 		// Open shell
-		runApp();
+		 runApp();
 	}
 	
 	/**
@@ -319,13 +320,13 @@ public class GraphVisualizer {
 		jumpButtons.setLayout(new GridLayout(2, true));
 		
 		jumpRule = new Button(jumpButtons, SWT.PUSH);
-		jumpRule.setText("Jump To Apply");
+		jumpRule.setText("Jump to apply");
 		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
 		gd.heightHint = 50;
 		jumpRule.setLayoutData(gd);
 		
 		jumpMatchChange = new Button(jumpButtons, SWT.PUSH);
-		jumpMatchChange.setText("Jump To Change");
+		jumpMatchChange.setText("Jump to change");
 		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
 		gd.heightHint = 50;
 		jumpMatchChange.setLayoutData(gd);
@@ -396,7 +397,7 @@ public class GraphVisualizer {
 		matchList.setLayoutData(gd);
 		
 		showAllMatches = new Button(textsAndList, SWT.PUSH);
-		showAllMatches.setText("Show All Matches");
+		showAllMatches.setText("Show all matches");
 		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
 		gd.heightHint = 50;
 		showAllMatches.setLayoutData(gd);
@@ -444,7 +445,7 @@ public class GraphVisualizer {
 		stateComp.setLayout(new RowLayout());
 		
 		curState = new Label(stateComp, SWT.CENTER);
-		curState.setText("Current State: ");
+		curState.setText("Current state: ");
 		
 		spinner = new Spinner (stateComp, SWT.CENTER);
 		spinner.setMinimum(0);
@@ -464,19 +465,19 @@ public class GraphVisualizer {
 		buttons.setLayout(new RowLayout(SWT.HORIZONTAL));	 	
 		 	
 		stepForward = new Button(buttons, SWT.PUSH);
-		stepForward.setText("StepForward");
+		stepForward.setText("Step forward");
 			
 		stepBackward = new Button(buttons, SWT.PUSH);
-		stepBackward.setText("StepBackward");
+		stepBackward.setText("Step backward");
 			
 		setInitial = new Button(buttons, SWT.PUSH);
-		setInitial.setText("Set Initial");
+		setInitial.setText("Set initial");
 		
 		deleteSelectedNode = new Button(buttons, SWT.PUSH);
-		deleteSelectedNode.setText("Hide Selected Node");
+		deleteSelectedNode.setText("Hide selected node");
 		
 		jumpState = new Button(buttons, SWT.PUSH);
-		jumpState.setText("Jump To State");
+		jumpState.setText("Jump to state");
 		
 		toggleFreeze = new Button(buttons, SWT.CHECK);
 		toggleFreeze.setText("Freeze Graph");
@@ -586,6 +587,7 @@ public class GraphVisualizer {
 			    helpLabel.setText(
 			    		"Green/++: \nCreation or change"
 			    		+ "\nRed/--: \nDeletion"
+			    		+ "\n\nVersion: " + VERSION
 			    		);
 			    
 			    GridLayout helpShellLayout = new GridLayout();
