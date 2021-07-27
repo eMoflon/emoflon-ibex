@@ -79,7 +79,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRuleSet;
 * @author Thomas
 *
 */
-public class GraphVisualizer {
+public class VaDoSGT {
 	protected static final double VERSION = 1.0;
 	// IBeX variables
 	private StateModelFactory factory = StateModelFactory.eINSTANCE;
@@ -189,7 +189,7 @@ public class GraphVisualizer {
 	 * @param iBeXPatternSet 
 	 * @param edgeTypes 
 	 */
-	public GraphVisualizer(Resource resource, ModelStateManager stateManager, GraphTransformationInterpreter graphTransformationInterpreter, IBeXRuleSet iBeXRuleSet, IBeXPatternSet iBeXPatternSet) {
+	public VaDoSGT(Resource resource, ModelStateManager stateManager, GraphTransformationInterpreter graphTransformationInterpreter, IBeXRuleSet iBeXRuleSet, IBeXPatternSet iBeXPatternSet) {
 		initialResourceContents = new BasicEList<EObject>(resource.getContents());
 		localStateManager = stateManager;
 		localGraphTransformationInterpreter = graphTransformationInterpreter;
@@ -227,7 +227,7 @@ public class GraphVisualizer {
 	 * @param iBeXPatternSet 
 	 * @param edgeTypes 
 	 */
-	public GraphVisualizer(Resource resource, ModelStateManager stateManager, GraphTransformationInterpreter graphTransformationInterpreter, IBeXRuleSet iBeXRuleSet, IBeXPatternSet iBeXPatternSet, String modelName) {
+	public VaDoSGT(Resource resource, ModelStateManager stateManager, GraphTransformationInterpreter graphTransformationInterpreter, IBeXRuleSet iBeXRuleSet, IBeXPatternSet iBeXPatternSet, String modelName) {
 		initialResourceContents = new BasicEList<EObject>(resource.getContents());
 		localStateManager = stateManager;
 		localGraphTransformationInterpreter = graphTransformationInterpreter;
@@ -1120,6 +1120,7 @@ public class GraphVisualizer {
 	 * Changes to the next state and calls updates for the gui
 	 */
 	private void UpdateGraphForwards() {
+	
 		// Checks if next state exists
 		if(!localStateManager.getCurrentState().getChildren().isEmpty()) {
 			//Defreeze graph
@@ -1177,6 +1178,7 @@ public class GraphVisualizer {
 			
 			updatePlot();
 		}
+		
 	}
 
 	/**

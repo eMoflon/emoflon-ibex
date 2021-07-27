@@ -36,7 +36,7 @@ import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.gt.api.GraphTransformationPattern;
 import org.emoflon.ibex.gt.disjointpatterns.GraphTransformationDisjointPatternInterpreter;
 import org.emoflon.ibex.gt.state.ModelStateManager;
-import org.emoflon.ibex.gt.ui.GraphVisualizer;
+import org.emoflon.ibex.gt.ui.VaDoSGT;
 import org.emoflon.ibex.gt.StateModel.State;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextAlternatives;
@@ -48,7 +48,6 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRuleSet;
-import org.emoflon.ibex.ui.SimVis;
 
 /**
  * The GraphTransformationInterpreter implements rule application based on a
@@ -95,8 +94,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	private ModelStateManager stateManager;
 	private boolean trackingStates = false;
 	
-	private SimVis gtVisualisation;
-	private GraphVisualizer graphVis;
+	private VaDoSGT graphVis;
 	/**
 	 * the pattern interpreter for disjoint patterns
 	 */
@@ -316,7 +314,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 //		-> Which is pretty much obvious to any "normal" user, hence, no more hidden update calls.
 		if(doUpdate)
 			updateMatches();
-
+		
 		// Return the co-match.
 		return comatch;
 	}
@@ -943,7 +941,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	}
 	
 	public void displayModelStates() {
-		graphVis = new GraphVisualizer(model.getResources().get(0), stateManager, this, ibexModel.getRuleSet(), ibexModel.getPatternSet());
+		graphVis = new VaDoSGT(model.getResources().get(0), stateManager, this, ibexModel.getRuleSet(), ibexModel.getPatternSet());
 	}
 	
 	public ModelStateManager getStateManager() {
