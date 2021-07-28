@@ -55,7 +55,7 @@ public class TGGResourceHandler {
 	protected IRegistrationHelper registrationHelper;
 
 	protected final URI base;
-	private ResourceSet specificationRS;
+	protected ResourceSet specificationRS;
 	protected ResourceSet rs;
 
 	protected Resource source;
@@ -347,8 +347,12 @@ public class TGGResourceHandler {
 		specificationRS.getResourceFactoryRegistry().getExtensionToFactoryMap().put(Resource.Factory.Registry.DEFAULT_EXTENSION, new XMIResourceFactoryImpl());
 	}
 
-	public ResourceSet getResourceSet() {
+	public ResourceSet getModelResourceSet() {
 		return rs;
+	}
+	
+	public ResourceSet getSpecificationResourceSet() {
+		return specificationRS;
 	}
 
 	public Resource getSourceResource() {
@@ -418,7 +422,7 @@ public class TGGResourceHandler {
 		return res;
 	}
 	
-	private Resource createResource(ResourceSet rs, String workspaceRelativePath) {
+	public Resource createResource(ResourceSet rs, String workspaceRelativePath) {
 		URI uri = URI.createURI(workspaceRelativePath);
 		Resource res = rs.createResource(uri.resolve(base), ContentHandler.UNSPECIFIED_CONTENT_TYPE);
 		return res;
