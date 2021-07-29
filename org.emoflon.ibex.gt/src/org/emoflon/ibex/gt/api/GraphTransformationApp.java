@@ -119,7 +119,7 @@ public abstract class GraphTransformationApp<API extends GraphTransformationAPI>
 	 */
 	private void prepareResourceSet() {
 		Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
-		reg.getExtensionToFactoryMap().put("xmi", new SmartEMFResourceFactoryImpl());
+		reg.getExtensionToFactoryMap().put("xmi", new SmartEMFResourceFactoryImpl(workspacePath));
 		registerMetaModels();
 	}
 
