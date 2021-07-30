@@ -177,7 +177,7 @@ public interface RuleState extends State {
 	EList<AttributeDelta> getAttributeDeltas();
 
 	void setMatches(Map<String, Collection<IMatch>> matches);
-	
+
 	Map<String, Collection<IMatch>> getMatches();
 
 	Map<String, Double> getStaticRules();

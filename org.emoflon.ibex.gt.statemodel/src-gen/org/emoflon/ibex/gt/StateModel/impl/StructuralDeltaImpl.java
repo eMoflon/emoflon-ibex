@@ -2,7 +2,6 @@
  */
 package org.emoflon.ibex.gt.StateModel.impl;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import org.eclipse.emf.common.notify.NotificationChain;
@@ -22,8 +21,6 @@ import org.eclipse.emf.ecore.util.InternalEList;
 import org.emoflon.ibex.gt.StateModel.Link;
 import org.emoflon.ibex.gt.StateModel.StateModelPackage;
 import org.emoflon.ibex.gt.StateModel.StructuralDelta;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 
 /**
  * <!-- begin-user-doc -->
@@ -43,7 +40,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
  *
  * @generated
  */
-public class StructuralDeltaImpl extends MinimalEObjectImpl.Container implements StructuralDelta {	
+public class StructuralDeltaImpl extends MinimalEObjectImpl.Container implements StructuralDelta {
 	/**
 	 * The cached value of the '{@link #getCreatedObjects() <em>Created Objects</em>}' reference list.
 	 * <!-- begin-user-doc -->

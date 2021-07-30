@@ -929,6 +929,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	}
 	
 	public void deactivateModelStatesTracking() {
+//		stateManager.prepForSave();
 		stateManager = null;
 		trackingStates = false;
 	}

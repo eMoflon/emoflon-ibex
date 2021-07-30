@@ -14,11 +14,16 @@ import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EContentAdapter;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.ecore.xmi.XMIResource;
+import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 import org.emoflon.ibex.common.operational.HashUtil;
@@ -47,7 +52,7 @@ public class ModelStateManager {
 	private IContextPatternInterpreter engine;
 	private boolean forceNewStates;
 	private StateModelFactory factory = StateModelFactory.eINSTANCE;
-	public StateContainer modelStates;
+	private StateContainer modelStates; 
 	private State currentState;
 	private Map<StateID, State> allStates;
 	private Map<State, BiFunction<Map<String,Object>, Boolean, Optional<IMatch>>> gtApply;
@@ -328,6 +333,7 @@ public class ModelStateManager {
 		// Check and fix attribute values
 		rs.getAttributeDeltas().stream()
 			.filter(atrDelta -> atrDelta.getObject().eGet(atrDelta.getAttribute()) != atrDelta.getNewValue())
+//			.filter(atrDelta -> (Double)(atrDelta.getObject().eGet(atrDelta.getAttribute())) != atrDelta.getNewValue())
 			.forEach(atrDelta -> atrDelta.getObject().eSet(atrDelta.getAttribute(), atrDelta.getNewValue()));
 		
 		currentState = childState;
@@ -538,6 +544,44 @@ public class ModelStateManager {
 				frontier.addAll(container.eContents());
 		}
 	}
+	
+	public StateContainer getModelStates() {
+		return modelStates;
+	}
+	
+//	public void prepForSave() {
+//		String path = "TESTEST"+".xmi";
+//		try {
+//			saveModelAndStates(model, modelStates, path);
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
+//	
+//	public synchronized static void saveModelAndStates(Resource simModel, StateContainer states, String path) throws Exception {
+//		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("SimulationModel", new XMIResourceFactoryImpl());
+//		ResourceSet rs = new ResourceSetImpl();
+//		rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());
+//		
+//		
+//		
+//		URI uri = URI.createFileURI(path);
+//		Resource modelResource = rs.createResource(uri);
+//		
+//		modelResource.getContents().addAll(simModel.getContents());
+//		modelResource.getContents().add(states.getInitialState());
+//		
+//		Map<Object, Object> saveOptions = ((XMIResource)modelResource).getDefaultSaveOptions();
+//		saveOptions.put(XMIResource.OPTION_ENCODING,"UTF-8");
+//		saveOptions.put(XMIResource.OPTION_USE_XMI_TYPE, Boolean.TRUE);
+//		saveOptions.put(XMIResource.OPTION_SAVE_TYPE_INFORMATION,Boolean.TRUE);
+//		saveOptions.put(XMIResource.OPTION_SCHEMA_LOCATION_IMPLEMENTATION, Boolean.TRUE);
+//		
+//		((XMIResource)modelResource).save(saveOptions);
+//		System.out.println("Model saved to: "+uri.path());
+//	}
+	
 }
 
 class StateID {

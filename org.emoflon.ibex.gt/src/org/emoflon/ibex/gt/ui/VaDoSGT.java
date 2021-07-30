@@ -193,7 +193,7 @@ public class VaDoSGT {
 		initialResourceContents = new BasicEList<EObject>(resource.getContents());
 		localStateManager = stateManager;
 		localGraphTransformationInterpreter = graphTransformationInterpreter;
-		localStateManager.moveToState(localStateManager.modelStates.getInitialState(), false);
+		localStateManager.moveToState(localStateManager.getModelStates().getInitialState(), false);
 		ruleSet = iBeXRuleSet.getRules();
 		patternSet = iBeXPatternSet.getContextPatterns();
 		
@@ -231,7 +231,7 @@ public class VaDoSGT {
 		initialResourceContents = new BasicEList<EObject>(resource.getContents());
 		localStateManager = stateManager;
 		localGraphTransformationInterpreter = graphTransformationInterpreter;
-		localStateManager.moveToState(localStateManager.modelStates.getInitialState(), false);
+		localStateManager.moveToState(localStateManager.getModelStates().getInitialState(), false);
 		ruleSet = iBeXRuleSet.getRules();
 		patternSet = iBeXPatternSet.getContextPatterns();
 		
@@ -423,7 +423,7 @@ public class VaDoSGT {
 		sliderAndButtons.setLayout(new GridLayout(1, true));
 		 	
 		slider = new Slider(sliderAndButtons, SWT.HORIZONTAL);
-		slider.setValues(0, 0, localStateManager.modelStates.getStates().size(), 1, 1, 1);
+		slider.setValues(0, 0, localStateManager.getModelStates().getStates().size(), 1, 1, 1);
 		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
 		gd.heightHint = 20;
 		slider.setLayoutData(gd);
@@ -449,13 +449,13 @@ public class VaDoSGT {
 		
 		spinner = new Spinner (stateComp, SWT.CENTER);
 		spinner.setMinimum(0);
-		spinner.setMaximum(localStateManager.modelStates.getStates().size()-1);
+		spinner.setMaximum(localStateManager.getModelStates().getStates().size()-1);
 		spinner.setSelection(0);
 		spinner.setIncrement(1);
 		spinner.setPageIncrement(1);
 		
 		Label maxState = new Label(stateLabels, SWT.END);
-		maxState.setText(Integer.toString(localStateManager.modelStates.getStates().size()-1));
+		maxState.setText(Integer.toString(localStateManager.getModelStates().getStates().size()-1));
 		maxState.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, true, true));
 		
 		Composite buttons = new Composite(sliderAndButtons, SWT.NONE);
@@ -536,7 +536,6 @@ public class VaDoSGT {
 	 * Displays the plot
 	 */
 	protected void displayData() {
-		// TODO
 		Label noDataLabel = new Label(folder, SWT.NONE);
 		noDataLabel.setText("No plot data available!");
 		tab2.setControl(noDataLabel);
@@ -706,7 +705,7 @@ public class VaDoSGT {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if(spinner.getSelection() == localStateManager.modelStates.getStates().size()-1) {
+				if(spinner.getSelection() == localStateManager.getModelStates().getStates().size()-1) {
 					spinner.setSelection(spinner.getMaximum());
 				}
 				stateChanged(spinner.getSelection());
@@ -1134,8 +1133,8 @@ public class VaDoSGT {
 			// Move to next state and change slider value
 			localStateManager.moveToState(localStateManager.getCurrentState().getChildren().get(0), false);
 			RuleState currentRuleState = (RuleState)localStateManager.getCurrentState();
-			slider.setSelection(localStateManager.modelStates.getStates().indexOf(currentRuleState));
-			spinner.setSelection(localStateManager.modelStates.getStates().indexOf(currentRuleState));
+			slider.setSelection(localStateManager.getModelStates().getStates().indexOf(currentRuleState));
+			spinner.setSelection(localStateManager.getModelStates().getStates().indexOf(currentRuleState));
 			//curState.setText("Current State: " + Integer.toString(localStateManager.modelStates.getStates().indexOf(currentRuleState)));
 			// Create new nodes
 			for(EObject newNode : currentRuleState.getStructuralDelta().getCreatedObjects()) {
@@ -1200,8 +1199,8 @@ public class VaDoSGT {
 			
 			RuleState currentRuleState = (RuleState)localStateManager.getCurrentState();
 			// Adjust slider value
-			slider.setSelection(localStateManager.modelStates.getStates().indexOf(currentRuleState)-1);
-			spinner.setSelection(localStateManager.modelStates.getStates().indexOf(currentRuleState)-1);
+			slider.setSelection(localStateManager.getModelStates().getStates().indexOf(currentRuleState)-1);
+			spinner.setSelection(localStateManager.getModelStates().getStates().indexOf(currentRuleState)-1);
 //			curState.setText("Current State: " + Integer.toString(localStateManager.modelStates.getStates().indexOf(currentRuleState)-1));
 			// Delete links created in current state
 			for(Link newLink : currentRuleState.getStructuralDelta().getCreatedLinks()) {
@@ -1272,7 +1271,7 @@ public class VaDoSGT {
 		edgeID = 0;
 			
 		// Move to initial state and create initial nodes and edges
-		localStateManager.moveToState(localStateManager.modelStates.getInitialState(),false);
+		localStateManager.moveToState(localStateManager.getModelStates().getInitialState(),false);
 		createNodesFromList(initialResourceContents);
 		
 		// Clean info label
@@ -1654,14 +1653,14 @@ public class VaDoSGT {
 	 * @param index index of new state
 	 */
 	private void stateChanged(int index) {
-		int indexOfCurrentState = localStateManager.modelStates.getStates().indexOf(localStateManager.getCurrentState());
+		int indexOfCurrentState = localStateManager.getModelStates().getStates().indexOf(localStateManager.getCurrentState());
 		while(index != indexOfCurrentState) {
 			if(index > indexOfCurrentState) {
 				UpdateGraphForwards();
 			} else {
 				UpdateGraphBackwards();
 			}
-			indexOfCurrentState = localStateManager.modelStates.getStates().indexOf(localStateManager.getCurrentState());
+			indexOfCurrentState = localStateManager.getModelStates().getStates().indexOf(localStateManager.getCurrentState());
 		}
 	}
 
@@ -1800,7 +1799,7 @@ public class VaDoSGT {
 			localStateManager.moveToState(localStateManager.getCurrentState().getChildren().get(0), false);
 			float newCount = ((RuleState) localStateManager.getCurrentState()).getMatches().get(selectedPatternInList).size();
 			if(newCount != currentCount) {
-				int index = localStateManager.modelStates.getStates().indexOf(localStateManager.getCurrentState());
+				int index = localStateManager.getModelStates().getStates().indexOf(localStateManager.getCurrentState());
 				found = true;
 				localStateManager.moveToState(curr, false);
 				stateChanged(index);
@@ -1825,7 +1824,7 @@ public class VaDoSGT {
 				localStateManager.moveToState(localStateManager.getCurrentState().getChildren().get(0), false);
 				RuleState movedState = (RuleState) localStateManager.getCurrentState();
 				if(movedState.getRule().getName().equals(selectedRule)) {
-					int index = localStateManager.modelStates.getStates().indexOf(movedState);
+					int index = localStateManager.getModelStates().getStates().indexOf(movedState);
 					found = true;
 					localStateManager.moveToState(curr, false);
 					stateChanged(index);

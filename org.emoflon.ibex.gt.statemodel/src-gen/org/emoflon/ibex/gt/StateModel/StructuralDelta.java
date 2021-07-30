@@ -2,13 +2,9 @@
  */
 package org.emoflon.ibex.gt.StateModel;
 
-import java.util.ArrayList;
-
 import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EObject;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 
 /**
  * <!-- begin-user-doc -->
@@ -103,7 +99,5 @@ public interface StructuralDelta extends EObject {
 	 * @generated
 	 */
 	EList<EObject> getResource2EObjectContainment();
-
-
 
 } // StructuralDelta
