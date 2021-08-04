@@ -24,7 +24,8 @@ Require-Bundle: org.eclipse.emf.ecore,
  org.emoflon.delta;bundle-version="1.0.0";visibility:=reexport,
  org.emoflon.ibex.patternmodel,
  org.emoflon.ibex.tgg.language,
- emfcodegenerator
+ emfcodegenerator,
+ org.moflon.core.propertycontainer;bundle-version="2.1.0"
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: lib/commons-io-2.5.jar,

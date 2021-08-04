@@ -38,6 +38,7 @@ import org.emoflon.ibex.tgg.operational.strategies.sync.INITIAL_FWD;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 import org.moflon.core.utilities.MoflonUtil;
 import org.moflon.smartemf.persistence.SmartEMFResourceFactoryImpl;
+import org.moflon.smartemf.runtime.SmartObject;
 import org.moflon.smartemf.runtime.util.SmartEMFUtil;
 
 import language.TGG;
@@ -114,11 +115,17 @@ public class TGGResourceHandler {
 	}
 
 	private void initializeCorrCaching() {
+		if(options.project.usesSmartEMF()) 
+			return;
+		
 		node2corrs = Collections.synchronizedMap(new HashMap<>());
 		corr.getContents().parallelStream().forEach(corr -> doAddCorrCachingNode(corr));
 	}
 
 	public void addCorrCachingNode(EObject corr) {
+		if(options.project.usesSmartEMF())
+			return;
+
 		if (node2corrs == null)
 			initializeCorrCaching();
 
@@ -126,6 +133,9 @@ public class TGGResourceHandler {
 	}
 
 	public void addCorrCachingEdge(EMFEdge corrEdge) {
+		if(options.project.usesSmartEMF()) 
+			return;
+		
 		if (node2corrs == null)
 			initializeCorrCaching();
 
@@ -144,8 +154,12 @@ public class TGGResourceHandler {
 	}
 
 	private void doAddCorrCachingNode(EObject corr) {
-		for (EObject node : corr.eCrossReferences())
+		for (EObject node : corr.eCrossReferences()) {
+			if(corr instanceof SmartObject)
+				break;
+		
 			doAddCorrCachingNode(corr, node);
+		}
 	}
 
 	private void doAddCorrCachingNode(EObject corr, EObject node) {
@@ -159,6 +173,9 @@ public class TGGResourceHandler {
 	}
 
 	public void removeCorrCachingNode(EObject corr) {
+		if(options.project.usesSmartEMF()) 
+			return;
+		
 		if (node2corrs == null)
 			initializeCorrCaching();
 
