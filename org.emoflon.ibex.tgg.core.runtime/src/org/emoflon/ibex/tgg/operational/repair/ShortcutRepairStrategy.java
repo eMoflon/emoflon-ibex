@@ -44,8 +44,9 @@ public class ShortcutRepairStrategy implements AbstractRepairStrategy {
 		this.opStrat = opStrat;
 		this.options = opStrat.getOptions();
 
-		// enable backward navigation for emf edges
-		options.resourceHandler().getModelResourceSet().eAdapters().add(new ECrossReferenceAdapter());
+		// enable backward navigation for emf edges if smartemf is not enabled
+		if(!options.project.usesSmartEMF())
+			options.resourceHandler().getModelResourceSet().eAdapters().add(new ECrossReferenceAdapter());
 		initialize();
 	}
 
