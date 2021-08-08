@@ -7,13 +7,13 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.util.EContentAdapter;
+import org.moflon.smartemf.runtime.notification.SmartContentAdapter;
 
 /**
  * class which remembers node updates for attribute updates
  *
  */
-public class IBeXDisjointContentAdapter extends EContentAdapter {
+public class IBeXDisjointContentAdapter extends SmartContentAdapter {
 	
 	private Set<Object> changedObjects;
 	public IBeXDisjointContentAdapter(ResourceSet rsSet) {

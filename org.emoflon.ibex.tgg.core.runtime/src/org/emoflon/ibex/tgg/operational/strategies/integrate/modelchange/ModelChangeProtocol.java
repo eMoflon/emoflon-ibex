@@ -14,6 +14,7 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EContentAdapter;
 import org.emoflon.ibex.common.emf.EMFEdge;
+import org.moflon.smartemf.runtime.notification.SmartContentAdapter;
 
 public class ModelChangeProtocol {
 
@@ -36,7 +37,7 @@ public class ModelChangeProtocol {
 		groupedModelChanges = new HashMap<>();
 		currentKeys = new HashSet<>();
 
-		adapter = new EContentAdapter() {
+		adapter = new SmartContentAdapter() {
 			@SuppressWarnings("unchecked")
 			@Override
 			public void notifyChanged(Notification n) {

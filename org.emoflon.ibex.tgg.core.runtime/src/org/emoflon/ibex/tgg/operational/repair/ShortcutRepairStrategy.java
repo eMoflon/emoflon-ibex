@@ -19,6 +19,7 @@ import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCMatch;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.sync.FWD_Strategy;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
+import org.moflon.smartemf.runtime.notification.SmartEMFCrossReferenceAdapter;
 
 import runtime.TGGRuleApplication;
 
@@ -46,7 +47,7 @@ public class ShortcutRepairStrategy implements AbstractRepairStrategy {
 
 		// enable backward navigation for emf edges if smartemf is not enabled
 		if(!options.project.usesSmartEMF())
-			options.resourceHandler().getModelResourceSet().eAdapters().add(new ECrossReferenceAdapter());
+			options.resourceHandler().getModelResourceSet().eAdapters().add(new SmartEMFCrossReferenceAdapter());
 		initialize();
 	}
 
