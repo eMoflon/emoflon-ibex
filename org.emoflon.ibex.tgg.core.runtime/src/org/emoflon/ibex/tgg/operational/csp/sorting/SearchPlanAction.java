@@ -62,20 +62,6 @@ public class SearchPlanAction extends Algorithm<SimpleCombiner, TGGAttributeCons
 		List<WeightedOperation<TGGAttributeConstraint>> weightedOperations = createWeightedOperations(constraints);
 
 		// 3. Call search plan algorithm to sort weighted operations
-
-		PrintStream out = System.out;
-		PrintStream err = System.err;
-		System.setOut(new PrintStream(new OutputStream() {
-			@Override
-			public void write(int b) throws IOException {
-			}
-		}));
-		System.setErr(new PrintStream(new OutputStream() {
-			@Override
-			public void write(int b) throws IOException {
-			}
-		}));
-
 		try {
 			SimpleCombiner sc = generatePlan(new SimpleCombiner(), weightedOperations, inputAdornment);
 			List<TGGAttributeConstraint> sortedList = new ArrayList<>();
@@ -89,10 +75,7 @@ public class SearchPlanAction extends Algorithm<SimpleCombiner, TGGAttributeCons
 			throw new IllegalStateException(
 					constraints.stream().map(c -> c.getDefinition().getName()).collect(Collectors.toList()) + ", "
 							+ e.getMessage());
-		} finally {
-			System.setOut(out);
-			System.setErr(err);
-		}
+		} 
 	}
 
 	private Adornment determineInputAdornment() {

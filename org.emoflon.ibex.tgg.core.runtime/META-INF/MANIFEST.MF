@@ -31,12 +31,12 @@ Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: lib/commons-io-2.5.jar,
  lib/commons-lang3-3.5.jar,
  lib/gurobi.jar,
- lib/javabdd-1.0b2.jar,
  .,
  lib/glpk-java.jar,
  lib/com.google.ortools.jar,
  lib/protobuf.jar,
- lib/mipcl.jar
+ lib/mipcl.jar,
+ lib/javabdd-silent.jar
 Export-Package: .,
  by.bsu.JVmipcl,
  by.bsu.JVmipshell,
