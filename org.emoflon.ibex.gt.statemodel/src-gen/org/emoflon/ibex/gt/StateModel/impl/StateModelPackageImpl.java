@@ -9,14 +9,18 @@ import org.eclipse.emf.ecore.EReference;
 
 import org.eclipse.emf.ecore.impl.EPackageImpl;
 
+import org.emoflon.ibex.gt.StateModel.AllMatches;
 import org.emoflon.ibex.gt.StateModel.AttributeDelta;
+import org.emoflon.ibex.gt.StateModel.IBeXMatch;
 import org.emoflon.ibex.gt.StateModel.Link;
+import org.emoflon.ibex.gt.StateModel.Parameter;
 import org.emoflon.ibex.gt.StateModel.RuleState;
 import org.emoflon.ibex.gt.StateModel.State;
 import org.emoflon.ibex.gt.StateModel.StateContainer;
 import org.emoflon.ibex.gt.StateModel.StateModelFactory;
 import org.emoflon.ibex.gt.StateModel.StateModelPackage;
 import org.emoflon.ibex.gt.StateModel.StructuralDelta;
+import org.emoflon.ibex.gt.StateModel.Value;
 
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage;
 
@@ -68,6 +72,34 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 	 * @generated
 	 */
 	private EClass linkEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass iBeXMatchEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass parameterEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass valueEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass allMatchesEClass = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -212,6 +244,16 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 	 * @generated
 	 */
 	@Override
+	public EAttribute getState_PushoutApproach() {
+		return (EAttribute) stateEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public EClass getRuleState() {
 		return ruleStateEClass;
 	}
@@ -242,38 +284,8 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 	 * @generated
 	 */
 	@Override
-	public EAttribute getRuleState_Parameter() {
-		return (EAttribute) ruleStateEClass.getEStructuralFeatures().get(2);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public EAttribute getRuleState_Match() {
-		return (EAttribute) ruleStateEClass.getEStructuralFeatures().get(3);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public EAttribute getRuleState_CoMatch() {
-		return (EAttribute) ruleStateEClass.getEStructuralFeatures().get(4);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
 	public EReference getRuleState_StructuralDelta() {
-		return (EReference) ruleStateEClass.getEStructuralFeatures().get(5);
+		return (EReference) ruleStateEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
@@ -283,7 +295,47 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 	 */
 	@Override
 	public EReference getRuleState_AttributeDeltas() {
+		return (EReference) ruleStateEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getRuleState_Match() {
+		return (EReference) ruleStateEClass.getEStructuralFeatures().get(4);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getRuleState_CoMatch() {
+		return (EReference) ruleStateEClass.getEStructuralFeatures().get(5);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getRuleState_Parameters() {
 		return (EReference) ruleStateEClass.getEStructuralFeatures().get(6);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getRuleState_AllMatches() {
+		return (EReference) ruleStateEClass.getEStructuralFeatures().get(7);
 	}
 
 	/**
@@ -322,8 +374,8 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 	 * @generated
 	 */
 	@Override
-	public EAttribute getAttributeDelta_NewValue() {
-		return (EAttribute) attributeDeltaEClass.getEStructuralFeatures().get(2);
+	public EReference getAttributeDelta_OldValue() {
+		return (EReference) attributeDeltaEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
@@ -332,8 +384,8 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 	 * @generated
 	 */
 	@Override
-	public EAttribute getAttributeDelta_OldValue() {
-		return (EAttribute) attributeDeltaEClass.getEStructuralFeatures().get(3);
+	public EReference getAttributeDelta_NewValue() {
+		return (EReference) attributeDeltaEClass.getEStructuralFeatures().get(3);
 	}
 
 	/**
@@ -452,6 +504,126 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 	 * @generated
 	 */
 	@Override
+	public EClass getIBeXMatch() {
+		return iBeXMatchEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getIBeXMatch_PatternName() {
+		return (EAttribute) iBeXMatchEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getIBeXMatch_Parameters() {
+		return (EReference) iBeXMatchEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EClass getParameter() {
+		return parameterEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getParameter_Name() {
+		return (EAttribute) parameterEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getParameter_Parameter() {
+		return (EReference) parameterEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EClass getValue() {
+		return valueEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getValue_Type() {
+		return (EReference) valueEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getValue_ValueAsString() {
+		return (EAttribute) valueEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EClass getAllMatches() {
+		return allMatchesEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getAllMatches_PatternName() {
+		return (EAttribute) allMatchesEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getAllMatches_AllMatchesForPattern() {
+		return (EReference) allMatchesEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public StateModelFactory getStateModelFactory() {
 		return (StateModelFactory) getEFactoryInstance();
 	}
@@ -484,21 +656,23 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 		createEAttribute(stateEClass, STATE__INITIAL);
 		createEReference(stateEClass, STATE__CHILDREN);
 		createEAttribute(stateEClass, STATE__HASH);
+		createEAttribute(stateEClass, STATE__PUSHOUT_APPROACH);
 
 		ruleStateEClass = createEClass(RULE_STATE);
 		createEReference(ruleStateEClass, RULE_STATE__PARENT);
 		createEReference(ruleStateEClass, RULE_STATE__RULE);
-		createEAttribute(ruleStateEClass, RULE_STATE__PARAMETER);
-		createEAttribute(ruleStateEClass, RULE_STATE__MATCH);
-		createEAttribute(ruleStateEClass, RULE_STATE__CO_MATCH);
 		createEReference(ruleStateEClass, RULE_STATE__STRUCTURAL_DELTA);
 		createEReference(ruleStateEClass, RULE_STATE__ATTRIBUTE_DELTAS);
+		createEReference(ruleStateEClass, RULE_STATE__MATCH);
+		createEReference(ruleStateEClass, RULE_STATE__CO_MATCH);
+		createEReference(ruleStateEClass, RULE_STATE__PARAMETERS);
+		createEReference(ruleStateEClass, RULE_STATE__ALL_MATCHES);
 
 		attributeDeltaEClass = createEClass(ATTRIBUTE_DELTA);
 		createEReference(attributeDeltaEClass, ATTRIBUTE_DELTA__ATTRIBUTE);
 		createEReference(attributeDeltaEClass, ATTRIBUTE_DELTA__OBJECT);
-		createEAttribute(attributeDeltaEClass, ATTRIBUTE_DELTA__NEW_VALUE);
-		createEAttribute(attributeDeltaEClass, ATTRIBUTE_DELTA__OLD_VALUE);
+		createEReference(attributeDeltaEClass, ATTRIBUTE_DELTA__OLD_VALUE);
+		createEReference(attributeDeltaEClass, ATTRIBUTE_DELTA__NEW_VALUE);
 
 		structuralDeltaEClass = createEClass(STRUCTURAL_DELTA);
 		createEReference(structuralDeltaEClass, STRUCTURAL_DELTA__CREATED_OBJECTS);
@@ -512,6 +686,22 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 		createEReference(linkEClass, LINK__TYPE);
 		createEReference(linkEClass, LINK__SRC);
 		createEReference(linkEClass, LINK__TRG);
+
+		iBeXMatchEClass = createEClass(IBE_XMATCH);
+		createEAttribute(iBeXMatchEClass, IBE_XMATCH__PATTERN_NAME);
+		createEReference(iBeXMatchEClass, IBE_XMATCH__PARAMETERS);
+
+		parameterEClass = createEClass(PARAMETER);
+		createEAttribute(parameterEClass, PARAMETER__NAME);
+		createEReference(parameterEClass, PARAMETER__PARAMETER);
+
+		valueEClass = createEClass(VALUE);
+		createEReference(valueEClass, VALUE__TYPE);
+		createEAttribute(valueEClass, VALUE__VALUE_AS_STRING);
+
+		allMatchesEClass = createEClass(ALL_MATCHES);
+		createEAttribute(allMatchesEClass, ALL_MATCHES__PATTERN_NAME);
+		createEReference(allMatchesEClass, ALL_MATCHES__ALL_MATCHES_FOR_PATTERN);
 	}
 
 	/**
@@ -556,7 +746,7 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getStateContainer_InitialState(), this.getState(), null, "initialState", null, 0, 1,
-				StateContainer.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
+				StateContainer.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(stateEClass, State.class, "State", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -567,6 +757,8 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getState_Hash(), ecorePackage.getELong(), "hash", null, 0, 1, State.class, !IS_TRANSIENT,
 				!IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getState_PushoutApproach(), ecorePackage.getEInt(), "pushoutApproach", null, 0, 1, State.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(ruleStateEClass, RuleState.class, "RuleState", !IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);
@@ -576,17 +768,22 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 		initEReference(getRuleState_Rule(), theIBeXPatternModelPackage.getIBeXRule(), null, "rule", null, 0, 1,
 				RuleState.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getRuleState_Parameter(), ecorePackage.getEJavaObject(), "parameter", null, 0, 1,
-				RuleState.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
-		initEAttribute(getRuleState_Match(), ecorePackage.getEJavaObject(), "match", null, 0, 1, RuleState.class,
-				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getRuleState_CoMatch(), ecorePackage.getEJavaObject(), "coMatch", null, 0, 1, RuleState.class,
-				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getRuleState_StructuralDelta(), this.getStructuralDelta(), null, "structuralDelta", null, 0, 1,
 				RuleState.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getRuleState_AttributeDeltas(), this.getAttributeDelta(), null, "attributeDeltas", null, 0, -1,
+				RuleState.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getRuleState_Match(), this.getIBeXMatch(), null, "match", null, 0, 1, RuleState.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getRuleState_CoMatch(), this.getIBeXMatch(), null, "coMatch", null, 0, 1, RuleState.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getRuleState_Parameters(), this.getParameter(), null, "parameters", null, 0, -1, RuleState.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getRuleState_AllMatches(), this.getAllMatches(), null, "allMatches", null, 0, -1,
 				RuleState.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
@@ -598,12 +795,12 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 		initEReference(getAttributeDelta_Object(), ecorePackage.getEObject(), null, "object", null, 1, 1,
 				AttributeDelta.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getAttributeDelta_NewValue(), ecorePackage.getEJavaObject(), "newValue", null, 1, 1,
-				AttributeDelta.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
-		initEAttribute(getAttributeDelta_OldValue(), ecorePackage.getEJavaObject(), "oldValue", null, 1, 1,
-				AttributeDelta.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
+		initEReference(getAttributeDelta_OldValue(), this.getValue(), null, "oldValue", null, 0, 1,
+				AttributeDelta.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getAttributeDelta_NewValue(), this.getValue(), null, "newValue", null, 0, 1,
+				AttributeDelta.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(structuralDeltaEClass, StructuralDelta.class, "StructuralDelta", !IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);
@@ -636,6 +833,39 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 		initEReference(getLink_Trg(), ecorePackage.getEObject(), null, "trg", null, 1, 1, Link.class, !IS_TRANSIENT,
 				!IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
 				IS_ORDERED);
+
+		initEClass(iBeXMatchEClass, IBeXMatch.class, "IBeXMatch", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getIBeXMatch_PatternName(), ecorePackage.getEString(), "patternName", "", 0, 1, IBeXMatch.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED,
+				!IS_ORDERED);
+		initEReference(getIBeXMatch_Parameters(), this.getParameter(), null, "parameters", null, 0, -1, IBeXMatch.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(parameterEClass, Parameter.class, "Parameter", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getParameter_Name(), ecorePackage.getEString(), "name", null, 0, 1, Parameter.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getParameter_Parameter(), ecorePackage.getEObject(), null, "parameter", null, 0, 1,
+				Parameter.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(valueEClass, Value.class, "Value", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getValue_Type(), ecorePackage.getEDataType(), null, "Type", null, 0, 1, Value.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getValue_ValueAsString(), ecorePackage.getEString(), "ValueAsString", null, 0, 1, Value.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(allMatchesEClass, AllMatches.class, "AllMatches", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getAllMatches_PatternName(), ecorePackage.getEString(), "patternName", null, 0, 1,
+				AllMatches.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
+		initEReference(getAllMatches_AllMatchesForPattern(), this.getIBeXMatch(), null, "allMatchesForPattern", null, 0,
+				-1, AllMatches.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Create resource
 		createResource(eNS_URI);

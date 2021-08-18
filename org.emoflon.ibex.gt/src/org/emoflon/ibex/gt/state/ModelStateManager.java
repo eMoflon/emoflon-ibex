@@ -1,5 +1,6 @@
 package org.emoflon.ibex.gt.state;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,15 +11,30 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EAttribute;
+import org.eclipse.emf.ecore.EDataType;
+import org.eclipse.emf.ecore.EFactory;
+import org.eclipse.emf.ecore.EGenericType;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.EParameter;
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.ETypeParameter;
+import org.eclipse.emf.ecore.ETypedElement;
+import org.eclipse.emf.ecore.EcorePackage;
+import org.eclipse.emf.ecore.impl.EAttributeImpl;
+import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EContentAdapter;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -29,14 +45,24 @@ import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 import org.emoflon.ibex.common.operational.HashUtil;
 import org.emoflon.ibex.common.operational.IContextPatternInterpreter;
 import org.emoflon.ibex.common.operational.IMatch;
+import org.emoflon.ibex.common.operational.PushoutApproach;
+import org.emoflon.ibex.common.operational.SimpleMatch;
+import org.emoflon.ibex.gt.StateModel.AllMatches;
 import org.emoflon.ibex.gt.StateModel.AttributeDelta;
+//import org.emoflon.ibex.gt.StateModel.CoMatch;
+import org.emoflon.ibex.gt.StateModel.IBeXMatch;
 import org.emoflon.ibex.gt.StateModel.Link;
+//import org.emoflon.ibex.gt.StateModel.Match;
+import org.emoflon.ibex.gt.StateModel.Parameter;
 import org.emoflon.ibex.gt.StateModel.RuleState;
 import org.emoflon.ibex.gt.StateModel.State;
 import org.emoflon.ibex.gt.StateModel.StateContainer;
 import org.emoflon.ibex.gt.StateModel.StateModelFactory;
 import org.emoflon.ibex.gt.StateModel.StructuralDelta;
+import org.emoflon.ibex.gt.StateModel.Value;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttribute;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeAssignment;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeValue;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
@@ -56,6 +82,7 @@ public class ModelStateManager {
 	private State currentState;
 	private Map<StateID, State> allStates;
 	private Map<State, BiFunction<Map<String,Object>, Boolean, Optional<IMatch>>> gtApply;
+	private Map<State, Map<String, Collection<IMatch>>> matches;
 	
 	public ModelStateManager(final Resource model, final Resource trashResource, final IContextPatternInterpreter engine, boolean forceNewStates) {
 		this.model = model;
@@ -68,6 +95,7 @@ public class ModelStateManager {
 	private void init() {
 		gtApply = new HashMap<>();
 		allStates = new HashMap<>();
+		matches = new HashMap<>();
 		
 		modelStates = factory.createStateContainer();
 		State initialState = factory.createState();
@@ -85,14 +113,112 @@ public class ModelStateManager {
 		return currentState;
 	}
 	
-	public Optional<IMatch> addNewState(final IBeXRule rule, final IMatch match, final Map<String, Object> parameter,final Map<String, Collection<IMatch>> matches, boolean doUpdate, BiFunction<Map<String,Object>, Boolean, Optional<IMatch>> applyRule) {
+	protected void setCurrentState(State curr) {
+		currentState = curr;
+	}
+	
+	protected void setAllStates(Map<StateID, State> allStates) {
+		this.allStates = allStates;
+	}
+	
+	protected void setGTApply(Map<State, BiFunction<Map<String,Object>, Boolean, Optional<IMatch>>> gtApply) {
+		this.gtApply = gtApply;
+	}
+	
+	private IBeXMatch IMatchToIBeXMatch(IMatch imatch) {
+		IBeXMatch ibexmatch = factory.createIBeXMatch();
+		
+		for(String paramName : imatch.getParameterNames()) {
+			Parameter param = factory.createParameter();
+			param.setName(paramName);
+			param.setParameter((EObject) imatch.get(paramName));
+			ibexmatch.getParameters().add(param);
+		}
+		
+		ibexmatch.setPatternName(imatch.getPatternName());
+		return ibexmatch;
+	}
+	
+	public IMatch IBeXMatchToIMatchByList(RuleState state) {
+		Collection<IMatch> matchesForPattern =  matches.get(state).get(state.getMatch().getPatternName());
+		Map<String, Object> parameter =  extractParameterFromMatch(state.getMatch());
+		
+		for(IMatch imatch : matchesForPattern) {
+			if(imatch.getObjects().containsAll(parameter.values()))
+				return imatch;
+		}
+		
+		return null;
+	}
+	
+	public IMatch IBeXMatchToIMatch(IBeXMatch ibexmatch) {
+		IMatch imatch = new SimpleMatch(ibexmatch.getPatternName());
+		Map<String, Object> extractedParameter = extractParameterFromMatch(ibexmatch);
+		for(String patName : extractedParameter.keySet()) {
+			imatch.put(patName, extractedParameter.get(patName));
+		}
+		return imatch;
+	}
+	
+	private void addParameterToState(RuleState state, Map<String, Object> parameter) {
+		for(String key: parameter.keySet()) {
+			Parameter param = factory.createParameter();
+			param.setName(key);
+			param.setParameter((EObject) parameter.get(key));
+			state.getParameters().add(param);
+		}
+	}
+	
+	public  Map<String, Object> extractParameterFromState(RuleState state) {
+		Map<String, Object> parameter = new HashMap<String,Object>();
+		for(Parameter param: state.getParameters()) {
+			parameter.put(param.getName(), param.getParameter());
+		}
+		return parameter;
+	}
+	
+	private  Map<String, Object> extractParameterFromMatch(IBeXMatch match) {
+		Map<String, Object> parameter = new HashMap<String,Object>();
+		for(Parameter param: match.getParameters()) {
+			parameter.put(param.getName(), param.getParameter());
+		}
+		return parameter;
+	}
+	
+	public boolean testIfSameIBeXMatch(IBeXMatch first, IBeXMatch second) {
+		if(!(first.getPatternName().equals(second.getPatternName())))
+			return false;
+		else {
+			for(Parameter paramFirst : first.getParameters()) {
+				for(Parameter paramSecond : second.getParameters()) {
+					if(paramFirst.getName().equals(paramSecond.getName()) && !(paramFirst.getParameter().equals(paramSecond.getParameter()))) {
+						return false;
+					}
+				}
+			}
+			return true;
+		}
+		
+		
+	}
+	
+	public Optional<IMatch> addNewState(final IBeXRule rule, final IMatch match, final Map<String, Object> parameter,final Map<String, Collection<IMatch>> matches, boolean doUpdate, PushoutApproach po, BiFunction<Map<String,Object>, Boolean, Optional<IMatch>> applyRule) {
 		RuleState newState = factory.createRuleState();
-
-		newState.setMatches(matches);
+				
+		for(String pattern : matches.keySet()) {
+			AllMatches allMatches = factory.createAllMatches();
+			allMatches.setPatternName(pattern);
+			for(IMatch iMatch : matches.get(pattern)) {
+				allMatches.getAllMatchesForPattern().add(IMatchToIBeXMatch(iMatch));
+			}
+			newState.getAllMatches().add(allMatches);
+		}
+		
 		newState.setInitial(false);
-		newState.setMatch(match);
+		newState.setMatch(IMatchToIBeXMatch(match));
 		newState.setRule(rule);
-		newState.setParameter(parameter);
+		newState.setPushoutApproach(po.ordinal());
+		addParameterToState(newState, parameter);
 		newState.setParent(currentState);
 		currentState.getChildren().add(newState);
 		
@@ -141,7 +267,7 @@ public class ModelStateManager {
 		gtApply.put(newState, applyRule);
 		
 		IMatch comatch = optComatch.get();
-		newState.setCoMatch(comatch);
+		newState.setCoMatch(IMatchToIBeXMatch(comatch));
 		
 		modelStates.getStates().add(newState);
 		currentState = newState;
@@ -236,13 +362,12 @@ public class ModelStateManager {
 		// Restore attribute values
 		currentRuleState.getAttributeDeltas().stream()
 			.filter(atrDelta -> !createdNodes.contains(atrDelta.getObject()))
-			.forEach(atrDelta -> {
-				atrDelta.getObject().eSet(atrDelta.getAttribute(), atrDelta.getOldValue());
+			.forEach(atrDelta -> {atrDelta.getObject().eSet(atrDelta.getAttribute(), getObjectFromValue(atrDelta.getOldValue()));
 			});
 		currentState = previousState;
 		
 		if(currentState instanceof RuleState) {
-			return Optional.of((IMatch)((RuleState)currentState).getCoMatch());
+			return Optional.of(IBeXMatchToIMatch(((RuleState)currentState).getCoMatch()));
 		} else {
 			return Optional.empty();
 		}
@@ -276,7 +401,7 @@ public class ModelStateManager {
 		}
 		
 		if(currentState instanceof RuleState) {
-			return Optional.of((IMatch)((RuleState)currentState).getCoMatch());
+			return Optional.of(IBeXMatchToIMatch(((RuleState)currentState).getCoMatch()));
 		} else {
 			return Optional.empty();
 		}
@@ -290,7 +415,8 @@ public class ModelStateManager {
 		
 		// Let the rule play out again
 		RuleState rs = (RuleState)childState;
-		Optional<IMatch> optComatch = gtApply.get(childState).apply((Map<String, Object>) rs.getParameter(), false);
+		
+		Optional<IMatch> optComatch = gtApply.get(childState).apply(extractParameterFromState(rs), false);
 		if(!optComatch.isPresent())
 			return optComatch;
 		
@@ -310,8 +436,7 @@ public class ModelStateManager {
 						node -> trashResource.getContents().add(EcoreUtil.getRootContainer(node)), false);
 			else
 				EMFManipulationUtils.delete(removals, new HashSet(), false);
-			
-			IMatch trueComatch = (IMatch) rs.getCoMatch();
+			IMatch trueComatch = IBeXMatchToIMatch(rs.getCoMatch());
 			// Place all originally created new nodes into resource
 			rs.getRule().getCreate().getCreatedNodes().forEach(node -> {
 				model.getContents().add((EObject) trueComatch.get(node.getName()));
@@ -331,18 +456,35 @@ public class ModelStateManager {
 		}
 		
 		// Check and fix attribute values
+
 		rs.getAttributeDeltas().stream()
-			.filter(atrDelta -> atrDelta.getObject().eGet(atrDelta.getAttribute()) != atrDelta.getNewValue())
-//			.filter(atrDelta -> (Double)(atrDelta.getObject().eGet(atrDelta.getAttribute())) != atrDelta.getNewValue())
-			.forEach(atrDelta -> atrDelta.getObject().eSet(atrDelta.getAttribute(), atrDelta.getNewValue()));
+			.filter(atrDelta -> atrDelta.getObject().eGet(atrDelta.getAttribute()) != getObjectFromValue(atrDelta.getNewValue()))
+			.filter(atrDelta -> atrDelta.getObject().eGet(atrDelta.getAttribute()) != getObjectFromValue(atrDelta.getNewValue()))
+			.forEach(atrDelta -> {atrDelta.getObject().eSet(atrDelta.getAttribute(), getObjectFromValue(atrDelta.getNewValue()));
+				
+			});
 		
 		currentState = childState;
 		
 		if(currentState instanceof RuleState) {
-			return Optional.of((IMatch)((RuleState)currentState).getCoMatch());
+			return Optional.of(IBeXMatchToIMatch(((RuleState)currentState).getCoMatch()));
 		} else {
 			return Optional.empty();
 		}
+	}
+	
+	
+
+	
+	public Object getObjectFromValue(Value val) {
+		Object obj = null;
+		try {
+			obj = stringToValue(factory, val.getType(), val.getValueAsString());
+		} catch (Exception e) {
+			
+		}
+		// Null check missing in calling methods 
+		return obj;
 	}
 	
 	private Queue<State> findPathToTargetState(final State trgState) {
@@ -420,12 +562,22 @@ public class ModelStateManager {
 	
 	private AttributeDelta createAttributeDelta(final IMatch match, final IBeXAttributeAssignment assignment) {
 		AttributeDelta delta = factory.createAttributeDelta();
+		Value oldVal = factory.createValue();
 		
 		delta.setAttribute(assignment.getType());
 		EObject node = (EObject) match.get(assignment.getNode().getName());
 		delta.setObject(node);
-		delta.setOldValue(node.eGet(assignment.getType()));
+
+		EDataType type = assignment.getType().getEAttributeType();
+		oldVal.setType(type);
+		try {
+			oldVal.setValueAsString(valueToString(factory, type, node.eGet(assignment.getType())));
+		} catch (IOException e) {
+			// Auto-generated catch block
+			e.printStackTrace();
+		}
 		
+		delta.setOldValue(oldVal);			
 		return delta;
 	}
 	
@@ -434,8 +586,19 @@ public class ModelStateManager {
 			delta = createAttributeDelta(match, assignment);
 		}
 		
+		Value newVal = factory.createValue();
+	
 		EObject node = (EObject) match.get(assignment.getNode().getName());
-		delta.setNewValue(node.eGet(assignment.getType()));
+		EDataType type = assignment.getType().getEAttributeType();
+		newVal.setType(type);
+		try {
+			newVal.setValueAsString(valueToString(factory, type, node.eGet(assignment.getType())));
+		} catch (IOException e) {
+			// Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		delta.setNewValue(newVal);			
 		
 		return delta;
 	}
@@ -464,7 +627,7 @@ public class ModelStateManager {
 		
 		return true;
 	}
-	//TODO
+
 	private boolean addDeleteDelta(StructuralDelta delta, final IMatch match, final IBeXDeletePattern pattern) {
 		if(pattern.getDeletedNodes().size() == 0 && pattern.getDeletedEdges().size() == 0) {
 			return false;
@@ -548,39 +711,69 @@ public class ModelStateManager {
 	public StateContainer getModelStates() {
 		return modelStates;
 	}
+
+	private static Object stringToValue(final EFactory factory, final EDataType atr, final String value) throws Exception {
+		EcorePackage epack = EcorePackage.eINSTANCE;
+		EFactory efac = epack.getEFactoryInstance();
+		if(atr == epack.getEString()) {
+			return value;
+		} else if(atr == epack.getEBoolean()) {
+			return ("true".equals(value)) ? true : false;
+		} else if(atr == epack.getEByte()) {
+			return Byte.parseByte(value);
+		} else if(atr == epack.getEChar()) {
+			return value.charAt(0);
+		} else if(atr == epack.getEDate()) {
+			return efac.createFromString(atr, value);
+		} else if(atr == epack.getEDouble()) {
+			return Double.parseDouble(value);
+		}  else if(atr == epack.getEFloat()) {
+			return Float.parseFloat(value);
+		} else if(atr == epack.getEInt()) {
+			return Integer.parseInt(value);
+		} else if(atr == epack.getELong()) {
+			return Long.parseLong(value);
+		} else if(atr == epack.getEShort()) {
+			return Short.parseShort(value);
+		} else {
+			return factory.createFromString(atr, value);
+		}
+	}
 	
-//	public void prepForSave() {
-//		String path = "TESTEST"+".xmi";
-//		try {
-//			saveModelAndStates(model, modelStates, path);
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
-//	
-//	public synchronized static void saveModelAndStates(Resource simModel, StateContainer states, String path) throws Exception {
-//		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("SimulationModel", new XMIResourceFactoryImpl());
-//		ResourceSet rs = new ResourceSetImpl();
-//		rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());
-//		
-//		
-//		
-//		URI uri = URI.createFileURI(path);
-//		Resource modelResource = rs.createResource(uri);
-//		
-//		modelResource.getContents().addAll(simModel.getContents());
-//		modelResource.getContents().add(states.getInitialState());
-//		
-//		Map<Object, Object> saveOptions = ((XMIResource)modelResource).getDefaultSaveOptions();
-//		saveOptions.put(XMIResource.OPTION_ENCODING,"UTF-8");
-//		saveOptions.put(XMIResource.OPTION_USE_XMI_TYPE, Boolean.TRUE);
-//		saveOptions.put(XMIResource.OPTION_SAVE_TYPE_INFORMATION,Boolean.TRUE);
-//		saveOptions.put(XMIResource.OPTION_SCHEMA_LOCATION_IMPLEMENTATION, Boolean.TRUE);
-//		
-//		((XMIResource)modelResource).save(saveOptions);
-//		System.out.println("Model saved to: "+uri.path());
-//	}
+	private static String valueToString(final EFactory factory, final EDataType atr, final Object value) throws IOException {
+		EcorePackage epack = EcorePackage.eINSTANCE;
+		EFactory efac = epack.getEFactoryInstance();
+		if(atr == epack.getEString()) {
+			return (String) value;
+		} else if(atr == epack.getEBoolean()) {
+			return String.valueOf(value);
+		} else if(atr == epack.getEByte()) {
+			return String.valueOf(value);
+		} else if(atr == epack.getEChar()) {
+			return String.valueOf(value);
+		} else if(atr == epack.getEDate()) {
+			return efac.convertToString(atr, value);
+		} else if(atr == epack.getEDouble()) {
+			return String.valueOf(value);
+		}  else if(atr == epack.getEFloat()) {
+			return String.valueOf(value);
+		} else if(atr == epack.getEInt()) {
+			return String.valueOf(value);
+		} else if(atr == epack.getELong()) {
+			return String.valueOf(value);
+		} else if(atr == epack.getEShort()) {
+			return String.valueOf(value);
+		} else if(atr == epack.getEFeatureMapEntry()) {
+			return null;
+		}else {
+			return factory.convertToString(atr, value);
+		}
+	}
+
+	public Resource getModel() {
+
+		return model;
+	}	
 	
 }
 
@@ -590,17 +783,24 @@ class StateID {
 	public final long hashCode;
 	public final Map<String,Object> parameters;
 	
-	@SuppressWarnings("unchecked")
 	public StateID(final State state) {
 		this.state = state;
 		state.setHash(calculateHashCode(state));
 		hashCode = state.getHash();
 		if(state instanceof RuleState) {
 			RuleState rState = (RuleState) state;
-			parameters = (Map<String, Object>) rState.getParameter();
+			parameters = extractParameterFromState(rState);
 		} else {
 			parameters = null;
 		}
+	}
+	
+	private  Map<String, Object> extractParameterFromState(RuleState state) {
+		Map<String, Object> parameter = new HashMap<String,Object>();
+		for(Parameter param: state.getParameters()) {
+			parameter.put(param.getName(), param.getParameter());
+		}
+		return parameter;
 	}
 	
 	@Override
@@ -663,8 +863,8 @@ class StateID {
 			RuleState rState = (RuleState)state;
 			List<Object> components = new LinkedList<>();
 			components.add(rState.getParent().getHash());
-			components.add(rState.getRule());
-			components.add(rState.getMatch());
+//			components.add(rState.getRule());
+//			components.add(rState.getMatch());
 			return HashUtil.collectionToHash(components);
 		}else {
 			return HashUtil.objectToHash(state);

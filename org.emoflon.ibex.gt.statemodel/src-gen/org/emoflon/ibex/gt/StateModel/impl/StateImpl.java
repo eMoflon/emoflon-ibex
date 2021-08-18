@@ -14,6 +14,7 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 
 import org.eclipse.emf.ecore.util.EObjectResolvingEList;
+
 import org.emoflon.ibex.gt.StateModel.RuleState;
 import org.emoflon.ibex.gt.StateModel.State;
 import org.emoflon.ibex.gt.StateModel.StateModelPackage;
@@ -29,6 +30,7 @@ import org.emoflon.ibex.gt.StateModel.StateModelPackage;
  *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.StateImpl#isInitial <em>Initial</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.StateImpl#getChildren <em>Children</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.StateImpl#getHash <em>Hash</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.StateImpl#getPushoutApproach <em>Pushout Approach</em>}</li>
  * </ul>
  *
  * @generated
@@ -83,6 +85,26 @@ public class StateImpl extends MinimalEObjectImpl.Container implements State {
 	 * @ordered
 	 */
 	protected long hash = HASH_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #getPushoutApproach() <em>Pushout Approach</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getPushoutApproach()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final int PUSHOUT_APPROACH_EDEFAULT = 0;
+
+	/**
+	 * The cached value of the '{@link #getPushoutApproach() <em>Pushout Approach</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getPushoutApproach()
+	 * @generated
+	 * @ordered
+	 */
+	protected int pushoutApproach = PUSHOUT_APPROACH_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -169,6 +191,30 @@ public class StateImpl extends MinimalEObjectImpl.Container implements State {
 	 * @generated
 	 */
 	@Override
+	public int getPushoutApproach() {
+		return pushoutApproach;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setPushoutApproach(int newPushoutApproach) {
+		int oldPushoutApproach = pushoutApproach;
+		pushoutApproach = newPushoutApproach;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, StateModelPackage.STATE__PUSHOUT_APPROACH,
+					oldPushoutApproach, pushoutApproach));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
 		case StateModelPackage.STATE__INITIAL:
@@ -177,6 +223,8 @@ public class StateImpl extends MinimalEObjectImpl.Container implements State {
 			return getChildren();
 		case StateModelPackage.STATE__HASH:
 			return getHash();
+		case StateModelPackage.STATE__PUSHOUT_APPROACH:
+			return getPushoutApproach();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -200,6 +248,9 @@ public class StateImpl extends MinimalEObjectImpl.Container implements State {
 		case StateModelPackage.STATE__HASH:
 			setHash((Long) newValue);
 			return;
+		case StateModelPackage.STATE__PUSHOUT_APPROACH:
+			setPushoutApproach((Integer) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -221,6 +272,9 @@ public class StateImpl extends MinimalEObjectImpl.Container implements State {
 		case StateModelPackage.STATE__HASH:
 			setHash(HASH_EDEFAULT);
 			return;
+		case StateModelPackage.STATE__PUSHOUT_APPROACH:
+			setPushoutApproach(PUSHOUT_APPROACH_EDEFAULT);
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -239,6 +293,8 @@ public class StateImpl extends MinimalEObjectImpl.Container implements State {
 			return children != null && !children.isEmpty();
 		case StateModelPackage.STATE__HASH:
 			return hash != HASH_EDEFAULT;
+		case StateModelPackage.STATE__PUSHOUT_APPROACH:
+			return pushoutApproach != PUSHOUT_APPROACH_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
 	}
@@ -258,6 +314,8 @@ public class StateImpl extends MinimalEObjectImpl.Container implements State {
 		result.append(initial);
 		result.append(", hash: ");
 		result.append(hash);
+		result.append(", pushoutApproach: ");
+		result.append(pushoutApproach);
 		result.append(')');
 		return result.toString();
 	}

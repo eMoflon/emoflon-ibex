@@ -48,7 +48,7 @@ public class StateContainerImpl extends MinimalEObjectImpl.Container implements 
 	protected EList<State> states;
 
 	/**
-	 * The cached value of the '{@link #getInitialState() <em>Initial State</em>}' reference.
+	 * The cached value of the '{@link #getInitialState() <em>Initial State</em>}' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @see #getInitialState()
@@ -96,15 +96,6 @@ public class StateContainerImpl extends MinimalEObjectImpl.Container implements 
 	 */
 	@Override
 	public State getInitialState() {
-		if (initialState != null && initialState.eIsProxy()) {
-			InternalEObject oldInitialState = (InternalEObject) initialState;
-			initialState = (State) eResolveProxy(oldInitialState);
-			if (initialState != oldInitialState) {
-				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
-							StateModelPackage.STATE_CONTAINER__INITIAL_STATE, oldInitialState, initialState));
-			}
-		}
 		return initialState;
 	}
 
@@ -113,8 +104,18 @@ public class StateContainerImpl extends MinimalEObjectImpl.Container implements 
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public State basicGetInitialState() {
-		return initialState;
+	public NotificationChain basicSetInitialState(State newInitialState, NotificationChain msgs) {
+		State oldInitialState = initialState;
+		initialState = newInitialState;
+		if (eNotificationRequired()) {
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
+					StateModelPackage.STATE_CONTAINER__INITIAL_STATE, oldInitialState, newInitialState);
+			if (msgs == null)
+				msgs = notification;
+			else
+				msgs.add(notification);
+		}
+		return msgs;
 	}
 
 	/**
@@ -124,11 +125,20 @@ public class StateContainerImpl extends MinimalEObjectImpl.Container implements 
 	 */
 	@Override
 	public void setInitialState(State newInitialState) {
-		State oldInitialState = initialState;
-		initialState = newInitialState;
-		if (eNotificationRequired())
+		if (newInitialState != initialState) {
+			NotificationChain msgs = null;
+			if (initialState != null)
+				msgs = ((InternalEObject) initialState).eInverseRemove(this,
+						EOPPOSITE_FEATURE_BASE - StateModelPackage.STATE_CONTAINER__INITIAL_STATE, null, msgs);
+			if (newInitialState != null)
+				msgs = ((InternalEObject) newInitialState).eInverseAdd(this,
+						EOPPOSITE_FEATURE_BASE - StateModelPackage.STATE_CONTAINER__INITIAL_STATE, null, msgs);
+			msgs = basicSetInitialState(newInitialState, msgs);
+			if (msgs != null)
+				msgs.dispatch();
+		} else if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET, StateModelPackage.STATE_CONTAINER__INITIAL_STATE,
-					oldInitialState, initialState));
+					newInitialState, newInitialState));
 	}
 
 	/**
@@ -141,6 +151,8 @@ public class StateContainerImpl extends MinimalEObjectImpl.Container implements 
 		switch (featureID) {
 		case StateModelPackage.STATE_CONTAINER__STATES:
 			return ((InternalEList<?>) getStates()).basicRemove(otherEnd, msgs);
+		case StateModelPackage.STATE_CONTAINER__INITIAL_STATE:
+			return basicSetInitialState(null, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -156,9 +168,7 @@ public class StateContainerImpl extends MinimalEObjectImpl.Container implements 
 		case StateModelPackage.STATE_CONTAINER__STATES:
 			return getStates();
 		case StateModelPackage.STATE_CONTAINER__INITIAL_STATE:
-			if (resolve)
-				return getInitialState();
-			return basicGetInitialState();
+			return getInitialState();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}

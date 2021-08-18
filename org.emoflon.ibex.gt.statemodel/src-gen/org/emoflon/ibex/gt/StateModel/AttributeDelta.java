@@ -16,8 +16,8 @@ import org.eclipse.emf.ecore.EObject;
  * <ul>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.AttributeDelta#getAttribute <em>Attribute</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.AttributeDelta#getObject <em>Object</em>}</li>
- *   <li>{@link org.emoflon.ibex.gt.StateModel.AttributeDelta#getNewValue <em>New Value</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.AttributeDelta#getOldValue <em>Old Value</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.StateModel.AttributeDelta#getNewValue <em>New Value</em>}</li>
  * </ul>
  *
  * @see org.emoflon.ibex.gt.StateModel.StateModelPackage#getAttributeDelta()
@@ -70,47 +70,47 @@ public interface AttributeDelta extends EObject {
 	void setObject(EObject value);
 
 	/**
-	 * Returns the value of the '<em><b>New Value</b></em>' attribute.
+	 * Returns the value of the '<em><b>Old Value</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>New Value</em>' attribute.
-	 * @see #setNewValue(Object)
-	 * @see org.emoflon.ibex.gt.StateModel.StateModelPackage#getAttributeDelta_NewValue()
-	 * @model required="true"
-	 * @generated
-	 */
-	Object getNewValue();
-
-	/**
-	 * Sets the value of the '{@link org.emoflon.ibex.gt.StateModel.AttributeDelta#getNewValue <em>New Value</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>New Value</em>' attribute.
-	 * @see #getNewValue()
-	 * @generated
-	 */
-	void setNewValue(Object value);
-
-	/**
-	 * Returns the value of the '<em><b>Old Value</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Old Value</em>' attribute.
-	 * @see #setOldValue(Object)
+	 * @return the value of the '<em>Old Value</em>' containment reference.
+	 * @see #setOldValue(Value)
 	 * @see org.emoflon.ibex.gt.StateModel.StateModelPackage#getAttributeDelta_OldValue()
-	 * @model required="true"
+	 * @model containment="true"
 	 * @generated
 	 */
-	Object getOldValue();
+	Value getOldValue();
 
 	/**
-	 * Sets the value of the '{@link org.emoflon.ibex.gt.StateModel.AttributeDelta#getOldValue <em>Old Value</em>}' attribute.
+	 * Sets the value of the '{@link org.emoflon.ibex.gt.StateModel.AttributeDelta#getOldValue <em>Old Value</em>}' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Old Value</em>' attribute.
+	 * @param value the new value of the '<em>Old Value</em>' containment reference.
 	 * @see #getOldValue()
 	 * @generated
 	 */
-	void setOldValue(Object value);
+	void setOldValue(Value value);
+
+	/**
+	 * Returns the value of the '<em><b>New Value</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>New Value</em>' containment reference.
+	 * @see #setNewValue(Value)
+	 * @see org.emoflon.ibex.gt.StateModel.StateModelPackage#getAttributeDelta_NewValue()
+	 * @model containment="true"
+	 * @generated
+	 */
+	Value getNewValue();
+
+	/**
+	 * Sets the value of the '{@link org.emoflon.ibex.gt.StateModel.AttributeDelta#getNewValue <em>New Value</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>New Value</em>' containment reference.
+	 * @see #getNewValue()
+	 * @generated
+	 */
+	void setNewValue(Value value);
 
 } // AttributeDelta

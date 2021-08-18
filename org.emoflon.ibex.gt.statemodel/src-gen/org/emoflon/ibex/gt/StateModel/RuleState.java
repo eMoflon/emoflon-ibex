@@ -2,11 +2,8 @@
  */
 package org.emoflon.ibex.gt.StateModel;
 
-import java.util.Collection;
-import java.util.Map;
-
 import org.eclipse.emf.common.util.EList;
-import org.emoflon.ibex.common.operational.IMatch;
+
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule;
 
 /**
@@ -20,11 +17,12 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule;
  * <ul>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.RuleState#getParent <em>Parent</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.RuleState#getRule <em>Rule</em>}</li>
- *   <li>{@link org.emoflon.ibex.gt.StateModel.RuleState#getParameter <em>Parameter</em>}</li>
- *   <li>{@link org.emoflon.ibex.gt.StateModel.RuleState#getMatch <em>Match</em>}</li>
- *   <li>{@link org.emoflon.ibex.gt.StateModel.RuleState#getCoMatch <em>Co Match</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.RuleState#getStructuralDelta <em>Structural Delta</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.RuleState#getAttributeDeltas <em>Attribute Deltas</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.StateModel.RuleState#getMatch <em>Match</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.StateModel.RuleState#getCoMatch <em>Co Match</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.StateModel.RuleState#getParameters <em>Parameters</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.StateModel.RuleState#getAllMatches <em>All Matches</em>}</li>
  * </ul>
  *
  * @see org.emoflon.ibex.gt.StateModel.StateModelPackage#getRuleState()
@@ -77,72 +75,6 @@ public interface RuleState extends State {
 	void setRule(IBeXRule value);
 
 	/**
-	 * Returns the value of the '<em><b>Parameter</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Parameter</em>' attribute.
-	 * @see #setParameter(Object)
-	 * @see org.emoflon.ibex.gt.StateModel.StateModelPackage#getRuleState_Parameter()
-	 * @model
-	 * @generated
-	 */
-	Object getParameter();
-
-	/**
-	 * Sets the value of the '{@link org.emoflon.ibex.gt.StateModel.RuleState#getParameter <em>Parameter</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Parameter</em>' attribute.
-	 * @see #getParameter()
-	 * @generated
-	 */
-	void setParameter(Object value);
-
-	/**
-	 * Returns the value of the '<em><b>Match</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Match</em>' attribute.
-	 * @see #setMatch(Object)
-	 * @see org.emoflon.ibex.gt.StateModel.StateModelPackage#getRuleState_Match()
-	 * @model
-	 * @generated
-	 */
-	Object getMatch();
-
-	/**
-	 * Sets the value of the '{@link org.emoflon.ibex.gt.StateModel.RuleState#getMatch <em>Match</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Match</em>' attribute.
-	 * @see #getMatch()
-	 * @generated
-	 */
-	void setMatch(Object value);
-
-	/**
-	 * Returns the value of the '<em><b>Co Match</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Co Match</em>' attribute.
-	 * @see #setCoMatch(Object)
-	 * @see org.emoflon.ibex.gt.StateModel.StateModelPackage#getRuleState_CoMatch()
-	 * @model
-	 * @generated
-	 */
-	Object getCoMatch();
-
-	/**
-	 * Sets the value of the '{@link org.emoflon.ibex.gt.StateModel.RuleState#getCoMatch <em>Co Match</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Co Match</em>' attribute.
-	 * @see #getCoMatch()
-	 * @generated
-	 */
-	void setCoMatch(Object value);
-
-	/**
 	 * Returns the value of the '<em><b>Structural Delta</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -176,16 +108,72 @@ public interface RuleState extends State {
 	 */
 	EList<AttributeDelta> getAttributeDeltas();
 
-	void setMatches(Map<String, Collection<IMatch>> matches);
+	/**
+	 * Returns the value of the '<em><b>Match</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Match</em>' containment reference.
+	 * @see #setMatch(IBeXMatch)
+	 * @see org.emoflon.ibex.gt.StateModel.StateModelPackage#getRuleState_Match()
+	 * @model containment="true"
+	 * @generated
+	 */
+	IBeXMatch getMatch();
 
-	Map<String, Collection<IMatch>> getMatches();
+	/**
+	 * Sets the value of the '{@link org.emoflon.ibex.gt.StateModel.RuleState#getMatch <em>Match</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Match</em>' containment reference.
+	 * @see #getMatch()
+	 * @generated
+	 */
+	void setMatch(IBeXMatch value);
 
-	Map<String, Double> getStaticRules();
+	/**
+	 * Returns the value of the '<em><b>Co Match</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Co Match</em>' containment reference.
+	 * @see #setCoMatch(IBeXMatch)
+	 * @see org.emoflon.ibex.gt.StateModel.StateModelPackage#getRuleState_CoMatch()
+	 * @model containment="true"
+	 * @generated
+	 */
+	IBeXMatch getCoMatch();
 
-	Map<String, Double> getDynamicRules();
+	/**
+	 * Sets the value of the '{@link org.emoflon.ibex.gt.StateModel.RuleState#getCoMatch <em>Co Match</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Co Match</em>' containment reference.
+	 * @see #getCoMatch()
+	 * @generated
+	 */
+	void setCoMatch(IBeXMatch value);
 
-	void setDynamicRules(Map<String, Double> dRR);
+	/**
+	 * Returns the value of the '<em><b>Parameters</b></em>' containment reference list.
+	 * The list contents are of type {@link org.emoflon.ibex.gt.StateModel.Parameter}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Parameters</em>' containment reference list.
+	 * @see org.emoflon.ibex.gt.StateModel.StateModelPackage#getRuleState_Parameters()
+	 * @model containment="true"
+	 * @generated
+	 */
+	EList<Parameter> getParameters();
 
-	void setStaticRules(Map<String, Double> sRR);
+	/**
+	 * Returns the value of the '<em><b>All Matches</b></em>' containment reference list.
+	 * The list contents are of type {@link org.emoflon.ibex.gt.StateModel.AllMatches}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>All Matches</em>' containment reference list.
+	 * @see org.emoflon.ibex.gt.StateModel.StateModelPackage#getRuleState_AllMatches()
+	 * @model containment="true"
+	 * @generated
+	 */
+	EList<AllMatches> getAllMatches();
 
 } // RuleState

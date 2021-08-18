@@ -9,6 +9,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.text.DecimalFormat;
+
 //Graphstream imports
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Node;
@@ -21,14 +23,22 @@ import org.graphstream.ui.view.View;
 import org.graphstream.ui.view.Viewer;
 import org.graphstream.ui.view.camera.Camera;
 import org.graphstream.ui.view.util.InteractiveElement;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
+
 //Util imports
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 //SWING imports
 import javax.swing.JRootPane;
 //emf imports
@@ -62,7 +72,9 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 //IBeX imports
 import org.emoflon.ibex.common.operational.IMatch;
+import org.emoflon.ibex.gt.StateModel.AllMatches;
 import org.emoflon.ibex.gt.StateModel.AttributeDelta;
+import org.emoflon.ibex.gt.StateModel.IBeXMatch;
 import org.emoflon.ibex.gt.StateModel.Link;
 import org.emoflon.ibex.gt.StateModel.RuleState;
 import org.emoflon.ibex.gt.StateModel.State;
@@ -79,7 +91,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRuleSet;
 * @author Thomas
 *
 */
-public class VaDoSGT {
+public class VaDoGT {
 	protected static final double VERSION = 1.0;
 	// IBeX variables
 	private StateModelFactory factory = StateModelFactory.eINSTANCE;
@@ -107,6 +119,8 @@ public class VaDoSGT {
 	private Node lastSelectedNode;
 	private EList<EObject> nodeBlacklist;
 	private EList<Link> edgeBlacklist;
+	private List<State> allStates;
+	
 	
 	// GUI
 	protected Shell shell;
@@ -149,8 +163,6 @@ public class VaDoSGT {
 	protected org.eclipse.swt.widgets.List ruleList;
 	protected org.eclipse.swt.widgets.List patternList;
 	
-	
-	
 	// Graphstream variables
 	private SingleGraph graph;
 //	private MouseEvent last;		//Used for camera movement -> not implemented
@@ -189,7 +201,7 @@ public class VaDoSGT {
 	 * @param iBeXPatternSet 
 	 * @param edgeTypes 
 	 */
-	public VaDoSGT(Resource resource, ModelStateManager stateManager, GraphTransformationInterpreter graphTransformationInterpreter, IBeXRuleSet iBeXRuleSet, IBeXPatternSet iBeXPatternSet) {
+	public VaDoGT(Resource resource, ModelStateManager stateManager, GraphTransformationInterpreter graphTransformationInterpreter, IBeXRuleSet iBeXRuleSet, IBeXPatternSet iBeXPatternSet) {
 		initialResourceContents = new BasicEList<EObject>(resource.getContents());
 		localStateManager = stateManager;
 		localGraphTransformationInterpreter = graphTransformationInterpreter;
@@ -197,6 +209,9 @@ public class VaDoSGT {
 		ruleSet = iBeXRuleSet.getRules();
 		patternSet = iBeXPatternSet.getContextPatterns();
 		
+		allStates = new ArrayList<State>();
+		allStates.add(localStateManager.getModelStates().getInitialState());
+		allStates.addAll(localStateManager.getModelStates().getStates());
 		nodeMap = new HashMap<EObject, Node>();
 		edgeMap = new HashMap<Link, Edge>();
 		infoNodes = new HashMap<EObject, Node>();
@@ -227,7 +242,7 @@ public class VaDoSGT {
 	 * @param iBeXPatternSet 
 	 * @param edgeTypes 
 	 */
-	public VaDoSGT(Resource resource, ModelStateManager stateManager, GraphTransformationInterpreter graphTransformationInterpreter, IBeXRuleSet iBeXRuleSet, IBeXPatternSet iBeXPatternSet, String modelName) {
+	public VaDoGT(Resource resource, ModelStateManager stateManager, GraphTransformationInterpreter graphTransformationInterpreter, IBeXRuleSet iBeXRuleSet, IBeXPatternSet iBeXPatternSet, String modelName) {
 		initialResourceContents = new BasicEList<EObject>(resource.getContents());
 		localStateManager = stateManager;
 		localGraphTransformationInterpreter = graphTransformationInterpreter;
@@ -235,6 +250,9 @@ public class VaDoSGT {
 		ruleSet = iBeXRuleSet.getRules();
 		patternSet = iBeXPatternSet.getContextPatterns();
 		
+		allStates = new ArrayList<State>();
+		allStates.add(localStateManager.getModelStates().getInitialState());
+		allStates.addAll(localStateManager.getModelStates().getStates());
 		nodeMap = new HashMap<EObject, Node>();
 		edgeMap = new HashMap<Link, Edge>();
 		infoNodes = new HashMap<EObject, Node>();
@@ -423,7 +441,7 @@ public class VaDoSGT {
 		sliderAndButtons.setLayout(new GridLayout(1, true));
 		 	
 		slider = new Slider(sliderAndButtons, SWT.HORIZONTAL);
-		slider.setValues(0, 0, localStateManager.getModelStates().getStates().size(), 1, 1, 1);
+		slider.setValues(0, 0, allStates.size(), 1, 1, 1);
 		gd = new GridData(SWT.FILL, SWT.FILL, true, true);
 		gd.heightHint = 20;
 		slider.setLayoutData(gd);
@@ -449,13 +467,13 @@ public class VaDoSGT {
 		
 		spinner = new Spinner (stateComp, SWT.CENTER);
 		spinner.setMinimum(0);
-		spinner.setMaximum(localStateManager.getModelStates().getStates().size()-1);
+		spinner.setMaximum(allStates.size());
 		spinner.setSelection(0);
 		spinner.setIncrement(1);
 		spinner.setPageIncrement(1);
 		
 		Label maxState = new Label(stateLabels, SWT.END);
-		maxState.setText(Integer.toString(localStateManager.getModelStates().getStates().size()-1));
+		maxState.setText(Integer.toString(allStates.size()-1));
 		maxState.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, true, true));
 		
 		Composite buttons = new Composite(sliderAndButtons, SWT.NONE);
@@ -539,15 +557,60 @@ public class VaDoSGT {
 		Label noDataLabel = new Label(folder, SWT.NONE);
 		noDataLabel.setText("No plot data available!");
 		tab2.setControl(noDataLabel);
+//		if(!localStateManager.getCurrentState().getObservables().isEmpty()) {
+//			prepDataSet();
+//			Group plotGroup = new Group(folder, SWT.NO_BACKGROUND | SWT.EMBEDDED);
+//	        tab2.setControl(plotGroup);
+//			Frame plotFrame = SWT_AWT.new_Frame(plotGroup);
+//			
+//			xylineChart = ChartFactory.createXYLineChart(
+//					 "Observables" ,
+//			         (timeOnXAxis)?"Time [s]":"#Steps" ,
+//			         "Population" ,
+//			         dataset ,
+//			         PlotOrientation.VERTICAL ,
+//			         true , true , false);
+//		
+//			ChartPanel jfreeChartPanel = new ChartPanel(xylineChart);
+//			plotFrame.add(jfreeChartPanel);
+//			plotFrame.setVisible(true);
+//		} else {
+//			Label noDataLabel = new Label(folder, SWT.NONE);
+//			noDataLabel.setText("No plot data available!");
+//			tab2.setControl(noDataLabel);
+//		}
 	}
 	
 	/**
 	 * Updates the plot
 	 */
 	protected void updatePlot() {
-		// Nothing to do here
-		// Overwritten by SimSG
+		// Nothing to do here, overridden by subclass
 	}
+	
+	/**
+	 * Prepares data set for plotting e.g. adds data for respective amount of states to the data set
+	 */
+//	private void prepDataSet() {
+//		XYSeriesCollection seriesCollection = new XYSeriesCollection();
+//		dataset = seriesCollection;
+//		int state = allStates.indexOf(localStateManager.getCurrentState());
+//		for(Observable obs : localStateManager.getModelStates().getInitialState().getObservables()) {
+//			XYSeries series = new XYSeries(obs.getPatternName());
+//			for(int i=0;i<=state;i++) {
+//				State dataState = allStates.get(i);
+//				for(Observable stateObs : dataState.getObservables()) {
+//					if(stateObs.getPatternName().equals(obs.getPatternName())) {
+//						series.add(stateObs.getKey(),stateObs.getValue());
+//						break;
+//					}
+//				}
+//			}	
+//				seriesCollection.addSeries(series);
+//			
+//		}
+//	}
+	
 	
 	/**
 	 * Opens the display
@@ -560,6 +623,7 @@ public class VaDoSGT {
 				display.sleep();
 		}
 		// Free resources after closing
+		display.close();
 		display.dispose();
 	}
 	
@@ -567,7 +631,7 @@ public class VaDoSGT {
 	 * Prepares info label for rule rates
 	 */
 	protected void printRuleRates() {
-		info.setText("No rates without SimSG");
+		info.setText("No data available!");
 	}
 	
 	/**
@@ -705,7 +769,7 @@ public class VaDoSGT {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if(spinner.getSelection() == localStateManager.getModelStates().getStates().size()-1) {
+				if(spinner.getSelection() == allStates.size()) {
 					spinner.setSelection(spinner.getMaximum());
 				}
 				stateChanged(spinner.getSelection());
@@ -1133,8 +1197,8 @@ public class VaDoSGT {
 			// Move to next state and change slider value
 			localStateManager.moveToState(localStateManager.getCurrentState().getChildren().get(0), false);
 			RuleState currentRuleState = (RuleState)localStateManager.getCurrentState();
-			slider.setSelection(localStateManager.getModelStates().getStates().indexOf(currentRuleState));
-			spinner.setSelection(localStateManager.getModelStates().getStates().indexOf(currentRuleState));
+			slider.setSelection(allStates.indexOf(currentRuleState));
+			spinner.setSelection(allStates.indexOf(currentRuleState));
 			//curState.setText("Current State: " + Integer.toString(localStateManager.modelStates.getStates().indexOf(currentRuleState)));
 			// Create new nodes
 			for(EObject newNode : currentRuleState.getStructuralDelta().getCreatedObjects()) {
@@ -1146,7 +1210,7 @@ public class VaDoSGT {
 					if(node.equals(attributeDelta.getObject())) {
 						for(EAttribute attribute : node.eClass().getEAttributes()) {
 							if(attributeDelta.getAttribute().equals(attribute)) {
-								node.eSet(attribute, attributeDelta.getNewValue());
+								node.eSet(attribute, localStateManager.getObjectFromValue(attributeDelta.getNewValue()));
 							}
 							
 						}
@@ -1179,7 +1243,7 @@ public class VaDoSGT {
 		}
 		
 	}
-
+	
 	/**
 	 * Changes to the previous state and calls updates for the gui
 	 */
@@ -1199,8 +1263,8 @@ public class VaDoSGT {
 			
 			RuleState currentRuleState = (RuleState)localStateManager.getCurrentState();
 			// Adjust slider value
-			slider.setSelection(localStateManager.getModelStates().getStates().indexOf(currentRuleState)-1);
-			spinner.setSelection(localStateManager.getModelStates().getStates().indexOf(currentRuleState)-1);
+			slider.setSelection(allStates.indexOf(currentRuleState)-1);
+			spinner.setSelection(allStates.indexOf(currentRuleState)-1);
 //			curState.setText("Current State: " + Integer.toString(localStateManager.modelStates.getStates().indexOf(currentRuleState)-1));
 			// Delete links created in current state
 			for(Link newLink : currentRuleState.getStructuralDelta().getCreatedLinks()) {
@@ -1216,7 +1280,7 @@ public class VaDoSGT {
 					if(node.equals(attributeDelta.getObject())) {
 						for(EAttribute attribute : node.eClass().getEAttributes()) {
 							if(attributeDelta.getAttribute().equals(attribute)) {
-								node.eSet(attribute, attributeDelta.getNewValue());
+								node.eSet(attribute, localStateManager.getObjectFromValue(attributeDelta.getNewValue()));
 							}
 								
 						}
@@ -1276,6 +1340,7 @@ public class VaDoSGT {
 		
 		// Clean info label
 		nodeInfoLabel.setText("");
+		jumpRuleInfo.setText("");
 		printRuleRates();
 		
 		// Reset radio button selection
@@ -1320,9 +1385,23 @@ public class VaDoSGT {
 			
 			// Just list applied match/rule to ensure performance
 			// GUI can not handle listing of thousands of matches in an appropriate time
+			long size = 0;
 			matchList.add(nextRuleState.getRule().getName() + " (Next)");
-			listedMatches.put(0, (IMatch) nextRuleState.getMatch());
-			futureApplyLabel.setText("Next Apply: \n" + nextRuleState.getRule().getName() + "\nMatches: " + nextRuleState.getMatches().get(nextRuleState.getRule().getName()).size());
+			listedMatches.put(0, localStateManager.IBeXMatchToIMatch(nextRuleState.getMatch()));
+			for(AllMatches matches : nextRuleState.getAllMatches()) {
+				if(matches.getPatternName().equals(nextRuleState.getMatch().getPatternName())) {
+					size = matches.getAllMatchesForPattern().size();
+					break;
+				}
+			}
+		
+			
+//			System.out.println(
+//			localGraphTransformationInterpreter.countMatches(nextRuleState.getMatch().getPatternName(), localStateManager.extractParameterFromState(nextRuleState), false));
+//			System.out.println(
+//			localGraphTransformationInterpreter.matchStream(nextRuleState.getMatch().getPatternName(), localStateManager.extractParameterFromState(nextRuleState), true).toList().size());
+//			
+			futureApplyLabel.setText("Next Apply: \n" + nextRuleState.getRule().getName() + "\nMatches: " + size);
 			
 		} else {
 			futureApplyLabel.setText("Next Apply: \nNo further state available!");
@@ -1340,21 +1419,39 @@ public class VaDoSGT {
 			listedMatches.clear();
 			allMatchesShown = true;
 			RuleState nextRuleState = (RuleState)localStateManager.getCurrentState().getChildren().get(0);
-			Collection<IMatch> matchStream = nextRuleState.getMatches().get(patternName);
+//			Collection<IMatch> matchStream = localStateManager.getMatchesFromState(nextRuleState).get(patternName);
+			List<IBeXMatch> matchStream = null;
+			for(AllMatches matches : nextRuleState.getAllMatches()) {
+				if(matches.getPatternName().equals(patternName)) {
+					 matchStream = matches.getAllMatchesForPattern();
+					break;
+				}
+			}
+//			List<IMatch> matchStream = localGraphTransformationInterpreter.matchStream(patternName, localStateManager.extractParameterFromState(nextRuleState), false).toList();
+			IBeXMatch saveForLater = null;
 			futureApplyLabel.setText("Next Apply: \n" + nextRuleState.getRule().getName() + "\nMatches: " + matchStream.size());
 			int index = 0;
 			if(patternName.equals(nextRuleState.getRule().getName())) {
 				matchList.add(nextRuleState.getRule().getName() + " (Next)");
-				listedMatches.put(0, (IMatch) nextRuleState.getMatch());
-				matchStream.remove(nextRuleState.getMatch());
+				listedMatches.put(0, localStateManager.IBeXMatchToIMatch(nextRuleState.getMatch()));
+				for(IBeXMatch match : matchStream) {
+					if(localStateManager.testIfSameIBeXMatch(match, nextRuleState.getMatch())) {
+						saveForLater = match;
+						matchStream.remove(match);
+						break;
+					}
+				}
+//				matchStream.remove(nextRuleState.getMatch());
 				index = 1;
 			}
 			
-			for(IMatch match : matchStream) {
+			for(IBeXMatch match : matchStream) {
 				matchList.add(match.getPatternName());
-				listedMatches.put(index, match);
+				listedMatches.put(index, localStateManager.IBeXMatchToIMatch(match));
 				index++;
 			}
+			if(saveForLater != null)
+				matchStream.add(saveForLater);
 		}
 	}
 	
@@ -1365,14 +1462,41 @@ public class VaDoSGT {
 		if(!localStateManager.getCurrentState().getChildren().isEmpty() && !allMatchesShown) {
 			allMatchesShown = true;
 			RuleState nextRuleState = (RuleState)localStateManager.getCurrentState().getChildren().get(0);
-			Collection<IMatch> matchStream = nextRuleState.getMatches().get(nextRuleState.getRule().getName());
-			matchStream.remove(nextRuleState.getMatch());
+			List<IBeXMatch> matchStream = null;
+			for(AllMatches matches : nextRuleState.getAllMatches()) {
+				if(matches.getPatternName().equals(nextRuleState.getMatch().getPatternName())) {
+					 matchStream = matches.getAllMatchesForPattern();
+					break;
+				}
+			}
+			IBeXMatch saveForLater = null;
+			for(IBeXMatch match : matchStream) {
+				if(localStateManager.testIfSameIBeXMatch(match, nextRuleState.getMatch())) {
+					saveForLater = match;
+					matchStream.remove(match);
+					break;
+				}
+			}
 			int index = 1;
-			for(IMatch match : matchStream) {
+			for(IBeXMatch match : matchStream) {
 				matchList.add(match.getPatternName());
-				listedMatches.put(index, match);
+				listedMatches.put(index, localStateManager.IBeXMatchToIMatch(match));
 				index++;
 			}
+			if(saveForLater != null)
+				matchStream.add(saveForLater);
+//			List<IMatch> matchStream = localGraphTransformationInterpreter.matchStream(nextRuleState.getMatch().getPatternName(), localStateManager.extractParameterFromState(nextRuleState), false).toList();
+//			matchStream.remove(localStateManager.IBeXMatchToIMatchByList(nextRuleState));
+			
+//			Collection<IMatch> matchStream = localStateManager.getMatchesFromState(nextRuleState).get(nextRuleState.getRule().getName());
+//			matchStream.remove(localStateManager.IBeXMatchToIMatchByList(nextRuleState));
+//			Collection<IMatch> matchStream = nextRuleState.getMatches().get(nextRuleState.getRule().getName());
+			
+//			for(IMatch match : matchStream) {
+//				matchList.add(match.getPatternName());
+//				listedMatches.put(index, match);
+//				index++;
+//			}
 		}
 	}
 	
@@ -1406,7 +1530,7 @@ public class VaDoSGT {
 				if(infoNode) {
 					for(AttributeDelta delta : ((RuleState)localStateManager.getCurrentState().getChildren().get(0)).getAttributeDeltas()) {
 						if(delta.getObject().equals(node) && delta.getAttribute().equals(attribute)) {
-							info = info + " --> " + delta.getNewValue();
+							info = info + " --> " + delta.getNewValue().getValueAsString();
 						}
 					}
 				}
@@ -1416,6 +1540,7 @@ public class VaDoSGT {
 		
 	}
 
+	
 	/**
 	 * Colors and labels all nodes and edges effected by the apply of the current rule
 	 * Structural changes are indicates by coloring the whole node / edge
@@ -1653,14 +1778,14 @@ public class VaDoSGT {
 	 * @param index index of new state
 	 */
 	private void stateChanged(int index) {
-		int indexOfCurrentState = localStateManager.getModelStates().getStates().indexOf(localStateManager.getCurrentState());
+		int indexOfCurrentState = allStates.indexOf(localStateManager.getCurrentState());
 		while(index != indexOfCurrentState) {
 			if(index > indexOfCurrentState) {
 				UpdateGraphForwards();
 			} else {
 				UpdateGraphBackwards();
 			}
-			indexOfCurrentState = localStateManager.getModelStates().getStates().indexOf(localStateManager.getCurrentState());
+			indexOfCurrentState = allStates.indexOf(localStateManager.getCurrentState());
 		}
 	}
 
@@ -1786,29 +1911,45 @@ public class VaDoSGT {
 	 * @param selectedPatternInList 
 	 */
 	private void jumpMatchCountChanged(String selectedPatternInList) {
-		float currentCount;
-		if(localStateManager.getCurrentState().isInitial())
-			currentCount = localGraphTransformationInterpreter.countMatches(selectedPatternInList, new HashMap<String, Object>(), false);
-		else 
-			currentCount = ((RuleState) localStateManager.getCurrentState()).getMatches().get(selectedPatternInList).size();
-		
+		long currentCount = 0;
 		State curr = localStateManager.getCurrentState();
-		boolean found = false;
+		State beginningState = localStateManager.getCurrentState();
+		
+		if(!curr.getChildren().isEmpty())
+			curr = curr.getChildren().get(0);
 	
-		while(!localStateManager.getCurrentState().getChildren().isEmpty()) {
-			localStateManager.moveToState(localStateManager.getCurrentState().getChildren().get(0), false);
-			float newCount = ((RuleState) localStateManager.getCurrentState()).getMatches().get(selectedPatternInList).size();
+		for(AllMatches allMatches :  ((RuleState) curr).getAllMatches()) {
+			if(allMatches.getPatternName().equals(selectedPatternInList)) {
+				currentCount = allMatches.getAllMatchesForPattern().size(); 
+				break;
+			}
+		}
+		
+		
+		boolean found = false;
+		
+		while(!curr.getChildren().isEmpty()) {
+			long newCount = 0;
+			localStateManager.moveToState(curr.getChildren().get(0), false);
+			curr = localStateManager.getCurrentState();
+			for(AllMatches allMatches :  ((RuleState) curr).getAllMatches()) {
+				if(allMatches.getPatternName().equals(selectedPatternInList)) {
+					newCount = allMatches.getAllMatchesForPattern().size(); 
+					break;
+				}
+			}
+
 			if(newCount != currentCount) {
-				int index = localStateManager.getModelStates().getStates().indexOf(localStateManager.getCurrentState());
+				int index = allStates.indexOf(curr) -1 ; 
 				found = true;
-				localStateManager.moveToState(curr, false);
+				localStateManager.moveToState(beginningState, false);
 				stateChanged(index);
 				jumpRuleInfo.setText("Pattern count changed from " + currentCount + " to " + newCount);
 				break;
 			}
 		}
 		if(!found) {
-			localStateManager.moveToState(curr, false);
+			localStateManager.moveToState(beginningState, false);
 			jumpRuleInfo.setText("No further changes!");
 		}
 	}

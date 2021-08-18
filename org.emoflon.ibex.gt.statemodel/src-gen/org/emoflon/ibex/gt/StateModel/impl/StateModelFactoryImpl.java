@@ -68,6 +68,14 @@ public class StateModelFactoryImpl extends EFactoryImpl implements StateModelFac
 			return createStructuralDelta();
 		case StateModelPackage.LINK:
 			return createLink();
+		case StateModelPackage.IBE_XMATCH:
+			return createIBeXMatch();
+		case StateModelPackage.PARAMETER:
+			return createParameter();
+		case StateModelPackage.VALUE:
+			return createValue();
+		case StateModelPackage.ALL_MATCHES:
+			return createAllMatches();
 		default:
 			throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -137,6 +145,50 @@ public class StateModelFactoryImpl extends EFactoryImpl implements StateModelFac
 	public Link createLink() {
 		LinkImpl link = new LinkImpl();
 		return link;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public IBeXMatch createIBeXMatch() {
+		IBeXMatchImpl iBeXMatch = new IBeXMatchImpl();
+		return iBeXMatch;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public Parameter createParameter() {
+		ParameterImpl parameter = new ParameterImpl();
+		return parameter;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public Value createValue() {
+		ValueImpl value = new ValueImpl();
+		return value;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public AllMatches createAllMatches() {
+		AllMatchesImpl allMatches = new AllMatchesImpl();
+		return allMatches;
 	}
 
 	/**

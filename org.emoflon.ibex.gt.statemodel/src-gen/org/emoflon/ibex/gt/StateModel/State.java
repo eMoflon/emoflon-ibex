@@ -18,6 +18,7 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link org.emoflon.ibex.gt.StateModel.State#isInitial <em>Initial</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.State#getChildren <em>Children</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.State#getHash <em>Hash</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.StateModel.State#getPushoutApproach <em>Pushout Approach</em>}</li>
  * </ul>
  *
  * @see org.emoflon.ibex.gt.StateModel.StateModelPackage#getState()
@@ -25,7 +26,6 @@ import org.eclipse.emf.ecore.EObject;
  * @generated
  */
 public interface State extends EObject {
-
 	/**
 	 * Returns the value of the '<em><b>Initial</b></em>' attribute.
 	 * <!-- begin-user-doc -->
@@ -81,5 +81,27 @@ public interface State extends EObject {
 	 * @generated
 	 */
 	void setHash(long value);
+
+	/**
+	 * Returns the value of the '<em><b>Pushout Approach</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Pushout Approach</em>' attribute.
+	 * @see #setPushoutApproach(int)
+	 * @see org.emoflon.ibex.gt.StateModel.StateModelPackage#getState_PushoutApproach()
+	 * @model
+	 * @generated
+	 */
+	int getPushoutApproach();
+
+	/**
+	 * Sets the value of the '{@link org.emoflon.ibex.gt.StateModel.State#getPushoutApproach <em>Pushout Approach</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Pushout Approach</em>' attribute.
+	 * @see #getPushoutApproach()
+	 * @generated
+	 */
+	void setPushoutApproach(int value);
 
 } // State

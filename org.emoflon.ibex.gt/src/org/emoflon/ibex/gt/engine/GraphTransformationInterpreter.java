@@ -1,5 +1,6 @@
 package org.emoflon.ibex.gt.engine;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -13,13 +14,16 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
@@ -36,7 +40,8 @@ import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.gt.api.GraphTransformationPattern;
 import org.emoflon.ibex.gt.disjointpatterns.GraphTransformationDisjointPatternInterpreter;
 import org.emoflon.ibex.gt.state.ModelStateManager;
-import org.emoflon.ibex.gt.ui.VaDoSGT;
+import org.emoflon.ibex.gt.state.PersistenceManager;
+import org.emoflon.ibex.gt.ui.VaDoGT;
 import org.emoflon.ibex.gt.StateModel.State;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextAlternatives;
@@ -94,7 +99,6 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	private ModelStateManager stateManager;
 	private boolean trackingStates = false;
 	
-	private VaDoSGT graphVis;
 	/**
 	 * the pattern interpreter for disjoint patterns
 	 */
@@ -276,7 +280,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			// Deep-copy parameter map to prevent state inconsistencies caused by changed node/parameter bindings.
 			Map<String, Object> cpyParameter = new HashMap<>();
 			parameters.forEach((str, obj) -> cpyParameter.put(str, obj));
-			return stateManager.addNewState(rule.get(), match, cpyParameter, copyMatches(), doUpdate, (params, update) -> applyInternal(match, po, params, update)); 
+			return stateManager.addNewState(rule.get(), match, cpyParameter, copyMatches(), doUpdate, po, (params, update) -> applyInternal(match, po, params, update)); 
 		}else {
 			return applyInternal(match, po, parameters, doUpdate);
 		}
@@ -929,11 +933,30 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	}
 	
 	public void deactivateModelStatesTracking() {
-//		stateManager.prepForSave();
 		stateManager = null;
 		trackingStates = false;
 	}
 	
+	public void saveModelStates(String path) {
+		if(stateManager != null) {
+			try {
+				PersistenceManager.saveModelAndStates(model.getResources().get(0), stateManager.getModelStates(), path);
+			} catch (Exception e) {
+				// Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public void loadModelStates(String path) {
+		try {
+			stateManager = PersistenceManager.loadModelAndStates(model.getResources().get(0), model.getResources().get(1), contextPatternInterpreter, this, path);
+		} catch (Exception e) {
+			// Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	public State getCurrentModelState() {
 		if(!trackingStates)
 			throw new UnsupportedOperationException("Graph state is currently not tracked, cannot return current state.");
@@ -942,11 +965,15 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	}
 	
 	public void displayModelStates() {
-		graphVis = new VaDoSGT(model.getResources().get(0), stateManager, this, ibexModel.getRuleSet(), ibexModel.getPatternSet());
+		new VaDoGT(stateManager.getModel(), stateManager, this, ibexModel.getRuleSet(), ibexModel.getPatternSet());
 	}
 	
 	public ModelStateManager getStateManager() {
 		return stateManager;
+	}
+	
+	public BiFunction<Map<String, Object>, Boolean, Optional<IMatch>> getApplyInternalPointer(final IMatch match, final PushoutApproach po, final Map<String, Object> parameters, boolean doUpdate) {
+		return ((params, update) -> applyInternal(match, po, params, doUpdate));
 	}
 	
 	private Map<String, Collection<IMatch>> copyMatches() {
@@ -956,6 +983,9 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		}
 		return cpyMatches;
 	}
-
+	
+	public IBeXRuleSet getRuleSet() {
+		return ruleSet;
+	}
 	
 }

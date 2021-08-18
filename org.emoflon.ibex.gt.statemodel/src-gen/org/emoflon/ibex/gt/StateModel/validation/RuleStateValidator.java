@@ -6,7 +6,10 @@ package org.emoflon.ibex.gt.StateModel.validation;
 
 import org.eclipse.emf.common.util.EList;
 
+import org.emoflon.ibex.gt.StateModel.AllMatches;
 import org.emoflon.ibex.gt.StateModel.AttributeDelta;
+import org.emoflon.ibex.gt.StateModel.IBeXMatch;
+import org.emoflon.ibex.gt.StateModel.Parameter;
 import org.emoflon.ibex.gt.StateModel.State;
 import org.emoflon.ibex.gt.StateModel.StructuralDelta;
 
@@ -25,13 +28,15 @@ public interface RuleStateValidator {
 
 	boolean validateRule(IBeXRule value);
 
-	boolean validateParameter(Object value);
-
-	boolean validateMatch(Object value);
-
-	boolean validateCoMatch(Object value);
-
 	boolean validateStructuralDelta(StructuralDelta value);
 
 	boolean validateAttributeDeltas(EList<AttributeDelta> value);
+
+	boolean validateMatch(IBeXMatch value);
+
+	boolean validateCoMatch(IBeXMatch value);
+
+	boolean validateParameters(EList<Parameter> value);
+
+	boolean validateAllMatches(EList<AllMatches> value);
 }

@@ -3,7 +3,6 @@
 package org.emoflon.ibex.gt.StateModel.impl;
 
 import java.util.Collection;
-import java.util.Map;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
@@ -17,8 +16,11 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
-import org.emoflon.ibex.common.operational.IMatch;
+
+import org.emoflon.ibex.gt.StateModel.AllMatches;
 import org.emoflon.ibex.gt.StateModel.AttributeDelta;
+import org.emoflon.ibex.gt.StateModel.IBeXMatch;
+import org.emoflon.ibex.gt.StateModel.Parameter;
 import org.emoflon.ibex.gt.StateModel.RuleState;
 import org.emoflon.ibex.gt.StateModel.State;
 import org.emoflon.ibex.gt.StateModel.StateModelPackage;
@@ -36,11 +38,12 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule;
  * <ul>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.RuleStateImpl#getParent <em>Parent</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.RuleStateImpl#getRule <em>Rule</em>}</li>
- *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.RuleStateImpl#getParameter <em>Parameter</em>}</li>
- *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.RuleStateImpl#getMatch <em>Match</em>}</li>
- *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.RuleStateImpl#getCoMatch <em>Co Match</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.RuleStateImpl#getStructuralDelta <em>Structural Delta</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.RuleStateImpl#getAttributeDeltas <em>Attribute Deltas</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.RuleStateImpl#getMatch <em>Match</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.RuleStateImpl#getCoMatch <em>Co Match</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.RuleStateImpl#getParameters <em>Parameters</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.RuleStateImpl#getAllMatches <em>All Matches</em>}</li>
  * </ul>
  *
  * @generated
@@ -67,66 +70,6 @@ public class RuleStateImpl extends StateImpl implements RuleState {
 	protected IBeXRule rule;
 
 	/**
-	 * The default value of the '{@link #getParameter() <em>Parameter</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getParameter()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final Object PARAMETER_EDEFAULT = null;
-
-	/**
-	 * The cached value of the '{@link #getParameter() <em>Parameter</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getParameter()
-	 * @generated
-	 * @ordered
-	 */
-	protected Object parameter = PARAMETER_EDEFAULT;
-
-	/**
-	 * The default value of the '{@link #getMatch() <em>Match</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getMatch()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final Object MATCH_EDEFAULT = null;
-
-	/**
-	 * The cached value of the '{@link #getMatch() <em>Match</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getMatch()
-	 * @generated
-	 * @ordered
-	 */
-	protected Object match = MATCH_EDEFAULT;
-
-	/**
-	 * The default value of the '{@link #getCoMatch() <em>Co Match</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getCoMatch()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final Object CO_MATCH_EDEFAULT = null;
-
-	/**
-	 * The cached value of the '{@link #getCoMatch() <em>Co Match</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getCoMatch()
-	 * @generated
-	 * @ordered
-	 */
-	protected Object coMatch = CO_MATCH_EDEFAULT;
-
-	/**
 	 * The cached value of the '{@link #getStructuralDelta() <em>Structural Delta</em>}' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -146,9 +89,45 @@ public class RuleStateImpl extends StateImpl implements RuleState {
 	 */
 	protected EList<AttributeDelta> attributeDeltas;
 
-	protected Map<String, Collection<IMatch>> matches;
-	protected Map<String, Double> staticRuleRates;
-	protected Map<String, Double> dynamicRuleRates;
+	/**
+	 * The cached value of the '{@link #getMatch() <em>Match</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getMatch()
+	 * @generated
+	 * @ordered
+	 */
+	protected IBeXMatch match;
+
+	/**
+	 * The cached value of the '{@link #getCoMatch() <em>Co Match</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getCoMatch()
+	 * @generated
+	 * @ordered
+	 */
+	protected IBeXMatch coMatch;
+
+	/**
+	 * The cached value of the '{@link #getParameters() <em>Parameters</em>}' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getParameters()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<Parameter> parameters;
+
+	/**
+	 * The cached value of the '{@link #getAllMatches() <em>All Matches</em>}' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getAllMatches()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<AllMatches> allMatches;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -258,78 +237,6 @@ public class RuleStateImpl extends StateImpl implements RuleState {
 	 * @generated
 	 */
 	@Override
-	public Object getParameter() {
-		return parameter;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void setParameter(Object newParameter) {
-		Object oldParameter = parameter;
-		parameter = newParameter;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, StateModelPackage.RULE_STATE__PARAMETER, oldParameter,
-					parameter));
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public Object getMatch() {
-		return match;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void setMatch(Object newMatch) {
-		Object oldMatch = match;
-		match = newMatch;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, StateModelPackage.RULE_STATE__MATCH, oldMatch,
-					match));
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public Object getCoMatch() {
-		return coMatch;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public void setCoMatch(Object newCoMatch) {
-		Object oldCoMatch = coMatch;
-		coMatch = newCoMatch;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, StateModelPackage.RULE_STATE__CO_MATCH, oldCoMatch,
-					coMatch));
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
 	public StructuralDelta getStructuralDelta() {
 		return structuralDelta;
 	}
@@ -396,12 +303,152 @@ public class RuleStateImpl extends StateImpl implements RuleState {
 	 * @generated
 	 */
 	@Override
+	public IBeXMatch getMatch() {
+		return match;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public NotificationChain basicSetMatch(IBeXMatch newMatch, NotificationChain msgs) {
+		IBeXMatch oldMatch = match;
+		match = newMatch;
+		if (eNotificationRequired()) {
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
+					StateModelPackage.RULE_STATE__MATCH, oldMatch, newMatch);
+			if (msgs == null)
+				msgs = notification;
+			else
+				msgs.add(notification);
+		}
+		return msgs;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setMatch(IBeXMatch newMatch) {
+		if (newMatch != match) {
+			NotificationChain msgs = null;
+			if (match != null)
+				msgs = ((InternalEObject) match).eInverseRemove(this,
+						EOPPOSITE_FEATURE_BASE - StateModelPackage.RULE_STATE__MATCH, null, msgs);
+			if (newMatch != null)
+				msgs = ((InternalEObject) newMatch).eInverseAdd(this,
+						EOPPOSITE_FEATURE_BASE - StateModelPackage.RULE_STATE__MATCH, null, msgs);
+			msgs = basicSetMatch(newMatch, msgs);
+			if (msgs != null)
+				msgs.dispatch();
+		} else if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, StateModelPackage.RULE_STATE__MATCH, newMatch,
+					newMatch));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public IBeXMatch getCoMatch() {
+		return coMatch;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public NotificationChain basicSetCoMatch(IBeXMatch newCoMatch, NotificationChain msgs) {
+		IBeXMatch oldCoMatch = coMatch;
+		coMatch = newCoMatch;
+		if (eNotificationRequired()) {
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
+					StateModelPackage.RULE_STATE__CO_MATCH, oldCoMatch, newCoMatch);
+			if (msgs == null)
+				msgs = notification;
+			else
+				msgs.add(notification);
+		}
+		return msgs;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setCoMatch(IBeXMatch newCoMatch) {
+		if (newCoMatch != coMatch) {
+			NotificationChain msgs = null;
+			if (coMatch != null)
+				msgs = ((InternalEObject) coMatch).eInverseRemove(this,
+						EOPPOSITE_FEATURE_BASE - StateModelPackage.RULE_STATE__CO_MATCH, null, msgs);
+			if (newCoMatch != null)
+				msgs = ((InternalEObject) newCoMatch).eInverseAdd(this,
+						EOPPOSITE_FEATURE_BASE - StateModelPackage.RULE_STATE__CO_MATCH, null, msgs);
+			msgs = basicSetCoMatch(newCoMatch, msgs);
+			if (msgs != null)
+				msgs.dispatch();
+		} else if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, StateModelPackage.RULE_STATE__CO_MATCH, newCoMatch,
+					newCoMatch));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EList<Parameter> getParameters() {
+		if (parameters == null) {
+			parameters = new EObjectContainmentEList<Parameter>(Parameter.class, this,
+					StateModelPackage.RULE_STATE__PARAMETERS);
+		}
+		return parameters;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EList<AllMatches> getAllMatches() {
+		if (allMatches == null) {
+			allMatches = new EObjectContainmentEList<AllMatches>(AllMatches.class, this,
+					StateModelPackage.RULE_STATE__ALL_MATCHES);
+		}
+		return allMatches;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 		case StateModelPackage.RULE_STATE__STRUCTURAL_DELTA:
 			return basicSetStructuralDelta(null, msgs);
 		case StateModelPackage.RULE_STATE__ATTRIBUTE_DELTAS:
 			return ((InternalEList<?>) getAttributeDeltas()).basicRemove(otherEnd, msgs);
+		case StateModelPackage.RULE_STATE__MATCH:
+			return basicSetMatch(null, msgs);
+		case StateModelPackage.RULE_STATE__CO_MATCH:
+			return basicSetCoMatch(null, msgs);
+		case StateModelPackage.RULE_STATE__PARAMETERS:
+			return ((InternalEList<?>) getParameters()).basicRemove(otherEnd, msgs);
+		case StateModelPackage.RULE_STATE__ALL_MATCHES:
+			return ((InternalEList<?>) getAllMatches()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -422,16 +469,18 @@ public class RuleStateImpl extends StateImpl implements RuleState {
 			if (resolve)
 				return getRule();
 			return basicGetRule();
-		case StateModelPackage.RULE_STATE__PARAMETER:
-			return getParameter();
-		case StateModelPackage.RULE_STATE__MATCH:
-			return getMatch();
-		case StateModelPackage.RULE_STATE__CO_MATCH:
-			return getCoMatch();
 		case StateModelPackage.RULE_STATE__STRUCTURAL_DELTA:
 			return getStructuralDelta();
 		case StateModelPackage.RULE_STATE__ATTRIBUTE_DELTAS:
 			return getAttributeDeltas();
+		case StateModelPackage.RULE_STATE__MATCH:
+			return getMatch();
+		case StateModelPackage.RULE_STATE__CO_MATCH:
+			return getCoMatch();
+		case StateModelPackage.RULE_STATE__PARAMETERS:
+			return getParameters();
+		case StateModelPackage.RULE_STATE__ALL_MATCHES:
+			return getAllMatches();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -451,21 +500,26 @@ public class RuleStateImpl extends StateImpl implements RuleState {
 		case StateModelPackage.RULE_STATE__RULE:
 			setRule((IBeXRule) newValue);
 			return;
-		case StateModelPackage.RULE_STATE__PARAMETER:
-			setParameter(newValue);
-			return;
-		case StateModelPackage.RULE_STATE__MATCH:
-			setMatch(newValue);
-			return;
-		case StateModelPackage.RULE_STATE__CO_MATCH:
-			setCoMatch(newValue);
-			return;
 		case StateModelPackage.RULE_STATE__STRUCTURAL_DELTA:
 			setStructuralDelta((StructuralDelta) newValue);
 			return;
 		case StateModelPackage.RULE_STATE__ATTRIBUTE_DELTAS:
 			getAttributeDeltas().clear();
 			getAttributeDeltas().addAll((Collection<? extends AttributeDelta>) newValue);
+			return;
+		case StateModelPackage.RULE_STATE__MATCH:
+			setMatch((IBeXMatch) newValue);
+			return;
+		case StateModelPackage.RULE_STATE__CO_MATCH:
+			setCoMatch((IBeXMatch) newValue);
+			return;
+		case StateModelPackage.RULE_STATE__PARAMETERS:
+			getParameters().clear();
+			getParameters().addAll((Collection<? extends Parameter>) newValue);
+			return;
+		case StateModelPackage.RULE_STATE__ALL_MATCHES:
+			getAllMatches().clear();
+			getAllMatches().addAll((Collection<? extends AllMatches>) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -485,20 +539,23 @@ public class RuleStateImpl extends StateImpl implements RuleState {
 		case StateModelPackage.RULE_STATE__RULE:
 			setRule((IBeXRule) null);
 			return;
-		case StateModelPackage.RULE_STATE__PARAMETER:
-			setParameter(PARAMETER_EDEFAULT);
-			return;
-		case StateModelPackage.RULE_STATE__MATCH:
-			setMatch(MATCH_EDEFAULT);
-			return;
-		case StateModelPackage.RULE_STATE__CO_MATCH:
-			setCoMatch(CO_MATCH_EDEFAULT);
-			return;
 		case StateModelPackage.RULE_STATE__STRUCTURAL_DELTA:
 			setStructuralDelta((StructuralDelta) null);
 			return;
 		case StateModelPackage.RULE_STATE__ATTRIBUTE_DELTAS:
 			getAttributeDeltas().clear();
+			return;
+		case StateModelPackage.RULE_STATE__MATCH:
+			setMatch((IBeXMatch) null);
+			return;
+		case StateModelPackage.RULE_STATE__CO_MATCH:
+			setCoMatch((IBeXMatch) null);
+			return;
+		case StateModelPackage.RULE_STATE__PARAMETERS:
+			getParameters().clear();
+			return;
+		case StateModelPackage.RULE_STATE__ALL_MATCHES:
+			getAllMatches().clear();
 			return;
 		}
 		super.eUnset(featureID);
@@ -516,70 +573,20 @@ public class RuleStateImpl extends StateImpl implements RuleState {
 			return parent != null;
 		case StateModelPackage.RULE_STATE__RULE:
 			return rule != null;
-		case StateModelPackage.RULE_STATE__PARAMETER:
-			return PARAMETER_EDEFAULT == null ? parameter != null : !PARAMETER_EDEFAULT.equals(parameter);
-		case StateModelPackage.RULE_STATE__MATCH:
-			return MATCH_EDEFAULT == null ? match != null : !MATCH_EDEFAULT.equals(match);
-		case StateModelPackage.RULE_STATE__CO_MATCH:
-			return CO_MATCH_EDEFAULT == null ? coMatch != null : !CO_MATCH_EDEFAULT.equals(coMatch);
 		case StateModelPackage.RULE_STATE__STRUCTURAL_DELTA:
 			return structuralDelta != null;
 		case StateModelPackage.RULE_STATE__ATTRIBUTE_DELTAS:
 			return attributeDeltas != null && !attributeDeltas.isEmpty();
+		case StateModelPackage.RULE_STATE__MATCH:
+			return match != null;
+		case StateModelPackage.RULE_STATE__CO_MATCH:
+			return coMatch != null;
+		case StateModelPackage.RULE_STATE__PARAMETERS:
+			return parameters != null && !parameters.isEmpty();
+		case StateModelPackage.RULE_STATE__ALL_MATCHES:
+			return allMatches != null && !allMatches.isEmpty();
 		}
 		return super.eIsSet(featureID);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public String toString() {
-		if (eIsProxy())
-			return super.toString();
-
-		StringBuilder result = new StringBuilder(super.toString());
-		result.append(" (parameter: ");
-		result.append(parameter);
-		result.append(", match: ");
-		result.append(match);
-		result.append(", coMatch: ");
-		result.append(coMatch);
-		result.append(')');
-		return result.toString();
-	}
-
-	@Override
-	public void setMatches(Map<String, Collection<IMatch>> matches) {
-		this.matches = matches;
-
-	}
-
-	@Override
-	public Map<String, Collection<IMatch>> getMatches() {
-		return matches;
-	}
-
-	@Override
-	public void setStaticRules(Map<String, Double> sRR) {
-		this.staticRuleRates = sRR;
-	}
-
-	@Override
-	public Map<String, Double> getStaticRules() {
-		return this.staticRuleRates;
-	}
-
-	@Override
-	public void setDynamicRules(Map<String, Double> dRR) {
-		this.dynamicRuleRates = dRR;
-	}
-
-	@Override
-	public Map<String, Double> getDynamicRules() {
-		return this.dynamicRuleRates;
 	}
 
 } //RuleStateImpl

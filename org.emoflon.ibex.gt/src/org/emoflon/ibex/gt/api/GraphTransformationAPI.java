@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Random;
+import java.util.TreeMap;
 import java.util.function.Supplier;
 
 import org.eclipse.emf.ecore.resource.Resource;
@@ -238,6 +239,14 @@ public abstract class GraphTransformationAPI {
 		interpreter.displayModelStates();
 	}
 	
+	public void saveModelStates(String path) {
+		interpreter.saveModelStates(path);
+	}
+	
+	public void loadModelStates(String path) {
+		interpreter.loadModelStates(path);
+	}
+	
 	/**
 	 * Applies the rule on the given match.
 	 * 
@@ -259,4 +268,5 @@ public abstract class GraphTransformationAPI {
 	public State getCurrentModelState() {
 		return interpreter.getCurrentModelState();
 	}
+
 }

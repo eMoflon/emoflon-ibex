@@ -37,22 +37,22 @@ public interface StateContainer extends EObject {
 	EList<State> getStates();
 
 	/**
-	 * Returns the value of the '<em><b>Initial State</b></em>' reference.
+	 * Returns the value of the '<em><b>Initial State</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Initial State</em>' reference.
+	 * @return the value of the '<em>Initial State</em>' containment reference.
 	 * @see #setInitialState(State)
 	 * @see org.emoflon.ibex.gt.StateModel.StateModelPackage#getStateContainer_InitialState()
-	 * @model
+	 * @model containment="true"
 	 * @generated
 	 */
 	State getInitialState();
 
 	/**
-	 * Sets the value of the '{@link org.emoflon.ibex.gt.StateModel.StateContainer#getInitialState <em>Initial State</em>}' reference.
+	 * Sets the value of the '{@link org.emoflon.ibex.gt.StateModel.StateContainer#getInitialState <em>Initial State</em>}' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Initial State</em>' reference.
+	 * @param value the new value of the '<em>Initial State</em>' containment reference.
 	 * @see #getInitialState()
 	 * @generated
 	 */

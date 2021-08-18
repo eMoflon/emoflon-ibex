@@ -15,21 +15,23 @@ Package StateModel <platform:/resource/StateModel/model/StateModel.ecore>
     Attribute initial : EBoolean
     Reference children : RuleState<<0..*>>
     Attribute hash : ELong
+    Attribute pushoutApproach : EInt
 
   Class RuleState -> State
     Reference parent : State
     Reference rule : IBeXRule
-    Attribute parameter : EJavaObject
-    Attribute match : EJavaObject
-    Attribute coMatch : EJavaObject
     Reference structuralDelta : StructuralDelta
     Reference attributeDeltas : AttributeDelta<<0..*>>
+    Reference match : IBeXMatch
+    Reference coMatch : IBeXMatch
+    Reference parameters : Parameter<<0..*>>
+    Reference allMatches : AllMatches<<0..*>>
 
   Class AttributeDelta
     Reference attribute : EAttribute<<1..1>>
     Reference object : EObject<<1..1>>
-    Attribute newValue : EJavaObject<<1..1>>
-    Attribute oldValue : EJavaObject<<1..1>>
+    Reference oldValue : Value
+    Reference newValue : Value
 
   Class StructuralDelta
     Reference createdObjects : EObject<<0..*>>
@@ -43,3 +45,19 @@ Package StateModel <platform:/resource/StateModel/model/StateModel.ecore>
     Reference type : EReference<<1..1>>
     Reference src : EObject<<1..1>>
     Reference trg : EObject<<1..1>>
+
+  Class IBeXMatch
+    Attribute patternName : EString
+    Reference parameters : Parameter<<0..*>>
+
+  Class Parameter
+    Attribute name : EString
+    Reference parameter : EObject
+
+  Class Value
+    Reference Type : EDataType
+    Attribute ValueAsString : EString
+
+  Class AllMatches
+    Attribute patternName : EString
+    Reference allMatchesForPattern : IBeXMatch<<0..*>>
