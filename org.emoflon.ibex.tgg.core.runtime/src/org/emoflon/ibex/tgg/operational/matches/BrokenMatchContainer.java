@@ -229,12 +229,16 @@ public class BrokenMatchContainer implements IMatchContainer, TimeMeasurable {
 	public Set<ITGGMatch> getMatches() {
 		Timer.start();
 		
-		Collection<ITGGMatch> notPendingMatches = pending.parallelStream().filter(this::noElementIsPending).collect(Collectors.toList());
-		notPendingMatches.forEach(this::handleMatch);
-		if(notPendingMatches.size() == pending.size())
-			pending.clear();
-		else
-			pending.removeAll(notPendingMatches);
+		if(!pending.isEmpty()) {
+			Timer.start();
+			Collection<ITGGMatch> notPendingMatches = pending.parallelStream().filter(this::noElementIsPending).collect(Collectors.toSet());
+			times.addTo("elementPending", Timer.stop());
+			notPendingMatches.forEach(this::handleMatch);
+			if(notPendingMatches.size() == pending.size())
+				pending.clear();
+			else
+				pending.removeAll(notPendingMatches);
+		}
 		Set<ITGGMatch> validate = validate(readySet);
 		
 		times.addTo("getMatches", Timer.stop());
@@ -245,13 +249,14 @@ public class BrokenMatchContainer implements IMatchContainer, TimeMeasurable {
 		if(pendingElts.isEmpty())
 			return readySet;
 		
-		Set<ITGGMatch> filteredReadySet = cfactory.createObjectSet();
-		for(ITGGMatch m : readySet) {
-			if(m.getParameterNames().stream().anyMatch(p -> pendingElts.contains(m.get(p))))
-				continue;
-			filteredReadySet.add(m);
-		}
-		return filteredReadySet;
+//		Set<ITGGMatch> filteredReadySet = cfactory.createObjectSet();
+//		for(ITGGMatch m : readySet) {
+//			if(m.getParameterNames().stream().anyMatch(p -> pendingElts.contains(m.get(p))))
+//				continue;
+//			filteredReadySet.add(m);
+//		}
+		
+		return readySet.parallelStream().filter(m -> !m.getParameterNames().stream().anyMatch(p -> pendingElts.contains(m.get(p)))).collect(Collectors.toSet());
 	}
  
 	@Override
