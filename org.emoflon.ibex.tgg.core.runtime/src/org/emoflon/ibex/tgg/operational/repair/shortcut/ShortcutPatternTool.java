@@ -18,6 +18,10 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.IGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.IRedInterpreter;
+import org.emoflon.ibex.tgg.operational.benchmark.TimeMeasurable;
+import org.emoflon.ibex.tgg.operational.benchmark.TimeRegistry;
+import org.emoflon.ibex.tgg.operational.benchmark.Timer;
+import org.emoflon.ibex.tgg.operational.benchmark.Times;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
@@ -51,11 +55,13 @@ import runtime.TempContainer;
  * @author lfritsche
  *
  */
-public class ShortcutPatternTool {
+public class ShortcutPatternTool implements TimeMeasurable {
 
 	protected final static Logger logger = Logger.getLogger(ShortcutPatternTool.class);
 
 	private int numOfDeletedNodes = 0;
+	
+	protected final Times times = new Times();
 
 	private PropagatingOperationalStrategy strategy;
 	private TGGResourceHandler resourceHandler;
@@ -70,6 +76,7 @@ public class ShortcutPatternTool {
 		this.scRules = scRules;
 		this.strategy = strategy;
 		this.resourceHandler = strategy.getOptions().resourceHandler();
+		TimeRegistry.register(this);
 		initialize(types);
 	}
 
@@ -148,7 +155,9 @@ public class ShortcutPatternTool {
 
 			LoggerConfig.log(LoggerConfig.log_repair(), () -> //
 			"Repair attempt: " + brokenMatch.getPatternName() + "(" + brokenMatch.hashCode() + ") with " + osr.getName());
+			Timer.start();
 			ITGGMatch newMatch = processBrokenMatch(osr, brokenMatch);
+			times.addTo("processBrokenMatch", Timer.stop());
 			if (newMatch == null) {
 				copiedRules.remove(osr);
 				continue;
@@ -157,16 +166,22 @@ public class ShortcutPatternTool {
 			// TODO lfritsche, amoeller: we have to make sure that we do not delete elements that are used
 			// (context) or will be recreated
 			// this is due to the missing injectivity checks
+			Timer.start();
 			Optional<ITGGMatch> newCoMatch = processCreations(osr, newMatch);
+			times.addTo("processCreations", Timer.stop());
 			if (!newCoMatch.isPresent()) {
 				copiedRules.remove(osr);
 				continue;
 			}
-
+			
+			Timer.start();
 			processDeletions(osr, newMatch);
-
+			times.addTo("processDeletions", Timer.stop());
+			
+			Timer.start();
 			processAttributes(osr, newMatch);
-
+			times.addTo("processAttributes", Timer.stop());
+			
 			return transformToReplacingMatch(osr, newCoMatch.get());
 
 		} while (!copiedRules.isEmpty());
@@ -291,5 +306,10 @@ public class ShortcutPatternTool {
 
 	public int countDeletedElements() {
 		return numOfDeletedNodes;
+	}
+
+	@Override
+	public Times getTimes() {
+		return times;
 	}
 }

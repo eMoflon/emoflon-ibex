@@ -4,6 +4,8 @@ import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
 
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -70,6 +72,34 @@ public class BrokenMatchContainer implements IMatchContainer, TimeMeasurable {
 		pending.add(match);
 		
 		times.addTo("addMatch", Timer.stop());
+	}
+	
+	@Override
+	public ITGGMatch getNext() {
+		Timer.start();
+		
+		Timer.start();
+		Set<ITGGMatch> matches = getMatches();
+		times.addTo("getNext:getmatches", Timer.stop());
+		
+//		Timer.start();
+//		Iterator<ITGGMatch> iterator = matches.iterator();
+//		times.addTo("getNext:iterator", Timer.stop());
+//		
+//		Timer.start();
+//		ITGGMatch next = iterator.next();
+//		times.addTo("getNext:next", Timer.stop());
+		Timer.start();
+		for(ITGGMatch next : matches) {
+			times.addTo("getNext:next", Timer.stop());
+
+			times.addTo("getNext", Timer.stop());
+			return next;
+		}
+		
+		return null;
+		
+//		return next;
 	}
 
 	private void handleMatch(ITGGMatch m) {
@@ -232,7 +262,7 @@ public class BrokenMatchContainer implements IMatchContainer, TimeMeasurable {
 		if(!pending.isEmpty()) {
 			Timer.start();
 			Collection<ITGGMatch> notPendingMatches = pending.parallelStream().filter(this::noElementIsPending).collect(Collectors.toSet());
-			times.addTo("elementPending", Timer.stop());
+			times.addTo("getMatches:elementPending", Timer.stop());
 			notPendingMatches.forEach(this::handleMatch);
 			if(notPendingMatches.size() == pending.size())
 				pending.clear();
@@ -256,7 +286,7 @@ public class BrokenMatchContainer implements IMatchContainer, TimeMeasurable {
 //			filteredReadySet.add(m);
 //		}
 		
-		return readySet.parallelStream().filter(m -> !m.getParameterNames().stream().anyMatch(p -> pendingElts.contains(m.get(p)))).collect(Collectors.toSet());
+		return readySet.parallelStream().filter(m -> !m.getParameterNames().stream().anyMatch(p -> pendingElts.contains(m.get(p)))).collect(Collectors.toCollection(() -> new LinkedHashSet<>()));
 	}
  
 	@Override

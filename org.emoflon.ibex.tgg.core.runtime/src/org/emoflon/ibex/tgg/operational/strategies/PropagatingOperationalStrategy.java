@@ -74,27 +74,41 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 	protected boolean repairBrokenMatches() {
 		Timer.start();
 
+		Timer.start();
 		Collection<ITGGMatch> alreadyProcessed = cfactory.createObjectSet();
 		dependencyContainer.reset();
 		brokenRuleApplications.values().forEach(dependencyContainer::addMatch);
+		times.addTo("repair:initialize", Timer.stop());
 
 		boolean processedOnce = true;
 		while (processedOnce) {
 			processedOnce = false;
 			// TODO lfritsche, amoeller: refactor this -> applying repairs can occasionally invalidate
 			// other consistency matches
-			while (!dependencyContainer.isEmpty()) {
+			Timer.start();
+			boolean finished = !dependencyContainer.isEmpty();
+			times.addTo("repair:isEmpty", Timer.stop());
+			while (finished) {
+				Timer.start();
 				ITGGMatch repairCandidate = dependencyContainer.getNext();
+				times.addTo("repair:getNext", Timer.stop());
+
 				processedOnce = true;
 
 				for (AbstractRepairStrategy rStrategy : repairStrategies) {
+					Timer.start();
 					if (alreadyProcessed.contains(repairCandidate)) {
+						times.addTo("repair:alreadyProcessed", Timer.stop());
 						continue;
 					}
-
+					times.addTo("repair:alreadyProcessed", Timer.stop());
+					
+					Timer.start();
 					ITGGMatch repairedMatch = rStrategy.repair(repairCandidate);
+					times.addTo("repair:repairCandidate", Timer.stop());
 					if (repairedMatch != null) {
-
+						
+						Timer.start();
 						TGGRuleApplication oldRa = getRuleApplicationNode(repairCandidate);
 						brokenRuleApplications.remove(oldRa);
 
@@ -102,15 +116,29 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 						brokenRuleApplications.put(newRa, repairedMatch);
 						alreadyProcessed.add(repairCandidate);
 						alreadyProcessed.add(repairedMatch);
+						times.addTo("repair:registerRuleApplication", Timer.stop());
 					}
 				}
+				Timer.start();
 				dependencyContainer.matchApplied(repairCandidate);
+				times.addTo("repair:matchApplied", Timer.stop());
+				
+				Timer.start();
+				finished = !dependencyContainer.isEmpty();
+				times.addTo("repair:isEmpty", Timer.stop());
 			}
+			Timer.start();
 			alreadyProcessed.addAll(brokenRuleApplications.values());
+			times.addTo("repair:addProcessed", Timer.stop());
+			Timer.start();
 			matchDistributor.updateMatches();
+			times.addTo("repair:updateMatches", Timer.stop());
+			
+			Timer.start();
 			brokenRuleApplications.values().stream() //
 					.filter(m -> !alreadyProcessed.contains(m)) //
 					.forEach(dependencyContainer::addMatch);
+			times.addTo("repair:addBrokenMatches", Timer.stop());
 		}
 
 		times.addTo("repair", Timer.stop());
