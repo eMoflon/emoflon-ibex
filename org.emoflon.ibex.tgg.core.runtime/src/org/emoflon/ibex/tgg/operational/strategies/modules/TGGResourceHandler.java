@@ -17,10 +17,10 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.ContentHandler;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceFactoryImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.emoflon.ibex.common.emf.EMFEdge;
+import org.emoflon.ibex.common.emf.EMFSaveUtils;
 import org.emoflon.ibex.tgg.compiler.defaults.IRegistrationHelper;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
@@ -37,9 +37,7 @@ import org.emoflon.ibex.tgg.operational.strategies.sync.INITIAL_BWD;
 import org.emoflon.ibex.tgg.operational.strategies.sync.INITIAL_FWD;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 import org.moflon.core.utilities.MoflonUtil;
-import org.moflon.smartemf.persistence.SmartEMFResourceFactoryImpl;
 import org.moflon.smartemf.runtime.SmartObject;
-import org.moflon.smartemf.runtime.util.SmartEMFUtil;
 
 import language.TGG;
 import language.impl.LanguagePackageImpl;
@@ -115,15 +113,15 @@ public class TGGResourceHandler {
 	}
 
 	private void initializeCorrCaching() {
-		if(options.project.usesSmartEMF()) 
+		if (options.project.usesSmartEMF())
 			return;
-		
+
 		node2corrs = Collections.synchronizedMap(new HashMap<>());
 		corr.getContents().parallelStream().forEach(corr -> doAddCorrCachingNode(corr));
 	}
 
 	public void addCorrCachingNode(EObject corr) {
-		if(options.project.usesSmartEMF())
+		if (options.project.usesSmartEMF())
 			return;
 
 		if (node2corrs == null)
@@ -133,9 +131,9 @@ public class TGGResourceHandler {
 	}
 
 	public void addCorrCachingEdge(EMFEdge corrEdge) {
-		if(options.project.usesSmartEMF()) 
+		if (options.project.usesSmartEMF())
 			return;
-		
+
 		if (node2corrs == null)
 			initializeCorrCaching();
 
@@ -155,9 +153,9 @@ public class TGGResourceHandler {
 
 	private void doAddCorrCachingNode(EObject corr) {
 		for (EObject node : corr.eCrossReferences()) {
-			if(corr instanceof SmartObject)
+			if (corr instanceof SmartObject)
 				break;
-		
+
 			doAddCorrCachingNode(corr, node);
 		}
 	}
@@ -173,9 +171,9 @@ public class TGGResourceHandler {
 	}
 
 	public void removeCorrCachingNode(EObject corr) {
-		if(options.project.usesSmartEMF()) 
+		if (options.project.usesSmartEMF())
 			return;
-		
+
 		if (node2corrs == null)
 			initializeCorrCaching();
 
@@ -287,7 +285,7 @@ public class TGGResourceHandler {
 		}
 
 		loadModels();
-		SmartEMFUtil.resolveAll(rs);
+		EMFSaveUtils.resolveAll(rs);
 	}
 
 	public void loadModels() throws IOException {
@@ -353,21 +351,23 @@ public class TGGResourceHandler {
 			protocol = loadResource(options.project.path() + "/instances/protocol.xmi");
 		}
 
-		SmartEMFUtil.resolveAll(rs);
+		EMFSaveUtils.resolveAll(rs);
 	}
 
 	protected void createAndPrepareResourceSets() {
 		rs = options.blackInterpreter().createAndPrepareResourceSet(options.project.workspacePath());
 		specificationRS = options.blackInterpreter().createAndPrepareResourceSet(options.project.workspacePath());
-		
-		// set the factory of metamodelRs to EMFResourceFactory as SmartEMF does not supported loading metamodels alongside models within the same resourceset
-		specificationRS.getResourceFactoryRegistry().getExtensionToFactoryMap().put(Resource.Factory.Registry.DEFAULT_EXTENSION, new XMIResourceFactoryImpl());
+
+		// set the factory of metamodelRs to EMFResourceFactory as SmartEMF does not supported loading
+		// metamodels alongside models within the same resourceset
+		specificationRS.getResourceFactoryRegistry().getExtensionToFactoryMap().put(Resource.Factory.Registry.DEFAULT_EXTENSION,
+				new XMIResourceFactoryImpl());
 	}
 
 	public ResourceSet getModelResourceSet() {
 		return rs;
 	}
-	
+
 	public ResourceSet getSpecificationResourceSet() {
 		return specificationRS;
 	}
@@ -418,7 +418,7 @@ public class TGGResourceHandler {
 		} catch (FileNotFoundException e) {
 			throw new TGGFileNotFoundException(e, res.getURI());
 		}
-		SmartEMFUtil.resolveAll(res);
+		EMFSaveUtils.resolveAll(res);
 		return res;
 	}
 
@@ -427,7 +427,7 @@ public class TGGResourceHandler {
 		Resource res = rs.createResource(uri.resolve(base), ContentHandler.UNSPECIFIED_CONTENT_TYPE);
 		return res;
 	}
-	
+
 	private Resource loadResource(ResourceSet rs, String workspaceRelativePath) throws IOException {
 		Resource res = createResource(rs, workspaceRelativePath);
 		try {
@@ -435,10 +435,10 @@ public class TGGResourceHandler {
 		} catch (FileNotFoundException e) {
 			throw new TGGFileNotFoundException(e, res.getURI());
 		}
-		SmartEMFUtil.resolveAll(res);
+		EMFSaveUtils.resolveAll(res);
 		return res;
 	}
-	
+
 	public Resource createResource(ResourceSet rs, String workspaceRelativePath) {
 		URI uri = URI.createURI(workspaceRelativePath);
 		Resource res = rs.createResource(uri.resolve(base), ContentHandler.UNSPECIFIED_CONTENT_TYPE);
