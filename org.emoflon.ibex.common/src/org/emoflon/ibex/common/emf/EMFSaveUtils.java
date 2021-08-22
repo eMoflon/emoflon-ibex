@@ -12,7 +12,6 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.moflon.smartemf.persistence.SmartEMFResource;
-import org.moflon.smartemf.runtime.util.SmartEMFUtil;
 
 /**
  * Utility methods for resource-related operations.
@@ -46,47 +45,15 @@ public class EMFSaveUtils {
 	}
 
 	public static void resolveAll(ResourceSet resourceSet) {
-		if (checkForSmartEMFResources(resourceSet))
-			SmartEMFUtil.resolveAll(resourceSet);
-		else
-			EcoreUtil.resolveAll(resourceSet);
+		for (Resource resource : resourceSet.getResources())
+			resolveAll(resource);
 	}
 
 	public static void resolveAll(Resource resource) {
-		ResourceSet resourceSet = resource.getResourceSet();
-
-		boolean isSmartEMF = false;
-		if (resourceSet != null) {
-			isSmartEMF = checkForSmartEMFResources(resourceSet);
-		} else {
-			if (resource instanceof SmartEMFResource)
-				isSmartEMF = true;
-		}
-
-		if (isSmartEMF)
-			SmartEMFUtil.resolveAll(resource);
-		else
-			EcoreUtil.resolveAll(resource);
-	}
-
-	private static boolean checkForSmartEMFResources(ResourceSet resourceSet) {
-		final String heterogeneousResources = "To function properly SmartEMF resources cannot be combined with non-SmartEMF resources!";
-
-		boolean isSmartEMF = false;
-		boolean notSmartEMF = false;
-		for (Resource resource : resourceSet.getResources()) {
-			if (resource instanceof SmartEMFResource) {
-				if (notSmartEMF)
-					throw new IllegalStateException(heterogeneousResources);
-				isSmartEMF = true;
-			} else if (isSmartEMF) {
-				throw new IllegalStateException(heterogeneousResources);
-			} else {
-				notSmartEMF = true;
-			}
-		}
-
-		return isSmartEMF;
+		if (resource instanceof SmartEMFResource)
+			return;
+		
+		EcoreUtil.resolveAll(resource);
 	}
 
 }
