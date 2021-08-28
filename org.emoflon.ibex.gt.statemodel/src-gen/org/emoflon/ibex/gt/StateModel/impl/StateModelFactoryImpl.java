@@ -74,8 +74,8 @@ public class StateModelFactoryImpl extends EFactoryImpl implements StateModelFac
 			return createParameter();
 		case StateModelPackage.VALUE:
 			return createValue();
-		case StateModelPackage.ALL_MATCHES:
-			return createAllMatches();
+		case StateModelPackage.MATCH_DELTA:
+			return createMatchDelta();
 		default:
 			throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -186,9 +186,9 @@ public class StateModelFactoryImpl extends EFactoryImpl implements StateModelFac
 	 * @generated
 	 */
 	@Override
-	public AllMatches createAllMatches() {
-		AllMatchesImpl allMatches = new AllMatchesImpl();
-		return allMatches;
+	public MatchDelta createMatchDelta() {
+		MatchDeltaImpl matchDelta = new MatchDeltaImpl();
+		return matchDelta;
 	}
 
 	/**

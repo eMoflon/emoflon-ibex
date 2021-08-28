@@ -8,11 +8,10 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 
 import org.eclipse.emf.ecore.impl.EPackageImpl;
-
-import org.emoflon.ibex.gt.StateModel.AllMatches;
 import org.emoflon.ibex.gt.StateModel.AttributeDelta;
 import org.emoflon.ibex.gt.StateModel.IBeXMatch;
 import org.emoflon.ibex.gt.StateModel.Link;
+import org.emoflon.ibex.gt.StateModel.MatchDelta;
 import org.emoflon.ibex.gt.StateModel.Parameter;
 import org.emoflon.ibex.gt.StateModel.RuleState;
 import org.emoflon.ibex.gt.StateModel.State;
@@ -99,7 +98,7 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private EClass allMatchesEClass = null;
+	private EClass matchDeltaEClass = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -196,6 +195,16 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 	@Override
 	public EReference getStateContainer_InitialState() {
 		return (EReference) stateContainerEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getStateContainer_InitialMatches() {
+		return (EReference) stateContainerEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
@@ -334,8 +343,28 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 	 * @generated
 	 */
 	@Override
-	public EReference getRuleState_AllMatches() {
+	public EReference getRuleState_DeletedMatches() {
 		return (EReference) ruleStateEClass.getEStructuralFeatures().get(7);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getRuleState_CreatedMatches() {
+		return (EReference) ruleStateEClass.getEStructuralFeatures().get(8);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getRuleState_MatchCount() {
+		return (EAttribute) ruleStateEClass.getEStructuralFeatures().get(9);
 	}
 
 	/**
@@ -594,8 +623,8 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 	 * @generated
 	 */
 	@Override
-	public EClass getAllMatches() {
-		return allMatchesEClass;
+	public EClass getMatchDelta() {
+		return matchDeltaEClass;
 	}
 
 	/**
@@ -604,8 +633,8 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 	 * @generated
 	 */
 	@Override
-	public EAttribute getAllMatches_PatternName() {
-		return (EAttribute) allMatchesEClass.getEStructuralFeatures().get(0);
+	public EAttribute getMatchDelta_PatternName() {
+		return (EAttribute) matchDeltaEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -614,8 +643,8 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 	 * @generated
 	 */
 	@Override
-	public EReference getAllMatches_AllMatchesForPattern() {
-		return (EReference) allMatchesEClass.getEStructuralFeatures().get(1);
+	public EReference getMatchDelta_MatchDeltasForPattern() {
+		return (EReference) matchDeltaEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -651,6 +680,7 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 		stateContainerEClass = createEClass(STATE_CONTAINER);
 		createEReference(stateContainerEClass, STATE_CONTAINER__STATES);
 		createEReference(stateContainerEClass, STATE_CONTAINER__INITIAL_STATE);
+		createEReference(stateContainerEClass, STATE_CONTAINER__INITIAL_MATCHES);
 
 		stateEClass = createEClass(STATE);
 		createEAttribute(stateEClass, STATE__INITIAL);
@@ -666,7 +696,9 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 		createEReference(ruleStateEClass, RULE_STATE__MATCH);
 		createEReference(ruleStateEClass, RULE_STATE__CO_MATCH);
 		createEReference(ruleStateEClass, RULE_STATE__PARAMETERS);
-		createEReference(ruleStateEClass, RULE_STATE__ALL_MATCHES);
+		createEReference(ruleStateEClass, RULE_STATE__DELETED_MATCHES);
+		createEReference(ruleStateEClass, RULE_STATE__CREATED_MATCHES);
+		createEAttribute(ruleStateEClass, RULE_STATE__MATCH_COUNT);
 
 		attributeDeltaEClass = createEClass(ATTRIBUTE_DELTA);
 		createEReference(attributeDeltaEClass, ATTRIBUTE_DELTA__ATTRIBUTE);
@@ -699,9 +731,9 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 		createEReference(valueEClass, VALUE__TYPE);
 		createEAttribute(valueEClass, VALUE__VALUE_AS_STRING);
 
-		allMatchesEClass = createEClass(ALL_MATCHES);
-		createEAttribute(allMatchesEClass, ALL_MATCHES__PATTERN_NAME);
-		createEReference(allMatchesEClass, ALL_MATCHES__ALL_MATCHES_FOR_PATTERN);
+		matchDeltaEClass = createEClass(MATCH_DELTA);
+		createEAttribute(matchDeltaEClass, MATCH_DELTA__PATTERN_NAME);
+		createEReference(matchDeltaEClass, MATCH_DELTA__MATCH_DELTAS_FOR_PATTERN);
 	}
 
 	/**
@@ -748,6 +780,9 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 		initEReference(getStateContainer_InitialState(), this.getState(), null, "initialState", null, 0, 1,
 				StateContainer.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getStateContainer_InitialMatches(), this.getIBeXMatch(), null, "initialMatches", null, 0, -1,
+				StateContainer.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(stateEClass, State.class, "State", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getState_Initial(), ecorePackage.getEBoolean(), "initial", null, 0, 1, State.class,
@@ -783,9 +818,14 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 		initEReference(getRuleState_Parameters(), this.getParameter(), null, "parameters", null, 0, -1, RuleState.class,
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getRuleState_AllMatches(), this.getAllMatches(), null, "allMatches", null, 0, -1,
+		initEReference(getRuleState_DeletedMatches(), this.getMatchDelta(), null, "deletedMatches", null, 0, -1,
 				RuleState.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getRuleState_CreatedMatches(), this.getMatchDelta(), null, "createdMatches", null, 0, -1,
+				RuleState.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getRuleState_MatchCount(), ecorePackage.getELong(), "matchCount", null, 0, 1, RuleState.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(attributeDeltaEClass, AttributeDelta.class, "AttributeDelta", !IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);
@@ -858,13 +898,13 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 		initEAttribute(getValue_ValueAsString(), ecorePackage.getEString(), "ValueAsString", null, 0, 1, Value.class,
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(allMatchesEClass, AllMatches.class, "AllMatches", !IS_ABSTRACT, !IS_INTERFACE,
+		initEClass(matchDeltaEClass, MatchDelta.class, "MatchDelta", !IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getAllMatches_PatternName(), ecorePackage.getEString(), "patternName", null, 0, 1,
-				AllMatches.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+		initEAttribute(getMatchDelta_PatternName(), ecorePackage.getEString(), "patternName", null, 0, 1,
+				MatchDelta.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
 				!IS_DERIVED, IS_ORDERED);
-		initEReference(getAllMatches_AllMatchesForPattern(), this.getIBeXMatch(), null, "allMatchesForPattern", null, 0,
-				-1, AllMatches.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
+		initEReference(getMatchDelta_MatchDeltasForPattern(), this.getIBeXMatch(), null, "matchDeltasForPattern", null,
+				0, -1, MatchDelta.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Create resource

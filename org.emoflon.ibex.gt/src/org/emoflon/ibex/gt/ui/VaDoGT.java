@@ -33,8 +33,10 @@ import org.jfree.data.xy.XYSeriesCollection;
 
 //Util imports
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -76,6 +78,8 @@ import org.emoflon.ibex.gt.StateModel.AllMatches;
 import org.emoflon.ibex.gt.StateModel.AttributeDelta;
 import org.emoflon.ibex.gt.StateModel.IBeXMatch;
 import org.emoflon.ibex.gt.StateModel.Link;
+import org.emoflon.ibex.gt.StateModel.MatchDelta;
+import org.emoflon.ibex.gt.StateModel.Parameter;
 import org.emoflon.ibex.gt.StateModel.RuleState;
 import org.emoflon.ibex.gt.StateModel.State;
 import org.emoflon.ibex.gt.StateModel.StateModelFactory;
@@ -113,14 +117,14 @@ public class VaDoGT {
 	protected EList<IBeXRule> ruleSet;
 	protected EList<IBeXContext> patternSet;
 	private EList<EObject> initialResourceContents;
-	private Map<Integer,IMatch> listedMatches;
+	private Map<Integer,IBeXMatch> listedMatches;
 	private Map<EObject, Node> infoNodes;
 	private Node matchHiglightNode;
 	private Node lastSelectedNode;
 	private EList<EObject> nodeBlacklist;
 	private EList<Link> edgeBlacklist;
 	private List<State> allStates;
-	
+	private Map<String, Collection<IBeXMatch>> initialMatches;
 	
 	// GUI
 	protected Shell shell;
@@ -215,7 +219,7 @@ public class VaDoGT {
 		nodeMap = new HashMap<EObject, Node>();
 		edgeMap = new HashMap<Link, Edge>();
 		infoNodes = new HashMap<EObject, Node>();
-		listedMatches = new HashMap<Integer, IMatch>();
+		listedMatches = new HashMap<Integer, IBeXMatch>();
 		nodeBlacklist = new BasicEList<EObject>();
 		edgeBlacklist = new BasicEList<Link>();
 		graph = new SingleGraph("");
@@ -226,6 +230,9 @@ public class VaDoGT {
 		// Create initial graph with resources
 		createNodesFromList(resource.getContents());
 		
+		// Init initialMatches
+		initialMatches = localStateManager.getInitialMatches();
+		
 		// Generate gui
 		generateUI();
 		
@@ -234,7 +241,7 @@ public class VaDoGT {
 	}
 	
 	/**
-	 * Second constructor for simsg use
+	 * Second constructor for load use
 	 * @param resource	Model resources with initial nodes
 	 * @param stateManager Statemanager with all states and helper functions
 	 * @param graphTransformationInterpreter Interpreter used to find matches
@@ -249,6 +256,8 @@ public class VaDoGT {
 		localStateManager.moveToState(localStateManager.getModelStates().getInitialState(), false);
 		ruleSet = iBeXRuleSet.getRules();
 		patternSet = iBeXPatternSet.getContextPatterns();
+		initialMatches = new HashMap<String, Collection<IBeXMatch>>();
+		
 		
 		allStates = new ArrayList<State>();
 		allStates.add(localStateManager.getModelStates().getInitialState());
@@ -256,7 +265,7 @@ public class VaDoGT {
 		nodeMap = new HashMap<EObject, Node>();
 		edgeMap = new HashMap<Link, Edge>();
 		infoNodes = new HashMap<EObject, Node>();
-		listedMatches = new HashMap<Integer, IMatch>();
+		listedMatches = new HashMap<Integer, IBeXMatch>();
 		nodeBlacklist = new BasicEList<EObject>();
 		edgeBlacklist = new BasicEList<Link>();
 		graph = new SingleGraph("");
@@ -267,13 +276,27 @@ public class VaDoGT {
 		// Create initial graph with resources
 		createNodesFromList(resource.getContents());
 		
+		// Init initialMatches
+		initMatchesForContainer();
+		
 		// Generate gui
 		generateUI();
 		
 		shell.setText(modelName);
 
 	}
-
+	
+	private void initMatchesForContainer() {
+		for( IBeXContext pat : localGraphTransformationInterpreter.getPatternSet().getContextPatterns()) {
+			Collection<IBeXMatch> matchesToPat = new ArrayList<IBeXMatch>();
+			for(IBeXMatch match : localStateManager.getModelStates().getInitialMatches()) {
+				if(pat.getName().equals(match.getPatternName())) {
+					matchesToPat.add(match);
+				}
+			}
+			initialMatches.put(pat.getName(), matchesToPat);
+		}	
+	}
 
 	/**
 	 *  Generates the UI and embeds the graph from graphstream
@@ -1385,22 +1408,14 @@ public class VaDoGT {
 			
 			// Just list applied match/rule to ensure performance
 			// GUI can not handle listing of thousands of matches in an appropriate time
-			long size = 0;
+			long size = nextRuleState.getMatchCount();
 			matchList.add(nextRuleState.getRule().getName() + " (Next)");
-			listedMatches.put(0, localStateManager.IBeXMatchToIMatch(nextRuleState.getMatch()));
-			for(AllMatches matches : nextRuleState.getAllMatches()) {
-				if(matches.getPatternName().equals(nextRuleState.getMatch().getPatternName())) {
-					size = matches.getAllMatchesForPattern().size();
-					break;
-				}
-			}
+			listedMatches.put(0, nextRuleState.getMatch());
 		
-			
-//			System.out.println(
-//			localGraphTransformationInterpreter.countMatches(nextRuleState.getMatch().getPatternName(), localStateManager.extractParameterFromState(nextRuleState), false));
-//			System.out.println(
-//			localGraphTransformationInterpreter.matchStream(nextRuleState.getMatch().getPatternName(), localStateManager.extractParameterFromState(nextRuleState), true).toList().size());
-//			
+//			System.out.println("Exact Pattern Size: " + size);
+//			System.out.println("Calculated Pattern Size: " + 
+//			localGraphTransformationInterpreter.countMatches(nextRuleState.getMatch().getPatternName(), localStateManager.extractParameterFromState(nextRuleState), true));
+		
 			futureApplyLabel.setText("Next Apply: \n" + nextRuleState.getRule().getName() + "\nMatches: " + size);
 			
 		} else {
@@ -1419,21 +1434,15 @@ public class VaDoGT {
 			listedMatches.clear();
 			allMatchesShown = true;
 			RuleState nextRuleState = (RuleState)localStateManager.getCurrentState().getChildren().get(0);
-//			Collection<IMatch> matchStream = localStateManager.getMatchesFromState(nextRuleState).get(patternName);
-			List<IBeXMatch> matchStream = null;
-			for(AllMatches matches : nextRuleState.getAllMatches()) {
-				if(matches.getPatternName().equals(patternName)) {
-					 matchStream = matches.getAllMatchesForPattern();
-					break;
-				}
-			}
-//			List<IMatch> matchStream = localGraphTransformationInterpreter.matchStream(patternName, localStateManager.extractParameterFromState(nextRuleState), false).toList();
+
+			List<IBeXMatch> matchStream = calculateCurrentMatches(nextRuleState, patternName);
+			
 			IBeXMatch saveForLater = null;
 			futureApplyLabel.setText("Next Apply: \n" + nextRuleState.getRule().getName() + "\nMatches: " + matchStream.size());
 			int index = 0;
 			if(patternName.equals(nextRuleState.getRule().getName())) {
 				matchList.add(nextRuleState.getRule().getName() + " (Next)");
-				listedMatches.put(0, localStateManager.IBeXMatchToIMatch(nextRuleState.getMatch()));
+				listedMatches.put(0, nextRuleState.getMatch());
 				for(IBeXMatch match : matchStream) {
 					if(localStateManager.testIfSameIBeXMatch(match, nextRuleState.getMatch())) {
 						saveForLater = match;
@@ -1447,7 +1456,7 @@ public class VaDoGT {
 			
 			for(IBeXMatch match : matchStream) {
 				matchList.add(match.getPatternName());
-				listedMatches.put(index, localStateManager.IBeXMatchToIMatch(match));
+				listedMatches.put(index, match);
 				index++;
 			}
 			if(saveForLater != null)
@@ -1462,13 +1471,8 @@ public class VaDoGT {
 		if(!localStateManager.getCurrentState().getChildren().isEmpty() && !allMatchesShown) {
 			allMatchesShown = true;
 			RuleState nextRuleState = (RuleState)localStateManager.getCurrentState().getChildren().get(0);
-			List<IBeXMatch> matchStream = null;
-			for(AllMatches matches : nextRuleState.getAllMatches()) {
-				if(matches.getPatternName().equals(nextRuleState.getMatch().getPatternName())) {
-					 matchStream = matches.getAllMatchesForPattern();
-					break;
-				}
-			}
+			List<IBeXMatch> matchStream = calculateCurrentMatches(nextRuleState, nextRuleState.getMatch().getPatternName());
+
 			IBeXMatch saveForLater = null;
 			for(IBeXMatch match : matchStream) {
 				if(localStateManager.testIfSameIBeXMatch(match, nextRuleState.getMatch())) {
@@ -1480,7 +1484,7 @@ public class VaDoGT {
 			int index = 1;
 			for(IBeXMatch match : matchStream) {
 				matchList.add(match.getPatternName());
-				listedMatches.put(index, localStateManager.IBeXMatchToIMatch(match));
+				listedMatches.put(index, match);
 				index++;
 			}
 			if(saveForLater != null)
@@ -1668,9 +1672,9 @@ public class VaDoGT {
 	
 	/**
 	 * Highlights parameter of given match with orange shadow
-	 * @param selectedMatch Match which should be highlighted
+	 * @param iBeXMatch Match which should be highlighted
 	 */
-	private void highlightMatch(IMatch selectedMatch) {
+	private void highlightMatch(IBeXMatch iBeXMatch) {
 		matchHiglightNode = graph.addNode(Integer.toString(nodeID));
 		matchHiglightNode.setAttribute("ui.style", 
 				"fill-color: orange;"
@@ -1681,9 +1685,10 @@ public class VaDoGT {
 				);
 		matchHiglightNode.setAttribute("ui.label", "");
 		nodeID++;
-		
-		for(Object matchNode : selectedMatch.getObjects()) {
+	
+		for(Parameter param : iBeXMatch.getParameters()) {
 			try {
+				EObject matchNode = param.getParameter();
 				if(!nodeBlacklist.contains((EObject)matchNode)) {
 					nodeMap.get((EObject)matchNode).setAttribute("ui.style", "shadow-mode: gradient-radial; shadow-width: 10px; shadow-color: orange;");
 					Edge matchHighlightEdge = graph.addEdge(Integer.toString(edgeID), matchHiglightNode, nodeMap.get((EObject)matchNode));
@@ -1822,7 +1827,7 @@ public class VaDoGT {
 		}
 	}
 
-	/**
+	/** 
 	 * Adds node to the graph and map graph node to EObject node
 	 * @param node Node to add
 	 */
@@ -1918,12 +1923,7 @@ public class VaDoGT {
 		if(!curr.getChildren().isEmpty())
 			curr = curr.getChildren().get(0);
 	
-		for(AllMatches allMatches :  ((RuleState) curr).getAllMatches()) {
-			if(allMatches.getPatternName().equals(selectedPatternInList)) {
-				currentCount = allMatches.getAllMatchesForPattern().size(); 
-				break;
-			}
-		}
+		currentCount = calculateCurrentMatches((RuleState)curr, selectedPatternInList).size();
 		
 		
 		boolean found = false;
@@ -1932,12 +1932,7 @@ public class VaDoGT {
 			long newCount = 0;
 			localStateManager.moveToState(curr.getChildren().get(0), false);
 			curr = localStateManager.getCurrentState();
-			for(AllMatches allMatches :  ((RuleState) curr).getAllMatches()) {
-				if(allMatches.getPatternName().equals(selectedPatternInList)) {
-					newCount = allMatches.getAllMatchesForPattern().size(); 
-					break;
-				}
-			}
+			newCount = calculateCurrentMatches((RuleState)curr, selectedPatternInList).size();
 
 			if(newCount != currentCount) {
 				int index = allStates.indexOf(curr) -1 ; 
@@ -1979,6 +1974,54 @@ public class VaDoGT {
 				localStateManager.moveToState(curr, false);
 				jumpRuleInfo.setText("No further apply!");
 			}
+	}
+	
+	/**
+	 * Collects all delta matches to the given state for given pattern 
+	 * @param currState the state
+	 * @param patternName the pattern
+	 * @return list with all matches in current state for current pattern
+	 */
+	protected List<IBeXMatch> calculateCurrentMatches(RuleState currState, String patternName) {
+		List<IBeXMatch> currMatches = new ArrayList<IBeXMatch>(initialMatches.get(patternName));
+		RuleState rState = localStateManager.getModelStates().getInitialState().getChildren().get(0);
+		if(rState.equals(currState))
+			return currMatches; // return initialMatches
+		boolean found = false;
+		for(State state : localStateManager.getModelStates().getStates()) {
+			if(found)
+				break;
+			rState = (RuleState) state;
+			for(MatchDelta createDelta : rState.getCreatedMatches()) {
+					if(createDelta.getPatternName().equals(patternName)) {
+						currMatches.addAll(createDelta.getMatchDeltasForPattern());
+						break;
+					}
+				}
+				for(MatchDelta deleteDelta : rState.getDeletedMatches()) {
+					if(deleteDelta.getPatternName().equals(patternName)) {
+						List<IBeXMatch> toRemove = new ArrayList<IBeXMatch>();
+						for(IBeXMatch currMatch : currMatches) {
+							for(IBeXMatch removeMatch : deleteDelta.getMatchDeltasForPattern()) {
+								if(localStateManager.testIfSameIBeXMatch(removeMatch, currMatch)) {
+									toRemove.add(currMatch);
+								}
+							}
+						}
+						currMatches.removeAll(toRemove);
+						break;
+					}
+				}
+			if(rState.equals(currState)) {
+				found = true;
+			}
+		}
+
+		if(!found | currState.isInitial()) {
+			System.err.print("State error, wrong matches!");
+		}
+		return currMatches;
+		
 	}
 }
 

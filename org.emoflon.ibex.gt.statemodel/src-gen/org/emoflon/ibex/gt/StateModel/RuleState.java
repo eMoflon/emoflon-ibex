@@ -22,7 +22,9 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule;
  *   <li>{@link org.emoflon.ibex.gt.StateModel.RuleState#getMatch <em>Match</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.RuleState#getCoMatch <em>Co Match</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.RuleState#getParameters <em>Parameters</em>}</li>
- *   <li>{@link org.emoflon.ibex.gt.StateModel.RuleState#getAllMatches <em>All Matches</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.StateModel.RuleState#getDeletedMatches <em>Deleted Matches</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.StateModel.RuleState#getCreatedMatches <em>Created Matches</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.StateModel.RuleState#getMatchCount <em>Match Count</em>}</li>
  * </ul>
  *
  * @see org.emoflon.ibex.gt.StateModel.StateModelPackage#getRuleState()
@@ -165,15 +167,49 @@ public interface RuleState extends State {
 	EList<Parameter> getParameters();
 
 	/**
-	 * Returns the value of the '<em><b>All Matches</b></em>' containment reference list.
-	 * The list contents are of type {@link org.emoflon.ibex.gt.StateModel.AllMatches}.
+	 * Returns the value of the '<em><b>Deleted Matches</b></em>' containment reference list.
+	 * The list contents are of type {@link org.emoflon.ibex.gt.StateModel.MatchDelta}.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>All Matches</em>' containment reference list.
-	 * @see org.emoflon.ibex.gt.StateModel.StateModelPackage#getRuleState_AllMatches()
+	 * @return the value of the '<em>Deleted Matches</em>' containment reference list.
+	 * @see org.emoflon.ibex.gt.StateModel.StateModelPackage#getRuleState_DeletedMatches()
 	 * @model containment="true"
 	 * @generated
 	 */
-	EList<AllMatches> getAllMatches();
+	EList<MatchDelta> getDeletedMatches();
+
+	/**
+	 * Returns the value of the '<em><b>Created Matches</b></em>' containment reference list.
+	 * The list contents are of type {@link org.emoflon.ibex.gt.StateModel.MatchDelta}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Created Matches</em>' containment reference list.
+	 * @see org.emoflon.ibex.gt.StateModel.StateModelPackage#getRuleState_CreatedMatches()
+	 * @model containment="true"
+	 * @generated
+	 */
+	EList<MatchDelta> getCreatedMatches();
+
+	/**
+	 * Returns the value of the '<em><b>Match Count</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Match Count</em>' attribute.
+	 * @see #setMatchCount(long)
+	 * @see org.emoflon.ibex.gt.StateModel.StateModelPackage#getRuleState_MatchCount()
+	 * @model
+	 * @generated
+	 */
+	long getMatchCount();
+
+	/**
+	 * Sets the value of the '{@link org.emoflon.ibex.gt.StateModel.RuleState#getMatchCount <em>Match Count</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Match Count</em>' attribute.
+	 * @see #getMatchCount()
+	 * @generated
+	 */
+	void setMatchCount(long value);
 
 } // RuleState

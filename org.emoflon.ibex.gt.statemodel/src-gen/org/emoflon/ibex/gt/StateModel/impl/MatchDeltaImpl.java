@@ -18,25 +18,25 @@ import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 
-import org.emoflon.ibex.gt.StateModel.AllMatches;
 import org.emoflon.ibex.gt.StateModel.IBeXMatch;
+import org.emoflon.ibex.gt.StateModel.MatchDelta;
 import org.emoflon.ibex.gt.StateModel.StateModelPackage;
 
 /**
  * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>All Matches</b></em>'.
+ * An implementation of the model object '<em><b>Match Delta</b></em>'.
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.AllMatchesImpl#getPatternName <em>Pattern Name</em>}</li>
- *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.AllMatchesImpl#getAllMatchesForPattern <em>All Matches For Pattern</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.MatchDeltaImpl#getPatternName <em>Pattern Name</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.MatchDeltaImpl#getMatchDeltasForPattern <em>Match Deltas For Pattern</em>}</li>
  * </ul>
  *
  * @generated
  */
-public class AllMatchesImpl extends MinimalEObjectImpl.Container implements AllMatches {
+public class MatchDeltaImpl extends MinimalEObjectImpl.Container implements MatchDelta {
 	/**
 	 * The default value of the '{@link #getPatternName() <em>Pattern Name</em>}' attribute.
 	 * <!-- begin-user-doc -->
@@ -58,21 +58,21 @@ public class AllMatchesImpl extends MinimalEObjectImpl.Container implements AllM
 	protected String patternName = PATTERN_NAME_EDEFAULT;
 
 	/**
-	 * The cached value of the '{@link #getAllMatchesForPattern() <em>All Matches For Pattern</em>}' containment reference list.
+	 * The cached value of the '{@link #getMatchDeltasForPattern() <em>Match Deltas For Pattern</em>}' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getAllMatchesForPattern()
+	 * @see #getMatchDeltasForPattern()
 	 * @generated
 	 * @ordered
 	 */
-	protected EList<IBeXMatch> allMatchesForPattern;
+	protected EList<IBeXMatch> matchDeltasForPattern;
 
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected AllMatchesImpl() {
+	protected MatchDeltaImpl() {
 		super();
 	}
 
@@ -83,7 +83,7 @@ public class AllMatchesImpl extends MinimalEObjectImpl.Container implements AllM
 	 */
 	@Override
 	protected EClass eStaticClass() {
-		return StateModelPackage.Literals.ALL_MATCHES;
+		return StateModelPackage.Literals.MATCH_DELTA;
 	}
 
 	/**
@@ -106,7 +106,7 @@ public class AllMatchesImpl extends MinimalEObjectImpl.Container implements AllM
 		String oldPatternName = patternName;
 		patternName = newPatternName;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, StateModelPackage.ALL_MATCHES__PATTERN_NAME,
+			eNotify(new ENotificationImpl(this, Notification.SET, StateModelPackage.MATCH_DELTA__PATTERN_NAME,
 					oldPatternName, patternName));
 	}
 
@@ -116,12 +116,12 @@ public class AllMatchesImpl extends MinimalEObjectImpl.Container implements AllM
 	 * @generated
 	 */
 	@Override
-	public EList<IBeXMatch> getAllMatchesForPattern() {
-		if (allMatchesForPattern == null) {
-			allMatchesForPattern = new EObjectContainmentEList<IBeXMatch>(IBeXMatch.class, this,
-					StateModelPackage.ALL_MATCHES__ALL_MATCHES_FOR_PATTERN);
+	public EList<IBeXMatch> getMatchDeltasForPattern() {
+		if (matchDeltasForPattern == null) {
+			matchDeltasForPattern = new EObjectContainmentEList<IBeXMatch>(IBeXMatch.class, this,
+					StateModelPackage.MATCH_DELTA__MATCH_DELTAS_FOR_PATTERN);
 		}
-		return allMatchesForPattern;
+		return matchDeltasForPattern;
 	}
 
 	/**
@@ -132,8 +132,8 @@ public class AllMatchesImpl extends MinimalEObjectImpl.Container implements AllM
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-		case StateModelPackage.ALL_MATCHES__ALL_MATCHES_FOR_PATTERN:
-			return ((InternalEList<?>) getAllMatchesForPattern()).basicRemove(otherEnd, msgs);
+		case StateModelPackage.MATCH_DELTA__MATCH_DELTAS_FOR_PATTERN:
+			return ((InternalEList<?>) getMatchDeltasForPattern()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -146,10 +146,10 @@ public class AllMatchesImpl extends MinimalEObjectImpl.Container implements AllM
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case StateModelPackage.ALL_MATCHES__PATTERN_NAME:
+		case StateModelPackage.MATCH_DELTA__PATTERN_NAME:
 			return getPatternName();
-		case StateModelPackage.ALL_MATCHES__ALL_MATCHES_FOR_PATTERN:
-			return getAllMatchesForPattern();
+		case StateModelPackage.MATCH_DELTA__MATCH_DELTAS_FOR_PATTERN:
+			return getMatchDeltasForPattern();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -163,12 +163,12 @@ public class AllMatchesImpl extends MinimalEObjectImpl.Container implements AllM
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case StateModelPackage.ALL_MATCHES__PATTERN_NAME:
+		case StateModelPackage.MATCH_DELTA__PATTERN_NAME:
 			setPatternName((String) newValue);
 			return;
-		case StateModelPackage.ALL_MATCHES__ALL_MATCHES_FOR_PATTERN:
-			getAllMatchesForPattern().clear();
-			getAllMatchesForPattern().addAll((Collection<? extends IBeXMatch>) newValue);
+		case StateModelPackage.MATCH_DELTA__MATCH_DELTAS_FOR_PATTERN:
+			getMatchDeltasForPattern().clear();
+			getMatchDeltasForPattern().addAll((Collection<? extends IBeXMatch>) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -182,11 +182,11 @@ public class AllMatchesImpl extends MinimalEObjectImpl.Container implements AllM
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case StateModelPackage.ALL_MATCHES__PATTERN_NAME:
+		case StateModelPackage.MATCH_DELTA__PATTERN_NAME:
 			setPatternName(PATTERN_NAME_EDEFAULT);
 			return;
-		case StateModelPackage.ALL_MATCHES__ALL_MATCHES_FOR_PATTERN:
-			getAllMatchesForPattern().clear();
+		case StateModelPackage.MATCH_DELTA__MATCH_DELTAS_FOR_PATTERN:
+			getMatchDeltasForPattern().clear();
 			return;
 		}
 		super.eUnset(featureID);
@@ -200,10 +200,10 @@ public class AllMatchesImpl extends MinimalEObjectImpl.Container implements AllM
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case StateModelPackage.ALL_MATCHES__PATTERN_NAME:
+		case StateModelPackage.MATCH_DELTA__PATTERN_NAME:
 			return PATTERN_NAME_EDEFAULT == null ? patternName != null : !PATTERN_NAME_EDEFAULT.equals(patternName);
-		case StateModelPackage.ALL_MATCHES__ALL_MATCHES_FOR_PATTERN:
-			return allMatchesForPattern != null && !allMatchesForPattern.isEmpty();
+		case StateModelPackage.MATCH_DELTA__MATCH_DELTAS_FOR_PATTERN:
+			return matchDeltasForPattern != null && !matchDeltasForPattern.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}
@@ -225,4 +225,4 @@ public class AllMatchesImpl extends MinimalEObjectImpl.Container implements AllM
 		return result.toString();
 	}
 
-} //AllMatchesImpl
+} //MatchDeltaImpl

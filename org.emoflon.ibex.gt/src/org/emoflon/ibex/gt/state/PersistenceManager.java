@@ -97,7 +97,7 @@ public abstract class PersistenceManager {
 		
 		
 		
-		ModelStateManager stateManager = new ModelStateManager(simModel, trashresource, contextPatternInterpreter, false);
+		ModelStateManager stateManager = new ModelStateManager(simModel, trashresource, contextPatternInterpreter, graphTransformationInterpreter.getMatches(), false, true);
 		
 
 		stateManager.getModelStates().getStates().addAll(((StateContainer) modelResource.getContents().get(0)).getStates());

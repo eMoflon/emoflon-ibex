@@ -16,10 +16,9 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
-
-import org.emoflon.ibex.gt.StateModel.AllMatches;
 import org.emoflon.ibex.gt.StateModel.AttributeDelta;
 import org.emoflon.ibex.gt.StateModel.IBeXMatch;
+import org.emoflon.ibex.gt.StateModel.MatchDelta;
 import org.emoflon.ibex.gt.StateModel.Parameter;
 import org.emoflon.ibex.gt.StateModel.RuleState;
 import org.emoflon.ibex.gt.StateModel.State;
@@ -43,7 +42,9 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule;
  *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.RuleStateImpl#getMatch <em>Match</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.RuleStateImpl#getCoMatch <em>Co Match</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.RuleStateImpl#getParameters <em>Parameters</em>}</li>
- *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.RuleStateImpl#getAllMatches <em>All Matches</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.RuleStateImpl#getDeletedMatches <em>Deleted Matches</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.RuleStateImpl#getCreatedMatches <em>Created Matches</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.RuleStateImpl#getMatchCount <em>Match Count</em>}</li>
  * </ul>
  *
  * @generated
@@ -120,14 +121,44 @@ public class RuleStateImpl extends StateImpl implements RuleState {
 	protected EList<Parameter> parameters;
 
 	/**
-	 * The cached value of the '{@link #getAllMatches() <em>All Matches</em>}' containment reference list.
+	 * The cached value of the '{@link #getDeletedMatches() <em>Deleted Matches</em>}' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getAllMatches()
+	 * @see #getDeletedMatches()
 	 * @generated
 	 * @ordered
 	 */
-	protected EList<AllMatches> allMatches;
+	protected EList<MatchDelta> deletedMatches;
+
+	/**
+	 * The cached value of the '{@link #getCreatedMatches() <em>Created Matches</em>}' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getCreatedMatches()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<MatchDelta> createdMatches;
+
+	/**
+	 * The default value of the '{@link #getMatchCount() <em>Match Count</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getMatchCount()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final long MATCH_COUNT_EDEFAULT = 0L;
+
+	/**
+	 * The cached value of the '{@link #getMatchCount() <em>Match Count</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getMatchCount()
+	 * @generated
+	 * @ordered
+	 */
+	protected long matchCount = MATCH_COUNT_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -421,12 +452,50 @@ public class RuleStateImpl extends StateImpl implements RuleState {
 	 * @generated
 	 */
 	@Override
-	public EList<AllMatches> getAllMatches() {
-		if (allMatches == null) {
-			allMatches = new EObjectContainmentEList<AllMatches>(AllMatches.class, this,
-					StateModelPackage.RULE_STATE__ALL_MATCHES);
+	public EList<MatchDelta> getDeletedMatches() {
+		if (deletedMatches == null) {
+			deletedMatches = new EObjectContainmentEList<MatchDelta>(MatchDelta.class, this,
+					StateModelPackage.RULE_STATE__DELETED_MATCHES);
 		}
-		return allMatches;
+		return deletedMatches;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EList<MatchDelta> getCreatedMatches() {
+		if (createdMatches == null) {
+			createdMatches = new EObjectContainmentEList<MatchDelta>(MatchDelta.class, this,
+					StateModelPackage.RULE_STATE__CREATED_MATCHES);
+		}
+		return createdMatches;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public long getMatchCount() {
+		return matchCount;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setMatchCount(long newMatchCount) {
+		long oldMatchCount = matchCount;
+		matchCount = newMatchCount;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, StateModelPackage.RULE_STATE__MATCH_COUNT,
+					oldMatchCount, matchCount));
 	}
 
 	/**
@@ -447,8 +516,10 @@ public class RuleStateImpl extends StateImpl implements RuleState {
 			return basicSetCoMatch(null, msgs);
 		case StateModelPackage.RULE_STATE__PARAMETERS:
 			return ((InternalEList<?>) getParameters()).basicRemove(otherEnd, msgs);
-		case StateModelPackage.RULE_STATE__ALL_MATCHES:
-			return ((InternalEList<?>) getAllMatches()).basicRemove(otherEnd, msgs);
+		case StateModelPackage.RULE_STATE__DELETED_MATCHES:
+			return ((InternalEList<?>) getDeletedMatches()).basicRemove(otherEnd, msgs);
+		case StateModelPackage.RULE_STATE__CREATED_MATCHES:
+			return ((InternalEList<?>) getCreatedMatches()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -479,8 +550,12 @@ public class RuleStateImpl extends StateImpl implements RuleState {
 			return getCoMatch();
 		case StateModelPackage.RULE_STATE__PARAMETERS:
 			return getParameters();
-		case StateModelPackage.RULE_STATE__ALL_MATCHES:
-			return getAllMatches();
+		case StateModelPackage.RULE_STATE__DELETED_MATCHES:
+			return getDeletedMatches();
+		case StateModelPackage.RULE_STATE__CREATED_MATCHES:
+			return getCreatedMatches();
+		case StateModelPackage.RULE_STATE__MATCH_COUNT:
+			return getMatchCount();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -517,9 +592,16 @@ public class RuleStateImpl extends StateImpl implements RuleState {
 			getParameters().clear();
 			getParameters().addAll((Collection<? extends Parameter>) newValue);
 			return;
-		case StateModelPackage.RULE_STATE__ALL_MATCHES:
-			getAllMatches().clear();
-			getAllMatches().addAll((Collection<? extends AllMatches>) newValue);
+		case StateModelPackage.RULE_STATE__DELETED_MATCHES:
+			getDeletedMatches().clear();
+			getDeletedMatches().addAll((Collection<? extends MatchDelta>) newValue);
+			return;
+		case StateModelPackage.RULE_STATE__CREATED_MATCHES:
+			getCreatedMatches().clear();
+			getCreatedMatches().addAll((Collection<? extends MatchDelta>) newValue);
+			return;
+		case StateModelPackage.RULE_STATE__MATCH_COUNT:
+			setMatchCount((Long) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -554,8 +636,14 @@ public class RuleStateImpl extends StateImpl implements RuleState {
 		case StateModelPackage.RULE_STATE__PARAMETERS:
 			getParameters().clear();
 			return;
-		case StateModelPackage.RULE_STATE__ALL_MATCHES:
-			getAllMatches().clear();
+		case StateModelPackage.RULE_STATE__DELETED_MATCHES:
+			getDeletedMatches().clear();
+			return;
+		case StateModelPackage.RULE_STATE__CREATED_MATCHES:
+			getCreatedMatches().clear();
+			return;
+		case StateModelPackage.RULE_STATE__MATCH_COUNT:
+			setMatchCount(MATCH_COUNT_EDEFAULT);
 			return;
 		}
 		super.eUnset(featureID);
@@ -583,10 +671,31 @@ public class RuleStateImpl extends StateImpl implements RuleState {
 			return coMatch != null;
 		case StateModelPackage.RULE_STATE__PARAMETERS:
 			return parameters != null && !parameters.isEmpty();
-		case StateModelPackage.RULE_STATE__ALL_MATCHES:
-			return allMatches != null && !allMatches.isEmpty();
+		case StateModelPackage.RULE_STATE__DELETED_MATCHES:
+			return deletedMatches != null && !deletedMatches.isEmpty();
+		case StateModelPackage.RULE_STATE__CREATED_MATCHES:
+			return createdMatches != null && !createdMatches.isEmpty();
+		case StateModelPackage.RULE_STATE__MATCH_COUNT:
+			return matchCount != MATCH_COUNT_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public String toString() {
+		if (eIsProxy())
+			return super.toString();
+
+		StringBuilder result = new StringBuilder(super.toString());
+		result.append(" (matchCount: ");
+		result.append(matchCount);
+		result.append(')');
+		return result.toString();
 	}
 
 } //RuleStateImpl

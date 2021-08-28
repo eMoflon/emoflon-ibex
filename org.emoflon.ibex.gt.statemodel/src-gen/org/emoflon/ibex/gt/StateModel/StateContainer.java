@@ -17,6 +17,7 @@ import org.eclipse.emf.ecore.EObject;
  * <ul>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.StateContainer#getStates <em>States</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.StateContainer#getInitialState <em>Initial State</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.StateModel.StateContainer#getInitialMatches <em>Initial Matches</em>}</li>
  * </ul>
  *
  * @see org.emoflon.ibex.gt.StateModel.StateModelPackage#getStateContainer()
@@ -57,5 +58,17 @@ public interface StateContainer extends EObject {
 	 * @generated
 	 */
 	void setInitialState(State value);
+
+	/**
+	 * Returns the value of the '<em><b>Initial Matches</b></em>' containment reference list.
+	 * The list contents are of type {@link org.emoflon.ibex.gt.StateModel.IBeXMatch}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Initial Matches</em>' containment reference list.
+	 * @see org.emoflon.ibex.gt.StateModel.StateModelPackage#getStateContainer_InitialMatches()
+	 * @model containment="true"
+	 * @generated
+	 */
+	EList<IBeXMatch> getInitialMatches();
 
 } // StateContainer

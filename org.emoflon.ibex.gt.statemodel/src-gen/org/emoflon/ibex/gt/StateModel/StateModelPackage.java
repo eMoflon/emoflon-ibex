@@ -85,13 +85,22 @@ public interface StateModelPackage extends EPackage {
 	int STATE_CONTAINER__INITIAL_STATE = 1;
 
 	/**
+	 * The feature id for the '<em><b>Initial Matches</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int STATE_CONTAINER__INITIAL_MATCHES = 2;
+
+	/**
 	 * The number of structural features of the '<em>State Container</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int STATE_CONTAINER_FEATURE_COUNT = 2;
+	int STATE_CONTAINER_FEATURE_COUNT = 3;
 
 	/**
 	 * The number of operations of the '<em>State Container</em>' class.
@@ -276,13 +285,31 @@ public interface StateModelPackage extends EPackage {
 	int RULE_STATE__PARAMETERS = STATE_FEATURE_COUNT + 6;
 
 	/**
-	 * The feature id for the '<em><b>All Matches</b></em>' containment reference list.
+	 * The feature id for the '<em><b>Deleted Matches</b></em>' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int RULE_STATE__ALL_MATCHES = STATE_FEATURE_COUNT + 7;
+	int RULE_STATE__DELETED_MATCHES = STATE_FEATURE_COUNT + 7;
+
+	/**
+	 * The feature id for the '<em><b>Created Matches</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int RULE_STATE__CREATED_MATCHES = STATE_FEATURE_COUNT + 8;
+
+	/**
+	 * The feature id for the '<em><b>Match Count</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int RULE_STATE__MATCH_COUNT = STATE_FEATURE_COUNT + 9;
 
 	/**
 	 * The number of structural features of the '<em>Rule State</em>' class.
@@ -291,7 +318,7 @@ public interface StateModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int RULE_STATE_FEATURE_COUNT = STATE_FEATURE_COUNT + 8;
+	int RULE_STATE_FEATURE_COUNT = STATE_FEATURE_COUNT + 10;
 
 	/**
 	 * The number of operations of the '<em>Rule State</em>' class.
@@ -642,14 +669,14 @@ public interface StateModelPackage extends EPackage {
 	int VALUE_OPERATION_COUNT = 0;
 
 	/**
-	 * The meta object id for the '{@link org.emoflon.ibex.gt.StateModel.impl.AllMatchesImpl <em>All Matches</em>}' class.
+	 * The meta object id for the '{@link org.emoflon.ibex.gt.StateModel.impl.MatchDeltaImpl <em>Match Delta</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see org.emoflon.ibex.gt.StateModel.impl.AllMatchesImpl
-	 * @see org.emoflon.ibex.gt.StateModel.impl.StateModelPackageImpl#getAllMatches()
+	 * @see org.emoflon.ibex.gt.StateModel.impl.MatchDeltaImpl
+	 * @see org.emoflon.ibex.gt.StateModel.impl.StateModelPackageImpl#getMatchDelta()
 	 * @generated
 	 */
-	int ALL_MATCHES = 9;
+	int MATCH_DELTA = 9;
 
 	/**
 	 * The feature id for the '<em><b>Pattern Name</b></em>' attribute.
@@ -658,34 +685,34 @@ public interface StateModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int ALL_MATCHES__PATTERN_NAME = 0;
+	int MATCH_DELTA__PATTERN_NAME = 0;
 
 	/**
-	 * The feature id for the '<em><b>All Matches For Pattern</b></em>' containment reference list.
+	 * The feature id for the '<em><b>Match Deltas For Pattern</b></em>' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int ALL_MATCHES__ALL_MATCHES_FOR_PATTERN = 1;
+	int MATCH_DELTA__MATCH_DELTAS_FOR_PATTERN = 1;
 
 	/**
-	 * The number of structural features of the '<em>All Matches</em>' class.
+	 * The number of structural features of the '<em>Match Delta</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int ALL_MATCHES_FEATURE_COUNT = 2;
+	int MATCH_DELTA_FEATURE_COUNT = 2;
 
 	/**
-	 * The number of operations of the '<em>All Matches</em>' class.
+	 * The number of operations of the '<em>Match Delta</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int ALL_MATCHES_OPERATION_COUNT = 0;
+	int MATCH_DELTA_OPERATION_COUNT = 0;
 
 	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.gt.StateModel.StateContainer <em>State Container</em>}'.
@@ -718,6 +745,17 @@ public interface StateModelPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getStateContainer_InitialState();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.gt.StateModel.StateContainer#getInitialMatches <em>Initial Matches</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Initial Matches</em>'.
+	 * @see org.emoflon.ibex.gt.StateModel.StateContainer#getInitialMatches()
+	 * @see #getStateContainer()
+	 * @generated
+	 */
+	EReference getStateContainer_InitialMatches();
 
 	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.gt.StateModel.State <em>State</em>}'.
@@ -861,15 +899,37 @@ public interface StateModelPackage extends EPackage {
 	EReference getRuleState_Parameters();
 
 	/**
-	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.gt.StateModel.RuleState#getAllMatches <em>All Matches</em>}'.
+	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.gt.StateModel.RuleState#getDeletedMatches <em>Deleted Matches</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference list '<em>All Matches</em>'.
-	 * @see org.emoflon.ibex.gt.StateModel.RuleState#getAllMatches()
+	 * @return the meta object for the containment reference list '<em>Deleted Matches</em>'.
+	 * @see org.emoflon.ibex.gt.StateModel.RuleState#getDeletedMatches()
 	 * @see #getRuleState()
 	 * @generated
 	 */
-	EReference getRuleState_AllMatches();
+	EReference getRuleState_DeletedMatches();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.gt.StateModel.RuleState#getCreatedMatches <em>Created Matches</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Created Matches</em>'.
+	 * @see org.emoflon.ibex.gt.StateModel.RuleState#getCreatedMatches()
+	 * @see #getRuleState()
+	 * @generated
+	 */
+	EReference getRuleState_CreatedMatches();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.gt.StateModel.RuleState#getMatchCount <em>Match Count</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Match Count</em>'.
+	 * @see org.emoflon.ibex.gt.StateModel.RuleState#getMatchCount()
+	 * @see #getRuleState()
+	 * @generated
+	 */
+	EAttribute getRuleState_MatchCount();
 
 	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.gt.StateModel.AttributeDelta <em>Attribute Delta</em>}'.
@@ -1141,36 +1201,36 @@ public interface StateModelPackage extends EPackage {
 	EAttribute getValue_ValueAsString();
 
 	/**
-	 * Returns the meta object for class '{@link org.emoflon.ibex.gt.StateModel.AllMatches <em>All Matches</em>}'.
+	 * Returns the meta object for class '{@link org.emoflon.ibex.gt.StateModel.MatchDelta <em>Match Delta</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for class '<em>All Matches</em>'.
-	 * @see org.emoflon.ibex.gt.StateModel.AllMatches
+	 * @return the meta object for class '<em>Match Delta</em>'.
+	 * @see org.emoflon.ibex.gt.StateModel.MatchDelta
 	 * @generated
 	 */
-	EClass getAllMatches();
+	EClass getMatchDelta();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.gt.StateModel.AllMatches#getPatternName <em>Pattern Name</em>}'.
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.gt.StateModel.MatchDelta#getPatternName <em>Pattern Name</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the attribute '<em>Pattern Name</em>'.
-	 * @see org.emoflon.ibex.gt.StateModel.AllMatches#getPatternName()
-	 * @see #getAllMatches()
+	 * @see org.emoflon.ibex.gt.StateModel.MatchDelta#getPatternName()
+	 * @see #getMatchDelta()
 	 * @generated
 	 */
-	EAttribute getAllMatches_PatternName();
+	EAttribute getMatchDelta_PatternName();
 
 	/**
-	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.gt.StateModel.AllMatches#getAllMatchesForPattern <em>All Matches For Pattern</em>}'.
+	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.gt.StateModel.MatchDelta#getMatchDeltasForPattern <em>Match Deltas For Pattern</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference list '<em>All Matches For Pattern</em>'.
-	 * @see org.emoflon.ibex.gt.StateModel.AllMatches#getAllMatchesForPattern()
-	 * @see #getAllMatches()
+	 * @return the meta object for the containment reference list '<em>Match Deltas For Pattern</em>'.
+	 * @see org.emoflon.ibex.gt.StateModel.MatchDelta#getMatchDeltasForPattern()
+	 * @see #getMatchDelta()
 	 * @generated
 	 */
-	EReference getAllMatches_AllMatchesForPattern();
+	EReference getMatchDelta_MatchDeltasForPattern();
 
 	/**
 	 * Returns the factory that creates the instances of the model.
@@ -1220,6 +1280,14 @@ public interface StateModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference STATE_CONTAINER__INITIAL_STATE = eINSTANCE.getStateContainer_InitialState();
+
+		/**
+		 * The meta object literal for the '<em><b>Initial Matches</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference STATE_CONTAINER__INITIAL_MATCHES = eINSTANCE.getStateContainer_InitialMatches();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.gt.StateModel.impl.StateImpl <em>State</em>}' class.
@@ -1330,12 +1398,28 @@ public interface StateModelPackage extends EPackage {
 		EReference RULE_STATE__PARAMETERS = eINSTANCE.getRuleState_Parameters();
 
 		/**
-		 * The meta object literal for the '<em><b>All Matches</b></em>' containment reference list feature.
+		 * The meta object literal for the '<em><b>Deleted Matches</b></em>' containment reference list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference RULE_STATE__ALL_MATCHES = eINSTANCE.getRuleState_AllMatches();
+		EReference RULE_STATE__DELETED_MATCHES = eINSTANCE.getRuleState_DeletedMatches();
+
+		/**
+		 * The meta object literal for the '<em><b>Created Matches</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference RULE_STATE__CREATED_MATCHES = eINSTANCE.getRuleState_CreatedMatches();
+
+		/**
+		 * The meta object literal for the '<em><b>Match Count</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute RULE_STATE__MATCH_COUNT = eINSTANCE.getRuleState_MatchCount();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.gt.StateModel.impl.AttributeDeltaImpl <em>Attribute Delta</em>}' class.
@@ -1552,14 +1636,14 @@ public interface StateModelPackage extends EPackage {
 		EAttribute VALUE__VALUE_AS_STRING = eINSTANCE.getValue_ValueAsString();
 
 		/**
-		 * The meta object literal for the '{@link org.emoflon.ibex.gt.StateModel.impl.AllMatchesImpl <em>All Matches</em>}' class.
+		 * The meta object literal for the '{@link org.emoflon.ibex.gt.StateModel.impl.MatchDeltaImpl <em>Match Delta</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
-		 * @see org.emoflon.ibex.gt.StateModel.impl.AllMatchesImpl
-		 * @see org.emoflon.ibex.gt.StateModel.impl.StateModelPackageImpl#getAllMatches()
+		 * @see org.emoflon.ibex.gt.StateModel.impl.MatchDeltaImpl
+		 * @see org.emoflon.ibex.gt.StateModel.impl.StateModelPackageImpl#getMatchDelta()
 		 * @generated
 		 */
-		EClass ALL_MATCHES = eINSTANCE.getAllMatches();
+		EClass MATCH_DELTA = eINSTANCE.getMatchDelta();
 
 		/**
 		 * The meta object literal for the '<em><b>Pattern Name</b></em>' attribute feature.
@@ -1567,15 +1651,15 @@ public interface StateModelPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute ALL_MATCHES__PATTERN_NAME = eINSTANCE.getAllMatches_PatternName();
+		EAttribute MATCH_DELTA__PATTERN_NAME = eINSTANCE.getMatchDelta_PatternName();
 
 		/**
-		 * The meta object literal for the '<em><b>All Matches For Pattern</b></em>' containment reference list feature.
+		 * The meta object literal for the '<em><b>Match Deltas For Pattern</b></em>' containment reference list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference ALL_MATCHES__ALL_MATCHES_FOR_PATTERN = eINSTANCE.getAllMatches_AllMatchesForPattern();
+		EReference MATCH_DELTA__MATCH_DELTAS_FOR_PATTERN = eINSTANCE.getMatchDelta_MatchDeltasForPattern();
 
 	}
 

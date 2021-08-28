@@ -131,9 +131,9 @@ public class StateModelSwitch<T> extends Switch<T> {
 				result = defaultCase(theEObject);
 			return result;
 		}
-		case StateModelPackage.ALL_MATCHES: {
-			AllMatches allMatches = (AllMatches) theEObject;
-			T result = caseAllMatches(allMatches);
+		case StateModelPackage.MATCH_DELTA: {
+			MatchDelta matchDelta = (MatchDelta) theEObject;
+			T result = caseMatchDelta(matchDelta);
 			if (result == null)
 				result = defaultCase(theEObject);
 			return result;
@@ -279,17 +279,17 @@ public class StateModelSwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '<em>All Matches</em>'.
+	 * Returns the result of interpreting the object as an instance of '<em>Match Delta</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>All Matches</em>'.
+	 * @return the result of interpreting the object as an instance of '<em>Match Delta</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public T caseAllMatches(AllMatches object) {
+	public T caseMatchDelta(MatchDelta object) {
 		return null;
 	}
 

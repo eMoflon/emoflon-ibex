@@ -280,7 +280,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			// Deep-copy parameter map to prevent state inconsistencies caused by changed node/parameter bindings.
 			Map<String, Object> cpyParameter = new HashMap<>();
 			parameters.forEach((str, obj) -> cpyParameter.put(str, obj));
-			return stateManager.addNewState(rule.get(), match, cpyParameter, copyMatches(), doUpdate, po, (params, update) -> applyInternal(match, po, params, update)); 
+			return stateManager.addNewState(rule.get(), match, cpyParameter, copyMatches(), doUpdate, po, addedMatches, removedMatches, (params, update) -> applyInternal(match, po, params, update)); 
 		}else {
 			return applyInternal(match, po, parameters, doUpdate);
 		}
@@ -927,10 +927,25 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		return disjointContextPatternSet.stream().anyMatch(pattern -> pattern.getName().equals(patternName));
 	}
 	
-	public void trackModelStates(boolean forceNewStates) {
-		stateManager = new ModelStateManager(model.getResources().get(0), model.getResources().get(1), contextPatternInterpreter, forceNewStates);
-		trackingStates = true;	
+	public Map<String, Collection<IMatch>> getMatches() {
+		return matches;
 	}
+	
+	public void trackModelStates(boolean forceNewStates) {
+		stateManager = new ModelStateManager(model.getResources().get(0), model.getResources().get(1), contextPatternInterpreter, matches, forceNewStates, false);
+		trackingStates = true;
+		for( IBeXContext contextPattern : patternSet.getContextPatterns()) {
+			subscribeAppearing(contextPattern.getName(), cons);
+			break;
+		}
+		
+	}
+	
+	Consumer<IMatch> cons = new Consumer<IMatch>() {
+		public void accept(IMatch match) {
+//			System.out.println(match.getPatternName());
+		}
+	};
 	
 	public void deactivateModelStatesTracking() {
 		stateManager = null;

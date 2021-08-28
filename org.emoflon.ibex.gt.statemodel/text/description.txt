@@ -10,6 +10,7 @@ Package StateModel <platform:/resource/StateModel/model/StateModel.ecore>
   Class StateContainer
     Reference states : State<<0..*>>
     Reference initialState : State
+    Reference initialMatches : IBeXMatch<<0..*>>
 
   Class State
     Attribute initial : EBoolean
@@ -25,7 +26,9 @@ Package StateModel <platform:/resource/StateModel/model/StateModel.ecore>
     Reference match : IBeXMatch
     Reference coMatch : IBeXMatch
     Reference parameters : Parameter<<0..*>>
-    Reference allMatches : AllMatches<<0..*>>
+    Reference deletedMatches : MatchDelta<<0..*>>
+    Reference createdMatches : MatchDelta<<0..*>>
+    Attribute matchCount : ELong
 
   Class AttributeDelta
     Reference attribute : EAttribute<<1..1>>
@@ -58,6 +61,6 @@ Package StateModel <platform:/resource/StateModel/model/StateModel.ecore>
     Reference Type : EDataType
     Attribute ValueAsString : EString
 
-  Class AllMatches
+  Class MatchDelta
     Attribute patternName : EString
-    Reference allMatchesForPattern : IBeXMatch<<0..*>>
+    Reference matchDeltasForPattern : IBeXMatch<<0..*>>

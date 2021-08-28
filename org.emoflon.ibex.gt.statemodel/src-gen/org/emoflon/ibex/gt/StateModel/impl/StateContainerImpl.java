@@ -18,6 +18,7 @@ import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 
+import org.emoflon.ibex.gt.StateModel.IBeXMatch;
 import org.emoflon.ibex.gt.StateModel.State;
 import org.emoflon.ibex.gt.StateModel.StateContainer;
 import org.emoflon.ibex.gt.StateModel.StateModelPackage;
@@ -32,6 +33,7 @@ import org.emoflon.ibex.gt.StateModel.StateModelPackage;
  * <ul>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.StateContainerImpl#getStates <em>States</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.StateContainerImpl#getInitialState <em>Initial State</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.StateContainerImpl#getInitialMatches <em>Initial Matches</em>}</li>
  * </ul>
  *
  * @generated
@@ -56,6 +58,16 @@ public class StateContainerImpl extends MinimalEObjectImpl.Container implements 
 	 * @ordered
 	 */
 	protected State initialState;
+
+	/**
+	 * The cached value of the '{@link #getInitialMatches() <em>Initial Matches</em>}' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getInitialMatches()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<IBeXMatch> initialMatches;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -147,12 +159,28 @@ public class StateContainerImpl extends MinimalEObjectImpl.Container implements 
 	 * @generated
 	 */
 	@Override
+	public EList<IBeXMatch> getInitialMatches() {
+		if (initialMatches == null) {
+			initialMatches = new EObjectContainmentEList<IBeXMatch>(IBeXMatch.class, this,
+					StateModelPackage.STATE_CONTAINER__INITIAL_MATCHES);
+		}
+		return initialMatches;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 		case StateModelPackage.STATE_CONTAINER__STATES:
 			return ((InternalEList<?>) getStates()).basicRemove(otherEnd, msgs);
 		case StateModelPackage.STATE_CONTAINER__INITIAL_STATE:
 			return basicSetInitialState(null, msgs);
+		case StateModelPackage.STATE_CONTAINER__INITIAL_MATCHES:
+			return ((InternalEList<?>) getInitialMatches()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -169,6 +197,8 @@ public class StateContainerImpl extends MinimalEObjectImpl.Container implements 
 			return getStates();
 		case StateModelPackage.STATE_CONTAINER__INITIAL_STATE:
 			return getInitialState();
+		case StateModelPackage.STATE_CONTAINER__INITIAL_MATCHES:
+			return getInitialMatches();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -189,6 +219,10 @@ public class StateContainerImpl extends MinimalEObjectImpl.Container implements 
 		case StateModelPackage.STATE_CONTAINER__INITIAL_STATE:
 			setInitialState((State) newValue);
 			return;
+		case StateModelPackage.STATE_CONTAINER__INITIAL_MATCHES:
+			getInitialMatches().clear();
+			getInitialMatches().addAll((Collection<? extends IBeXMatch>) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -207,6 +241,9 @@ public class StateContainerImpl extends MinimalEObjectImpl.Container implements 
 		case StateModelPackage.STATE_CONTAINER__INITIAL_STATE:
 			setInitialState((State) null);
 			return;
+		case StateModelPackage.STATE_CONTAINER__INITIAL_MATCHES:
+			getInitialMatches().clear();
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -223,6 +260,8 @@ public class StateContainerImpl extends MinimalEObjectImpl.Container implements 
 			return states != null && !states.isEmpty();
 		case StateModelPackage.STATE_CONTAINER__INITIAL_STATE:
 			return initialState != null;
+		case StateModelPackage.STATE_CONTAINER__INITIAL_MATCHES:
+			return initialMatches != null && !initialMatches.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

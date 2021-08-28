@@ -112,8 +112,8 @@ public class StateModelAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
-		public Adapter caseAllMatches(AllMatches object) {
-			return createAllMatchesAdapter();
+		public Adapter caseMatchDelta(MatchDelta object) {
+			return createMatchDeltaAdapter();
 		}
 
 		@Override
@@ -262,16 +262,16 @@ public class StateModelAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.gt.StateModel.AllMatches <em>All Matches</em>}'.
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.gt.StateModel.MatchDelta <em>Match Delta</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see org.emoflon.ibex.gt.StateModel.AllMatches
+	 * @see org.emoflon.ibex.gt.StateModel.MatchDelta
 	 * @generated
 	 */
-	public Adapter createAllMatchesAdapter() {
+	public Adapter createMatchDeltaAdapter() {
 		return null;
 	}
 

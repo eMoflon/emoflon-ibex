@@ -14,6 +14,7 @@
     <genClasses ecoreClass="StateModel.ecore#//StateContainer">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference StateModel.ecore#//StateContainer/states"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference StateModel.ecore#//StateContainer/initialState"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference StateModel.ecore#//StateContainer/initialMatches"/>
     </genClasses>
     <genClasses ecoreClass="StateModel.ecore#//State">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute StateModel.ecore#//State/initial"/>
@@ -29,7 +30,9 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EReference StateModel.ecore#//RuleState/match"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EReference StateModel.ecore#//RuleState/coMatch"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference StateModel.ecore#//RuleState/parameters"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference StateModel.ecore#//RuleState/allMatches"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference StateModel.ecore#//RuleState/deletedMatches"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference StateModel.ecore#//RuleState/createdMatches"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute StateModel.ecore#//RuleState/matchCount"/>
     </genClasses>
     <genClasses ecoreClass="StateModel.ecore#//AttributeDelta">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference StateModel.ecore#//AttributeDelta/attribute"/>
@@ -62,9 +65,9 @@
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference StateModel.ecore#//Value/Type"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute StateModel.ecore#//Value/ValueAsString"/>
     </genClasses>
-    <genClasses ecoreClass="StateModel.ecore#//AllMatches">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute StateModel.ecore#//AllMatches/patternName"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference StateModel.ecore#//AllMatches/allMatchesForPattern"/>
+    <genClasses ecoreClass="StateModel.ecore#//MatchDelta">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute StateModel.ecore#//MatchDelta/patternName"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference StateModel.ecore#//MatchDelta/matchDeltasForPattern"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>

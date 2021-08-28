@@ -103,13 +103,13 @@ public interface StateModelFactory extends EFactory {
 	Value createValue();
 
 	/**
-	 * Returns a new object of class '<em>All Matches</em>'.
+	 * Returns a new object of class '<em>Match Delta</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>All Matches</em>'.
+	 * @return a new object of class '<em>Match Delta</em>'.
 	 * @generated
 	 */
-	AllMatches createAllMatches();
+	MatchDelta createMatchDelta();
 
 	/**
 	 * Returns the package supported by this factory.

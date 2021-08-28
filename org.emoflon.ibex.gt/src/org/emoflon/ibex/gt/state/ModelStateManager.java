@@ -52,6 +52,7 @@ import org.emoflon.ibex.gt.StateModel.AttributeDelta;
 //import org.emoflon.ibex.gt.StateModel.CoMatch;
 import org.emoflon.ibex.gt.StateModel.IBeXMatch;
 import org.emoflon.ibex.gt.StateModel.Link;
+import org.emoflon.ibex.gt.StateModel.MatchDelta;
 //import org.emoflon.ibex.gt.StateModel.Match;
 import org.emoflon.ibex.gt.StateModel.Parameter;
 import org.emoflon.ibex.gt.StateModel.RuleState;
@@ -83,16 +84,21 @@ public class ModelStateManager {
 	private Map<StateID, State> allStates;
 	private Map<State, BiFunction<Map<String,Object>, Boolean, Optional<IMatch>>> gtApply;
 	private Map<State, Map<String, Collection<IMatch>>> matches;
+	private HashMap<String,Collection<IBeXMatch>> initialMatches;
 	
-	public ModelStateManager(final Resource model, final Resource trashResource, final IContextPatternInterpreter engine, boolean forceNewStates) {
+	public ModelStateManager(final Resource model, final Resource trashResource, final IContextPatternInterpreter engine, Map<String, Collection<IMatch>> matches, boolean forceNewStates, boolean loaded) {
 		this.model = model;
 		this.trashResource = trashResource;
 		this.engine = engine;
 		this.forceNewStates = forceNewStates;
 		init();
+		if(!loaded)
+			;
+			initMatches(matches); 
 	}
 	
 	private void init() {
+		
 		gtApply = new HashMap<>();
 		allStates = new HashMap<>();
 		matches = new HashMap<>();
@@ -107,6 +113,23 @@ public class ModelStateManager {
 			allStates.put(id, initialState);
 		}
 		currentState = initialState;
+	}
+	
+	private void initMatches(Map<String, Collection<IMatch>> matches) {
+		initialMatches = new HashMap<String,Collection<IBeXMatch>>();
+		for(String pattern : matches.keySet()) {
+			Collection<IBeXMatch> matchToPattern = new LinkedList<IBeXMatch>();
+			for(IMatch match : matches.get(pattern)) {
+				matchToPattern.add(IMatchToIBeXMatch(match));
+			}
+			initialMatches.put(pattern, matchToPattern);
+			modelStates.getInitialMatches().addAll(matchToPattern);
+		}
+	}
+	
+	
+	public HashMap<String, Collection<IBeXMatch>> getInitialMatches() {
+		return initialMatches;
 	}
 	
 	public State getCurrentState() {
@@ -125,7 +148,7 @@ public class ModelStateManager {
 		this.gtApply = gtApply;
 	}
 	
-	private IBeXMatch IMatchToIBeXMatch(IMatch imatch) {
+	public IBeXMatch IMatchToIBeXMatch(IMatch imatch) {
 		IBeXMatch ibexmatch = factory.createIBeXMatch();
 		
 		for(String paramName : imatch.getParameterNames()) {
@@ -202,17 +225,35 @@ public class ModelStateManager {
 		
 	}
 	
-	public Optional<IMatch> addNewState(final IBeXRule rule, final IMatch match, final Map<String, Object> parameter,final Map<String, Collection<IMatch>> matches, boolean doUpdate, PushoutApproach po, BiFunction<Map<String,Object>, Boolean, Optional<IMatch>> applyRule) {
-		RuleState newState = factory.createRuleState();
+	private void addDeltaMatches(RuleState state, Map<String, Collection<IMatch>> addedMatches, Map<String, Collection<IMatch>> removedMatches) {
+		for(String pattern : addedMatches.keySet()) {
+			MatchDelta createdMatches = factory.createMatchDelta();
+			createdMatches.setPatternName(pattern);
+			for(IMatch match : addedMatches.get(pattern)) {
+					createdMatches.getMatchDeltasForPattern().add(IMatchToIBeXMatch(match));
 				
-		for(String pattern : matches.keySet()) {
-			AllMatches allMatches = factory.createAllMatches();
-			allMatches.setPatternName(pattern);
-			for(IMatch iMatch : matches.get(pattern)) {
-				allMatches.getAllMatchesForPattern().add(IMatchToIBeXMatch(iMatch));
 			}
-			newState.getAllMatches().add(allMatches);
+			state.getCreatedMatches().add(createdMatches);
 		}
+		for(String pattern : removedMatches.keySet()) {
+			MatchDelta deletedMatches = factory.createMatchDelta();
+			deletedMatches.setPatternName(pattern);
+			for(IMatch match : removedMatches.get(pattern)) {
+				deletedMatches.getMatchDeltasForPattern().add(IMatchToIBeXMatch(match));
+			}
+			state.getDeletedMatches().add(deletedMatches);
+		}
+		
+		
+	}
+	
+	public Optional<IMatch> addNewState(final IBeXRule rule, final IMatch match, final Map<String, Object> parameter,final Map<String, Collection<IMatch>> matches, boolean doUpdate, PushoutApproach po,
+			Map<String, Collection<IMatch>> addedMatches, Map<String, Collection<IMatch>> removedMatches, BiFunction<Map<String,Object>, Boolean, Optional<IMatch>> applyRule) {
+		RuleState newState = factory.createRuleState();
+	
+		newState.setMatchCount(matches.get(match.getPatternName()).size());
+
+		addDeltaMatches(newState, addedMatches, removedMatches); 
 		
 		newState.setInitial(false);
 		newState.setMatch(IMatchToIBeXMatch(match));
@@ -773,8 +814,9 @@ public class ModelStateManager {
 	public Resource getModel() {
 
 		return model;
-	}	
-	
+	}
+
+
 }
 
 class StateID {

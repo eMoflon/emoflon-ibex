@@ -7,6 +7,8 @@
         eType="#//State" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="initialState" eType="#//State"
         containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="initialMatches" upperBound="-1"
+        eType="#//IBeXMatch" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="State">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="initial" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
@@ -28,8 +30,11 @@
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="parameters" upperBound="-1"
         eType="#//Parameter" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="allMatches" upperBound="-1"
-        eType="#//AllMatches" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="deletedMatches" upperBound="-1"
+        eType="#//MatchDelta" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="createdMatches" upperBound="-1"
+        eType="#//MatchDelta" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="matchCount" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//ELong"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="AttributeDelta">
     <eStructuralFeatures xsi:type="ecore:EReference" name="attribute" lowerBound="1"
@@ -74,9 +79,9 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="Type" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EDataType"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="ValueAsString" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="AllMatches">
+  <eClassifiers xsi:type="ecore:EClass" name="MatchDelta">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="patternName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="allMatchesForPattern" upperBound="-1"
-        eType="#//IBeXMatch" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="matchDeltasForPattern"
+        upperBound="-1" eType="#//IBeXMatch" containment="true"/>
   </eClassifiers>
 </ecore:EPackage>
