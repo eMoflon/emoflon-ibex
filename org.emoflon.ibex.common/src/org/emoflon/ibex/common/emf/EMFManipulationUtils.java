@@ -140,6 +140,18 @@ public class EMFManipulationUtils {
 		deleteNodes(nodesToDelete, recursive, optimize);
 	}
 	
+	public static void delete(EObject node) {
+		delete(node, false);
+	}
+	
+	public static void delete(EObject node, boolean recursive) {
+		EcoreUtil.delete(node, recursive);
+	}
+	
+	public static void deleteNodes(final Set<EObject> nodeToDelete, boolean recursive) {
+		deleteNodes(nodeToDelete, recursive, false);
+	}
+	
 	/**
 	 * Deletes the given nodes.
 	 * 

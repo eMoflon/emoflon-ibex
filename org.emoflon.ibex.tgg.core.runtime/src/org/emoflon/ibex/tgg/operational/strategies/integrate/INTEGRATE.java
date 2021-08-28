@@ -21,6 +21,7 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.delta.validation.InvalidDeltaException;
 import org.emoflon.ibex.common.emf.EMFEdge;
+import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.benchmark.Timer;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
@@ -122,7 +123,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 		Collection<PatternType> patternsRelevantForPrecedenceGraph = Arrays.asList(PatternType.CONSISTENCY, PatternType.SRC, PatternType.TRG);
 		matchDistributor.registerSingle(patternsRelevantForPrecedenceGraph, precedenceGraph::notifyAddedMatch, precedenceGraph::notifyRemovedMatch);
-		matchDistributor.registerMultiple(patternsRelevantForPrecedenceGraph, precedenceGraph::notifyAddedMatches, precedenceGraph::notifyRemovedMatches);
+		matchDistributor.registerMultiple(patternsRelevantForPrecedenceGraph, precedenceGraph::notifyAddedMatches,
+				precedenceGraph::notifyRemovedMatches);
 	}
 
 	private void removeBrokenMatchesAfterCCMatchApplication(ITGGMatch ccMatch) {
@@ -290,10 +292,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 			return false;
 		brokenRuleApplications.forEach((ra, m) -> {
 			deleteGreenCorrs(m);
-//			EcoreUtil.delete(ra, true);
-//			ra.setProtocol(null);
-			ra.eClass().getEAllReferences().forEach(r -> ra.eSet(r, null));
-			ra.eResource().getContents().remove(ra);
+			EMFManipulationUtils.delete(ra);
 		});
 		processed.putAll(brokenRuleApplications);
 		brokenRuleApplications.clear();
@@ -637,12 +636,16 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 	public void removeBrokenMatch(ITGGMatch brokenMatch) {
 		TGGRuleApplication ra = getRuleApplicationNode(brokenMatch);
-		brokenRuleApplications.remove(ra);
-		ra.setProtocol(null);
-		for (EReference ref : ra.eClass().getEReferences()) {
-			ra.eSet(ref, null);
-		}
 
+		for (EReference ref : ra.eClass().getEAllReferences())
+			ra.eUnset(ref);
+
+		matchDistributor.updateMatches();
+
+		if (brokenRuleApplications.remove(ra) == null)
+			throw new RuntimeException("Match is still valid and therefore cannot be removed!");
+		if (ra.eResource() != null)
+			ra.eResource().getContents().remove(ra);
 		precedenceGraph.removeMatch(brokenMatch);
 	}
 
