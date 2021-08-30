@@ -185,7 +185,7 @@ public class EMFManipulationUtils {
 					else
 						eObject.eSet(ref, null);
 				}
-				EcoreUtil.remove(eObject);
+				delete(eObject);
 			}
 		}
 		else {
@@ -214,7 +214,8 @@ public class EMFManipulationUtils {
 					else
 						eObject.eSet(ref, null);
 				}
-				EcoreUtil.remove(eObject);
+//				EcoreUtil.remove(eObject);
+				delete(eObject);
 			}
 		}
 		else {

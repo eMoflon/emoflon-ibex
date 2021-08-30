@@ -19,6 +19,7 @@ import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 
 import language.TGGRuleNode;
+import runtime.CorrespondenceNode;
 import runtime.TGGRuleApplication;
 
 public class IbexRedInterpreter implements IRedInterpreter {
@@ -151,11 +152,10 @@ public class IbexRedInterpreter implements IRedInterpreter {
 	 */
 	public void revoke(final Set<EObject> nodesToRevoke, final Set<EMFEdge> edgesToRevoke) {
 		nodesToRevoke.forEach(n -> {
-			Resource r = n.eResource();
-			if (resourceHandler.getSourceResource().equals(r) || resourceHandler.getTargetResource().equals(r))
-				numOfDeletedNodes++;
-			else if (resourceHandler.getCorrResource().equals(r))
+			if (n instanceof CorrespondenceNode)
 				numOfDeletedCorrNodes++;
+			else
+				numOfDeletedNodes++;
 		});
 		
 		if(options.blackInterpreter().getProperties().needs_trash_resource()) 

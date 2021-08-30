@@ -16,5 +16,6 @@
     <genClasses ecoreClass="Runtime.ecore#//TempContainer">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Runtime.ecore#//TempContainer/objects"/>
     </genClasses>
+    <genClasses ecoreClass="Runtime.ecore#//CorrespondenceNode"/>
   </genPackages>
 </genmodel:GenModel>

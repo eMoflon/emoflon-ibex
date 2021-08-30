@@ -170,6 +170,34 @@ public interface RuntimePackage extends EPackage {
 	int TEMP_CONTAINER_OPERATION_COUNT = 0;
 
 	/**
+	 * The meta object id for the '{@link runtime.impl.CorrespondenceNodeImpl <em>Correspondence Node</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see runtime.impl.CorrespondenceNodeImpl
+	 * @see runtime.impl.RuntimePackageImpl#getCorrespondenceNode()
+	 * @generated
+	 */
+	int CORRESPONDENCE_NODE = 3;
+
+	/**
+	 * The number of structural features of the '<em>Correspondence Node</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CORRESPONDENCE_NODE_FEATURE_COUNT = 0;
+
+	/**
+	 * The number of operations of the '<em>Correspondence Node</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int CORRESPONDENCE_NODE_OPERATION_COUNT = 0;
+
+	/**
 	 * Returns the meta object for class '{@link runtime.Protocol <em>Protocol</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -231,6 +259,16 @@ public interface RuntimePackage extends EPackage {
 	 * @generated
 	 */
 	EReference getTempContainer_Objects();
+
+	/**
+	 * Returns the meta object for class '{@link runtime.CorrespondenceNode <em>Correspondence Node</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Correspondence Node</em>'.
+	 * @see runtime.CorrespondenceNode
+	 * @generated
+	 */
+	EClass getCorrespondenceNode();
 
 	/**
 	 * Returns the factory that creates the instances of the model.
@@ -308,6 +346,16 @@ public interface RuntimePackage extends EPackage {
 		 * @generated
 		 */
 		EReference TEMP_CONTAINER__OBJECTS = eINSTANCE.getTempContainer_Objects();
+
+		/**
+		 * The meta object literal for the '{@link runtime.impl.CorrespondenceNodeImpl <em>Correspondence Node</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see runtime.impl.CorrespondenceNodeImpl
+		 * @see runtime.impl.RuntimePackageImpl#getCorrespondenceNode()
+		 * @generated
+		 */
+		EClass CORRESPONDENCE_NODE = eINSTANCE.getCorrespondenceNode();
 
 	}
 

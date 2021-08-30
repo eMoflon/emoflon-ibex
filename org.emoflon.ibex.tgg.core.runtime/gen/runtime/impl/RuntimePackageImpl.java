@@ -7,6 +7,7 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.EPackageImpl;
 
+import runtime.CorrespondenceNode;
 import runtime.Protocol;
 import runtime.RuntimeFactory;
 import runtime.RuntimePackage;
@@ -40,6 +41,13 @@ public class RuntimePackageImpl extends EPackageImpl implements RuntimePackage {
 	 * @generated
 	 */
 	private EClass tempContainerEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass correspondenceNodeEClass = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -171,6 +179,16 @@ public class RuntimePackageImpl extends EPackageImpl implements RuntimePackage {
 	 * @generated
 	 */
 	@Override
+	public EClass getCorrespondenceNode() {
+		return correspondenceNodeEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public RuntimeFactory getRuntimeFactory() {
 		return (RuntimeFactory) getEFactoryInstance();
 	}
@@ -203,6 +221,8 @@ public class RuntimePackageImpl extends EPackageImpl implements RuntimePackage {
 
 		tempContainerEClass = createEClass(TEMP_CONTAINER);
 		createEReference(tempContainerEClass, TEMP_CONTAINER__OBJECTS);
+
+		correspondenceNodeEClass = createEClass(CORRESPONDENCE_NODE);
 	}
 
 	/**
@@ -253,6 +273,9 @@ public class RuntimePackageImpl extends EPackageImpl implements RuntimePackage {
 		initEReference(getTempContainer_Objects(), ecorePackage.getEObject(), null, "objects", null, 0, -1,
 				TempContainer.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(correspondenceNodeEClass, CorrespondenceNode.class, "CorrespondenceNode", !IS_ABSTRACT,
+				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		// Create resource
 		createResource(eNS_URI);

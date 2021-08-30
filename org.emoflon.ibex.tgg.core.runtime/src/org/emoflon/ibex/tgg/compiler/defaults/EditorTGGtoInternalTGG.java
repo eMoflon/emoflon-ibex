@@ -473,10 +473,12 @@ public class EditorTGGtoInternalTGG {
 		}
 
 		for (CorrType ct : xtextTGG.getSchema().getCorrespondenceTypes()) {
-
 			if (ct.getSuper() != null) {
 				((EClass) xTextCorrToCorrClass.get(ct.getName())).getESuperTypes()
 						.add((EClass) xTextCorrToCorrClass.get(ct.getSuper().getName()));
+			}
+			else {
+				((EClass) xTextCorrToCorrClass.get(ct.getName())).getESuperTypes().add(RuntimePackage.eINSTANCE.getCorrespondenceNode());
 			}
 		}
 

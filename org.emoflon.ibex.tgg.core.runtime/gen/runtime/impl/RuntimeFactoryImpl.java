@@ -8,6 +8,7 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.impl.EFactoryImpl;
 import org.eclipse.emf.ecore.plugin.EcorePlugin;
 
+import runtime.*;
 import runtime.Protocol;
 import runtime.RuntimeFactory;
 import runtime.RuntimePackage;
@@ -64,6 +65,8 @@ public class RuntimeFactoryImpl extends EFactoryImpl implements RuntimeFactory {
 			return createTGGRuleApplication();
 		case RuntimePackage.TEMP_CONTAINER:
 			return createTempContainer();
+		case RuntimePackage.CORRESPONDENCE_NODE:
+			return createCorrespondenceNode();
 		default:
 			throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -100,6 +103,17 @@ public class RuntimeFactoryImpl extends EFactoryImpl implements RuntimeFactory {
 	public TempContainer createTempContainer() {
 		TempContainerImpl tempContainer = new TempContainerImpl();
 		return tempContainer;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public CorrespondenceNode createCorrespondenceNode() {
+		CorrespondenceNodeImpl correspondenceNode = new CorrespondenceNodeImpl();
+		return correspondenceNode;
 	}
 
 	/**
