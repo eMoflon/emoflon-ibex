@@ -745,7 +745,7 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 			IBeXNode ibexNode = IBeXPatternFactory.createNode(editorExpression.getNode().getName(), editorExpression.getNode().getType());
 			data.node2ibexNode.get(ibexPattern.getName()).put(editorExpression.getNode(), ibexNode);
 			((IBeXCreatePattern) ibexPattern).getContextNodes().add(ibexNode);
-			Optional.of(ibexNode);
+			ibexExistingNode = Optional.of(ibexNode);
 		}
 
 		return ibexExistingNode.map(ibexNode -> {
@@ -761,10 +761,15 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		Optional<IBeXNode> ibexExistingNode = Optional.of(data.iterator2ibexNode.get(ibexPattern.getName()).get(editorExpression.getIterator()));
 
 		if (!ibexExistingNode.isPresent() && ibexPattern instanceof IBeXCreatePattern) {
-			IBeXNode ibexNode = IBeXPatternFactory.createNode(editorExpression.getIterator().getName(), (EClass)editorExpression.getIterator().getType().getEType());
+			IBeXNode ibexNode = null;
+			if(editorExpression.getIterator().getSubType() != null) {
+				ibexNode = IBeXPatternFactory.createNode(editorExpression.getIterator().getName(), editorExpression.getIterator().getSubType());
+			} else {
+				ibexNode = IBeXPatternFactory.createNode(editorExpression.getIterator().getName(), (EClass)editorExpression.getIterator().getType().getEType());
+			}
 			data.iterator2ibexNode.get(ibexPattern.getName()).put(editorExpression.getIterator(), ibexNode);
 			((IBeXCreatePattern) ibexPattern).getContextNodes().add(ibexNode);
-			Optional.of(ibexNode);
+			ibexExistingNode = Optional.of(ibexNode);
 		}
 
 		return ibexExistingNode.map(ibexNode -> {
@@ -892,7 +897,12 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		IBeXForEachExpression forEachExpr = IBeXPatternModelFactory.eINSTANCE.createIBeXForEachExpression();
 		forEachExpr.setSource(data.node2ibexNode.get(editorPattern.getName()).get(iterator.eContainer()));
 		
-		IBeXNode trgIterator = IBeXPatternFactory.createNode(iterator.getName(), (EClass)iterator.getType().getEType());
+		IBeXNode trgIterator = null;
+		if(iterator.getSubType() != null) {
+			trgIterator = IBeXPatternFactory.createNode(iterator.getName(), iterator.getSubType());
+		} else {
+			trgIterator = IBeXPatternFactory.createNode(iterator.getName(), (EClass)iterator.getType().getEType());
+		}
 		forEachExpr.setTrgIterator(trgIterator);
 		Map<EditorReferenceIterator, IBeXNode> itr2node = data.iterator2ibexNode.get(editorPattern.getName());
 		if(itr2node == null) {
