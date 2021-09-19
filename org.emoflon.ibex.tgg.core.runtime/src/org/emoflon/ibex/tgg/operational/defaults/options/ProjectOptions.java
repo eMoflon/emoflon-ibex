@@ -1,12 +1,6 @@
 package org.emoflon.ibex.tgg.operational.defaults.options;
 
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
-import org.moflon.core.propertycontainer.MoflonPropertiesContainer;
-import org.moflon.core.propertycontainer.UsedCodeGen;
 import org.moflon.smartemf.runtime.SmartPackage;
 
 public class ProjectOptions extends IbexSubOptions {
