@@ -11,7 +11,6 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.pattern.Integration
 
 public class FragmentProvider {
 
-	public static final ApplyUserDelta APPLY_USER_DELTA = new ApplyUserDelta();
 	public static final Repair REPAIR = new Repair();
 	public static final ResolveConflicts RESOLVE_CONFLICTS = new ResolveConflicts();
 	public static final ResolveBrokenMatches RESOLVE_BROKEN_MATCHES = new ResolveBrokenMatches();
@@ -21,7 +20,6 @@ public class FragmentProvider {
 	public static final CleanUp CLEAN_UP = new CleanUp();
 
 	public static final List<IntegrationFragment> DEFAULT_FRAGMENTS = Arrays.asList( //
-			APPLY_USER_DELTA, //
 			REPAIR, //
 			CHECK_LOCAL_CONSISTENCY, //
 			RESOLVE_CONFLICTS, //
@@ -32,30 +30,17 @@ public class FragmentProvider {
 
 	//// INTEGRATION FRAGMENTS ////
 
-	@Deprecated
-	public static class ApplyUserDelta implements IntegrationFragment {
-		private ApplyUserDelta() {
-		}
-
-		@Override
-		public void apply(INTEGRATE i) throws IOException {
-			// NO-OP
-			return;
-		}
-	}
-
 	public static class Repair implements IntegrationFragment {
 		private Repair() {
 		}
 
 		@Override
 		public void apply(INTEGRATE i) throws IOException {
+			TRANSLATE.apply(i);
+
 			FragmentProvider.logFragmentStart(this);
 			Timer.start();
 
-			i.classifyBrokenMatches(true);
-			i.detectConflicts();
-			i.translateConflictFree();
 			i.repairBrokenMatches();
 
 			i.getTimes().addTo("fragments:Repair", Timer.stop());
@@ -74,7 +59,6 @@ public class FragmentProvider {
 			i.classifyBrokenMatches(true);
 			i.detectConflicts();
 			i.resolveConflicts();
-			i.detectAndResolveOpMultiplicityConflicts();
 
 			i.getTimes().addTo("fragments:ResolveConflicts", Timer.stop());
 		}
@@ -126,7 +110,7 @@ public class FragmentProvider {
 			Timer.start();
 
 			i.classifyBrokenMatches(true);
-			i.detectConflicts();
+			i.detectAndResolveOpMultiplicityConflicts();
 			i.translateConflictFree();
 
 			i.getTimes().addTo("fragments:Translate", Timer.stop());

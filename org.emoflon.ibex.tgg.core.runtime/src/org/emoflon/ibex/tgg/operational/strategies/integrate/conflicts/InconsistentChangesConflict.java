@@ -72,7 +72,6 @@ public abstract class InconsistentChangesConflict extends Conflict implements CR
 	protected void repair() {
 		try {
 			// TODO adrianM: fix this repair!
-			FragmentProvider.APPLY_USER_DELTA.apply(integrate());
 			FragmentProvider.REPAIR.apply(integrate());
 		} catch (IOException e) {
 			e.printStackTrace();
