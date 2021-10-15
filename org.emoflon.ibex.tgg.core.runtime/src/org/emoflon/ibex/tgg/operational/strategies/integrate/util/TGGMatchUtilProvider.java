@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.strategies.integrate.util2;
+package org.emoflon.ibex.tgg.operational.strategies.integrate.util;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,12 +29,7 @@ public class TGGMatchUtilProvider {
 	}
 
 	public TGGMatchUtil get(ITGGMatch match) {
-		TGGMatchUtil util = match2util.get(match);
-		if (util == null) {
-			util = new TGGMatchUtil(integrate, match, name2rule.get(match.getRuleName()));
-			match2util.put(match, util);
-		}
-		return util;
+		return match2util.computeIfAbsent(match, k -> new TGGMatchUtil(integrate, match, name2rule.get(match.getRuleName())));
 	}
 
 }

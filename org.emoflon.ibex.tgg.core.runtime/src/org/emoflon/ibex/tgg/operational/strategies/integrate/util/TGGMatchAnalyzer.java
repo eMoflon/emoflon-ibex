@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.strategies.integrate.util2;
+package org.emoflon.ibex.tgg.operational.strategies.integrate.util;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,7 +36,7 @@ public class TGGMatchAnalyzer {
 		this.util = util;
 	}
 
-	private Set<TGGRuleElement> analyzeDeletions() {
+	public Set<TGGRuleElement> getAllDeletedElements() {
 		Set<TGGRuleElement> deletedElements = new HashSet<>();
 
 		util.node2eObject.forEach((node, obj) -> {
@@ -45,7 +45,7 @@ public class TGGMatchAnalyzer {
 				deletedElements.add(node);
 		});
 		util.edge2emfEdge.forEach((edge, emfEdge) -> {
-			if (edgeIsDeleted(edge, emfEdge, deletedElements))
+			if (isEdgeDeleted(edge, emfEdge, deletedElements))
 				deletedElements.add(edge);
 		});
 
@@ -63,7 +63,7 @@ public class TGGMatchAnalyzer {
 		return false;
 	}
 
-	private boolean edgeIsDeleted(TGGRuleEdge edge, EMFEdge emfEdge, Set<TGGRuleElement> deletedElements) {
+	private boolean isEdgeDeleted(TGGRuleEdge edge, EMFEdge emfEdge, Set<TGGRuleElement> deletedElements) {
 		if (deletedElements.contains(edge.getSrcNode()) || deletedElements.contains(edge.getTrgNode()))
 			return true;
 		Object value = emfEdge.getSource().eGet(emfEdge.getType());
@@ -75,7 +75,7 @@ public class TGGMatchAnalyzer {
 	}
 
 	public DeletionPattern createDelPattern() {
-		Set<TGGRuleElement> deletedElements = analyzeDeletions();
+		Set<TGGRuleElement> deletedElements = getAllDeletedElements();
 
 		DeletionPattern pattern = new DeletionPattern(DomainModification.UNCHANGED);
 		Predicate<TGGRuleElement> isDel = e -> deletedElements.contains(e);

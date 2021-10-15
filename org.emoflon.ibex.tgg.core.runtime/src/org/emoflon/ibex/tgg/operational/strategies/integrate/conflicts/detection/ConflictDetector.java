@@ -32,8 +32,8 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.Operation
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.detection.MultiplicityCounter.OutgoingEdge;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceNode;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.AttributeChange;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis.ConstrainedAttributeChanges;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchAnalyzer.ConstrainedAttributeChanges;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil;
 
 import com.google.common.collect.Sets;
 
@@ -82,12 +82,12 @@ public class ConflictDetector {
 	private void detectDeletePreserveConflicts() {
 		// we only iterate over src/trg matches which are not part of a consistency match (already filtered
 		// in precedence graph)
-		integrate.getPrecedenceGraph().getSourceNodes().parallelStream() //
-				.filter(srcNode -> !integrate.getPrecedenceGraph().hasAnyConsistencyOverlap(srcNode)) //
+		integrate.precedenceGraph().getSourceNodes().parallelStream() //
+				.filter(srcNode -> !integrate.precedenceGraph().hasAnyConsistencyOverlap(srcNode)) //
 				.forEach(srcNode -> detectDeletePreserveEdgeConflict(srcNode, null));
 
-		integrate.getPrecedenceGraph().getTargetNodes().parallelStream() //
-				.filter(trgNode -> !integrate.getPrecedenceGraph().hasAnyConsistencyOverlap(trgNode)) //
+		integrate.precedenceGraph().getTargetNodes().parallelStream() //
+				.filter(trgNode -> !integrate.precedenceGraph().hasAnyConsistencyOverlap(trgNode)) //
 				.forEach(trgNode -> detectDeletePreserveEdgeConflict(trgNode, null));
 
 		detectDeletePreserveAttrConflicts();
@@ -108,7 +108,7 @@ public class ConflictDetector {
 		srcTrgNode.forAllToBeRolledBackBy((act, pre) -> {
 			// TODO adrianm: improve performance?
 			// we only want to traverse those src/trg matches that only matches non-translated green elements
-			if (act.getMatch().getType() != PatternType.CONSISTENCY && integrate.getPrecedenceGraph().hasAnyConsistencyOverlap(act))
+			if (act.getMatch().getType() != PatternType.CONSISTENCY && integrate.precedenceGraph().hasAnyConsistencyOverlap(act))
 				return false;
 			if (act.isBroken()) {
 				directRollBackCauses.add(act);
@@ -137,12 +137,12 @@ public class ConflictDetector {
 
 	private void detectDeletePreserveAttrConflicts() {
 		for (AttributeChange change : integrate.getGeneralModelChanges().getAttributeChanges()) {
-			for (PrecedenceNode node : integrate.getPrecedenceGraph().getNodesTranslating(change.getElement())) {
+			for (PrecedenceNode node : integrate.precedenceGraph().getNodesTranslating(change.getElement())) {
 				if (node.getMatch().getType() != PatternType.CONSISTENCY)
 					continue;
 
-				MatchAnalysis analysis = integrate.getMatchUtil().getAnalysis(node.getMatch());
-				TGGRuleNode ruleNode = analysis.getNode(change.getElement());
+				TGGMatchUtil matchUtil = integrate.matchUtils().get(node.getMatch());
+				TGGRuleNode ruleNode = matchUtil.getNode(change.getElement());
 
 				ConflictContainer container = match2conflictContainer.computeIfAbsent(node.getMatch(), //
 						key -> new ConflictContainer(integrate, node.getMatch()));
@@ -231,24 +231,22 @@ public class ConflictDetector {
 	}
 
 	private boolean hasDomainSpecificViolations(ITGGMatch match, DomainType domain) {
-		ClassifiedMatch brokenMatch = integrate.getClassifiedBrokenMatches().get(match);
-		if (brokenMatch == null)
-			brokenMatch = new ClassifiedMatch(integrate, match, false);
+		ClassifiedMatch classifiedMatch = integrate.matchClassifier().get(match);
 
 		switch (domain) {
 		case SRC:
-			if (DeletionType.getSrcDelCandidates().contains(brokenMatch.getDeletionType()))
+			if (DeletionType.getSrcDelCandidates().contains(classifiedMatch.getDeletionType()))
 				return true;
 			break;
 		case TRG:
-			if (DeletionType.getTrgDelCandidates().contains(brokenMatch.getDeletionType()))
+			if (DeletionType.getTrgDelCandidates().contains(classifiedMatch.getDeletionType()))
 				return true;
 			break;
 		default:
 			break;
 		}
 
-		if (brokenMatch.getFilterNacViolations().containsValue(domain))
+		if (classifiedMatch.getFilterNacViolations().containsValue(domain))
 			return true;
 
 		// TODO adrianm: check attributes
@@ -270,7 +268,7 @@ public class ConflictDetector {
 	}
 
 	private void detectBrokenMatchBasedConflicts() {
-		integrate.getClassifiedBrokenMatches().values().parallelStream() //
+		integrate.matchClassifier().getAllClassifiedMatches().parallelStream() //
 				.forEach(brokenMatch -> detectBrokenMatchBasedConflicts(brokenMatch));
 	}
 
@@ -348,7 +346,7 @@ public class ConflictDetector {
 				// reparable match, we additionally have to detect possible conflicts starting from all qualified
 				// source matches.
 				for (ITGGMatch srcMatch : srcMatches)
-					if (detectDeletePreserveEdgeConflict(integrate.getPrecedenceGraph().getNode(srcMatch), brokenMatch.getMatch()))
+					if (detectDeletePreserveEdgeConflict(integrate.precedenceGraph().getNode(srcMatch), brokenMatch.getMatch()))
 						anyConflictsDetected = true;
 
 				// In case the conflicting match is also the reparable match, we simply can create the conflict.
@@ -377,7 +375,7 @@ public class ConflictDetector {
 				// reparable match, we additionally have to detect possible conflicts starting from all qualified
 				// target matches.
 				for (ITGGMatch trgMatch : trgMatches)
-					if (detectDeletePreserveEdgeConflict(integrate.getPrecedenceGraph().getNode(trgMatch), brokenMatch.getMatch()))
+					if (detectDeletePreserveEdgeConflict(integrate.precedenceGraph().getNode(trgMatch), brokenMatch.getMatch()))
 						anyConflictsDetected = true;
 
 				// In case the conflicting match is also the reparable match, we simply can create the conflict.
@@ -412,11 +410,11 @@ public class ConflictDetector {
 
 		IGreenPatternFactory gFactory = integrate.getGreenFactory(match.getRuleName());
 		for (TGGRuleNode ruleNode : gFactory.getGreenSrcNodesInRule()) {
-			for (PrecedenceNode node : integrate.getPrecedenceGraph().getNodesTranslating(match.get(ruleNode.getName()))) {
+			for (PrecedenceNode node : integrate.precedenceGraph().getNodesTranslating(match.get(ruleNode.getName()))) {
 				if (node.getMatch().getType() == PatternType.CONSISTENCY)
 					continue;
 
-				if (integrate.getPrecedenceGraph().getSourceNodes().contains(node))
+				if (integrate.precedenceGraph().getSourceNodes().contains(node))
 					srcMatches.add(node.getMatch());
 			}
 		}
@@ -436,11 +434,11 @@ public class ConflictDetector {
 
 		IGreenPatternFactory gFactory = integrate.getGreenFactory(match.getRuleName());
 		for (TGGRuleNode ruleNode : gFactory.getGreenTrgNodesInRule()) {
-			for (PrecedenceNode node : integrate.getPrecedenceGraph().getNodesTranslating(match.get(ruleNode.getName()))) {
+			for (PrecedenceNode node : integrate.precedenceGraph().getNodesTranslating(match.get(ruleNode.getName()))) {
 				if (node.getMatch().getType() == PatternType.CONSISTENCY)
 					continue;
 
-				if (integrate.getPrecedenceGraph().getTargetNodes().contains(node))
+				if (integrate.precedenceGraph().getTargetNodes().contains(node))
 					trgMatches.add(node.getMatch());
 			}
 		}
@@ -450,7 +448,7 @@ public class ConflictDetector {
 
 	private List<ITGGMatch> computeSortedRollBackCausesIfAbsent(ITGGMatch directCausingMatch) {
 		return match2sortedRollBackCauses.computeIfAbsent(directCausingMatch, //
-				k -> integrate.getPrecedenceGraph().getNode(directCausingMatch).computeSortedRollBackCauses().stream() //
+				k -> integrate.precedenceGraph().getNode(directCausingMatch).computeSortedRollBackCauses().stream() //
 						.map(n -> n.getMatch()) //
 						.collect(Collectors.toList()));
 	}
@@ -462,18 +460,18 @@ public class ConflictDetector {
 		// directly at INTEGRATE)
 		Set<ITGGMatch> actFwdBwdMatches = integrate.getMatchContainer().getMatches();
 		for (ITGGMatch fwdBwdMatch : Sets.difference(actFwdBwdMatches, cachedAddedFwdBwdMatches))
-			integrate.getMultiplicityCounter().notifyAddedMatch(fwdBwdMatch);
+			integrate.multiplicityCounter().notifyAddedMatch(fwdBwdMatch);
 		for (ITGGMatch fwdBwdMatch : Sets.difference(cachedAddedFwdBwdMatches, actFwdBwdMatches))
-			integrate.getMultiplicityCounter().notifyRemovedMatch(fwdBwdMatch);
+			integrate.multiplicityCounter().notifyRemovedMatch(fwdBwdMatch);
 		cachedAddedFwdBwdMatches = new HashSet<>(actFwdBwdMatches);
 
 		// detect conflicts
-		integrate.getMultiplicityCounter().getSubject2reference2numOfEdges().forEach((subj, ref2numOfEdges) -> {
+		integrate.multiplicityCounter().getSubject2reference2numOfEdges().forEach((subj, ref2numOfEdges) -> {
 			ref2numOfEdges.forEach((ref, numOfEdges) -> {
-				int violationCounter = integrate.getMultiplicityCounter().violatesMultiplicity(ref, numOfEdges);
+				int violationCounter = integrate.multiplicityCounter().violatesMultiplicity(ref, numOfEdges);
 				if (violationCounter != 0) {
 					ITGGMatch underlyingMatch = null;
-					for (PrecedenceNode node : integrate.getPrecedenceGraph().getNodesTranslating(subj)) {
+					for (PrecedenceNode node : integrate.precedenceGraph().getNodesTranslating(subj)) {
 						if (node.getMatch().getType() == PatternType.CONSISTENCY) {
 							underlyingMatch = node.getMatch();
 							break;
@@ -488,9 +486,9 @@ public class ConflictDetector {
 							key -> new ConflictContainer(integrate, tmpUnderlyingMatch));
 
 					OutgoingEdge outgoingEdge = new OutgoingEdge(subj, ref);
-					Map<ITGGMatch, Integer> addedMatches = integrate.getMultiplicityCounter().getOutgoingEdge2addedMatches2numOfEdges() //
+					Map<ITGGMatch, Integer> addedMatches = integrate.multiplicityCounter().getOutgoingEdge2addedMatches2numOfEdges() //
 							.getOrDefault(outgoingEdge, Collections.emptyMap());
-					Map<ITGGMatch, Integer> removedMatches = integrate.getMultiplicityCounter().getOutgoingEdge2removedMatches2numOfEdges() //
+					Map<ITGGMatch, Integer> removedMatches = integrate.multiplicityCounter().getOutgoingEdge2removedMatches2numOfEdges() //
 							.getOrDefault(outgoingEdge, Collections.emptyMap());
 
 					new OperationalMultiplicityConflict(container, subj, ref, violationCounter, addedMatches, removedMatches);

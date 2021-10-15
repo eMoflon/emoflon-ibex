@@ -40,7 +40,7 @@ public class CorrPreservationConflict extends InconsistentChangesConflict implem
 		srcMatches = new HashSet<>();
 		trgMatches = new HashSet<>();
 
-		PrecedenceGraph pg = integrate().getPrecedenceGraph();
+		PrecedenceGraph pg = integrate().precedenceGraph();
 		ITGGMatch match = getMatch();
 		IGreenPatternFactory gFactory = integrate().getGreenFactory(match.getRuleName());
 

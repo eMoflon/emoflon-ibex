@@ -84,7 +84,7 @@ public class DelPreserveEdgeConflict extends DeletePreserveConflict {
 
 	@Override
 	protected void revokeAddition() {
-		for (TGGRuleEdge e : integrate().getMatchUtil().getEdges(srcTrgMatch, new EltFilter().create())) {
+		for (TGGRuleEdge e : integrate().matchUtils().get(srcTrgMatch).getEdges(new EltFilter().create())) {
 			if (e.getSrcNode().getBindingType() != BindingType.CONTEXT && e.getTrgNode().getBindingType() != BindingType.CONTEXT)
 				return;
 

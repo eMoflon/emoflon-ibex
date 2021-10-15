@@ -42,7 +42,7 @@ public abstract class DeletePreserveConflict extends Conflict
 		Set<ITGGMatch> matches = new HashSet<>();
 		matches.addAll(causingMatches);
 		matches.remove(causingMatches.get(0));
-		integrate().getPrecedenceGraph().getNode(getMatch()).forAllRequiredBy((act, pre) -> matches.add(act.getMatch()));
+		integrate().precedenceGraph().getNode(getMatch()).forAllRequiredBy((act, pre) -> matches.add(act.getMatch()));
 		return matches;
 	}
 
@@ -128,7 +128,7 @@ public abstract class DeletePreserveConflict extends Conflict
 
 			toBeCorrsDeleted.add(match);
 
-			integrate().getPrecedenceGraph().getNode(match).forAllRequiredBy((act, pre) -> {
+			integrate().precedenceGraph().getNode(match).forAllRequiredBy((act, pre) -> {
 				if (act.getMatch().getType() != PatternType.CONSISTENCY || toBeCorrsDeleted.contains(act.getMatch()))
 					return false;
 				toBeCorrsDeleted.add(act.getMatch());
@@ -157,7 +157,7 @@ public abstract class DeletePreserveConflict extends Conflict
 	}
 
 	protected void restoreMatchesBasedOn(ITGGMatch match) {
-		PrecedenceGraph pg = integrate().getPrecedenceGraph();
+		PrecedenceGraph pg = integrate().precedenceGraph();
 		pg.getNode(match).getRequiredBy().forEach(n -> {
 			if (n.isBroken()) {
 				ITGGMatch m = n.getMatch();

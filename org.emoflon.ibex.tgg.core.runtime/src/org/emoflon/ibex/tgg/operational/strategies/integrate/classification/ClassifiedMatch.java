@@ -1,18 +1,13 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.classification;
 
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.emf.ecore.EObject;
-import org.emoflon.ibex.common.emf.EMFEdge;
-import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.EltFilter;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis.ConstrainedAttributeChanges;
-import org.emoflon.ibex.tgg.util.ConsoleUtil;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceNode;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchAnalyzer.ConstrainedAttributeChanges;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil;
 
 import language.DomainType;
 
@@ -21,25 +16,41 @@ public class ClassifiedMatch {
 	private final INTEGRATE integrate;
 
 	private final ITGGMatch match;
-	private final MatchAnalysis util;
+	private final TGGMatchUtil util;
 
-	private final boolean implicitBroken;
+	private final MatchStatus matchStatus;
 	private final DeletionPattern deletionPattern;
 
 	private DeletionType deletionType;
 	private final Map<ITGGMatch, DomainType> filterNacViolations;
 	private final Set<ConstrainedAttributeChanges> constrainedAttrChanges;
 	// TODO adrianm: add violated in-place attribute expressions
+	
+	public enum MatchStatus {
+		INTACT, BROKEN, IMPLICIT_BROKEN;
+	}
 
-	public ClassifiedMatch(INTEGRATE integrate, ITGGMatch match, boolean implicitBroken) {
+	public ClassifiedMatch(INTEGRATE integrate, PrecedenceNode node) {
 		this.integrate = integrate;
-		this.match = match;
-		this.implicitBroken = implicitBroken;
-		this.util = integrate.getMatchUtil().getAnalysis(match);
-		this.deletionPattern = util.createDelPattern();
-		this.filterNacViolations = util.analyzeFilterNACViolations();
-		this.constrainedAttrChanges = util.analyzeAttributeChanges();
+		this.match = node.getMatch();
+		this.matchStatus = calcMatchStatus(node);
+		this.util = integrate.matchUtils().get(match);
+		this.deletionPattern = util.analyzer().createDelPattern();
+		this.filterNacViolations = util.analyzer().analyzeFilterNACViolations();
+		this.constrainedAttrChanges = util.analyzer().analyzeAttributeChanges();
 		fillDeletionTypes();
+	}
+	
+	public ClassifiedMatch(INTEGRATE integrate, ITGGMatch match) {
+		this(integrate, integrate.precedenceGraph().getNode(match));
+	}
+
+	private MatchStatus calcMatchStatus(PrecedenceNode node) {
+		if (node.isBroken())
+			return MatchStatus.BROKEN;
+		if (integrate.precedenceGraph().getImplicitBrokenNodes().contains(node))
+			return MatchStatus.IMPLICIT_BROKEN;
+		return MatchStatus.INTACT;
 	}
 
 	private void fillDeletionTypes() {
@@ -70,45 +81,17 @@ public class ClassifiedMatch {
 	}
 
 	public boolean isImplicitBroken() {
-		return implicitBroken;
+		return matchStatus == MatchStatus.IMPLICIT_BROKEN;
 	}
 
-	public MatchAnalysis util() {
+	public TGGMatchUtil util() {
 		return util;
-	}
-
-	public void rollbackBrokenMatch() {
-		if (implicitBroken)
-			return;
-
-		integrate.deleteGreenCorrs(match);
-
-		Set<EObject> nodesToBeDeleted = new HashSet<>();
-		Set<EMFEdge> edgesToBeDeleted = new HashSet<>();
-
-		EltFilter filter = new EltFilter().create().notDeleted();
-		if (DeletionType.getPropFWDCandidates().contains(deletionType))
-			filter.trg();
-		else if (DeletionType.getPropBWDCandidates().contains(deletionType))
-			filter.src();
-		else
-			filter.srcAndTrg();
-
-		integrate.getMatchUtil().getObjects(match, filter).forEach((o) -> nodesToBeDeleted.add(o));
-		integrate.getMatchUtil().getEMFEdges(match, filter).forEach((e) -> edgesToBeDeleted.add(e));
-		integrate.getRedInterpreter().revoke(nodesToBeDeleted, edgesToBeDeleted);
-
-		integrate.removeBrokenMatch(match);
-
-		LoggerConfig.log(LoggerConfig.log_ruleApplication(),
-				() -> "Rule application: rolled back " + match.getPatternName() + "(" + match.hashCode() + ")\n" //
-						+ ConsoleUtil.indent(ConsoleUtil.printMatchParameter(match), 18, true));
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder b = new StringBuilder();
-		b.append("BrokenMatch | ");
+		b.append("ClassifiedMatch | ");
 		b.append(match.getPatternName());
 		b.append("(");
 		b.append(match.hashCode());
@@ -120,8 +103,8 @@ public class ClassifiedMatch {
 
 	private String print() {
 		StringBuilder b = new StringBuilder();
-		b.append("IsImplicitBroken [ ");
-		b.append(implicitBroken);
+		b.append("Status [ ");
+		b.append(matchStatus);
 		b.append(" ]\n");
 		b.append("DeletionType [ ");
 		b.append(deletionType);

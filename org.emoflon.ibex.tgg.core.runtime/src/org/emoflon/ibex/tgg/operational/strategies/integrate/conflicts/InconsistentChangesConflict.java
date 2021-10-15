@@ -35,7 +35,7 @@ public abstract class InconsistentChangesConflict extends Conflict implements CR
 	public void crs_deleteCorrs() {
 		Set<ITGGMatch> toBeCorrsDeleted = new HashSet<>();
 		toBeCorrsDeleted.add(getMatch());
-		integrate().getPrecedenceGraph().getNode(getMatch()).forAllRequiredBy((act, pre) -> {
+		integrate().precedenceGraph().getNode(getMatch()).forAllRequiredBy((act, pre) -> {
 			if (act.getMatch().getType() != PatternType.CONSISTENCY)
 				return false;
 			toBeCorrsDeleted.add(act.getMatch());

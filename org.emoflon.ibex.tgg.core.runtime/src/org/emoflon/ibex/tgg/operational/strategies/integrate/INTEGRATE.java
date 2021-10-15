@@ -51,11 +51,13 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelCh
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChanges;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.pattern.IntegrationFragment;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.EltFilter;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis.ConstrainedAttributeChanges;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.NACOverlap;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchAnalyzer.ConstrainedAttributeChanges;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtilProvider;
 import org.emoflon.ibex.tgg.operational.strategies.opt.CC;
 import org.emoflon.ibex.tgg.operational.strategies.opt.LocalCC;
+import org.emoflon.ibex.tgg.util.ConsoleUtil;
 
 import com.google.common.collect.Sets;
 
@@ -70,9 +72,9 @@ import runtime.TGGRuleApplication;
 public class INTEGRATE extends PropagatingOperationalStrategy {
 
 	//// TOOLS ////
-	protected TGGMatchUtil matchUtil;
 	protected ModelChangeProtocol modelChangeProtocol;
 	protected MatchClassifier matchClassifier;
+	protected TGGMatchUtilProvider matchUtils;
 	protected ConflictDetector conflictDetector;
 	protected CC consistencyChecker;
 	protected PrecedenceGraph precedenceGraph;
@@ -85,7 +87,6 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	protected Map<String, Collection<String>> ruleName2filterNacPatternNames;
 	protected Map<String, Map<NACOverlap, Collection<ITGGMatch>>> pattern2filterNacMatches;
 	protected Map<String, Collection<String>> filterNacPattern2nodeNames;
-	protected Map<ITGGMatch, ClassifiedMatch> classifiedBrokenMatches;
 	protected Set<ConflictContainer> conflicts;
 	protected Map<ITGGMatch, ConflictContainer> match2conflicts;
 
@@ -99,11 +100,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 				.collect(Collectors.toMap(r -> r.getName(), r -> new LinkedList<>()));
 		pattern2filterNacMatches = new HashMap<>();
 		filterNacPattern2nodeNames = new HashMap<>();
-		classifiedBrokenMatches = new HashMap<>();
 		conflicts = new HashSet<>();
 		match2conflicts = new HashMap<>();
-
-		matchUtil = new TGGMatchUtil(this);
 
 		modelChangeProtocol = new ModelChangeProtocol( //
 				resourceHandler.getSourceResource(), resourceHandler.getTargetResource(), //
@@ -113,6 +111,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		modelChangeProtocol.registerKey(generalDeltaKey);
 
 		matchClassifier = new MatchClassifier(this);
+		matchUtils = new TGGMatchUtilProvider(this);
 
 		conflictDetector = new ConflictDetector(this);
 		consistencyChecker = new LocalCC(options) {
@@ -132,11 +131,11 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	}
 
 	private void removeBrokenMatchesAfterCCMatchApplication(ITGGMatch ccMatch) {
-		Set<EObject> ccObjects = matchUtil.getObjects(ccMatch, new EltFilter().srcAndTrg().create());
+		Set<EObject> ccObjects = matchUtils.get(ccMatch).getObjects(new EltFilter().srcAndTrg().create());
 
 		Collection<ITGGMatch> brokenMatches = new HashSet<>(brokenRuleApplications.values());
 		for (ITGGMatch brokenMatch : brokenMatches) {
-			Set<EObject> brokenObjects = matchUtil.getObjects(brokenMatch, new EltFilter().srcAndTrg().create());
+			Set<EObject> brokenObjects = matchUtils.get(brokenMatch).getObjects(new EltFilter().srcAndTrg().create());
 			if (!Sets.intersection(ccObjects, brokenObjects).isEmpty())
 				removeBrokenMatch(brokenMatch);
 		}
@@ -175,7 +174,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		Timer.start();
 
 		modelChangeProtocol.clearAll();
-		classifiedBrokenMatches = new HashMap<>();
+		matchClassifier.clear();
 		conflicts = new HashSet<>();
 		match2conflicts = new HashMap<>();
 
@@ -194,17 +193,14 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 		Timer.start();
 
-		classifiedBrokenMatches.clear();
+		matchClassifier.clear();
 
-		Collection<PrecedenceNode> brokenNodes = new HashSet<>(precedenceGraph.getBrokenNodes());
+		Set<PrecedenceNode> brokenNodes = new HashSet<>(precedenceGraph.getBrokenNodes());
 		if (includeImplicitBroken)
 			brokenNodes.addAll(precedenceGraph.getImplicitBrokenNodes().parallelStream() //
 					.filter(n -> n.getMatch().getType() == PatternType.CONSISTENCY).collect(Collectors.toSet()) //
 			);
-		classifiedBrokenMatches = brokenNodes.parallelStream().collect( //
-				Collectors.toMap( //
-						node -> node.getMatch(), //
-						node -> new ClassifiedMatch(this, node.getMatch(), !node.isBroken())));
+		matchClassifier.classifyAllByNode(brokenNodes);
 
 		times.addTo("operations:classifyBrokenMatches", Timer.stop());
 	}
@@ -268,13 +264,47 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	protected void resolveBrokenMatches() {
 		Timer.start();
 
-		classifiedBrokenMatches.values().forEach(brokenMatch -> brokenMatch.rollbackBrokenMatch());
+		Collection<ITGGMatch> brokenMatches = new LinkedList<>(brokenRuleApplications.values());
+
+		for (ITGGMatch brokenMatch : brokenMatches)
+			rollbackBrokenMatch(brokenMatch);
 		((PrecedenceMatchContainer) operationalMatchContainer).clearPendingElements();
 
 		times.addTo("operations:resolveBrokenMatches", Timer.stop());
 
-		if (!classifiedBrokenMatches.isEmpty())
+		if (!brokenRuleApplications.isEmpty())
 			LoggerConfig.log(LoggerConfig.log_ruleApplication(), () -> "");
+	}
+
+	protected void rollbackBrokenMatch(ITGGMatch match) {
+		ClassifiedMatch classifiedMatch = matchClassifier.get(match);
+
+		if (classifiedMatch.isImplicitBroken())
+			return;
+
+		deleteGreenCorrs(match);
+
+		Set<EObject> nodesToBeDeleted = new HashSet<>();
+		Set<EMFEdge> edgesToBeDeleted = new HashSet<>();
+
+		EltFilter filter = new EltFilter().create().notDeleted();
+		if (DeletionType.getPropFWDCandidates().contains(classifiedMatch.getDeletionType()))
+			filter.trg();
+		else if (DeletionType.getPropBWDCandidates().contains(classifiedMatch.getDeletionType()))
+			filter.src();
+		else
+			filter.srcAndTrg();
+
+		TGGMatchUtil matchUtil = matchUtils.get(match);
+		matchUtil.getObjects(filter).forEach((o) -> nodesToBeDeleted.add(o));
+		matchUtil.getEMFEdges(filter).forEach((e) -> edgesToBeDeleted.add(e));
+		getRedInterpreter().revoke(nodesToBeDeleted, edgesToBeDeleted);
+
+		removeBrokenMatch(match);
+
+		LoggerConfig.log(LoggerConfig.log_ruleApplication(),
+				() -> "Rule application: rolled back " + match.getPatternName() + "(" + match.hashCode() + ")\n" //
+						+ ConsoleUtil.indent(ConsoleUtil.printMatchParameter(match), 18, true));
 	}
 
 	protected ChangeKey revokeBrokenCorrsAndRuleApplNodes() {
@@ -330,14 +360,15 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	 * @param edgesToRevoke
 	 */
 	private void prepareGreenCorrDeletion(ITGGMatch match, Set<EObject> nodesToRevoke, Set<EMFEdge> edgesToRevoke) {
-		matchUtil.getObjects(match, new EltFilter().corr().create()) //
+		matchUtils.get(match).getObjects(new EltFilter().corr().create()) //
 				.forEach(obj -> getIbexRedInterpreter().revokeCorr(obj, nodesToRevoke, edgesToRevoke));
 	}
 
 	protected void restoreBrokenCorrsAndRuleApplNodes(ChangeKey key) {
 		matchDistributor.updateMatches();
 		ModelChanges changes = modelChangeProtocol.getModelChanges(key);
-		brokenRuleApplications.forEach((ra, m) -> matchUtil.getObjects(m, new EltFilter().corr().create()).forEach(obj -> restoreNode(changes, obj)));
+		brokenRuleApplications
+				.forEach((ra, m) -> matchUtils.get(m).getObjects(new EltFilter().corr().create()).forEach(obj -> restoreNode(changes, obj)));
 		brokenRuleApplications.forEach((ra, m) -> restoreNode(changes, ra));
 	}
 
@@ -427,7 +458,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		dependencyContainer.reset();
 		brokenRuleApplications.values().stream() //
 				.filter(m -> {
-					DeletionPattern pattern = classifiedBrokenMatches.get(m).getDeletionPattern();
+					DeletionPattern pattern = matchClassifier.get(m).getDeletionPattern();
 					DomainModification srcModType = pattern.getModType(DomainType.SRC, BindingType.CREATE);
 					DomainModification trgModType = pattern.getModType(DomainType.TRG, BindingType.CREATE);
 					return !(srcModType == DomainModification.COMPL_DEL && trgModType == DomainModification.UNCHANGED || //
@@ -446,14 +477,14 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 					continue;
 
 				boolean repairedSth = false;
-				ClassifiedMatch brokenMatch = classifiedBrokenMatches.get(repairCandidate);
+				ClassifiedMatch classifiedMatch = matchClassifier.get(repairCandidate);
 
-				ITGGMatch repairedMatch = repairAttributes(brokenMatch);
+				ITGGMatch repairedMatch = repairAttributes(classifiedMatch);
 				if (repairedMatch != null) {
 					repairedSth = true;
 				}
 
-				repairedMatch = repairViaShortcut(brokenMatch);
+				repairedMatch = repairViaShortcut(classifiedMatch);
 				if (repairedMatch != null) {
 					repairedSth = true;
 
@@ -483,8 +514,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		return !alreadyProcessed.isEmpty();
 	}
 
-	private ITGGMatch repairAttributes(ClassifiedMatch brokenMatch) {
-		Set<ConstrainedAttributeChanges> attrChanges = brokenMatch.getConstrainedAttrChanges();
+	private ITGGMatch repairAttributes(ClassifiedMatch classifiedMatch) {
+		Set<ConstrainedAttributeChanges> attrChanges = classifiedMatch.getConstrainedAttrChanges();
 		if (attrChanges.isEmpty())
 			return null;
 
@@ -507,24 +538,24 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 				PatternType type = srcChange ? PatternType.FWD : PatternType.BWD;
 				List<TGGAttributeConstraint> constraints = new LinkedList<>();
 				constraints.add(attrCh.constraint);
-				ITGGMatch repairedMatch = getAttributeRepairStrat().repair(constraints, brokenMatch.getMatch(), type);
+				ITGGMatch repairedMatch = getAttributeRepairStrat().repair(constraints, classifiedMatch.getMatch(), type);
 				if (repairedMatch != null)
 					repairedSth = true;
 			}
 		}
 
-		return repairedSth ? brokenMatch.getMatch() : null;
+		return repairedSth ? classifiedMatch.getMatch() : null;
 	}
 
-	private ITGGMatch repairViaShortcut(ClassifiedMatch brokenMatch) {
-		DeletionType delType = brokenMatch.getDeletionType();
+	private ITGGMatch repairViaShortcut(ClassifiedMatch classifiedMatch) {
+		DeletionType delType = classifiedMatch.getDeletionType();
 		if (DeletionType.getShortcutCCCandidates().contains(delType)) {
-			return getShortcutRepairStrat().repair(brokenMatch.getMatch(), PatternType.CC);
+			return getShortcutRepairStrat().repair(classifiedMatch.getMatch(), PatternType.CC);
 		} else if (DeletionType.getShortcutPropCandidates().contains(delType)) {
 			PatternType type = delType == DeletionType.SRC_PARTLY_TRG_NOT ? PatternType.FWD : PatternType.BWD;
-			ITGGMatch repairedMatch = getShortcutRepairStrat().repair(brokenMatch.getMatch(), type);
+			ITGGMatch repairedMatch = getShortcutRepairStrat().repair(classifiedMatch.getMatch(), type);
 			if (repairedMatch == null) {
-				repairedMatch = getShortcutRepairStrat().repair(brokenMatch.getMatch(), PatternType.CC);
+				repairedMatch = getShortcutRepairStrat().repair(classifiedMatch.getMatch(), PatternType.CC);
 			}
 			return repairedMatch;
 		}
@@ -614,19 +645,23 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		return pattern2filterNacMatches.get(match.getPatternName()).get(overlap).remove(match);
 	}
 
-	public TGGMatchUtil getMatchUtil() {
-		return matchUtil;
+	public TGGMatchUtilProvider matchUtils() {
+		return matchUtils;
 	}
 
-	public PrecedenceGraph getPrecedenceGraph() {
+	public MatchClassifier matchClassifier() {
+		return matchClassifier;
+	}
+
+	public PrecedenceGraph precedenceGraph() {
 		return precedenceGraph;
 	}
 
-	public MultiplicityCounter getMultiplicityCounter() {
+	public MultiplicityCounter multiplicityCounter() {
 		return multiplicityCounter;
 	}
 
-	public ModelChangeProtocol getModelChangeProtocol() {
+	public ModelChangeProtocol modelChangeProtocol() {
 		return modelChangeProtocol;
 	}
 
@@ -666,10 +701,6 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		return filterNacMatches;
 	}
 
-	public Map<ITGGMatch, ClassifiedMatch> getClassifiedBrokenMatches() {
-		return classifiedBrokenMatches;
-	}
-
 	public Map<ITGGMatch, ConflictContainer> getConflicts() {
 		return match2conflicts;
 	}
@@ -690,6 +721,10 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	public AttributeRepairStrategy getAttributeRepairStrat() {
 		return (AttributeRepairStrategy) repairStrategies.stream() //
 				.filter(r -> r instanceof AttributeRepairStrategy).findFirst().get();
+	}
+
+	public Map<TGGRuleApplication, ITGGMatch> getBrokenRuleApplications() {
+		return brokenRuleApplications;
 	}
 
 	/**

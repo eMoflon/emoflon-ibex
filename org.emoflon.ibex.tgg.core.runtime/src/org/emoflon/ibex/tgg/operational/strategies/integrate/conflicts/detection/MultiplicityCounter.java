@@ -131,7 +131,7 @@ public class MultiplicityCounter {
 					});
 				}
 			} else {
-				boolean isBroken = match.getType() == PatternType.CONSISTENCY && integrate.getPrecedenceGraph().getNode(match).isBroken();
+				boolean isBroken = match.getType() == PatternType.CONSISTENCY && integrate.precedenceGraph().getNode(match).isBroken();
 
 				Map<EReference, Integer> reference2numOfEdges = subject2reference2numOfEdges.get(subject);
 				entry.getValue().forEach((ref, numOfEdges) -> {

@@ -149,7 +149,7 @@ public class OperationalMultiplicityConflict extends Conflict implements CRS_Pre
 	}
 
 	private void restoreMatchAndAllRequired(ITGGMatch match) {
-		List<PrecedenceNode> rollBackCauses = integrate().getPrecedenceGraph().getNode(match).computeSortedRollBackCauses();
+		List<PrecedenceNode> rollBackCauses = integrate().precedenceGraph().getNode(match).computeSortedRollBackCauses();
 		for (PrecedenceNode rollbackCause : rollBackCauses)
 			restoreMatch(rollbackCause.getMatch());
 	}
