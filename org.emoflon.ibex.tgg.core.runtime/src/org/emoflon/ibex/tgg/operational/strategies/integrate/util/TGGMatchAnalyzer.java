@@ -95,7 +95,7 @@ public class TGGMatchAnalyzer {
 	}
 
 	public Map<ITGGMatch, DomainType> analyzeFilterNACViolations() {
-		return util.integrate.getFilterNacMatches(util.match).stream() //
+		return util.integrate.filterNACMatchCollector().getFilterNACMatches(util.match).stream() //
 				.collect(Collectors.toMap( //
 						fnm -> fnm, //
 						fnm -> fnm.getType() == PatternType.FILTER_NAC_SRC ? DomainType.SRC : DomainType.TRG) //

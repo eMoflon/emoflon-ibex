@@ -51,7 +51,7 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelCh
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChanges;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.pattern.IntegrationFragment;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.EltFilter;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.NACOverlap;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.FilterNACMatchCollector;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchAnalyzer.ConstrainedAttributeChanges;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtilProvider;
@@ -79,14 +79,12 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	protected CC consistencyChecker;
 	protected PrecedenceGraph precedenceGraph;
 	protected MultiplicityCounter multiplicityCounter;
+	protected FilterNACMatchCollector filterNACMatchCollector;
 
 	//// DATA ////
 	protected ChangeKey userDeltaKey;
 	protected ChangeKey generalDeltaKey;
 
-	protected Map<String, Collection<String>> ruleName2filterNacPatternNames;
-	protected Map<String, Map<NACOverlap, Collection<ITGGMatch>>> pattern2filterNacMatches;
-	protected Map<String, Collection<String>> filterNacPattern2nodeNames;
 	protected Set<ConflictContainer> conflicts;
 	protected Map<ITGGMatch, ConflictContainer> match2conflicts;
 
@@ -96,10 +94,6 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	}
 
 	private void init() throws IOException {
-		ruleName2filterNacPatternNames = this.options.tgg.getFlattenedConcreteTGGRules().stream() //
-				.collect(Collectors.toMap(r -> r.getName(), r -> new LinkedList<>()));
-		pattern2filterNacMatches = new HashMap<>();
-		filterNacPattern2nodeNames = new HashMap<>();
 		conflicts = new HashSet<>();
 		match2conflicts = new HashMap<>();
 
@@ -110,6 +104,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		generalDeltaKey = new ChangeKey();
 		modelChangeProtocol.registerKey(generalDeltaKey);
 
+		filterNACMatchCollector = new FilterNACMatchCollector(options);
 		matchClassifier = new MatchClassifier(this);
 		matchUtils = new TGGMatchUtilProvider(this);
 
@@ -603,7 +598,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	@Override
 	protected void addOperationalRuleMatch(ITGGMatch match) {
 		if (match.getType() == PatternType.FILTER_NAC_SRC || match.getType() == PatternType.FILTER_NAC_TRG)
-			addFilterNacMatch(match);
+			filterNACMatchCollector.addFilterNACMatch(match);
 		else {
 			if (match.getType() == PatternType.CONSISTENCY)
 				multiplicityCounter.notifyAddedMatch(match);
@@ -614,35 +609,16 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	@Override
 	public boolean removeOperationalRuleMatch(ITGGMatch match) {
 		if (match.getType() == PatternType.FILTER_NAC_SRC || match.getType() == PatternType.FILTER_NAC_TRG)
-			return removeFilterNacMatch(match);
+			return filterNACMatchCollector.removeFilterNACMatch(match);
 		else {
 			if (match.getType() == PatternType.CONSISTENCY)
 				multiplicityCounter.notifyRemovedMatch(match);
 			return super.removeOperationalRuleMatch(match);
 		}
 	}
-
-	private void addFilterNacMatch(ITGGMatch match) {
-		if (!pattern2filterNacMatches.containsKey(match.getPatternName())) {
-			String ruleName = match.getRuleName().split("_")[0];
-			ruleName2filterNacPatternNames.get(ruleName).add(match.getPatternName());
-
-			pattern2filterNacMatches.put(match.getPatternName(), new HashMap<>());
-			filterNacPattern2nodeNames.put(match.getPatternName(), match.getParameterNames());
-		}
-
-		Map<NACOverlap, Collection<ITGGMatch>> overlap2match = pattern2filterNacMatches.get(match.getPatternName());
-		NACOverlap overlap = new NACOverlap(match);
-		// the number of matches per overlap should not exceed a certain number
-		overlap2match.putIfAbsent(overlap, new LinkedList<>());
-		overlap2match.get(overlap).add(match);
-
-		LoggerConfig.log(LoggerConfig.log_matches(), () -> "Matches: received & added " + match.getPatternName() + "(" + match.hashCode() + ")");
-	}
-
-	private boolean removeFilterNacMatch(ITGGMatch match) {
-		NACOverlap overlap = new NACOverlap(match);
-		return pattern2filterNacMatches.get(match.getPatternName()).get(overlap).remove(match);
+	
+	public FilterNACMatchCollector filterNACMatchCollector() {
+		return filterNACMatchCollector;
 	}
 
 	public TGGMatchUtilProvider matchUtils() {
@@ -687,18 +663,6 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 			ra.eResource().getContents().remove(ra);
 		precedenceGraph.removeMatch(brokenMatch);
 		multiplicityCounter.removeMatch(brokenMatch);
-	}
-
-	public Collection<ITGGMatch> getFilterNacMatches(ITGGMatch match) {
-		Collection<ITGGMatch> filterNacMatches = new LinkedList<>();
-		for (String nacPatternName : ruleName2filterNacPatternNames.getOrDefault(match.getRuleName(), new LinkedList<>())) {
-			Map<NACOverlap, Collection<ITGGMatch>> overlap2matches = pattern2filterNacMatches.get(nacPatternName);
-			if (overlap2matches == null)
-				continue;
-			NACOverlap overlap = new NACOverlap(match, filterNacPattern2nodeNames.get(nacPatternName));
-			filterNacMatches.addAll(overlap2matches.getOrDefault(overlap, new LinkedList<>()));
-		}
-		return filterNacMatches;
 	}
 
 	public Map<ITGGMatch, ConflictContainer> getConflicts() {
