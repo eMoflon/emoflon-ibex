@@ -4,27 +4,30 @@ import java.io.IOException;
 import java.util.Collection;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.benchmark.Timer;
-import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
+import org.emoflon.ibex.tgg.operational.patterns.EmptyGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
+import org.emoflon.ibex.tgg.operational.repair.SyncRepairer;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.PropagationDirectionHolder;
+import org.emoflon.ibex.tgg.operational.strategies.PropagationDirectionHolder.PropagationDirection;
 
 public class SYNC extends PropagatingOperationalStrategy {
 
 	// Forward or backward sync
-	protected SYNC_Strategy syncStrategy;
+	protected final PropagationDirectionHolder propagationDirectionHolder;
 
-	/*****
-	 * Constructors
-	 * 
-	 * @param sync
-	 *****/
+	// Repair
+	protected final SyncRepairer repairer;
 
 	public SYNC(IbexOptions options) throws IOException {
 		super(options);
+		this.propagationDirectionHolder = new PropagationDirectionHolder();
+		this.repairer = new SyncRepairer(this, propagationDirectionHolder);
 	}
 
 	/***** Sync algorithm *****/
@@ -44,41 +47,36 @@ public class SYNC extends PropagatingOperationalStrategy {
 	}
 
 	public void forward() throws IOException {
-		syncStrategy = new FWD_Strategy();
+		propagationDirectionHolder.set(PropagationDirection.FORWARD);
 		run();
 	}
 
 	public void backward() throws IOException {
-		syncStrategy = new BWD_Strategy();
+		propagationDirectionHolder.set(PropagationDirection.BACKWARD);
 		run();
 	}
 
 	protected void repair() {
-		initializeRepairStrategy(options);
-
 		// TODO loop this together with roll back
 		translate();
-		repairBrokenMatches();
+		repairer.repairBrokenMatches();
 	}
 
-	public SYNC_Strategy getSyncStrategy() {
-		return syncStrategy;
-	}
-	
-	public IRuntimeTGGAttrConstrContainer determineCSP(IGreenPatternFactory factory, ITGGMatch m) {
-		return syncStrategy.determineCSP(factory, m);
-	}
-	
 	/***** Match and pattern management *****/
 
 	@Override
 	public boolean isPatternRelevantForInterpreter(PatternType type) {
-		return syncStrategy.isPatternRelevantForInterpreter(type);
+		return propagationDirectionHolder.get().getPatternType() == type;
 	}
 
 	@Override
 	public IGreenPattern revokes(ITGGMatch match) {
-		return syncStrategy.revokes(getGreenFactory(match.getRuleName()), match.getPatternName(), match.getRuleName());
+		IGreenPatternFactory greenFactory = getGreenFactory(match.getRuleName());
+		if (match.getPatternName().equals(TGGPatternUtil.getConsistencyPatternName(match.getRuleName()))) {
+			return greenFactory.createGreenPattern(propagationDirectionHolder.get().getGreenPatternClass());
+		} else {
+			return greenFactory.createGreenPattern(EmptyGreenPattern.class);
+		}
 	}
 
 	@Override

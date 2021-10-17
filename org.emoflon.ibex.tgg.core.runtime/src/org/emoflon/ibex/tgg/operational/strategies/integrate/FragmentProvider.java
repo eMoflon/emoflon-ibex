@@ -41,7 +41,7 @@ public class FragmentProvider {
 			FragmentProvider.logFragmentStart(this);
 			Timer.start();
 
-			i.repairBrokenMatches();
+			i.repairer().repairBrokenMatches();
 
 			i.getTimes().addTo("fragments:Repair", Timer.stop());
 		}

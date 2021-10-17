@@ -8,7 +8,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
-import org.emoflon.ibex.tgg.operational.repair.ShortcutRepairStrategy.RepairableMatch;
+import org.emoflon.ibex.tgg.operational.repair.strategies.ShortcutRepairStrategy.RepairableMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_PreferSource;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_PreferTarget;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceGraph;
@@ -65,7 +65,7 @@ public class CorrPreservationConflict extends InconsistentChangesConflict implem
 	@Override
 	public void crs_preferSource() {
 		for (ITGGMatch trgMatch : trgMatches) {
-			RepairableMatch repairableMatch = integrate().getShortcutRepairStrat().isRepairable(getMatch(), trgMatch);
+			RepairableMatch repairableMatch = integrate().repairer().isShortcutRepairable(getMatch(), trgMatch);
 			if (repairableMatch != null)
 				revertRepairable(repairableMatch, DomainType.TRG);
 		}
@@ -75,13 +75,13 @@ public class CorrPreservationConflict extends InconsistentChangesConflict implem
 
 		integrate().getOptions().matchDistributor().updateMatches();
 		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Auto-repair after resolution of " + printConflictIdentification() + ":");
-		integrate().repairOneMatch(integrate().getShortcutRepairStrat(), getMatch(), PatternType.FWD);
+		integrate().repairer().shortcutRepairOneMatch(getMatch(), PatternType.FWD);
 	}
 
 	@Override
 	public void crs_preferTarget() {
 		for (ITGGMatch srcMatch : srcMatches) {
-			RepairableMatch repairableMatch = integrate().getShortcutRepairStrat().isRepairable(getMatch(), srcMatch);
+			RepairableMatch repairableMatch = integrate().repairer().isShortcutRepairable(getMatch(), srcMatch);
 			if (repairableMatch != null)
 				revertRepairable(repairableMatch, DomainType.SRC);
 		}
@@ -91,7 +91,7 @@ public class CorrPreservationConflict extends InconsistentChangesConflict implem
 
 		integrate().getOptions().matchDistributor().updateMatches();
 		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Auto-repair after resolution of " + printConflictIdentification() + ":");
-		integrate().repairOneMatch(integrate().getShortcutRepairStrat(), getMatch(), PatternType.BWD);
+		integrate().repairer().shortcutRepairOneMatch(getMatch(), PatternType.BWD);
 	}
 
 }
