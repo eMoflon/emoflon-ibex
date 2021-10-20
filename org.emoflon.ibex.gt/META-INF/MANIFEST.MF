@@ -9,7 +9,9 @@ Export-Package: org.emoflon.ibex.gt.api,
  org.emoflon.ibex.gt.arithmetic,
  org.emoflon.ibex.gt.codegen,
  org.emoflon.ibex.gt.engine,
- org.emoflon.ibex.gt.transformations
+ org.emoflon.ibex.gt.state,
+ org.emoflon.ibex.gt.transformations,
+ org.emoflon.ibex.gt.ui
 Bundle-Localization: plugin
 Require-Bundle: org.apache.log4j,
  org.eclipse.core.resources,
@@ -25,7 +27,8 @@ Require-Bundle: org.apache.log4j,
  org.moflon.core.propertycontainer,
  org.moflon.core.utilities,
  org.emoflon.ibex.dependencies;bundle-version="1.0.0";visibility:=reexport,
- org.emoflon.ibex.patternmodel;visibility:=reexport
+ org.emoflon.ibex.patternmodel;visibility:=reexport,
+ org.emoflon.ibex.gt.statemodel;visibility:=reexport
 Bundle-ClassPath: .
 Automatic-Module-Name: org.emoflon.ibex.gt
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

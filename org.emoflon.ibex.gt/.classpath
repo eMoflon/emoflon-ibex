@@ -6,7 +6,11 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry kind="src" path="src"/>
+	<classpathentry excluding="org/emoflon/ibex/ui/displayTest.java|org/emoflon/ibex/ui/GraphTransformator.java|org/emoflon/ibex/ui/mouseMan.java|org/emoflon/ibex/ui/testMain.java|org/emoflon/ibex/ui/UIGenerator.java" kind="src" path="src"/>
 	<classpathentry kind="src" path="xtend-gen"/>
+	<classpathentry kind="lib" path="/org.emoflon.ibex.dependencies/gs-algo-2.0.jar"/>
+	<classpathentry kind="lib" path="/org.emoflon.ibex.dependencies/gs-core-2.0.jar"/>
+	<classpathentry kind="lib" path="/org.emoflon.ibex.dependencies/gs-ui-javafx-2.0.jar"/>
+	<classpathentry kind="lib" path="/org.emoflon.ibex.dependencies/gs-ui-swing-2.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
