@@ -981,19 +981,8 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	
 	public void trackModelStates(boolean forceNewStates) {
 		stateManager = new ModelStateManager(model.getResources().get(0), model.getResources().get(1), contextPatternInterpreter, matches, forceNewStates, false);
-		trackingStates = true;
-		for( IBeXContext contextPattern : patternSet.getContextPatterns()) {
-			subscribeAppearing(contextPattern.getName(), cons);
-			break;
-		}
-		
+		trackingStates = true;	
 	}
-	
-	Consumer<IMatch> cons = new Consumer<IMatch>() {
-		public void accept(IMatch match) {
-//			System.out.println(match.getPatternName());
-		}
-	};
 	
 	public void deactivateModelStatesTracking() {
 		stateManager = null;
@@ -1005,7 +994,6 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 			try {
 				PersistenceManager.saveModelAndStates(model.getResources().get(0), stateManager.getModelStates(), path);
 			} catch (Exception e) {
-				// Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -1015,7 +1003,6 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		try {
 			stateManager = PersistenceManager.loadModelAndStates(model.getResources().get(0), model.getResources().get(1), contextPatternInterpreter, this, path);
 		} catch (Exception e) {
-			// Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
