@@ -8,6 +8,7 @@ import java.util.Map;
 import org.emoflon.ibex.gt.editor.gT.EditorNode;
 import org.emoflon.ibex.gt.editor.gT.EditorPattern;
 import org.emoflon.ibex.gt.editor.gT.EditorReference;
+import org.emoflon.ibex.gt.editor.gT.EditorReferenceIterator;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern;
@@ -37,6 +38,8 @@ public class TransformationData {
 	 * Maps pattern names to a collection mapping editor nodes to ibex nodes.
 	 */
 	public Map<String, Map<EditorNode, IBeXNode>> node2ibexNode = new HashMap<>();
+	
+	public Map<String, Map<EditorReferenceIterator, IBeXNode>> iterator2ibexNode = new HashMap<>();
 	
 	/**
 	 * Maps pattern names to a collection mapping editor references to ibex references.
@@ -81,6 +84,7 @@ public class TransformationData {
 	public void clear() {
 		pattern2flattened.clear();
 		ibexNodes.clear();
+		iterator2ibexNode.clear();
 		ibexEdges.clear();
 		node2ibexNode.clear();
 		reference2ibexEdge.clear();

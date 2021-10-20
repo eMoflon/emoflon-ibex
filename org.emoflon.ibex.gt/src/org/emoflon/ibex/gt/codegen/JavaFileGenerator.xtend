@@ -574,6 +574,17 @@ class JavaFileGenerator {
 						«ArithmeticExtensionGenerator.transformExpression(constraint.lhs, true)»«getRelation(constraint.relation)»«ArithmeticExtensionGenerator.transformExpression(constraint.rhs, true)»
 						«ENDFOR»;
 				}
+				
+				@Override
+				public boolean containsArithmeticExpressions() {
+					return true;
+				}
+				«IF rule.lhs.hasCountExpression»
+				@Override
+				public boolean containsCountExpressions() {
+					return true;
+				}
+				«ENDIF»
 				«ENDIF»
 				@Override
 				public String toString() {
@@ -706,6 +717,16 @@ class JavaFileGenerator {
 						«arithmeticConstraint» && «ENDFOR»
 							«ArithmeticExtensionGenerator.transformExpression(constraint.lhs, true)»«getRelation(constraint.relation)»«ArithmeticExtensionGenerator.transformExpression(constraint.rhs, true)»«ENDFOR»;				
 				}
+				@Override
+				public boolean containsArithmeticExpressions() {
+					return true;
+				}
+				«IF pattern.hasCountExpression»
+				@Override
+				public boolean containsCountExpressions() {
+					return true;
+				}
+				«ENDIF»
 				«ENDIF»
 				@Override
 				public String toString() {

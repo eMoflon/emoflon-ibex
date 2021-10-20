@@ -330,13 +330,22 @@ public interface IBeXPatternModelPackage extends EPackage {
 	int IBE_XPATTERN__NAME = IBE_XNAMED_ELEMENT__NAME;
 
 	/**
+	 * The feature id for the '<em><b>Has Count Expression</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XPATTERN__HAS_COUNT_EXPRESSION = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 0;
+
+	/**
 	 * The number of structural features of the '<em>IBe XPattern</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XPATTERN_FEATURE_COUNT = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 0;
+	int IBE_XPATTERN_FEATURE_COUNT = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 1;
 
 	/**
 	 * The number of operations of the '<em>IBe XPattern</em>' class.
@@ -365,6 +374,15 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int IBE_XCONTEXT__NAME = IBE_XPATTERN__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Has Count Expression</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XCONTEXT__HAS_COUNT_EXPRESSION = IBE_XPATTERN__HAS_COUNT_EXPRESSION;
 
 	/**
 	 * The feature id for the '<em><b>Api Pattern Dependencies</b></em>' reference list.
@@ -411,6 +429,15 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int IBE_XCONTEXT_ALTERNATIVES__NAME = IBE_XCONTEXT__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Has Count Expression</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XCONTEXT_ALTERNATIVES__HAS_COUNT_EXPRESSION = IBE_XCONTEXT__HAS_COUNT_EXPRESSION;
 
 	/**
 	 * The feature id for the '<em><b>Api Pattern Dependencies</b></em>' reference list.
@@ -475,6 +502,15 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int IBE_XCONTEXT_PATTERN__NAME = IBE_XCONTEXT__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Has Count Expression</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XCONTEXT_PATTERN__HAS_COUNT_EXPRESSION = IBE_XCONTEXT__HAS_COUNT_EXPRESSION;
 
 	/**
 	 * The feature id for the '<em><b>Api Pattern Dependencies</b></em>' reference list.
@@ -631,6 +667,15 @@ public interface IBeXPatternModelPackage extends EPackage {
 	int IBE_XCREATE_PATTERN__NAME = IBE_XPATTERN__NAME;
 
 	/**
+	 * The feature id for the '<em><b>Has Count Expression</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XCREATE_PATTERN__HAS_COUNT_EXPRESSION = IBE_XPATTERN__HAS_COUNT_EXPRESSION;
+
+	/**
 	 * The feature id for the '<em><b>Attribute Assignments</b></em>' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -702,6 +747,15 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int IBE_XDELETE_PATTERN__NAME = IBE_XPATTERN__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Has Count Expression</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XDELETE_PATTERN__HAS_COUNT_EXPRESSION = IBE_XPATTERN__HAS_COUNT_EXPRESSION;
 
 	/**
 	 * The feature id for the '<em><b>Context Nodes</b></em>' reference list.
@@ -1604,13 +1658,22 @@ public interface IBeXPatternModelPackage extends EPackage {
 	int IBE_XRULE__DELETE = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 4;
 
 	/**
+	 * The feature id for the '<em><b>For Each</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XRULE__FOR_EACH = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 5;
+
+	/**
 	 * The feature id for the '<em><b>Parameters</b></em>' reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XRULE__PARAMETERS = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 5;
+	int IBE_XRULE__PARAMETERS = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 6;
 
 	/**
 	 * The feature id for the '<em><b>Arithmetic Constraints</b></em>' reference list.
@@ -1619,7 +1682,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XRULE__ARITHMETIC_CONSTRAINTS = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 6;
+	int IBE_XRULE__ARITHMETIC_CONSTRAINTS = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 7;
 
 	/**
 	 * The feature id for the '<em><b>Probability</b></em>' containment reference.
@@ -1628,7 +1691,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XRULE__PROBABILITY = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 7;
+	int IBE_XRULE__PROBABILITY = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 8;
 
 	/**
 	 * The number of structural features of the '<em>IBe XRule</em>' class.
@@ -1637,7 +1700,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XRULE_FEATURE_COUNT = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 8;
+	int IBE_XRULE_FEATURE_COUNT = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 9;
 
 	/**
 	 * The number of operations of the '<em>IBe XRule</em>' class.
@@ -1649,6 +1712,97 @@ public interface IBeXPatternModelPackage extends EPackage {
 	int IBE_XRULE_OPERATION_COUNT = IBE_XNAMED_ELEMENT_OPERATION_COUNT + 0;
 
 	/**
+	 * The meta object id for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXForEachExpressionImpl <em>IBe XFor Each Expression</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXForEachExpressionImpl
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXForEachExpression()
+	 * @generated
+	 */
+	int IBE_XFOR_EACH_EXPRESSION = 30;
+
+	/**
+	 * The feature id for the '<em><b>Create</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XFOR_EACH_EXPRESSION__CREATE = 0;
+
+	/**
+	 * The feature id for the '<em><b>Delete</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XFOR_EACH_EXPRESSION__DELETE = 1;
+
+	/**
+	 * The feature id for the '<em><b>Source</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XFOR_EACH_EXPRESSION__SOURCE = 2;
+
+	/**
+	 * The feature id for the '<em><b>Trg Iterator</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XFOR_EACH_EXPRESSION__TRG_ITERATOR = 3;
+
+	/**
+	 * The feature id for the '<em><b>Edge</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XFOR_EACH_EXPRESSION__EDGE = 4;
+
+	/**
+	 * The feature id for the '<em><b>Created Edges</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XFOR_EACH_EXPRESSION__CREATED_EDGES = 5;
+
+	/**
+	 * The feature id for the '<em><b>Deleted Edges</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XFOR_EACH_EXPRESSION__DELETED_EDGES = 6;
+
+	/**
+	 * The number of structural features of the '<em>IBe XFor Each Expression</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XFOR_EACH_EXPRESSION_FEATURE_COUNT = 7;
+
+	/**
+	 * The number of operations of the '<em>IBe XFor Each Expression</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XFOR_EACH_EXPRESSION_OPERATION_COUNT = 0;
+
+	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXProbabilityImpl <em>IBe XProbability</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1656,7 +1810,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXProbability()
 	 * @generated
 	 */
-	int IBE_XPROBABILITY = 30;
+	int IBE_XPROBABILITY = 31;
 
 	/**
 	 * The feature id for the '<em><b>Distribution</b></em>' containment reference.
@@ -1702,7 +1856,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXConstraint()
 	 * @generated
 	 */
-	int IBE_XCONSTRAINT = 39;
+	int IBE_XCONSTRAINT = 40;
 
 	/**
 	 * The number of structural features of the '<em>IBe XConstraint</em>' class.
@@ -1730,7 +1884,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXArithmeticConstraint()
 	 * @generated
 	 */
-	int IBE_XARITHMETIC_CONSTRAINT = 31;
+	int IBE_XARITHMETIC_CONSTRAINT = 32;
 
 	/**
 	 * The feature id for the '<em><b>Lhs</b></em>' containment reference.
@@ -1785,7 +1939,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXArithmeticExpression()
 	 * @generated
 	 */
-	int IBE_XARITHMETIC_EXPRESSION = 32;
+	int IBE_XARITHMETIC_EXPRESSION = 33;
 
 	/**
 	 * The number of structural features of the '<em>IBe XArithmetic Expression</em>' class.
@@ -1813,7 +1967,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXUnaryExpression()
 	 * @generated
 	 */
-	int IBE_XUNARY_EXPRESSION = 33;
+	int IBE_XUNARY_EXPRESSION = 34;
 
 	/**
 	 * The feature id for the '<em><b>Operand</b></em>' containment reference.
@@ -1868,7 +2022,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXBinaryExpression()
 	 * @generated
 	 */
-	int IBE_XBINARY_EXPRESSION = 34;
+	int IBE_XBINARY_EXPRESSION = 35;
 
 	/**
 	 * The feature id for the '<em><b>Left</b></em>' containment reference.
@@ -1923,7 +2077,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXArithmeticValueLiteral()
 	 * @generated
 	 */
-	int IBE_XARITHMETIC_VALUE_LITERAL = 35;
+	int IBE_XARITHMETIC_VALUE_LITERAL = 36;
 
 	/**
 	 * The feature id for the '<em><b>Value</b></em>' attribute.
@@ -1960,7 +2114,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXProbabilityDistribution()
 	 * @generated
 	 */
-	int IBE_XPROBABILITY_DISTRIBUTION = 36;
+	int IBE_XPROBABILITY_DISTRIBUTION = 37;
 
 	/**
 	 * The feature id for the '<em><b>Mean</b></em>' containment reference.
@@ -2015,7 +2169,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXArithmeticAttribute()
 	 * @generated
 	 */
-	int IBE_XARITHMETIC_ATTRIBUTE = 37;
+	int IBE_XARITHMETIC_ATTRIBUTE = 38;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -2097,7 +2251,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXMatchCount()
 	 * @generated
 	 */
-	int IBE_XMATCH_COUNT = 38;
+	int IBE_XMATCH_COUNT = 39;
 
 	/**
 	 * The feature id for the '<em><b>Operand</b></em>' containment reference.
@@ -2161,7 +2315,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXDisjointContextPattern()
 	 * @generated
 	 */
-	int IBE_XDISJOINT_CONTEXT_PATTERN = 40;
+	int IBE_XDISJOINT_CONTEXT_PATTERN = 41;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -2171,6 +2325,15 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int IBE_XDISJOINT_CONTEXT_PATTERN__NAME = IBE_XCONTEXT__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Has Count Expression</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XDISJOINT_CONTEXT_PATTERN__HAS_COUNT_EXPRESSION = IBE_XCONTEXT__HAS_COUNT_EXPRESSION;
 
 	/**
 	 * The feature id for the '<em><b>Api Pattern Dependencies</b></em>' reference list.
@@ -2243,7 +2406,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBexDisjointInjectivityConstraint()
 	 * @generated
 	 */
-	int IBEX_DISJOINT_INJECTIVITY_CONSTRAINT = 41;
+	int IBEX_DISJOINT_INJECTIVITY_CONSTRAINT = 42;
 
 	/**
 	 * The feature id for the '<em><b>Pattern1</b></em>' reference.
@@ -2307,7 +2470,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXDisjointAttribute()
 	 * @generated
 	 */
-	int IBE_XDISJOINT_ATTRIBUTE = 42;
+	int IBE_XDISJOINT_ATTRIBUTE = 43;
 
 	/**
 	 * The feature id for the '<em><b>Target Pattern</b></em>' reference list.
@@ -2362,7 +2525,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXInterdependentInjectivityConstraints()
 	 * @generated
 	 */
-	int IBE_XINTERDEPENDENT_INJECTIVITY_CONSTRAINTS = 43;
+	int IBE_XINTERDEPENDENT_INJECTIVITY_CONSTRAINTS = 44;
 
 	/**
 	 * The feature id for the '<em><b>Injectivity Constraints</b></em>' containment reference list.
@@ -2417,7 +2580,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXInterdependentAttributes()
 	 * @generated
 	 */
-	int IBE_XINTERDEPENDENT_ATTRIBUTES = 44;
+	int IBE_XINTERDEPENDENT_ATTRIBUTES = 45;
 
 	/**
 	 * The feature id for the '<em><b>Attributes</b></em>' containment reference list.
@@ -2472,7 +2635,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXRelation()
 	 * @generated
 	 */
-	int IBE_XRELATION = 45;
+	int IBE_XRELATION = 46;
 
 	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXBinaryOperator <em>IBe XBinary Operator</em>}' enum.
@@ -2482,7 +2645,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXBinaryOperator()
 	 * @generated
 	 */
-	int IBE_XBINARY_OPERATOR = 46;
+	int IBE_XBINARY_OPERATOR = 47;
 
 	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXUnaryOperator <em>IBe XUnary Operator</em>}' enum.
@@ -2492,7 +2655,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXUnaryOperator()
 	 * @generated
 	 */
-	int IBE_XUNARY_OPERATOR = 47;
+	int IBE_XUNARY_OPERATOR = 48;
 
 	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDistributionType <em>IBe XDistribution Type</em>}' enum.
@@ -2502,7 +2665,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXDistributionType()
 	 * @generated
 	 */
-	int IBE_XDISTRIBUTION_TYPE = 48;
+	int IBE_XDISTRIBUTION_TYPE = 49;
 
 	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDistributionRange <em>IBe XDistribution Range</em>}' enum.
@@ -2512,7 +2675,7 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXDistributionRange()
 	 * @generated
 	 */
-	int IBE_XDISTRIBUTION_RANGE = 49;
+	int IBE_XDISTRIBUTION_RANGE = 50;
 
 	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel <em>IBe XModel</em>}'.
@@ -2682,6 +2845,17 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @generated
 	 */
 	EClass getIBeXPattern();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPattern#isHasCountExpression <em>Has Count Expression</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Has Count Expression</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPattern#isHasCountExpression()
+	 * @see #getIBeXPattern()
+	 * @generated
+	 */
+	EAttribute getIBeXPattern_HasCountExpression();
 
 	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext <em>IBe XContext</em>}'.
@@ -3554,6 +3728,17 @@ public interface IBeXPatternModelPackage extends EPackage {
 	EReference getIBeXRule_Delete();
 
 	/**
+	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getForEach <em>For Each</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>For Each</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getForEach()
+	 * @see #getIBeXRule()
+	 * @generated
+	 */
+	EReference getIBeXRule_ForEach();
+
+	/**
 	 * Returns the meta object for the reference list '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getParameters <em>Parameters</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -3585,6 +3770,93 @@ public interface IBeXPatternModelPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getIBeXRule_Probability();
+
+	/**
+	 * Returns the meta object for class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXForEachExpression <em>IBe XFor Each Expression</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>IBe XFor Each Expression</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXForEachExpression
+	 * @generated
+	 */
+	EClass getIBeXForEachExpression();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXForEachExpression#getCreate <em>Create</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Create</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXForEachExpression#getCreate()
+	 * @see #getIBeXForEachExpression()
+	 * @generated
+	 */
+	EReference getIBeXForEachExpression_Create();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXForEachExpression#getDelete <em>Delete</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Delete</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXForEachExpression#getDelete()
+	 * @see #getIBeXForEachExpression()
+	 * @generated
+	 */
+	EReference getIBeXForEachExpression_Delete();
+
+	/**
+	 * Returns the meta object for the reference '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXForEachExpression#getSource <em>Source</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Source</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXForEachExpression#getSource()
+	 * @see #getIBeXForEachExpression()
+	 * @generated
+	 */
+	EReference getIBeXForEachExpression_Source();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXForEachExpression#getTrgIterator <em>Trg Iterator</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Trg Iterator</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXForEachExpression#getTrgIterator()
+	 * @see #getIBeXForEachExpression()
+	 * @generated
+	 */
+	EReference getIBeXForEachExpression_TrgIterator();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXForEachExpression#getEdge <em>Edge</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Edge</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXForEachExpression#getEdge()
+	 * @see #getIBeXForEachExpression()
+	 * @generated
+	 */
+	EReference getIBeXForEachExpression_Edge();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXForEachExpression#getCreatedEdges <em>Created Edges</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Created Edges</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXForEachExpression#getCreatedEdges()
+	 * @see #getIBeXForEachExpression()
+	 * @generated
+	 */
+	EReference getIBeXForEachExpression_CreatedEdges();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXForEachExpression#getDeletedEdges <em>Deleted Edges</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Deleted Edges</em>'.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXForEachExpression#getDeletedEdges()
+	 * @see #getIBeXForEachExpression()
+	 * @generated
+	 */
+	EReference getIBeXForEachExpression_DeletedEdges();
 
 	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXProbability <em>IBe XProbability</em>}'.
@@ -4337,6 +4609,14 @@ public interface IBeXPatternModelPackage extends EPackage {
 		EClass IBE_XPATTERN = eINSTANCE.getIBeXPattern();
 
 		/**
+		 * The meta object literal for the '<em><b>Has Count Expression</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute IBE_XPATTERN__HAS_COUNT_EXPRESSION = eINSTANCE.getIBeXPattern_HasCountExpression();
+
+		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXContextImpl <em>IBe XContext</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -5034,6 +5314,14 @@ public interface IBeXPatternModelPackage extends EPackage {
 		EReference IBE_XRULE__DELETE = eINSTANCE.getIBeXRule_Delete();
 
 		/**
+		 * The meta object literal for the '<em><b>For Each</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XRULE__FOR_EACH = eINSTANCE.getIBeXRule_ForEach();
+
+		/**
 		 * The meta object literal for the '<em><b>Parameters</b></em>' reference list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -5056,6 +5344,72 @@ public interface IBeXPatternModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference IBE_XRULE__PROBABILITY = eINSTANCE.getIBeXRule_Probability();
+
+		/**
+		 * The meta object literal for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXForEachExpressionImpl <em>IBe XFor Each Expression</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXForEachExpressionImpl
+		 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXPatternModelPackageImpl#getIBeXForEachExpression()
+		 * @generated
+		 */
+		EClass IBE_XFOR_EACH_EXPRESSION = eINSTANCE.getIBeXForEachExpression();
+
+		/**
+		 * The meta object literal for the '<em><b>Create</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XFOR_EACH_EXPRESSION__CREATE = eINSTANCE.getIBeXForEachExpression_Create();
+
+		/**
+		 * The meta object literal for the '<em><b>Delete</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XFOR_EACH_EXPRESSION__DELETE = eINSTANCE.getIBeXForEachExpression_Delete();
+
+		/**
+		 * The meta object literal for the '<em><b>Source</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XFOR_EACH_EXPRESSION__SOURCE = eINSTANCE.getIBeXForEachExpression_Source();
+
+		/**
+		 * The meta object literal for the '<em><b>Trg Iterator</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XFOR_EACH_EXPRESSION__TRG_ITERATOR = eINSTANCE.getIBeXForEachExpression_TrgIterator();
+
+		/**
+		 * The meta object literal for the '<em><b>Edge</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XFOR_EACH_EXPRESSION__EDGE = eINSTANCE.getIBeXForEachExpression_Edge();
+
+		/**
+		 * The meta object literal for the '<em><b>Created Edges</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XFOR_EACH_EXPRESSION__CREATED_EDGES = eINSTANCE.getIBeXForEachExpression_CreatedEdges();
+
+		/**
+		 * The meta object literal for the '<em><b>Deleted Edges</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XFOR_EACH_EXPRESSION__DELETED_EDGES = eINSTANCE.getIBeXForEachExpression_DeletedEdges();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.impl.IBeXProbabilityImpl <em>IBe XProbability</em>}' class.

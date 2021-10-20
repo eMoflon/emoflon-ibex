@@ -18,6 +18,7 @@ import org.eclipse.emf.common.util.EList;
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getRhs <em>Rhs</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getCreate <em>Create</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getDelete <em>Delete</em>}</li>
+ *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getForEach <em>For Each</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getParameters <em>Parameters</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getArithmeticConstraints <em>Arithmetic Constraints</em>}</li>
  *   <li>{@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule#getProbability <em>Probability</em>}</li>
@@ -137,6 +138,18 @@ public interface IBeXRule extends IBeXNamedElement {
 	 * @generated
 	 */
 	void setDelete(IBeXDeletePattern value);
+
+	/**
+	 * Returns the value of the '<em><b>For Each</b></em>' containment reference list.
+	 * The list contents are of type {@link org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXForEachExpression}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>For Each</em>' containment reference list.
+	 * @see org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage#getIBeXRule_ForEach()
+	 * @model containment="true"
+	 * @generated
+	 */
+	EList<IBeXForEachExpression> getForEach();
 
 	/**
 	 * Returns the value of the '<em><b>Parameters</b></em>' reference list.

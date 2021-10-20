@@ -3,12 +3,14 @@ package org.emoflon.ibex.gt.transformations;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.emf.ecore.EClass;
 import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.gt.editor.gT.AddExpression;
 import org.emoflon.ibex.gt.editor.gT.AddOperator;
 import org.emoflon.ibex.gt.editor.gT.ArithmeticExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorAttributeExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorCountExpression;
+import org.emoflon.ibex.gt.editor.gT.EditorIteratorAttributeExpression;
 import org.emoflon.ibex.gt.editor.gT.EditorLiteralExpression;
 import org.emoflon.ibex.gt.editor.gT.ExpExpression;
 import org.emoflon.ibex.gt.editor.gT.MinMaxExpression;
@@ -148,6 +150,12 @@ public class EditorToArithmeticExtensionHelper {
 			calculation.setName(((EditorAttributeExpression) expression).getNode().getName());
 			calculation.setAttribute(((EditorAttributeExpression) expression).getAttribute());
 			return calculation;
+		} else if(expression instanceof EditorIteratorAttributeExpression) {
+			IBeXArithmeticAttribute calculation = IBeXPatternModelFactory.eINSTANCE.createIBeXArithmeticAttribute();
+			calculation.setType((EClass)((EditorIteratorAttributeExpression) expression).getIterator().getType().getEType());
+			calculation.setName(((EditorIteratorAttributeExpression) expression).getIterator().getName());
+			calculation.setAttribute(((EditorIteratorAttributeExpression) expression).getAttribute());
+			return calculation;
 		}
 		else if(expression instanceof EditorCountExpression) {
 			return transformCountExpression(data, ibexPattern, (EditorCountExpression)expression);
@@ -214,6 +222,11 @@ public class EditorToArithmeticExtensionHelper {
 		matchCount.setInvocation(invocation);
 		
 		invokingContext.getApiPatternDependencies().add(invokedContext);
+		
+		ibexPattern.setHasCountExpression(true);
+		invokingPattern.setHasCountExpression(true);
+		invokingContext.setHasCountExpression(true);
+		
 		return matchCount;
 	}
 }

@@ -40,7 +40,10 @@
     </eAnnotations>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="IBeXPattern" abstract="true" eSuperTypes="#//IBeXNamedElement"/>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXPattern" abstract="true" eSuperTypes="#//IBeXNamedElement">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="hasCountExpression" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
+        defaultValueLiteral="false"/>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBeXContext" abstract="true" eSuperTypes="#//IBeXPattern">
     <eStructuralFeatures xsi:type="ecore:EReference" name="apiPatternDependencies"
         upperBound="-1" eType="#//IBeXContext"/>
@@ -242,12 +245,30 @@
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="delete" eType="#//IBeXDeletePattern"
         containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="forEach" upperBound="-1"
+        eType="#//IBeXForEachExpression" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="parameters" upperBound="-1"
         eType="#//IBeXParameter"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="arithmeticConstraints"
         upperBound="-1" eType="#//IBeXArithmeticConstraint"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="probability" eType="#//IBeXProbability"
         containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXForEachExpression">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="create" eType="#//IBeXCreatePattern"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="delete" eType="#//IBeXDeletePattern"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="source" lowerBound="1"
+        eType="#//IBeXNode"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="trgIterator" lowerBound="1"
+        eType="#//IBeXNode" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="edge" lowerBound="1" eType="#//IBeXEdge"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="createdEdges" upperBound="-1"
+        eType="#//IBeXEdge" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="deletedEdges" upperBound="-1"
+        eType="#//IBeXEdge" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBeXProbability">
     <eStructuralFeatures xsi:type="ecore:EReference" name="distribution" lowerBound="1"

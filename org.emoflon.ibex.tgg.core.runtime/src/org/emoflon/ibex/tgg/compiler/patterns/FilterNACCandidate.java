@@ -30,12 +30,13 @@ public class FilterNACCandidate {
 
 	@Override
 	public String toString() {
-		return getNodeInRule().getName() + "_" + getEdgeType().getName() + "_"
-				+ getEDirection().toString().toLowerCase() + "_" + getNodeInRule().getDomainType().getName();
+		return getNodeInRule().getName() + "_" + getEdgeType().getName() + "_" + getEDirection().toString().toLowerCase() + "_"
+				+ getNodeInRule().getDomainType().getName();
 	}
-	
+
 	public EClass getOtherNodeType() {
-		return getEDirection() == EdgeDirection.OUTGOING ? (EClass) getEdgeType().getEType()
-				: (EClass) getEdgeType().eContainer();
+		return getEDirection() == EdgeDirection.OUTGOING ? //
+				(EClass) getEdgeType().getEType() : //
+				(EClass) getEdgeType().eContainer();
 	}
 }

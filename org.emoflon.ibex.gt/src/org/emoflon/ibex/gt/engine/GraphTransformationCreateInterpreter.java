@@ -11,7 +11,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.emf.EMFManipulationUtils;
-import org.emoflon.ibex.common.operational.ICreatePatternInterpreter;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.gt.arithmetic.IBeXArithmeticCalculatorHelper;
 import org.emoflon.ibex.gt.arithmetic.IBeXStochasticCalculatorHelper;
@@ -29,7 +28,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXStochasticAttributeVal
 /**
  * Interpreter applying creation of elements for graph transformation.
  */
-public class GraphTransformationCreateInterpreter implements ICreatePatternInterpreter {
+public class GraphTransformationCreateInterpreter {
 	/**
 	 * The default resource.
 	 */
@@ -48,7 +47,6 @@ public class GraphTransformationCreateInterpreter implements ICreatePatternInter
 		this.contextInterpreter = contextInterpreter;
 	}
 
-	@Override
 	public Optional<IMatch> apply(final IBeXCreatePattern createPattern, final IMatch match,
 			final Map<String, Object> parameters) {
 		createNodes(createPattern, match);
@@ -104,7 +102,7 @@ public class GraphTransformationCreateInterpreter implements ICreatePatternInter
 		// Calculate attribute values.
 		List<AssignmentTriple> assignments = new ArrayList<AssignmentTriple>();
 		createPattern.getAttributeAssignments().forEach(assignment -> {
-			assignments.add(calculateAssignment(assignment, match, parameters));
+			assignments.add(calculateAssignment(assignment, match, parameters, contextInterpreter));
 		});
 
 		// Execute assignments.
@@ -124,8 +122,8 @@ public class GraphTransformationCreateInterpreter implements ICreatePatternInter
 	 *            the parameters
 	 * @return the calculated assignment
 	 */
-	private AssignmentTriple calculateAssignment(final IBeXAttributeAssignment assignment, final IMatch match,
-			final Map<String, Object> parameters) {
+	public static AssignmentTriple calculateAssignment(final IBeXAttributeAssignment assignment, final IMatch match,
+			final Map<String, Object> parameters, final GraphTransformationInterpreter contextInterpreter) {
 		IBeXAttributeValue value = assignment.getValue();
 		Object calculatedValue = null;
 		if (value instanceof IBeXConstant) {
@@ -158,31 +156,5 @@ public class GraphTransformationCreateInterpreter implements ICreatePatternInter
 		return new AssignmentTriple(object, assignment.getType(), calculatedValue);
 	}
 
-	/**
-	 * An AssignmentTriple consists of the object, the attribute type and the new
-	 * value for the attribute.
-	 */
-	class AssignmentTriple {
-		private final EObject object;
-		private final EAttribute attribute;
-		private final Object value;
-
-		public AssignmentTriple(final EObject object, final EAttribute attribute, final Object value) {
-			this.object = object;
-			this.attribute = attribute;
-			this.value = value;
-		}
-
-		public EObject getObject() {
-			return object;
-		}
-
-		public EAttribute getAttribute() {
-			return attribute;
-		}
-
-		public Object getValue() {
-			return value;
-		}
-	}
+	
 }

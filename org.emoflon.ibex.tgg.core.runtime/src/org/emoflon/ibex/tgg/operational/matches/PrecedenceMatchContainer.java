@@ -29,8 +29,13 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 	protected PropagatingOperationalStrategy strategy;
 
 	protected Collection<Object> translated = cfactory.createObjectSet();
-	protected Collection<Object> pendingElts = cfactory.createObjectSet();
 	protected Collection<ITGGMatch> pending = cfactory.createObjectSet();
+
+	/**
+	 * We use this set to store all elements of broken rule applications. We need this to prevent
+	 * translation of these elements by other rules until repair has taken place.
+	 */
+	protected Collection<Object> pendingElts = cfactory.createObjectSet();
 
 	protected Map<ITGGMatch, Collection<Object>> requires = cfactory.createObjectToObjectHashMap();
 	protected Map<Object, Collection<ITGGMatch>> requiredBy = cfactory.createObjectToObjectHashMap();
@@ -50,10 +55,10 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 	@Override
 	public void addMatch(ITGGMatch match) {
 		Timer.start();
-		
+
 		if (match.getType() == PatternType.CONSISTENCY || match.getType() == PatternType.FWD || match.getType() == PatternType.BWD)
 			pending.add(match);
-		
+
 		times.addTo("addMatch", Timer.stop());
 	}
 
@@ -234,7 +239,9 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 	public Set<ITGGMatch> getMatches() {
 		Timer.start();
 
-		Collection<ITGGMatch> notPendingMatches = pending.parallelStream().filter(this::noElementIsPending).collect(Collectors.toList());
+		Collection<ITGGMatch> notPendingMatches = pending.parallelStream() //
+				.filter(this::noElementIsPending) //
+				.collect(Collectors.toList());
 		notPendingMatches.forEach(this::handleMatch);
 		if (notPendingMatches.size() == pending.size())
 			pending.clear();
