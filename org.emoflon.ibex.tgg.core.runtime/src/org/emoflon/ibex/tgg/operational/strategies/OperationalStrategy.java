@@ -11,9 +11,7 @@ import java.util.Optional;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.IGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.benchmark.TimeMeasurable;
 import org.emoflon.ibex.tgg.operational.benchmark.TimeRegistry;
@@ -151,7 +149,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	}
 
 	protected void addConsistencyMatch(ITGGMatch match) {
-		TGGRuleApplication ruleAppNode = getRuleApplicationNode(match);
+		TGGRuleApplication ruleAppNode = match.getRuleApplicationNode();
 		consistencyMatches.put(ruleAppNode, match);
 		LoggerConfig.log(LoggerConfig.log_matches(), () -> "Matches: received & added " + match.getPatternName() + "(" + match.hashCode() + ")\n" //
 				+ ConsoleUtil.indent(ConsoleUtil.printMatchParameter(match), 9, true));
@@ -294,11 +292,6 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 	protected void handleSuccessfulRuleApplication(ITGGMatch cm, String ruleName, IGreenPattern greenPattern) {
 		createMarkers(greenPattern, cm, ruleName);
-	}
-
-	public TGGRuleApplication getRuleApplicationNode(ITGGMatch match) {
-		return (TGGRuleApplication) match.get(TGGPatternUtil.getProtocolNodeName(//
-				PatternSuffixes.removeSuffix(match.getPatternName())));
 	}
 
 	protected void updateBlockedMatches() {

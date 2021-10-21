@@ -20,7 +20,7 @@ import org.emoflon.ibex.tgg.operational.strategies.PropagationDirectionHolder;
 
 import runtime.TGGRuleApplication;
 
-public class SyncRepairer implements TimeMeasurable {
+public class SyncRepair implements TimeMeasurable {
 
 	protected Times times;
 
@@ -33,7 +33,7 @@ public class SyncRepairer implements TimeMeasurable {
 
 	protected BrokenMatchContainer dependencyContainer;
 
-	public SyncRepairer(PropagatingOperationalStrategy opStrat, PropagationDirectionHolder propDirHolder) {
+	public SyncRepair(PropagatingOperationalStrategy opStrat, PropagationDirectionHolder propDirHolder) {
 		this.opStrat = opStrat;
 		this.propDirHolder = propDirHolder;
 		this.dependencyContainer = new BrokenMatchContainer(opStrat);
@@ -82,10 +82,10 @@ public class SyncRepairer implements TimeMeasurable {
 					ITGGMatch repairedMatch = rStrategy.repair(repairCandidate);
 					if (repairedMatch != null) {
 
-						TGGRuleApplication oldRa = opStrat.getRuleApplicationNode(repairCandidate);
+						TGGRuleApplication oldRa = repairCandidate.getRuleApplicationNode();
 						opStrat.getBrokenRuleApplications().remove(oldRa);
 
-						TGGRuleApplication newRa = opStrat.getRuleApplicationNode(repairedMatch);
+						TGGRuleApplication newRa = repairedMatch.getRuleApplicationNode();
 						opStrat.getBrokenRuleApplications().put(newRa, repairedMatch);
 						alreadyProcessed.add(repairCandidate);
 						alreadyProcessed.add(repairedMatch);

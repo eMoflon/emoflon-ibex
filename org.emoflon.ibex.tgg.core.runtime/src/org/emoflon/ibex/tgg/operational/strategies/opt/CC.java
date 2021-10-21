@@ -68,7 +68,7 @@ public class CC extends OPT {
 				for (TGGRuleCorr createdCorr : getGreenFactory(matchIdToRuleName.get(id)).getGreenCorrNodesInRule())
 					objectsToDelete.add((EObject) comatch.get(createdCorr.getName()));
 
-				objectsToDelete.add(getRuleApplicationNode(comatch));
+				objectsToDelete.add(comatch.getRuleApplicationNode());
 			} else
 				processValidMatch(comatch);
 		}

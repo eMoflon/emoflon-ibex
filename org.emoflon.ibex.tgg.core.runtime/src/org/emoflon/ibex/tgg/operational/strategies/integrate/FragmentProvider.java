@@ -75,7 +75,7 @@ public class FragmentProvider {
 
 			do {
 				i.classifyBrokenMatches(false);
-				i.resolveBrokenMatches();
+				i.rollbackBrokenMatches();
 			} while (!i.getBrokenRuleApplications().isEmpty());
 
 			i.getTimes().addTo("fragments:ResolveBrokenMatches", Timer.stop());

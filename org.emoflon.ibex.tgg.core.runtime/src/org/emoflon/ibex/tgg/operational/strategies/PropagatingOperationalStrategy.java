@@ -133,7 +133,7 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 	protected void addConsistencyMatch(ITGGMatch match) {
 		super.addConsistencyMatch(match);
 
-		TGGRuleApplication ruleAppNode = getRuleApplicationNode(match);
+		TGGRuleApplication ruleAppNode = match.getRuleApplicationNode();
 		if (brokenRuleApplications.containsKey(ruleAppNode)) {
 			LoggerConfig.log(LoggerConfig.log_ruleApplication(),
 					() -> "Repair confirmation: " + match.getPatternName() + "(" + match.hashCode() + ") appears to be fixed.");
@@ -153,7 +153,7 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 	}
 
 	protected void addConsistencyBrokenMatch(ITGGMatch match) {
-		TGGRuleApplication ra = getRuleApplicationNode(match);
+		TGGRuleApplication ra = match.getRuleApplicationNode();
 		brokenRuleApplications.put(ra, match);
 
 		consistencyMatches.remove(ra);

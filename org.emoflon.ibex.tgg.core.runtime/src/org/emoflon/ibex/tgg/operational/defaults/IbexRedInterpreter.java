@@ -40,7 +40,7 @@ public class IbexRedInterpreter implements IRedInterpreter {
 
 	@Override
 	public void revokeOperationalRule(final ITGGMatch match) {
-		TGGRuleApplication ra = strategy.getRuleApplicationNode(match);
+		TGGRuleApplication ra = match.getRuleApplicationNode();
 		IGreenPattern pattern = strategy.revokes(match);
 
 		// Revoke nodes and edges in the correspondence model.

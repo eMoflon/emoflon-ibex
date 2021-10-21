@@ -26,7 +26,7 @@ public class CO extends CC {
 			int id = v < 0 ? -v : v;
 			ITGGMatch comatch = idToMatch.get(id);
 			if (v < 0)
-				objectsToDelete.add(getRuleApplicationNode(comatch));
+				objectsToDelete.add(comatch.getRuleApplicationNode());
 		}
 
 		EcoreUtil.deleteAll(objectsToDelete, true);

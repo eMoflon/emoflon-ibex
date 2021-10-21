@@ -112,7 +112,7 @@ public abstract class Conflict {
 			if (integrate().getGeneralModelChanges().isDeleted(node))
 				deletedNodes.add(node);
 		});
-		TGGRuleApplication ruleApplication = integrate().getRuleApplicationNode(match);
+		TGGRuleApplication ruleApplication = match.getRuleApplicationNode();
 		deletedCrossEdges.addAll(integrate().getGeneralModelChanges().getDeletedEdges(ruleApplication));
 
 		recreateElements(deletedNodes, deletedContainmentEdges, deletedCrossEdges);
@@ -144,7 +144,7 @@ public abstract class Conflict {
 			if (integrate().getGeneralModelChanges().isDeleted(node))
 				deletedNodes.add(node);
 		});
-		TGGRuleApplication ruleApplication = integrate().getRuleApplicationNode(classifiedMatch.getMatch());
+		TGGRuleApplication ruleApplication = classifiedMatch.getMatch().getRuleApplicationNode();
 		integrate().getGeneralModelChanges().getDeletedEdges(ruleApplication).stream() //
 				.filter(edge -> {
 					TGGRuleNode trgNode = classifiedMatch.util().getNode(edge.getTarget());
@@ -194,7 +194,7 @@ public abstract class Conflict {
 			deletedCrossEdges = matchUtil.getEMFEdgeStream(filter) //
 					.filter(e -> !e.getType().isContainment()) //
 					.collect(Collectors.toSet());
-			TGGRuleApplication ra = integrate().getRuleApplicationNode(match);
+			TGGRuleApplication ra = match.getRuleApplicationNode();
 			ra.eClass().getEAllReferences().forEach(r -> ra.eSet(r, null));
 			ra.eResource().getContents().remove(ra);
 			break;
@@ -227,7 +227,7 @@ public abstract class Conflict {
 		integrate().matchUtils().get(getMatch()).getEMFEdges(new EltFilter().corr().create()).stream() //
 				.filter(e -> deletedNodes.contains(e.getTarget())) //
 				.forEach(e -> deletedCrossEdges.add(e));
-		TGGRuleApplication ruleApplication = integrate().getRuleApplicationNode(getMatch());
+		TGGRuleApplication ruleApplication = getMatch().getRuleApplicationNode();
 		integrate().getGeneralModelChanges().getDeletedEdges(ruleApplication).stream() //
 				.filter(e -> deletedNodes.contains(e.getTarget())) //
 				.forEach(e -> deletedCrossEdges.add(e));

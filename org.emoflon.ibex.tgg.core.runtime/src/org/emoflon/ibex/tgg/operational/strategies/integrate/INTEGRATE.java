@@ -28,7 +28,7 @@ import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.PrecedenceMatchContainer;
-import org.emoflon.ibex.tgg.operational.repair.IntegrateRepairer;
+import org.emoflon.ibex.tgg.operational.repair.IntegrateRepair;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.ClassifiedMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DeletionType;
@@ -61,7 +61,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 	//// TOOLS ////
 	protected ModelChangeProtocol modelChangeProtocol;
-	protected IntegrateRepairer repairer;
+	protected IntegrateRepair repairer;
 	protected MatchClassifier matchClassifier;
 	protected TGGMatchUtilProvider matchUtils;
 	protected ConflictDetector conflictDetector;
@@ -93,7 +93,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		generalDeltaKey = new ChangeKey();
 		modelChangeProtocol.registerKey(generalDeltaKey);
 
-		repairer = new IntegrateRepairer(this);
+		repairer = new IntegrateRepair(this);
 		filterNACMatchCollector = new FilterNACMatchCollector(options);
 		matchClassifier = new MatchClassifier(this);
 		matchUtils = new TGGMatchUtilProvider(this);
@@ -244,7 +244,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 //		setUpdatePolicy(new NextMatchUpdatePolicy());
 	}
 
-	protected void resolveBrokenMatches() {
+	protected void rollbackBrokenMatches() {
 		Timer.start();
 
 		Collection<ITGGMatch> brokenMatches = new LinkedList<>(brokenRuleApplications.values());
@@ -466,7 +466,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		}
 	}
 
-	public IntegrateRepairer repairer() {
+	public IntegrateRepair repairer() {
 		return repairer;
 	}
 
@@ -503,7 +503,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	}
 
 	public void removeBrokenMatch(ITGGMatch brokenMatch) {
-		TGGRuleApplication ra = getRuleApplicationNode(brokenMatch);
+		TGGRuleApplication ra = brokenMatch.getRuleApplicationNode();
 
 		for (EReference ref : ra.eClass().getEAllReferences())
 			ra.eUnset(ref);

@@ -333,7 +333,7 @@ public class BrokenMatchContainer implements IMatchContainer, TimeMeasurable {
 	
 	public boolean removeConsistencyMatch(ITGGMatch m) {
 		// Transfer elements to the pending collection
-		TGGRuleApplication ra = strategy.getRuleApplicationNode(m);
+		TGGRuleApplication ra = m.getRuleApplicationNode();
 		if(!raToTranslated.containsKey(ra))
 			return true;
 		

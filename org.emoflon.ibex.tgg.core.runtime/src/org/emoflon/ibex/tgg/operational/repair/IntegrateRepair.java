@@ -31,7 +31,7 @@ import language.DomainType;
 import language.TGGAttributeConstraint;
 import language.TGGAttributeExpression;
 
-public class IntegrateRepairer implements TimeMeasurable {
+public class IntegrateRepair implements TimeMeasurable {
 
 	protected Times times;
 
@@ -45,7 +45,7 @@ public class IntegrateRepairer implements TimeMeasurable {
 
 	protected BrokenMatchContainer dependencyContainer;
 
-	public IntegrateRepairer(INTEGRATE opStrat) {
+	public IntegrateRepair(INTEGRATE opStrat) {
 		this.opStrat = opStrat;
 		this.shortcutRepairStrat = new ShortcutRepairStrategy(opStrat, shortcutPatternTypes);
 		this.attributeRepairStrat = new AttributeRepairStrategy(opStrat);
@@ -92,9 +92,9 @@ public class IntegrateRepairer implements TimeMeasurable {
 				if (repairedMatch != null) {
 					repairedSth = true;
 
-					opStrat.getBrokenRuleApplications().remove(opStrat.getRuleApplicationNode(repairCandidate));
+					opStrat.getBrokenRuleApplications().remove(repairCandidate.getRuleApplicationNode());
 					opStrat.precedenceGraph().removeMatch(repairCandidate);
-					opStrat.getBrokenRuleApplications().put(opStrat.getRuleApplicationNode(repairedMatch), repairedMatch);
+					opStrat.getBrokenRuleApplications().put(repairedMatch.getRuleApplicationNode(), repairedMatch);
 					opStrat.precedenceGraph().notifyAddedMatch(repairedMatch);
 					opStrat.precedenceGraph().notifyRemovedMatch(repairedMatch);
 					alreadyProcessed.add(repairedMatch);
@@ -108,13 +108,13 @@ public class IntegrateRepairer implements TimeMeasurable {
 
 			Timer.start();
 			opStrat.classifyBrokenMatches(false);
-			times.subtractFrom("operations:repairBrokenMatches", Timer.stop());
+			times.subtractFrom("repairBrokenMatches", Timer.stop());
 			opStrat.getBrokenRuleApplications().values().stream() //
 					.filter(m -> !alreadyProcessed.contains(m)) //
 					.forEach(dependencyContainer::addMatch);
 		}
 
-		times.addTo("operations:repairBrokenMatches", Timer.stop());
+		times.addTo("repairBrokenMatches", Timer.stop());
 		LoggerConfig.log(LoggerConfig.log_repair(), () -> "");
 
 		return !alreadyProcessed.isEmpty();
@@ -182,9 +182,9 @@ public class IntegrateRepairer implements TimeMeasurable {
 			repairedMatch = repairStrat.repair(repairCandidate, type);
 
 		if (repairedMatch != null) {
-			opStrat.getBrokenRuleApplications().remove(opStrat.getRuleApplicationNode(repairCandidate));
+			opStrat.getBrokenRuleApplications().remove(repairCandidate.getRuleApplicationNode());
 			opStrat.precedenceGraph().removeMatch(repairCandidate);
-			opStrat.getBrokenRuleApplications().put(opStrat.getRuleApplicationNode(repairedMatch), repairedMatch);
+			opStrat.getBrokenRuleApplications().put(repairedMatch.getRuleApplicationNode(), repairedMatch);
 			opStrat.precedenceGraph().notifyAddedMatch(repairedMatch);
 			opStrat.precedenceGraph().notifyRemovedMatch(repairedMatch);
 		}

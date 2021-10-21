@@ -197,7 +197,7 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 	}
 
 	private void consistencyMatchApplied(ITGGMatch m) {
-		TGGRuleApplication ra = strategy.getRuleApplicationNode(m);
+		TGGRuleApplication ra = m.getRuleApplicationNode();
 		if (raToTranslated.containsKey(ra))
 			return;
 
@@ -311,7 +311,7 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 
 	public boolean removeConsistencyMatch(ITGGMatch m) {
 		// Transfer elements to the pending collection
-		TGGRuleApplication ra = strategy.getRuleApplicationNode(m);
+		TGGRuleApplication ra = m.getRuleApplicationNode();
 		if (!raToTranslated.containsKey(ra))
 			return true;
 
