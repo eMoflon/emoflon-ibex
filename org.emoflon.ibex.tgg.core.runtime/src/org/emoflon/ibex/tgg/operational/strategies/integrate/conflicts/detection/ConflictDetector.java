@@ -408,7 +408,7 @@ public class ConflictDetector {
 	private Set<ITGGMatch> computeSrcMatches(ITGGMatch match) {
 		Set<ITGGMatch> srcMatches = new HashSet<>();
 
-		IGreenPatternFactory gFactory = integrate.getGreenFactory(match.getRuleName());
+		IGreenPatternFactory gFactory = integrate.getGreenFactories().get(match.getRuleName());
 		for (TGGRuleNode ruleNode : gFactory.getGreenSrcNodesInRule()) {
 			for (PrecedenceNode node : integrate.precedenceGraph().getNodesTranslating(match.get(ruleNode.getName()))) {
 				if (node.getMatch().getType() == PatternType.CONSISTENCY)
@@ -432,7 +432,7 @@ public class ConflictDetector {
 	private Set<ITGGMatch> computeTrgMatches(ITGGMatch match) {
 		Set<ITGGMatch> trgMatches = new HashSet<>();
 
-		IGreenPatternFactory gFactory = integrate.getGreenFactory(match.getRuleName());
+		IGreenPatternFactory gFactory = integrate.getGreenFactories().get(match.getRuleName());
 		for (TGGRuleNode ruleNode : gFactory.getGreenTrgNodesInRule()) {
 			for (PrecedenceNode node : integrate.precedenceGraph().getNodesTranslating(match.get(ruleNode.getName()))) {
 				if (node.getMatch().getType() == PatternType.CONSISTENCY)

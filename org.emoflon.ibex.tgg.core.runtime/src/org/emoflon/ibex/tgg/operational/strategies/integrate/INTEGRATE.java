@@ -530,10 +530,6 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		return modelChangeProtocol.getModelChanges(generalDeltaKey);
 	}
 
-	public Map<TGGRuleApplication, ITGGMatch> getBrokenRuleApplications() {
-		return brokenRuleApplications;
-	}
-
 	/**
 	 * Applies a given delta to source and target models specified by a {@link BiConsumer} providing the
 	 * source and target root elements.

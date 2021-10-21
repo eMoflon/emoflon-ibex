@@ -32,10 +32,10 @@ public class CC extends OPT {
 
 	@Override
 	public double getDefaultWeightForMatch(IMatch comatch, String ruleName) {
-		return getGreenFactory(ruleName).getGreenSrcEdgesInRule().size()
-				+ getGreenFactory(ruleName).getGreenSrcNodesInRule().size()
-				+ getGreenFactory(ruleName).getGreenTrgEdgesInRule().size()
-				+ getGreenFactory(ruleName).getGreenTrgNodesInRule().size();
+		return greenFactories.get(ruleName).getGreenSrcEdgesInRule().size()
+				+ greenFactories.get(ruleName).getGreenSrcNodesInRule().size()
+				+ greenFactories.get(ruleName).getGreenTrgEdgesInRule().size()
+				+ greenFactories.get(ruleName).getGreenTrgNodesInRule().size();
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class CC extends OPT {
 			int id = v < 0 ? -v : v;
 			ITGGMatch comatch = idToMatch.get(id);
 			if (v < 0) {
-				for (TGGRuleCorr createdCorr : getGreenFactory(matchIdToRuleName.get(id)).getGreenCorrNodesInRule())
+				for (TGGRuleCorr createdCorr : greenFactories.get(matchIdToRuleName.get(id)).getGreenCorrNodesInRule())
 					objectsToDelete.add((EObject) comatch.get(createdCorr.getName()));
 
 				objectsToDelete.add(comatch.getRuleApplicationNode());

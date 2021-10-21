@@ -63,7 +63,7 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 	}
 
 	private void handleMatch(ITGGMatch m) {
-		IGreenPatternFactory gFactory = strategy.getGreenFactory(m.getRuleName());
+		IGreenPatternFactory gFactory = strategy.getGreenFactories().get(m.getRuleName());
 		IGreenPattern gPattern = gFactory.create(m.getType());
 
 		if (anElementHasAlreadyBeenTranslated(m, gPattern))
@@ -134,7 +134,7 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 	}
 
 	private boolean noElementIsPending(ITGGMatch m) {
-		IGreenPatternFactory gFactory = strategy.getGreenFactory(m.getRuleName());
+		IGreenPatternFactory gFactory = strategy.getGreenFactories().get(m.getRuleName());
 		IGreenPattern gPattern = gFactory.create(m.getType());
 
 		for (TGGRuleNode createdNode : gPattern.getNodesMarkedByPattern()) {
@@ -201,7 +201,7 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 		if (raToTranslated.containsKey(ra))
 			return;
 
-		IGreenPatternFactory gFactory = strategy.getGreenFactory(m.getRuleName());
+		IGreenPatternFactory gFactory = strategy.getGreenFactories().get(m.getRuleName());
 
 		// Add translated elements
 		Collection<Object> translatedElts = cfactory.createObjectSet();

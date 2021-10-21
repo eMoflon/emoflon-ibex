@@ -217,7 +217,7 @@ public class ShortcutPatternTool implements TimeMeasurable {
 		osr.getOpScRule().getReplacingRule().getNodes()
 				.forEach(n -> tempMatch.put(n.getName(), scMatch.get(osr.getOpScRule().mapRuleNodeToSCRuleNode(n, SCInputRule.REPLACING).getName())));
 
-		IGreenPatternFactory greenFactory = strategy.getGreenFactory(osr.getOpScRule().getReplacingRule().getName());
+		IGreenPatternFactory greenFactory = strategy.getGreenFactories().get(osr.getOpScRule().getReplacingRule().getName());
 		IGreenPattern greenPattern = greenFactory.create(PatternType.FWD);
 		greenPattern.createMarkers(osr.getOpScRule().getReplacingRule().getName(), tempMatch);
 

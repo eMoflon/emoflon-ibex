@@ -71,7 +71,7 @@ public class SYNC extends PropagatingOperationalStrategy {
 
 	@Override
 	public IGreenPattern revokes(ITGGMatch match) {
-		IGreenPatternFactory greenFactory = getGreenFactory(match.getRuleName());
+		IGreenPatternFactory greenFactory = greenFactories.get(match.getRuleName());
 		if (match.getPatternName().equals(TGGPatternUtil.getConsistencyPatternName(match.getRuleName()))) {
 			return greenFactory.createGreenPattern(propagationDirectionHolder.get().getGreenPatternClass());
 		} else {

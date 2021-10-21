@@ -43,7 +43,7 @@ public class CO extends CC {
 	@Override
 	public double getDefaultWeightForMatch(IMatch comatch, String ruleName) {
 		return super.getDefaultWeightForMatch(comatch, ruleName)
-				+ getGreenFactory(ruleName).getGreenCorrNodesInRule().size();
+				+ greenFactories.get(ruleName).getGreenCorrNodesInRule().size();
 	}
 
 	@Override

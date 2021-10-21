@@ -4,7 +4,6 @@ import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -26,7 +25,7 @@ import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.TGGMatchParameterOrderProvider;
 import org.emoflon.ibex.tgg.operational.monitoring.AbstractIbexObservable;
-import org.emoflon.ibex.tgg.operational.patterns.GreenPatternFactory;
+import org.emoflon.ibex.tgg.operational.patterns.GreenPatternFactoryProvider;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.strategies.modules.IbexExecutable;
@@ -49,7 +48,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	protected IMatchContainer operationalMatchContainer;
 	protected Map<TGGRuleApplication, ITGGMatch> consistencyMatches;
 	private boolean domainsHaveNoSharedTypes;
-	private Map<String, IGreenPatternFactory> factories;
+	protected GreenPatternFactoryProvider greenFactories;
 
 	protected Map<ITGGMatch, String> blockedMatches = cfactory.createObjectToObjectHashMap();
 
@@ -85,7 +84,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 		resourceHandler = options.resourceHandler();
 		matchDistributor = options.matchDistributor();
-		factories = new HashMap<>();
+		greenFactories = new GreenPatternFactoryProvider(options);
 
 		matchDistributor.registerSingle(getPatternRelevantForCompiler(), this::addOperationalRuleMatch, this::removeOperationalRuleMatch);
 		matchDistributor.registerMultiple(getPatternRelevantForCompiler(), this::addOperationalRuleMatches, this::removeOperationalRuleMatches);
@@ -177,22 +176,22 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 		if(options.patterns.relaxDomainConformity()) 
 			return (matchedNodesAreInCorrectResource(resourceHandler.getSourceResource(), //
-					getGreenFactory(match.getRuleName()).getBlackSrcNodesInRule(), match)
+					greenFactories.get(match.getRuleName()).getBlackSrcNodesInRule(), match)
 					|| matchedNodesAreInCorrectResource(resourceHandler.getSourceResource(), //
-							getGreenFactory(match.getRuleName()).getGreenSrcNodesInRule(), match))
+							greenFactories.get(match.getRuleName()).getGreenSrcNodesInRule(), match))
 					&& (matchedNodesAreInCorrectResource(resourceHandler.getTargetResource(), //
-							getGreenFactory(match.getRuleName()).getBlackTrgNodesInRule(), match)
+							greenFactories.get(match.getRuleName()).getBlackTrgNodesInRule(), match)
 					|| matchedNodesAreInCorrectResource(resourceHandler.getTargetResource(), //
-							getGreenFactory(match.getRuleName()).getGreenTrgNodesInRule(), match));
+							greenFactories.get(match.getRuleName()).getGreenTrgNodesInRule(), match));
 		else
 			return matchedNodesAreInCorrectResource(resourceHandler.getSourceResource(), //
-					getGreenFactory(match.getRuleName()).getBlackSrcNodesInRule(), match)
+					greenFactories.get(match.getRuleName()).getBlackSrcNodesInRule(), match)
 					&& matchedNodesAreInCorrectResource(resourceHandler.getSourceResource(), //
-							getGreenFactory(match.getRuleName()).getGreenSrcNodesInRule(), match)
+							greenFactories.get(match.getRuleName()).getGreenSrcNodesInRule(), match)
 					&& matchedNodesAreInCorrectResource(resourceHandler.getTargetResource(), //
-							getGreenFactory(match.getRuleName()).getBlackTrgNodesInRule(), match)
+							greenFactories.get(match.getRuleName()).getBlackTrgNodesInRule(), match)
 					&& matchedNodesAreInCorrectResource(resourceHandler.getTargetResource(), //
-							getGreenFactory(match.getRuleName()).getGreenTrgNodesInRule(), match);
+							greenFactories.get(match.getRuleName()).getGreenTrgNodesInRule(), match);
 	}
 
 	private boolean matchedNodesAreInCorrectResource(Resource r, Collection<TGGRuleNode> nodes, ITGGMatch match) {
@@ -263,7 +262,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 			return Optional.empty();
 		}
 
-		IGreenPatternFactory factory = getGreenFactory(ruleName);
+		IGreenPatternFactory factory = greenFactories.get(ruleName);
 		IGreenPattern greenPattern = factory.create(match.getType());
 
 		LoggerConfig.log(LoggerConfig.log_ruleApplication(),
@@ -321,15 +320,6 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		cacheObjectToResource.clear();
 	}
 
-	public synchronized IGreenPatternFactory getGreenFactory(String ruleName) {
-		assert (ruleName != null);
-		if (!factories.containsKey(ruleName)) {
-			factories.put(ruleName, new GreenPatternFactory(options, ruleName));
-		}
-
-		return factories.get(ruleName);
-	}
-
 	protected void prepareMarkerCreation(IGreenPattern greenPattern, ITGGMatch comatch, String ruleName) {
 
 	}
@@ -341,8 +331,8 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 	/***** Configuration *****/
 
-	public Map<String, IGreenPatternFactory> getFactories() {
-		return factories;
+	public GreenPatternFactoryProvider getGreenFactories() {
+		return greenFactories;
 	}
 
 	public IbexOptions getOptions() {

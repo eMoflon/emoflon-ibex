@@ -102,7 +102,7 @@ public class BrokenMatchContainer implements IMatchContainer, TimeMeasurable {
 	}
 
 	private void handleMatch(ITGGMatch m) {
-		IGreenPatternFactory gFactory = strategy.getGreenFactory(m.getRuleName());
+		IGreenPatternFactory gFactory = strategy.getGreenFactories().get(m.getRuleName());
 		IGreenPattern gPattern = gFactory.create(PatternType.CC);
 
 		if (anElementHasAlreadyBeenTranslated(m, gPattern))
@@ -185,7 +185,7 @@ public class BrokenMatchContainer implements IMatchContainer, TimeMeasurable {
 	}
 	
 	private boolean noElementIsPending(ITGGMatch m) {
-		IGreenPatternFactory gFactory = strategy.getGreenFactory(m.getRuleName());
+		IGreenPatternFactory gFactory = strategy.getGreenFactories().get(m.getRuleName());
 		IGreenPattern gPattern = gFactory.create(m.getType());
 		
 		for (TGGRuleNode createdNode : gPattern.getNodesMarkedByPattern()) {

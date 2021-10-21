@@ -165,7 +165,7 @@ public abstract class Conflict {
 		switch (match.getType()) {
 		case FWD:
 		case SRC:
-			IGreenPattern fwdPattern = integrate().getGreenFactory(match.getRuleName()).create(PatternType.FWD);
+			IGreenPattern fwdPattern = integrate().getGreenFactories().get(match.getRuleName()).create(PatternType.FWD);
 			deletedNodes = fwdPattern.getNodesMarkedByPattern().stream() //
 					.map(n -> (EObject) match.get(n.getName())) //
 					.collect(Collectors.toSet());
@@ -177,7 +177,7 @@ public abstract class Conflict {
 			break;
 		case BWD:
 		case TRG:
-			IGreenPattern bwdPattern = integrate().getGreenFactory(match.getRuleName()).create(PatternType.BWD);
+			IGreenPattern bwdPattern = integrate().getGreenFactories().get(match.getRuleName()).create(PatternType.BWD);
 			deletedNodes = bwdPattern.getNodesMarkedByPattern().stream() //
 					.map(n -> (EObject) match.get(n.getName())) //
 					.collect(Collectors.toSet());

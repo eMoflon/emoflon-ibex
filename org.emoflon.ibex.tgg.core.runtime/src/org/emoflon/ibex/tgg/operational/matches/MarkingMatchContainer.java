@@ -74,7 +74,7 @@ public class MarkingMatchContainer implements IMatchContainer, TimeMeasurable {
 		Iterator<ITGGMatch> it = matches.iterator();
 		while (it.hasNext()) {
 			ITGGMatch nextMatch = it.next();
-			IGreenPatternFactory gFactory = opStrat.getGreenFactory(nextMatch.getRuleName());
+			IGreenPatternFactory gFactory = opStrat.getGreenFactories().get(nextMatch.getRuleName());
 			if (checkPositiveRAs(nextMatch, gFactory)) {
 				if (checkNegativeRAs(nextMatch, gFactory)) {
 					match = nextMatch;
@@ -100,9 +100,9 @@ public class MarkingMatchContainer implements IMatchContainer, TimeMeasurable {
 		Collection<ITGGMatch> neverApplicable = new LinkedList<>();
 
 		Set<ITGGMatch> nextMatches = matches.stream() //
-				.filter(m -> checkPositiveRAs(m, opStrat.getGreenFactory(m.getRuleName()))) //
+				.filter(m -> checkPositiveRAs(m, opStrat.getGreenFactories().get(m.getRuleName()))) //
 				.filter(m -> {
-					if (checkNegativeRAs(m, opStrat.getGreenFactory(m.getRuleName())))
+					if (checkNegativeRAs(m, opStrat.getGreenFactories().get(m.getRuleName())))
 						return true;
 					else {
 						neverApplicable.add(m);
@@ -141,7 +141,7 @@ public class MarkingMatchContainer implements IMatchContainer, TimeMeasurable {
 	}
 
 	private boolean removeConsistencyMatch(ITGGMatch match) {
-		IGreenPatternFactory gFactory = opStrat.getGreenFactory(match.getRuleName());
+		IGreenPatternFactory gFactory = opStrat.getGreenFactories().get(match.getRuleName());
 
 		gFactory.getGreenSrcNodesInRule().stream() //
 				.map(n -> (EObject) match.get(n.getName())) //
@@ -154,7 +154,7 @@ public class MarkingMatchContainer implements IMatchContainer, TimeMeasurable {
 	}
 
 	private void consistencyMatchApplied(ITGGMatch match) {
-		IGreenPatternFactory gFactory = opStrat.getGreenFactory(match.getRuleName());
+		IGreenPatternFactory gFactory = opStrat.getGreenFactories().get(match.getRuleName());
 
 		gFactory.getGreenSrcNodesInRule().stream() //
 				.map(n -> (EObject) match.get(n.getName())) //

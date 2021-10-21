@@ -188,7 +188,7 @@ public class PrecedenceGraph implements TimeMeasurable {
 	public boolean hasAnyConsistencyOverlap(PrecedenceNode srcTrgNode) {
 		ITGGMatch srcTrgMatch = srcTrgNode.getMatch();
 
-		IGreenPatternFactory gFactory = strategy.getGreenFactory(srcTrgMatch.getRuleName());
+		IGreenPatternFactory gFactory = strategy.getGreenFactories().get(srcTrgMatch.getRuleName());
 		Collection<Object> translatedElts = cfactory.createObjectSet();
 		if (srcTrgMatch.getType() == PatternType.SRC) {
 			gFactory.getGreenSrcNodesInRule().forEach(n -> translatedElts.add(srcTrgMatch.get(n.getName())));
@@ -204,7 +204,7 @@ public class PrecedenceGraph implements TimeMeasurable {
 	}
 
 	private void addMatch(ITGGMatch match) {
-		IGreenPatternFactory gFactory = strategy.getGreenFactory(match.getRuleName());
+		IGreenPatternFactory gFactory = strategy.getGreenFactories().get(match.getRuleName());
 
 		Collection<Object> requiredElts = cfactory.createObjectSet();
 		Collection<Object> translatedElts = cfactory.createObjectSet();

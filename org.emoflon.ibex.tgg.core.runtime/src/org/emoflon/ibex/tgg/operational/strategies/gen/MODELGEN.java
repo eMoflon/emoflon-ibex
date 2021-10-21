@@ -192,10 +192,10 @@ public class MODELGEN extends OperationalStrategy {
 	 */
 	private void updateStopCriterion(String ruleName) {
 		stopCriterion.update(ruleName,
-				getGreenFactory(ruleName).getGreenSrcNodesInRule().size()
-						+ getGreenFactory(ruleName).getGreenSrcEdgesInRule().size(),
-				getGreenFactory(ruleName).getGreenTrgNodesInRule().size()
-						+ getGreenFactory(ruleName).getGreenTrgEdgesInRule().size());
+				greenFactories.get(ruleName).getGreenSrcNodesInRule().size()
+						+ greenFactories.get(ruleName).getGreenSrcEdgesInRule().size(),
+						greenFactories.get(ruleName).getGreenTrgNodesInRule().size()
+						+ greenFactories.get(ruleName).getGreenTrgEdgesInRule().size());
 	}
 
 	/**
@@ -205,7 +205,7 @@ public class MODELGEN extends OperationalStrategy {
 	 * the axiom is found (or the stop criterion blocks the rule).
 	 */
 	private void collectMatchesForAxioms() {
-		options.tgg.getFlattenedConcreteTGGRules().stream().filter(r -> getGreenFactory(r.getName()).isAxiom())
+		options.tgg.getFlattenedConcreteTGGRules().stream().filter(r -> greenFactories.get(r.getName()).isAxiom())
 				.forEach(r -> {
 					addOperationalRuleMatch(new SimpleTGGMatch(TGGPatternUtil.generateGENBlackPatternName(r.getName())));
 				});

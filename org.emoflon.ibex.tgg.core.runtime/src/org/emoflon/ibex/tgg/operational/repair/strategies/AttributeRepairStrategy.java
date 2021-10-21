@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
@@ -26,7 +25,7 @@ import runtime.TGGRuleApplication;
 
 public class AttributeRepairStrategy implements RepairStrategy {
 
-	private PropagatingOperationalStrategy opStrat;
+	protected PropagatingOperationalStrategy opStrat;
 
 	public AttributeRepairStrategy(PropagatingOperationalStrategy opStrat) {
 		this.opStrat = opStrat;
@@ -38,7 +37,7 @@ public class AttributeRepairStrategy implements RepairStrategy {
 		if (propDir == null)
 			return null;
 
-		return repair(repairCandidate, determineCSP(propDir, getFactory(repairCandidate), repairCandidate));
+		return repair(repairCandidate, determineCSP(propDir, opStrat.getGreenFactories().get(repairCandidate), repairCandidate));
 	}
 
 	public ITGGMatch repair(List<TGGAttributeConstraint> constraints, ITGGMatch repairCandidate, PatternType type) {
@@ -74,10 +73,6 @@ public class AttributeRepairStrategy implements RepairStrategy {
 		return TGGPatternUtil.getAllNodes(ra).stream().noneMatch(n -> n == null);
 	}
 
-	protected IGreenPatternFactory getFactory(ITGGMatch match) {
-		return opStrat.getGreenFactory(PatternSuffixes.removeSuffix(match.getPatternName()));
-	}
-
 	protected IRuntimeTGGAttrConstrContainer determineCSP(PropagationDirection propDir, IGreenPatternFactory greenFactory, ITGGMatch match) {
 		ITGGMatch matchCopy = match.copy();
 
@@ -95,7 +90,7 @@ public class AttributeRepairStrategy implements RepairStrategy {
 	protected IRuntimeTGGAttrConstrContainer determineCSP(PropagationDirection propDir, List<TGGAttributeConstraint> constraints, ITGGMatch match) {
 		ITGGMatch matchCopy = match.copy();
 
-		IGreenPattern greenPattern = getFactory(matchCopy).create(propDir.getPatternType());
+		IGreenPattern greenPattern = opStrat.getGreenFactories().get(matchCopy).create(propDir.getPatternType());
 
 		matchCopy.getParameterNames().removeAll( //
 				propDir.getNodesInOutputDomain(greenPattern).stream() //

@@ -30,10 +30,10 @@ public class BWD_OPT extends OPT {
 			int id = v < 0 ? -v : v;
 			ITGGMatch comatch = idToMatch.get(id);
 			if (v < 0) {
-				for (TGGRuleCorr createdCorr : getGreenFactory(matchIdToRuleName.get(id)).getGreenCorrNodesInRule())
+				for (TGGRuleCorr createdCorr : greenFactories.get(matchIdToRuleName.get(id)).getGreenCorrNodesInRule())
 					objectsToDelete.add((EObject) comatch.get(createdCorr.getName()));
 
-				for (TGGRuleNode createdSrcNode : getGreenFactory(matchIdToRuleName.get(id)).getGreenSrcNodesInRule())
+				for (TGGRuleNode createdSrcNode : greenFactories.get(matchIdToRuleName.get(id)).getGreenSrcNodesInRule())
 					objectsToDelete.add((EObject) comatch.get(createdSrcNode.getName()));
 
 				objectsToDelete.addAll(getRuleApplicationNodes(comatch));
@@ -92,8 +92,7 @@ public class BWD_OPT extends OPT {
 
 	@Override
 	public double getDefaultWeightForMatch(IMatch comatch, String ruleName) {
-		return getGreenFactory(ruleName).getGreenTrgEdgesInRule().size()
-				+ getGreenFactory(ruleName).getGreenTrgNodesInRule().size();
+		return greenFactories.get(ruleName).getGreenTrgEdgesInRule().size() + greenFactories.get(ruleName).getGreenTrgNodesInRule().size();
 	}
 
 	public void backward() throws IOException {

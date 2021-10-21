@@ -15,7 +15,7 @@ public class PropDirectedAttributeRepairStrategy extends AttributeRepairStrategy
 
 	@Override
 	public ITGGMatch repair(ITGGMatch repairCandidate) {
-		return repair(repairCandidate, determineCSP(propDirHolder.get(), getFactory(repairCandidate), repairCandidate));
+		return repair(repairCandidate, determineCSP(propDirHolder.get(), opStrat.getGreenFactories().get(repairCandidate), repairCandidate));
 	}
 
 }
