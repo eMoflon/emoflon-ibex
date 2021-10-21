@@ -3,6 +3,7 @@ package org.emoflon.ibex.tgg.operational.strategies.opt;
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -47,12 +48,12 @@ public class CC extends OPT {
 		String ruleName = match.getRuleName();
 
 		if (ruleName == null) {
-			removeOperationalRuleMatch(match);
+			operationalMatchHandler.removeOperationalMatch(match);
 			return true;
 		}
 
 		processOperationalRuleMatch(ruleName, match);
-		removeOperationalRuleMatch(match);
+		operationalMatchHandler.removeOperationalMatch(match);
 
 		return true;
 	}
@@ -175,7 +176,7 @@ public class CC extends OPT {
 	}
 
 	@Override
-	public Collection<PatternType> getPatternRelevantForCompiler() {
-		return PatternType.getCCTypes();
+	protected Set<PatternType> getRelevantOperationalPatterns() {
+		return new HashSet<>(Arrays.asList(PatternType.CC, PatternType.GENForCC));
 	}
 }

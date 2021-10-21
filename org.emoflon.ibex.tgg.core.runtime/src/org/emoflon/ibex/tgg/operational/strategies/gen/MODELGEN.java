@@ -1,8 +1,7 @@
 package org.emoflon.ibex.tgg.operational.strategies.gen;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 
@@ -58,11 +57,14 @@ public class MODELGEN extends OperationalStrategy {
 	 */
 	protected MODELGENStopCriterion stopCriterion;
 
+	protected AxiomNACHandler axiomMatchHandler;
+
 	/** Constructors 
 	 * @param modelgen **/
 
 	public MODELGEN(IbexOptions options) throws IOException {
 		super(options, new RandomMatchUpdatePolicy(50));
+		this.axiomMatchHandler = new AxiomNACHandler(options, operationalMatchContainer);
 	}
 
 	/********************** Public Interface *********************/
@@ -81,20 +83,6 @@ public class MODELGEN extends OperationalStrategy {
 
 	public void setStopCriterion(MODELGENStopCriterion stop) {
 		this.stopCriterion = stop;
-	}
-
-	/**
-	 * If we get notified about a new match that is the NAC of an axiom (i.e. a
-	 * match for an GENAxiomNacPattern) we need to remove the always available empty
-	 * axiom match. Otherwise we can add the match as usual.
-	 */
-	@Override
-	public void addOperationalRuleMatch(ITGGMatch match) {
-		if (match.getType() == PatternType.GEN_AXIOM_NAC) {
-			this.deleteAxiomMatchesForFoundNACs(match);
-		} else {
-			super.addOperationalRuleMatch(match);
-		}
 	}
 
 	/********************** Internal Interface *********************/
@@ -120,7 +108,7 @@ public class MODELGEN extends OperationalStrategy {
 
 		// Rule application failed, match must have invalid so remove
 		if (!comatch.isPresent()) {
-			removeOperationalRuleMatch(match);
+			operationalMatchHandler.removeOperationalMatch(match);
 			logger.debug("Unable to apply: " + ruleName);
 		}
 
@@ -134,12 +122,12 @@ public class MODELGEN extends OperationalStrategy {
 			if (stopCriterion.dont()) {
 				if (!blockedMatches.containsKey(match))
 					blockedMatches.put(match, "Application blocked by stop criterion");
-				removeOperationalRuleMatch(match);
+				operationalMatchHandler.removeOperationalMatch(match);
 			}
 			if (stopCriterion.dont(ruleName)) {
 				if (!blockedMatches.containsKey(match))
 					blockedMatches.put(match, "Application blocked by ruleName stop criterion");
-				removeOperationalRuleMatch(match);
+				operationalMatchHandler.removeOperationalMatch(match);
 			}
 		}
 		super.updateBlockedMatches();
@@ -165,26 +153,6 @@ public class MODELGEN extends OperationalStrategy {
 	}
 
 	/**
-	 * We have found a match for a NAC of an axiom. This means this axiom is no
-	 * longer applicable and thus needs to be removed from the set of matches
-	 * 
-	 * @param match the match of a NAC for an Axiom
-	 */
-	private void deleteAxiomMatchesForFoundNACs(org.emoflon.ibex.common.operational.IMatch match) {
-		Set<ITGGMatch> matchesToRemove = new HashSet<>();
-
-		String axiomName = TGGPatternUtil.generateGENBlackPatternName(//
-				TGGPatternUtil.extractGENAxiomNacName(match.getPatternName()));
-
-		operationalMatchContainer.getMatches()//
-				.stream()//
-				.filter(m -> m.getPatternName().equals(axiomName))//
-				.forEach(m -> matchesToRemove.add(m));
-
-		matchesToRemove.forEach(m -> operationalMatchContainer.removeMatch(m));
-	}
-
-	/**
 	 * Update stop criterion by passing number of created source and target elements
 	 * (nodes and edges).
 	 * 
@@ -207,12 +175,13 @@ public class MODELGEN extends OperationalStrategy {
 	private void collectMatchesForAxioms() {
 		options.tgg.getFlattenedConcreteTGGRules().stream().filter(r -> greenFactories.get(r.getName()).isAxiom())
 				.forEach(r -> {
-					addOperationalRuleMatch(new SimpleTGGMatch(TGGPatternUtil.generateGENBlackPatternName(r.getName())));
+					operationalMatchHandler.addOperationalMatch(new SimpleTGGMatch(TGGPatternUtil.generateGENBlackPatternName(r.getName())));
 				});
 	}
 
 	@Override
-	public Collection<PatternType> getPatternRelevantForCompiler() {
-		return PatternType.getModelGENTypes();
+	protected Set<PatternType> getRelevantOperationalPatterns() {
+		return Collections.singleton(PatternType.GEN);
 	}
+
 }

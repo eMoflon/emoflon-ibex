@@ -3,8 +3,10 @@ package org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer;
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -20,11 +22,13 @@ import org.emoflon.ibex.tgg.operational.matches.SimpleTGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.TGGMatchParameterOrderProvider;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
+import org.emoflon.ibex.tgg.operational.strategies.matchhandling.MatchConsumer;
+import org.emoflon.ibex.tgg.operational.strategies.modules.MatchDistributor;
 
 import language.DomainType;
 import language.TGGRuleNode;
 
-public class PrecedenceGraph implements TimeMeasurable {
+public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 
 	protected final Times times = new Times();
 
@@ -52,8 +56,17 @@ public class PrecedenceGraph implements TimeMeasurable {
 	protected Set<ITGGMatch> pendingSrcTrgMatches = Collections.synchronizedSet(cfactory.createObjectSet());
 
 	public PrecedenceGraph(PropagatingOperationalStrategy strategy) {
+		super(strategy.getOptions());
 		this.strategy = strategy;
 		TimeRegistry.register(this);
+	}
+
+	@Override
+	protected void registerAtMatchDistributor(MatchDistributor matchDistributor) {
+		// TODO split consistency and src/trg matches directly at registration
+		Set<PatternType> patternSet = new HashSet<>(Arrays.asList(PatternType.CONSISTENCY, PatternType.SRC, PatternType.TRG));
+		matchDistributor.registerSingle(patternSet, this::notifyAddedMatch, this::notifyRemovedMatch);
+		matchDistributor.registerMultiple(patternSet, this::notifyAddedMatches, this::notifyRemovedMatches);
 	}
 
 	public void notifyAddedMatch(ITGGMatch match) {

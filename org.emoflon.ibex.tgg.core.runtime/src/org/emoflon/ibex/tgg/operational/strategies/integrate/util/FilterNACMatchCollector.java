@@ -3,25 +3,38 @@ package org.emoflon.ibex.tgg.operational.strategies.integrate.util;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
+import org.emoflon.ibex.tgg.operational.strategies.matchhandling.MatchConsumer;
+import org.emoflon.ibex.tgg.operational.strategies.modules.MatchDistributor;
 
-public class FilterNACMatchCollector {
+public class FilterNACMatchCollector extends MatchConsumer {
 
 	private final Map<String, Collection<String>> ruleName2filterNacPatternNames;
 	private final Map<String, Map<NACOverlap, Collection<ITGGMatch>>> pattern2filterNacMatches;
 	private final Map<String, Collection<String>> filterNacPattern2nodeNames;
 
 	public FilterNACMatchCollector(IbexOptions options) {
+		super(options);
 		ruleName2filterNacPatternNames = options.tgg.getFlattenedConcreteTGGRules().stream() //
 				.collect(Collectors.toMap(r -> r.getName(), r -> new LinkedList<>()));
 		pattern2filterNacMatches = new HashMap<>();
 		filterNacPattern2nodeNames = new HashMap<>();
+	}
+
+	@Override
+	protected void registerAtMatchDistributor(MatchDistributor matchDistributor) {
+		Set<PatternType> patternSet = new HashSet<>(Arrays.asList(PatternType.FILTER_NAC_SRC, PatternType.FILTER_NAC_TRG));
+		matchDistributor.registerSingle(patternSet, this::addFilterNACMatch, this::removeFilterNACMatch);
+		matchDistributor.registerMultiple(patternSet, m -> m.forEach(this::addFilterNACMatch), m -> m.forEach(this::removeFilterNACMatch));
 	}
 
 	public void addFilterNACMatch(ITGGMatch match) {

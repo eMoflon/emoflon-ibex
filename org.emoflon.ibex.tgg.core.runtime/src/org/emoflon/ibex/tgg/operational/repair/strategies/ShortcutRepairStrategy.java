@@ -56,8 +56,6 @@ public class ShortcutRepairStrategy implements RepairStrategy {
 			LoggerConfig.log(LoggerConfig.log_repair(), () -> "  " + scRule.getName());
 
 		scTool = new ShortcutPatternTool(opStrat, shortcutRules, new HashSet<>(Arrays.asList(shortcutPatternTypes)));
-
-		LoggerConfig.log(LoggerConfig.log_repair(), () -> "");
 	}
 
 	@Override

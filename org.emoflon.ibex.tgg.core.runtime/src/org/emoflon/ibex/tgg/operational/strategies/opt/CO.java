@@ -2,7 +2,10 @@ package org.emoflon.ibex.tgg.operational.strategies.opt;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -57,7 +60,8 @@ public class CO extends CC {
 	}
 
 	@Override
-	public Collection<PatternType> getPatternRelevantForCompiler() {
-		return PatternType.getCOTypes();
+	protected Set<PatternType> getRelevantOperationalPatterns() {
+		return new HashSet<>(Arrays.asList(PatternType.CC, PatternType.GENForCO));
 	}
+
 }

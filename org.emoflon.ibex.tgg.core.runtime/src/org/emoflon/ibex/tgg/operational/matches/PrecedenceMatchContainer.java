@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.benchmark.TimeMeasurable;
 import org.emoflon.ibex.tgg.operational.benchmark.TimeRegistry;
@@ -56,8 +55,11 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 	public void addMatch(ITGGMatch match) {
 		Timer.start();
 
-		if (match.getType() == PatternType.CONSISTENCY || match.getType() == PatternType.FWD || match.getType() == PatternType.BWD)
+		if (match.getType() == PatternType.CONSISTENCY) {
+			consistencyMatchApplied(match);
+		} else if (match.getType() == PatternType.FWD || match.getType() == PatternType.BWD) {
 			pending.add(match);
+		}
 
 		times.addTo("addMatch", Timer.stop());
 	}
@@ -155,12 +157,6 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 	@Override
 	public void matchApplied(ITGGMatch m) {
 		Timer.start();
-
-		if (m.getPatternName().endsWith(PatternSuffixes.CONSISTENCY)) {
-			consistencyMatchApplied(m);
-			times.addTo("matchApplied", Timer.stop());
-			return;
-		}
 
 		if (!translates.containsKey(m)) {
 			times.addTo("matchApplied", Timer.stop());

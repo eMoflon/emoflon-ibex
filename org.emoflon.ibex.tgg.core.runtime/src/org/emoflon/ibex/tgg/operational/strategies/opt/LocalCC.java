@@ -10,27 +10,30 @@ import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.LocalCCMatchContainer;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
+import org.emoflon.ibex.tgg.operational.strategies.matchhandling.ConsistencyMatchHandler;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 
 public class LocalCC extends CC {
 
+	protected ConsistencyMatchHandler consistencyMatches;
+
 	public LocalCC(IbexOptions options) throws IOException {
 		super(options);
+		init();
 	}
 
 	protected LocalCC(IbexOptions options, IUpdatePolicy policy) throws IOException {
 		super(options, policy);
+		init();
+	}
+
+	private void init() {
+		consistencyMatches = new ConsistencyMatchHandler(options, operationalMatchContainer, false);
 	}
 
 	@Override
 	protected IMatchContainer createMatchContainer() {
 		return new LocalCCMatchContainer(options, (IbexGreenInterpreter) greenInterpreter);
-	}
-	
-	@Override
-	protected void addConsistencyMatch(ITGGMatch match) {
-		operationalMatchContainer.addMatch(match);
-		super.addConsistencyMatch(match);
 	}
 
 	@Override
@@ -54,18 +57,18 @@ public class LocalCC extends CC {
 		});
 
 		getBlackNodes(comatch, ruleName).forEach(e -> {
-			if(mContainer.isMarked(e))
+			if (mContainer.isMarked(e))
 				return;
-			
+
 			if (!contextNodeToNeedingMatches.containsKey(e))
 				contextNodeToNeedingMatches.put(e, cfactory.createIntSet());
 			contextNodeToNeedingMatches.get(e).add(idCounter);
 		});
 
 		getBlackEdges(comatch, ruleName).forEach(e -> {
-			if(mContainer.isEdgeMarked(e))
+			if (mContainer.isEdgeMarked(e))
 				return;
-			
+
 			if (!contextEdgeToNeedingMatches.containsKey(e)) {
 				contextEdgeToNeedingMatches.put(e, cfactory.createIntSet());
 			}

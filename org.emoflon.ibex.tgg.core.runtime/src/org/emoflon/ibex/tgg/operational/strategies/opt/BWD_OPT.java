@@ -4,7 +4,8 @@ import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -42,11 +43,6 @@ public class BWD_OPT extends OPT {
 
 		EcoreUtil.deleteAll(objectsToDelete, true);
 		consistencyReporter.initTrg();
-	}
-
-	@Override
-	public boolean isPatternRelevantForInterpreter(PatternType type) {
-		return type == PatternType.BWD_OPT;
 	}
 
 	@Override
@@ -100,7 +96,7 @@ public class BWD_OPT extends OPT {
 	}
 
 	@Override
-	public Collection<PatternType> getPatternRelevantForCompiler() {
-		return PatternType.getBWD_Op();
+	protected Set<PatternType> getRelevantOperationalPatterns() {
+		return Collections.singleton(PatternType.BWD_OPT);
 	}
 }

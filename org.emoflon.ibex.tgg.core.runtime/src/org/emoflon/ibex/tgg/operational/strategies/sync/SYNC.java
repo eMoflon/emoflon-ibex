@@ -1,7 +1,9 @@
 package org.emoflon.ibex.tgg.operational.strategies.sync;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
@@ -80,8 +82,8 @@ public class SYNC extends PropagatingOperationalStrategy {
 	}
 
 	@Override
-	public Collection<PatternType> getPatternRelevantForCompiler() {
-		return PatternType.getSYNCTypes();
+	protected Set<PatternType> getRelevantOperationalPatterns() {
+		return new HashSet<>(Arrays.asList(PatternType.FWD, PatternType.BWD));
 	}
 
 	private void logCreatedAndDeletedNumbers() {

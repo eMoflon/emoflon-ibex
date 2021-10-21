@@ -3,10 +3,8 @@ package org.emoflon.ibex.tgg.operational.strategies;
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.Set;
 
-import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.IRedInterpreter;
 import org.emoflon.ibex.tgg.operational.benchmark.EmptyBenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.benchmark.Timer;
@@ -18,13 +16,15 @@ import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.MarkingMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.PrecedenceMatchContainer;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
+import org.emoflon.ibex.tgg.operational.strategies.matchhandling.ConsistencyMatchHandler;
 import org.emoflon.ibex.tgg.util.ConsoleUtil;
 
 import runtime.TGGRuleApplication;
 
 public abstract class PropagatingOperationalStrategy extends OperationalStrategy {
 
-	protected Map<TGGRuleApplication, ITGGMatch> brokenRuleApplications = cfactory.createObjectToObjectHashMap();
+	protected ConsistencyMatchHandler consistencyMatches;
+
 	protected IRedInterpreter redInterpreter;
 
 	/***** Constructors *****/
@@ -32,6 +32,7 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 	public PropagatingOperationalStrategy(IbexOptions options) throws IOException {
 		super(options);
 		redInterpreter = new IbexRedInterpreter(this);
+		consistencyMatches = new ConsistencyMatchHandler(options, operationalMatchContainer, true);
 	}
 
 	public void registerRedInterpeter(IRedInterpreter redInterpreter) {
@@ -81,7 +82,7 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 		if (operationalMatchContainer instanceof PrecedenceMatchContainer)
 			((PrecedenceMatchContainer) operationalMatchContainer).clearPendingElements();
 
-		if (brokenRuleApplications.isEmpty())
+		if (consistencyMatches.noBrokenRuleApplications())
 			return false;
 
 		revokeAllMatches();
@@ -90,11 +91,11 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 	}
 
 	protected void revokeAllMatches() {
-		while (!brokenRuleApplications.isEmpty()) {
+		while (!consistencyMatches.noBrokenRuleApplications()) {
 			Set<TGGRuleApplication> revoked = cfactory.createObjectSet();
 
-			for (TGGRuleApplication ra : brokenRuleApplications.keySet()) {
-				ITGGMatch match = brokenRuleApplications.get(ra);
+			for (TGGRuleApplication ra : consistencyMatches.getBrokenRuleApplications()) {
+				ITGGMatch match = consistencyMatches.getBrokenMatch(ra);
 				redInterpreter.revokeOperationalRule(match);
 				revoked.add(ra);
 				LoggerConfig.log(LoggerConfig.log_ruleApplication(),
@@ -102,7 +103,7 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 								+ ConsoleUtil.indent(ConsoleUtil.printMatchParameter(match), 18, true));
 			}
 			for (TGGRuleApplication revokedRA : revoked)
-				brokenRuleApplications.remove(revokedRA);
+				consistencyMatches.removeBrokenRuleApplication(revokedRA);
 
 			options.debug.benchmarkLogger().addToNumOfMatchesRevoked(revoked.size());
 		}
@@ -129,43 +130,12 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 			return new MarkingMatchContainer(this);
 	}
 
-	@Override
-	protected void addConsistencyMatch(ITGGMatch match) {
-		super.addConsistencyMatch(match);
-
-		TGGRuleApplication ruleAppNode = match.getRuleApplicationNode();
-		if (brokenRuleApplications.containsKey(ruleAppNode)) {
-			LoggerConfig.log(LoggerConfig.log_ruleApplication(),
-					() -> "Repair confirmation: " + match.getPatternName() + "(" + match.hashCode() + ") appears to be fixed.");
-			brokenRuleApplications.remove(ruleAppNode);
-			options.debug.benchmarkLogger().addToNumOfMatchesRepaired(1);
-		}
-
-		operationalMatchContainer.matchApplied(match);
-	}
-
-	@Override
-	public boolean removeOperationalRuleMatch(ITGGMatch match) {
-		if (match.getType() == PatternType.CONSISTENCY)
-			addConsistencyBrokenMatch((ITGGMatch) match);
-
-		return super.removeOperationalRuleMatch(match);
-	}
-
-	protected void addConsistencyBrokenMatch(ITGGMatch match) {
-		TGGRuleApplication ra = match.getRuleApplicationNode();
-		brokenRuleApplications.put(ra, match);
-
-		consistencyMatches.remove(ra);
-		operationalMatchContainer.removeMatch(match);
-	}
-
 	public IRedInterpreter getRedInterpreter() {
 		return redInterpreter;
 	}
 
-	public Map<TGGRuleApplication, ITGGMatch> getBrokenRuleApplications() {
-		return brokenRuleApplications;
+	public ConsistencyMatchHandler getConsistencyMatches() {
+		return consistencyMatches;
 	}
 
 	@Override

@@ -108,16 +108,12 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		options.executable(this);
 		precedenceGraph = new PrecedenceGraph(this);
 		multiplicityCounter = new MultiplicityCounter(this);
-
-		Collection<PatternType> patternsRelevantForPG = Arrays.asList(PatternType.CONSISTENCY, PatternType.SRC, PatternType.TRG);
-		matchDistributor.registerSingle(patternsRelevantForPG, precedenceGraph::notifyAddedMatch, precedenceGraph::notifyRemovedMatch);
-		matchDistributor.registerMultiple(patternsRelevantForPG, precedenceGraph::notifyAddedMatches, precedenceGraph::notifyRemovedMatches);
 	}
 
 	private void removeBrokenMatchesAfterCCMatchApplication(ITGGMatch ccMatch) {
 		Set<EObject> ccObjects = matchUtils.get(ccMatch).getObjects(new EltFilter().srcAndTrg().create());
 
-		Collection<ITGGMatch> brokenMatches = new HashSet<>(brokenRuleApplications.values());
+		Collection<ITGGMatch> brokenMatches = new HashSet<>(consistencyMatches.getBrokenMatches());
 		for (ITGGMatch brokenMatch : brokenMatches) {
 			Set<EObject> brokenObjects = matchUtils.get(brokenMatch).getObjects(new EltFilter().srcAndTrg().create());
 			if (!Sets.intersection(ccObjects, brokenObjects).isEmpty())
@@ -247,7 +243,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	protected void rollbackBrokenMatches() {
 		Timer.start();
 
-		Collection<ITGGMatch> brokenMatches = new LinkedList<>(brokenRuleApplications.values());
+		Collection<ITGGMatch> brokenMatches = new LinkedList<>(consistencyMatches.getBrokenMatches());
 
 		for (ITGGMatch brokenMatch : brokenMatches)
 			rollbackBrokenMatch(brokenMatch);
@@ -255,7 +251,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 		times.addTo("operations:resolveBrokenMatches", Timer.stop());
 
-		if (!brokenRuleApplications.isEmpty())
+		if (!consistencyMatches.noBrokenRuleApplications())
 			LoggerConfig.log(LoggerConfig.log_ruleApplication(), () -> "");
 	}
 
@@ -298,21 +294,21 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		do {
 			matchDistributor.updateMatches();
 		} while (deleteCorrsAndRAs(processed));
-		brokenRuleApplications.putAll(processed);
+		consistencyMatches.getBrokenRA2ConsMatches().putAll(processed);
 
 		modelChangeProtocol.deregisterKey(key);
 		return key;
 	}
 
 	private boolean deleteCorrsAndRAs(Map<TGGRuleApplication, ITGGMatch> processed) {
-		if (brokenRuleApplications.isEmpty())
+		if (consistencyMatches.noBrokenRuleApplications())
 			return false;
-		brokenRuleApplications.forEach((ra, m) -> {
+		consistencyMatches.getBrokenRA2ConsMatches().forEach((ra, m) -> {
 			deleteGreenCorrs(m);
 			EMFManipulationUtils.delete(ra);
 		});
-		processed.putAll(brokenRuleApplications);
-		brokenRuleApplications.clear();
+		processed.putAll(consistencyMatches.getBrokenRA2ConsMatches());
+		consistencyMatches.clearBrokenRuleApplications();
 		return true;
 	}
 
@@ -350,9 +346,9 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	protected void restoreBrokenCorrsAndRuleApplNodes(ChangeKey key) {
 		matchDistributor.updateMatches();
 		ModelChanges changes = modelChangeProtocol.getModelChanges(key);
-		brokenRuleApplications
+		consistencyMatches.getBrokenRA2ConsMatches()
 				.forEach((ra, m) -> matchUtils.get(m).getObjects(new EltFilter().corr().create()).forEach(obj -> restoreNode(changes, obj)));
-		brokenRuleApplications.forEach((ra, m) -> restoreNode(changes, ra));
+		consistencyMatches.getBrokenRA2ConsMatches().forEach((ra, m) -> restoreNode(changes, ra));
 	}
 
 	private void restoreNode(ModelChanges changes, EObject node) {
@@ -364,10 +360,6 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 					ModelChangeUtil.createEdge(e);
 			});
 		}
-	}
-
-	protected void clearBrokenRuleApplications() {
-		brokenRuleApplications.clear();
 	}
 
 	protected void revokeUntranslatedElements() {
@@ -402,7 +394,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		String ruleName = match.getRuleName();
 
 		Optional<ITGGMatch> result = processOperationalRuleMatch(ruleName, match);
-		removeOperationalRuleMatch(match);
+		operationalMatchHandler.removeOperationalMatch(match);
 
 		if (result.isPresent()) {
 			options.debug.benchmarkLogger().addToNumOfMatchesApplied(1);
@@ -423,47 +415,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	}
 
 	@Override
-	public boolean isPatternRelevantForInterpreter(PatternType type) {
-		switch (type) {
-		case SRC:
-		case TRG:
-		case FWD:
-		case BWD:
-		case CONSISTENCY:
-		case CC:
-		case FILTER_NAC_SRC:
-		case FILTER_NAC_TRG:
-			return true;
-		default:
-			return false;
-		}
-	}
-
-	@Override
-	public Collection<PatternType> getPatternRelevantForCompiler() {
-		return PatternType.getIntegrateTypes();
-	}
-
-	@Override
-	protected void addOperationalRuleMatch(ITGGMatch match) {
-		if (match.getType() == PatternType.FILTER_NAC_SRC || match.getType() == PatternType.FILTER_NAC_TRG)
-			filterNACMatchCollector.addFilterNACMatch(match);
-		else {
-			if (match.getType() == PatternType.CONSISTENCY)
-				multiplicityCounter.notifyAddedMatch(match);
-			super.addOperationalRuleMatch(match);
-		}
-	}
-
-	@Override
-	public boolean removeOperationalRuleMatch(ITGGMatch match) {
-		if (match.getType() == PatternType.FILTER_NAC_SRC || match.getType() == PatternType.FILTER_NAC_TRG)
-			return filterNACMatchCollector.removeFilterNACMatch(match);
-		else {
-			if (match.getType() == PatternType.CONSISTENCY)
-				multiplicityCounter.notifyRemovedMatch(match);
-			return super.removeOperationalRuleMatch(match);
-		}
+	protected Set<PatternType> getRelevantOperationalPatterns() {
+		return new HashSet<>(Arrays.asList(PatternType.SRC, PatternType.TRG, PatternType.FWD, PatternType.BWD, PatternType.CC));
 	}
 
 	public IntegrateRepair repairer() {
@@ -510,7 +463,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 		matchDistributor.updateMatches();
 
-		if (brokenRuleApplications.remove(ra) == null)
+		if (consistencyMatches.removeBrokenRuleApplication(ra) == null)
 			throw new RuntimeException("Match is still valid and therefore cannot be removed!");
 		if (ra.eResource() != null)
 			ra.eResource().getContents().remove(ra);
