@@ -10,6 +10,7 @@ import org.emoflon.ibex.tgg.operational.benchmark.TimeMeasurable;
 import org.emoflon.ibex.tgg.operational.benchmark.TimeRegistry;
 import org.emoflon.ibex.tgg.operational.benchmark.Timer;
 import org.emoflon.ibex.tgg.operational.benchmark.Times;
+import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.matches.BrokenMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.repair.strategies.PropDirectedAttributeRepairStrategy;
@@ -33,29 +34,39 @@ public class SyncRepair implements TimeMeasurable {
 
 	protected BrokenMatchContainer dependencyContainer;
 
+	protected boolean strategiesInitialized;
+
 	public SyncRepair(PropagatingOperationalStrategy opStrat, PropagationDirectionHolder propDirHolder) {
 		this.opStrat = opStrat;
 		this.propDirHolder = propDirHolder;
 		this.dependencyContainer = new BrokenMatchContainer(opStrat);
+		this.strategiesInitialized = false;
 
 		this.times = new Times();
 		TimeRegistry.register(this);
 	}
 
-	protected void initializeRepairStrategies() {
-		if (!repairStrategies.isEmpty())
-			return;
+	protected void initializeStrategies() {
+		if (!strategiesInitialized) {
+			strategiesInitialized = true;
 
-		if (opStrat.getOptions().repair.useShortcutRules()) {
-			repairStrategies.add(new PropDirectedShortcutRepairStrategy(opStrat, shortcutPatternTypes, propDirHolder));
-		}
-		if (opStrat.getOptions().repair.repairAttributes()) {
-			repairStrategies.add(new PropDirectedAttributeRepairStrategy(opStrat, propDirHolder));
+			LoggerConfig.log(LoggerConfig.log_repair(), () -> "Repair: init strategies");
+			Timer.start();
+
+			if (opStrat.getOptions().repair.useShortcutRules()) {
+				repairStrategies.add(new PropDirectedShortcutRepairStrategy(opStrat, shortcutPatternTypes, propDirHolder));
+			}
+			if (opStrat.getOptions().repair.repairAttributes()) {
+				repairStrategies.add(new PropDirectedAttributeRepairStrategy(opStrat, propDirHolder));
+			}
+
+			times.addTo("initializeStrategies", Timer.stop());
+			LoggerConfig.log(LoggerConfig.log_repair(), () -> "Repair: init strategies - done");
 		}
 	}
 
 	public boolean repairBrokenMatches() {
-		initializeRepairStrategies();
+		initializeStrategies();
 
 		Timer.start();
 

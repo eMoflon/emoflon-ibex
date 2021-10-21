@@ -37,8 +37,10 @@ public class IntegrateRepair implements TimeMeasurable {
 
 	protected final INTEGRATE opStrat;
 
-	protected final ShortcutRepairStrategy shortcutRepairStrat;
-	protected final AttributeRepairStrategy attributeRepairStrat;
+	protected ShortcutRepairStrategy shortcutRepairStrat;
+	protected AttributeRepairStrategy attributeRepairStrat;
+
+	protected boolean strategiesInitialized;
 
 	protected static final PatternType[] shortcutPatternTypes = //
 			{ PatternType.FWD, PatternType.BWD, PatternType.CC, PatternType.SRC, PatternType.TRG };
@@ -47,15 +49,31 @@ public class IntegrateRepair implements TimeMeasurable {
 
 	public IntegrateRepair(INTEGRATE opStrat) {
 		this.opStrat = opStrat;
-		this.shortcutRepairStrat = new ShortcutRepairStrategy(opStrat, shortcutPatternTypes);
-		this.attributeRepairStrat = new AttributeRepairStrategy(opStrat);
 		this.dependencyContainer = new BrokenMatchContainer(opStrat);
+		this.strategiesInitialized = false;
 
 		this.times = new Times();
 		TimeRegistry.register(this);
 	}
 
+	protected void initializeStrategies() {
+		if (!strategiesInitialized) {
+			strategiesInitialized = true;
+
+			LoggerConfig.log(LoggerConfig.log_repair(), () -> "Repair: init strategies");
+			Timer.start();
+
+			this.shortcutRepairStrat = new ShortcutRepairStrategy(opStrat, shortcutPatternTypes);
+			this.attributeRepairStrat = new AttributeRepairStrategy(opStrat);
+
+			times.addTo("initializeStrategies", Timer.stop());
+			LoggerConfig.log(LoggerConfig.log_repair(), () -> "Repair: init strategies - done");
+		}
+	}
+
 	public boolean repairBrokenMatches() {
+		initializeStrategies();
+
 		Timer.start();
 
 		Collection<ITGGMatch> alreadyProcessed = cfactory.createObjectSet();
@@ -169,10 +187,14 @@ public class IntegrateRepair implements TimeMeasurable {
 	}
 
 	public ITGGMatch attributeRepairOneMatch(ITGGMatch repairCandidate, PatternType type) {
+		initializeStrategies();
+
 		return repairOneMatch(attributeRepairStrat, repairCandidate, type);
 	}
 
 	public ITGGMatch shortcutRepairOneMatch(ITGGMatch repairCandidate, PatternType type) {
+		initializeStrategies();
+
 		return repairOneMatch(shortcutRepairStrat, repairCandidate, type);
 	}
 
@@ -193,6 +215,8 @@ public class IntegrateRepair implements TimeMeasurable {
 	}
 
 	public RepairableMatch isShortcutRepairable(ITGGMatch repairCandidate, ITGGMatch replacingMatch) {
+		initializeStrategies();
+
 		return shortcutRepairStrat.isRepairable(repairCandidate, replacingMatch);
 	}
 
