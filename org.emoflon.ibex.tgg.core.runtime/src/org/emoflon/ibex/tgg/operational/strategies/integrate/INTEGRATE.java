@@ -647,6 +647,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		if (ra.eResource() != null)
 			ra.eResource().getContents().remove(ra);
 		precedenceGraph.removeMatch(brokenMatch);
+		multiplicityCounter.removeMatch(brokenMatch);
 	}
 
 	public Collection<ITGGMatch> getFilterNacMatches(ITGGMatch match) {

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
@@ -11,6 +12,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.EltFilter;
 
 import language.BindingType;
 import language.DomainType;
@@ -144,6 +146,19 @@ public class MultiplicityCounter {
 
 					if (isBroken)
 						outgoingEdge2removedMatches2numOfEdges.computeIfAbsent(outgoingEdge, k -> new HashMap<>()).put(match, numOfEdges);
+				});
+			}
+		}
+	}
+
+	public void removeMatch(ITGGMatch match) {
+		Set<EObject> greenSubjects = integrate.getMatchUtil().getObjects(match, new EltFilter().create().srcAndTrg());
+		for (EObject subject : greenSubjects) {
+			if (subject2reference2numOfEdges.remove(subject) != null) {
+				subject.eClass().getEAllReferences().forEach(ref -> {
+					OutgoingEdge outgoingEdge = new OutgoingEdge(subject, ref);
+					outgoingEdge2addedMatches2numOfEdges.remove(outgoingEdge);
+					outgoingEdge2removedMatches2numOfEdges.remove(outgoingEdge);
 				});
 			}
 		}
