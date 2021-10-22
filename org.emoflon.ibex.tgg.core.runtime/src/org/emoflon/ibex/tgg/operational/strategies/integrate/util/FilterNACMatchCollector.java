@@ -13,7 +13,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.operational.strategies.matchhandling.MatchConsumer;
+import org.emoflon.ibex.tgg.operational.strategies.modules.MatchConsumer;
 import org.emoflon.ibex.tgg.operational.strategies.modules.MatchDistributor;
 
 public class FilterNACMatchCollector extends MatchConsumer {

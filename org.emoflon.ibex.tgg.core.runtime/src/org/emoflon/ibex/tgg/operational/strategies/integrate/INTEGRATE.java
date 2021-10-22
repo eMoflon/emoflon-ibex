@@ -79,10 +79,12 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 	public INTEGRATE(IbexOptions options) throws IOException {
 		super(options);
-		init();
 	}
 
-	private void init() throws IOException {
+	@Override
+	protected void initializeAdditionalModules(IbexOptions options) throws IOException {
+		super.initializeAdditionalModules(options);
+
 		conflicts = new HashSet<>();
 		match2conflicts = new HashMap<>();
 
@@ -113,7 +115,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	private void removeBrokenMatchesAfterCCMatchApplication(ITGGMatch ccMatch) {
 		Set<EObject> ccObjects = matchUtils.get(ccMatch).getObjects(new EltFilter().srcAndTrg().create());
 
-		Collection<ITGGMatch> brokenMatches = new HashSet<>(consistencyMatches.getBrokenMatches());
+		Collection<ITGGMatch> brokenMatches = new HashSet<>(matchHandler.getBrokenMatches());
 		for (ITGGMatch brokenMatch : brokenMatches) {
 			Set<EObject> brokenObjects = matchUtils.get(brokenMatch).getObjects(new EltFilter().srcAndTrg().create());
 			if (!Sets.intersection(ccObjects, brokenObjects).isEmpty())
@@ -243,7 +245,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	protected void rollbackBrokenMatches() {
 		Timer.start();
 
-		Collection<ITGGMatch> brokenMatches = new LinkedList<>(consistencyMatches.getBrokenMatches());
+		Collection<ITGGMatch> brokenMatches = new LinkedList<>(matchHandler.getBrokenMatches());
 
 		for (ITGGMatch brokenMatch : brokenMatches)
 			rollbackBrokenMatch(brokenMatch);
@@ -251,7 +253,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 		times.addTo("operations:resolveBrokenMatches", Timer.stop());
 
-		if (!consistencyMatches.noBrokenRuleApplications())
+		if (!matchHandler.noBrokenRuleApplications())
 			LoggerConfig.log(LoggerConfig.log_ruleApplication(), () -> "");
 	}
 
@@ -294,21 +296,21 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		do {
 			matchDistributor.updateMatches();
 		} while (deleteCorrsAndRAs(processed));
-		consistencyMatches.getBrokenRA2ConsMatches().putAll(processed);
+		matchHandler.getBrokenRA2ConsMatches().putAll(processed);
 
 		modelChangeProtocol.deregisterKey(key);
 		return key;
 	}
 
 	private boolean deleteCorrsAndRAs(Map<TGGRuleApplication, ITGGMatch> processed) {
-		if (consistencyMatches.noBrokenRuleApplications())
+		if (matchHandler.noBrokenRuleApplications())
 			return false;
-		consistencyMatches.getBrokenRA2ConsMatches().forEach((ra, m) -> {
+		matchHandler.getBrokenRA2ConsMatches().forEach((ra, m) -> {
 			deleteGreenCorrs(m);
 			EMFManipulationUtils.delete(ra);
 		});
-		processed.putAll(consistencyMatches.getBrokenRA2ConsMatches());
-		consistencyMatches.clearBrokenRuleApplications();
+		processed.putAll(matchHandler.getBrokenRA2ConsMatches());
+		matchHandler.clearBrokenRuleApplications();
 		return true;
 	}
 
@@ -346,9 +348,9 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	protected void restoreBrokenCorrsAndRuleApplNodes(ChangeKey key) {
 		matchDistributor.updateMatches();
 		ModelChanges changes = modelChangeProtocol.getModelChanges(key);
-		consistencyMatches.getBrokenRA2ConsMatches()
+		matchHandler.getBrokenRA2ConsMatches()
 				.forEach((ra, m) -> matchUtils.get(m).getObjects(new EltFilter().corr().create()).forEach(obj -> restoreNode(changes, obj)));
-		consistencyMatches.getBrokenRA2ConsMatches().forEach((ra, m) -> restoreNode(changes, ra));
+		matchHandler.getBrokenRA2ConsMatches().forEach((ra, m) -> restoreNode(changes, ra));
 	}
 
 	private void restoreNode(ModelChanges changes, EObject node) {
@@ -394,15 +396,15 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		String ruleName = match.getRuleName();
 
 		Optional<ITGGMatch> result = processOperationalRuleMatch(ruleName, match);
-		operationalMatchHandler.removeOperationalMatch(match);
+		matchHandler.removeOperationalMatch(match);
 
 		if (result.isPresent()) {
 			options.debug.benchmarkLogger().addToNumOfMatchesApplied(1);
-			LoggerConfig.log(LoggerConfig.log_ruleApplication(),
-					() -> "Matches: removed (as it has just been applied) " + match.getPatternName() + "(" + match.hashCode() + ")\n");
+			LoggerConfig.log(LoggerConfig.log_ruleApplication(), () -> "Matches: removed (as it has just been applied) " //
+					+ match.getPatternName() + "(" + match.hashCode() + ")\n");
 		} else {
-			LoggerConfig.log(LoggerConfig.log_ruleApplication(),
-					() -> "Matches: removed (as application failed) " + match.getPatternName() + "(" + match.hashCode() + ")\n");
+			LoggerConfig.log(LoggerConfig.log_ruleApplication(), () -> "Matches: removed (as application failed) " //
+					+ match.getPatternName() + "(" + match.hashCode() + ")\n");
 		}
 
 		times.addTo("translate:ruleApplication", Timer.stop());
@@ -463,7 +465,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 		matchDistributor.updateMatches();
 
-		if (consistencyMatches.removeBrokenRuleApplication(ra) == null)
+		if (matchHandler.removeBrokenRuleApplication(ra) == null)
 			throw new RuntimeException("Match is still valid and therefore cannot be removed!");
 		if (ra.eResource() != null)
 			ra.eResource().getContents().remove(ra);

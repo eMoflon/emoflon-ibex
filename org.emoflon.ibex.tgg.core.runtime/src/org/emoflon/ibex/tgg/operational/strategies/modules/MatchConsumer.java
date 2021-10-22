@@ -1,10 +1,9 @@
-package org.emoflon.ibex.tgg.operational.strategies.matchhandling;
+package org.emoflon.ibex.tgg.operational.strategies.modules;
 
 import java.util.Set;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
-import org.emoflon.ibex.tgg.operational.strategies.modules.MatchDistributor;
 
 public abstract class MatchConsumer {
 

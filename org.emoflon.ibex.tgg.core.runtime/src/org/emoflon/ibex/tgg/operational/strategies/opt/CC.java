@@ -48,12 +48,12 @@ public class CC extends OPT {
 		String ruleName = match.getRuleName();
 
 		if (ruleName == null) {
-			operationalMatchHandler.removeOperationalMatch(match);
+			matchHandler.removeOperationalMatch(match);
 			return true;
 		}
 
 		processOperationalRuleMatch(ruleName, match);
-		operationalMatchHandler.removeOperationalMatch(match);
+		matchHandler.removeOperationalMatch(match);
 
 		return true;
 	}

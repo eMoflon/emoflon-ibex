@@ -10,25 +10,22 @@ import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.LocalCCMatchContainer;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
-import org.emoflon.ibex.tgg.operational.strategies.matchhandling.ConsistencyMatchHandler;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 
 public class LocalCC extends CC {
 
-	protected ConsistencyMatchHandler consistencyMatches;
-
 	public LocalCC(IbexOptions options) throws IOException {
 		super(options);
-		init();
 	}
 
 	protected LocalCC(IbexOptions options, IUpdatePolicy policy) throws IOException {
 		super(options, policy);
-		init();
 	}
 
-	private void init() {
-		consistencyMatches = new ConsistencyMatchHandler(options, operationalMatchContainer, false);
+	@Override
+	protected void initializeAdditionalModules(IbexOptions options) throws IOException {
+		super.initializeAdditionalModules(options);
+		matchHandler.handleConsistencyMatches(operationalMatchContainer);
 	}
 
 	@Override

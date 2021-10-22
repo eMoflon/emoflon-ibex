@@ -72,7 +72,7 @@ public class SyncRepair implements TimeMeasurable {
 
 		Collection<ITGGMatch> alreadyProcessed = cfactory.createObjectSet();
 		dependencyContainer.reset();
-		opStrat.getConsistencyMatches().getBrokenMatches().forEach(dependencyContainer::addMatch);
+		opStrat.getMatchHandler().getBrokenMatches().forEach(dependencyContainer::addMatch);
 
 		boolean processedOnce = true;
 		while (processedOnce) {
@@ -94,10 +94,10 @@ public class SyncRepair implements TimeMeasurable {
 					if (repairedMatch != null) {
 
 						TGGRuleApplication oldRa = repairCandidate.getRuleApplicationNode();
-						opStrat.getConsistencyMatches().removeBrokenRuleApplication(oldRa);
+						opStrat.getMatchHandler().removeBrokenRuleApplication(oldRa);
 
 						TGGRuleApplication newRa = repairedMatch.getRuleApplicationNode();
-						opStrat.getConsistencyMatches().addBrokenRuleApplication(newRa, repairedMatch);
+						opStrat.getMatchHandler().addBrokenRuleApplication(newRa, repairedMatch);
 						alreadyProcessed.add(repairCandidate);
 						alreadyProcessed.add(repairedMatch);
 					}
@@ -106,10 +106,10 @@ public class SyncRepair implements TimeMeasurable {
 
 				finished = !dependencyContainer.isEmpty();
 			}
-			alreadyProcessed.addAll(opStrat.getConsistencyMatches().getBrokenMatches());
+			alreadyProcessed.addAll(opStrat.getMatchHandler().getBrokenMatches());
 			opStrat.getOptions().matchDistributor().updateMatches();
 
-			opStrat.getConsistencyMatches().getBrokenMatches().stream() //
+			opStrat.getMatchHandler().getBrokenMatches().stream() //
 					.filter(m -> !alreadyProcessed.contains(m)) //
 					.forEach(dependencyContainer::addMatch);
 		}

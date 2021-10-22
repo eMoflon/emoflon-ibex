@@ -26,9 +26,9 @@ import org.emoflon.ibex.tgg.operational.monitoring.AbstractIbexObservable;
 import org.emoflon.ibex.tgg.operational.patterns.GreenPatternFactoryProvider;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
-import org.emoflon.ibex.tgg.operational.strategies.matchhandling.OperationalMatchHandler;
 import org.emoflon.ibex.tgg.operational.strategies.modules.IbexExecutable;
 import org.emoflon.ibex.tgg.operational.strategies.modules.MatchDistributor;
+import org.emoflon.ibex.tgg.operational.strategies.modules.MatchHandler;
 import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 import org.emoflon.ibex.tgg.operational.updatepolicy.IUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.updatepolicy.NextMatchUpdatePolicy;
@@ -43,7 +43,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 	// Match and pattern management
 	protected IMatchContainer operationalMatchContainer;
-	protected OperationalMatchHandler operationalMatchHandler;
+	protected MatchHandler matchHandler;
 	protected GreenPatternFactoryProvider greenFactories;
 
 	protected Map<ITGGMatch, String> blockedMatches = cfactory.createObjectToObjectHashMap();
@@ -60,17 +60,20 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 	/***** Constructors *****/
 
-	public OperationalStrategy(IbexOptions options) {
+	public OperationalStrategy(IbexOptions options) throws IOException {
 		this(options, new NextMatchUpdatePolicy());
 	}
 
-	protected OperationalStrategy(IbexOptions options, IUpdatePolicy policy) {
+	protected OperationalStrategy(IbexOptions options, IUpdatePolicy policy) throws IOException {
 		this.options = options;
-		initialize(options, policy);
+		initializeBasicModules(options, policy);
+		initializeAdditionalModules(options);
+		matchHandler.registerAtMatchDistributer(getRelevantOperationalPatterns());
+
 		TimeRegistry.register(this);
 	}
 
-	private void initialize(IbexOptions options, IUpdatePolicy policy) {
+	private void initializeBasicModules(IbexOptions options, IUpdatePolicy policy) {
 		Timer.start();
 		this.notifyStartInit();
 
@@ -80,7 +83,8 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 		resourceHandler = options.resourceHandler();
 		matchDistributor = options.matchDistributor();
-		greenFactories = new GreenPatternFactoryProvider(options);
+		greenFactories = options.patterns.greenPatternFactories();
+		matchHandler = options.matchHandler();
 
 		this.notifyStartLoading();
 		resourceHandler.initialize();
@@ -94,8 +98,9 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 			e.printStackTrace();
 		}
 
-		operationalMatchHandler = new OperationalMatchHandler(options, greenFactories, operationalMatchContainer, //
-				getRelevantOperationalPatterns(), this::isPatternRelevantForInterpreter);
+		matchHandler.initialize();
+		matchHandler.handleOperationalMatches(operationalMatchContainer, this::isPatternRelevantForInterpreter);
+
 		greenInterpreter = new IbexGreenInterpreter(this);
 
 		TGGMatchParameterOrderProvider.init(options.tgg.flattenedTGG());
@@ -103,6 +108,8 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		this.notifyDoneInit();
 		options.debug.benchmarkLogger().addToInitTime(Timer.stop());
 	}
+
+	protected abstract void initializeAdditionalModules(IbexOptions options) throws IOException;
 
 	/***** Resource management *****/
 
@@ -148,7 +155,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		times.addTo("ruleApplication:chooseMatch", Timer.stop());
 
 		Optional<ITGGMatch> result = processOperationalRuleMatch(ruleName, match);
-		operationalMatchHandler.removeOperationalMatch(match);
+		matchHandler.removeOperationalMatch(match);
 
 		if (result.isPresent()) {
 			options.debug.benchmarkLogger().addToNumOfMatchesApplied(1);
@@ -236,7 +243,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	public void terminate() throws IOException {
 		matchDistributor.removeBlackInterpreter();
 		operationalMatchContainer.removeAllMatches();
-		operationalMatchHandler.clearCaches();
+		matchHandler.clearCaches();
 	}
 
 	protected void prepareMarkerCreation(IGreenPattern greenPattern, ITGGMatch comatch, String ruleName) {
@@ -260,6 +267,10 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 	public IMatchContainer getMatchContainer() {
 		return operationalMatchContainer;
+	}
+
+	public MatchHandler getMatchHandler() {
+		return matchHandler;
 	}
 
 	protected void collectDataToBeLogged() {

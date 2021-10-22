@@ -76,7 +76,7 @@ public class FragmentProvider {
 			do {
 				i.classifyBrokenMatches(false);
 				i.rollbackBrokenMatches();
-			} while (!i.getConsistencyMatches().noBrokenRuleApplications());
+			} while (!i.getMatchHandler().noBrokenRuleApplications());
 
 			i.getTimes().addTo("fragments:ResolveBrokenMatches", Timer.stop());
 		}
@@ -143,7 +143,7 @@ public class FragmentProvider {
 			Timer.start();
 
 			i.revokeBrokenCorrsAndRuleApplNodes();
-			i.getConsistencyMatches().clearBrokenRuleApplications();
+			i.getMatchHandler().clearBrokenRuleApplications();
 			i.revokeUntranslatedElements();
 
 			i.getTimes().addTo("fragments:CleanUp", Timer.stop());

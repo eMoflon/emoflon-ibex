@@ -21,13 +21,18 @@ import org.emoflon.ibex.tgg.operational.strategies.PropagationDirectionHolder.Pr
 public class SYNC extends PropagatingOperationalStrategy {
 
 	// Forward or backward sync
-	protected final PropagationDirectionHolder propagationDirectionHolder;
+	protected PropagationDirectionHolder propagationDirectionHolder;
 
 	// Repair
-	protected final SyncRepair repairer;
+	protected SyncRepair repairer;
 
 	public SYNC(IbexOptions options) throws IOException {
 		super(options);
+	}
+
+	@Override
+	protected void initializeAdditionalModules(IbexOptions options) throws IOException {
+		super.initializeAdditionalModules(options);
 		this.propagationDirectionHolder = new PropagationDirectionHolder();
 		this.repairer = new SyncRepair(this, propagationDirectionHolder);
 	}

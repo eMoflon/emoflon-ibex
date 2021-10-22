@@ -9,7 +9,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.operational.strategies.matchhandling.MatchConsumer;
+import org.emoflon.ibex.tgg.operational.strategies.modules.MatchConsumer;
 import org.emoflon.ibex.tgg.operational.strategies.modules.MatchDistributor;
 
 /**

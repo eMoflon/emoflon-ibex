@@ -64,6 +64,10 @@ public class MODELGEN extends OperationalStrategy {
 
 	public MODELGEN(IbexOptions options) throws IOException {
 		super(options, new RandomMatchUpdatePolicy(50));
+	}
+
+	@Override
+	protected void initializeAdditionalModules(IbexOptions options) throws IOException {
 		this.axiomMatchHandler = new AxiomNACHandler(options, operationalMatchContainer);
 	}
 
@@ -108,7 +112,7 @@ public class MODELGEN extends OperationalStrategy {
 
 		// Rule application failed, match must have invalid so remove
 		if (!comatch.isPresent()) {
-			operationalMatchHandler.removeOperationalMatch(match);
+			matchHandler.removeOperationalMatch(match);
 			logger.debug("Unable to apply: " + ruleName);
 		}
 
@@ -122,12 +126,12 @@ public class MODELGEN extends OperationalStrategy {
 			if (stopCriterion.dont()) {
 				if (!blockedMatches.containsKey(match))
 					blockedMatches.put(match, "Application blocked by stop criterion");
-				operationalMatchHandler.removeOperationalMatch(match);
+				matchHandler.removeOperationalMatch(match);
 			}
 			if (stopCriterion.dont(ruleName)) {
 				if (!blockedMatches.containsKey(match))
 					blockedMatches.put(match, "Application blocked by ruleName stop criterion");
-				operationalMatchHandler.removeOperationalMatch(match);
+				matchHandler.removeOperationalMatch(match);
 			}
 		}
 		super.updateBlockedMatches();
@@ -175,7 +179,7 @@ public class MODELGEN extends OperationalStrategy {
 	private void collectMatchesForAxioms() {
 		options.tgg.getFlattenedConcreteTGGRules().stream().filter(r -> greenFactories.get(r.getName()).isAxiom())
 				.forEach(r -> {
-					operationalMatchHandler.addOperationalMatch(new SimpleTGGMatch(TGGPatternUtil.generateGENBlackPatternName(r.getName())));
+					matchHandler.addOperationalMatch(new SimpleTGGMatch(TGGPatternUtil.generateGENBlackPatternName(r.getName())));
 				});
 	}
 

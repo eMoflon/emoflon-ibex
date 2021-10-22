@@ -22,7 +22,7 @@ import org.emoflon.ibex.tgg.operational.matches.SimpleTGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.TGGMatchParameterOrderProvider;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
-import org.emoflon.ibex.tgg.operational.strategies.matchhandling.MatchConsumer;
+import org.emoflon.ibex.tgg.operational.strategies.modules.MatchConsumer;
 import org.emoflon.ibex.tgg.operational.strategies.modules.MatchDistributor;
 
 import language.DomainType;

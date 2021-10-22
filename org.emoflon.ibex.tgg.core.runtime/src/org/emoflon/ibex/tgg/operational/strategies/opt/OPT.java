@@ -50,11 +50,14 @@ public abstract class OPT extends OperationalStrategy {
 
 	public OPT(final IbexOptions options) throws IOException {
 		super(options);
-		consistencyReporter = new ConsistencyReporter(this);
 	}
 
 	public OPT(final IbexOptions options, final IUpdatePolicy policy) throws IOException {
 		super(options, policy);
+	}
+
+	@Override
+	protected void initializeAdditionalModules(IbexOptions options) throws IOException {
 		consistencyReporter = new ConsistencyReporter(this);
 	}
 
