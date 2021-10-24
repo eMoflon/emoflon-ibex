@@ -33,15 +33,15 @@ public abstract class InconsistentChangesConflict extends Conflict implements CR
 
 	@Override
 	public void crs_deleteCorrs() {
-		Set<ITGGMatch> toBeCorrsDeleted = new HashSet<>();
-		toBeCorrsDeleted.add(getMatch());
+		Set<ITGGMatch> corrsToBeDeleted = new HashSet<>();
+		corrsToBeDeleted.add(getMatch());
 		integrate().precedenceGraph().getNode(getMatch()).forAllRequiredBy((act, pre) -> {
 			if (act.getMatch().getType() != PatternType.CONSISTENCY)
 				return false;
-			toBeCorrsDeleted.add(act.getMatch());
+			corrsToBeDeleted.add(act.getMatch());
 			return true;
 		});
-		toBeCorrsDeleted.forEach(this::deleteCorrs);
+		integrate().revoker().removeCorrs(corrsToBeDeleted);
 		
 		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by DELETE_CORRS");
 		resolved = true;

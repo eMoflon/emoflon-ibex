@@ -101,7 +101,7 @@ public class DelPreserveEdgeConflict extends DeletePreserveConflict {
 		integrate().getOptions().matchDistributor().updateMatches();
 		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Auto-repair after resolution of " + printConflictIdentification() + ":");
 		PatternType repairDirection = domainToBePreserved == DomainType.SRC ? PatternType.FWD : PatternType.BWD;
-		integrate().repairer().shortcutRepairOneMatch(matchToBeRepaired, repairDirection);
+		integrate().repair().shortcutRepairOneMatch(matchToBeRepaired, repairDirection);
 	}
 
 }

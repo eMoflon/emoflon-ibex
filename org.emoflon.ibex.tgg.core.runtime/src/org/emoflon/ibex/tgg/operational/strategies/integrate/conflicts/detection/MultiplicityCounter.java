@@ -133,7 +133,7 @@ public class MultiplicityCounter extends MatchConsumer {
 			if (subject == null)
 				throw new RuntimeException("MultiplicityCounter: node must exist in match!");
 
-			if (integrate.getGeneralModelChanges().isDeleted(subject)) {
+			if (integrate.generalModelChanges().isDeleted(subject)) {
 				if (subject2reference2numOfEdges.remove(subject) != null) {
 					entry.getValue().forEach((ref, numOfEdges) -> {
 						OutgoingEdge outgoingEdge = new OutgoingEdge(subject, ref);

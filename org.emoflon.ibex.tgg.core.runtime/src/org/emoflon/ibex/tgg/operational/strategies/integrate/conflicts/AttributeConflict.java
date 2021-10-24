@@ -55,7 +55,7 @@ public class AttributeConflict extends Conflict implements CRS_PreferSource, CRS
 	@Override
 	public void crs_preferSource() {
 		ModelChangeUtil.revertAttributeChange(trgChange);
-		integrate().repairer().attributeRepairOneMatch(getMatch(), PatternType.FWD);
+		integrate().repair().attributeRepairOneMatch(getMatch(), PatternType.FWD);
 		
 		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by PREFER_SOURCE");
 		resolved = true;
@@ -64,7 +64,7 @@ public class AttributeConflict extends Conflict implements CRS_PreferSource, CRS
 	@Override
 	public void crs_preferTarget() {
 		ModelChangeUtil.revertAttributeChange(srcChange);
-		integrate().repairer().attributeRepairOneMatch(getMatch(), PatternType.BWD);
+		integrate().repair().attributeRepairOneMatch(getMatch(), PatternType.BWD);
 		
 		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by PREFER_TARGET");
 		resolved = true;

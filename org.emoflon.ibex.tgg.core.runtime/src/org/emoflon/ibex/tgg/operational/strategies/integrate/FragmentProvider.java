@@ -41,7 +41,7 @@ public class FragmentProvider {
 			FragmentProvider.logFragmentStart(this);
 			Timer.start();
 
-			i.repairer().repairBrokenMatches();
+			i.repair().repairBrokenMatches();
 
 			i.getTimes().addTo("fragments:Repair", Timer.stop());
 		}
@@ -57,8 +57,8 @@ public class FragmentProvider {
 			Timer.start();
 
 			i.classifyBrokenMatches(true);
-			i.detectConflicts();
-			i.resolveConflicts();
+			i.conflictHandler.detectConflicts();
+			i.conflictHandler.resolveConflicts();
 
 			i.getTimes().addTo("fragments:ResolveConflicts", Timer.stop());
 		}
@@ -73,10 +73,7 @@ public class FragmentProvider {
 			FragmentProvider.logFragmentStart(this);
 			Timer.start();
 
-			do {
-				i.classifyBrokenMatches(false);
-				i.rollbackBrokenMatches();
-			} while (!i.getMatchHandler().noBrokenRuleApplications());
+			i.revoker.rollBack();
 
 			i.getTimes().addTo("fragments:ResolveBrokenMatches", Timer.stop());
 		}
@@ -91,10 +88,10 @@ public class FragmentProvider {
 			FragmentProvider.logFragmentStart(this);
 			Timer.start();
 
-			ChangeKey key = i.revokeBrokenCorrsAndRuleApplNodes();
+			ChangeKey key = i.revoker.revokeBrokenCorrsAndRuleApplNodes();
 			i.consistencyChecker.run();
 			i.consistencyChecker.terminate();
-			i.restoreBrokenCorrsAndRuleApplNodes(key);
+			i.revoker.restoreBrokenCorrsAndRuleApplNodes(key);
 
 			i.getTimes().addTo("fragments:LocalCC", Timer.stop());
 		}
@@ -110,7 +107,7 @@ public class FragmentProvider {
 			Timer.start();
 
 			i.classifyBrokenMatches(true);
-			i.detectAndResolveOpMultiplicityConflicts();
+			i.conflictHandler.detectAndResolveOpMultiplicityConflicts();
 			i.translateConflictFree();
 
 			i.getTimes().addTo("fragments:Translate", Timer.stop());
@@ -127,7 +124,7 @@ public class FragmentProvider {
 			FragmentProvider.logFragmentStart(this);
 			Timer.start();
 
-			i.revokeBrokenCorrsAndRuleApplNodes();
+			i.revoker.revokeBrokenCorrsAndRuleApplNodes();
 
 			i.getTimes().addTo("fragments:RevokeBrokenCorrs", Timer.stop());
 		}
@@ -142,9 +139,9 @@ public class FragmentProvider {
 			FragmentProvider.logFragmentStart(this);
 			Timer.start();
 
-			i.revokeBrokenCorrsAndRuleApplNodes();
+			i.revoker.revokeBrokenCorrsAndRuleApplNodes();
 			i.getMatchHandler().clearBrokenRuleApplications();
-			i.revokeUntranslatedElements();
+			i.revoker.revokeUntranslatedElements();
 
 			i.getTimes().addTo("fragments:CleanUp", Timer.stop());
 		}

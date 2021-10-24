@@ -136,7 +136,7 @@ public class ConflictDetector {
 	}
 
 	private void detectDeletePreserveAttrConflicts() {
-		for (AttributeChange change : integrate.getGeneralModelChanges().getAttributeChanges()) {
+		for (AttributeChange change : integrate.generalModelChanges().getAttributeChanges()) {
 			for (PrecedenceNode node : integrate.precedenceGraph().getNodesTranslating(change.getElement())) {
 				if (node.getMatch().getType() != PatternType.CONSISTENCY)
 					continue;

@@ -65,7 +65,7 @@ public class CorrPreservationConflict extends InconsistentChangesConflict implem
 	@Override
 	public void crs_preferSource() {
 		for (ITGGMatch trgMatch : trgMatches) {
-			RepairableMatch repairableMatch = integrate().repairer().isShortcutRepairable(getMatch(), trgMatch);
+			RepairableMatch repairableMatch = integrate().repair().isShortcutRepairable(getMatch(), trgMatch);
 			if (repairableMatch != null)
 				revertRepairable(repairableMatch, DomainType.TRG);
 		}
@@ -75,13 +75,13 @@ public class CorrPreservationConflict extends InconsistentChangesConflict implem
 
 		integrate().getOptions().matchDistributor().updateMatches();
 		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Auto-repair after resolution of " + printConflictIdentification() + ":");
-		integrate().repairer().shortcutRepairOneMatch(getMatch(), PatternType.FWD);
+		integrate().repair().shortcutRepairOneMatch(getMatch(), PatternType.FWD);
 	}
 
 	@Override
 	public void crs_preferTarget() {
 		for (ITGGMatch srcMatch : srcMatches) {
-			RepairableMatch repairableMatch = integrate().repairer().isShortcutRepairable(getMatch(), srcMatch);
+			RepairableMatch repairableMatch = integrate().repair().isShortcutRepairable(getMatch(), srcMatch);
 			if (repairableMatch != null)
 				revertRepairable(repairableMatch, DomainType.SRC);
 		}
@@ -91,7 +91,7 @@ public class CorrPreservationConflict extends InconsistentChangesConflict implem
 
 		integrate().getOptions().matchDistributor().updateMatches();
 		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Auto-repair after resolution of " + printConflictIdentification() + ":");
-		integrate().repairer().shortcutRepairOneMatch(getMatch(), PatternType.BWD);
+		integrate().repair().shortcutRepairOneMatch(getMatch(), PatternType.BWD);
 	}
 
 }

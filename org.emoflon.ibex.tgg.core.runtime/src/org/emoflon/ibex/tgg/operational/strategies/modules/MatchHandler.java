@@ -68,38 +68,55 @@ public class MatchHandler {
 		initialized = true;
 	}
 
+	/**
+	 * Enables handling of consistency matches and forwards them to the specified
+	 * {@link IMatchContainer}. All currently valid consistency matches can be accessed via
+	 * {@link MatchHandler#getConsistencyMatches()}.
+	 * 
+	 * @param matchContainer the match container consistency matches where forwarded to
+	 */
 	public void handleConsistencyMatches(IMatchContainer matchContainer) {
-		this.handleConsistencyMatches = true;
+		registerConsistencyMatches();
 		this.consistencyContainers.add(matchContainer);
 	}
 
-	public void handleOperationalMatches(IMatchContainer matchContainer, Predicate<PatternType> isPatternRelevant) {
+	/**
+	 * Enables handling of operational matches and forwards them to the specified
+	 * {@link IMatchContainer}. The given set of pattern types is used to statically filter the relevant
+	 * operational pattern types. By the predicate, matches can be dynamically filtered by their pattern
+	 * type.
+	 * 
+	 * @param matchContainer      the match container operational matches where forwarded to
+	 * @param operationalPatterns generally relevant operational patterns
+	 * @param isPatternRelevant   determines if the pattern type of the match is relevant at this point
+	 *                            of time
+	 */
+	public void handleOperationalMatches(IMatchContainer matchContainer, //
+			Set<PatternType> operationalPatterns, Predicate<PatternType> isPatternRelevant) {
+		options.matchDistributor().registerSingle(operationalPatterns, this::addOperationalMatch, this::removeOperationalMatch);
+		options.matchDistributor().registerMultiple(operationalPatterns, m -> m.forEach(this::addOperationalMatch),
+				m -> m.forEach(this::removeOperationalMatch));
+
 		this.handleOperationalMatches = true;
 		this.operationalContainers.put(matchContainer, isPatternRelevant);
 	}
 
+	/**
+	 * Enables handling of broken consistency matches. All currently broken consistency matches can be
+	 * accessed via {@link MatchHandler#getBrokenMatches()}.
+	 */
 	public void handleBrokenConsistencyMatches() {
-		this.handleConsistencyMatches = true;
+		registerConsistencyMatches();
 		this.handleBrokenConsistencyMatches = true;
 	}
 
-	/**
-	 * Call this method after every {@link IMatchContainer} has been registered by the
-	 * {@code handleMatches} methods.
-	 * 
-	 * @param operationalPatterns generally relevant operational patterns
-	 */
-	public void registerAtMatchDistributer(Set<PatternType> operationalPatterns) {
-		if (handleConsistencyMatches) {
+	private void registerConsistencyMatches() {
+		if (!this.handleConsistencyMatches) {
 			Set<PatternType> consPattern = Collections.singleton(PatternType.CONSISTENCY);
 			options.matchDistributor().registerSingle(consPattern, this::addConsistencyMatch, this::removeConsistencyMatch);
 			options.matchDistributor().registerMultiple(consPattern, this::addConsistencyMatches, this::removeConsistencyMatches);
-		}
 
-		if (handleOperationalMatches) {
-			options.matchDistributor().registerSingle(operationalPatterns, this::addOperationalMatch, this::removeOperationalMatch);
-			options.matchDistributor().registerMultiple(operationalPatterns, m -> m.forEach(this::addOperationalMatch),
-					m -> m.forEach(this::removeOperationalMatch));
+			this.handleConsistencyMatches = true;
 		}
 	}
 

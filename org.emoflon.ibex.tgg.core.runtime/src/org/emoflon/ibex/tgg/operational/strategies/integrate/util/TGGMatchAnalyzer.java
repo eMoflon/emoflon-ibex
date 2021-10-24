@@ -116,7 +116,7 @@ public class TGGMatchAnalyzer {
 				if (param instanceof TGGAttributeExpression) {
 					TGGAttributeExpression attrExpr = (TGGAttributeExpression) param;
 					EObject obj = util.getObject(attrExpr.getObjectVar());
-					Set<AttributeChange> attrChanges = util.integrate.getGeneralModelChanges().getAttributeChanges(obj);
+					Set<AttributeChange> attrChanges = util.integrate.generalModelChanges().getAttributeChanges(obj);
 					for (AttributeChange attrChange : attrChanges) {
 						if (attrChange.getAttribute().equals(attrExpr.getAttribute())) {
 							affectedParams.put(attrExpr, attrChange);
