@@ -271,7 +271,7 @@ public abstract class OperationalShortcutRule {
 	}
 
 	private IGreenPattern createGreenPattern() {
-		return new GreenSCPattern(strategy.getGreenFactory(opScRule.getReplacingRule().getName()), this);
+		return new GreenSCPattern(strategy.getGreenFactories().get(opScRule.getReplacingRule().getName()), this);
 	}
 
 	@Override

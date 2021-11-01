@@ -50,11 +50,14 @@ public abstract class OPT extends OperationalStrategy {
 
 	public OPT(final IbexOptions options) throws IOException {
 		super(options);
-		consistencyReporter = new ConsistencyReporter(this);
 	}
 
 	public OPT(final IbexOptions options, final IUpdatePolicy policy) throws IOException {
 		super(options, policy);
+	}
+
+	@Override
+	protected void initializeAdditionalModules(IbexOptions options) throws IOException {
 		consistencyReporter = new ConsistencyReporter(this);
 	}
 
@@ -205,17 +208,17 @@ public abstract class OPT extends OperationalStrategy {
 
 	protected Set<EObject> getGreenNodes(final ITGGMatch comatch, final String ruleName) {
 		Set<EObject> result = cfactory.createObjectSet();
-		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getGreenSrcNodesInRule()));
-		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getGreenTrgNodesInRule()));
-		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getGreenCorrNodesInRule()));
+		result.addAll(getNodes(comatch, greenFactories.get(ruleName).getGreenSrcNodesInRule()));
+		result.addAll(getNodes(comatch, greenFactories.get(ruleName).getGreenTrgNodesInRule()));
+		result.addAll(getNodes(comatch, greenFactories.get(ruleName).getGreenCorrNodesInRule()));
 		return result;
 	}
 
 	protected Set<EObject> getBlackNodes(final ITGGMatch comatch, final String ruleName) {
 		Set<EObject> result = cfactory.createObjectSet();
-		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getBlackSrcNodesInRule()));
-		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getBlackTrgNodesInRule()));
-		result.addAll(getNodes(comatch, getGreenFactory(ruleName).getBlackCorrNodesInRule()));
+		result.addAll(getNodes(comatch, greenFactories.get(ruleName).getBlackSrcNodesInRule()));
+		result.addAll(getNodes(comatch, greenFactories.get(ruleName).getBlackTrgNodesInRule()));
+		result.addAll(getNodes(comatch, greenFactories.get(ruleName).getBlackCorrNodesInRule()));
 		return result;
 	}
 
@@ -229,15 +232,15 @@ public abstract class OPT extends OperationalStrategy {
 
 	protected Set<EMFEdge> getGreenEdges(final ITGGMatch comatch, final String ruleName) {
 		Set<EMFEdge> result = cfactory.createEMFEdgeHashSet();
-		result.addAll(((IbexGreenInterpreter) greenInterpreter).createEdges(comatch, getGreenFactory(ruleName).getGreenSrcEdgesInRule(), false));
-		result.addAll(((IbexGreenInterpreter) greenInterpreter).createEdges(comatch, getGreenFactory(ruleName).getGreenTrgEdgesInRule(), false));
+		result.addAll(((IbexGreenInterpreter) greenInterpreter).createEdges(comatch, greenFactories.get(ruleName).getGreenSrcEdgesInRule(), false));
+		result.addAll(((IbexGreenInterpreter) greenInterpreter).createEdges(comatch, greenFactories.get(ruleName).getGreenTrgEdgesInRule(), false));
 		return result;
 	}
 
 	protected Set<EMFEdge> getBlackEdges(final ITGGMatch comatch, final String ruleName) {
 		Set<EMFEdge> result = cfactory.createEMFEdgeHashSet();
-		result.addAll(((IbexGreenInterpreter) greenInterpreter).createEdges(comatch, getGreenFactory(ruleName).getBlackSrcEdgesInRule(), false));
-		result.addAll(((IbexGreenInterpreter) greenInterpreter).createEdges(comatch, getGreenFactory(ruleName).getBlackTrgEdgesInRule(), false));
+		result.addAll(((IbexGreenInterpreter) greenInterpreter).createEdges(comatch, greenFactories.get(ruleName).getBlackSrcEdgesInRule(), false));
+		result.addAll(((IbexGreenInterpreter) greenInterpreter).createEdges(comatch, greenFactories.get(ruleName).getBlackTrgEdgesInRule(), false));
 		return result;
 	}
 

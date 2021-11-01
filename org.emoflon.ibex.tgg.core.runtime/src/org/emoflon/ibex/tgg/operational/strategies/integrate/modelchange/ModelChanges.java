@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -95,8 +96,9 @@ public class ModelChanges {
 		if (!deletedElements.remove(createdElement)) {
 			createdElements.add(createdElement);
 			newlyCreatedElements.add(createdElement);
-		} else
+		} else {
 			containedInResource.remove(createdElement);
+		}
 	}
 
 	public void addDeletedElement(EObject deletedElement) {
@@ -104,22 +106,20 @@ public class ModelChanges {
 		if (!createdElements.remove(deletedElement)) {
 			deletedElements.add(deletedElement);
 			newlyDeletedElements.add(deletedElement);
+		} else {
+			newlyCreatedElements.remove(deletedElement);
 		}
 	}
 
-	public void addDelEltContainedInRes(EObject deletedElement, Resource resource) {
+	public void addDeletedEltContainedInRes(EObject deletedElement, Resource resource) {
 		modified = true;
-		if (!createdElements.remove(deletedElement)) {
-			deletedElements.add(deletedElement);
-			newlyDeletedElements.add(deletedElement);
+		if (!createdElements.contains(deletedElement))
 			containedInResource.put(deletedElement, resource);
-		}
 	}
 
 	public void addCreatedEdge(EMFEdge createdEdge) {
 		modified = true;
-		if (deletedEdges.contains(createdEdge)) {
-			deletedEdges.remove(createdEdge);
+		if (deletedEdges.remove(createdEdge)) {
 			srcMappedDeletedEdges.get(createdEdge.getSource()).remove(createdEdge);
 			trgMappedDeletedEdges.get(createdEdge.getTarget()).remove(createdEdge);
 		} else {
@@ -131,8 +131,7 @@ public class ModelChanges {
 
 	public void addDeletedEdge(EMFEdge deletedEdge) {
 		modified = true;
-		if (createdEdges.contains(deletedEdge)) {
-			createdEdges.remove(deletedEdge);
+		if (createdEdges.remove(deletedEdge)) {
 			srcMappedCreatedEdges.get(deletedEdge.getSource()).remove(deletedEdge);
 			trgMappedCreatedEdges.get(deletedEdge.getTarget()).remove(deletedEdge);
 		} else {
@@ -304,10 +303,19 @@ public class ModelChanges {
 
 	synchronized private void cleanUp() {
 		if (modified) {
+			synchronizeContainedInResourceWithDeletedElements();
 			detectAppendagesOfNewlyCreatedElements();
 			newlyCreatedElements.clear();
 			newlyDeletedElements.clear();
 			modified = false;
+		}
+	}
+
+	private void synchronizeContainedInResourceWithDeletedElements() {
+		for (Iterator<EObject> it = containedInResource.keySet().iterator(); it.hasNext();) {
+			EObject elt = (EObject) it.next();
+			if (!deletedElements.contains(elt))
+				it.remove();
 		}
 	}
 

@@ -10,7 +10,7 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolutio
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_PreferTarget;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.AttributeChange;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.MatchAnalysis.ConstrainedAttributeChanges;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchAnalyzer.ConstrainedAttributeChanges;
 
 public class AttributeConflict extends Conflict implements CRS_PreferSource, CRS_PreferTarget {
 
@@ -55,7 +55,7 @@ public class AttributeConflict extends Conflict implements CRS_PreferSource, CRS
 	@Override
 	public void crs_preferSource() {
 		ModelChangeUtil.revertAttributeChange(trgChange);
-		integrate().repairOneMatch(integrate().getAttributeRepairStrat(), getMatch(), PatternType.FWD);
+		integrate().repair().attributeRepairOneMatch(getMatch(), PatternType.FWD);
 		
 		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by PREFER_SOURCE");
 		resolved = true;
@@ -64,7 +64,7 @@ public class AttributeConflict extends Conflict implements CRS_PreferSource, CRS
 	@Override
 	public void crs_preferTarget() {
 		ModelChangeUtil.revertAttributeChange(srcChange);
-		integrate().repairOneMatch(integrate().getAttributeRepairStrat(), getMatch(), PatternType.BWD);
+		integrate().repair().attributeRepairOneMatch(getMatch(), PatternType.BWD);
 		
 		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by PREFER_TARGET");
 		resolved = true;

@@ -3,47 +3,38 @@ package org.emoflon.ibex.tgg.operational.strategies;
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
-import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.IRedInterpreter;
 import org.emoflon.ibex.tgg.operational.benchmark.EmptyBenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.benchmark.Timer;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.defaults.IbexRedInterpreter;
-import org.emoflon.ibex.tgg.operational.matches.BrokenMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.MarkingMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.PrecedenceMatchContainer;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
-import org.emoflon.ibex.tgg.operational.repair.AbstractRepairStrategy;
-import org.emoflon.ibex.tgg.operational.repair.AttributeRepairStrategy;
-import org.emoflon.ibex.tgg.operational.repair.ShortcutRepairStrategy;
 import org.emoflon.ibex.tgg.util.ConsoleUtil;
 
 import runtime.TGGRuleApplication;
 
 public abstract class PropagatingOperationalStrategy extends OperationalStrategy {
 
-	// Repair
-	protected Collection<AbstractRepairStrategy> repairStrategies = new ArrayList<>();
-	protected BrokenMatchContainer dependencyContainer;
-
-	protected Map<TGGRuleApplication, ITGGMatch> brokenRuleApplications = cfactory.createObjectToObjectHashMap();
 	protected IRedInterpreter redInterpreter;
 
 	/***** Constructors *****/
 
 	public PropagatingOperationalStrategy(IbexOptions options) throws IOException {
 		super(options);
+	}
+
+	@Override
+	protected void initializeAdditionalModules(IbexOptions options) throws IOException {
 		redInterpreter = new IbexRedInterpreter(this);
-		dependencyContainer = new BrokenMatchContainer(this);
+		matchHandler.handleConsistencyMatches(operationalMatchContainer);
+		matchHandler.handleBrokenConsistencyMatches();
 	}
 
 	public void registerRedInterpeter(IRedInterpreter redInterpreter) {
@@ -51,99 +42,6 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 	}
 
 	/***** Algorithm *****/
-
-	protected void initializeRepairStrategy(IbexOptions options) {
-		if (!repairStrategies.isEmpty())
-			return;
-
-		if (options.repair.useShortcutRules()) {
-			repairStrategies.add(new ShortcutRepairStrategy(this));
-		}
-		if (options.repair.repairAttributes()) {
-			repairStrategies.add(new AttributeRepairStrategy(this));
-		}
-	}
-
-	public Set<PatternType> getShortcutPatternTypes() {
-		Set<PatternType> set = new HashSet<>();
-		set.add(PatternType.FWD);
-		set.add(PatternType.BWD);
-		return set;
-	}
-
-	protected boolean repairBrokenMatches() {
-		Timer.start();
-
-		Timer.start();
-		Collection<ITGGMatch> alreadyProcessed = cfactory.createObjectSet();
-		dependencyContainer.reset();
-		brokenRuleApplications.values().forEach(dependencyContainer::addMatch);
-		times.addTo("repair:initialize", Timer.stop());
-
-		boolean processedOnce = true;
-		while (processedOnce) {
-			processedOnce = false;
-			// TODO lfritsche, amoeller: refactor this -> applying repairs can occasionally invalidate
-			// other consistency matches
-			Timer.start();
-			boolean finished = !dependencyContainer.isEmpty();
-			times.addTo("repair:isEmpty", Timer.stop());
-			while (finished) {
-				Timer.start();
-				ITGGMatch repairCandidate = dependencyContainer.getNext();
-				times.addTo("repair:getNext", Timer.stop());
-
-				processedOnce = true;
-
-				for (AbstractRepairStrategy rStrategy : repairStrategies) {
-					Timer.start();
-					if (alreadyProcessed.contains(repairCandidate)) {
-						times.addTo("repair:alreadyProcessed", Timer.stop());
-						continue;
-					}
-					times.addTo("repair:alreadyProcessed", Timer.stop());
-					
-					Timer.start();
-					ITGGMatch repairedMatch = rStrategy.repair(repairCandidate);
-					times.addTo("repair:repairCandidate", Timer.stop());
-					if (repairedMatch != null) {
-						
-						Timer.start();
-						TGGRuleApplication oldRa = getRuleApplicationNode(repairCandidate);
-						brokenRuleApplications.remove(oldRa);
-
-						TGGRuleApplication newRa = getRuleApplicationNode(repairedMatch);
-						brokenRuleApplications.put(newRa, repairedMatch);
-						alreadyProcessed.add(repairCandidate);
-						alreadyProcessed.add(repairedMatch);
-						times.addTo("repair:registerRuleApplication", Timer.stop());
-					}
-				}
-				Timer.start();
-				dependencyContainer.matchApplied(repairCandidate);
-				times.addTo("repair:matchApplied", Timer.stop());
-				
-				Timer.start();
-				finished = !dependencyContainer.isEmpty();
-				times.addTo("repair:isEmpty", Timer.stop());
-			}
-			Timer.start();
-			alreadyProcessed.addAll(brokenRuleApplications.values());
-			times.addTo("repair:addProcessed", Timer.stop());
-			Timer.start();
-			matchDistributor.updateMatches();
-			times.addTo("repair:updateMatches", Timer.stop());
-			
-			Timer.start();
-			brokenRuleApplications.values().stream() //
-					.filter(m -> !alreadyProcessed.contains(m)) //
-					.forEach(dependencyContainer::addMatch);
-			times.addTo("repair:addBrokenMatches", Timer.stop());
-		}
-
-		times.addTo("repair", Timer.stop());
-		return !alreadyProcessed.isEmpty();
-	}
 
 	protected void translate() {
 		Timer.start();
@@ -186,7 +84,7 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 		if (operationalMatchContainer instanceof PrecedenceMatchContainer)
 			((PrecedenceMatchContainer) operationalMatchContainer).clearPendingElements();
 
-		if (brokenRuleApplications.isEmpty())
+		if (matchHandler.noBrokenRuleApplications())
 			return false;
 
 		revokeAllMatches();
@@ -195,11 +93,11 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 	}
 
 	protected void revokeAllMatches() {
-		while (!brokenRuleApplications.isEmpty()) {
+		while (!matchHandler.noBrokenRuleApplications()) {
 			Set<TGGRuleApplication> revoked = cfactory.createObjectSet();
 
-			for (TGGRuleApplication ra : brokenRuleApplications.keySet()) {
-				ITGGMatch match = brokenRuleApplications.get(ra);
+			for (TGGRuleApplication ra : matchHandler.getBrokenRuleApplications()) {
+				ITGGMatch match = matchHandler.getBrokenMatch(ra);
 				redInterpreter.revokeOperationalRule(match);
 				revoked.add(ra);
 				LoggerConfig.log(LoggerConfig.log_ruleApplication(),
@@ -207,7 +105,7 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 								+ ConsoleUtil.indent(ConsoleUtil.printMatchParameter(match), 18, true));
 			}
 			for (TGGRuleApplication revokedRA : revoked)
-				brokenRuleApplications.remove(revokedRA);
+				matchHandler.removeBrokenRuleApplication(revokedRA);
 
 			options.debug.benchmarkLogger().addToNumOfMatchesRevoked(revoked.size());
 		}
@@ -216,8 +114,8 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 	/***** Marker Handling *******/
 
 	/**
-	 * Override in subclass if markers for protocol are not required (this can speed up the
-	 * translation process).
+	 * Override in subclass if markers for protocol are not required (this can speed up the translation
+	 * process).
 	 */
 	@Override
 	protected void handleSuccessfulRuleApplication(ITGGMatch cm, String ruleName, IGreenPattern greenPattern) {
@@ -232,37 +130,6 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 			return new PrecedenceMatchContainer(this);
 		else
 			return new MarkingMatchContainer(this);
-	}
-
-	@Override
-	protected void addConsistencyMatch(ITGGMatch match) {
-		super.addConsistencyMatch(match);
-
-		TGGRuleApplication ruleAppNode = getRuleApplicationNode(match);
-		if (brokenRuleApplications.containsKey(ruleAppNode)) {
-			LoggerConfig.log(LoggerConfig.log_ruleApplication(),
-					() -> "Repair confirmation: " + match.getPatternName() + "(" + match.hashCode() + ") appears to be fixed.");
-			brokenRuleApplications.remove(ruleAppNode);
-			options.debug.benchmarkLogger().addToNumOfMatchesRepaired(1);
-		}
-
-		operationalMatchContainer.matchApplied(match);
-	}
-
-	@Override
-	public boolean removeOperationalRuleMatch(ITGGMatch match) {
-		if (match.getType() == PatternType.CONSISTENCY)
-			addConsistencyBrokenMatch((ITGGMatch) match);
-
-		return super.removeOperationalRuleMatch(match);
-	}
-
-	protected void addConsistencyBrokenMatch(ITGGMatch match) {
-		TGGRuleApplication ra = getRuleApplicationNode(match);
-		brokenRuleApplications.put(ra, match);
-
-		consistencyMatches.remove(ra);
-		operationalMatchContainer.removeMatch(match);
 	}
 
 	public IRedInterpreter getRedInterpreter() {

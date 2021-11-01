@@ -42,7 +42,7 @@ public abstract class DeletePreserveConflict extends Conflict
 		Set<ITGGMatch> matches = new HashSet<>();
 		matches.addAll(causingMatches);
 		matches.remove(causingMatches.get(0));
-		integrate().getPrecedenceGraph().getNode(getMatch()).forAllRequiredBy((act, pre) -> matches.add(act.getMatch()));
+		integrate().precedenceGraph().getNode(getMatch()).forAllRequiredBy((act, pre) -> matches.add(act.getMatch()));
 		return matches;
 	}
 
@@ -59,7 +59,7 @@ public abstract class DeletePreserveConflict extends Conflict
 	@Override
 	public void crs_mergeAndPreserve() {
 		for (ITGGMatch causingMatch : causingMatches)
-			restoreMatch(integrate().getClassifiedBrokenMatches().get(causingMatch));
+			restoreMatch(causingMatch);
 
 		// Do not remove elements above conflict match due to new explicit/implicit user deletion handling approach!
 
@@ -91,6 +91,7 @@ public abstract class DeletePreserveConflict extends Conflict
 			break;
 		case TRG:
 			revokeAddition();
+			break;
 		default:
 			break;
 		}
@@ -107,6 +108,7 @@ public abstract class DeletePreserveConflict extends Conflict
 			break;
 		case TRG:
 			revokeDeletion();
+			break;
 		default:
 			break;
 		}
@@ -117,23 +119,23 @@ public abstract class DeletePreserveConflict extends Conflict
 
 	@Override
 	public void crs_deleteCorrs() {
-		Set<ITGGMatch> toBeCorrsDeleted = new HashSet<>();
+		Set<ITGGMatch> corrsToBeDeleted = new HashSet<>();
 		for (ListIterator<ITGGMatch> iterator = causingMatches.listIterator(causingMatches.size()); iterator.hasPrevious();) {
 			ITGGMatch match = (ITGGMatch) iterator.previous();
 
-			if (toBeCorrsDeleted.contains(match))
+			if (corrsToBeDeleted.contains(match))
 				continue;
 
-			toBeCorrsDeleted.add(match);
+			corrsToBeDeleted.add(match);
 
-			integrate().getPrecedenceGraph().getNode(match).forAllRequiredBy((act, pre) -> {
-				if (act.getMatch().getType() != PatternType.CONSISTENCY || toBeCorrsDeleted.contains(act.getMatch()))
+			integrate().precedenceGraph().getNode(match).forAllRequiredBy((act, pre) -> {
+				if (act.getMatch().getType() != PatternType.CONSISTENCY || corrsToBeDeleted.contains(act.getMatch()))
 					return false;
-				toBeCorrsDeleted.add(act.getMatch());
+				corrsToBeDeleted.add(act.getMatch());
 				return true;
 			});
 		}
-		toBeCorrsDeleted.forEach(this::deleteCorrs);
+		integrate().revoker().removeCorrs(corrsToBeDeleted);
 
 		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by DELETE_CORRS");
 		resolved = true;
@@ -145,7 +147,7 @@ public abstract class DeletePreserveConflict extends Conflict
 		tmp_restored = new HashSet<>();
 		for (ITGGMatch match : causingMatches) {
 			if (!tmp_restored.contains(match)) {
-				restoreMatch(integrate().getClassifiedBrokenMatches().get(match));
+				restoreMatch(match);
 				tmp_restored.add(match);
 				// restore other branches based on this match below the conflict match
 				if (!match.equals(getMatch()))
@@ -155,12 +157,12 @@ public abstract class DeletePreserveConflict extends Conflict
 	}
 
 	protected void restoreMatchesBasedOn(ITGGMatch match) {
-		PrecedenceGraph pg = integrate().getPrecedenceGraph();
+		PrecedenceGraph pg = integrate().precedenceGraph();
 		pg.getNode(match).getRequiredBy().forEach(n -> {
 			if (n.isBroken()) {
 				ITGGMatch m = n.getMatch();
 				if (!tmp_restored.contains(m)) {
-					restoreMatch(integrate().getClassifiedBrokenMatches().get(m));
+					restoreMatch(m);
 					tmp_restored.add(m);
 					restoreMatchesBasedOn(m);
 				}

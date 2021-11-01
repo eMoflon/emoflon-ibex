@@ -126,8 +126,8 @@ public class ConsistencyReporter {
 			if (c instanceof TGGRuleApplication) {
 				TGGRuleApplication ra = (TGGRuleApplication) c;
 				String ruleName = ra.eClass().getName().substring(0, ra.eClass().getName().length() - 8);
-				Collection<TGGRuleEdge> specificationEdges = domain == DomainType.SRC ? strategy.getGreenFactory(ruleName).getGreenSrcEdgesInRule()
-						: strategy.getGreenFactory(ruleName).getGreenTrgEdgesInRule();
+				Collection<TGGRuleEdge> specificationEdges = domain == DomainType.SRC ? strategy.getGreenFactories().get(ruleName).getGreenSrcEdgesInRule()
+						: strategy.getGreenFactories().get(ruleName).getGreenTrgEdgesInRule();
 				for (TGGRuleEdge specificationEdge : specificationEdges) {
 					EObject srcOfEdge = TGGPatternUtil.getNode(ra, specificationEdge.getSrcNode().getBindingType(), domain,
 							specificationEdge.getSrcNode().getName());

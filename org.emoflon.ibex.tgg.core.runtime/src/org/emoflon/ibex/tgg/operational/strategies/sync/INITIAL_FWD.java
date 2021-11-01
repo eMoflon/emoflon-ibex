@@ -1,8 +1,8 @@
 package org.emoflon.ibex.tgg.operational.strategies.sync;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Collections;
+import java.util.Set;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
@@ -13,9 +13,8 @@ public class INITIAL_FWD extends SYNC {
 	}
 
 	@Override
-	public Collection<PatternType> getPatternRelevantForCompiler() {
-		Collection<PatternType> types = new LinkedList<>();
-		types.add(PatternType.FWD);
-		return types;
+	protected Set<PatternType> getRelevantOperationalPatterns() {
+		return Collections.singleton(PatternType.FWD);
 	}
+
 }

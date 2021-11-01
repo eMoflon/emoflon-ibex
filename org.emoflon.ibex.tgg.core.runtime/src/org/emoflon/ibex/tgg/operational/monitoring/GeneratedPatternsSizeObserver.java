@@ -39,7 +39,7 @@ public class GeneratedPatternsSizeObserver extends AbstractIbexObserver {
 		case MATCHAPPLIED:
 			if (this.getObservable() instanceof OperationalStrategy) {
 				OperationalStrategy op = (OperationalStrategy) this.getObservable();
-				factories = op.getFactories();
+				factories = op.getGreenFactories().getAll();
 				this.calculateSize();
 				break;
 			}

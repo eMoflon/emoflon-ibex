@@ -1,6 +1,5 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.util;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -13,6 +12,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
+import org.emoflon.ibex.tgg.util.TGGEdgeUtil;
 
 import language.BindingType;
 import language.DomainType;
@@ -23,106 +23,167 @@ import language.TGGRuleNode;
 
 public class TGGMatchUtil {
 
-	private final INTEGRATE integrate;
+	final INTEGRATE integrate;
+	final ITGGMatch match;
+	final TGGRule rule;
 
-	private Map<String, TGGRule> nameToRules;
-	private Map<ITGGMatch, MatchAnalysis> matchToAnalysis;
+	Map<TGGRuleNode, EObject> node2eObject;
+	Map<EObject, TGGRuleNode> eObject2node;
 
-	public TGGMatchUtil(INTEGRATE integrate) {
+	Map<TGGRuleEdge, EMFEdge> edge2emfEdge;
+	Map<EMFEdge, TGGRuleEdge> emfEdge2edge;
+
+	Map<DomainType, Map<BindingType, List<TGGRuleElement>>> groupedElements;
+
+	private TGGMatchAnalyzer analyzer;
+
+	public TGGMatchUtil(INTEGRATE integrate, ITGGMatch match, TGGRule rule) {
 		this.integrate = integrate;
+		this.match = match;
+		this.rule = rule;
 		init();
 	}
 
 	private void init() {
-		nameToRules = integrate.getOptions().tgg.getFlattenedConcreteTGGRules().stream() //
-				.collect(Collectors.toMap(rule -> rule.getName(), rule -> rule));
-		matchToAnalysis = Collections.synchronizedMap(new HashMap<>());
+		this.node2eObject = rule.getNodes().stream() //
+				.filter(n -> match.get(n.getName()) != null) //
+				.collect(Collectors.toMap(n -> n, n -> (EObject) match.get(n.getName())));
+		this.eObject2node = new HashMap<>();
+		node2eObject.forEach((n, o) -> eObject2node.put(o, n));
+
+		this.edge2emfEdge = rule.getEdges().stream() //
+				.filter(e -> node2eObject.containsKey(e.getSrcNode()) && node2eObject.containsKey(e.getTrgNode())) //
+				.collect(Collectors.toMap(e -> e, e -> TGGEdgeUtil.getRuntimeEdge(match, e)));
+		this.emfEdge2edge = new HashMap<>();
+		edge2emfEdge.forEach((e, f) -> emfEdge2edge.put(f, e));
+
+		Set<TGGRuleElement> elements = new HashSet<>();
+		elements.addAll(node2eObject.keySet());
+		elements.addAll(edge2emfEdge.keySet());
+		groupedElements = elements.stream().collect(Collectors.groupingBy( //
+				elt -> elt.getDomainType(), //
+				Collectors.groupingBy(elt -> elt.getBindingType()) //
+		));
+
+		this.analyzer = new TGGMatchAnalyzer(this);
 	}
 
-	public MatchAnalysis getAnalysis(ITGGMatch match) {
-		return getRawAnalysis(match).update();
+	public TGGMatchAnalyzer analyzer() {
+		return analyzer;
 	}
 
-	private MatchAnalysis getRawAnalysis(ITGGMatch match) {
-		if(!matchToAnalysis.containsKey(match)) {
-			MatchAnalysis analyseMatch = analyseMatch(match);
-			matchToAnalysis.put(match, analyseMatch);
-			return analyseMatch;
-		}
-		return matchToAnalysis.get(match);
+	//// GETTER, CONVERTER ////
+
+	public Set<TGGRuleNode> getNodes() {
+		return node2eObject.keySet();
 	}
 
-	private MatchAnalysis analyseMatch(ITGGMatch match) {
-		return new MatchAnalysis(integrate, match, nameToRules.get(match.getRuleName()));
+	public Set<TGGRuleEdge> getEdges() {
+		return edge2emfEdge.keySet();
 	}
 
-	Set<TGGRuleElement> getElts(MatchAnalysis analysis, EltFilter filter) {
+	public Set<EObject> getObjects() {
+		return eObject2node.keySet();
+	}
+
+	public Set<EMFEdge> getEMFEdges() {
+		return emfEdge2edge.keySet();
+	}
+
+	public Map<TGGRuleNode, EObject> getNodeToEObject() {
+		return node2eObject;
+	}
+
+	public Map<EObject, TGGRuleNode> getEObjectToNode() {
+		return eObject2node;
+	}
+
+	public Map<TGGRuleEdge, EMFEdge> getEdgeToEMFEdge() {
+		return edge2emfEdge;
+	}
+
+	public Map<EMFEdge, TGGRuleEdge> getEmfEdgeToEdge() {
+		return emfEdge2edge;
+	}
+
+	public TGGRuleNode getNode(EObject object) {
+		return eObject2node.get(object);
+	}
+
+	public EObject getObject(TGGRuleNode node) {
+		return node2eObject.get(node);
+	}
+
+	public TGGRuleEdge getEdge(EMFEdge emfEdge) {
+		return emfEdge2edge.get(emfEdge);
+	}
+
+	public EMFEdge getEMFEdge(TGGRuleEdge edge) {
+		return edge2emfEdge.get(edge);
+	}
+
+	//// FILTER ////
+
+	public Set<TGGRuleElement> getElts(EltFilter filter) {
 		Set<TGGRuleElement> filtered = new HashSet<>();
 		for (DomainType domain : filter.domainTypes) {
 			for (BindingType binding : filter.bindingTypes) {
-				Map<BindingType, List<TGGRuleElement>> map = analysis.groupedElements.get(domain);
-				if(map == null)
+				Map<BindingType, List<TGGRuleElement>> map = groupedElements.get(domain);
+				if (map == null)
 					continue;
-				
+
 				List<TGGRuleElement> group = map.get(binding);
-				if(group == null)
+				if (group == null)
 					continue;
-				
-				if(filter.all)
+
+				if (filter.all) {
 					filtered.addAll(group);
-				else
+				} else {
+					Set<TGGRuleElement> delElts = analyzer.getAllDeletedElements();
 					group.forEach(elt -> {
-						if (filter.deleted == analysis.isElementDeleted(elt))
+						if (filter.deleted == delElts.contains(elt))
 							filtered.add(elt);
 					});
+				}
 			}
 		}
 		return filtered;
 	}
 
-	public Set<TGGRuleElement> getElts(ITGGMatch match, EltFilter filter) {
-		MatchAnalysis analysis = getRawAnalysis(match);
-		if (!filter.all)
-			analysis.update();
-
-		return getElts(analysis, filter);
-	}
-
-	public Stream<TGGRuleNode> getNodeStream(ITGGMatch match, EltFilter filter) {
-		return getElts(match, filter).stream() //
+	public Stream<TGGRuleNode> getNodeStream(EltFilter filter) {
+		return getElts(filter).stream() //
 				.filter(elt -> elt instanceof TGGRuleNode) //
 				.map(elt -> (TGGRuleNode) elt);
 	}
 
-	public Set<TGGRuleNode> getNodes(ITGGMatch match, EltFilter filter) {
-		return getNodeStream(match, filter).collect(Collectors.toSet());
-	}
-	
-	public Stream<EObject> getObjectStream(ITGGMatch match, EltFilter filter) {
-		return getNodeStream(match, filter).map(n -> (EObject) match.get(n.getName()));
+	public Set<TGGRuleNode> getNodes(EltFilter filter) {
+		return getNodeStream(filter).collect(Collectors.toSet());
 	}
 
-	public Set<EObject> getObjects(ITGGMatch match, EltFilter filter) {
-		return getObjectStream(match, filter).collect(Collectors.toSet());
+	public Stream<EObject> getObjectStream(EltFilter filter) {
+		return getNodeStream(filter).map(n -> getObject(n));
 	}
 
-	public Stream<TGGRuleEdge> getEdgeStream(ITGGMatch match, EltFilter filter) {
-		return getElts(match, filter).stream() //
+	public Set<EObject> getObjects(EltFilter filter) {
+		return getObjectStream(filter).collect(Collectors.toSet());
+	}
+
+	public Stream<TGGRuleEdge> getEdgeStream(EltFilter filter) {
+		return getElts(filter).stream() //
 				.filter(elt -> elt instanceof TGGRuleEdge) //
 				.map(elt -> (TGGRuleEdge) elt);
 	}
 
-	public Set<TGGRuleEdge> getEdges(ITGGMatch match, EltFilter filter) {
-		return getEdgeStream(match, filter).collect(Collectors.toSet());
-	}
-	
-	public Stream<EMFEdge> getEMFEdgeStream(ITGGMatch match, EltFilter filter) {
-		MatchAnalysis analysis = getRawAnalysis(match);
-		return getEdgeStream(match, filter).map(e -> analysis.getEMFEdge(e));
+	public Set<TGGRuleEdge> getEdges(EltFilter filter) {
+		return getEdgeStream(filter).collect(Collectors.toSet());
 	}
 
-	public Set<EMFEdge> getEMFEdges(ITGGMatch match, EltFilter filter) {
-		return getEMFEdgeStream(match, filter).collect(Collectors.toSet());
+	public Stream<EMFEdge> getEMFEdgeStream(EltFilter filter) {
+		return getEdgeStream(filter).map(e -> getEMFEdge(e));
+	}
+
+	public Set<EMFEdge> getEMFEdges(EltFilter filter) {
+		return getEMFEdgeStream(filter).collect(Collectors.toSet());
 	}
 
 }

@@ -3,6 +3,7 @@ package org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -11,7 +12,6 @@ import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.BrokenMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_CustomizedOpMultiResolution;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_PreferSource;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.CRS_PreferTarget;
@@ -149,12 +149,9 @@ public class OperationalMultiplicityConflict extends Conflict implements CRS_Pre
 	}
 
 	private void restoreMatchAndAllRequired(ITGGMatch match) {
-		for (PrecedenceNode rollbackCause : integrate().getPrecedenceGraph().getNode(match).computeSortedRollBackCauses()) {
-			BrokenMatch brokenMatch = integrate().getClassifiedBrokenMatches().get(rollbackCause.getMatch());
-			if (brokenMatch == null)
-				brokenMatch = new BrokenMatch(integrate(), rollbackCause.getMatch(), false);
-			restoreMatch(brokenMatch);
-		}
+		List<PrecedenceNode> rollBackCauses = integrate().precedenceGraph().getNode(match).computeSortedRollBackCauses();
+		for (PrecedenceNode rollbackCause : rollBackCauses)
+			restoreMatch(rollbackCause.getMatch());
 	}
 
 }

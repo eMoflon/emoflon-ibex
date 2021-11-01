@@ -20,7 +20,8 @@ public class DelPreserveEdgeConflict extends DeletePreserveConflict {
 	protected final ITGGMatch srcTrgMatch;
 	protected final ITGGMatch matchToBeRepaired;
 
-	public DelPreserveEdgeConflict(ConflictContainer container, ITGGMatch srcTrgMatch, DomainType domainToBePreserved, List<ITGGMatch> causingMatches) {
+	public DelPreserveEdgeConflict(ConflictContainer container, ITGGMatch srcTrgMatch, DomainType domainToBePreserved,
+			List<ITGGMatch> causingMatches) {
 		super(container, domainToBePreserved, causingMatches);
 		this.srcTrgMatch = srcTrgMatch;
 		this.matchToBeRepaired = null;
@@ -69,7 +70,7 @@ public class DelPreserveEdgeConflict extends DeletePreserveConflict {
 	@Override
 	public void crs_preferSource() {
 		super.crs_preferSource();
-		
+
 		if (matchToBeRepaired != null)
 			autoRepair();
 	}
@@ -77,14 +78,14 @@ public class DelPreserveEdgeConflict extends DeletePreserveConflict {
 	@Override
 	public void crs_preferTarget() {
 		super.crs_preferTarget();
-		
+
 		if (matchToBeRepaired != null)
 			autoRepair();
 	}
 
 	@Override
 	protected void revokeAddition() {
-		for (TGGRuleEdge e : integrate().getMatchUtil().getEdges(srcTrgMatch, new EltFilter().create())) {
+		for (TGGRuleEdge e : integrate().matchUtils().get(srcTrgMatch).getEdges(new EltFilter().create())) {
 			if (e.getSrcNode().getBindingType() != BindingType.CONTEXT && e.getTrgNode().getBindingType() != BindingType.CONTEXT)
 				return;
 
@@ -100,7 +101,7 @@ public class DelPreserveEdgeConflict extends DeletePreserveConflict {
 		integrate().getOptions().matchDistributor().updateMatches();
 		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Auto-repair after resolution of " + printConflictIdentification() + ":");
 		PatternType repairDirection = domainToBePreserved == DomainType.SRC ? PatternType.FWD : PatternType.BWD;
-		integrate().repairOneMatch(integrate().getShortcutRepairStrat(), matchToBeRepaired, repairDirection);
+		integrate().repair().shortcutRepairOneMatch(matchToBeRepaired, repairDirection);
 	}
 
 }

@@ -17,8 +17,8 @@ public class ConflictFreeElementsUpdatePolicy implements IUpdatePolicy {
 	private Map<ITGGMatch, ConflictContainer> conflicts;
 
 	public ConflictFreeElementsUpdatePolicy(INTEGRATE integrate) {
-		this.pg = integrate.getPrecedenceGraph();
-		this.conflicts = integrate.getConflicts();
+		this.pg = integrate.precedenceGraph();
+		this.conflicts = integrate.conflictHandler().getConflicts();
 	}
 
 	@Override
