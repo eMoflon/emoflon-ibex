@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,35 +12,18 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.notify.Notification;
-import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EFactory;
-import org.eclipse.emf.ecore.EGenericType;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EPackage;
-import org.eclipse.emf.ecore.EParameter;
 import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.ETypeParameter;
-import org.eclipse.emf.ecore.ETypedElement;
 import org.eclipse.emf.ecore.EcorePackage;
-import org.eclipse.emf.ecore.impl.EAttributeImpl;
-import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EContentAdapter;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.emf.ecore.xmi.XMIResource;
-import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 import org.emoflon.ibex.common.operational.HashUtil;
@@ -47,7 +31,6 @@ import org.emoflon.ibex.common.operational.IContextPatternInterpreter;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.common.operational.PushoutApproach;
 import org.emoflon.ibex.common.operational.SimpleMatch;
-import org.emoflon.ibex.gt.StateModel.AllMatches;
 import org.emoflon.ibex.gt.StateModel.AttributeDelta;
 //import org.emoflon.ibex.gt.StateModel.CoMatch;
 import org.emoflon.ibex.gt.StateModel.IBeXMatch;
@@ -61,9 +44,7 @@ import org.emoflon.ibex.gt.StateModel.StateContainer;
 import org.emoflon.ibex.gt.StateModel.StateModelFactory;
 import org.emoflon.ibex.gt.StateModel.StructuralDelta;
 import org.emoflon.ibex.gt.StateModel.Value;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttribute;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeAssignment;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeValue;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
@@ -76,6 +57,7 @@ public class ModelStateManager {
 	
 	private Resource model;
 	private Resource trashResource;
+	private ModelStateDeleteAdapter adapter;
 	private IContextPatternInterpreter engine;
 	private boolean forceNewStates;
 	private StateModelFactory factory = StateModelFactory.eINSTANCE;
@@ -85,6 +67,7 @@ public class ModelStateManager {
 	private Map<State, BiFunction<Map<String,Object>, Boolean, Optional<IMatch>>> gtApply;
 	private Map<State, Map<String, Collection<IMatch>>> matches;
 	private HashMap<String,Collection<IBeXMatch>> initialMatches;
+	private int addStateAction = -1;
 	
 	public ModelStateManager(final Resource model, final Resource trashResource, final IContextPatternInterpreter engine, Map<String, Collection<IMatch>> matches, boolean forceNewStates, boolean loaded) {
 		this.model = model;
@@ -97,36 +80,14 @@ public class ModelStateManager {
 			initMatches(matches); 
 	}
 	
-	private void init() {
-		
-		gtApply = new HashMap<>();
-		allStates = new HashMap<>();
-		matches = new HashMap<>();
-		
-		modelStates = factory.createStateContainer();
-		State initialState = factory.createState();
-		modelStates.getStates().add(initialState);
-		modelStates.setInitialState(initialState);
-		initialState.setInitial(true);
-		if(!forceNewStates) {
-			StateID id = new StateID(initialState);
-			allStates.put(id, initialState);
-		}
-		currentState = initialState;
+	public StateContainer getModelStates() {
+		return modelStates;
 	}
-	
-	private void initMatches(Map<String, Collection<IMatch>> matches) {
-		initialMatches = new HashMap<String,Collection<IBeXMatch>>();
-		for(String pattern : matches.keySet()) {
-			Collection<IBeXMatch> matchToPattern = new LinkedList<IBeXMatch>();
-			for(IMatch match : matches.get(pattern)) {
-				matchToPattern.add(IMatchToIBeXMatch(match));
-			}
-			initialMatches.put(pattern, matchToPattern);
-			modelStates.getInitialMatches().addAll(matchToPattern);
-		}
+
+	public Resource getModel() {
+
+		return model;
 	}
-	
 	
 	public HashMap<String, Collection<IBeXMatch>> getInitialMatches() {
 		return initialMatches;
@@ -134,18 +95,6 @@ public class ModelStateManager {
 	
 	public State getCurrentState() {
 		return currentState;
-	}
-	
-	protected void setCurrentState(State curr) {
-		currentState = curr;
-	}
-	
-	protected void setAllStates(Map<StateID, State> allStates) {
-		this.allStates = allStates;
-	}
-	
-	protected void setGTApply(Map<State, BiFunction<Map<String,Object>, Boolean, Optional<IMatch>>> gtApply) {
-		this.gtApply = gtApply;
 	}
 	
 	public IBeXMatch IMatchToIBeXMatch(IMatch imatch) {
@@ -183,26 +132,9 @@ public class ModelStateManager {
 		return imatch;
 	}
 	
-	private void addParameterToState(RuleState state, Map<String, Object> parameter) {
-		for(String key: parameter.keySet()) {
-			Parameter param = factory.createParameter();
-			param.setName(key);
-			param.setParameter((EObject) parameter.get(key));
-			state.getParameters().add(param);
-		}
-	}
-	
 	public  Map<String, Object> extractParameterFromState(RuleState state) {
 		Map<String, Object> parameter = new HashMap<String,Object>();
 		for(Parameter param: state.getParameters()) {
-			parameter.put(param.getName(), param.getParameter());
-		}
-		return parameter;
-	}
-	
-	private  Map<String, Object> extractParameterFromMatch(IBeXMatch match) {
-		Map<String, Object> parameter = new HashMap<String,Object>();
-		for(Parameter param: match.getParameters()) {
 			parameter.put(param.getName(), param.getParameter());
 		}
 		return parameter;
@@ -220,28 +152,6 @@ public class ModelStateManager {
 				}
 			}
 			return true;
-		}
-		
-		
-	}
-	
-	private void addDeltaMatches(RuleState state, Map<String, Collection<IMatch>> addedMatches, Map<String, Collection<IMatch>> removedMatches) {
-		for(String pattern : addedMatches.keySet()) {
-			MatchDelta createdMatches = factory.createMatchDelta();
-			createdMatches.setPatternName(pattern);
-			for(IMatch match : addedMatches.get(pattern)) {
-					createdMatches.getMatchDeltasForPattern().add(IMatchToIBeXMatch(match));
-				
-			}
-			state.getCreatedMatches().add(createdMatches);
-		}
-		for(String pattern : removedMatches.keySet()) {
-			MatchDelta deletedMatches = factory.createMatchDelta();
-			deletedMatches.setPatternName(pattern);
-			for(IMatch match : removedMatches.get(pattern)) {
-				deletedMatches.getMatchDeltasForPattern().add(IMatchToIBeXMatch(match));
-			}
-			state.getDeletedMatches().add(deletedMatches);
 		}
 		
 		
@@ -288,8 +198,11 @@ public class ModelStateManager {
 		Set<EObject> nodesInResource = findAllNodesRemovedFromResourceContainment(match, rule.getCreate());
 		
 		// Register adapter to catch all indirectly deleted edges
-		ModelStateDeleteAdapter adapter = new ModelStateDeleteAdapter(model);
-		adapter.pluginAdapter(nodesToWatch);
+		int currentAction = ++addStateAction;
+		adapter.clear(currentAction);
+		adapter.addNodesToWatch(nodesToWatch, currentAction);
+		adapter.setActive();
+		
 		
 		// Let the rule play out
 		// While using autoApply method this recursive call leads to an error
@@ -325,8 +238,8 @@ public class ModelStateManager {
 			newState.setStructuralDelta(delta);
 		}
 		
-		if(adapter.getRemovedLinks().size()>0) {
-			delta.getDeletedLinks().addAll(adapter.getRemovedLinks());
+		if(adapter.getRemovedLinks(currentAction).size()>0) {
+			delta.getDeletedLinks().addAll(adapter.getRemovedLinks(currentAction));
 			
 			if(newState.getStructuralDelta() == null) {
 				newState.setStructuralDelta(delta);
@@ -338,7 +251,9 @@ public class ModelStateManager {
 		}
 		
 		delta.getResource2EObjectContainment().addAll(nodesInResource);
-		adapter.removeAdapter();
+		
+		adapter.setInactive();
+		adapter.clear(currentAction);
 		
 		return optComatch;
 	}
@@ -448,6 +363,103 @@ public class ModelStateManager {
 		}
 	}
 	
+	public Object getObjectFromValue(Value val) {
+		Object obj = null;
+		try {
+			obj = stringToValue(factory, val.getType(), val.getValueAsString());
+		} catch (Exception e) {
+			
+		}
+		// Null check missing in calling methods 
+		return obj;
+	}
+	
+	protected void setCurrentState(State curr) {
+		currentState = curr;
+	}
+	
+	protected void setAllStates(Map<StateID, State> allStates) {
+		this.allStates = allStates;
+	}
+	
+	protected void setGTApply(Map<State, BiFunction<Map<String,Object>, Boolean, Optional<IMatch>>> gtApply) {
+		this.gtApply = gtApply;
+	}
+	
+	private void init() {
+		
+		gtApply = new HashMap<>();
+		allStates = new HashMap<>();
+		matches = new HashMap<>();
+		
+		modelStates = factory.createStateContainer();
+		State initialState = factory.createState();
+		modelStates.getStates().add(initialState);
+		modelStates.setInitialState(initialState);
+		initialState.setInitial(true);
+		if(!forceNewStates) {
+			StateID id = new StateID(initialState);
+			allStates.put(id, initialState);
+		}
+		currentState = initialState;
+		adapter = new ModelStateDeleteAdapter(model);
+	}
+	
+	private void initMatches(Map<String, Collection<IMatch>> matches) {
+		initialMatches = new HashMap<String,Collection<IBeXMatch>>();
+		for(String pattern : matches.keySet()) {
+			Collection<IBeXMatch> matchToPattern = new LinkedList<IBeXMatch>();
+			for(IMatch match : matches.get(pattern)) {
+				matchToPattern.add(IMatchToIBeXMatch(match));
+			}
+			initialMatches.put(pattern, matchToPattern);
+			modelStates.getInitialMatches().addAll(matchToPattern);
+		}
+	}
+	
+	private void addParameterToState(RuleState state, Map<String, Object> parameter) {
+		for(String key: parameter.keySet()) {
+			Parameter param = factory.createParameter();
+			param.setName(key);
+			param.setParameter((EObject) parameter.get(key));
+			state.getParameters().add(param);
+		}
+	}
+	
+
+	
+	private  Map<String, Object> extractParameterFromMatch(IBeXMatch match) {
+		Map<String, Object> parameter = new HashMap<String,Object>();
+		for(Parameter param: match.getParameters()) {
+			parameter.put(param.getName(), param.getParameter());
+		}
+		return parameter;
+	}
+	
+
+	
+	private void addDeltaMatches(RuleState state, Map<String, Collection<IMatch>> addedMatches, Map<String, Collection<IMatch>> removedMatches) {
+		for(String pattern : addedMatches.keySet()) {
+			MatchDelta createdMatches = factory.createMatchDelta();
+			createdMatches.setPatternName(pattern);
+			for(IMatch match : addedMatches.get(pattern)) {
+					createdMatches.getMatchDeltasForPattern().add(IMatchToIBeXMatch(match));
+				
+			}
+			state.getCreatedMatches().add(createdMatches);
+		}
+		for(String pattern : removedMatches.keySet()) {
+			MatchDelta deletedMatches = factory.createMatchDelta();
+			deletedMatches.setPatternName(pattern);
+			for(IMatch match : removedMatches.get(pattern)) {
+				deletedMatches.getMatchDeltasForPattern().add(IMatchToIBeXMatch(match));
+			}
+			state.getDeletedMatches().add(deletedMatches);
+		}
+		
+		
+	}
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private Optional<IMatch> moveToChildState(final State childState) {
 		if(!currentState.getChildren().contains(childState)) {
@@ -512,20 +524,6 @@ public class ModelStateManager {
 		} else {
 			return Optional.empty();
 		}
-	}
-	
-	
-
-	
-	public Object getObjectFromValue(Value val) {
-		Object obj = null;
-		try {
-			obj = stringToValue(factory, val.getType(), val.getValueAsString());
-		} catch (Exception e) {
-			
-		}
-		// Null check missing in calling methods 
-		return obj;
 	}
 	
 	private Queue<State> findPathToTargetState(final State trgState) {
@@ -748,10 +746,6 @@ public class ModelStateManager {
 				frontier.addAll(container.eContents());
 		}
 	}
-	
-	public StateContainer getModelStates() {
-		return modelStates;
-	}
 
 	private static Object stringToValue(final EFactory factory, final EDataType atr, final String value) throws Exception {
 		EcorePackage epack = EcorePackage.eINSTANCE;
@@ -810,178 +804,4 @@ public class ModelStateManager {
 			return factory.convertToString(atr, value);
 		}
 	}
-
-	public Resource getModel() {
-
-		return model;
-	}
-
-
-}
-
-class StateID {
-	
-	public final State state;
-	public final long hashCode;
-	public final Map<String,Object> parameters;
-	
-	public StateID(final State state) {
-		this.state = state;
-		state.setHash(calculateHashCode(state));
-		hashCode = state.getHash();
-		if(state instanceof RuleState) {
-			RuleState rState = (RuleState) state;
-			parameters = extractParameterFromState(rState);
-		} else {
-			parameters = null;
-		}
-	}
-	
-	private  Map<String, Object> extractParameterFromState(RuleState state) {
-		Map<String, Object> parameter = new HashMap<String,Object>();
-		for(Parameter param: state.getParameters()) {
-			parameter.put(param.getName(), param.getParameter());
-		}
-		return parameter;
-	}
-	
-	@Override
-	public int hashCode() {
-		return (int) hashCode;
-	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		if(!(obj instanceof StateID))
-			return false;
-		
-		StateID other = (StateID)obj;
-		if(hashCode != other.hashCode)
-			return false;
-		
-		if(state.isInitial() != other.state.isInitial())
-			return false;
-		
-		if(state.isInitial()) {
-			return state.equals(other.state);
-		}
-		RuleState rState = (RuleState) state;
-		RuleState rStateOther = (RuleState) other.state;
-		
-		if(rState.getParent().getHash() != rStateOther.getParent().getHash())
-			return false;
-		
-		if(!rState.getRule().getName().equals(rStateOther.getRule().getName()))
-			return false;
-		
-		if(!rState.getMatch().equals(rStateOther.getMatch()))
-			return false;
-		
-		if((parameters == null || other.parameters == null) && parameters != other.parameters)
-			return false;
-		
-		if(parameters == null && other.parameters == null)
-			return true;
-		
-		if(parameters.size() != other.parameters.size())
-			return false;
-		
-		for(String name : parameters.keySet()) {
-			Object otherParam = other.parameters.get(name);
-			if(otherParam == null)
-				return false;
-			
-			Object param = parameters.get(name);
-			if(!param.equals(otherParam))
-				return false;
-		}
-		
-		return true;
-	}
-	
-	// Calculate hash based on current state and all prior states -> see crypto currency
-	public static long calculateHashCode(final State state) {
-		if(state instanceof RuleState) {
-			RuleState rState = (RuleState)state;
-			List<Object> components = new LinkedList<>();
-			components.add(rState.getParent().getHash());
-//			components.add(rState.getRule());
-//			components.add(rState.getMatch());
-			return HashUtil.collectionToHash(components);
-		}else {
-			return HashUtil.objectToHash(state);
-		}
-	}
-}
-
-class ModelStateDeleteAdapter extends EContentAdapter {
-	
-	private StateModelFactory factory = StateModelFactory.eINSTANCE;
-	private final Resource resource;
-	private Set<EObject> nodesToWatch;
-	private Set<Link> removedLinks;
-	
-	public ModelStateDeleteAdapter(final Resource resource) {
-		this.resource = resource;
-	}
-	
-	public void pluginAdapter(final Set<EObject> nodesToWatch) {
-		this.nodesToWatch = nodesToWatch;
-		removedLinks = new LinkedHashSet<>();
-		resource.eAdapters().add(this);
-	}
-	
-	public void removeAdapter() {
-		resource.eAdapters().remove(this);
-		this.nodesToWatch = null;
-		removedLinks = null;
-	}
-	
-	public Set<Link> getRemovedLinks() {
-		return removedLinks;
-	}
-	
-	@Override
-	public void notifyChanged(Notification notification) {	
-		super.notifyChanged(notification);
-		//DO Stuff..
-		switch(notification.getEventType()) {
-			case Notification.REMOVE: {
-				Object feature = notification.getFeature();
-				if(feature == null)
-					break;
-				
-				if(nodesToWatch.contains(notification.getNotifier()) || nodesToWatch.contains(notification.getOldValue())) {
-					Link link = factory.createLink();
-					link.setSrc((EObject) notification.getNotifier());
-					link.setTrg((EObject) notification.getOldValue());
-					link.setType((EReference) feature);
-					removedLinks.add(link);
-				}
-				break;
-			}
-			case Notification.REMOVING_ADAPTER: {
-//				We can ignore this in most cases, since restoring the removed containment edge will also restore containment
-//				TODO: Look at the deletion of root-level "Container"-Objects from resources -> this will lead to a problem, since these do not have a containment reference, they are contained in the resource itself!
-				break;
-			}
-			case Notification.SET: {
-				Object feature = notification.getFeature();
-				if(feature == null || !(feature instanceof EReference))
-					break;
-				
-				if(nodesToWatch.contains(notification.getNotifier()) || nodesToWatch.contains(notification.getOldValue())) {
-					Link link = factory.createLink();
-					link.setSrc((EObject) notification.getNotifier());
-					link.setTrg((EObject) notification.getOldValue());
-					link.setType((EReference) feature);
-					removedLinks.add(link);
-				}
-				break;
-			}
-		}
-	
-	}
-	
-	
 }

@@ -9,7 +9,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.text.DecimalFormat;
 
 //Graphstream imports
 import org.graphstream.graph.Edge;
@@ -23,29 +22,23 @@ import org.graphstream.ui.view.View;
 import org.graphstream.ui.view.Viewer;
 import org.graphstream.ui.view.camera.Camera;
 import org.graphstream.ui.view.util.InteractiveElement;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.xy.XYDataset;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
 
-//Util imports
 import java.util.ArrayList;
+//Util imports
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 //SWING imports
 import javax.swing.JRootPane;
 //emf imports
-import org.eclipse.emf.common.util.BasicEList;
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
@@ -73,8 +66,6 @@ import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 //IBeX imports
-import org.emoflon.ibex.common.operational.IMatch;
-import org.emoflon.ibex.gt.StateModel.AllMatches;
 import org.emoflon.ibex.gt.StateModel.AttributeDelta;
 import org.emoflon.ibex.gt.StateModel.IBeXMatch;
 import org.emoflon.ibex.gt.StateModel.Link;
@@ -114,15 +105,15 @@ public class VaDoGT {
 	
 	private Map<EObject, Node> nodeMap;
 	private Map<Link, Edge> edgeMap;
-	protected EList<IBeXRule> ruleSet;
-	protected EList<IBeXContext> patternSet;
-	private EList<EObject> initialResourceContents;
+	protected Set<IBeXRule> ruleSet;
+	protected Set<IBeXContext> patternSet;
+	private List<EObject> initialResourceContents;
 	private Map<Integer,IBeXMatch> listedMatches;
 	private Map<EObject, Node> infoNodes;
 	private Node matchHiglightNode;
 	private Node lastSelectedNode;
-	private EList<EObject> nodeBlacklist;
-	private EList<Link> edgeBlacklist;
+	private List<EObject> nodeBlacklist;
+	private List<Link> edgeBlacklist;
 	private List<State> allStates;
 	private Map<String, Collection<IBeXMatch>> initialMatches;
 	
@@ -206,22 +197,22 @@ public class VaDoGT {
 	 * @param edgeTypes 
 	 */
 	public VaDoGT(Resource resource, ModelStateManager stateManager, GraphTransformationInterpreter graphTransformationInterpreter, IBeXRuleSet iBeXRuleSet, IBeXPatternSet iBeXPatternSet) {
-		initialResourceContents = new BasicEList<EObject>(resource.getContents());
+		initialResourceContents = new LinkedList<EObject>(resource.getContents());
 		localStateManager = stateManager;
 		localGraphTransformationInterpreter = graphTransformationInterpreter;
 		localStateManager.moveToState(localStateManager.getModelStates().getInitialState(), false);
-		ruleSet = iBeXRuleSet.getRules();
-		patternSet = iBeXPatternSet.getContextPatterns();
+		ruleSet = new HashSet<>(iBeXRuleSet.getRules());
+		patternSet = new HashSet<>(iBeXPatternSet.getContextPatterns());
 		
-		allStates = new ArrayList<State>();
+		allStates = new LinkedList<State>();
 		allStates.add(localStateManager.getModelStates().getInitialState());
 		allStates.addAll(localStateManager.getModelStates().getStates());
-		nodeMap = new HashMap<EObject, Node>();
-		edgeMap = new HashMap<Link, Edge>();
-		infoNodes = new HashMap<EObject, Node>();
-		listedMatches = new HashMap<Integer, IBeXMatch>();
-		nodeBlacklist = new BasicEList<EObject>();
-		edgeBlacklist = new BasicEList<Link>();
+		nodeMap = new LinkedHashMap<EObject, Node>();
+		edgeMap = new LinkedHashMap<Link, Edge>();
+		infoNodes = new LinkedHashMap<EObject, Node>();
+		listedMatches = new LinkedHashMap<Integer, IBeXMatch>();
+		nodeBlacklist = new ArrayList<EObject>();
+		edgeBlacklist = new ArrayList<Link>();
 		graph = new SingleGraph("");
 		graph.setStrict(false);
 		graph.setAutoCreate(false);
@@ -229,7 +220,7 @@ public class VaDoGT {
 
 		// Create initial graph with resources
 		createNodesFromList(resource.getContents());
-		
+		creadNonContainmentEdges(nodeMap.keySet());
 		// Init initialMatches
 		initialMatches = localStateManager.getInitialMatches();
 		
@@ -250,24 +241,24 @@ public class VaDoGT {
 	 * @param edgeTypes 
 	 */
 	public VaDoGT(Resource resource, ModelStateManager stateManager, GraphTransformationInterpreter graphTransformationInterpreter, IBeXRuleSet iBeXRuleSet, IBeXPatternSet iBeXPatternSet, String modelName) {
-		initialResourceContents = new BasicEList<EObject>(resource.getContents());
+		initialResourceContents = new LinkedList<EObject>(resource.getContents());
 		localStateManager = stateManager;
 		localGraphTransformationInterpreter = graphTransformationInterpreter;
 		localStateManager.moveToState(localStateManager.getModelStates().getInitialState(), false);
-		ruleSet = iBeXRuleSet.getRules();
-		patternSet = iBeXPatternSet.getContextPatterns();
+		ruleSet = new HashSet<>(iBeXRuleSet.getRules());
+		patternSet = new HashSet<>(iBeXPatternSet.getContextPatterns());
 		initialMatches = new HashMap<String, Collection<IBeXMatch>>();
 		
 		
-		allStates = new ArrayList<State>();
+		allStates = new LinkedList<State>();
 		allStates.add(localStateManager.getModelStates().getInitialState());
 		allStates.addAll(localStateManager.getModelStates().getStates());
-		nodeMap = new HashMap<EObject, Node>();
-		edgeMap = new HashMap<Link, Edge>();
-		infoNodes = new HashMap<EObject, Node>();
-		listedMatches = new HashMap<Integer, IBeXMatch>();
-		nodeBlacklist = new BasicEList<EObject>();
-		edgeBlacklist = new BasicEList<Link>();
+		nodeMap = new LinkedHashMap<EObject, Node>();
+		edgeMap = new LinkedHashMap<Link, Edge>();
+		infoNodes = new LinkedHashMap<EObject, Node>();
+		listedMatches = new LinkedHashMap<Integer, IBeXMatch>();
+		nodeBlacklist = new ArrayList<EObject>();
+		edgeBlacklist = new ArrayList<Link>();
 		graph = new SingleGraph("");
 		graph.setStrict(false);
 		graph.setAutoCreate(false);
@@ -275,6 +266,7 @@ public class VaDoGT {
 
 		// Create initial graph with resources
 		createNodesFromList(resource.getContents());
+		creadNonContainmentEdges(nodeMap.keySet());
 		
 		// Init initialMatches
 		initMatchesForContainer();
@@ -288,7 +280,7 @@ public class VaDoGT {
 	
 	private void initMatchesForContainer() {
 		for( IBeXContext pat : localGraphTransformationInterpreter.getPatternSet().getContextPatterns()) {
-			Collection<IBeXMatch> matchesToPat = new ArrayList<IBeXMatch>();
+			Collection<IBeXMatch> matchesToPat = new LinkedList<IBeXMatch>();
 			for(IBeXMatch match : localStateManager.getModelStates().getInitialMatches()) {
 				if(pat.getName().equals(match.getPatternName())) {
 					matchesToPat.add(match);
@@ -1062,37 +1054,6 @@ public class VaDoGT {
 	 * @param graphstreamView
 	 */
 	private void addGraphListeners(View graphstreamView) {
-		
-//		 Enabbles to move camera by drag & drop -> not implemented
-		
-//		((Component) graphstreamView).addMouseMotionListener(new MouseMotionListener() {
-//			@Override
-//			public void mouseDragged(MouseEvent event) {
-//			
-//				if(last!=null) {
-//					Camera camera = graphstreamView.getCamera();
-//					Point3 p1 = camera.getViewCenter();
-//					Point3 p2=camera.transformGuToPx(p1.x,p1.y,0);
-//					int xdelta=event.getX()-last.getX();	//determine direction
-//					int ydelta=event.getY()-last.getY();	//determine direction
-//					//sysout("xdelta "+xdelta+" ydelta "+ydelta);
-//					p2.x-=xdelta;
-//					p2.y-=ydelta;
-//					Point3 p3=camera.transformPxToGu(p2.x,p2.y);
-//					camera.setViewCenter(p3.x,p3.y, 0);
-//				}
-//				last=event;
-//				
-//			}
-//
-//			@Override
-//			public void mouseMoved(MouseEvent e) {
-//				// Auto-generated method stub
-//				
-//			}
-//			
-//		});
-		
 		// Enables zoom function
 		((Component) graphstreamView).addMouseWheelListener(new MouseWheelListener() {
 		    @Override
@@ -1161,23 +1122,25 @@ public class VaDoGT {
 	 * @return created and existing nodes as list
 	 */
 	@SuppressWarnings("unchecked")
-	private List<EObject> createNodesFromList(EList<EObject> list) {
-		List<EObject> createdOrOldNodes = new ArrayList<EObject>();
+	private List<EObject> createNodesFromList(List<EObject> list) {
+		List<EObject> createdOrOldNodes = new LinkedList<EObject>();
 		for(EObject node : list) {
 			createdOrOldNodes.add(node);
 			if(!nodeMap.keySet().contains(node)) {
 				// If node does not exist in graph create it
 				createGraphNode(node);
 				// If node has children add all of them to a list and call createNodesFromList recursive
-				if(!node.eClass().getEReferences().isEmpty()) {
-					for(EReference ref : node.eClass().getEReferences()) {
-						EList<EObject> newList = new BasicEList<EObject>();
+				if(!node.eClass().getEAllReferences().isEmpty()) {
+					for(EReference ref : node.eClass().getEAllReferences()) {
+						if(!ref.isContainment())
+							continue;
+						List<EObject> newList = new LinkedList<EObject>();
 						// If there is only one sub-node its not saved as list 
-						if(!(node.eGet(ref) instanceof EList)) {
+						if(!ref.isMany()) {
 							if(node.eGet(ref) != null)
 								newList.add((EObject) node.eGet(ref));
 						} else {
-							newList = (EList<EObject>)(node.eGet(ref));
+							newList = (List<EObject>)(node.eGet(ref));
 						}
 						// Create links between children and their parents
 						List<EObject> createdSubNodes = createNodesFromList(newList);
@@ -1187,19 +1150,39 @@ public class VaDoGT {
 							link.setTrg(createdSubNode);
 							link.setType(ref);
 							createGraphEdge(link);
-							
-//							TODO Delete notes or save somewhere else
-//							node.eClass().getEAllContainments()
-//							node.eClass().getEAllStructuralFeatures()
-//							node.eGet(ref)
-							
-							
 						}
 					}
+					
 				}
 			}	
 		}
 		return createdOrOldNodes;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void creadNonContainmentEdges(Collection<EObject> list) {
+		for(EObject node : list) {
+			// Add non containment references
+			for(EReference ref : node.eClass().getEAllReferences()) {
+				if(ref.isContainment())
+					continue;
+				List<EObject> newList = new LinkedList<EObject>();
+				// If there is only one sub-node its not saved as list 
+				if(!ref.isMany()) {
+					if(node.eGet(ref) != null)
+						newList.add((EObject) node.eGet(ref));
+				} else {
+					newList = (List<EObject>)(node.eGet(ref));
+				}
+				for(EObject createdSubNode : newList) {
+					Link link = factory.createLink();
+					link.setSrc(node);
+					link.setTrg(createdSubNode);
+					link.setType(ref);
+					createGraphEdge(link);		
+				}
+			}
+		}
 	}
 	
 	/**
@@ -1360,6 +1343,7 @@ public class VaDoGT {
 		// Move to initial state and create initial nodes and edges
 		localStateManager.moveToState(localStateManager.getModelStates().getInitialState(),false);
 		createNodesFromList(initialResourceContents);
+		creadNonContainmentEdges(nodeMap.keySet());
 		
 		// Clean info label
 		nodeInfoLabel.setText("");
@@ -1983,7 +1967,7 @@ public class VaDoGT {
 	 * @return list with all matches in current state for current pattern
 	 */
 	protected List<IBeXMatch> calculateCurrentMatches(RuleState currState, String patternName) {
-		List<IBeXMatch> currMatches = new ArrayList<IBeXMatch>(initialMatches.get(patternName));
+		List<IBeXMatch> currMatches = new LinkedList<IBeXMatch>(initialMatches.get(patternName));
 		RuleState rState = localStateManager.getModelStates().getInitialState().getChildren().get(0);
 		if(rState.equals(currState))
 			return currMatches; // return initialMatches
@@ -2000,7 +1984,7 @@ public class VaDoGT {
 				}
 				for(MatchDelta deleteDelta : rState.getDeletedMatches()) {
 					if(deleteDelta.getPatternName().equals(patternName)) {
-						List<IBeXMatch> toRemove = new ArrayList<IBeXMatch>();
+						List<IBeXMatch> toRemove = new LinkedList<IBeXMatch>();
 						for(IBeXMatch currMatch : currMatches) {
 							for(IBeXMatch removeMatch : deleteDelta.getMatchDeltasForPattern()) {
 								if(localStateManager.testIfSameIBeXMatch(removeMatch, currMatch)) {
