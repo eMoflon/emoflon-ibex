@@ -197,10 +197,10 @@ public class VaDoGT {
 	 * @param edgeTypes 
 	 */
 	public VaDoGT(Resource resource, ModelStateManager stateManager, GraphTransformationInterpreter graphTransformationInterpreter, IBeXRuleSet iBeXRuleSet, IBeXPatternSet iBeXPatternSet) {
-		initialResourceContents = new LinkedList<EObject>(resource.getContents());
 		localStateManager = stateManager;
 		localGraphTransformationInterpreter = graphTransformationInterpreter;
 		localStateManager.moveToState(localStateManager.getModelStates().getInitialState(), false);
+		initialResourceContents = new LinkedList<EObject>(resource.getContents());
 		ruleSet = new HashSet<>(iBeXRuleSet.getRules());
 		patternSet = new HashSet<>(iBeXPatternSet.getContextPatterns());
 		
@@ -241,10 +241,10 @@ public class VaDoGT {
 	 * @param edgeTypes 
 	 */
 	public VaDoGT(Resource resource, ModelStateManager stateManager, GraphTransformationInterpreter graphTransformationInterpreter, IBeXRuleSet iBeXRuleSet, IBeXPatternSet iBeXPatternSet, String modelName) {
-		initialResourceContents = new LinkedList<EObject>(resource.getContents());
 		localStateManager = stateManager;
 		localGraphTransformationInterpreter = graphTransformationInterpreter;
 		localStateManager.moveToState(localStateManager.getModelStates().getInitialState(), false);
+		initialResourceContents = new LinkedList<EObject>(resource.getContents());
 		ruleSet = new HashSet<>(iBeXRuleSet.getRules());
 		patternSet = new HashSet<>(iBeXPatternSet.getContextPatterns());
 		initialMatches = new HashMap<String, Collection<IBeXMatch>>();
