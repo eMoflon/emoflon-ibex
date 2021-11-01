@@ -1342,6 +1342,7 @@ public class VaDoGT {
 			
 		// Move to initial state and create initial nodes and edges
 		localStateManager.moveToState(localStateManager.getModelStates().getInitialState(),false);
+		initialResourceContents = new LinkedList<EObject>(localStateManager.getModel().getContents());
 		createNodesFromList(initialResourceContents);
 		creadNonContainmentEdges(nodeMap.keySet());
 		
