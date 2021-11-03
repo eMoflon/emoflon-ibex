@@ -67,6 +67,7 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 //IBeX imports
 import org.emoflon.ibex.gt.StateModel.AttributeDelta;
+import org.emoflon.ibex.gt.StateModel.ComplexParameter;
 import org.emoflon.ibex.gt.StateModel.IBeXMatch;
 import org.emoflon.ibex.gt.StateModel.Link;
 import org.emoflon.ibex.gt.StateModel.MatchDelta;
@@ -1671,9 +1672,12 @@ public class VaDoGT {
 		matchHiglightNode.setAttribute("ui.label", "");
 		nodeID++;
 	
-		for(Parameter param : iBeXMatch.getParameters()) {
+		for(ComplexParameter param : iBeXMatch.getParameters().stream()
+				.filter(param -> param instanceof ComplexParameter)
+				.map(param -> (ComplexParameter)param)
+				.collect(Collectors.toList())) {
 			try {
-				EObject matchNode = param.getParameter();
+				EObject matchNode = param.getValue();
 				if(!nodeBlacklist.contains((EObject)matchNode)) {
 					nodeMap.get((EObject)matchNode).setAttribute("ui.style", "shadow-mode: gradient-radial; shadow-width: 10px; shadow-color: orange;");
 					Edge matchHighlightEdge = graph.addEdge(Integer.toString(edgeID), matchHiglightNode, nodeMap.get((EObject)matchNode));

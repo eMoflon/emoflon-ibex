@@ -70,12 +70,14 @@ public class StateModelFactoryImpl extends EFactoryImpl implements StateModelFac
 			return createLink();
 		case StateModelPackage.IBE_XMATCH:
 			return createIBeXMatch();
-		case StateModelPackage.PARAMETER:
-			return createParameter();
 		case StateModelPackage.VALUE:
 			return createValue();
 		case StateModelPackage.MATCH_DELTA:
 			return createMatchDelta();
+		case StateModelPackage.COMPLEX_PARAMETER:
+			return createComplexParameter();
+		case StateModelPackage.SIMPLE_PARAMETER:
+			return createSimpleParameter();
 		default:
 			throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -164,17 +166,6 @@ public class StateModelFactoryImpl extends EFactoryImpl implements StateModelFac
 	 * @generated
 	 */
 	@Override
-	public Parameter createParameter() {
-		ParameterImpl parameter = new ParameterImpl();
-		return parameter;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
 	public Value createValue() {
 		ValueImpl value = new ValueImpl();
 		return value;
@@ -189,6 +180,28 @@ public class StateModelFactoryImpl extends EFactoryImpl implements StateModelFac
 	public MatchDelta createMatchDelta() {
 		MatchDeltaImpl matchDelta = new MatchDeltaImpl();
 		return matchDelta;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public ComplexParameter createComplexParameter() {
+		ComplexParameterImpl complexParameter = new ComplexParameterImpl();
+		return complexParameter;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public SimpleParameter createSimpleParameter() {
+		SimpleParameterImpl simpleParameter = new SimpleParameterImpl();
+		return simpleParameter;
 	}
 
 	/**

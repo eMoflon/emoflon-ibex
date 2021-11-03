@@ -596,22 +596,13 @@ public interface StateModelPackage extends EPackage {
 	int PARAMETER__NAME = 0;
 
 	/**
-	 * The feature id for the '<em><b>Parameter</b></em>' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int PARAMETER__PARAMETER = 1;
-
-	/**
 	 * The number of structural features of the '<em>Parameter</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int PARAMETER_FEATURE_COUNT = 2;
+	int PARAMETER_FEATURE_COUNT = 1;
 
 	/**
 	 * The number of operations of the '<em>Parameter</em>' class.
@@ -713,6 +704,98 @@ public interface StateModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int MATCH_DELTA_OPERATION_COUNT = 0;
+
+	/**
+	 * The meta object id for the '{@link org.emoflon.ibex.gt.StateModel.impl.ComplexParameterImpl <em>Complex Parameter</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.emoflon.ibex.gt.StateModel.impl.ComplexParameterImpl
+	 * @see org.emoflon.ibex.gt.StateModel.impl.StateModelPackageImpl#getComplexParameter()
+	 * @generated
+	 */
+	int COMPLEX_PARAMETER = 10;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPLEX_PARAMETER__NAME = PARAMETER__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Value</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPLEX_PARAMETER__VALUE = PARAMETER_FEATURE_COUNT + 0;
+
+	/**
+	 * The number of structural features of the '<em>Complex Parameter</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPLEX_PARAMETER_FEATURE_COUNT = PARAMETER_FEATURE_COUNT + 1;
+
+	/**
+	 * The number of operations of the '<em>Complex Parameter</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPLEX_PARAMETER_OPERATION_COUNT = PARAMETER_OPERATION_COUNT + 0;
+
+	/**
+	 * The meta object id for the '{@link org.emoflon.ibex.gt.StateModel.impl.SimpleParameterImpl <em>Simple Parameter</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.emoflon.ibex.gt.StateModel.impl.SimpleParameterImpl
+	 * @see org.emoflon.ibex.gt.StateModel.impl.StateModelPackageImpl#getSimpleParameter()
+	 * @generated
+	 */
+	int SIMPLE_PARAMETER = 11;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SIMPLE_PARAMETER__NAME = PARAMETER__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Value</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SIMPLE_PARAMETER__VALUE = PARAMETER_FEATURE_COUNT + 0;
+
+	/**
+	 * The number of structural features of the '<em>Simple Parameter</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SIMPLE_PARAMETER_FEATURE_COUNT = PARAMETER_FEATURE_COUNT + 1;
+
+	/**
+	 * The number of operations of the '<em>Simple Parameter</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SIMPLE_PARAMETER_OPERATION_COUNT = PARAMETER_OPERATION_COUNT + 0;
 
 	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.gt.StateModel.StateContainer <em>State Container</em>}'.
@@ -1158,17 +1241,6 @@ public interface StateModelPackage extends EPackage {
 	EAttribute getParameter_Name();
 
 	/**
-	 * Returns the meta object for the reference '{@link org.emoflon.ibex.gt.StateModel.Parameter#getParameter <em>Parameter</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the reference '<em>Parameter</em>'.
-	 * @see org.emoflon.ibex.gt.StateModel.Parameter#getParameter()
-	 * @see #getParameter()
-	 * @generated
-	 */
-	EReference getParameter_Parameter();
-
-	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.gt.StateModel.Value <em>Value</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1231,6 +1303,48 @@ public interface StateModelPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getMatchDelta_MatchDeltasForPattern();
+
+	/**
+	 * Returns the meta object for class '{@link org.emoflon.ibex.gt.StateModel.ComplexParameter <em>Complex Parameter</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Complex Parameter</em>'.
+	 * @see org.emoflon.ibex.gt.StateModel.ComplexParameter
+	 * @generated
+	 */
+	EClass getComplexParameter();
+
+	/**
+	 * Returns the meta object for the reference '{@link org.emoflon.ibex.gt.StateModel.ComplexParameter#getValue <em>Value</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Value</em>'.
+	 * @see org.emoflon.ibex.gt.StateModel.ComplexParameter#getValue()
+	 * @see #getComplexParameter()
+	 * @generated
+	 */
+	EReference getComplexParameter_Value();
+
+	/**
+	 * Returns the meta object for class '{@link org.emoflon.ibex.gt.StateModel.SimpleParameter <em>Simple Parameter</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Simple Parameter</em>'.
+	 * @see org.emoflon.ibex.gt.StateModel.SimpleParameter
+	 * @generated
+	 */
+	EClass getSimpleParameter();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.gt.StateModel.SimpleParameter#getValue <em>Value</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Value</em>'.
+	 * @see org.emoflon.ibex.gt.StateModel.SimpleParameter#getValue()
+	 * @see #getSimpleParameter()
+	 * @generated
+	 */
+	EAttribute getSimpleParameter_Value();
 
 	/**
 	 * Returns the factory that creates the instances of the model.
@@ -1602,14 +1716,6 @@ public interface StateModelPackage extends EPackage {
 		EAttribute PARAMETER__NAME = eINSTANCE.getParameter_Name();
 
 		/**
-		 * The meta object literal for the '<em><b>Parameter</b></em>' reference feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference PARAMETER__PARAMETER = eINSTANCE.getParameter_Parameter();
-
-		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.gt.StateModel.impl.ValueImpl <em>Value</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -1660,6 +1766,42 @@ public interface StateModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference MATCH_DELTA__MATCH_DELTAS_FOR_PATTERN = eINSTANCE.getMatchDelta_MatchDeltasForPattern();
+
+		/**
+		 * The meta object literal for the '{@link org.emoflon.ibex.gt.StateModel.impl.ComplexParameterImpl <em>Complex Parameter</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.emoflon.ibex.gt.StateModel.impl.ComplexParameterImpl
+		 * @see org.emoflon.ibex.gt.StateModel.impl.StateModelPackageImpl#getComplexParameter()
+		 * @generated
+		 */
+		EClass COMPLEX_PARAMETER = eINSTANCE.getComplexParameter();
+
+		/**
+		 * The meta object literal for the '<em><b>Value</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference COMPLEX_PARAMETER__VALUE = eINSTANCE.getComplexParameter_Value();
+
+		/**
+		 * The meta object literal for the '{@link org.emoflon.ibex.gt.StateModel.impl.SimpleParameterImpl <em>Simple Parameter</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.emoflon.ibex.gt.StateModel.impl.SimpleParameterImpl
+		 * @see org.emoflon.ibex.gt.StateModel.impl.StateModelPackageImpl#getSimpleParameter()
+		 * @generated
+		 */
+		EClass SIMPLE_PARAMETER = eINSTANCE.getSimpleParameter();
+
+		/**
+		 * The meta object literal for the '<em><b>Value</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute SIMPLE_PARAMETER__VALUE = eINSTANCE.getSimpleParameter_Value();
 
 	}
 

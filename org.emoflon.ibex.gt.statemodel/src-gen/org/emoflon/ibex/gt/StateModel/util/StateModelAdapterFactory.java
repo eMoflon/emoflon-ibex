@@ -117,6 +117,16 @@ public class StateModelAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
+		public Adapter caseComplexParameter(ComplexParameter object) {
+			return createComplexParameterAdapter();
+		}
+
+		@Override
+		public Adapter caseSimpleParameter(SimpleParameter object) {
+			return createSimpleParameterAdapter();
+		}
+
+		@Override
 		public Adapter defaultCase(EObject object) {
 			return createEObjectAdapter();
 		}
@@ -272,6 +282,34 @@ public class StateModelAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createMatchDeltaAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.gt.StateModel.ComplexParameter <em>Complex Parameter</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.gt.StateModel.ComplexParameter
+	 * @generated
+	 */
+	public Adapter createComplexParameterAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.gt.StateModel.SimpleParameter <em>Simple Parameter</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.gt.StateModel.SimpleParameter
+	 * @generated
+	 */
+	public Adapter createSimpleParameterAdapter() {
 		return null;
 	}
 

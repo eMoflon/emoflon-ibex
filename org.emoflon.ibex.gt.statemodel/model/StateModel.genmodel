@@ -59,7 +59,6 @@
     </genClasses>
     <genClasses ecoreClass="StateModel.ecore#//Parameter">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute StateModel.ecore#//Parameter/name"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference StateModel.ecore#//Parameter/parameter"/>
     </genClasses>
     <genClasses ecoreClass="StateModel.ecore#//Value">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference StateModel.ecore#//Value/Type"/>
@@ -68,6 +67,12 @@
     <genClasses ecoreClass="StateModel.ecore#//MatchDelta">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute StateModel.ecore#//MatchDelta/patternName"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference StateModel.ecore#//MatchDelta/matchDeltasForPattern"/>
+    </genClasses>
+    <genClasses ecoreClass="StateModel.ecore#//ComplexParameter">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference StateModel.ecore#//ComplexParameter/value"/>
+    </genClasses>
+    <genClasses ecoreClass="StateModel.ecore#//SimpleParameter">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute StateModel.ecore#//SimpleParameter/value"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>

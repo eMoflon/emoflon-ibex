@@ -9,11 +9,13 @@ import org.eclipse.emf.ecore.EReference;
 
 import org.eclipse.emf.ecore.impl.EPackageImpl;
 import org.emoflon.ibex.gt.StateModel.AttributeDelta;
+import org.emoflon.ibex.gt.StateModel.ComplexParameter;
 import org.emoflon.ibex.gt.StateModel.IBeXMatch;
 import org.emoflon.ibex.gt.StateModel.Link;
 import org.emoflon.ibex.gt.StateModel.MatchDelta;
 import org.emoflon.ibex.gt.StateModel.Parameter;
 import org.emoflon.ibex.gt.StateModel.RuleState;
+import org.emoflon.ibex.gt.StateModel.SimpleParameter;
 import org.emoflon.ibex.gt.StateModel.State;
 import org.emoflon.ibex.gt.StateModel.StateContainer;
 import org.emoflon.ibex.gt.StateModel.StateModelFactory;
@@ -99,6 +101,20 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 	 * @generated
 	 */
 	private EClass matchDeltaEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass complexParameterEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass simpleParameterEClass = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -583,16 +599,6 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 	 * @generated
 	 */
 	@Override
-	public EReference getParameter_Parameter() {
-		return (EReference) parameterEClass.getEStructuralFeatures().get(1);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
 	public EClass getValue() {
 		return valueEClass;
 	}
@@ -645,6 +651,46 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 	@Override
 	public EReference getMatchDelta_MatchDeltasForPattern() {
 		return (EReference) matchDeltaEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EClass getComplexParameter() {
+		return complexParameterEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EReference getComplexParameter_Value() {
+		return (EReference) complexParameterEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EClass getSimpleParameter() {
+		return simpleParameterEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EAttribute getSimpleParameter_Value() {
+		return (EAttribute) simpleParameterEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -725,7 +771,6 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 
 		parameterEClass = createEClass(PARAMETER);
 		createEAttribute(parameterEClass, PARAMETER__NAME);
-		createEReference(parameterEClass, PARAMETER__PARAMETER);
 
 		valueEClass = createEClass(VALUE);
 		createEReference(valueEClass, VALUE__TYPE);
@@ -734,6 +779,12 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 		matchDeltaEClass = createEClass(MATCH_DELTA);
 		createEAttribute(matchDeltaEClass, MATCH_DELTA__PATTERN_NAME);
 		createEReference(matchDeltaEClass, MATCH_DELTA__MATCH_DELTAS_FOR_PATTERN);
+
+		complexParameterEClass = createEClass(COMPLEX_PARAMETER);
+		createEReference(complexParameterEClass, COMPLEX_PARAMETER__VALUE);
+
+		simpleParameterEClass = createEClass(SIMPLE_PARAMETER);
+		createEAttribute(simpleParameterEClass, SIMPLE_PARAMETER__VALUE);
 	}
 
 	/**
@@ -770,6 +821,8 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 
 		// Add supertypes to classes
 		ruleStateEClass.getESuperTypes().add(this.getState());
+		complexParameterEClass.getESuperTypes().add(this.getParameter());
+		simpleParameterEClass.getESuperTypes().add(this.getParameter());
 
 		// Initialize classes, features, and operations; add parameters
 		initEClass(stateContainerEClass, StateContainer.class, "StateContainer", !IS_ABSTRACT, !IS_INTERFACE,
@@ -883,13 +936,10 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(parameterEClass, Parameter.class, "Parameter", !IS_ABSTRACT, !IS_INTERFACE,
+		initEClass(parameterEClass, Parameter.class, "Parameter", IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getParameter_Name(), ecorePackage.getEString(), "name", null, 0, 1, Parameter.class,
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getParameter_Parameter(), ecorePackage.getEObject(), null, "parameter", null, 0, 1,
-				Parameter.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
-				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(valueEClass, Value.class, "Value", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getValue_Type(), ecorePackage.getEDataType(), null, "Type", null, 0, 1, Value.class,
@@ -906,6 +956,18 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 		initEReference(getMatchDelta_MatchDeltasForPattern(), this.getIBeXMatch(), null, "matchDeltasForPattern", null,
 				0, -1, MatchDelta.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(complexParameterEClass, ComplexParameter.class, "ComplexParameter", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getComplexParameter_Value(), ecorePackage.getEObject(), null, "value", null, 0, 1,
+				ComplexParameter.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(simpleParameterEClass, SimpleParameter.class, "SimpleParameter", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getSimpleParameter_Value(), ecorePackage.getEString(), "value", null, 0, 1,
+				SimpleParameter.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
 
 		// Create resource
 		createResource(eNS_URI);

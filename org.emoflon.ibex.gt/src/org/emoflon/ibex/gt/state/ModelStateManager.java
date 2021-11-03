@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
+import org.bouncycastle.asn1.misc.CAST5CBCParameters;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EFactory;
@@ -32,6 +33,7 @@ import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.common.operational.PushoutApproach;
 import org.emoflon.ibex.common.operational.SimpleMatch;
 import org.emoflon.ibex.gt.StateModel.AttributeDelta;
+import org.emoflon.ibex.gt.StateModel.ComplexParameter;
 //import org.emoflon.ibex.gt.StateModel.CoMatch;
 import org.emoflon.ibex.gt.StateModel.IBeXMatch;
 import org.emoflon.ibex.gt.StateModel.Link;
@@ -39,6 +41,7 @@ import org.emoflon.ibex.gt.StateModel.MatchDelta;
 //import org.emoflon.ibex.gt.StateModel.Match;
 import org.emoflon.ibex.gt.StateModel.Parameter;
 import org.emoflon.ibex.gt.StateModel.RuleState;
+import org.emoflon.ibex.gt.StateModel.SimpleParameter;
 import org.emoflon.ibex.gt.StateModel.State;
 import org.emoflon.ibex.gt.StateModel.StateContainer;
 import org.emoflon.ibex.gt.StateModel.StateModelFactory;
@@ -101,9 +104,9 @@ public class ModelStateManager {
 		IBeXMatch ibexmatch = factory.createIBeXMatch();
 		
 		for(String paramName : imatch.getParameterNames()) {
-			Parameter param = factory.createParameter();
+			ComplexParameter param = factory.createComplexParameter();
 			param.setName(paramName);
-			param.setParameter((EObject) imatch.get(paramName));
+			param.setValue((EObject) imatch.get(paramName));
 			ibexmatch.getParameters().add(param);
 		}
 		
@@ -113,10 +116,13 @@ public class ModelStateManager {
 	
 	public IMatch IBeXMatchToIMatchByList(RuleState state) {
 		Collection<IMatch> matchesForPattern =  matches.get(state).get(state.getMatch().getPatternName());
-		Map<String, Object> parameter =  extractParameterFromMatch(state.getMatch());
+		Map<String, Parameter> parameter =  extractParameterFromMatch(state.getMatch());
 		
 		for(IMatch imatch : matchesForPattern) {
-			if(imatch.getObjects().containsAll(parameter.values()))
+			if(imatch.getObjects().containsAll(parameter.values().stream()
+					.filter(param -> param instanceof ComplexParameter)
+					.map(param->((ComplexParameter)param).getValue())
+					.collect(Collectors.toSet())))
 				return imatch;
 		}
 		
@@ -125,17 +131,41 @@ public class ModelStateManager {
 	
 	public IMatch IBeXMatchToIMatch(IBeXMatch ibexmatch) {
 		IMatch imatch = new SimpleMatch(ibexmatch.getPatternName());
-		Map<String, Object> extractedParameter = extractParameterFromMatch(ibexmatch);
-		for(String patName : extractedParameter.keySet()) {
-			imatch.put(patName, extractedParameter.get(patName));
+		Map<String, Parameter> extractedParameter = extractParameterFromMatch(ibexmatch);
+		for(String paramName : extractedParameter.keySet()) {
+			Parameter param = extractedParameter.get(paramName);
+			if(param instanceof SimpleParameter)
+				continue;
+			
+			imatch.put(paramName, ((ComplexParameter)param).getValue());
 		}
 		return imatch;
 	}
 	
 	public  Map<String, Object> extractParameterFromState(RuleState state) {
-		Map<String, Object> parameter = new HashMap<String,Object>();
+		Map<String, Object> parameter = new HashMap<>();
 		for(Parameter param: state.getParameters()) {
-			parameter.put(param.getName(), param.getParameter());
+			if(param instanceof ComplexParameter) {
+				parameter.put(param.getName(), ((ComplexParameter)param).getValue());
+			} else {
+				SimpleParameter pParam = (SimpleParameter)param;
+				Object value = null;
+				try {
+					value = Integer.parseInt(pParam.getValue());
+				} catch (Exception e) {
+					try {
+						value = Double.parseDouble(pParam.getValue());
+					} catch (Exception e1) {
+						try {
+							value = Boolean.parseBoolean(pParam.getValue());
+						} catch (Exception e2) {
+							value = pParam.getValue();
+						}
+					}
+				}
+				parameter.put(param.getName(), value);
+			}
+			
 		}
 		return parameter;
 	}
@@ -146,9 +176,24 @@ public class ModelStateManager {
 		else {
 			for(Parameter paramFirst : first.getParameters()) {
 				for(Parameter paramSecond : second.getParameters()) {
-					if(paramFirst.getName().equals(paramSecond.getName()) && !(paramFirst.getParameter().equals(paramSecond.getParameter()))) {
-						return false;
+					if(paramFirst instanceof ComplexParameter && paramSecond instanceof ComplexParameter) {
+						ComplexParameter fP = (ComplexParameter)paramFirst;
+						ComplexParameter sP = (ComplexParameter)paramSecond;
+						if(paramFirst.getName().equals(paramSecond.getName()) && !(fP.getValue().equals(sP.getValue()))) {
+							return false;
+						}
+					} else if(paramFirst instanceof SimpleParameter && paramSecond instanceof SimpleParameter) {
+						SimpleParameter fP = (SimpleParameter)paramFirst;
+						SimpleParameter sP = (SimpleParameter)paramSecond;
+						if(paramFirst.getName().equals(paramSecond.getName()) && !(fP.getValue().equals(sP.getValue()))) {
+							return false;
+						}
+					} else {
+						if(paramFirst.getName().equals(paramSecond.getName())) {
+							return false;
+						}
 					}
+					
 				}
 			}
 			return true;
@@ -419,25 +464,32 @@ public class ModelStateManager {
 	
 	private void addParameterToState(RuleState state, Map<String, Object> parameter) {
 		for(String key: parameter.keySet()) {
-			Parameter param = factory.createParameter();
-			param.setName(key);
-			param.setParameter((EObject) parameter.get(key));
-			state.getParameters().add(param);
+			Object parameterValue = parameter.get(key);
+			if(parameterValue instanceof EObject) {
+				ComplexParameter param = factory.createComplexParameter();
+				param.setName(key);
+				param.setValue((EObject) parameter.get(key));
+				state.getParameters().add(param);
+			} else {
+				SimpleParameter param = factory.createSimpleParameter();
+				param.setName(key);
+				param.setValue(String.valueOf(parameterValue));
+				state.getParameters().add(param);
+			}
+			
 		}
 	}
 	
 
 	
-	private  Map<String, Object> extractParameterFromMatch(IBeXMatch match) {
-		Map<String, Object> parameter = new HashMap<String,Object>();
+	private  Map<String, Parameter> extractParameterFromMatch(IBeXMatch match) {
+		Map<String, Parameter> parameter = new HashMap<>();
 		for(Parameter param: match.getParameters()) {
-			parameter.put(param.getName(), param.getParameter());
+			parameter.put(param.getName(), param);
 		}
 		return parameter;
 	}
-	
 
-	
 	private void addDeltaMatches(RuleState state, Map<String, Collection<IMatch>> addedMatches, Map<String, Collection<IMatch>> removedMatches) {
 		for(String pattern : addedMatches.keySet()) {
 			MatchDelta createdMatches = factory.createMatchDelta();

@@ -85,15 +85,6 @@ public interface StateModelFactory extends EFactory {
 	IBeXMatch createIBeXMatch();
 
 	/**
-	 * Returns a new object of class '<em>Parameter</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>Parameter</em>'.
-	 * @generated
-	 */
-	Parameter createParameter();
-
-	/**
 	 * Returns a new object of class '<em>Value</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -110,6 +101,24 @@ public interface StateModelFactory extends EFactory {
 	 * @generated
 	 */
 	MatchDelta createMatchDelta();
+
+	/**
+	 * Returns a new object of class '<em>Complex Parameter</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Complex Parameter</em>'.
+	 * @generated
+	 */
+	ComplexParameter createComplexParameter();
+
+	/**
+	 * Returns a new object of class '<em>Simple Parameter</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Simple Parameter</em>'.
+	 * @generated
+	 */
+	SimpleParameter createSimpleParameter();
 
 	/**
 	 * Returns the package supported by this factory.

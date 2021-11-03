@@ -14,7 +14,7 @@ public class StateID {
 	
 	public final State state;
 	public final long hashCode;
-	public final Map<String,Object> parameters;
+	public final Map<String,Parameter> parameters;
 	
 	public StateID(final State state) {
 		this.state = state;
@@ -28,10 +28,10 @@ public class StateID {
 		}
 	}
 	
-	private  Map<String, Object> extractParameterFromState(RuleState state) {
-		Map<String, Object> parameter = new HashMap<String,Object>();
+	private  Map<String, Parameter> extractParameterFromState(RuleState state) {
+		Map<String, Parameter> parameter = new HashMap<>();
 		for(Parameter param: state.getParameters()) {
-			parameter.put(param.getName(), param.getParameter());
+			parameter.put(param.getName(), param);
 		}
 		return parameter;
 	}
