@@ -780,13 +780,22 @@ public interface StateModelPackage extends EPackage {
 	int SIMPLE_PARAMETER__VALUE = PARAMETER_FEATURE_COUNT + 0;
 
 	/**
+	 * The feature id for the '<em><b>Type</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SIMPLE_PARAMETER__TYPE = PARAMETER_FEATURE_COUNT + 1;
+
+	/**
 	 * The number of structural features of the '<em>Simple Parameter</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int SIMPLE_PARAMETER_FEATURE_COUNT = PARAMETER_FEATURE_COUNT + 1;
+	int SIMPLE_PARAMETER_FEATURE_COUNT = PARAMETER_FEATURE_COUNT + 2;
 
 	/**
 	 * The number of operations of the '<em>Simple Parameter</em>' class.
@@ -1347,6 +1356,17 @@ public interface StateModelPackage extends EPackage {
 	EAttribute getSimpleParameter_Value();
 
 	/**
+	 * Returns the meta object for the reference '{@link org.emoflon.ibex.gt.StateModel.SimpleParameter#getType <em>Type</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Type</em>'.
+	 * @see org.emoflon.ibex.gt.StateModel.SimpleParameter#getType()
+	 * @see #getSimpleParameter()
+	 * @generated
+	 */
+	EReference getSimpleParameter_Type();
+
+	/**
 	 * Returns the factory that creates the instances of the model.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1802,6 +1822,14 @@ public interface StateModelPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute SIMPLE_PARAMETER__VALUE = eINSTANCE.getSimpleParameter_Value();
+
+		/**
+		 * The meta object literal for the '<em><b>Type</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference SIMPLE_PARAMETER__TYPE = eINSTANCE.getSimpleParameter_Type();
 
 	}
 

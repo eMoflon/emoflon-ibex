@@ -18,8 +18,10 @@ import java.util.stream.Collectors;
 import org.bouncycastle.asn1.misc.CAST5CBCParameters;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EDataType;
+import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -53,6 +55,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule;
+import org.graphstream.util.parser.ParseException;
 
 import com.google.common.collect.Lists;
 
@@ -88,7 +91,6 @@ public class ModelStateManager {
 	}
 
 	public Resource getModel() {
-
 		return model;
 	}
 	
@@ -157,12 +159,29 @@ public class ModelStateManager {
 						value = Double.parseDouble(pParam.getValue());
 					} catch (Exception e1) {
 						try {
-							value = Boolean.parseBoolean(pParam.getValue());
-						} catch (Exception e2) {
-							value = pParam.getValue();
+							EPackage ePack = model.getContents().iterator().next().eClass().getEPackage();
+							EFactory factory = ePack.getEFactoryInstance();
+							for(EEnum enm : ePack.getEClassifiers().stream().filter(cls -> cls instanceof EEnum).map(enm -> (EEnum)enm).collect(Collectors.toList())) {
+								try {
+									value = factory.createFromString(enm, pParam.getValue());
+									break;
+								} catch(Exception e2) {}
+							}
+							if(value == null)
+								throw new ParseException();
+						} catch(Exception e2) {
+							if(pParam.getValue().equalsIgnoreCase("true")) {
+								value = true;
+							} else if(pParam.getValue().equalsIgnoreCase("false")) {
+								value = false;
+							} else {
+								value = pParam.getValue();
+							}
 						}
+						
 					}
 				}
+				System.out.println("Parsed: "+pParam.toString()+"\n as: "+value.getClass()+" -> "+value);
 				parameter.put(param.getName(), value);
 			}
 			
@@ -823,7 +842,8 @@ public class ModelStateManager {
 		} else if(atr == epack.getEShort()) {
 			return Short.parseShort(value);
 		} else {
-			return factory.createFromString(atr, value);
+			EFactory objectFactory = atr.getEPackage().getEFactoryInstance();
+			return objectFactory.createFromString(atr, value);
 		}
 	}
 	
@@ -853,7 +873,8 @@ public class ModelStateManager {
 		} else if(atr == epack.getEFeatureMapEntry()) {
 			return null;
 		}else {
-			return factory.convertToString(atr, value);
+			EFactory objectFactory = atr.getEPackage().getEFactoryInstance();
+			return objectFactory.convertToString(atr, value);
 		}
 	}
 }

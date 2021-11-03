@@ -6,6 +6,8 @@ import org.eclipse.emf.common.notify.Notification;
 
 import org.eclipse.emf.ecore.EClass;
 
+import org.eclipse.emf.ecore.EDataType;
+import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
 import org.emoflon.ibex.gt.StateModel.SimpleParameter;
@@ -20,6 +22,7 @@ import org.emoflon.ibex.gt.StateModel.StateModelPackage;
  * </p>
  * <ul>
  *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.SimpleParameterImpl#getValue <em>Value</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.StateModel.impl.SimpleParameterImpl#getType <em>Type</em>}</li>
  * </ul>
  *
  * @generated
@@ -44,6 +47,16 @@ public class SimpleParameterImpl extends ParameterImpl implements SimpleParamete
 	 * @ordered
 	 */
 	protected String value = VALUE_EDEFAULT;
+
+	/**
+	 * The cached value of the '{@link #getType() <em>Type</em>}' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getType()
+	 * @generated
+	 * @ordered
+	 */
+	protected EDataType type;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -94,10 +107,56 @@ public class SimpleParameterImpl extends ParameterImpl implements SimpleParamete
 	 * @generated
 	 */
 	@Override
+	public EDataType getType() {
+		if (type != null && type.eIsProxy()) {
+			InternalEObject oldType = (InternalEObject) type;
+			type = (EDataType) eResolveProxy(oldType);
+			if (type != oldType) {
+				if (eNotificationRequired())
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, StateModelPackage.SIMPLE_PARAMETER__TYPE,
+							oldType, type));
+			}
+		}
+		return type;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EDataType basicGetType() {
+		return type;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setType(EDataType newType) {
+		EDataType oldType = type;
+		type = newType;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, StateModelPackage.SIMPLE_PARAMETER__TYPE, oldType,
+					type));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
 		case StateModelPackage.SIMPLE_PARAMETER__VALUE:
 			return getValue();
+		case StateModelPackage.SIMPLE_PARAMETER__TYPE:
+			if (resolve)
+				return getType();
+			return basicGetType();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -112,6 +171,9 @@ public class SimpleParameterImpl extends ParameterImpl implements SimpleParamete
 		switch (featureID) {
 		case StateModelPackage.SIMPLE_PARAMETER__VALUE:
 			setValue((String) newValue);
+			return;
+		case StateModelPackage.SIMPLE_PARAMETER__TYPE:
+			setType((EDataType) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -128,6 +190,9 @@ public class SimpleParameterImpl extends ParameterImpl implements SimpleParamete
 		case StateModelPackage.SIMPLE_PARAMETER__VALUE:
 			setValue(VALUE_EDEFAULT);
 			return;
+		case StateModelPackage.SIMPLE_PARAMETER__TYPE:
+			setType((EDataType) null);
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -142,6 +207,8 @@ public class SimpleParameterImpl extends ParameterImpl implements SimpleParamete
 		switch (featureID) {
 		case StateModelPackage.SIMPLE_PARAMETER__VALUE:
 			return VALUE_EDEFAULT == null ? value != null : !VALUE_EDEFAULT.equals(value);
+		case StateModelPackage.SIMPLE_PARAMETER__TYPE:
+			return type != null;
 		}
 		return super.eIsSet(featureID);
 	}

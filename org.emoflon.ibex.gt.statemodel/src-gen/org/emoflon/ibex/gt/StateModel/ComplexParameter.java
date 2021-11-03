@@ -21,6 +21,7 @@ import org.eclipse.emf.ecore.EObject;
  * @generated
  */
 public interface ComplexParameter extends Parameter {
+
 	/**
 	 * Returns the value of the '<em><b>Value</b></em>' reference.
 	 * <!-- begin-user-doc -->
@@ -28,7 +29,7 @@ public interface ComplexParameter extends Parameter {
 	 * @return the value of the '<em>Value</em>' reference.
 	 * @see #setValue(EObject)
 	 * @see org.emoflon.ibex.gt.StateModel.StateModelPackage#getComplexParameter_Value()
-	 * @model
+	 * @model required="true"
 	 * @generated
 	 */
 	EObject getValue();

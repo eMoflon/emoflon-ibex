@@ -73,6 +73,7 @@
     </genClasses>
     <genClasses ecoreClass="StateModel.ecore#//SimpleParameter">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute StateModel.ecore#//SimpleParameter/value"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference StateModel.ecore#//SimpleParameter/type"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>

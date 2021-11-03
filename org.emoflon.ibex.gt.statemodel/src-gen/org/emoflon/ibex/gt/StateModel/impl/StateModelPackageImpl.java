@@ -699,6 +699,16 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 	 * @generated
 	 */
 	@Override
+	public EReference getSimpleParameter_Type() {
+		return (EReference) simpleParameterEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public StateModelFactory getStateModelFactory() {
 		return (StateModelFactory) getEFactoryInstance();
 	}
@@ -785,6 +795,7 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 
 		simpleParameterEClass = createEClass(SIMPLE_PARAMETER);
 		createEAttribute(simpleParameterEClass, SIMPLE_PARAMETER__VALUE);
+		createEReference(simpleParameterEClass, SIMPLE_PARAMETER__TYPE);
 	}
 
 	/**
@@ -959,7 +970,7 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 
 		initEClass(complexParameterEClass, ComplexParameter.class, "ComplexParameter", !IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getComplexParameter_Value(), ecorePackage.getEObject(), null, "value", null, 0, 1,
+		initEReference(getComplexParameter_Value(), ecorePackage.getEObject(), null, "value", null, 1, 1,
 				ComplexParameter.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
@@ -968,6 +979,9 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 		initEAttribute(getSimpleParameter_Value(), ecorePackage.getEString(), "value", null, 0, 1,
 				SimpleParameter.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
 				!IS_DERIVED, IS_ORDERED);
+		initEReference(getSimpleParameter_Type(), ecorePackage.getEDataType(), null, "type", null, 1, 1,
+				SimpleParameter.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Create resource
 		createResource(eNS_URI);
