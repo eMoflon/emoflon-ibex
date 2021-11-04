@@ -1,7 +1,5 @@
 package org.emoflon.ibex.gt.engine;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -14,7 +12,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -23,7 +20,6 @@ import java.util.stream.Stream;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
@@ -43,11 +39,13 @@ import org.emoflon.ibex.gt.ui.VaDoGT;
 import org.emoflon.ibex.gt.StateModel.State;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextAlternatives;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjointContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXForEachExpression;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternInvocation;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule;
@@ -418,9 +416,45 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		
 		IBeXContext pattern = name2Pattern.get(patternName);
 		if (IBeXPatternUtils.isEmptyPattern(pattern)) {
-			SimpleMatch match = (SimpleMatch)createEmptyMatchForCreatePattern(patternName);
-			match.setHashCode(Objects.hash(match.getParameterNames()));
-			patternMatches.add(match);
+			// Check for any NACs or PACs that are attached to the empty-create pattern
+			List<IBeXPatternInvocation> invocations = null;
+			if(pattern instanceof IBeXContextPattern) {
+				IBeXContextPattern context = (IBeXContextPattern)pattern;
+				if(context.getInvocations() != null && context.getInvocations().size()>0) {
+					invocations = context.getInvocations();
+				}
+			} else {
+				IBeXContextAlternatives alternatives = (IBeXContextAlternatives) pattern;
+				IBeXContextPattern context = alternatives.getContext();
+				if(context.getInvocations() != null && context.getInvocations().size()>0) {
+					invocations = context.getInvocations();
+				}
+			}
+			if(invocations == null) {
+				SimpleMatch match = (SimpleMatch)createEmptyMatchForCreatePattern(patternName);
+				match.setHashCode(Objects.hash(match.getParameterNames()));
+				patternMatches.add(match);
+			} else {
+				boolean invocationsViolated = false;
+				for(IBeXPatternInvocation invocation : invocations) {
+					updateMatchStream(invocation.getInvokedPattern().getName(), new HashMap<>());
+					Collection<IMatch> matches = filteredMatches.get(invocation.getInvokedPattern().getName());
+					if(invocation.isPositive() && (matches == null || matches.size()<=0)) {
+						invocationsViolated = true;
+					}
+					if(!invocation.isPositive() && matches.size()>0) {
+						invocationsViolated = true;
+					}
+				}
+				if(!invocationsViolated) {
+					SimpleMatch match = (SimpleMatch)createEmptyMatchForCreatePattern(patternName);
+					match.setHashCode(Objects.hash(match.getParameterNames()));
+					patternMatches.add(match);
+				} else {
+					patternMatches.clear();
+				}
+			}
+			
 		} else {
 			GraphTransformationPattern<?,?> gtPattern = name2GTPattern.get(patternName);
 			
@@ -1029,7 +1063,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 	private Map<String, Collection<IMatch>> copyMatches() {
 		Map<String, Collection<IMatch>> cpyMatches = new HashMap<String, Collection<IMatch>>();
 		for(String entry : matches.keySet()) {
-			cpyMatches.put(entry, new ArrayList<IMatch>(matches.get(entry)));
+			cpyMatches.put(entry, new HashSet<IMatch>(matches.get(entry)));
 		}
 		return cpyMatches;
 	}
