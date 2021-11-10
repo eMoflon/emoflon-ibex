@@ -1398,10 +1398,6 @@ public class VaDoGT {
 			matchList.add(nextRuleState.getRule().getName() + " (Next)");
 			listedMatches.put(0, nextRuleState.getMatch());
 		
-//			System.out.println("Exact Pattern Size: " + size);
-//			System.out.println("Calculated Pattern Size: " + 
-//			localGraphTransformationInterpreter.countMatches(nextRuleState.getMatch().getPatternName(), localStateManager.extractParameterFromState(nextRuleState), true));
-		
 			futureApplyLabel.setText("Next Apply: \n" + nextRuleState.getRule().getName() + "\nMatches: " + size);
 			
 		} else {
@@ -1691,7 +1687,7 @@ public class VaDoGT {
 					edgeID++;
 				} 
 			} catch (Exception ex) {
-				System.out.println("Error when highlighting matches");
+				System.err.println("Error when highlighting matches:\n"+ex.getMessage());
 			}
 			
 		}

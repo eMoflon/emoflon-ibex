@@ -135,7 +135,7 @@ public class ModelStateManager {
 		return imatch;
 	}
 	
-	public  Map<String, Object> extractParameterFromState(RuleState state) {
+	public Map<String, Object> extractParameterFromState(RuleState state) {
 		Map<String, Object> parameter = new HashMap<>();
 		for(Parameter param: state.getParameters()) {
 			if(param instanceof ComplexParameter) {
@@ -172,7 +172,6 @@ public class ModelStateManager {
 						
 					}
 				}
-				System.out.println("Parsed: "+pParam.toString()+"\n as: "+value.getClass()+" -> "+value);
 				parameter.put(param.getName(), value);
 			}
 			
