@@ -16,8 +16,8 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EObjectResolvingEList;
-
 import org.eclipse.emf.ecore.util.InternalEList;
+
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXArithmeticConstraint;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
