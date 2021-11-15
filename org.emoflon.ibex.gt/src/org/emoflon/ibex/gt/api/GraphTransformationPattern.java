@@ -406,7 +406,4 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 		return patternName;
 	}
 	
-	public boolean isDisjunct() {
-		return interpreter.isDisjoint(patternName);
-	}
 }
