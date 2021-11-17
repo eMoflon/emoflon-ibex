@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
@@ -18,8 +17,6 @@ import org.emoflon.ibex.tgg.operational.repair.shortcut.util.OverlapUtil;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCMatch;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 import org.emoflon.smartemf.runtime.notification.SmartEMFCrossReferenceAdapter;
-
-import runtime.TGGRuleApplication;
 
 /**
  * This class attempts to repair broken matches by using operationalized shortcut rules (OSR). These
@@ -56,20 +53,6 @@ public class ShortcutRepairStrategy implements RepairStrategy {
 			LoggerConfig.log(LoggerConfig.log_repair(), () -> "  " + scRule.getName());
 
 		scTool = new ShortcutPatternTool(opStrat, shortcutRules, new HashSet<>(Arrays.asList(shortcutPatternTypes)));
-	}
-
-	@Override
-	public Collection<ITGGMatch> chooseMatches(Map<TGGRuleApplication, ITGGMatch> brokenRuleApplications) {
-		return brokenRuleApplications.keySet() //
-				.stream() //
-				.filter(this::noMissingNodes) //
-				.map(brokenRuleApplications::get) //
-				.collect(Collectors.toList());
-	}
-
-	private boolean noMissingNodes(TGGRuleApplication ra) {
-//		return TGGPatternUtil.getAllNodes(ra).stream().noneMatch(n -> n == null);
-		return true;
 	}
 
 	@Override

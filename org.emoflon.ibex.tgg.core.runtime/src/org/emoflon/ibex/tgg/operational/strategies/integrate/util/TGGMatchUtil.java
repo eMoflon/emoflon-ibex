@@ -68,6 +68,10 @@ public class TGGMatchUtil {
 		this.analyzer = new TGGMatchAnalyzer(this);
 	}
 
+	public TGGRule getRule() {
+		return rule;
+	}
+
 	public TGGMatchAnalyzer analyzer() {
 		return analyzer;
 	}

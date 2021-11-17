@@ -1,10 +1,8 @@
 package org.emoflon.ibex.tgg.operational.repair.strategies;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -61,15 +59,7 @@ public class AttributeRepairStrategy implements RepairStrategy {
 	}
 
 	@Override
-	public Collection<ITGGMatch> chooseMatches(Map<TGGRuleApplication, ITGGMatch> brokenRuleApplications) {
-		return brokenRuleApplications.keySet() //
-				.stream() //
-				.filter(this::noMissingNodes) //
-				.map(brokenRuleApplications::get) //
-				.collect(Collectors.toList());
-	}
-
-	private boolean noMissingNodes(TGGRuleApplication ra) {
+	public boolean noMissingNodes(TGGRuleApplication ra) {
 		return TGGPatternUtil.getAllNodes(ra).stream().noneMatch(n -> n == null);
 	}
 
