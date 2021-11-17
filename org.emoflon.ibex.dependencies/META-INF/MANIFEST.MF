@@ -219,5 +219,5 @@ Export-Package: .,
  org.graphstream.util.parser,
  org.graphstream.util.set,
  org.graphstream.util.time
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-15
 Automatic-Module-Name: org.emoflon.ibex.dependencies

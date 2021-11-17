@@ -23,7 +23,7 @@ Require-Bundle: org.emoflon.ibex.patternmodel;bundle-version="0.1.0";visibility:
  org.eclipse.equinox.registry
 Bundle-ClassPath: .
 Automatic-Module-Name: org.emoflon.ibex.common
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-15
 Export-Package: org.emoflon.ibex.common.collections,
  org.emoflon.ibex.common.collections.jdk,
  org.emoflon.ibex.common.emf,

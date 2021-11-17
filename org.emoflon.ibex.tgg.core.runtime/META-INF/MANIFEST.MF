@@ -119,7 +119,7 @@ Export-Package: .,
  runtime.impl,
  runtime.util
 Automatic-Module-Name: org.emoflon.ibex.tgg.runtime
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-15
 Import-Package: delta,
  org.emoflon.delta.validation
 

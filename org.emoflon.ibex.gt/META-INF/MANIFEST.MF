@@ -31,4 +31,4 @@ Require-Bundle: org.apache.log4j,
  org.emoflon.ibex.gt.statemodel;visibility:=reexport
 Bundle-ClassPath: .
 Automatic-Module-Name: org.emoflon.ibex.gt
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-15
