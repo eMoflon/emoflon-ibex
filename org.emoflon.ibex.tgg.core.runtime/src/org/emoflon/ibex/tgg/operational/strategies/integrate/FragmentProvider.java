@@ -56,7 +56,6 @@ public class FragmentProvider {
 			FragmentProvider.logFragmentStart(this);
 			Timer.start();
 
-			i.classifyBrokenMatches(true);
 			i.conflictHandler.detectConflicts();
 			i.conflictHandler.resolveConflicts();
 
@@ -106,7 +105,6 @@ public class FragmentProvider {
 			FragmentProvider.logFragmentStart(this);
 			Timer.start();
 
-			i.classifyBrokenMatches(true);
 			i.conflictHandler.detectAndResolveOpMultiplicityConflicts();
 			i.translateConflictFree();
 

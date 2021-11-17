@@ -31,7 +31,7 @@ import language.DomainType;
 import language.TGGAttributeConstraint;
 import language.TGGAttributeExpression;
 
-public class IntegrateRepair implements TimeMeasurable {
+public class ConcRepair implements TimeMeasurable {
 
 	protected Times times;
 
@@ -47,7 +47,7 @@ public class IntegrateRepair implements TimeMeasurable {
 
 	protected BrokenMatchContainer dependencyContainer;
 
-	public IntegrateRepair(INTEGRATE opStrat) {
+	public ConcRepair(INTEGRATE opStrat) {
 		this.opStrat = opStrat;
 		this.dependencyContainer = new BrokenMatchContainer(opStrat);
 		this.strategiesInitialized = false;
@@ -123,10 +123,12 @@ public class IntegrateRepair implements TimeMeasurable {
 				dependencyContainer.matchApplied(repairCandidate);
 			}
 			alreadyProcessed.addAll(opStrat.getMatchHandler().getBrokenMatches());
+			opStrat.getOptions().matchDistributor().updateMatches();
 
 			Timer.start();
-			opStrat.classifyBrokenMatches(false);
+			opStrat.matchClassifier().clearAndClassifyAll(opStrat.getMatchHandler().getBrokenMatches());
 			times.subtractFrom("repairBrokenMatches", Timer.stop());
+
 			opStrat.getMatchHandler().getBrokenMatches().stream() //
 					.filter(m -> !alreadyProcessed.contains(m)) //
 					.forEach(dependencyContainer::addMatch);

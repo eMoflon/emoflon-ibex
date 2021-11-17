@@ -170,15 +170,15 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 		return node;
 	}
 
-	public Collection<PrecedenceNode> getNodes() {
+	public Set<PrecedenceNode> getNodes() {
 		return nodes;
 	}
 
-	public Collection<PrecedenceNode> getBrokenNodes() {
+	public Set<PrecedenceNode> getBrokenNodes() {
 		return brokenNodes;
 	}
 
-	public Collection<PrecedenceNode> getImplicitBrokenNodes() {
+	public Set<PrecedenceNode> getImplicitBrokenNodes() {
 		return implicitBrokenNodes;
 	}
 
@@ -194,7 +194,7 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 		return trgNodes;
 	}
 
-	public Collection<PrecedenceNode> getNodesTranslating(Object elt) {
+	public Set<PrecedenceNode> getNodesTranslating(Object elt) {
 		return translatedBy.getOrDefault(elt, new LockedSet<>());
 	}
 

@@ -21,7 +21,7 @@ import org.emoflon.ibex.tgg.operational.strategies.PropagationDirectionHolder;
 
 import runtime.TGGRuleApplication;
 
-public class SyncRepair implements TimeMeasurable {
+public class SeqRepair implements TimeMeasurable {
 
 	protected Times times;
 
@@ -36,7 +36,7 @@ public class SyncRepair implements TimeMeasurable {
 
 	protected boolean strategiesInitialized;
 
-	public SyncRepair(PropagatingOperationalStrategy opStrat, PropagationDirectionHolder propDirHolder) {
+	public SeqRepair(PropagatingOperationalStrategy opStrat, PropagationDirectionHolder propDirHolder) {
 		this.opStrat = opStrat;
 		this.propDirHolder = propDirHolder;
 		this.dependencyContainer = new BrokenMatchContainer(opStrat);

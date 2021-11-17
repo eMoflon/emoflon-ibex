@@ -63,6 +63,8 @@ public class ConflictDetector {
 		match2conflictContainer = Collections.synchronizedMap(new HashMap<>());
 		match2sortedRollBackCauses = Collections.synchronizedMap(new HashMap<>());
 
+		integrate.getOptions().matchDistributor().updateMatches();
+
 		// delete-preserve conflicts must be detected last, since some of them may be irrelevant, in case
 		// they depend on other conflicts which repair the deletions while being resolved (see method
 		// isDeletionRepairableConflictedMatch)
@@ -263,6 +265,12 @@ public class ConflictDetector {
 	}
 
 	private void detectBrokenMatchBasedConflicts() {
+		Set<PrecedenceNode> brokenNodes = new HashSet<>(integrate.precedenceGraph().getBrokenNodes());
+		brokenNodes.addAll(integrate.precedenceGraph().getImplicitBrokenNodes().parallelStream() //
+				.filter(n -> n.getMatch().getType() == PatternType.CONSISTENCY).collect(Collectors.toSet()) //
+		);
+		integrate.matchClassifier().clearAndClassifyAllByNodes(brokenNodes);
+
 		integrate.matchClassifier().getAllClassifiedMatches().parallelStream() //
 				.forEach(brokenMatch -> detectBrokenMatchBasedConflicts(brokenMatch));
 	}
