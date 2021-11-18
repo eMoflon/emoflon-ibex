@@ -237,11 +237,11 @@ public class ConflictDetector {
 
 		switch (domain) {
 			case SRC -> {
-				if (DeletionType.getSrcDelCandidates().contains(classifiedMatch.getDeletionType()))
+				if (DeletionType.srcDelCandidates.contains(classifiedMatch.getDeletionType()))
 					return true;
 			}
 			case TRG -> {
-				if (DeletionType.getTrgDelCandidates().contains(classifiedMatch.getDeletionType()))
+				if (DeletionType.trgDelCandidates.contains(classifiedMatch.getDeletionType()))
 					return true;
 			}
 			default -> throw new IllegalArgumentException("Unexpected value: " + domain);

@@ -172,9 +172,9 @@ public class ConcRepair implements TimeMeasurable {
 
 	private ITGGMatch repairViaShortcut(ClassifiedMatch classifiedMatch) {
 		DeletionType delType = classifiedMatch.getDeletionType();
-		if (DeletionType.getShortcutCCCandidates().contains(delType)) {
+		if (DeletionType.shortcutCCCandidates.contains(delType)) {
 			return shortcutRepairStrat.repair(classifiedMatch.getMatch(), PatternType.CC);
-		} else if (DeletionType.getShortcutPropCandidates().contains(delType)) {
+		} else if (DeletionType.shortcutPropCandidates.contains(delType)) {
 			PatternType type = delType == DeletionType.SRC_PARTLY_TRG_NOT ? PatternType.FWD : PatternType.BWD;
 			ITGGMatch repairedMatch = shortcutRepairStrat.repair(classifiedMatch.getMatch(), type);
 			if (repairedMatch == null) {

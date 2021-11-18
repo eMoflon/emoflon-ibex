@@ -71,9 +71,9 @@ public class Revoker implements TimeMeasurable {
 		Set<EMFEdge> edgesToBeDeleted = new HashSet<>();
 
 		EltFilter filter = new EltFilter().create().notDeleted();
-		if (DeletionType.getPropFWDCandidates().contains(classifiedMatch.getDeletionType()))
+		if (DeletionType.propFWDCandidates.contains(classifiedMatch.getDeletionType()))
 			filter.trg();
-		else if (DeletionType.getPropBWDCandidates().contains(classifiedMatch.getDeletionType()))
+		else if (DeletionType.propBWDCandidates.contains(classifiedMatch.getDeletionType()))
 			filter.src();
 		else
 			filter.srcAndTrg();
