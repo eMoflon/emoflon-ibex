@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 import org.apache.log4j.Logger;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.ClassifiedMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DeletionType;
@@ -85,11 +84,11 @@ public class ConflictDetector {
 		// we only iterate over src/trg matches which are not part of a consistency match (already filtered
 		// in precedence graph)
 		integrate.precedenceGraph().getSourceNodes().parallelStream() //
-				.filter(srcNode -> !integrate.precedenceGraph().hasAnyConsistencyOverlap(srcNode)) //
+				.filter(srcNode -> !integrate.precedenceGraph().hasConsistencyMatchOverlap(srcNode)) //
 				.forEach(srcNode -> detectDeletePreserveEdgeConflict(srcNode, null));
 
 		integrate.precedenceGraph().getTargetNodes().parallelStream() //
-				.filter(trgNode -> !integrate.precedenceGraph().hasAnyConsistencyOverlap(trgNode)) //
+				.filter(trgNode -> !integrate.precedenceGraph().hasConsistencyMatchOverlap(trgNode)) //
 				.forEach(trgNode -> detectDeletePreserveEdgeConflict(trgNode, null));
 
 		detectDeletePreserveAttrConflicts();
@@ -110,7 +109,7 @@ public class ConflictDetector {
 		srcTrgNode.forAllToBeRolledBackBy((act, pre) -> {
 			// TODO adrianm: improve performance?
 			// we only want to traverse those src/trg matches that only matches non-translated green elements
-			if (act.getMatch().getType() != PatternType.CONSISTENCY && integrate.precedenceGraph().hasAnyConsistencyOverlap(act))
+			if (act.getMatch().getType() != PatternType.CONSISTENCY && integrate.precedenceGraph().hasConsistencyMatchOverlap(act))
 				return false;
 			if (act.isBroken()) {
 				directRollBackCauses.add(act);
@@ -334,9 +333,11 @@ public class ConflictDetector {
 		if (!partlyModSrc && !partlyModTrg)
 			return false;
 
+		PrecedenceNode brokenNode = integrate.precedenceGraph().getNode(container.getMatch());
+
 		boolean anyConflictsDetected = false;
 		if (partlyModSrc) {
-			Set<ITGGMatch> srcMatches = computeSrcMatches(container.getMatch());
+			Set<PrecedenceNode> srcNodes = integrate.precedenceGraph().findOverlappingNodes(brokenNode, PatternType.SRC);
 
 			// Detect delete-preserve conflicts whose conflicting creations are involved in a reparable
 			// delta (source domain partly deleted plus related creations). Thus, after conflict resolution the
@@ -345,14 +346,14 @@ public class ConflictDetector {
 				// In case the conflicting match i.e. the match which has deletions is not the same as the
 				// reparable match, we additionally have to detect possible conflicts starting from all qualified
 				// source matches.
-				for (ITGGMatch srcMatch : srcMatches)
-					if (detectDeletePreserveEdgeConflict(integrate.precedenceGraph().getNode(srcMatch), brokenMatch.getMatch()))
+				for (PrecedenceNode srcNode : srcNodes)
+					if (detectDeletePreserveEdgeConflict(srcNode, brokenMatch.getMatch()))
 						anyConflictsDetected = true;
 
 				// In case the conflicting match is also the reparable match, we simply can create the conflict.
 				if (domainModTrg == DomainModification.COMPL_DEL) {
-					for (ITGGMatch srcMatch : srcMatches) {
-						createDelPresEdgeConflict(container, srcMatch, DomainType.SRC, brokenMatch.getMatch(), brokenMatch.getMatch());
+					for (PrecedenceNode srcNode : srcNodes) {
+						createDelPresEdgeConflict(container, srcNode.getMatch(), DomainType.SRC, brokenMatch.getMatch(), brokenMatch.getMatch());
 						anyConflictsDetected = true;
 					}
 				}
@@ -365,7 +366,7 @@ public class ConflictDetector {
 				return true;
 			}
 		} else {
-			Set<ITGGMatch> trgMatches = computeTrgMatches(container.getMatch());
+			Set<PrecedenceNode> trgNodes = integrate.precedenceGraph().findOverlappingNodes(brokenNode, PatternType.TRG);
 
 			// Detect delete-preserve conflicts whose conflicting creations are involved in a reparable
 			// delta (target domain partly deleted plus related creations). Thus, after conflict resolution the
@@ -374,14 +375,14 @@ public class ConflictDetector {
 				// In case the conflicting match i.e. the match which has deletions is not the same as the
 				// reparable match, we additionally have to detect possible conflicts starting from all qualified
 				// target matches.
-				for (ITGGMatch trgMatch : trgMatches)
-					if (detectDeletePreserveEdgeConflict(integrate.precedenceGraph().getNode(trgMatch), brokenMatch.getMatch()))
+				for (PrecedenceNode trgNode : trgNodes)
+					if (detectDeletePreserveEdgeConflict(trgNode, brokenMatch.getMatch()))
 						anyConflictsDetected = true;
 
 				// In case the conflicting match is also the reparable match, we simply can create the conflict.
 				if (domainModSrc == DomainModification.COMPL_DEL) {
-					for (ITGGMatch trgMatch : trgMatches) {
-						createDelPresEdgeConflict(container, trgMatch, DomainType.TRG, brokenMatch.getMatch(), brokenMatch.getMatch());
+					for (PrecedenceNode trgNode : trgNodes) {
+						createDelPresEdgeConflict(container, trgNode.getMatch(), DomainType.TRG, brokenMatch.getMatch(), brokenMatch.getMatch());
 						anyConflictsDetected = true;
 					}
 				}
@@ -396,54 +397,6 @@ public class ConflictDetector {
 		}
 
 		return true;
-	}
-
-	/**
-	 * Finds all valid source matches whose green nodes (partly) overlap with the green nodes from the
-	 * specified match.
-	 * 
-	 * @param match
-	 * @return a set of all source matches
-	 */
-	private Set<ITGGMatch> computeSrcMatches(ITGGMatch match) {
-		Set<ITGGMatch> srcMatches = new HashSet<>();
-
-		IGreenPatternFactory gFactory = integrate.getGreenFactories().get(match.getRuleName());
-		for (TGGRuleNode ruleNode : gFactory.getGreenSrcNodesInRule()) {
-			for (PrecedenceNode node : integrate.precedenceGraph().getNodesTranslating(match.get(ruleNode.getName()))) {
-				if (node.getMatch().getType() == PatternType.CONSISTENCY)
-					continue;
-
-				if (integrate.precedenceGraph().getSourceNodes().contains(node))
-					srcMatches.add(node.getMatch());
-			}
-		}
-
-		return srcMatches;
-	}
-
-	/**
-	 * Finds all valid target matches whose green nodes (partly) overlap with the green nodes from the
-	 * specified match.
-	 * 
-	 * @param match
-	 * @return a set of all target matches
-	 */
-	private Set<ITGGMatch> computeTrgMatches(ITGGMatch match) {
-		Set<ITGGMatch> trgMatches = new HashSet<>();
-
-		IGreenPatternFactory gFactory = integrate.getGreenFactories().get(match.getRuleName());
-		for (TGGRuleNode ruleNode : gFactory.getGreenTrgNodesInRule()) {
-			for (PrecedenceNode node : integrate.precedenceGraph().getNodesTranslating(match.get(ruleNode.getName()))) {
-				if (node.getMatch().getType() == PatternType.CONSISTENCY)
-					continue;
-
-				if (integrate.precedenceGraph().getTargetNodes().contains(node))
-					trgMatches.add(node.getMatch());
-			}
-		}
-
-		return trgMatches;
 	}
 
 	private List<ITGGMatch> computeSortedRollBackCausesIfAbsent(ITGGMatch directCausingMatch) {

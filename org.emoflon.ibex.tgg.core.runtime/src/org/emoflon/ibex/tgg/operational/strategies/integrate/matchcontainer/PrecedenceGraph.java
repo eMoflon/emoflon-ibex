@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
@@ -194,26 +195,102 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 		return trgNodes;
 	}
 
+	public Set<PrecedenceNode> getNodes(PatternType patternType) {
+		switch (patternType) {
+		case CONSISTENCY:
+			return consNodes;
+		case SRC:
+			return srcNodes;
+		case TRG:
+			return trgNodes;
+		default:
+			throw new RuntimeException("Precedence graph does not support this pattern type!");
+		}
+	}
+
 	public Set<PrecedenceNode> getNodesTranslating(Object elt) {
 		return translatedBy.getOrDefault(elt, new LockedSet<>());
 	}
 
-	public boolean hasAnyConsistencyOverlap(PrecedenceNode srcTrgNode) {
+	/**
+	 * Determines if there is any consistency match those green elements overlaps with any green
+	 * elements from the specified source or target match.
+	 * 
+	 * @param srcTrgNode
+	 * @return {@code true} if there is a consistency match overlap
+	 */
+	public boolean hasConsistencyMatchOverlap(PrecedenceNode srcTrgNode) {
 		ITGGMatch srcTrgMatch = srcTrgNode.getMatch();
 
 		IGreenPatternFactory gFactory = strategy.getGreenFactories().get(srcTrgMatch.getRuleName());
-		Collection<Object> translatedElts = cfactory.createObjectSet();
+		Set<Object> translatedElts = cfactory.createObjectSet();
 		if (srcTrgMatch.getType() == PatternType.SRC) {
-			gFactory.getGreenSrcNodesInRule().forEach(n -> translatedElts.add(srcTrgMatch.get(n.getName())));
-			gFactory.getGreenSrcEdgesInRule().forEach(e -> translatedElts.add(getRuntimeEdge(srcTrgMatch, e)));
+			getGreenSrcElements(srcTrgMatch, gFactory, translatedElts);
 		} else if (srcTrgMatch.getType() == PatternType.TRG) {
-			gFactory.getGreenTrgNodesInRule().forEach(n -> translatedElts.add(srcTrgMatch.get(n.getName())));
-			gFactory.getGreenTrgEdgesInRule().forEach(e -> translatedElts.add(getRuntimeEdge(srcTrgMatch, e)));
+			getGreenTrgElements(srcTrgMatch, gFactory, translatedElts);
+		} else {
+			throw new RuntimeException("The pattern type of the specified node can only to be source or target!");
 		}
 
 		return translatedElts.parallelStream() //
 				.flatMap(elt -> this.getNodesTranslating(elt).stream()) //
 				.anyMatch(n -> n.getMatch().getType() == PatternType.CONSISTENCY);
+	}
+
+	/**
+	 * Finds all valid node whose green nodes (partly) overlap with the green nodes from the specified
+	 * node. The {@code overlapType} parameter specifies which pattern type is considered for overlaps.
+	 * 
+	 * @param node
+	 * @param overlapType
+	 * @return
+	 */
+	public Set<PrecedenceNode> findOverlappingNodes(PrecedenceNode node, PatternType overlapType) {
+		Set<PrecedenceNode> overlaps = new HashSet<>();
+
+		ITGGMatch match = node.getMatch();
+		IGreenPatternFactory gFactory = strategy.getGreenFactories().get(match.getRuleName());
+		Set<Object> translatedElts = cfactory.createObjectSet();
+
+		if (match.getType() == PatternType.CONSISTENCY) {
+			if (overlapType == PatternType.SRC)
+				getGreenSrcElements(match, gFactory, translatedElts);
+			else if (overlapType == PatternType.TRG)
+				getGreenTrgElements(match, gFactory, translatedElts);
+			else
+				throw new RuntimeException("For consistency matches, the pattern type of overlapping matches can only be source or target!");
+
+			overlaps = translatedElts.parallelStream() //
+					.flatMap(elt -> this.getNodesTranslating(elt).stream()) //
+					.filter(n -> n.getMatch().getType() == overlapType) //
+					.filter(n -> this.getNodes(overlapType).contains(n)) //
+					.collect(Collectors.toSet());
+		} else {
+			if (match.getType() == PatternType.SRC)
+				getGreenSrcElements(match, gFactory, translatedElts);
+			else if (match.getType() == PatternType.TRG)
+				getGreenTrgElements(match, gFactory, translatedElts);
+			else
+				throw new RuntimeException("The pattern type of the specified node can only to be consistency, source or target!");
+
+			overlaps = translatedElts.parallelStream() //
+					.flatMap(elt -> this.getNodesTranslating(elt).stream()) //
+					.filter(n -> n.getMatch().getType() == overlapType) //
+					.filter(n -> this.nodes.contains(n)) //
+					.collect(Collectors.toSet());
+		}
+
+		return overlaps;
+	}
+
+	private void getGreenTrgElements(ITGGMatch match, IGreenPatternFactory gFactory, Set<Object> elements) {
+		gFactory.getGreenTrgNodesInRule().forEach(n -> elements.add(match.get(n.getName())));
+		gFactory.getGreenTrgEdgesInRule().forEach(e -> elements.add(getRuntimeEdge(match, e)));
+	}
+
+	private void getGreenSrcElements(ITGGMatch match, IGreenPatternFactory gFactory, Set<Object> elements) {
+		gFactory.getGreenSrcNodesInRule().forEach(n -> elements.add(match.get(n.getName())));
+		gFactory.getGreenSrcEdgesInRule().forEach(e -> elements.add(getRuntimeEdge(match, e)));
 	}
 
 	private void addMatch(ITGGMatch match) {
