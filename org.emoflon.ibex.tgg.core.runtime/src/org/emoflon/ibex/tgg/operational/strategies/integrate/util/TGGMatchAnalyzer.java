@@ -114,7 +114,7 @@ public class TGGMatchAnalyzer {
 
 			for (TGGParamValue param : constr.getParameters()) {
 				if (param instanceof TGGAttributeExpression attrExpr) {
-					EObject obj = util.getObject(attrExpr.getObjectVar());
+					EObject obj = util.getEObject(attrExpr.getObjectVar());
 					Set<AttributeChange> attrChanges = util.integrate.generalModelChanges().getAttributeChanges(obj);
 					for (AttributeChange attrChange : attrChanges) {
 						if (attrChange.getAttribute().equals(attrExpr.getAttribute())) {

@@ -93,11 +93,11 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	}
 
 	private void removeBrokenMatchesAfterCCMatchApplication(ITGGMatch ccMatch) {
-		Set<EObject> ccObjects = matchUtils.get(ccMatch).getObjects(new EltFilter().srcAndTrg().create());
+		Set<EObject> ccObjects = matchUtils.get(ccMatch).getEObjects(new EltFilter().srcAndTrg().create());
 
 		Collection<ITGGMatch> brokenMatches = new HashSet<>(matchHandler.getBrokenMatches());
 		for (ITGGMatch brokenMatch : brokenMatches) {
-			Set<EObject> brokenObjects = matchUtils.get(brokenMatch).getObjects(new EltFilter().srcAndTrg().create());
+			Set<EObject> brokenObjects = matchUtils.get(brokenMatch).getEObjects(new EltFilter().srcAndTrg().create());
 			if (!Sets.intersection(ccObjects, brokenObjects).isEmpty())
 				revoker.removeBrokenMatch(brokenMatch);
 		}

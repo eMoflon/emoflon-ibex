@@ -162,7 +162,7 @@ public class MultiplicityCounter extends MatchConsumer {
 	}
 
 	public void removeMatch(ITGGMatch match) {
-		Set<EObject> greenSubjects = integrate.matchUtils().get(match).getObjects(new EltFilter().create().srcAndTrg());
+		Set<EObject> greenSubjects = integrate.matchUtils().get(match).getEObjects(new EltFilter().create().srcAndTrg());
 		for (EObject subject : greenSubjects) {
 			if (subject2reference2numOfEdges.remove(subject) != null) {
 				subject.eClass().getEAllReferences().forEach(ref -> {

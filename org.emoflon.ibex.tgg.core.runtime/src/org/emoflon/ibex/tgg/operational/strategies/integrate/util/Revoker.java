@@ -79,7 +79,7 @@ public class Revoker implements TimeMeasurable {
 			filter.srcAndTrg();
 
 		TGGMatchUtil matchUtil = opStrat.matchUtils().get(brokenMatch);
-		matchUtil.getObjects(filter).forEach((o) -> nodesToBeDeleted.add(o));
+		matchUtil.getEObjects(filter).forEach((o) -> nodesToBeDeleted.add(o));
 		matchUtil.getEMFEdges(filter).forEach((e) -> edgesToBeDeleted.add(e));
 		opStrat.getRedInterpreter().revoke(nodesToBeDeleted, edgesToBeDeleted);
 
@@ -140,7 +140,7 @@ public class Revoker implements TimeMeasurable {
 	 * @param edgesToRevoke
 	 */
 	private void prepareGreenCorrDeletion(ITGGMatch match, Set<EObject> nodesToRevoke, Set<EMFEdge> edgesToRevoke) {
-		opStrat.matchUtils().get(match).getObjects(new EltFilter().corr().create()) //
+		opStrat.matchUtils().get(match).getEObjects(new EltFilter().corr().create()) //
 				.forEach(obj -> opStrat.ibexRedInterpreter().revokeCorr(obj, nodesToRevoke, edgesToRevoke));
 	}
 
@@ -185,7 +185,7 @@ public class Revoker implements TimeMeasurable {
 
 		ModelChanges changes = opStrat.modelChangeProtocol().getModelChanges(key);
 		opStrat.getMatchHandler().getBrokenRA2ConsMatches().forEach(
-				(ra, m) -> opStrat.matchUtils().get(m).getObjects(new EltFilter().corr().create()).forEach(obj -> restoreNode(changes, obj)));
+				(ra, m) -> opStrat.matchUtils().get(m).getEObjects(new EltFilter().corr().create()).forEach(obj -> restoreNode(changes, obj)));
 		opStrat.getMatchHandler().getBrokenRA2ConsMatches().forEach((ra, m) -> restoreNode(changes, ra));
 	}
 

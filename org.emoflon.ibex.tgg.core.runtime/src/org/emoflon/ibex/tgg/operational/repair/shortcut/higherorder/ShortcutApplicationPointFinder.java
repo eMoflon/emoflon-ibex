@@ -54,15 +54,15 @@ public class ShortcutApplicationPointFinder {
 		if (overlappingNodes.isEmpty())
 			return null;
 
-		List<PrecedenceNode> originalNodes = new LinkedList<>();
-		originalNodes.add(node);
+		LinkedList<PrecedenceNode> originalNodes = new LinkedList<>();
+		originalNodes.addFirst(node);
 		node.forAllRequires((act, pre) -> {
 			if (act.getMatch().getType() != PatternType.CONSISTENCY)
 				return false;
 
 			ClassifiedMatch classifiedAct = mc.get(act.getMatch());
 			if (propagationType == calcPropagationType(classifiedAct)) {
-				originalNodes.add(act);
+				originalNodes.addFirst(act);
 				return true;
 			}
 

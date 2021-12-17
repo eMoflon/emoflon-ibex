@@ -108,7 +108,7 @@ public abstract class Conflict {
 			else
 				deletedCrossEdges.add(edge);
 		});
-		integrate().matchUtils().get(match).getObjects(filter).forEach(node -> {
+		integrate().matchUtils().get(match).getEObjects(filter).forEach(node -> {
 			if (integrate().generalModelChanges().isDeleted(node))
 				deletedNodes.add(node);
 		});
@@ -143,7 +143,7 @@ public abstract class Conflict {
 					deletedCrossEdges.add(edge);
 			}
 		});
-		matchUtil.getObjects(filter).forEach(node -> {
+		matchUtil.getEObjects(filter).forEach(node -> {
 			if (integrate().generalModelChanges().isDeleted(node))
 				deletedNodes.add(node);
 		});
@@ -193,7 +193,7 @@ public abstract class Conflict {
 			}
 			case CONSISTENCY -> {
 				EltFilter filter = new EltFilter().create();
-				deletedNodes = matchUtil.getObjects(filter);
+				deletedNodes = matchUtil.getEObjects(filter);
 				deletedContainmentEdges = Collections.emptySet(); // do we need containment edges here?
 				deletedCrossEdges = matchUtil.getEMFEdgeStream(filter) //
 						.filter(e -> !e.getType().isContainment()) //

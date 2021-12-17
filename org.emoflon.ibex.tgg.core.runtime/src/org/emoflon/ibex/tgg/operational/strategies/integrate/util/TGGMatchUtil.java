@@ -33,6 +33,9 @@ public class TGGMatchUtil {
 	Map<TGGRuleEdge, EMFEdge> edge2emfEdge;
 	Map<EMFEdge, TGGRuleEdge> emfEdge2edge;
 
+	Map<TGGRuleElement, Object> element2object;
+	Map<Object, TGGRuleElement> object2element;
+
 	Map<DomainType, Map<BindingType, List<TGGRuleElement>>> groupedElements;
 
 	private TGGMatchAnalyzer analyzer;
@@ -56,6 +59,14 @@ public class TGGMatchUtil {
 				.collect(Collectors.toMap(e -> e, e -> TGGEdgeUtil.getRuntimeEdge(match, e)));
 		this.emfEdge2edge = new HashMap<>();
 		edge2emfEdge.forEach((e, f) -> emfEdge2edge.put(f, e));
+
+		element2object = new HashMap<>();
+		element2object.putAll(node2eObject);
+		element2object.putAll(edge2emfEdge);
+
+		object2element = new HashMap<>();
+		object2element.putAll(eObject2node);
+		object2element.putAll(emfEdge2edge);
 
 		Set<TGGRuleElement> elements = new HashSet<>();
 		elements.addAll(node2eObject.keySet());
@@ -110,11 +121,11 @@ public class TGGMatchUtil {
 		return emfEdge2edge;
 	}
 
-	public TGGRuleNode getNode(EObject object) {
-		return eObject2node.get(object);
+	public TGGRuleNode getNode(EObject eObject) {
+		return eObject2node.get(eObject);
 	}
 
-	public EObject getObject(TGGRuleNode node) {
+	public EObject getEObject(TGGRuleNode node) {
 		return node2eObject.get(node);
 	}
 
@@ -124,6 +135,14 @@ public class TGGMatchUtil {
 
 	public EMFEdge getEMFEdge(TGGRuleEdge edge) {
 		return edge2emfEdge.get(edge);
+	}
+
+	public TGGRuleElement getElement(Object object) {
+		return object2element.get(object);
+	}
+
+	public Object getObject(TGGRuleElement element) {
+		return element2object.get(element);
 	}
 
 	//// FILTER ////
@@ -154,6 +173,12 @@ public class TGGMatchUtil {
 		return filtered;
 	}
 
+	public Set<Object> getObjects(EltFilter filter) {
+		return getElts(filter).stream() //
+				.map(elt -> element2object.get(elt)) //
+				.collect(Collectors.toSet());
+	}
+
 	public Stream<TGGRuleNode> getNodeStream(EltFilter filter) {
 		return getElts(filter).stream() //
 				.filter(elt -> elt instanceof TGGRuleNode) //
@@ -164,12 +189,12 @@ public class TGGMatchUtil {
 		return getNodeStream(filter).collect(Collectors.toSet());
 	}
 
-	public Stream<EObject> getObjectStream(EltFilter filter) {
-		return getNodeStream(filter).map(n -> getObject(n));
+	public Stream<EObject> getEObjectStream(EltFilter filter) {
+		return getNodeStream(filter).map(n -> getEObject(n));
 	}
 
-	public Set<EObject> getObjects(EltFilter filter) {
-		return getObjectStream(filter).collect(Collectors.toSet());
+	public Set<EObject> getEObjects(EltFilter filter) {
+		return getEObjectStream(filter).collect(Collectors.toSet());
 	}
 
 	public Stream<TGGRuleEdge> getEdgeStream(EltFilter filter) {

@@ -1,27 +1,44 @@
 package org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder;
 
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.util.ConsoleUtil;
 
 import language.TGGRule;
-import language.TGGRuleNode;
+import language.TGGRuleElement;
 
 public class HigherOrderTGGRule {
 
 	private final LinkedList<HigherOrderRuleComponent> components;
+	private final Map<ITGGMatch, HigherOrderRuleComponent> match2component;
 
 	public HigherOrderTGGRule() {
 		this.components = new LinkedList<>();
+		this.match2component = new HashMap<>();
 	}
 
-	public void addComponentFirst(TGGRule rule, Map<TGGRuleNode, ComponentSpecificRuleNode> contextMapping) {
-		components.addFirst(new HigherOrderRuleComponent(rule, contextMapping));
+	public void addComponentFirst(TGGRule rule, ITGGMatch match, Map<TGGRuleElement, ComponentSpecificRuleElement> contextMapping) {
+		HigherOrderRuleComponent component = new HigherOrderRuleComponent(rule, contextMapping);
+		components.addFirst(component);
+		match2component.put(match, component);
 	}
 
-	public void addComponentLast(TGGRule rule, Map<TGGRuleNode, ComponentSpecificRuleNode> contextMapping) {
-		components.addLast(new HigherOrderRuleComponent(rule, contextMapping));
+	public void addComponentLast(TGGRule rule, ITGGMatch match, Map<TGGRuleElement, ComponentSpecificRuleElement> contextMapping) {
+		HigherOrderRuleComponent component = new HigherOrderRuleComponent(rule, contextMapping);
+		components.addLast(component);
+		match2component.put(match, component);
+	}
+
+	public List<HigherOrderRuleComponent> getComponents() {
+		return components;
+	}
+
+	public HigherOrderRuleComponent getComponent(ITGGMatch match) {
+		return match2component.get(match);
 	}
 
 	@Override
@@ -38,20 +55,20 @@ public class HigherOrderTGGRule {
 
 	public class HigherOrderRuleComponent {
 		public final TGGRule rule;
-		public final Map<TGGRuleNode, ComponentSpecificRuleNode> contextMapping;
+		public final Map<TGGRuleElement, ComponentSpecificRuleElement> contextMapping;
 
-		private HigherOrderRuleComponent(TGGRule rule, Map<TGGRuleNode, ComponentSpecificRuleNode> contextMapping) {
+		private HigherOrderRuleComponent(TGGRule rule, Map<TGGRuleElement, ComponentSpecificRuleElement> contextMapping) {
 			this.rule = rule;
 			this.contextMapping = contextMapping;
 		}
 	}
 
-	public class ComponentSpecificRuleNode {
-		public final TGGRuleNode ruleNode;
+	public static class ComponentSpecificRuleElement {
+		public final TGGRuleElement ruleElement;
 		public final HigherOrderRuleComponent component;
 
-		public ComponentSpecificRuleNode(TGGRuleNode ruleNode, HigherOrderRuleComponent component) {
-			this.ruleNode = ruleNode;
+		public ComponentSpecificRuleElement(TGGRuleElement ruleElement, HigherOrderRuleComponent component) {
+			this.ruleElement = ruleElement;
 			this.component = component;
 		}
 	}
