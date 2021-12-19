@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.util.ConsoleUtil;
@@ -70,6 +71,23 @@ public class HigherOrderTGGRule {
 		public ComponentSpecificRuleElement(TGGRuleElement ruleElement, HigherOrderRuleComponent component) {
 			this.ruleElement = ruleElement;
 			this.component = component;
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(component, ruleElement);
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ComponentSpecificRuleElement other = (ComponentSpecificRuleElement) obj;
+			return Objects.equals(component, other.component) && Objects.equals(ruleElement, other.ruleElement);
 		}
 	}
 

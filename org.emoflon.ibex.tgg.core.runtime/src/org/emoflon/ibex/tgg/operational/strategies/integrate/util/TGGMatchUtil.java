@@ -97,7 +97,7 @@ public class TGGMatchUtil {
 		return edge2emfEdge.keySet();
 	}
 
-	public Set<EObject> getObjects() {
+	public Set<EObject> getEObjects() {
 		return eObject2node.keySet();
 	}
 

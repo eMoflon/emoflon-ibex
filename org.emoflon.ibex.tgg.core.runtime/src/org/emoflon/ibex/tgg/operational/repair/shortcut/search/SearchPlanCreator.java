@@ -28,14 +28,11 @@ import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.NodeCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCMatch;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 import org.emoflon.ibex.tgg.util.EMFNavigationUtil;
-import org.emoflon.ibex.tgg.util.String2EPrimitive;
+import org.emoflon.ibex.tgg.util.TGGInplaceAttrExprUtil;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 
 import language.BindingType;
-import language.TGGAttributeExpression;
-import language.TGGEnumExpression;
 import language.TGGInplaceAttributeExpression;
-import language.TGGLiteralExpression;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
@@ -142,7 +139,8 @@ public class SearchPlanCreator {
 	private void createEdgeCheck(SearchKey key) {
 		boolean negative = key.edge.getBindingType() == BindingType.NEGATIVE;
 		if (negative) {
-			if (key.edge.getSrcNode().getBindingType().equals(BindingType.NEGATIVE) || key.edge.getTrgNode().getBindingType().equals(BindingType.NEGATIVE))
+			if (key.edge.getSrcNode().getBindingType().equals(BindingType.NEGATIVE)
+					|| key.edge.getTrgNode().getBindingType().equals(BindingType.NEGATIVE))
 				return;
 
 			key2edgeCheck.put(key, (s, t) -> {
@@ -210,77 +208,10 @@ public class SearchPlanCreator {
 		for (TGGInplaceAttributeExpression inplAttrExpr : key.getAttrExpr()) {
 			Object subjectAttr = node.eGet(inplAttrExpr.getAttribute());
 
-			if (inplAttrExpr.getValueExpr() instanceof TGGLiteralExpression litExpr) {
-				if (subjectAttr == null)
-					return false;
-
-				Object literal = String2EPrimitive.convertLiteral( //
-						litExpr.getValue(), inplAttrExpr.getAttribute().getEAttributeType());
-
-				switch (inplAttrExpr.getOperator()) {
-					case EQUAL -> {
-						if (!subjectAttr.equals(literal))
-							return false;
-						continue;
-					}
-					case UNEQUAL -> {
-						if (subjectAttr.equals(literal))
-							return false;
-						continue;
-					}
-					default -> {
-					}
-				}
-
-				int compareResult = comparePrimitives(subjectAttr, literal);
-				switch (inplAttrExpr.getOperator()) {
-					case GREATER -> {
-						if (!(compareResult > 0))
-							return false;
-					}
-					case GR_EQUAL -> {
-						if (!(compareResult >= 0))
-							return false;
-					}
-					case LESSER -> {
-						if (!(compareResult < 0))
-							return false;
-					}
-					case LE_EQUAL -> {
-						if (!(compareResult <= 0))
-							return false;
-					}
-					default -> {
-					}
-				}
-			} else if (inplAttrExpr.getValueExpr() instanceof TGGEnumExpression enumExpr) {
-				if (subjectAttr == null)
-					return false;
-
-				if (!subjectAttr.equals(enumExpr.getLiteral().getInstance()))
-					return false;
-			} else if (inplAttrExpr.getValueExpr() instanceof TGGAttributeExpression attrExpr) {
-				EObject obj = candidates.get(attrExpr.getObjectVar().getName());
-				if (obj == null)
-					return false;
-				Object objectAttr = obj.eGet(attrExpr.getAttribute());
-
-				if (subjectAttr == null) {
-					if (objectAttr != null)
-						return false;
-				} else if (!subjectAttr.equals(objectAttr))
-					return false;
-			}
+			if (!TGGInplaceAttrExprUtil.checkInplaceAttributeCondition(inplAttrExpr, subjectAttr, candidates))
+				return false;
 		}
 		return true;
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private int comparePrimitives(Object p1, Object p2) {
-		if (p1 instanceof Comparable c1 && p2 instanceof Comparable c2) {
-			return c1.compareTo(c2);
-		}
-		return 0;
 	}
 
 	public SearchPlan createSearchPlan() {
