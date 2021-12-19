@@ -17,42 +17,48 @@ import language.TGGRuleNode;
  *
  */
 public class TGGFilterUtil {
-	
+
 	public static Collection<TGGRuleNode> filterNodes(Collection<TGGRuleElement> elements) {
 		return elements.stream().filter(e -> e instanceof TGGRuleNode).map(e -> (TGGRuleNode) e).collect(Collectors.toList());
 	}
-	
+
 	public static Collection<TGGRuleEdge> filterEdges(Collection<TGGRuleElement> elements) {
 		return elements.stream().filter(e -> e instanceof TGGRuleEdge).map(e -> (TGGRuleEdge) e).collect(Collectors.toList());
 	}
-	
+
 	public static Collection<TGGRuleNode> filterNodes(Collection<TGGRuleNode> elements, BindingType type) {
 		return elements.stream().filter(e -> e.getBindingType().equals(type)).collect(Collectors.toList());
 	}
-	
+
 	public static Collection<TGGRuleEdge> filterEdges(Collection<TGGRuleEdge> elements, BindingType type) {
 		return elements.stream().filter(e -> e.getBindingType().equals(type)).collect(Collectors.toList());
 	}
-	
+
 	public static Collection<TGGRuleNode> filterNodes(Collection<TGGRuleNode> elements, DomainType type) {
 		return elements.stream().filter(e -> e.getDomainType().equals(type)).collect(Collectors.toList());
 	}
-	
+
 	public static Collection<TGGRuleEdge> filterEdges(Collection<TGGRuleEdge> elements, DomainType type) {
 		return elements.stream().filter(e -> e.getDomainType().equals(type)).collect(Collectors.toList());
 	}
-	
+
 	public static Collection<TGGRuleNode> filterNodes(Collection<TGGRuleNode> elements, DomainType dType, BindingType bType) {
-		return filterNodes(filterNodes(elements, bType), dType);
+		return elements.stream() //
+				.filter(e -> e.getDomainType() == dType) //
+				.filter(e -> e.getBindingType() == bType) //
+				.collect(Collectors.toList());
 	}
-	
+
 	public static Collection<TGGRuleEdge> filterEdges(Collection<TGGRuleEdge> elements, DomainType dType, BindingType bType) {
-		return filterEdges(filterEdges(elements, bType), dType);
+		return elements.stream() //
+				.filter(e -> e.getDomainType() == dType) //
+				.filter(e -> e.getBindingType() == bType) //
+				.collect(Collectors.toList());
 	}
-	
+
 	public static boolean isAxiomatic(TGGRule rule) {
-		return rule.getNodes().stream().noneMatch(n -> n.getBindingType() == BindingType.CONTEXT) && 
-				rule.getEdges().stream().noneMatch(e -> e.getBindingType() == BindingType.CONTEXT);
+		return rule.getNodes().stream().noneMatch(n -> n.getBindingType() == BindingType.CONTEXT)
+				&& rule.getEdges().stream().noneMatch(e -> e.getBindingType() == BindingType.CONTEXT);
 	}
 
 }
