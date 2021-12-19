@@ -32,6 +32,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXConstant;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextAlternatives;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjointContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDistributionRange;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEnumLiteral;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInjectivityConstraint;
@@ -55,9 +56,12 @@ final public class EditorToIBeXPatternHelper {
 		IBeXContextPattern lhs = null;
 		if(rule.getLhs() instanceof IBeXContextPattern) {
 			lhs = (IBeXContextPattern) rule.getLhs();
-		}else {
+		}else if (rule.getLhs() instanceof IBeXContextAlternatives) {
 			lhs = ((IBeXContextAlternatives) rule.getLhs()).getContext();
+		} else {
+			lhs = ((IBeXDisjointContextPattern) rule.getLhs()).getNonOptimizedPattern();
 		}
+		
 		nodes.addAll(lhs.getSignatureNodes());
 		
 		if(rule.getCreate() != null) {
@@ -72,8 +76,10 @@ final public class EditorToIBeXPatternHelper {
 		IBeXContextPattern lhs = null;
 		if(rule.getLhs() instanceof IBeXContextPattern) {
 			lhs = (IBeXContextPattern) rule.getLhs();
-		}else {
+		}else if (rule.getLhs() instanceof IBeXContextAlternatives) {
 			lhs = ((IBeXContextAlternatives) rule.getLhs()).getContext();
+		} else {
+			lhs = ((IBeXDisjointContextPattern) rule.getLhs()).getNonOptimizedPattern();
 		}
 		
 		nodes.addAll(lhs.getSignatureNodes());
@@ -85,8 +91,10 @@ final public class EditorToIBeXPatternHelper {
 		IBeXContextPattern context = null;
 		if(pattern instanceof IBeXContextPattern) {
 			context = (IBeXContextPattern) pattern;
-		} else {
+		} else if (pattern instanceof IBeXContextAlternatives) {
 			context = ((IBeXContextAlternatives) pattern).getContext();
+		} else {
+			context = ((IBeXDisjointContextPattern) pattern).getNonOptimizedPattern();
 		}
 		
 		nodes.addAll(context.getSignatureNodes());
@@ -98,8 +106,10 @@ final public class EditorToIBeXPatternHelper {
 		IBeXContextPattern context = null;
 		if(pattern instanceof IBeXContextPattern) {
 			context = (IBeXContextPattern) pattern;
-		} else {
+		} else if (pattern instanceof IBeXContextAlternatives){
 			context = ((IBeXContextAlternatives) pattern).getContext();		
+		} else {
+			context = ((IBeXDisjointContextPattern) pattern).getNonOptimizedPattern();
 		}
 		constraints.addAll(context.getArithmeticConstraints());
 		return constraints;

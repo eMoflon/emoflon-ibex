@@ -14,12 +14,14 @@ import java.util.stream.Stream;
 
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.operational.IMatch;
+import org.emoflon.ibex.gt.disjointpatterns.GraphTransformationDisjointPatternInterpreter;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeConstraint;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeExpression;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeParameter;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextAlternatives;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
+import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjointContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRelation;
 
 /**
@@ -40,10 +42,10 @@ public class MatchFilter {
 	 * @return a stream containing matches
 	 */
 	public static Stream<IMatch> getFilteredMatchStream(final IBeXContext pattern, final Map<String, Object> parameters,
-			final Map<String, Collection<IMatch>> matches) {
+			final Map<String, Collection<IMatch>> matches, final Map<IBeXDisjointContextPattern, GraphTransformationDisjointPatternInterpreter> disjointPatternInterpreter) {
 		if (pattern instanceof IBeXContextPattern) {
 			return MatchFilter.getFilteredMatchStream((IBeXContextPattern) pattern, parameters, matches);
-		} else{
+		} else if (pattern instanceof IBeXContextAlternatives) {
 			IBeXContextAlternatives alternatives = (IBeXContextAlternatives) pattern;
 			Function<IMatch, IMatch> renameMatchToAlternativePattern = m -> {
 				m.setPatternName(alternatives.getName());
@@ -57,9 +59,64 @@ public class MatchFilter {
 				matchStream = Stream.concat(matchStream, matchesForAlterative);
 			}
 			return matchStream.distinct();
+		} else if(pattern instanceof IBeXDisjointContextPattern) {
+			
+			IBeXDisjointContextPattern disjointPattern = (IBeXDisjointContextPattern) pattern;
+			//disjoint matches are merged	
+			return disjointPatternInterpreter.get(pattern).matchStream(disjointPattern, 
+					getFilteredMatchList(disjointPattern, parameters, matches));
 		}
+		throw new IllegalArgumentException("Invalid pattern " + pattern);
 	}
 	
+
+	/**
+	 * Returns a map of filtered match-set of the subpatterns for the pattern that is a disjointContextPattern
+	 * 
+	 * @param pattern
+	 *            the disjoint context pattern
+	 * @param parameters
+	 *            the parameter map
+	 * @param matches
+	 *            the matches
+	 * @return a list containing a set of the submatches
+	 */
+	public static final Map<IBeXContextPattern, Collection<IMatch>> getFilteredMatchList(final IBeXDisjointContextPattern pattern, final Map<String, Object> parameters,
+			final Map<String, Collection<IMatch>> matches){
+		IBeXDisjointContextPattern disjointPattern = (IBeXDisjointContextPattern) pattern;
+		Map<IBeXContextPattern, Collection<IMatch>> submatchesMap = new HashMap<IBeXContextPattern, Collection<IMatch>>();
+		
+		for(IBeXContextPattern subpattern: disjointPattern.getSubpatterns()) {
+			submatchesMap.put(subpattern, MatchFilter.getFilteredMatchStream(subpattern, parameters, matches).collect(Collectors.toSet()));
+		}
+		return submatchesMap;
+	}
+	
+	/**
+	 * Returns a map of match-sets of the subpatterns for the pattern that is a disjointContextPattern
+	 * 
+	 * @param pattern
+	 *            the disjoint context pattern
+	 * @param matches
+	 *            the matches
+	 * @return a list containing a set of the submatches
+	 */
+	public static final Map<IBeXContextPattern, Set<IMatch>> getUnfilteredMatchList(final IBeXDisjointContextPattern pattern,
+			final Map<String, Collection<IMatch>> matches){
+		IBeXDisjointContextPattern disjointPattern = (IBeXDisjointContextPattern) pattern;
+		Map<IBeXContextPattern, Set<IMatch>> submatchesMap = new HashMap<IBeXContextPattern, Set<IMatch>>();
+		for(IBeXContextPattern subpattern: disjointPattern.getSubpatterns()) {
+			if(matches.containsKey(subpattern.getName())) {
+				submatchesMap.put(subpattern, new HashSet<IMatch>(matches.get(subpattern.getName())));
+			}
+			else {
+				submatchesMap.put(subpattern, new HashSet<IMatch>());
+			}
+		}
+		return submatchesMap;
+	}
+	
+
 	public static boolean isMatchValid(final IMatch match, final IBeXContext pattern, final Map<String, Object> parameters, final Map<String, Collection<IMatch>> matches) {
 		if (pattern instanceof IBeXContextPattern) {
 			Stream<IMatch> matchesForPattern = Stream.of(match);

@@ -4,18 +4,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Random;
-import java.util.TreeMap;
 import java.util.function.Supplier;
 
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.common.operational.IContextPatternInterpreter;
-import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.common.operational.PushoutApproach;
-import org.emoflon.ibex.gt.StateModel.State;
 import org.emoflon.ibex.gt.arithmetic.Probability;
 import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
-import org.emoflon.ibex.gt.state.ModelStateManager;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
 
 
@@ -100,14 +96,6 @@ public abstract class GraphTransformationAPI {
 	 */
 	public final void updateMatches() {
 		interpreter.updateMatches();
-	}
-	
-	/**
-	 * Returns the model state manager
-	 * @return ModelStateManager
-	 */
-	public final ModelStateManager getStateManager() {
-		return interpreter.getStateManager();
 	}
 	
 	/**
@@ -221,52 +209,4 @@ public abstract class GraphTransformationAPI {
 	public GraphTransformationInterpreter getInterpreter() {
 		return interpreter;
 	}
-	
-	public void trackModelStates(boolean forceNewStates) {
-		interpreter.trackModelStates(forceNewStates);
-	}
-	
-	public void resetModelStatesTracking(boolean forceNewStates) {
-		deactivateModelStatesTracking();
-		trackModelStates(forceNewStates);
-	}
-	
-	public void deactivateModelStatesTracking() {
-		interpreter.deactivateModelStatesTracking();
-	}
-	
-	public void displayModelStates() {
-		interpreter.displayModelStates();
-	}
-	
-	public void saveModelStates(String path) {
-		interpreter.saveModelStates(path);
-	}
-	
-	public void loadModelStates(String path) {
-		interpreter.loadModelStates(path);
-	}
-	
-	/**
-	 * Applies the rule on the given match.
-	 * 
-	 * @param match
-	 *            the match
-	 *            
-	 * @param doUpdate
-	 * 			  true: run pattern matching process on changed model
-	 * @return an {@link Optional} for the the match after rule application
-	 */
-	public Optional<IMatch> revertLastApply(boolean doUpdate) {
-		return interpreter.revertApply(doUpdate);
-	}
-	
-	public Optional<IMatch> moveToKnownModelState(final State trgState, boolean doUpdate) {
-		return interpreter.moveToKnownModelState(trgState, doUpdate);
-	}
-	
-	public State getCurrentModelState() {
-		return interpreter.getCurrentModelState();
-	}
-
 }

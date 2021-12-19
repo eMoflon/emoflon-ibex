@@ -2,15 +2,12 @@ package org.emoflon.ibex.tgg.codegen;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
-import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -44,7 +41,6 @@ import org.emoflon.ibex.tgg.ide.admin.IbexTGGBuilder;
 import org.emoflon.ibex.tgg.ide.admin.IbexTGGNature;
 import org.emoflon.ibex.tgg.ide.admin.TGGBuilderExtension;
 import org.emoflon.ibex.tgg.ide.transformation.EditorTGGtoFlattenedTGG;
-import org.moflon.core.plugins.manifest.ManifestFileUpdater;
 import org.moflon.core.utilities.ExtensionsUtil;
 import org.moflon.core.utilities.MoflonUtil;
 import org.moflon.tgg.mosl.tgg.AttrCond;
@@ -95,9 +91,7 @@ public class TGGPackageBuilder implements TGGBuilderExtension{
 		logInfo("Running internal model builder..");
 		buildInternalModel(editorModel, flattenedEditorModel);
 		logInfo("Running engine builder..");
-		generatePMEngineCode(editorModel, flattenedEditorModel);
-		
-		updateManifest(manifest -> processManifestForProject(manifest));
+		generatePMEngineCode(editorModel, flattenedEditorModel);		
 	}
 	
 	private TripleGraphGrammarFile generateEditorModel() throws RuntimeException{
@@ -335,28 +329,5 @@ public class TGGPackageBuilder implements TGGBuilderExtension{
 	private void logError(final String message) {
 		Logger.getRootLogger().error(this.getClass().getSimpleName()+ "(TGG-Project -> " + project.getName() + " ): " + message);
 	}
-	
-	/**
-	 * Updates the project's manifest file.
-	 */
-	private void updateManifest(final Function<Manifest, Boolean> updateFunction) {
-		try {
-			new ManifestFileUpdater().processManifest(project, manifest -> updateFunction.apply(manifest));
-		} catch (CoreException e) {
-			logError("Failed to update MANIFEST.MF.");
-		}
-	}
-	
-	/**
-	 * Updates the manifest such that it contains at least basic properties and the
-	 * dependencies for the API.
-	 * 
-	 * @param manifest
-	 *            the manifest to update
-	 * @return whether the manifest was changed
-	 */
-	private boolean processManifestForProject(final Manifest manifest) {
-		boolean changedBasics = ManifestFileUpdater.setBasicProperties(manifest, project.getName());
-		return changedBasics;
-	}
+
 }

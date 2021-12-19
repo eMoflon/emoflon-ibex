@@ -19,6 +19,7 @@ package org.emoflon.ibex.patternmodel.IBeXPatternModel;
  * @generated
  */
 public interface IBeXPattern extends IBeXNamedElement {
+
 	/**
 	 * Returns the value of the '<em><b>Has Count Expression</b></em>' attribute.
 	 * The default value is <code>"false"</code>.
@@ -41,5 +42,4 @@ public interface IBeXPattern extends IBeXNamedElement {
 	 * @generated
 	 */
 	void setHasCountExpression(boolean value);
-
 } // IBeXPattern

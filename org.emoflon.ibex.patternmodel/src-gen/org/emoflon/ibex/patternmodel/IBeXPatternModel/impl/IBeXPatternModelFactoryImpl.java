@@ -171,6 +171,16 @@ public class IBeXPatternModelFactoryImpl extends EFactoryImpl implements IBeXPat
 			return createIBeXArithmeticAttribute();
 		case IBeXPatternModelPackage.IBE_XMATCH_COUNT:
 			return createIBeXMatchCount();
+		case IBeXPatternModelPackage.IBE_XDISJOINT_CONTEXT_PATTERN:
+			return createIBeXDisjointContextPattern();
+		case IBeXPatternModelPackage.IBEX_DISJOINT_INJECTIVITY_CONSTRAINT:
+			return createIBexDisjointInjectivityConstraint();
+		case IBeXPatternModelPackage.IBE_XDISJOINT_ATTRIBUTE:
+			return createIBeXDisjointAttribute();
+		case IBeXPatternModelPackage.IBE_XINTERDEPENDENT_INJECTIVITY_CONSTRAINTS:
+			return createIBeXInterdependentInjectivityConstraints();
+		case IBeXPatternModelPackage.IBE_XINTERDEPENDENT_ATTRIBUTES:
+			return createIBeXInterdependentAttributes();
 		default:
 			throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -604,6 +614,61 @@ public class IBeXPatternModelFactoryImpl extends EFactoryImpl implements IBeXPat
 	public IBeXMatchCount createIBeXMatchCount() {
 		IBeXMatchCountImpl iBeXMatchCount = new IBeXMatchCountImpl();
 		return iBeXMatchCount;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public IBeXDisjointContextPattern createIBeXDisjointContextPattern() {
+		IBeXDisjointContextPatternImpl iBeXDisjointContextPattern = new IBeXDisjointContextPatternImpl();
+		return iBeXDisjointContextPattern;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public IBexDisjointInjectivityConstraint createIBexDisjointInjectivityConstraint() {
+		IBexDisjointInjectivityConstraintImpl iBexDisjointInjectivityConstraint = new IBexDisjointInjectivityConstraintImpl();
+		return iBexDisjointInjectivityConstraint;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public IBeXDisjointAttribute createIBeXDisjointAttribute() {
+		IBeXDisjointAttributeImpl iBeXDisjointAttribute = new IBeXDisjointAttributeImpl();
+		return iBeXDisjointAttribute;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public IBeXInterdependentInjectivityConstraints createIBeXInterdependentInjectivityConstraints() {
+		IBeXInterdependentInjectivityConstraintsImpl iBeXInterdependentInjectivityConstraints = new IBeXInterdependentInjectivityConstraintsImpl();
+		return iBeXInterdependentInjectivityConstraints;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public IBeXInterdependentAttributes createIBeXInterdependentAttributes() {
+		IBeXInterdependentAttributesImpl iBeXInterdependentAttributes = new IBeXInterdependentAttributesImpl();
+		return iBeXInterdependentAttributes;
 	}
 
 	/**

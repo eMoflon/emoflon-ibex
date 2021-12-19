@@ -390,13 +390,6 @@ public class IBeXPatternModelSwitch<T> extends Switch<T> {
 				result = defaultCase(theEObject);
 			return result;
 		}
-		case IBeXPatternModelPackage.IBE_XCONSTRAINT: {
-			IBeXConstraint iBeXConstraint = (IBeXConstraint) theEObject;
-			T result = caseIBeXConstraint(iBeXConstraint);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
 		case IBeXPatternModelPackage.IBE_XARITHMETIC_CONSTRAINT: {
 			IBeXArithmeticConstraint iBeXArithmeticConstraint = (IBeXArithmeticConstraint) theEObject;
 			T result = caseIBeXArithmeticConstraint(iBeXArithmeticConstraint);
@@ -467,6 +460,54 @@ public class IBeXPatternModelSwitch<T> extends Switch<T> {
 				result = caseIBeXUnaryExpression(iBeXMatchCount);
 			if (result == null)
 				result = caseIBeXArithmeticExpression(iBeXMatchCount);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case IBeXPatternModelPackage.IBE_XCONSTRAINT: {
+			IBeXConstraint iBeXConstraint = (IBeXConstraint) theEObject;
+			T result = caseIBeXConstraint(iBeXConstraint);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case IBeXPatternModelPackage.IBE_XDISJOINT_CONTEXT_PATTERN: {
+			IBeXDisjointContextPattern iBeXDisjointContextPattern = (IBeXDisjointContextPattern) theEObject;
+			T result = caseIBeXDisjointContextPattern(iBeXDisjointContextPattern);
+			if (result == null)
+				result = caseIBeXContext(iBeXDisjointContextPattern);
+			if (result == null)
+				result = caseIBeXPattern(iBeXDisjointContextPattern);
+			if (result == null)
+				result = caseIBeXNamedElement(iBeXDisjointContextPattern);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case IBeXPatternModelPackage.IBEX_DISJOINT_INJECTIVITY_CONSTRAINT: {
+			IBexDisjointInjectivityConstraint iBexDisjointInjectivityConstraint = (IBexDisjointInjectivityConstraint) theEObject;
+			T result = caseIBexDisjointInjectivityConstraint(iBexDisjointInjectivityConstraint);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case IBeXPatternModelPackage.IBE_XDISJOINT_ATTRIBUTE: {
+			IBeXDisjointAttribute iBeXDisjointAttribute = (IBeXDisjointAttribute) theEObject;
+			T result = caseIBeXDisjointAttribute(iBeXDisjointAttribute);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case IBeXPatternModelPackage.IBE_XINTERDEPENDENT_INJECTIVITY_CONSTRAINTS: {
+			IBeXInterdependentInjectivityConstraints iBeXInterdependentInjectivityConstraints = (IBeXInterdependentInjectivityConstraints) theEObject;
+			T result = caseIBeXInterdependentInjectivityConstraints(iBeXInterdependentInjectivityConstraints);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case IBeXPatternModelPackage.IBE_XINTERDEPENDENT_ATTRIBUTES: {
+			IBeXInterdependentAttributes iBeXInterdependentAttributes = (IBeXInterdependentAttributes) theEObject;
+			T result = caseIBeXInterdependentAttributes(iBeXInterdependentAttributes);
 			if (result == null)
 				result = defaultCase(theEObject);
 			return result;
@@ -957,21 +998,6 @@ public class IBeXPatternModelSwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '<em>IBe XConstraint</em>'.
-	 * <!-- begin-user-doc -->
-	 * This implementation returns null;
-	 * returning a non-null result will terminate the switch.
-	 * <!-- end-user-doc -->
-	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>IBe XConstraint</em>'.
-	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-	 * @generated
-	 */
-	public T caseIBeXConstraint(IBeXConstraint object) {
-		return null;
-	}
-
-	/**
 	 * Returns the result of interpreting the object as an instance of '<em>IBe XArithmetic Constraint</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
@@ -1088,6 +1114,96 @@ public class IBeXPatternModelSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseIBeXMatchCount(IBeXMatchCount object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>IBe XConstraint</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>IBe XConstraint</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseIBeXConstraint(IBeXConstraint object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>IBe XDisjoint Context Pattern</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>IBe XDisjoint Context Pattern</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseIBeXDisjointContextPattern(IBeXDisjointContextPattern object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>IBex Disjoint Injectivity Constraint</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>IBex Disjoint Injectivity Constraint</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseIBexDisjointInjectivityConstraint(IBexDisjointInjectivityConstraint object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>IBe XDisjoint Attribute</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>IBe XDisjoint Attribute</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseIBeXDisjointAttribute(IBeXDisjointAttribute object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>IBe XInterdependent Injectivity Constraints</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>IBe XInterdependent Injectivity Constraints</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseIBeXInterdependentInjectivityConstraints(IBeXInterdependentInjectivityConstraints object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>IBe XInterdependent Attributes</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>IBe XInterdependent Attributes</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseIBeXInterdependentAttributes(IBeXInterdependentAttributes object) {
 		return null;
 	}
 
