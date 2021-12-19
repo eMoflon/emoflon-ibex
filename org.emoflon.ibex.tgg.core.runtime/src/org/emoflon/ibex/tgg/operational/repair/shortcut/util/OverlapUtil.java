@@ -1,7 +1,7 @@
 package org.emoflon.ibex.tgg.operational.repair.shortcut.util;
 
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
-import static org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil.isAxiomatic;
+import static org.emoflon.ibex.tgg.util.TGGFilterUtil.isAxiomatic;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,7 +17,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule;
-import org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil;
+import org.emoflon.ibex.tgg.util.TGGFilterUtil;
 import org.emoflon.ibex.tgg.util.ilp.BinaryILPProblem;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPLinearExpression;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.Objective;

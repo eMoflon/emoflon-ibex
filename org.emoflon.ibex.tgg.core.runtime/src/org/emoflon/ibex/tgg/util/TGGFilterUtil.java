@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.repair.util;
+package org.emoflon.ibex.tgg.util;
 
 import java.util.Collection;
 import java.util.stream.Collectors;

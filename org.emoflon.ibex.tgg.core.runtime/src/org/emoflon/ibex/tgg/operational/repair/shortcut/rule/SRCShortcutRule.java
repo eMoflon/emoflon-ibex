@@ -2,8 +2,8 @@ package org.emoflon.ibex.tgg.operational.repair.shortcut.rule;
 
 import org.emoflon.ibex.tgg.compiler.patterns.ACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
+import org.emoflon.ibex.tgg.util.TGGFilterUtil;
 
 import language.BindingType;
 import language.DomainType;

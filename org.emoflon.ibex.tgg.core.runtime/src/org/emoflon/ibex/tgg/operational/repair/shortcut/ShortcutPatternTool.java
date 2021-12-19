@@ -37,9 +37,9 @@ import org.emoflon.ibex.tgg.operational.repair.shortcut.search.LocalPatternSearc
 import org.emoflon.ibex.tgg.operational.repair.shortcut.updatepolicy.IShortcutRuleUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCMatch;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCPersistence;
-import org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
+import org.emoflon.ibex.tgg.util.TGGFilterUtil;
 
 import language.BindingType;
 import language.DomainType;

@@ -11,11 +11,11 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.EltFilter;
 import org.emoflon.ibex.tgg.operational.strategies.modules.MatchConsumer;
 import org.emoflon.ibex.tgg.operational.strategies.modules.MatchDistributor;
+import org.emoflon.ibex.tgg.util.TGGFilterUtil;
 
 import language.BindingType;
 import language.DomainType;

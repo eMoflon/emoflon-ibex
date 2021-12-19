@@ -18,7 +18,6 @@ import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.strategies.ShortcutRepairStrategy.RepairableMatch;
-import org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.ClassifiedMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.util.ConflictElements;
@@ -27,6 +26,7 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelCh
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.EltFilter;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil;
 import org.emoflon.ibex.tgg.util.TGGEdgeUtil;
+import org.emoflon.ibex.tgg.util.TGGFilterUtil;
 
 import language.BindingType;
 import language.DomainType;

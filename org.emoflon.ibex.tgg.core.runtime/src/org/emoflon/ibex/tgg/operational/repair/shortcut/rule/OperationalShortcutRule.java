@@ -23,8 +23,8 @@ import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule.SCInpu
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.SearchPlan;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.SearchPlanCreator;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.TGGOverlap;
-import org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
+import org.emoflon.ibex.tgg.util.TGGFilterUtil;
 
 import language.BindingType;
 import language.DomainType;

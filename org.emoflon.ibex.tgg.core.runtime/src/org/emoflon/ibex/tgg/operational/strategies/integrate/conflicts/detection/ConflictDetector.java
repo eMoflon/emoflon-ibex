@@ -33,6 +33,7 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.Prec
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.AttributeChange;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchAnalyzer.ConstrainedAttributeChanges;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil;
+import org.emoflon.ibex.tgg.util.TGGModelUtils;
 
 import com.google.common.collect.Sets;
 
@@ -124,7 +125,7 @@ public class ConflictDetector {
 
 			boolean skipCheckDomainSpecificViolations = skipCheckDomainSpecificViolations(container, domainToBePreserved);
 
-			if (skipCheckDomainSpecificViolations || checkDomainSpecificViolations(dirRollBackCause, oppositeOf(domainToBePreserved))) {
+			if (skipCheckDomainSpecificViolations || checkDomainSpecificViolations(dirRollBackCause, TGGModelUtils.oppositeOf(domainToBePreserved))) {
 				if (matchToBeRepaired == null)
 					createDelPresEdgeConflict(container, srcTrgNode.getMatch(), domainToBePreserved, dirRollBackCause.getMatch());
 				else
@@ -150,7 +151,7 @@ public class ConflictDetector {
 
 				boolean skipCheckDomainSpecificViolations = skipCheckDomainSpecificViolations(container, ruleNode.getDomainType());
 
-				if (skipCheckDomainSpecificViolations || checkDomainSpecificViolations(node, oppositeOf(ruleNode.getDomainType())))
+				if (skipCheckDomainSpecificViolations || checkDomainSpecificViolations(node, TGGModelUtils.oppositeOf(ruleNode.getDomainType())))
 					createDelPresAttrConflict(container, change, ruleNode.getDomainType(), node.getMatch());
 			}
 		}

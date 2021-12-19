@@ -26,8 +26,8 @@ import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.Lookup;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.NACNodeCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.NodeCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCMatch;
-import org.emoflon.ibex.tgg.operational.repair.util.EMFNavigationUtil;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
+import org.emoflon.ibex.tgg.util.EMFNavigationUtil;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 
