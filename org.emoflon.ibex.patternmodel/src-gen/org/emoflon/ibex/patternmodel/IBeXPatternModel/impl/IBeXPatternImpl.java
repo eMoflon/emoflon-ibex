@@ -3,8 +3,10 @@
 package org.emoflon.ibex.patternmodel.IBeXPatternModel.impl;
 
 import org.eclipse.emf.common.notify.Notification;
+
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage;
 
@@ -31,6 +33,7 @@ public abstract class IBeXPatternImpl extends IBeXNamedElementImpl implements IB
 	 * @ordered
 	 */
 	protected static final boolean HAS_COUNT_EXPRESSION_EDEFAULT = false;
+
 	/**
 	 * The cached value of the '{@link #isHasCountExpression() <em>Has Count Expression</em>}' attribute.
 	 * <!-- begin-user-doc -->

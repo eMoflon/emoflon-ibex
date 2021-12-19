@@ -56,7 +56,6 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextAlternatives;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjointContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdgeSet;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEnumLiteral;
@@ -114,11 +113,6 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 			}
 		});
 		
-		//transfrom the disjoint attribute constraints
-		data.disjointPatternToTransformation.forEach((disjointPattern, transformation) -> {
-			transformation.transformAttributeConstraint(disjointPattern);
-		});
-		
 		while(!rulesToBeTransformed.isEmpty())
 			transformToRule(rulesToBeTransformed.poll());
 		
@@ -128,10 +122,8 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 			IBeXContextPattern lhs = null;
 			if(rule.getLhs() instanceof IBeXContextPattern) {
 				lhs = (IBeXContextPattern) rule.getLhs();
-			}else if (rule.getLhs() instanceof IBeXContextAlternatives) {
+			}else {
 				lhs = ((IBeXContextAlternatives) rule.getLhs()).getContext();
-			} else {
-				lhs = ((IBeXDisjointContextPattern) rule.getLhs()).getNonOptimizedPattern();
 			}
 			
 			rule.getArithmeticConstraints().addAll(lhs.getArithmeticConstraints());
@@ -183,10 +175,8 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 			IBeXContextPattern lhs = null;
 			if(rule.getLhs() instanceof IBeXContextPattern) {
 				lhs = (IBeXContextPattern) rule.getLhs();
-			}else if (rule.getLhs() instanceof IBeXContextAlternatives) {
+			}else {
 				lhs = ((IBeXContextAlternatives) rule.getLhs()).getContext();
-			} else {
-				lhs = ((IBeXDisjointContextPattern) rule.getLhs()).getNonOptimizedPattern();
 			}
 			
 			rule.getArithmeticConstraints().addAll(lhs.getArithmeticConstraints());
@@ -209,9 +199,6 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		List<IBeXContext> sortPatterns = new LinkedList<>(data.ibexContextPatterns.keySet());
 		
 		//remove the context patterns of the disjoint patterns that are optimized
-		data.nameToDisjointPattern.values().forEach(pattern -> sortPatterns.remove(pattern.getNonOptimizedPattern()));
-		sortPatterns.addAll(data.nameToDisjointPattern.values());	
-		sortPatterns.addAll(data.nameToDisjointPattern.values().stream().flatMap(pattern -> pattern.getSubpatterns().stream()).collect(Collectors.toList()));
 		sortPatterns.sort(IBeXPatternUtils.sortByName);
 			
 		List<IBeXRule> sortRules = new LinkedList<>(data.ibexRules.keySet());
@@ -317,27 +304,6 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 				EditorCondition editorCondition = editorPattern.getConditions().get(0);
 				transformCondition(ibexPattern, editorCondition);
 			}
-			
-			//copy the IBeXPattern to not destroy the non optimized pattern
-			IBeXContextPattern possibleDisjointPattern = EcoreUtil.copy(ibexPattern);
-			IBeXDisjointPatternFinder patternFinder = new IBeXDisjointPatternFinder(possibleDisjointPattern);
-			//transform if the pattern is disjoint and the pattern has the disjoint flag (which says that the pattern can be optimized)
-			if(editorPattern.isOptimize() && patternFinder.isDisjoint()) {
-				try {
-					IBeXDisjointPatternTransformation transformation = new IBeXDisjointPatternTransformation(possibleDisjointPattern, patternFinder.getSubgraphs());
-					IBeXDisjointContextPattern disjointPattern = transformation.transformToContextPattern();
-					disjointPattern.setNonOptimizedPattern(ibexPattern);
-					//add them to the disjoint pattern set; the used context pattern will be removed at the end
-					data.nameToDisjointPattern.put(disjointPattern.getName(), disjointPattern);
-					data.disjointPatternToTransformation.put(disjointPattern, transformation);
-
-				}
-				catch(IllegalArgumentException e) {
-					//when something goes wrong proceed normally
-					// already transformed patterns do not need to be removed
-					ibexPattern.setOptimizedDisjoint(false);
-				}
-			}
 		}
 	}
 
@@ -394,9 +360,6 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		
 		IBeXContextPattern ibexPattern = IBeXPatternModelFactory.eINSTANCE.createIBeXContextPattern();
 		ibexPattern.setName(name);
-		//is the pattern optimized or not
-		ibexPattern.setOptimizedDisjoint(editorPattern.isOptimize());
-		ibexPattern.setSubpattern(false);
 		addContextPattern(editorPattern, ibexPattern);
 		
 		// Add documentation
@@ -555,7 +518,7 @@ public class EditorToIBeXPatternTransformation extends AbstractEditorModelTransf
 		Set<String> signatureNodeNames = nodeMap.values().stream() //
 				.map(n -> n.getName()) //
 				.collect(Collectors.toSet());
-		String patternName = editorPattern.getName() + "-CONDITION-"
+		String patternName = editorPattern.getName() + "_CONDITION_"
 				+ signatureNodeNames.stream().collect(Collectors.joining("_"));
 		return  transformToContextPattern(editorPattern, patternName, nodeMap);
 		
