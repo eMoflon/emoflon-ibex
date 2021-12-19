@@ -2,6 +2,7 @@ package org.emoflon.ibex.gt.api;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -11,6 +12,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.operational.IMatch;
+import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
 import org.emoflon.ibex.gt.engine.GraphTransformationInterpreter;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
 
@@ -46,12 +48,12 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	/**
 	 * The parameters.
 	 */
-	protected Map<String, Object> parameters = new HashMap<String, Object>();
+	protected Map<String, Object> parameters = new LinkedHashMap<String, Object>();
 
 	/**
 	 * The mapping between consumers for typed and untyped consumers.
 	 */
-	private Map<Consumer<M>, Consumer<IMatch>> consumers = new HashMap<Consumer<M>, Consumer<IMatch>>();
+	private Map<Consumer<M>, Consumer<IMatch>> consumers = new LinkedHashMap<Consumer<M>, Consumer<IMatch>>();
 
 	/**
 	 * Creates a new pattern.
@@ -382,6 +384,14 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	public IBeXPatternSet getPatternSet() {
 		return interpreter.getPatternSet();
 	}
+	
+	public boolean isEmptyPattern() {
+		return interpreter.getPatternSet().getContextPatterns().stream()
+				.filter(pattern -> pattern.getName().equals(patternName))
+				.filter(pattern -> IBeXPatternUtils.isEmptyPattern(pattern))
+				.findFirst()
+				.isPresent();
+	}
 
 	/**
 	 * Convert the untyped to a typed match.
@@ -396,7 +406,4 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 		return patternName;
 	}
 	
-	public boolean isDisjunct() {
-		return interpreter.isDisjoint(patternName);
-	}
 }

@@ -4,24 +4,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.eclipse.emf.common.util.EList;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDisjointContextPattern;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXForEachExpression;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNamedElement;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPattern;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRuleSet;
-
 
 
 /**
@@ -32,25 +25,6 @@ public class IBeXPatternUtils {
 	 * A comparator for IBeXNamedElements.
 	 */
 	public static final Comparator<IBeXNamedElement> sortByName = (a, b) -> a.getName().compareTo(b.getName());
-	
-	/**
-	 * Removes all IBeXDisjointContextPatterns in a PatternSet, adds all subpatterns to it and creates a new patternSet for the disjoint context patterns
-	 * 
-	 * @param ibexPattern the pattern
-	 * @return the new, modified PatternSet
-	 */
-	public static List<IBeXDisjointContextPattern> transformIBeXPatternSet(IBeXPatternSet ibexPattern) {
-		
-		List<IBeXContext> disjointPatterns = ibexPattern.getContextPatterns().stream()
-				.filter(pattern -> pattern instanceof IBeXDisjointContextPattern).collect(Collectors.toList());
-		ibexPattern.getContextPatterns().removeAll(disjointPatterns);
-		
-		List<IBeXDisjointContextPattern> patterns = new ArrayList<IBeXDisjointContextPattern>();
-		for(IBeXContext pattern: disjointPatterns) {
-			patterns.add((IBeXDisjointContextPattern) pattern);
-		}	
-		return patterns;
-	}
 	
 	/**
 	 * Checks whether the given pattern is empty.
