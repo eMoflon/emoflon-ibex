@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRule.ComponentSpecificRuleElement;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRule.HigherOrderRuleComponent;
@@ -34,10 +35,12 @@ import language.TGGRuleNode;
 
 public class HigherOrderTGGRuleFactory {
 
+	private final IbexOptions options;
 	private final PrecedenceGraph pg;
 	private final TGGMatchUtilProvider mu;
 
-	public HigherOrderTGGRuleFactory(PrecedenceGraph pg, TGGMatchUtilProvider mu) {
+	public HigherOrderTGGRuleFactory(IbexOptions options, PrecedenceGraph pg, TGGMatchUtilProvider mu) {
+		this.options = options;
 		this.pg = pg;
 		this.mu = mu;
 	}
@@ -87,7 +90,6 @@ public class HigherOrderTGGRuleFactory {
 	public HigherOrderTGGRule createHigherOrderTGGRuleFromSrcTrgNodes(List<PrecedenceNode> nodes, DomainType propagationDomain) {
 		validateInputNodes(nodes);
 
-		HigherOrderTGGRule higherOrderRule = new HigherOrderTGGRule();
 		for (PrecedenceNode node : nodes) {
 			TGGMatchUtil matchUtil = mu.get(node.getMatch());
 			TGGRule rule = matchUtil.getRule();
@@ -96,9 +98,17 @@ public class HigherOrderTGGRuleFactory {
 					node, matchUtil, propagationDomain, nodes);
 			Map<TGGRuleElement, Set<MatchRelatedRuleElement>> oppositeDomainMapping = createMappingForOppositeDomain( //
 					node, matchUtil, propagationDomain, nodes);
+
+			// TODO
 		}
 
-		// TODO continue
+//		new ILPHigherOrderRuleMappingSolver(options.ilpSolver(), propagationDomainMapping, oppositeDomainMapping);
+
+		// TODO
+
+		HigherOrderTGGRule higherOrderRule = new HigherOrderTGGRule();
+
+		// TODO
 
 		return higherOrderRule;
 	}
@@ -108,12 +118,16 @@ public class HigherOrderTGGRuleFactory {
 		Map<TGGRuleElement, Set<MatchRelatedRuleElement>> contextMapping = new HashMap<>();
 
 		Set<Object> objects = matchUtil.getObjects(new EltFilter().domains(propagationDomain).context());
-		for (Object obj : objects) {
+		objLoop: for (Object obj : objects) {
 			TGGRuleElement ruleElement = matchUtil.getElement(obj);
 			Set<PrecedenceNode> mappedNodes = pg.getNodesTranslating(obj);
 
 			Set<MatchRelatedRuleElement> mappedElements = new HashSet<>();
 			for (PrecedenceNode mappedNode : mappedNodes) {
+				// if there is an intact consistency match covering that object, we don't want to map it's rule node
+				if (mappedNode.getMatch().getType() == PatternType.CONSISTENCY && !mappedNode.isBroken())
+					continue objLoop;
+
 				if (mappedNode.getMatch().getType() != node.getMatch().getType())
 					continue;
 
@@ -139,11 +153,10 @@ public class HigherOrderTGGRuleFactory {
 
 		Map<TGGRule, Set<ITGGMatch>> rule2matches = new HashMap<>();
 		for (PrecedenceNode requiredNode : node.getRequires()) {
-			PatternType requiredNodesType = requiredNode.getMatch().getType();
-			if (!(requiredNodesType == node.getMatch().getType() || requiredNodesType == PatternType.CONSISTENCY))
+			if (requiredNode.getMatch().getType() != node.getMatch().getType())
 				continue;
 
-			if (requiredNode.isBroken())
+			if (!nodes.contains(requiredNode))
 				continue;
 
 			TGGRule requiredNodesRule = mu.get(requiredNode.getMatch()).getRule();
@@ -226,9 +239,9 @@ public class HigherOrderTGGRuleFactory {
 			throw new RuntimeException("There must be at least one simple rule to create a higher-order TGG rule!");
 	}
 
-	private static class MatchRelatedRuleElement {
-		final TGGRuleElement ruleElement;
-		final ITGGMatch match;
+	static class MatchRelatedRuleElement {
+		public final TGGRuleElement ruleElement;
+		public final ITGGMatch match;
 
 		MatchRelatedRuleElement(TGGRuleElement ruleElement, ITGGMatch match) {
 			this.ruleElement = ruleElement;
