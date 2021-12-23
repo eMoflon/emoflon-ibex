@@ -21,7 +21,7 @@ Require-Bundle: org.emoflon.ibex.patternmodel;bundle-version="0.1.0";visibility:
  org.moflon.core.utilities;visibility:=reexport,
  org.emoflon.ibex.tgg.language,
  org.eclipse.equinox.registry,
- emfcodegenerator
+ emfcodegenerator;visibility:=reexport
 Bundle-ClassPath: .
 Automatic-Module-Name: org.emoflon.ibex.common
 Bundle-RequiredExecutionEnvironment: JavaSE-16
