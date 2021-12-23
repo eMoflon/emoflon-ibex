@@ -245,9 +245,15 @@ public class ShortcutPatternTool implements TimeMeasurable {
 					.filter(edge -> edge.getType().equals(e.getType())).collect(Collectors.toList());
 			for (TGGRuleEdge conflictingEdge : conflictingEdges) {
 				EMFEdge toBeCreatedRuntimeEdge = getRuntimeEdge(brokenMatch, conflictingEdge);
+				// if the runtime edge is null, this means that the element necessary to find it has been created anew by processCreations and we can ignore it.
+				if(toBeCreatedRuntimeEdge == null)
+					return;
+				
 				// we have to handle cases here where deletions should not be performed if the edge was just created
 				if (isSingle && toBeCreatedRuntimeEdge.getSource().equals(toBeDeletedRuntimeEdge.getSource()))
 					return;
+				
+				// if disable injectivity is activated and both edges are equal, we do not have to perform a deletion
 				if (strategy.getOptions().repair.disableInjectivity() && toBeCreatedRuntimeEdge.equals(toBeDeletedRuntimeEdge))
 					return;
 			}

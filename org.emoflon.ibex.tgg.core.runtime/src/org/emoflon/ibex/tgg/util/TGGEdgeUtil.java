@@ -12,6 +12,8 @@ public class TGGEdgeUtil {
 		EObject src = (EObject) match.get(specificationEdge.getSrcNode().getName());
 		EObject trg = (EObject) match.get(specificationEdge.getTrgNode().getName());
 		EReference ref = specificationEdge.getType();
+		if(src == null || trg == null)
+			return null;
 		return new EMFEdge(src, trg, ref);
 	}
 }
