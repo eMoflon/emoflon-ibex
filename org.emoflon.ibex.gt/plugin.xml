@@ -5,5 +5,13 @@
   <extension point="org.emoflon.ibex.gt.editor.ui.GTBuilderExtension">
     <builder_extension class="org.emoflon.ibex.gt.codegen.GTPackageBuilder"/>
   </extension>
+  <extension
+        point="org.eclipse.emf.ecore.generated_package">
+     <package
+           class="modelXML.ModelXMLPackage"
+           genModel="model/modelXML.genmodel"
+           uri="platform:/resource/ModelXML/model/modelXML.ecore">
+     </package>
+  </extension>
 
 </plugin>

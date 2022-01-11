@@ -83,6 +83,20 @@ public abstract class GraphTransformationApp<API extends GraphTransformationAPI>
 		return resourceSet.getResource(uri, true);
 	}
 
+	
+	
+	/**
+	 * Loads the XML model file with the given URI.
+	 * 
+	 * @param the filename
+	 * @return the resource
+	 */
+	public Resource loadXmlModel(final String filename) {
+		prepareResourceSet();
+		var model = xml.Parser.parseXMLFile(filename);
+		return model;
+	}
+	
 	/**
 	 * Returns the model.
 	 * 
