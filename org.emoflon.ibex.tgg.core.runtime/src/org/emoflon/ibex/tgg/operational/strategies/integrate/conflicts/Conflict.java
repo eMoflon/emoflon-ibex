@@ -116,6 +116,9 @@ public abstract class Conflict {
 		deletedCrossEdges.addAll(integrate().generalModelChanges().getDeletedEdges(ruleApplication));
 
 		recreateElements(deletedNodes, deletedContainmentEdges, deletedCrossEdges);
+
+		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Conflict resolution: restored " //
+				+ match.getPatternName() + "(" + match.hashCode() + ")");
 	}
 
 	protected void restoreDomain(ClassifiedMatch classifiedMatch, DomainType domain) {
@@ -154,6 +157,9 @@ public abstract class Conflict {
 
 		// Restore elements
 		recreateElements(deletedNodes, deletedContainmentEdges, deletedCrossEdges);
+
+		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Conflict resolution: restored " + domain + "-domain of " //
+				+ classifiedMatch.getMatch().getPatternName() + "(" + classifiedMatch.getMatch().hashCode() + ")");
 	}
 
 	protected void revokeMatch(ITGGMatch match) {
@@ -206,6 +212,9 @@ public abstract class Conflict {
 		}
 
 		revokeElements(deletedNodes, deletedContainmentEdges, deletedCrossEdges);
+
+		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Conflict resolution: revoked " //
+				+ match.getPatternName() + "(" + match.hashCode() + ")");
 	}
 
 	protected void revertRepairable(RepairableMatch repairableMatch, DomainType revertedDomain) {
@@ -244,6 +253,9 @@ public abstract class Conflict {
 				.collect(Collectors.toSet());
 
 		revokeElements(createdNodes, Collections.emptySet(), createdCrossEdges);
+
+		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Conflict resolution: reverted repairable " + revertedDomain + "-delta "//
+				+ repairableMatch.opSCR.toString());
 	}
 
 	protected void recreateElements(Collection<EObject> nodes, Collection<EMFEdge> containmentEdges, Collection<EMFEdge> crossEdges) {
