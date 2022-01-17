@@ -93,7 +93,8 @@ public abstract class GraphTransformationApp<API extends GraphTransformationAPI>
 	 */
 	public Resource loadXmlModel(final String filename) {
 		prepareResourceSet();
-		var model = xml.Parser.parseXMLFile(filename);
+		
+		var model = parseXMLFile(filename);
 		return model;
 	}
 	

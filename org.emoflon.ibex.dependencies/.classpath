@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-16"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-16">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry exported="true" kind="lib" path="gs-algo-2.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="gs-core-2.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="gs-ui-javafx-2.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="gs-ui-swing-2.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="commons-math3-3.6.1.jar"/>
+	<classpathentry kind="lib" path="jaxen-1.1.6.jar"/>
+	<classpathentry kind="lib" path="jdom-2.0.6.jar"/>
+	<classpathentry kind="lib" path="jdom-2.0.6-contrib.jar"/>
+	<classpathentry kind="lib" path="jdom-2.0.6-javadoc.jar"/>
+	<classpathentry kind="lib" path="jdom-2.0.6-junit.jar"/>
+	<classpathentry kind="lib" path="jdom-2.0.6-sources.jar"/>
+	<classpathentry kind="lib" path="serializer-2.7.2.jar"/>
+	<classpathentry kind="lib" path="xalan-2.7.2.jar"/>
+	<classpathentry kind="lib" path="xercesImpl.jar"/>
+	<classpathentry kind="lib" path="xml-apis.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

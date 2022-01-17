@@ -12,13 +12,6 @@
 	<classpathentry kind="lib" path="/org.emoflon.ibex.dependencies/gs-core-2.0.jar"/>
 	<classpathentry kind="lib" path="/org.emoflon.ibex.dependencies/gs-ui-javafx-2.0.jar"/>
 	<classpathentry kind="lib" path="/org.emoflon.ibex.dependencies/gs-ui-swing-2.0.jar"/>
-	<classpathentry kind="lib" path="lib"/>
-	<classpathentry kind="lib" path="lib/jaxen-1.1.6.jar"/>
-	<classpathentry kind="lib" path="lib/jdom-2.0.6.jar"/>
-	<classpathentry kind="lib" path="lib/jdom-2.0.6-contrib.jar"/>
-	<classpathentry kind="lib" path="lib/jdom-2.0.6-javadoc.jar"/>
-	<classpathentry kind="lib" path="lib/jdom-2.0.6-junit.jar"/>
-	<classpathentry kind="lib" path="lib/jdom-2.0.6-sources.jar"/>
 	<classpathentry kind="lib" path="lib/serializer-2.7.2.jar"/>
 	<classpathentry kind="lib" path="lib/xalan-2.7.2.jar"/>
 	<classpathentry kind="lib" path="lib/xercesImpl.jar"/>

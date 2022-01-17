@@ -29,7 +29,8 @@ Require-Bundle: org.apache.log4j,
  org.emoflon.ibex.dependencies;bundle-version="1.0.0";visibility:=reexport,
  org.emoflon.ibex.patternmodel;visibility:=reexport,
  org.emoflon.ibex.gt.statemodel;visibility:=reexport,
- org.apache.commons.io.source;bundle-version="2.8.0"
+ org.apache.commons.io.source;bundle-version="2.8.0",
+ org.emoflon.ibex.modelxml;bundle-version="0.1.0"
 Bundle-ClassPath: .,
  lib/
 Automatic-Module-Name: org.emoflon.ibex.gt

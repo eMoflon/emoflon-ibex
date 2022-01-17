@@ -1,18 +1,18 @@
-package xml;
+package org.emoflon.ibex.modelxml.parser;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.jdom2.*;
-import org.jdom2.input.SAXBuilder;
+import org.emoflon.ibex.modelXML.*;
 
-import modelXML.ModelXMLFactory;
-import modelXML.Value;
-import modelXML.XMLModel;
 
 public class Parser {
 
@@ -37,7 +37,7 @@ public class Parser {
 		Resource r = rs.createResource(URI.createURI(fileNameWoEnd+"Test.xmi"));
 
 //		Generate XML Model
-		modelXML.XMLModel container = ModelXMLFactory.eINSTANCE.createXMLModel();
+		XMLModel container = ModelxmlFactory.eINSTANCE.createXMLModel();
 		parseHeader(file, container);
 
 		parseContent(rootFile, container);
@@ -54,7 +54,7 @@ public class Parser {
 		return parseXMLFile("misc/xample.xml");
 	}
 
-	private static void parseHeader(File file, modelXML.XMLModel container) {
+	private static void parseHeader(File file, XMLModel container) {
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(file));
 			String header = br.readLine();
@@ -68,8 +68,8 @@ public class Parser {
 		}
 	}
 
-	private static void parseContent(final Element element, modelXML.XMLModel container) {
-		modelXML.Node root = ModelXMLFactory.eINSTANCE.createNode();
+	private static void parseContent(final Element element, XMLModel container) {
+		Node root = ModelxmlFactory.eINSTANCE.createNode();
 		container.setRoot(root);
 		root.setName(element.getName());
 		parseAttributes(element, root);
@@ -77,14 +77,14 @@ public class Parser {
 		parseChildren(element, root);
 	}
 
-	private static void parseChildren(final Element element, modelXML.Node node) {
+	private static void parseChildren(final Element element, Node node) {
 		var children = element.getChildren();
 		for (var child : children) {
-			var childNode = modelXML.ModelXMLFactory.eINSTANCE.createNode();
+			var childNode = ModelxmlFactory.eINSTANCE.createNode();
 //			System.out.println(child.getName());
 			childNode.setName(child.getName());
 //			System.out.println(child.getValue());
-			Value val = ModelXMLFactory.eINSTANCE.createValue();
+			Value val = ModelxmlFactory.eINSTANCE.createValue();
 			val.setText(child.getValue());
 			childNode.setValue(val);
 			parseAttributes(child, childNode);
@@ -93,10 +93,10 @@ public class Parser {
 		}
 	}
 
-	private static void parseAttributes(final Element rootFile, modelXML.Node root) {
+	private static void parseAttributes(final Element rootFile, Node root) {
 		var attributesFile = rootFile.getAttributes();
 		for (var attr : attributesFile) {
-			var a = modelXML.ModelXMLFactory.eINSTANCE.createAttribute();
+			var a = ModelxmlFactory.eINSTANCE.createAttribute();
 			a.setName(attr.getName());
 			a.setValue(attr.getValue());
 			root.getAttributes().add(a);
