@@ -8,5 +8,19 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="lib" path="/org.emoflon.ibex.dependencies/gs-algo-2.0.jar"/>
+	<classpathentry kind="lib" path="/org.emoflon.ibex.dependencies/gs-core-2.0.jar"/>
+	<classpathentry kind="lib" path="/org.emoflon.ibex.dependencies/gs-ui-javafx-2.0.jar"/>
+	<classpathentry kind="lib" path="/org.emoflon.ibex.dependencies/gs-ui-swing-2.0.jar"/>
+	<classpathentry kind="lib" path="/org.emoflon.ibex.dependencies/jaxen-1.1.6.jar"/>
+	<classpathentry kind="lib" path="/org.emoflon.ibex.dependencies/jdom-2.0.6.jar"/>
+	<classpathentry kind="lib" path="/org.emoflon.ibex.dependencies/jdom-2.0.6-contrib.jar"/>
+	<classpathentry kind="lib" path="/org.emoflon.ibex.dependencies/jdom-2.0.6-javadoc.jar"/>
+	<classpathentry kind="lib" path="/org.emoflon.ibex.dependencies/jdom-2.0.6-junit.jar"/>
+	<classpathentry kind="lib" path="/org.emoflon.ibex.dependencies/jdom-2.0.6-sources.jar"/>
+	<classpathentry kind="lib" path="/org.emoflon.ibex.dependencies/serializer-2.7.2.jar"/>
+	<classpathentry kind="lib" path="/org.emoflon.ibex.dependencies/xalan-2.7.2.jar"/>
+	<classpathentry kind="lib" path="/org.emoflon.ibex.dependencies/xercesImpl.jar"/>
+	<classpathentry kind="lib" path="/org.emoflon.ibex.dependencies/xml-apis.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

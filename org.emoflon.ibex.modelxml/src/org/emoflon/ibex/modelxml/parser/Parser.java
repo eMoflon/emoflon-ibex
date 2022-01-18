@@ -11,7 +11,13 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.emoflon.ibex.modelXML.*;
+import org.emoflon.ibex.modelXML.ModelxmlFactory;
+import org.emoflon.ibex.modelXML.Node;
+import org.emoflon.ibex.modelXML.Value;
+import org.emoflon.ibex.modelXML.XMLModel;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.input.SAXBuilder;
 
 
 public class Parser {
@@ -25,7 +31,7 @@ public class Parser {
 
 		try {
 			document = new SAXBuilder().build(file);
-		} catch (JDOMException | IOException e1) {
+		} catch (org.jdom2.JDOMException | IOException e1) {
 			e1.printStackTrace();
 		}
 
