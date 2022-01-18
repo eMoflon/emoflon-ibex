@@ -9,17 +9,21 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.ISafeRunnable;
+import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.EObject;
@@ -33,7 +37,6 @@ import org.eclipse.xtext.EcoreUtil2;
 import org.eclipse.xtext.resource.XtextResourceSet;
 import org.emoflon.ibex.gt.editor.gT.EditorGTFile;
 import org.emoflon.ibex.gt.editor.gT.EditorPattern;
-import org.emoflon.ibex.gt.editor.ui.builder.GTBuilder;
 import org.emoflon.ibex.gt.editor.ui.builder.GTBuilderExtension;
 import org.emoflon.ibex.gt.transformations.AbstractModelTransformation;
 import org.emoflon.ibex.gt.transformations.EditorToIBeXPatternTransformation;
@@ -41,7 +44,6 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPattern;
 import org.moflon.core.plugins.manifest.ManifestFileUpdater;
 import org.moflon.core.propertycontainer.MoflonPropertiesContainerHelper;
-import org.moflon.core.utilities.ClasspathUtil;
 import org.moflon.core.utilities.ExtensionsUtil;
 import org.moflon.core.utilities.WorkspaceHelper;
 
@@ -51,6 +53,13 @@ import org.moflon.core.utilities.WorkspaceHelper;
  * rule module with an own API.
  */
 public class GTPackageBuilder implements GTBuilderExtension {
+	
+	/**
+	 * The name of the source folder. The builds are only triggered for changes in
+	 * this folder.
+	 */
+	public final static String SOURCE_FOLDER = "src";
+	
 	/**
 	 * The name of the source folder containing the generated API.
 	 */
@@ -74,20 +83,10 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	@Override
 	public void run(final IProject project) {
 		this.project = project;
-		if (!WorkspaceHelper.isPluginProjectNoThrow(project)) {
-			logError("The build for GT projects only works for plugin projects.");
-			return;
-		}
-
-		updateManifest(manifest -> processManifestForProject(manifest));
-		try {
-			IFolder folder = ensureFolderExists(project.getFolder(SOURCE_GEN_FOLDER));
-			ClasspathUtil.makeSourceFolderIfNecessary(folder);
-		} catch (CoreException e) {
-			logError("Could not add src-gen as a source folder.");
-		}
+		IFolder srcFolder = project.getFolder(SOURCE_FOLDER);
+		buildPackages(project, findFolders(srcFolder, srcFolder));
 	}
-
+	
 	@Override
 	public void run(final IProject project, final IPath packagePath) {
 		if (!WorkspaceHelper.isPluginProjectNoThrow(project)) {
@@ -97,7 +96,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		this.path = packagePath;
 		this.packageName = this.path.toString().replace("/", ".");
 		IFolder apiPackage = ensureSourceGenPackageExists();
-
+	
 		// Load files into editor models.
 		XtextResourceSet resourceSet = new XtextResourceSet();
 		Map<IFile, EditorGTFile> editorModels = new HashMap<IFile, EditorGTFile>();
@@ -110,28 +109,96 @@ public class GTPackageBuilder implements GTBuilderExtension {
 			} catch (WrappedException e) {
 				logError(String.format("Error resolving cross references in file %s.", gtFile.getName()));
 			}
-
+	
 			EditorGTFile editorModel = (EditorGTFile) file.getContents().get(0);
 			editorModels.put(gtFile, editorModel);
 			editorModel.getImports().forEach(i -> metaModels.add(i.getName()));
 		});
 		EcoreUtil.resolveAll(resourceSet);
-
+	
 		checkEditorModelsForDuplicatePatternNames(editorModels);
-
+	
 		// Transform editor models to IBeXPatterns.
 		IBeXModel ibexModel = transformEditorModels(editorModels, new EditorToIBeXPatternTransformation(),
 				"%s errors during editor model to pattern transformation");
 		saveModelFile(apiPackage.getFile("ibex-patterns.xmi"), resourceSet, ibexModel);
 		// Run possible pattern matcher builder extensions (e.g. hipe builder)
 		collectEngineBuilderExtensions().forEach(builder -> builder.run(project, packagePath, ibexModel));
-
+	
 		// Generate the Java code.
 		generateAPI(apiPackage, ibexModel, loadMetaModels(metaModels, resourceSet));
 		updateManifest(manifest -> processManifestForPackage(manifest));
 		log("Finished build.");
 	}
 
+	/**
+	 * Determines the folders in the given container which contain .gt files.
+	 * 
+	 * @param container the container to check for folders
+	 * @return the package paths in the container which contain .gt files
+	 */
+	private Set<IPath> findFolders(final IContainer container, IFolder srcFolder) {
+		final Set<IPath> set = new HashSet<>();
+		IResource[] members;
+		try {
+			members = container.members();
+		} catch (final Throwable e) {
+			logError(e.getMessage());
+			return set;
+		}
+		Arrays.stream(members) //
+				.filter(m -> m instanceof IContainer).map(m -> (IContainer) m) //
+				.forEach(m -> set.addAll(findFolders(m, srcFolder)));
+		if (isRulePackage(members)) {
+			set.add(container.getLocation().makeRelativeTo(srcFolder.getLocation()));
+		}
+		return set;
+	}
+	
+	/**
+	 * Performs a build for the given packages.
+	 * @param project2 
+	 * 
+	 * @param packages the packages to build
+	 */
+	private void buildPackages(IProject project2, final Set<IPath> packages) {
+		packages.forEach(packagePath -> runBuilderExtensions(ext -> ext.run(project, packagePath)));
+	}
+	
+	/**
+	 * Checks whether the given resources contain at least one gt file.
+	 * 
+	 * @param members the resources to search
+	 * @return true if a gt file is found
+	 */
+	private static boolean isRulePackage(final IResource[] members) {
+		return Arrays.stream(members) //
+				.filter(m -> m instanceof IFile).map(m -> (IFile) m) // find a file
+				.anyMatch(f -> "gt".equals(f.getFileExtension())); // with extension gt
+	}
+	
+	/**
+	 * Runs the registered GTBuilderExtensions for the package.
+	 * 
+	 * @param action the method to call on the builder extension
+	 */
+	private void runBuilderExtensions(final Consumer<GTBuilderExtension> action) {
+		final ISafeRunnable runnable = new ISafeRunnable() {
+			@Override
+			public void handleException(final Throwable e) {
+				logError(e.getMessage());
+			}
+
+			@Override
+			public void run() throws Exception {
+				ExtensionsUtil
+						.collectExtensions(GTBuilderExtension.BUILDER_EXTENSON_ID, "class", GTBuilderExtension.class)
+						.forEach(action);
+			}
+		};
+		SafeRunner.run(runnable);
+	}
+	
 	/**
 	 * Creates the target package.
 	 * 
@@ -161,7 +228,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	private List<IFile> getFiles() {
 		IResource[] allFiles = null;
 		try {
-			allFiles = project.getFolder(GTBuilder.SOURCE_FOLDER).getFolder(path).members();
+			allFiles = project.getFolder(SOURCE_FOLDER).getFolder(path).members();
 		} catch (CoreException e) {
 			logError("Could not read files.");
 		}
