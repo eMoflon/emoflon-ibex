@@ -16,7 +16,7 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EContentAdapter;
 import org.emoflon.ibex.common.emf.EMFEdge;
-import org.moflon.smartemf.runtime.notification.SmartContentAdapter;
+import org.emoflon.smartemf.runtime.notification.SmartContentAdapter;
 
 public class ModelChangeProtocol {
 

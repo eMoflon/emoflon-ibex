@@ -36,8 +36,8 @@ import org.emoflon.ibex.tgg.operational.strategies.opt.MetamodelRelaxer;
 import org.emoflon.ibex.tgg.operational.strategies.sync.INITIAL_BWD;
 import org.emoflon.ibex.tgg.operational.strategies.sync.INITIAL_FWD;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
+import org.emoflon.smartemf.runtime.SmartObject;
 import org.moflon.core.utilities.MoflonUtil;
-import org.moflon.smartemf.runtime.SmartObject;
 
 import language.TGG;
 import language.impl.LanguagePackageImpl;

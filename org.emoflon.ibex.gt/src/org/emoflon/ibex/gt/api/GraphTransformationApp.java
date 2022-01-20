@@ -8,7 +8,7 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.common.operational.IContextPatternInterpreter;
-import org.moflon.smartemf.persistence.SmartEMFResourceFactoryImpl;
+import org.emoflon.smartemf.persistence.SmartEMFResourceFactoryImpl;
 
 /**
  * An application using an {@link GraphTransformationAPI}.

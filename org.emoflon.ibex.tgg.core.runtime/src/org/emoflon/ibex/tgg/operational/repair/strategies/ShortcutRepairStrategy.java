@@ -17,7 +17,7 @@ import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.OverlapUtil;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCMatch;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
-import org.moflon.smartemf.runtime.notification.SmartEMFCrossReferenceAdapter;
+import org.emoflon.smartemf.runtime.notification.SmartEMFCrossReferenceAdapter;
 
 import runtime.TGGRuleApplication;
 

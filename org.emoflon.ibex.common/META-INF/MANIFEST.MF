@@ -21,7 +21,7 @@ Require-Bundle: org.emoflon.ibex.patternmodel;bundle-version="0.1.0";visibility:
  org.moflon.core.utilities;visibility:=reexport,
  org.emoflon.ibex.tgg.language,
  org.eclipse.equinox.registry,
- emfcodegenerator;visibility:=reexport
+ org.emoflon.smartemf;visibility:=reexport
 Bundle-ClassPath: .
 Automatic-Module-Name: org.emoflon.ibex.common
 Bundle-RequiredExecutionEnvironment: JavaSE-16
@@ -34,4 +34,4 @@ Export-Package: org.emoflon.ibex.common.collections,
  org.emoflon.ibex.common.project,
  org.emoflon.ibex.common.visualization,
  org.emoflon.ibex.common.visualization.tgg
-Import-Package: org.moflon.smartemf.runtime
+Import-Package: org.emoflon.smartemf.runtime

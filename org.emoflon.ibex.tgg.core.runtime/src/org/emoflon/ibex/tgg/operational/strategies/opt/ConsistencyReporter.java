@@ -15,7 +15,7 @@ import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
-import org.moflon.smartemf.runtime.util.SmartEMFUtil;
+import org.emoflon.smartemf.runtime.util.SmartEMFUtil;
 
 import language.BindingType;
 import language.DomainType;

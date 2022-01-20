@@ -12,8 +12,8 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.moflon.smartemf.runtime.SmartObject;
-import org.moflon.smartemf.runtime.util.SmartEMFUtil;
+import org.emoflon.smartemf.runtime.SmartObject;
+import org.emoflon.smartemf.runtime.util.SmartEMFUtil;
 
 /**
  * Utility methods for manipulating EMF models.

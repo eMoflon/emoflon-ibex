@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.EPackage;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
-import org.moflon.smartemf.runtime.SmartPackage;
+import org.emoflon.smartemf.runtime.SmartPackage;
 
 public class ProjectOptions extends IbexSubOptions {
 
