@@ -4,27 +4,22 @@ package language.repair.impl;
 
 import java.util.Collection;
 
-import language.TGGRule;
-import language.TGGRuleElement;
-
-import language.repair.ExternalShortcutRule;
-import language.repair.RepairPackage;
-import language.repair.TGGRuleElementMapping;
-
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
-
 import org.eclipse.emf.common.util.EList;
-
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
-
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
-
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
+
+import language.TGGRule;
+import language.TGGRuleElement;
+import language.repair.ExternalShortcutRule;
+import language.repair.RepairPackage;
+import language.repair.TGGRuleElementMapping;
 
 /**
  * <!-- begin-user-doc -->

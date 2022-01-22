@@ -23,14 +23,14 @@ public class LocalCC extends CC {
 	}
 
 	@Override
+	protected void initializeAdditionalModules(IbexOptions options) throws IOException {
+		super.initializeAdditionalModules(options);
+		matchHandler.handleConsistencyMatches(operationalMatchContainer);
+	}
+
+	@Override
 	protected IMatchContainer createMatchContainer() {
 		return new LocalCCMatchContainer(options, (IbexGreenInterpreter) greenInterpreter);
-	}
-	
-	@Override
-	protected void addConsistencyMatch(ITGGMatch match) {
-		operationalMatchContainer.addMatch(match);
-		super.addConsistencyMatch(match);
 	}
 
 	@Override
@@ -54,18 +54,18 @@ public class LocalCC extends CC {
 		});
 
 		getBlackNodes(comatch, ruleName).forEach(e -> {
-			if(mContainer.isMarked(e))
+			if (mContainer.isMarked(e))
 				return;
-			
+
 			if (!contextNodeToNeedingMatches.containsKey(e))
 				contextNodeToNeedingMatches.put(e, cfactory.createIntSet());
 			contextNodeToNeedingMatches.get(e).add(idCounter);
 		});
 
 		getBlackEdges(comatch, ruleName).forEach(e -> {
-			if(mContainer.isEdgeMarked(e))
+			if (mContainer.isEdgeMarked(e))
 				return;
-			
+
 			if (!contextEdgeToNeedingMatches.containsKey(e)) {
 				contextEdgeToNeedingMatches.put(e, cfactory.createIntSet());
 			}

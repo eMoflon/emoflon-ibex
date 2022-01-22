@@ -4,7 +4,8 @@ import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -30,10 +31,10 @@ public class FWD_OPT extends OPT {
 			int id = v < 0 ? -v : v;
 			ITGGMatch comatch = idToMatch.get(id);
 			if (v < 0) {
-				for (TGGRuleCorr createdCorr : getGreenFactory(matchIdToRuleName.get(id)).getGreenCorrNodesInRule())
+				for (TGGRuleCorr createdCorr : greenFactories.get(matchIdToRuleName.get(id)).getGreenCorrNodesInRule())
 					objectsToDelete.add((EObject) comatch.get(createdCorr.getName()));
 
-				for (TGGRuleNode createdTrgNode : getGreenFactory(matchIdToRuleName.get(id)).getGreenTrgNodesInRule())
+				for (TGGRuleNode createdTrgNode : greenFactories.get(matchIdToRuleName.get(id)).getGreenTrgNodesInRule())
 					objectsToDelete.add((EObject) comatch.get(createdTrgNode.getName()));
 
 				objectsToDelete.addAll(getRuleApplicationNodes(comatch));
@@ -42,11 +43,6 @@ public class FWD_OPT extends OPT {
 
 		EcoreUtil.deleteAll(objectsToDelete, true);
 		consistencyReporter.initSrc();
-	}
-
-	@Override
-	public boolean isPatternRelevantForInterpreter(PatternType type) {
-		return type == PatternType.FWD_OPT;
 	}
 
 	@Override
@@ -92,8 +88,8 @@ public class FWD_OPT extends OPT {
 
 	@Override
 	public double getDefaultWeightForMatch(IMatch comatch, String ruleName) {
-		return getGreenFactory(ruleName).getGreenSrcEdgesInRule().size()
-				+ getGreenFactory(ruleName).getGreenSrcNodesInRule().size();
+		return greenFactories.get(ruleName).getGreenSrcEdgesInRule().size()
+				+ greenFactories.get(ruleName).getGreenSrcNodesInRule().size();
 	}
 
 	public void forward() throws IOException {
@@ -101,7 +97,7 @@ public class FWD_OPT extends OPT {
 	}
 
 	@Override
-	public Collection<PatternType> getPatternRelevantForCompiler() {
-		return PatternType.getFWD_Op();
+	protected Set<PatternType> getRelevantOperationalPatterns() {
+		return Collections.singleton(PatternType.FWD_OPT);
 	}
 }

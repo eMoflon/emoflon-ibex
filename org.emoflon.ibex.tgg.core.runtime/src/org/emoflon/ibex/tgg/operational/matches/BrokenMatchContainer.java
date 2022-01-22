@@ -4,6 +4,7 @@ import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
 
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -71,9 +72,37 @@ public class BrokenMatchContainer implements IMatchContainer, TimeMeasurable {
 		
 		times.addTo("addMatch", Timer.stop());
 	}
+	
+	@Override
+	public ITGGMatch getNext() {
+		Timer.start();
+		
+		Timer.start();
+		Set<ITGGMatch> matches = getMatches();
+		times.addTo("getNext:getmatches", Timer.stop());
+		
+//		Timer.start();
+//		Iterator<ITGGMatch> iterator = matches.iterator();
+//		times.addTo("getNext:iterator", Timer.stop());
+//		
+//		Timer.start();
+//		ITGGMatch next = iterator.next();
+//		times.addTo("getNext:next", Timer.stop());
+		Timer.start();
+		for(ITGGMatch next : matches) {
+			times.addTo("getNext:next", Timer.stop());
+
+			times.addTo("getNext", Timer.stop());
+			return next;
+		}
+		
+		return null;
+		
+//		return next;
+	}
 
 	private void handleMatch(ITGGMatch m) {
-		IGreenPatternFactory gFactory = strategy.getGreenFactory(m.getRuleName());
+		IGreenPatternFactory gFactory = strategy.getGreenFactories().get(m.getRuleName());
 		IGreenPattern gPattern = gFactory.create(PatternType.CC);
 
 		if (anElementHasAlreadyBeenTranslated(m, gPattern))
@@ -156,7 +185,7 @@ public class BrokenMatchContainer implements IMatchContainer, TimeMeasurable {
 	}
 	
 	private boolean noElementIsPending(ITGGMatch m) {
-		IGreenPatternFactory gFactory = strategy.getGreenFactory(m.getRuleName());
+		IGreenPatternFactory gFactory = strategy.getGreenFactories().get(m.getRuleName());
 		IGreenPattern gPattern = gFactory.create(m.getType());
 		
 		for (TGGRuleNode createdNode : gPattern.getNodesMarkedByPattern()) {
@@ -229,12 +258,16 @@ public class BrokenMatchContainer implements IMatchContainer, TimeMeasurable {
 	public Set<ITGGMatch> getMatches() {
 		Timer.start();
 		
-		Collection<ITGGMatch> notPendingMatches = pending.parallelStream().filter(this::noElementIsPending).collect(Collectors.toList());
-		notPendingMatches.forEach(this::handleMatch);
-		if(notPendingMatches.size() == pending.size())
-			pending.clear();
-		else
-			pending.removeAll(notPendingMatches);
+		if(!pending.isEmpty()) {
+			Timer.start();
+			Collection<ITGGMatch> notPendingMatches = pending.parallelStream().filter(this::noElementIsPending).collect(Collectors.toSet());
+			times.addTo("getMatches:elementPending", Timer.stop());
+			notPendingMatches.forEach(this::handleMatch);
+			if(notPendingMatches.size() == pending.size())
+				pending.clear();
+			else
+				pending.removeAll(notPendingMatches);
+		}
 		Set<ITGGMatch> validate = validate(readySet);
 		
 		times.addTo("getMatches", Timer.stop());
@@ -245,13 +278,14 @@ public class BrokenMatchContainer implements IMatchContainer, TimeMeasurable {
 		if(pendingElts.isEmpty())
 			return readySet;
 		
-		Set<ITGGMatch> filteredReadySet = cfactory.createObjectSet();
-		for(ITGGMatch m : readySet) {
-			if(m.getParameterNames().stream().anyMatch(p -> pendingElts.contains(m.get(p))))
-				continue;
-			filteredReadySet.add(m);
-		}
-		return filteredReadySet;
+//		Set<ITGGMatch> filteredReadySet = cfactory.createObjectSet();
+//		for(ITGGMatch m : readySet) {
+//			if(m.getParameterNames().stream().anyMatch(p -> pendingElts.contains(m.get(p))))
+//				continue;
+//			filteredReadySet.add(m);
+//		}
+		
+		return readySet.parallelStream().filter(m -> !m.getParameterNames().stream().anyMatch(p -> pendingElts.contains(m.get(p)))).collect(Collectors.toCollection(() -> new LinkedHashSet<>()));
 	}
  
 	@Override
@@ -299,7 +333,7 @@ public class BrokenMatchContainer implements IMatchContainer, TimeMeasurable {
 	
 	public boolean removeConsistencyMatch(ITGGMatch m) {
 		// Transfer elements to the pending collection
-		TGGRuleApplication ra = strategy.getRuleApplicationNode(m);
+		TGGRuleApplication ra = m.getRuleApplicationNode();
 		if(!raToTranslated.containsKey(ra))
 			return true;
 		

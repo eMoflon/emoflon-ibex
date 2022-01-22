@@ -2,14 +2,14 @@
  */
 package language.repair.util;
 
-import language.repair.*;
-
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notifier;
-
 import org.eclipse.emf.common.notify.impl.AdapterFactoryImpl;
-
 import org.eclipse.emf.ecore.EObject;
+
+import language.repair.ExternalShortcutRule;
+import language.repair.RepairPackage;
+import language.repair.TGGRuleElementMapping;
 
 /**
  * <!-- begin-user-doc -->

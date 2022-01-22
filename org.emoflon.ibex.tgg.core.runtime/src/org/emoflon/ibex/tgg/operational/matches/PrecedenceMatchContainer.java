@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.benchmark.TimeMeasurable;
 import org.emoflon.ibex.tgg.operational.benchmark.TimeRegistry;
@@ -56,14 +55,17 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 	public void addMatch(ITGGMatch match) {
 		Timer.start();
 
-		if (match.getType() == PatternType.CONSISTENCY || match.getType() == PatternType.FWD || match.getType() == PatternType.BWD)
+		if (match.getType() == PatternType.CONSISTENCY) {
+			consistencyMatchApplied(match);
+		} else if (match.getType() == PatternType.FWD || match.getType() == PatternType.BWD) {
 			pending.add(match);
+		}
 
 		times.addTo("addMatch", Timer.stop());
 	}
 
 	private void handleMatch(ITGGMatch m) {
-		IGreenPatternFactory gFactory = strategy.getGreenFactory(m.getRuleName());
+		IGreenPatternFactory gFactory = strategy.getGreenFactories().get(m.getRuleName());
 		IGreenPattern gPattern = gFactory.create(m.getType());
 
 		if (anElementHasAlreadyBeenTranslated(m, gPattern))
@@ -134,7 +136,7 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 	}
 
 	private boolean noElementIsPending(ITGGMatch m) {
-		IGreenPatternFactory gFactory = strategy.getGreenFactory(m.getRuleName());
+		IGreenPatternFactory gFactory = strategy.getGreenFactories().get(m.getRuleName());
 		IGreenPattern gPattern = gFactory.create(m.getType());
 
 		for (TGGRuleNode createdNode : gPattern.getNodesMarkedByPattern()) {
@@ -155,12 +157,6 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 	@Override
 	public void matchApplied(ITGGMatch m) {
 		Timer.start();
-
-		if (m.getPatternName().endsWith(PatternSuffixes.CONSISTENCY)) {
-			consistencyMatchApplied(m);
-			times.addTo("matchApplied", Timer.stop());
-			return;
-		}
 
 		if (!translates.containsKey(m)) {
 			times.addTo("matchApplied", Timer.stop());
@@ -197,11 +193,11 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 	}
 
 	private void consistencyMatchApplied(ITGGMatch m) {
-		TGGRuleApplication ra = strategy.getRuleApplicationNode(m);
+		TGGRuleApplication ra = m.getRuleApplicationNode();
 		if (raToTranslated.containsKey(ra))
 			return;
 
-		IGreenPatternFactory gFactory = strategy.getGreenFactory(m.getRuleName());
+		IGreenPatternFactory gFactory = strategy.getGreenFactories().get(m.getRuleName());
 
 		// Add translated elements
 		Collection<Object> translatedElts = cfactory.createObjectSet();
@@ -311,7 +307,7 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 
 	public boolean removeConsistencyMatch(ITGGMatch m) {
 		// Transfer elements to the pending collection
-		TGGRuleApplication ra = strategy.getRuleApplicationNode(m);
+		TGGRuleApplication ra = m.getRuleApplicationNode();
 		if (!raToTranslated.containsKey(ra))
 			return true;
 

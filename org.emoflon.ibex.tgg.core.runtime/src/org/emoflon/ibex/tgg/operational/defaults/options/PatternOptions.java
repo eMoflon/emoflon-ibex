@@ -4,18 +4,20 @@ import java.util.function.BiPredicate;
 
 import org.emoflon.ibex.tgg.compiler.patterns.ACStrategy;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
+import org.emoflon.ibex.tgg.operational.patterns.GreenPatternFactoryProvider;
 
 import language.TGGRuleNode;
 
 public class PatternOptions extends IbexSubOptions {
-	
+
+	private GreenPatternFactoryProvider greenPatternFactories;
 	private ACStrategy acStrategy;
 	/**
-	 * Switch to using edge patterns based on some heuristics (e.g., pattern size).
-	 * If this is false (disabled), then edge patterns are never used.
+	 * Switch to using edge patterns based on some heuristics (e.g., pattern size). If this is false
+	 * (disabled), then edge patterns are never used.
 	 */
 	private boolean useEdgePatterns;
-	private BiPredicate<TGGRuleNode, TGGRuleNode> ignoreInjecitity;
+	private BiPredicate<TGGRuleNode, TGGRuleNode> ignoreInjectivity;
 	private boolean ignoreDomainConformity;
 	private boolean relaxDomainConformity;
 	private boolean optimizePattern;
@@ -26,17 +28,27 @@ public class PatternOptions extends IbexSubOptions {
 	public PatternOptions(IbexOptions options) {
 		super(options);
 
-		parallelizeMatchProcessing = true;
+		greenPatternFactories = new GreenPatternFactoryProvider(options);
 		acStrategy = ACStrategy.FILTER_NACS;
 		useEdgePatterns = false;
-		ignoreInjecitity = (x, y) -> false;
+		ignoreInjectivity = (x, y) -> false;
 		ignoreDomainConformity = false;
 		relaxDomainConformity = false;
 		optimizePattern = false;
 		useGenPattern = false;
+		parallelizeMatchProcessing = true;
 		optimizeCSPs = false;
 	}
-	
+
+	public GreenPatternFactoryProvider greenPatternFactories() {
+		return greenPatternFactories;
+	}
+
+	public IbexOptions greenPatternFactories(GreenPatternFactoryProvider greenPatternFactories) {
+		this.greenPatternFactories = greenPatternFactories;
+		return options;
+	}
+
 	public ACStrategy acStrategy() {
 		return acStrategy;
 	}
@@ -56,11 +68,11 @@ public class PatternOptions extends IbexSubOptions {
 	}
 
 	public BiPredicate<TGGRuleNode, TGGRuleNode> ignoreInjectivity() {
-		return ignoreInjecitity;
+		return ignoreInjectivity;
 	}
 
 	public IbexOptions ignoreInjectivity(BiPredicate<TGGRuleNode, TGGRuleNode> ignoreInjecitity) {
-		this.ignoreInjecitity = ignoreInjecitity;
+		this.ignoreInjectivity = ignoreInjecitity;
 		return options;
 	}
 
@@ -72,16 +84,16 @@ public class PatternOptions extends IbexSubOptions {
 		this.ignoreDomainConformity = ignoreDomainConformity;
 		return options;
 	}
-	
+
 	public boolean relaxDomainConformity() {
 		return relaxDomainConformity;
 	}
-	
+
 	public IbexOptions relaxDomainConformity(boolean relaxDomainConformity) {
 		this.relaxDomainConformity = relaxDomainConformity;
 		return options;
 	}
-	
+
 	public boolean optimizePattern() {
 		return optimizePattern;
 	}
@@ -90,7 +102,7 @@ public class PatternOptions extends IbexSubOptions {
 		this.optimizePattern = optimizePattern;
 		return options;
 	}
-	
+
 	public boolean useGenPattern() {
 		return useGenPattern;
 	}
@@ -99,7 +111,7 @@ public class PatternOptions extends IbexSubOptions {
 		this.useGenPattern = useGenPattern;
 		return options;
 	}
-	
+
 	public boolean parallelizeMatchProcessing() {
 		return parallelizeMatchProcessing;
 	}
@@ -108,7 +120,7 @@ public class PatternOptions extends IbexSubOptions {
 		this.parallelizeMatchProcessing = parallelizeMatchProcessing;
 		return options;
 	}
-	
+
 	public boolean optimizeCSPs() {
 		return optimizeCSPs;
 	}

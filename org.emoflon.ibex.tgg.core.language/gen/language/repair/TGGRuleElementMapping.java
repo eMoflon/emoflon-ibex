@@ -2,9 +2,9 @@
  */
 package language.repair;
 
-import language.TGGRuleElement;
-
 import org.eclipse.emf.ecore.EObject;
+
+import language.TGGRuleElement;
 
 /**
  * <!-- begin-user-doc -->

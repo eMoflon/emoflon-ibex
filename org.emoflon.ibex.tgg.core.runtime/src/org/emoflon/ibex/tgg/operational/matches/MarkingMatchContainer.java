@@ -19,7 +19,7 @@ import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 
 public class MarkingMatchContainer implements IMatchContainer, TimeMeasurable {
-	
+
 	protected final Times times = new Times();
 
 	protected OperationalStrategy opStrat;
@@ -35,25 +35,27 @@ public class MarkingMatchContainer implements IMatchContainer, TimeMeasurable {
 	@Override
 	public void addMatch(ITGGMatch match) {
 		Timer.start();
-		
-		matches.add(match);
-		
+
+		if (match.getType() == PatternType.CONSISTENCY)
+			consistencyMatchApplied(match);
+		else
+			matches.add(match);
+
 		times.addTo("addMatch", Timer.stop());
 	}
 
 	@Override
 	public boolean removeMatch(ITGGMatch match) {
 		Timer.start();
-		
+
 		if (match.getType() == PatternType.CONSISTENCY) {
 			boolean removed = removeConsistencyMatch(match);
-			
+
 			times.addTo("removeMatch", Timer.stop());
 			return removed;
-		}
-		else {
+		} else {
 			matches.remove(match);
-			
+
 			times.addTo("removeMatch", Timer.stop());
 			return true;
 		}
@@ -67,14 +69,14 @@ public class MarkingMatchContainer implements IMatchContainer, TimeMeasurable {
 	@Override
 	public ITGGMatch getNext() {
 		Timer.start();
-		
+
 		List<ITGGMatch> notApplicable = new LinkedList<>();
 		ITGGMatch match = null;
 
 		Iterator<ITGGMatch> it = matches.iterator();
 		while (it.hasNext()) {
 			ITGGMatch nextMatch = it.next();
-			IGreenPatternFactory gFactory = opStrat.getGreenFactory(nextMatch.getRuleName());
+			IGreenPatternFactory gFactory = opStrat.getGreenFactories().get(nextMatch.getRuleName());
 			if (checkPositiveRAs(nextMatch, gFactory)) {
 				if (checkNegativeRAs(nextMatch, gFactory)) {
 					match = nextMatch;
@@ -88,7 +90,7 @@ public class MarkingMatchContainer implements IMatchContainer, TimeMeasurable {
 			}
 		}
 		matches.addAll(notApplicable);
-		
+
 		times.addTo("getNext", Timer.stop());
 		return match;
 	}
@@ -96,13 +98,13 @@ public class MarkingMatchContainer implements IMatchContainer, TimeMeasurable {
 	@Override
 	public Set<ITGGMatch> getMatches() {
 		Timer.start();
-		
+
 		Collection<ITGGMatch> neverApplicable = new LinkedList<>();
 
 		Set<ITGGMatch> nextMatches = matches.stream() //
-				.filter(m -> checkPositiveRAs(m, opStrat.getGreenFactory(m.getRuleName()))) //
+				.filter(m -> checkPositiveRAs(m, opStrat.getGreenFactories().get(m.getRuleName()))) //
 				.filter(m -> {
-					if (checkNegativeRAs(m, opStrat.getGreenFactory(m.getRuleName())))
+					if (checkNegativeRAs(m, opStrat.getGreenFactories().get(m.getRuleName())))
 						return true;
 					else {
 						neverApplicable.add(m);
@@ -112,7 +114,7 @@ public class MarkingMatchContainer implements IMatchContainer, TimeMeasurable {
 				.collect(Collectors.toSet());
 
 		matches.removeAll(neverApplicable);
-		
+
 		times.addTo("getMatches", Timer.stop());
 		return nextMatches;
 	}
@@ -131,17 +133,14 @@ public class MarkingMatchContainer implements IMatchContainer, TimeMeasurable {
 	@Override
 	public void matchApplied(ITGGMatch match) {
 		Timer.start();
-		
-		if (match.getType() == PatternType.CONSISTENCY)
-			consistencyMatchApplied(match);
-		else
-			matches.remove(match);
-		
+
+		matches.remove(match);
+
 		times.addTo("matchApplied", Timer.stop());
 	}
 
 	private boolean removeConsistencyMatch(ITGGMatch match) {
-		IGreenPatternFactory gFactory = opStrat.getGreenFactory(match.getRuleName());
+		IGreenPatternFactory gFactory = opStrat.getGreenFactories().get(match.getRuleName());
 
 		gFactory.getGreenSrcNodesInRule().stream() //
 				.map(n -> (EObject) match.get(n.getName())) //
@@ -154,7 +153,7 @@ public class MarkingMatchContainer implements IMatchContainer, TimeMeasurable {
 	}
 
 	private void consistencyMatchApplied(ITGGMatch match) {
-		IGreenPatternFactory gFactory = opStrat.getGreenFactory(match.getRuleName());
+		IGreenPatternFactory gFactory = opStrat.getGreenFactories().get(match.getRuleName());
 
 		gFactory.getGreenSrcNodesInRule().stream() //
 				.map(n -> (EObject) match.get(n.getName())) //

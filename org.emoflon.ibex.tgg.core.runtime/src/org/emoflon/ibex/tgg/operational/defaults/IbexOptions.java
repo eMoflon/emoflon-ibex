@@ -14,6 +14,7 @@ import org.emoflon.ibex.tgg.operational.defaults.options.RepairOptions;
 import org.emoflon.ibex.tgg.operational.defaults.options.TGGOptions;
 import org.emoflon.ibex.tgg.operational.strategies.modules.IbexExecutable;
 import org.emoflon.ibex.tgg.operational.strategies.modules.MatchDistributor;
+import org.emoflon.ibex.tgg.operational.strategies.modules.MatchHandler;
 import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;
 
@@ -21,6 +22,7 @@ public class IbexOptions {
 
 	private IbexExecutable executable;
 	private TGGResourceHandler resourceHandler;
+	private MatchHandler matchHandler;
 
 	private MatchDistributor matchDistributor;
 	private IRegistrationHelper registrationHelper;
@@ -43,6 +45,7 @@ public class IbexOptions {
 			e.printStackTrace();
 		}
 		matchDistributor = new MatchDistributor(this);
+		matchHandler = new MatchHandler(this);
 		this.ilpSolver = SupportedILPSolver.Sat4J;
 	}
 
@@ -71,6 +74,10 @@ public class IbexOptions {
 
 	public MatchDistributor matchDistributor() {
 		return matchDistributor;
+	}
+
+	public MatchHandler matchHandler() {
+		return matchHandler;
 	}
 
 	public IbexOptions registrationHelper(IRegistrationHelper registrationHelper) {

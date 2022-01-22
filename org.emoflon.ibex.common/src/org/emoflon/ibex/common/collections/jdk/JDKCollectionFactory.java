@@ -35,7 +35,7 @@ public class JDKCollectionFactory extends CollectionFactory {
 
 	@Override
 	public <T> Set<T> createObjectSet() {
-		return new HashSet<>();
+		return new LinkedHashSet<>();
 	}
 
 	@Override

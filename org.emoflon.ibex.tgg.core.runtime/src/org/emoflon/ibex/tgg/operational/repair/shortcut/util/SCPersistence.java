@@ -30,9 +30,9 @@ public class SCPersistence {
 		this.options = strategy.getOptions();
 		resourceHandler = options.resourceHandler();
 		
-		scResource = resourceHandler.createResource(options.project.path() + "/model/" + options.project.name() + ".sc.tgg.xmi");
-		oscFWDResource = resourceHandler.createResource(options.project.path() + "/model/" + options.project.name() + ".osc.fwd.tgg.xmi");
-		oscBWDResource = resourceHandler.createResource(options.project.path() + "/model/" + options.project.name() + ".osc.bwd.tgg.xmi");
+		scResource = resourceHandler.createResource(resourceHandler.getSpecificationResourceSet(), options.project.path() + "/model/" + options.project.name() + ".sc.tgg.xmi");
+		oscFWDResource = resourceHandler.createResource(resourceHandler.getSpecificationResourceSet(), options.project.path() + "/model/" + options.project.name() + ".osc.fwd.tgg.xmi");
+		oscBWDResource = resourceHandler.createResource(resourceHandler.getSpecificationResourceSet(), options.project.path() + "/model/" + options.project.name() + ".osc.bwd.tgg.xmi");
 	}
 	
 	public void saveOperationalFWDSCRules(Collection<OperationalShortcutRule> oscRule) {

@@ -20,6 +20,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.EObject;
@@ -211,10 +212,8 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	 * @return the mapping between EClassifier names to meta-model names
 	 */
 	private EClassifiersManager loadMetaModels(final Set<String> metaModels, final ResourceSet resourceSet) {
-		Map<String, String> map = MoflonPropertiesContainerHelper.loadIfExists(project) //
-				.map(m -> m.getImportMappings()) //
-				.map(i -> MoflonPropertiesContainerHelper.mappingsToMap(i)) //
-				.orElse(new HashMap<String, String>());
+		MoflonPropertiesContainerHelper moflonPropertiesContainerHelper = new MoflonPropertiesContainerHelper(project, new NullProgressMonitor());
+		Map<String, String> map = moflonPropertiesContainerHelper.mappingsToMap();
 
 		EClassifiersManager eClassifiersManager = new EClassifiersManager(map);
 		metaModels.forEach(uri -> {

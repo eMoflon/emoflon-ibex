@@ -89,14 +89,14 @@ public class ConflictElements {
 		Stream<EObject> objects;
 
 		if (!created) {
-			objects = this.matches.flatMap(m -> integrate.getMatchUtil().getObjectStream(m, consistencyFilter));
+			objects = this.matches.flatMap(m -> integrate.matchUtils().get(m).getObjectStream(consistencyFilter));
 		} else if (!deleted && !intact) {
-			objects = this.matches.flatMap(m -> integrate.getMatchUtil().getObjectStream(m, srcTrgFilter));
+			objects = this.matches.flatMap(m -> integrate.matchUtils().get(m).getObjectStream(srcTrgFilter));
 		} else {
 			objects = this.matches.flatMap(m -> {
 				if (created && m.getType() == PatternType.CONSISTENCY)
-					return integrate.getMatchUtil().getObjectStream(m, consistencyFilter);
-				return integrate.getMatchUtil().getObjectStream(m, srcTrgFilter);
+					return integrate.matchUtils().get(m).getObjectStream(consistencyFilter);
+				return integrate.matchUtils().get(m).getObjectStream(srcTrgFilter);
 			});
 		}
 
@@ -118,14 +118,14 @@ public class ConflictElements {
 		Stream<EMFEdge> edges;
 
 		if (!created) {
-			edges = this.matches.flatMap(m -> integrate.getMatchUtil().getEMFEdgeStream(m, consistencyFilter));
+			edges = this.matches.flatMap(m -> integrate.matchUtils().get(m).getEMFEdgeStream(consistencyFilter));
 		} else if (!deleted && !intact) {
-			edges = this.matches.flatMap(m -> integrate.getMatchUtil().getEMFEdgeStream(m, srcTrgFilter));
+			edges = this.matches.flatMap(m -> integrate.matchUtils().get(m).getEMFEdgeStream(srcTrgFilter));
 		} else {
 			edges = this.matches.flatMap(m -> {
 				if (created && m.getType() == PatternType.CONSISTENCY)
-					return integrate.getMatchUtil().getEMFEdgeStream(m, consistencyFilter);
-				return integrate.getMatchUtil().getEMFEdgeStream(m, srcTrgFilter);
+					return integrate.matchUtils().get(m).getEMFEdgeStream(consistencyFilter);
+				return integrate.matchUtils().get(m).getEMFEdgeStream(srcTrgFilter);
 			});
 		}
 

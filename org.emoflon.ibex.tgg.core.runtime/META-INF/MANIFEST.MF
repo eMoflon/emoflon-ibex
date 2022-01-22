@@ -23,18 +23,20 @@ Require-Bundle: org.eclipse.emf.ecore,
  org.emoflon.ibex.gt;visibility:=reexport,
  org.emoflon.delta;bundle-version="1.0.0";visibility:=reexport,
  org.emoflon.ibex.patternmodel,
- org.emoflon.ibex.tgg.language
+ org.emoflon.ibex.tgg.language,
+ org.emoflon.smartemf,
+ org.moflon.core.propertycontainer;bundle-version="2.1.0"
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: lib/commons-io-2.5.jar,
  lib/commons-lang3-3.5.jar,
  lib/gurobi.jar,
- lib/javabdd-1.0b2.jar,
  .,
  lib/glpk-java.jar,
  lib/com.google.ortools.jar,
  lib/protobuf.jar,
- lib/mipcl.jar
+ lib/mipcl.jar,
+ lib/javabdd-silent.jar
 Export-Package: .,
  by.bsu.JVmipcl,
  by.bsu.JVmipshell,

@@ -48,6 +48,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRuleSet;
+import org.emoflon.smartemf.persistence.SmartEMFResourceFactoryImpl;
 
 /**
  * The GraphTransformationInterpreter implements rule application based on a
