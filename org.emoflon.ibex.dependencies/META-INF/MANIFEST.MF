@@ -556,3 +556,4 @@ Export-Package: .,
  org.xml.sax.helpers
 Bundle-RequiredExecutionEnvironment: JavaSE-16
 Automatic-Module-Name: org.emoflon.ibex.dependencies
+Require-Bundle: org.emoflon.ibex.modelxml;visibility:=reexport

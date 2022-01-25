@@ -10,6 +10,8 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.emoflon.ibex.common.operational.IContextPatternInterpreter;
 
+import org.emoflon.ibex.modelxml.parser.*;
+
 /**
  * An application using an {@link GraphTransformationAPI}.
  */
@@ -91,10 +93,10 @@ public abstract class GraphTransformationApp<API extends GraphTransformationAPI>
 	 * @param the filename
 	 * @return the resource
 	 */
-	public Resource loadXmlModel(final String filename) {
-		prepareResourceSet();
+	public Resource loadXmlModel(final URI uri) {
+		//prepareResourceSet();
 		
-		var model = parseXMLFile(filename);
+		var model = Parser.parseXMLFile(uri);
 		return model;
 	}
 	

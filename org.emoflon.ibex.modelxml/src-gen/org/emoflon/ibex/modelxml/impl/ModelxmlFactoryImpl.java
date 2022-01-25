@@ -1,6 +1,6 @@
 /**
  */
-package org.emoflon.ibex.modelXML.impl;
+package org.emoflon.ibex.modelxml.impl;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -10,7 +10,7 @@ import org.eclipse.emf.ecore.impl.EFactoryImpl;
 
 import org.eclipse.emf.ecore.plugin.EcorePlugin;
 
-import org.emoflon.ibex.modelXML.*;
+import org.emoflon.ibex.modelxml.*;
 
 /**
  * <!-- begin-user-doc -->

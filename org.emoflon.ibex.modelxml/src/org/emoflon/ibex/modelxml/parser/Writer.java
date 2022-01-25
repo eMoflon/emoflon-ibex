@@ -4,7 +4,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import org.emoflon.ibex.modelXML.*;
+import org.emoflon.ibex.modelxml.*;
 
 public class Writer {
 	public static void createXMLFile(XMLModel container) {

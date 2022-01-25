@@ -7,12 +7,13 @@ Bundle-Version: 0.1.0.qualifier
 Bundle-ClassPath: .
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Export-Package: org.emoflon.ibex.modelXML,
- org.emoflon.ibex.modelXML.impl,
- org.emoflon.ibex.modelXML.util
+Bundle-RequiredExecutionEnvironment: JavaSE-16
+Export-Package: org.emoflon.ibex.modelxml,
+ org.emoflon.ibex.modelxml.impl,
+ org.emoflon.ibex.modelxml.parser,
+ org.emoflon.ibex.modelxml.util,
+ org.emoflon.ibex.modelxml.validation
 Require-Bundle: org.eclipse.emf.ecore;visibility:=reexport,
  org.eclipse.core.runtime,
- org.emoflon.ibex.dependencies;bundle-version="1.0.0",
  org.eclipse.emf.ecore.xmi
 Bundle-ActivationPolicy: lazy

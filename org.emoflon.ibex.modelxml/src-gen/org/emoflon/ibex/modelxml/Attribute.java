@@ -1,6 +1,6 @@
 /**
  */
-package org.emoflon.ibex.modelXML;
+package org.emoflon.ibex.modelxml;
 
 /**
  * <!-- begin-user-doc -->

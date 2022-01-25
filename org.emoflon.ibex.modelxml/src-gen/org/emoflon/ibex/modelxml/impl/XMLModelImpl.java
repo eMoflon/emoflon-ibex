@@ -1,6 +1,6 @@
 /**
  */
-package org.emoflon.ibex.modelXML.impl;
+package org.emoflon.ibex.modelxml.impl;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
@@ -11,9 +11,7 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 
-import org.emoflon.ibex.modelXML.ModelxmlPackage;
-import org.emoflon.ibex.modelXML.Node;
-import org.emoflon.ibex.modelXML.XMLModel;
+import org.emoflon.ibex.modelxml.*;
 
 /**
  * <!-- begin-user-doc -->

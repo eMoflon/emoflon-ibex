@@ -11,10 +11,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.emoflon.ibex.modelXML.ModelxmlFactory;
-import org.emoflon.ibex.modelXML.Node;
-import org.emoflon.ibex.modelXML.Value;
-import org.emoflon.ibex.modelXML.XMLModel;
+import org.emoflon.ibex.modelxml.*;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
@@ -55,6 +52,42 @@ public class Parser {
 		}
 		return container;
 	}
+	
+	public static Resource parseXMLFile(URI uri) {
+		var fileName = uri.toFileString();
+		var end = fileName.lastIndexOf(".");
+		var fileNameWoEnd = fileName.substring(0, end);
+		
+		File file = new File(fileName);
+		Document document = null;
+
+		try {
+			document = new SAXBuilder().build(file);
+		} catch (org.jdom2.JDOMException | IOException e1) {
+			e1.printStackTrace();
+		}
+
+		final Element rootFile = document.getRootElement();
+
+		// Setup RessourceSet
+		ResourceSet rs = new ResourceSetImpl();
+		rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());
+		Resource r = rs.createResource(URI.createURI(fileNameWoEnd+"Test.xmi"));
+
+//		Generate XML Model
+		XMLModel container = ModelxmlFactory.eINSTANCE.createXMLModel();
+		parseHeader(file, container);
+
+		parseContent(rootFile, container);
+		r.getContents().add(container);
+		try {
+			r.save(null);
+		} catch (IOException er) {
+			er.printStackTrace();
+		}
+		return r;
+	}
+	
 	
 	public static XMLModel parseXMLFile() {
 		return parseXMLFile("misc/xample.xml");

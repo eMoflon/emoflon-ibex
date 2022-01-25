@@ -1,6 +1,6 @@
 /**
  */
-package org.emoflon.ibex.modelXML;
+package org.emoflon.ibex.modelxml;
 
 import org.eclipse.emf.ecore.EFactory;
 
@@ -19,7 +19,7 @@ public interface ModelxmlFactory extends EFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	ModelxmlFactory eINSTANCE = org.emoflon.ibex.modelXML.impl.ModelxmlFactoryImpl.init();
+	ModelxmlFactory eINSTANCE = org.emoflon.ibex.modelxml.impl.ModelxmlFactoryImpl.init();
 
 	/**
 	 * Returns a new object of class '<em>Value</em>'.

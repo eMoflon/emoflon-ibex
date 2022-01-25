@@ -1,6 +1,6 @@
 /**
  */
-package org.emoflon.ibex.modelXML.impl;
+package org.emoflon.ibex.modelxml.impl;
 
 import java.util.Collection;
 
@@ -18,10 +18,7 @@ import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 
-import org.emoflon.ibex.modelXML.Attribute;
-import org.emoflon.ibex.modelXML.ModelxmlPackage;
-import org.emoflon.ibex.modelXML.Node;
-import org.emoflon.ibex.modelXML.Value;
+import org.emoflon.ibex.modelxml.*;
 
 /**
  * <!-- begin-user-doc -->

@@ -2,13 +2,11 @@
  *
  * $Id$
  */
-package org.emoflon.ibex.modelXML.validation;
+package org.emoflon.ibex.modelxml.validation;
 
 import org.eclipse.emf.common.util.EList;
 
-import org.emoflon.ibex.modelXML.Attribute;
-import org.emoflon.ibex.modelXML.Node;
-import org.emoflon.ibex.modelXML.Value;
+import org.emoflon.ibex.modelxml.*;
 
 /**
  * A sample validator interface for {@link org.emoflon.ibex.modelXML.Node}.

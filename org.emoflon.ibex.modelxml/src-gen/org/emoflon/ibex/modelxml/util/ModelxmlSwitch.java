@@ -1,13 +1,13 @@
 /**
  */
-package org.emoflon.ibex.modelXML.util;
+package org.emoflon.ibex.modelxml.util;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 
 import org.eclipse.emf.ecore.util.Switch;
 
-import org.emoflon.ibex.modelXML.*;
+import org.emoflon.ibex.modelxml.*;
 
 /**
  * <!-- begin-user-doc -->

@@ -1,15 +1,12 @@
 /**
  */
-package org.emoflon.ibex.modelXML.util;
+package org.emoflon.ibex.modelxml.util;
 
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notifier;
-
 import org.eclipse.emf.common.notify.impl.AdapterFactoryImpl;
-
 import org.eclipse.emf.ecore.EObject;
-
-import org.emoflon.ibex.modelXML.*;
+import org.emoflon.ibex.modelxml.*;
 
 /**
  * <!-- begin-user-doc -->

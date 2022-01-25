@@ -1,6 +1,6 @@
 /**
  */
-package org.emoflon.ibex.modelXML.impl;
+package org.emoflon.ibex.modelxml.impl;
 
 import org.eclipse.emf.common.notify.Notification;
 
@@ -8,8 +8,8 @@ import org.eclipse.emf.ecore.EClass;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
-import org.emoflon.ibex.modelXML.Attribute;
-import org.emoflon.ibex.modelXML.ModelxmlPackage;
+import org.emoflon.ibex.modelxml.Attribute;
+import org.emoflon.ibex.modelxml.ModelxmlPackage;
 
 /**
  * <!-- begin-user-doc -->

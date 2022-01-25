@@ -1,6 +1,6 @@
 /**
  */
-package org.emoflon.ibex.modelXML.impl;
+package org.emoflon.ibex.modelxml.impl;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
@@ -9,13 +9,7 @@ import org.eclipse.emf.ecore.EReference;
 
 import org.eclipse.emf.ecore.impl.EPackageImpl;
 
-import org.emoflon.ibex.modelXML.Attribute;
-import org.emoflon.ibex.modelXML.Element;
-import org.emoflon.ibex.modelXML.ModelxmlFactory;
-import org.emoflon.ibex.modelXML.ModelxmlPackage;
-import org.emoflon.ibex.modelXML.Node;
-import org.emoflon.ibex.modelXML.Value;
-import org.emoflon.ibex.modelXML.XMLModel;
+import org.emoflon.ibex.modelxml.*;
 
 /**
  * <!-- begin-user-doc -->

@@ -1,6 +1,6 @@
 /**
  */
-package org.emoflon.ibex.modelXML;
+package org.emoflon.ibex.modelxml;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
@@ -54,7 +54,7 @@ public interface ModelxmlPackage extends EPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	ModelxmlPackage eINSTANCE = org.emoflon.ibex.modelXML.impl.ModelxmlPackageImpl.init();
+	ModelxmlPackage eINSTANCE = org.emoflon.ibex.modelxml.impl.ModelxmlPackageImpl.init();
 
 	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.modelXML.impl.ValueImpl <em>Value</em>}' class.
