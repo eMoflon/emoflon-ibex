@@ -80,6 +80,7 @@ public class ShortcutApplicationPointFinder {
 				replacingNodes.add(act);
 				return true;
 			});
+			setOfReplacingNodes.add(replacingNodes);
 		}
 
 		ShortcutApplicationPoint shortcutApplPoint = new ShortcutApplicationPoint(originalNodes, setOfReplacingNodes);

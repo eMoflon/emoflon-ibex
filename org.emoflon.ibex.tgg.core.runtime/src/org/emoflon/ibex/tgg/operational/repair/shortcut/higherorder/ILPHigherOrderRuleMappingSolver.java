@@ -10,31 +10,30 @@ import java.util.stream.Stream;
 
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRuleFactory.MatchRelatedRuleElement;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRuleFactory.MatchRelatedRuleElementMap;
 import org.emoflon.ibex.tgg.util.ilp.BinaryILPProblem;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory;
-import org.emoflon.ibex.tgg.util.ilp.ILPSolver;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPLinearExpression;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPSolution;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.Objective;
+import org.emoflon.ibex.tgg.util.ilp.ILPSolver;
 
 import com.google.common.collect.Sets;
-
-import language.TGGRuleElement;
 
 public class ILPHigherOrderRuleMappingSolver {
 
 	private final SupportedILPSolver solver;
 
-	private final Map<TGGRuleElement, Set<MatchRelatedRuleElement>> propDomainMapping;
-	private final Map<TGGRuleElement, Set<MatchRelatedRuleElement>> oppositeDomainMapping;
+	private final MatchRelatedRuleElementMap propDomainMapping;
+	private final MatchRelatedRuleElementMap oppositeDomainMapping;
 
 	private int elementIDCounter = 0;
 	private int matchIDCounter = 0;
 	private int constraintNameCounter = 0;
 
-	private Map<TGGRuleElement, Set<Integer>> propDomainElement2Candidates = cfactory.createObjectToObjectHashMap();
-	private Map<TGGRuleElement, Set<Integer>> oppositeDomainElement2Candidates = cfactory.createObjectToObjectHashMap();
+	private Map<MatchRelatedRuleElement, Set<Integer>> propDomainElement2Candidates = cfactory.createObjectToObjectHashMap();
+	private Map<MatchRelatedRuleElement, Set<Integer>> oppositeDomainElement2Candidates = cfactory.createObjectToObjectHashMap();
 
 	private Map<ElementCandidate, Integer> propDomainCandidate2ID = cfactory.createObjectToIntHashMap();
 	private Map<ElementCandidate, Integer> oppositeDomainCandidate2ID = cfactory.createObjectToIntHashMap();
@@ -45,11 +44,11 @@ public class ILPHigherOrderRuleMappingSolver {
 	private Map<ITGGMatch, Integer> match2ID = cfactory.createObjectToIntHashMap();
 	private Map<Integer, ITGGMatch> id2match = cfactory.createIntToObjectHashMap();
 
-	private Map<TGGRuleElement, MatchRelatedRuleElement> mappingResult;
+	private Map<MatchRelatedRuleElement, MatchRelatedRuleElement> mappingResult;
 
 	public ILPHigherOrderRuleMappingSolver(SupportedILPSolver solver, //
-			Map<TGGRuleElement, Set<MatchRelatedRuleElement>> propDomainMapping, //
-			Map<TGGRuleElement, Set<MatchRelatedRuleElement>> oppositeDomainMapping) {
+			MatchRelatedRuleElementMap propDomainMapping, //
+			MatchRelatedRuleElementMap oppositeDomainMapping) {
 		this.solver = solver;
 		this.propDomainMapping = propDomainMapping;
 		this.oppositeDomainMapping = oppositeDomainMapping;
@@ -57,7 +56,7 @@ public class ILPHigherOrderRuleMappingSolver {
 		solve();
 	}
 
-	public Map<TGGRuleElement, MatchRelatedRuleElement> getResult() {
+	public Map<MatchRelatedRuleElement, MatchRelatedRuleElement> getResult() {
 		return mappingResult;
 	}
 
@@ -75,7 +74,7 @@ public class ILPHigherOrderRuleMappingSolver {
 		createMatchCandidates();
 	}
 
-	private void createPropDomainCandidates(TGGRuleElement source, Set<MatchRelatedRuleElement> targets) {
+	private void createPropDomainCandidates(MatchRelatedRuleElement source, Set<MatchRelatedRuleElement> targets) {
 		for (MatchRelatedRuleElement target : targets) {
 			ElementCandidate candidate = new ElementCandidate(source, target);
 
@@ -86,7 +85,7 @@ public class ILPHigherOrderRuleMappingSolver {
 		}
 	}
 
-	private void createOppositeDomainCandidates(TGGRuleElement source, Set<MatchRelatedRuleElement> targets) {
+	private void createOppositeDomainCandidates(MatchRelatedRuleElement source, Set<MatchRelatedRuleElement> targets) {
 		for (MatchRelatedRuleElement target : targets) {
 			ElementCandidate candidate = new ElementCandidate(source, target);
 
@@ -140,27 +139,27 @@ public class ILPHigherOrderRuleMappingSolver {
 	}
 
 	private void defineExclusionsForPropDomain(BinaryILPProblem ilpProblem) {
-		for (TGGRuleElement element : propDomainElement2Candidates.keySet()) {
+		for (MatchRelatedRuleElement element : propDomainElement2Candidates.keySet()) {
 			Set<Integer> candidates = propDomainElement2Candidates.get(element);
 
 			if (candidates.size() <= 1)
 				continue;
 
 			ilpProblem.addExclusion(candidates.stream().map(c -> "e" + c), //
-					"EXCL_propDomElement_" + element.eClass().getName() + "_" + constraintNameCounter++, //
+					"EXCL_propDomElement_" + element.ruleElement.eClass().getName() + "_" + constraintNameCounter++, //
 					1, 1);
 		}
 	}
 
 	private void defineExclusionsForOppositeDomain(BinaryILPProblem ilpProblem) {
-		for (TGGRuleElement element : oppositeDomainElement2Candidates.keySet()) {
+		for (MatchRelatedRuleElement element : oppositeDomainElement2Candidates.keySet()) {
 			Set<Integer> candidates = oppositeDomainElement2Candidates.get(element);
 
 			if (candidates.size() <= 1)
 				continue;
 
 			ilpProblem.addExclusion(candidates.stream().map(c -> "e" + c), //
-					"EXCL_oppositeDomElement_" + element.eClass().getName() + "_" + constraintNameCounter++);
+					"EXCL_oppositeDomElement_" + element.ruleElement.eClass().getName() + "_" + constraintNameCounter++);
 		}
 	}
 
@@ -175,25 +174,25 @@ public class ILPHigherOrderRuleMappingSolver {
 	}
 
 	private void defineImplicationsForPropDomain(BinaryILPProblem ilpProblem) {
-		for (TGGRuleElement element : propDomainElement2Candidates.keySet()) {
+		for (MatchRelatedRuleElement element : propDomainElement2Candidates.keySet()) {
 			Set<Integer> candidates = propDomainElement2Candidates.get(element);
 
 			for (Integer candidateID : candidates) {
 				ITGGMatch match = propDomainID2Candidate.get(candidateID).target.match;
 				ilpProblem.addImplication("e" + candidateID, Stream.of("m" + match2ID.get(match)), //
-						"IMPL_propDomElement->match_" + element.eClass().getName() + "_" + constraintNameCounter++);
+						"IMPL_propDomElement->match_" + element.ruleElement.eClass().getName() + "_" + constraintNameCounter++);
 			}
 		}
 	}
 
 	private void defineImplicationsForOppositeDomain(BinaryILPProblem ilpProblem) {
-		for (TGGRuleElement element : oppositeDomainElement2Candidates.keySet()) {
+		for (MatchRelatedRuleElement element : oppositeDomainElement2Candidates.keySet()) {
 			Set<Integer> candidates = oppositeDomainElement2Candidates.get(element);
 
 			for (Integer candidateID : candidates) {
 				ITGGMatch match = oppositeDomainID2Candidate.get(candidateID).target.match;
 				ilpProblem.addImplication("e" + candidateID, Stream.of("m" + match2ID.get(match)), //
-						"IMPL_oppositeDomElement->match_" + element.eClass().getName() + "_" + constraintNameCounter++);
+						"IMPL_oppositeDomElement->match_" + element.ruleElement.eClass().getName() + "_" + constraintNameCounter++);
 			}
 		}
 	}
@@ -252,10 +251,10 @@ public class ILPHigherOrderRuleMappingSolver {
 	}
 
 	private class ElementCandidate {
-		final TGGRuleElement source;
+		final MatchRelatedRuleElement source;
 		final MatchRelatedRuleElement target;
 
-		ElementCandidate(TGGRuleElement source, MatchRelatedRuleElement target) {
+		ElementCandidate(MatchRelatedRuleElement source, MatchRelatedRuleElement target) {
 			this.source = source;
 			this.target = target;
 		}
