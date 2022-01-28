@@ -32,9 +32,12 @@ import org.eclipse.emf.ecore.xmi.impl.URIHandlerImpl;
 import org.eclipse.xtext.EcoreUtil2;
 import org.eclipse.xtext.resource.XtextResourceSet;
 import org.emoflon.ibex.gt.editor.gT.EditorGTFile;
+import org.emoflon.ibex.gt.editor.gT.EditorImport;
 import org.emoflon.ibex.gt.editor.gT.EditorPattern;
+import org.emoflon.ibex.gt.editor.gT.XMLImport;
 import org.emoflon.ibex.gt.editor.ui.builder.GTBuilder;
 import org.emoflon.ibex.gt.editor.ui.builder.GTBuilderExtension;
+import org.emoflon.ibex.gt.editor.utils.GTEditorModelUtils;
 import org.emoflon.ibex.gt.transformations.AbstractModelTransformation;
 import org.emoflon.ibex.gt.transformations.EditorToIBeXPatternTransformation;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel;
@@ -113,7 +116,8 @@ public class GTPackageBuilder implements GTBuilderExtension {
 
 			EditorGTFile editorModel = (EditorGTFile) file.getContents().get(0);
 			editorModels.put(gtFile, editorModel);
-			editorModel.getImports().forEach(i -> metaModels.add(i.getName()));
+			editorModel.getImports().stream().filter(i -> i instanceof EditorImport).map(i -> (EditorImport) i).forEach(i -> metaModels.add(i.getName()));
+			editorModel.getImports().stream().filter(i -> i instanceof XMLImport).findAny().ifPresent(i -> metaModels.add(GTEditorModelUtils.XMLURI));
 		});
 		EcoreUtil.resolveAll(resourceSet);
 
