@@ -243,6 +243,8 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		matchDistributor.removeBlackInterpreter();
 		operationalMatchContainer.removeAllMatches();
 		matchHandler.clearCaches();
+
+		TimeRegistry.logTimes();
 	}
 
 	protected void prepareMarkerCreation(IGreenPattern greenPattern, ITGGMatch comatch, String ruleName) {

@@ -6,26 +6,22 @@ import java.util.Collections;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.emoflon.ibex.tgg.operational.benchmark.TimeRegistry;
+
 /**
- * This is the configuration class for console logs. It can be configured by using the
- * Environment Variable "log" and a list of options as value.
+ * This is the configuration class for console logs. It can be configured by using the Environment
+ * Variable "log" and a list of options as value.
  * <p>
  * Following options are available:
  * <ul>
  * <li>all</li>
- * <li>allTimes</li>
  * <li>matches</li>
  * <li>ruleApplication</li>
  * <li>repair</li>
  * <li>conflicts</li>
  * <li>ilp</li>
  * <li>precedenceGraph</li>
- * <li>matchApplicationTime</li>
- * <li>addMatchTime</li>
- * <li>collectMatchTime</li>
- * <li>translationTime</li>
- * <li>removalTime</li>
- * <li>repairTime</li>
+ * <li>times</li>
  * </ul>
  * </p>
  * 
@@ -35,34 +31,31 @@ import java.util.stream.Collectors;
  */
 public final class LoggerConfig {
 
-	private static Collection<String> envVars = getEnvironmentVariables();
+	private static final Collection<String> envVars = getEnvironmentVariables();
 
-	private static boolean log_all = getValue("all");
-	private static boolean log_allTimes = getValue("allTimes");
-	private static boolean log_matches = getValue("matches");
-	private static boolean log_ruleApplication = getValue("ruleApplication");
-	private static boolean log_repair = getValue("repair");
-	private static boolean log_conflicts = getValue("conflicts");
-	private static boolean log_ilp = getValue("ilp");
-	private static boolean log_pg = getValue("precedenceGraph");
-	private static boolean log_matchApplicationTime = getValue("matchApplicationTime");
-	private static boolean log_addMatchTime = getValue("addMatchTime");
-	private static boolean log_collectMatchTime = getValue("collectMatchTime");
-	private static boolean log_translationTime = getValue("translationTime");
-	private static boolean log_removalTime = getValue("removalTime");
-	private static boolean log_repairTime = getValue("repairTime");
+	private static final boolean log_all = getValue("all");
+	private static final boolean log_matches = getValue("matches");
+	private static final boolean log_ruleApplication = getValue("ruleApplication");
+	private static final boolean log_repair = getValue("repair");
+	private static final boolean log_conflicts = getValue("conflicts");
+	private static final boolean log_ilp = getValue("ilp");
+	private static final boolean log_pg = getValue("precedenceGraph");
+	private static final boolean log_times = getValue("times");
+
+	static {
+		TimeRegistry.setEnabled(log_times);
+	}
+
+	public static void init() {
+		// NO-OP
+	}
 
 	public static boolean log_anything() {
-		return log_all || log_allTimes || log_matches || log_ruleApplication || log_repair || log_conflicts || log_ilp || log_pg //
-				|| log_matchApplicationTime || log_addMatchTime || log_collectMatchTime || log_translationTime || log_removalTime || log_repairTime;
+		return log_all || log_matches || log_ruleApplication || log_repair || log_conflicts || log_ilp || log_pg;
 	}
 
 	public static boolean log_all() {
 		return log_all;
-	}
-
-	public static boolean log_allTimes() {
-		return log_all || log_allTimes;
 	}
 
 	public static boolean log_executionStructure() {
@@ -91,30 +84,6 @@ public final class LoggerConfig {
 
 	public static boolean log_pg() {
 		return log_pg;
-	}
-
-	public static boolean log_matchApplicationTime() {
-		return log_all || log_allTimes || log_matchApplicationTime;
-	}
-
-	public static boolean log_addMatchTime() {
-		return log_all || log_allTimes || log_addMatchTime;
-	}
-
-	public static boolean log_collectMatchTime() {
-		return log_all || log_allTimes || log_collectMatchTime;
-	}
-
-	public static boolean log_translationTime() {
-		return log_all || log_allTimes || log_translationTime;
-	}
-
-	public static boolean log_removalTime() {
-		return log_all || log_allTimes || log_removalTime;
-	}
-
-	public static boolean log_repairTime() {
-		return log_all || log_allTimes || log_repairTime;
 	}
 
 	public static void log(boolean apply, Supplier<String> output) {

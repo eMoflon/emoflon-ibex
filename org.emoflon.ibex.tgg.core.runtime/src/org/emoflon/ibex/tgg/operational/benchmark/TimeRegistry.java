@@ -13,8 +13,7 @@ import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.util.ConsoleUtil;
 
 /**
- * This class is a central registry for all classes that are going to measure
- * times.<br>
+ * This class is a central registry for all classes that are going to measure times.<br>
  * To register a class and measure times proceed as follows:
  * <ol>
  * <li>Let the class implement {@link TimeMeasurable}.</li>
@@ -28,6 +27,8 @@ import org.emoflon.ibex.tgg.util.ConsoleUtil;
  */
 public class TimeRegistry {
 
+	private static volatile boolean ENABLED = false;
+
 	private static final Set<TimeMeasurable> registry = cfactory.createObjectSet();
 
 	private static final DecimalFormat df = getFormat();
@@ -40,10 +41,16 @@ public class TimeRegistry {
 	}
 
 	public static void register(TimeMeasurable object) {
+		if (!ENABLED)
+			return;
+
 		registry.add(object);
 	}
 
 	public static void logTimes() {
+		if (!ENABLED)
+			return;
+
 		if (!Timer.timerStack.isEmpty())
 			throw new RuntimeException("Timer: there is still a timer running!");
 
@@ -62,7 +69,7 @@ public class TimeRegistry {
 
 		reset();
 	}
-	
+
 	public static void reset() {
 		registry.forEach(tm -> tm.getTimes().clear());
 	}
@@ -124,6 +131,28 @@ public class TimeRegistry {
 			elt2indent.put(elt, indent);
 			serialize(elt2indent, elt.childs, indent + 1);
 		}
+	}
+
+	/**
+	 * Enables or disables the functionalities of this class, so they do not affect performance.
+	 * 
+	 * @param enabled
+	 */
+	public static void setEnabled(boolean enabled) {
+		TimeRegistry.ENABLED = enabled;
+
+		if (enabled) {
+			Times.setEnabled(true);
+			Timer.setEnabled(true);
+		}
+	}
+
+	/**
+	 * 
+	 * @return {@code true} if the {@link TimeRegistry} is enabled.
+	 */
+	public static boolean isEnabled() {
+		return TimeRegistry.ENABLED;
 	}
 
 }

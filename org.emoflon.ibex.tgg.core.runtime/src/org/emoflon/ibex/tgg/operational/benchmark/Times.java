@@ -9,21 +9,32 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
+
 public class Times {
 
+	private static volatile boolean ENABLED = false;
+
 	private final Map<String, Long> times = new TreeMap<>();
+
+	static {
+		LoggerConfig.init();
+	}
 
 	/**
 	 * Adds the given time to the entry with the given name.<br>
 	 * <br>
-	 * To optionally specify a parent entry, enter it's name before the entry name
-	 * separated with a colon. The name parameter should then be in the form of
+	 * To optionally specify a parent entry, enter it's name before the entry name separated with a
+	 * colon. The name parameter should then be in the form of
 	 * <code>&lt;parentName&gt;:&lt;childName&gt;</code>.
 	 * 
 	 * @param name name of the entry
 	 * @param time time to add
 	 */
 	public void addTo(String name, long time) {
+		if (!ENABLED)
+			return;
+
 		if (times.containsKey(name))
 			times.put(name, times.get(name) + time);
 		else
@@ -37,6 +48,9 @@ public class Times {
 	 * @param time
 	 */
 	public void subtractFrom(String name, long time) {
+		if (!ENABLED)
+			return;
+
 		if (times.containsKey(name))
 			times.put(name, times.get(name) - time);
 		else
@@ -46,8 +60,8 @@ public class Times {
 	/**
 	 * Sets the time of the entry with the given name to the given time.<br>
 	 * <br>
-	 * To optionally specify a parent entry, enter it's name before the entry name
-	 * separated with a colon. The name parameter should then be in the form of
+	 * To optionally specify a parent entry, enter it's name before the entry name separated with a
+	 * colon. The name parameter should then be in the form of
 	 * <code>&lt;parentName&gt;:&lt;childName&gt;</code>.
 	 * 
 	 * @param name name of the entry
@@ -145,6 +159,24 @@ public class Times {
 		public int compareTo(TimeElt other) {
 			return this.name.compareTo(other.name);
 		}
+	}
+
+	/**
+	 * Enables or disables the functionalities of this class, so they do not affect performance.
+	 * 
+	 * @param enabled
+	 */
+	public static void setEnabled(boolean enabled) {
+		if (enabled || !TimeRegistry.isEnabled())
+			Times.ENABLED = enabled;
+	}
+
+	/**
+	 * 
+	 * @return {@code true} if this class is enabled.
+	 */
+	public static boolean isEnabled() {
+		return Times.ENABLED;
 	}
 
 }
