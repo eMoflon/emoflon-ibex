@@ -56,6 +56,11 @@ public class HigherOrderTGGRule {
 			this.rule = rule;
 			this.contextMapping = contextMapping;
 		}
+
+		@Override
+		public String toString() {
+			return "HigherOrderRuleComponent [rule: " + rule.getName() + "]";
+		}
 	}
 
 	public static class ComponentSpecificRuleElement {
@@ -82,6 +87,18 @@ public class HigherOrderTGGRule {
 				return false;
 			ComponentSpecificRuleElement other = (ComponentSpecificRuleElement) obj;
 			return Objects.equals(component, other.component) && Objects.equals(ruleElement, other.ruleElement);
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder builder = new StringBuilder();
+			builder.append("ComponentSpecificRuleElement [\n");
+			builder.append("  element:   ");
+			builder.append(ruleElement);
+			builder.append("\n  component: ");
+			builder.append(ConsoleUtil.indent(component.toString(), 2, false));
+			builder.append("\n]");
+			return builder.toString();
 		}
 	}
 
