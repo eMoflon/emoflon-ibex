@@ -71,19 +71,19 @@ public class ShortcutApplicationPointFinder {
 
 		Set<List<PrecedenceNode>> setOfReplacingNodes = new HashSet<>();
 		for (PrecedenceNode overlappingNode : overlappingNodes) {
-			List<PrecedenceNode> replacingNodes = new LinkedList<>();
-			replacingNodes.add(overlappingNode);
+			LinkedList<PrecedenceNode> replacingNodes = new LinkedList<>();
+			replacingNodes.addFirst(overlappingNode);
 			overlappingNode.forAllRequires((act, pre) -> {
 				if (act.getMatch().getType() != propagationType)
 					return false;
 
-				replacingNodes.add(act);
+				replacingNodes.addFirst(act);
 				return true;
 			});
 			setOfReplacingNodes.add(replacingNodes);
 		}
 
-		ShortcutApplicationPoint shortcutApplPoint = new ShortcutApplicationPoint(originalNodes, setOfReplacingNodes);
+		ShortcutApplicationPoint shortcutApplPoint = new ShortcutApplicationPoint(originalNodes, setOfReplacingNodes, propagationType);
 		shortcutApplPoint.addOverlaps(node, overlappingNodes);
 		return shortcutApplPoint;
 	}
@@ -122,6 +122,7 @@ public class ShortcutApplicationPointFinder {
 	public class ShortcutApplicationPoint {
 		public final List<PrecedenceNode> originalNodes;
 		public final Set<List<PrecedenceNode>> setOfReplacingNodes;
+		public final PatternType propagationType;
 
 		public final Map<PrecedenceNode, Set<PrecedenceNode>> original2replacingNodesOverlaps;
 		// do we really need this?
@@ -129,9 +130,10 @@ public class ShortcutApplicationPointFinder {
 
 		final Set<ShortcutApplicationPoint> subsetScApplications;
 
-		ShortcutApplicationPoint(List<PrecedenceNode> originalNodes, Set<List<PrecedenceNode>> setOfReplacingNodes) {
+		ShortcutApplicationPoint(List<PrecedenceNode> originalNodes, Set<List<PrecedenceNode>> setOfReplacingNodes, PatternType propagationType) {
 			this.originalNodes = originalNodes;
 			this.setOfReplacingNodes = setOfReplacingNodes;
+			this.propagationType = propagationType;
 
 			this.original2replacingNodesOverlaps = new HashMap<>();
 //			this.replacing2originalNodeOverlaps = new HashMap<>();

@@ -56,7 +56,7 @@ public class HigherOrderTGGRuleFactory {
 			Map<TGGRuleElement, ComponentSpecificRuleElement> contextMapping = nodes.indexOf(node) == 0 //
 					? new HashMap<>()
 					: createMappingForCons(higherOrderRule, node, matchUtil);
-			higherOrderRule.addComponentLast(rule, node.getMatch(), contextMapping);
+			higherOrderRule.addComponent(rule, node.getMatch(), contextMapping);
 		}
 
 		return higherOrderRule;
@@ -119,10 +119,17 @@ public class HigherOrderTGGRuleFactory {
 			TGGRule rule = matchUtil.getRule();
 
 			Set<MatchRelatedRuleElement> matchRelatedRuleElements = node2ruleElements.get(node);
-			Map<TGGRuleElement, MatchRelatedRuleElement> contextMapping = matchRelatedRuleElements.stream() //
-					.collect(Collectors.toMap(e -> e.ruleElement, overallContextMapping::get));
+			Map<TGGRuleElement, ComponentSpecificRuleElement> contextMapping = matchRelatedRuleElements.stream() //
+					.collect(Collectors.toMap(e -> e.ruleElement, e -> {
+						MatchRelatedRuleElement matchRelRuleElt = overallContextMapping.get(e);
+						HigherOrderRuleComponent component = higherOrderRule.getComponent(matchRelRuleElt.match);
+						if (component == null)
+							throw new RuntimeException(
+									"There are missing components which are tried to be referenced. Maybe component adding order is incorrect.");
+						return new ComponentSpecificRuleElement(matchRelRuleElt.ruleElement, component);
+					}));
 
-			// TODO map match related to component specific; manage adding components to HO-rule
+			higherOrderRule.addComponent(rule, node.getMatch(), contextMapping);
 		}
 
 		return higherOrderRule;
@@ -139,7 +146,8 @@ public class HigherOrderTGGRuleFactory {
 
 			Set<MatchRelatedRuleElement> mappedElements = new HashSet<>();
 			for (PrecedenceNode mappedNode : mappedNodes) {
-				// if there is an intact consistency match covering that object, we don't want to map it's rule node
+				// if there is an intact consistency match covering that object, we don't want to map the object's
+				// rule node
 				if (mappedNode.getMatch().getType() == PatternType.CONSISTENCY && !mappedNode.isBroken())
 					continue objLoop;
 

@@ -238,10 +238,11 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 	}
 
 	/**
-	 * Finds all valid node whose green nodes (partly) overlap with the green nodes from the specified
-	 * node. The {@code overlapType} parameter specifies which pattern type is considered for overlaps.
+	 * Finds all valid PG-nodes whose green rule nodes (partly) overlap with the green rule nodes from
+	 * the specified PG-node. The {@code overlapType} parameter specifies which pattern type is
+	 * considered for overlaps.
 	 * 
-	 * @param node
+	 * @param PG-node
 	 * @param overlapType
 	 * @return
 	 */

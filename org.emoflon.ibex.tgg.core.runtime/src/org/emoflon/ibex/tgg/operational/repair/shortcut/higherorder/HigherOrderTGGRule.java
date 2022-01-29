@@ -17,18 +17,12 @@ public class HigherOrderTGGRule {
 	private final LinkedList<HigherOrderRuleComponent> components;
 	private final Map<ITGGMatch, HigherOrderRuleComponent> match2component;
 
-	public HigherOrderTGGRule() {
+	protected HigherOrderTGGRule() {
 		this.components = new LinkedList<>();
 		this.match2component = new HashMap<>();
 	}
 
-	public void addComponentFirst(TGGRule rule, ITGGMatch match, Map<TGGRuleElement, ComponentSpecificRuleElement> contextMapping) {
-		HigherOrderRuleComponent component = new HigherOrderRuleComponent(rule, contextMapping);
-		components.addFirst(component);
-		match2component.put(match, component);
-	}
-
-	public void addComponentLast(TGGRule rule, ITGGMatch match, Map<TGGRuleElement, ComponentSpecificRuleElement> contextMapping) {
+	protected void addComponent(TGGRule rule, ITGGMatch match, Map<TGGRuleElement, ComponentSpecificRuleElement> contextMapping) {
 		HigherOrderRuleComponent component = new HigherOrderRuleComponent(rule, contextMapping);
 		components.addLast(component);
 		match2component.put(match, component);
