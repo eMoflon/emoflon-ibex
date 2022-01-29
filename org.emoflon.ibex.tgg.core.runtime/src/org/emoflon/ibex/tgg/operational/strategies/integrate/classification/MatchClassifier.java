@@ -114,7 +114,7 @@ public class MatchClassifier implements TimeMeasurable {
 	}
 
 	public Collection<ClassifiedMatch> getAllClassifiedMatches() {
-		return classifiedMatches.values();
+		return new HashSet<>(classifiedMatches.values());
 	}
 
 	public void clear() {
