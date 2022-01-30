@@ -7,6 +7,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.operational.benchmark.TimeRegistry;
+import org.emoflon.smartemf.runtime.SmartEMFConfig;
 
 /**
  * This is the configuration class for console logs. It can be configured by using the Environment
@@ -22,6 +23,7 @@ import org.emoflon.ibex.tgg.operational.benchmark.TimeRegistry;
  * <li>ilp</li>
  * <li>precedenceGraph</li>
  * <li>times</li>
+ * <li>simple</li>
  * </ul>
  * </p>
  * 
@@ -41,9 +43,11 @@ public final class LoggerConfig {
 	private static final boolean log_ilp = getValue("ilp");
 	private static final boolean log_pg = getValue("precedenceGraph");
 	private static final boolean log_times = getValue("times");
+	private static final boolean simplified_logs = getValue("simple");
 
 	static {
 		TimeRegistry.setEnabled(log_times);
+		SmartEMFConfig.setSimpleStringRepresentations(simplified_logs);
 	}
 
 	public static void init() {
