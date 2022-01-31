@@ -49,7 +49,7 @@ public class ShortcutApplicationPointFinder {
 		if (propagationType == null)
 			return null;
 
-		Set<PrecedenceNode> overlappingNodes = pg.findOverlappingNodes(node, propagationType);
+		Map<PrecedenceNode, Set<Object>> overlappingNodes = pg.findOverlappingNodes(node, propagationType);
 
 		if (overlappingNodes.isEmpty())
 			return null;
@@ -70,7 +70,7 @@ public class ShortcutApplicationPointFinder {
 		});
 
 		Set<List<PrecedenceNode>> setOfReplacingNodes = new HashSet<>();
-		for (PrecedenceNode overlappingNode : overlappingNodes) {
+		for (PrecedenceNode overlappingNode : overlappingNodes.keySet()) {
 			LinkedList<PrecedenceNode> replacingNodes = new LinkedList<>();
 			replacingNodes.addFirst(overlappingNode);
 			overlappingNode.forAllRequires((act, pre) -> {
@@ -111,7 +111,7 @@ public class ShortcutApplicationPointFinder {
 					subsetScApplications.add(subsetScAppl);
 
 					// add missing overlaps
-					Set<PrecedenceNode> replacingNodeOverlaps = subsetScAppl.original2replacingNodesOverlaps.get(originalNode);
+					Map<PrecedenceNode, Set<Object>> replacingNodeOverlaps = subsetScAppl.original2replacingNodesOverlaps.get(originalNode);
 					shortcutApplication.addOverlaps(originalNode, replacingNodeOverlaps);
 				}
 			}
@@ -124,7 +124,7 @@ public class ShortcutApplicationPointFinder {
 		public final Set<List<PrecedenceNode>> setOfReplacingNodes;
 		public final PatternType propagationType;
 
-		public final Map<PrecedenceNode, Set<PrecedenceNode>> original2replacingNodesOverlaps;
+		public final Map<PrecedenceNode, Map<PrecedenceNode, Set<Object>>> original2replacingNodesOverlaps;
 		// do we really need this?
 //		public final Map<PrecedenceNode, PrecedenceNode> replacing2originalNodeOverlaps;
 
@@ -141,8 +141,8 @@ public class ShortcutApplicationPointFinder {
 			this.subsetScApplications = new HashSet<>();
 		}
 
-		public void addOverlaps(PrecedenceNode originalNode, Set<PrecedenceNode> replacingNodes) {
-			original2replacingNodesOverlaps.put(originalNode, replacingNodes);
+		public void addOverlaps(PrecedenceNode originalNode, Map<PrecedenceNode, Set<Object>> replacingNodes2overlappingElts) {
+			original2replacingNodesOverlaps.put(originalNode, replacingNodes2overlappingElts);
 //			for (PrecedenceNode replacingNode : replacingNodes)
 //				replacing2originalNodeOverlaps.put(replacingNode, originalNode);
 		}

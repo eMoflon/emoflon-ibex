@@ -80,7 +80,7 @@ public class HigherOrderTGGRuleFactory {
 
 				TGGMatchUtil mappedMatchUtil = mu.get(mappedNode.getMatch());
 				TGGRuleElement mappedRuleElement = mappedMatchUtil.getElement(obj);
-				contextMapping.put(ruleElement, new ComponentSpecificRuleElement(mappedRuleElement, mappedComponent));
+				contextMapping.put(ruleElement, mappedComponent.createComponentSpecificRuleElement(mappedRuleElement));
 				break;
 			}
 		}
@@ -126,7 +126,7 @@ public class HigherOrderTGGRuleFactory {
 						if (component == null)
 							throw new RuntimeException(
 									"There are missing components which are tried to be referenced. Maybe component adding order is incorrect.");
-						return new ComponentSpecificRuleElement(matchRelRuleElt.ruleElement, component);
+						return component.createComponentSpecificRuleElement(matchRelRuleElt.ruleElement);
 					}));
 
 			higherOrderRule.addComponent(rule, node.getMatch(), contextMapping);

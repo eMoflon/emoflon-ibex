@@ -57,17 +57,21 @@ public class HigherOrderTGGRule {
 			this.contextMapping = contextMapping;
 		}
 
+		public ComponentSpecificRuleElement createComponentSpecificRuleElement(TGGRuleElement ruleElement) {
+			return new ComponentSpecificRuleElement(ruleElement, this);
+		}
+
 		@Override
 		public String toString() {
 			return "HigherOrderRuleComponent [rule: " + rule.getName() + "]";
 		}
 	}
 
-	public static class ComponentSpecificRuleElement {
+	public class ComponentSpecificRuleElement {
 		public final TGGRuleElement ruleElement;
 		public final HigherOrderRuleComponent component;
 
-		public ComponentSpecificRuleElement(TGGRuleElement ruleElement, HigherOrderRuleComponent component) {
+		private ComponentSpecificRuleElement(TGGRuleElement ruleElement, HigherOrderRuleComponent component) {
 			this.ruleElement = ruleElement;
 			this.component = component;
 		}

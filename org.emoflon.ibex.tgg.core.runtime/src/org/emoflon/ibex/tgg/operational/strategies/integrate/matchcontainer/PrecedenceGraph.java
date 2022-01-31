@@ -3,6 +3,7 @@ package org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer;
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -246,39 +247,42 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 	 * @param overlapType
 	 * @return
 	 */
-	public Set<PrecedenceNode> findOverlappingNodes(PrecedenceNode node, PatternType overlapType) {
-		Set<PrecedenceNode> overlaps = new HashSet<>();
+	public Map<PrecedenceNode, Set<Object>> findOverlappingNodes(PrecedenceNode node, PatternType overlapType) {
+		Map<PrecedenceNode, Set<Object>> overlaps;
 
 		ITGGMatch match = node.getMatch();
 		IGreenPatternFactory gFactory = strategy.getGreenFactories().get(match.getRuleName());
 		Set<Object> translatedElts = cfactory.createObjectSet();
 
 		if (match.getType() == PatternType.CONSISTENCY) {
-			if (overlapType == PatternType.SRC)
-				getGreenSrcElements(match, gFactory, translatedElts);
-			else if (overlapType == PatternType.TRG)
-				getGreenTrgElements(match, gFactory, translatedElts);
-			else
-				throw new RuntimeException("For consistency matches, the pattern type of overlapping matches can only be source or target!");
+			switch (overlapType) {
+			case SRC -> getGreenSrcElements(match, gFactory, translatedElts);
+			case TRG -> getGreenTrgElements(match, gFactory, translatedElts);
+			default -> throw new RuntimeException("For consistency matches, the pattern type of overlapping matches can only be source or target!");
+			}
 
+			// What it does: gets all nodes that translates the elt & passes them in a (node,elt)-pair.
+			// Then, does some filtering regarding pattern type & valid nodes.
+			// Finally, converts & reduces the pairs to a map such that a node points to the set of its
+			// translated elts.
 			overlaps = translatedElts.parallelStream() //
-					.flatMap(elt -> this.getNodesTranslating(elt).stream()) //
-					.filter(n -> n.getMatch().getType() == overlapType) //
-					.filter(n -> this.getNodes(overlapType).contains(n)) //
-					.collect(Collectors.toSet());
+					.flatMap(elt -> this.getNodesTranslating(elt).stream().map(n -> new SimpleEntry<>(n, elt))) //
+					.filter(e -> e.getKey().getMatch().getType() == overlapType) //
+					.filter(e -> this.getNodes(overlapType).contains(e.getKey())) //
+					.collect(Collectors.groupingBy(e -> e.getKey(), Collectors.mapping(e -> e.getValue(), Collectors.toSet())));
 		} else {
-			if (match.getType() == PatternType.SRC)
-				getGreenSrcElements(match, gFactory, translatedElts);
-			else if (match.getType() == PatternType.TRG)
-				getGreenTrgElements(match, gFactory, translatedElts);
-			else
-				throw new RuntimeException("The pattern type of the specified node can only to be consistency, source or target!");
+			switch (match.getType()) {
+			case SRC -> getGreenSrcElements(match, gFactory, translatedElts);
+			case TRG -> getGreenTrgElements(match, gFactory, translatedElts);
+			default -> throw new RuntimeException("The pattern type of the specified node can only to be consistency, source or target!");
+			}
 
+			// What it does: see comment above
 			overlaps = translatedElts.parallelStream() //
-					.flatMap(elt -> this.getNodesTranslating(elt).stream()) //
-					.filter(n -> n.getMatch().getType() == overlapType) //
-					.filter(n -> this.nodes.contains(n)) //
-					.collect(Collectors.toSet());
+					.flatMap(elt -> this.getNodesTranslating(elt).stream().map(n -> new SimpleEntry<>(n, elt))) //
+					.filter(e -> e.getKey().getMatch().getType() == overlapType) //
+					.filter(e -> this.nodes.contains(e.getKey())) //
+					.collect(Collectors.groupingBy(e -> e.getKey(), Collectors.mapping(e -> e.getValue(), Collectors.toSet())));
 		}
 
 		return overlaps;

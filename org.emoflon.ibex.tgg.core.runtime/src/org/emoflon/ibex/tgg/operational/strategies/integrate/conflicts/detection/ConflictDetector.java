@@ -338,7 +338,7 @@ public class ConflictDetector {
 
 		boolean anyConflictsDetected = false;
 		if (partlyModSrc) {
-			Set<PrecedenceNode> srcNodes = integrate.precedenceGraph().findOverlappingNodes(brokenNode, PatternType.SRC);
+			Set<PrecedenceNode> srcNodes = integrate.precedenceGraph().findOverlappingNodes(brokenNode, PatternType.SRC).keySet();
 
 			// Detect delete-preserve conflicts whose conflicting creations are involved in a reparable
 			// delta (source domain partly deleted plus related creations). Thus, after conflict resolution the
@@ -367,7 +367,7 @@ public class ConflictDetector {
 				return true;
 			}
 		} else {
-			Set<PrecedenceNode> trgNodes = integrate.precedenceGraph().findOverlappingNodes(brokenNode, PatternType.TRG);
+			Set<PrecedenceNode> trgNodes = integrate.precedenceGraph().findOverlappingNodes(brokenNode, PatternType.TRG).keySet();
 
 			// Detect delete-preserve conflicts whose conflicting creations are involved in a reparable
 			// delta (target domain partly deleted plus related creations). Thus, after conflict resolution the
