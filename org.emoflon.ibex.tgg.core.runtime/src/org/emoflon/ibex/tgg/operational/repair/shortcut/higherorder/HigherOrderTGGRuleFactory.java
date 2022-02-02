@@ -30,6 +30,7 @@ import language.TGGExpression;
 import language.TGGInplaceAttributeExpression;
 import language.TGGLiteralExpression;
 import language.TGGRule;
+import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
@@ -66,7 +67,7 @@ public class HigherOrderTGGRuleFactory {
 			TGGMatchUtil matchUtil) {
 		Map<TGGRuleElement, ComponentSpecificRuleElement> contextMapping = new HashMap<>();
 
-		Set<Object> objects = matchUtil.getObjects(new EltFilter().srcAndTrg().context());
+		Set<Object> objects = matchUtil.getObjects(new EltFilter().context());
 		for (Object obj : objects) {
 			TGGRuleElement ruleElement = matchUtil.getElement(obj);
 			Set<PrecedenceNode> mappedNodes = pg.getNodesTranslating(obj);
@@ -75,12 +76,22 @@ public class HigherOrderTGGRuleFactory {
 					continue;
 
 				HigherOrderRuleComponent mappedComponent = higherOrderRule.getComponent(mappedNode.getMatch());
-				if (mappedComponent == null)
-					continue;
-
-				TGGMatchUtil mappedMatchUtil = mu.get(mappedNode.getMatch());
-				TGGRuleElement mappedRuleElement = mappedMatchUtil.getElement(obj);
-				contextMapping.put(ruleElement, mappedComponent.createComponentSpecificRuleElement(mappedRuleElement));
+				if (mappedComponent != null) {
+					TGGMatchUtil mappedMatchUtil = mu.get(mappedNode.getMatch());
+					TGGRuleElement mappedRuleElement = mappedMatchUtil.getElement(obj);
+					contextMapping.put(ruleElement, mappedComponent.getComponentSpecificRuleElement(mappedRuleElement));
+				} else {
+					for (PrecedenceNode reqNode : mappedNode.getRequiredBy()) {
+						if (reqNode.getMatch().getObjects().contains(obj)) {
+							mappedComponent = higherOrderRule.getComponent(reqNode.getMatch());
+							if (mappedComponent == null)
+								continue;
+							TGGMatchUtil mappedMatchUtil = mu.get(reqNode.getMatch());
+							TGGRuleElement mappedRuleElement = mappedMatchUtil.getElement(obj);
+							contextMapping.put(ruleElement, mappedComponent.getComponentSpecificRuleElement(mappedRuleElement));
+						}
+					}
+				}
 				break;
 			}
 		}
@@ -126,8 +137,24 @@ public class HigherOrderTGGRuleFactory {
 						if (component == null)
 							throw new RuntimeException(
 									"There are missing components which are tried to be referenced. Maybe component adding order is incorrect.");
-						return component.createComponentSpecificRuleElement(matchRelRuleElt.ruleElement);
+						return component.getComponentSpecificRuleElement(matchRelRuleElt.ruleElement);
 					}));
+
+			// corr mapping:
+			Set<TGGRuleNode> corrNodes = matchUtil.getNodes(new EltFilter().corr().context());
+			for (TGGRuleNode corrNode : corrNodes) {
+				TGGRuleCorr corr = (TGGRuleCorr) corrNode;
+				ComponentSpecificRuleElement mappedSrcNode = contextMapping.get(corr.getSource());
+				ComponentSpecificRuleElement mappedTrgNode = contextMapping.get(corr.getTarget());
+				if (mappedSrcNode == null || mappedTrgNode == null)
+					continue;
+
+				if (!Objects.equals(mappedSrcNode.component, mappedTrgNode.component))
+					throw new RuntimeException("Inconsistent mapping! Corresponding source and target nodes should be mapped within the same rule.");
+
+				TGGRuleCorr mappedCorr = getConnectingCorr(mappedSrcNode.ruleElement, mappedTrgNode.ruleElement, mappedSrcNode.component);
+				contextMapping.put(corr, mappedSrcNode.component.getComponentSpecificRuleElement(mappedCorr));
+			}
 
 			higherOrderRule.addComponent(rule, node.getMatch(), contextMapping);
 		}
@@ -135,9 +162,21 @@ public class HigherOrderTGGRuleFactory {
 		return higherOrderRule;
 	}
 
+	private TGGRuleCorr getConnectingCorr(TGGRuleElement srcNode, TGGRuleElement trgNode, HigherOrderRuleComponent component) {
+		Collection<TGGRuleNode> corrNodes = TGGFilterUtil.filterNodes(component.rule.getNodes(), DomainType.CORR);
+		for (TGGRuleNode corrNode : corrNodes) {
+			TGGRuleCorr corr = (TGGRuleCorr) corrNode;
+			if (srcNode.equals(corr.getSource()) && trgNode.equals(corr.getTarget()))
+				return corr;
+		}
+		throw new RuntimeException("There is no correspondence connecting these two nodes!");
+	}
+
 	private MatchRelatedRuleElementMap createMappingForPropagationDomain(PrecedenceNode node, TGGMatchUtil matchUtil, DomainType propagationDomain,
 			List<PrecedenceNode> nodes) {
 		MatchRelatedRuleElementMap contextMapping = new MatchRelatedRuleElementMap();
+
+		// FIXME handle context to context mapping
 
 		Set<Object> objects = matchUtil.getObjects(new EltFilter().domains(propagationDomain).context());
 		objLoop: for (Object obj : objects) {
@@ -202,6 +241,8 @@ public class HigherOrderTGGRuleFactory {
 				}
 			}
 
+			// FIXME handle context to context mapping
+
 			if (!mappedElements.isEmpty())
 				contextMapping.put(new MatchRelatedRuleElement(ruleNode, node.getMatch()), mappedElements);
 		}
@@ -218,6 +259,8 @@ public class HigherOrderTGGRuleFactory {
 					}
 				}
 			}
+
+			// FIXME handle context to context mapping
 
 			if (!mappedElements.isEmpty())
 				contextMapping.put(new MatchRelatedRuleElement(ruleEdge, node.getMatch()), mappedElements);
