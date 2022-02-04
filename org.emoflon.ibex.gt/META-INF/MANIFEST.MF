@@ -4,7 +4,6 @@ Bundle-SymbolicName: org.emoflon.ibex.gt;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: eMoflon::IBeX Developers
 Bundle-ManifestVersion: 2
-Bundle-ActivationPolicy: lazy
 Export-Package: org.emoflon.ibex.gt.api,
  org.emoflon.ibex.gt.arithmetic,
  org.emoflon.ibex.gt.codegen,
@@ -13,7 +12,8 @@ Export-Package: org.emoflon.ibex.gt.api,
  org.emoflon.ibex.gt.transformations,
  org.emoflon.ibex.gt.ui
 Bundle-Localization: plugin
-Require-Bundle: org.apache.log4j,
+Require-Bundle: org.emoflon.ibex.dependencies;bundle-version="1.0.0";visibility:=reexport,
+ org.apache.log4j,
  org.eclipse.core.resources,
  org.eclipse.core.runtime,
  org.eclipse.emf.ecore;visibility:=reexport,
@@ -26,12 +26,11 @@ Require-Bundle: org.apache.log4j,
  org.moflon.core.plugins,
  org.moflon.core.propertycontainer,
  org.moflon.core.utilities,
- org.emoflon.ibex.dependencies;bundle-version="1.0.0";visibility:=reexport,
  org.emoflon.ibex.patternmodel;visibility:=reexport,
  org.emoflon.ibex.gt.statemodel;visibility:=reexport,
  org.apache.commons.io.source;bundle-version="2.8.0",
  org.emoflon.ibex.modelxml;bundle-version="0.1.0"
-Bundle-ClassPath: .,
- lib/
+Bundle-ClassPath: .
 Automatic-Module-Name: org.emoflon.ibex.gt
 Bundle-RequiredExecutionEnvironment: JavaSE-16
+Bundle-ActivationPolicy: lazy
