@@ -3,15 +3,9 @@ package org.emoflon.ibex.modelxml.parser;
 import java.io.*;
 import java.util.*;
 
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EAttribute;
-import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EPackage;
-import org.eclipse.emf.ecore.EcorePackage;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.*;
+import org.eclipse.emf.ecore.resource.*;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.emoflon.ibex.modelxml.*;
@@ -22,48 +16,27 @@ import org.jdom2.input.SAXBuilder;
 
 public class Parser {
 
-	private static List<XMLObject> xmlObjects;
+	public static XMLModel parseXMLFile() {
+		return parseXMLFile("misc/xample.xml");
+	}
 	
 	public static XMLModel parseXMLFile(String fileName) {
-		return parseXMLFile(fileName, false);
-	}
-	
-	public static void parseXMLFileToMetaModel(String filename) {
-		parseXMLFile(filename, true);
-	}
-	
-	private static XMLModel parseXMLFile(String fileName, boolean meta) {
-		xmlObjects = new ArrayList<XMLObject>();
 		var end = fileName.lastIndexOf(".");
 		var fileNameWoEnd = fileName.substring(0, end);
 		
-		File file = new File(fileName);
-		Document document = null;
-
-		try {
-			document = new SAXBuilder().build(file);
-		} catch (org.jdom2.JDOMException | IOException e1) {
-			e1.printStackTrace();
-		}
-
-		final Element rootElement = document.getRootElement();
-
+		final Element rootElement = getRootElement(fileName);
+		
 		// Setup RessourceSet
 		ResourceSet rs = new ResourceSetImpl();
 		rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());
 		Resource r = rs.createResource(URI.createURI(fileNameWoEnd+"Test.xmi"));
-
-//		Generate XML Model
+		
+		// Generate XML Model
 		XMLModel container = ModelxmlFactory.eINSTANCE.createXMLModel();
 		
-		if (meta) {
-			parseNodeMeta(rootElement);
-		} else {
-			parseHeader(file, container);
-			var root = parseNode(rootElement);
-			container.setRoot(root);
-		}
-		
+		parseHeader(new File(fileName), container);
+		var root = parseNode(rootElement);
+		container.setRoot(root);
 		r.getContents().add(container);
 		try {
 			r.save(null);
@@ -73,14 +46,30 @@ public class Parser {
 		return container;
 	}
 	
-
-
-
-	public static Resource parseXMLFile(URI uri) {
-		var fileName = uri.toFileString();
+	public static void parseXMLFileToMetaModel(String fileName) {
 		var end = fileName.lastIndexOf(".");
 		var fileNameWoEnd = fileName.substring(0, end);
 		
+		final Element rootElement = getRootElement(fileName);
+		
+		// TODO: persistieren
+		var rs = new ResourceSetImpl();
+		rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());
+		var r = rs.createResource(URI.createURI(fileNameWoEnd+"Ecore.idk"));
+		//var container = SomeFactory.createContainer();
+		
+		var root = parseNodeMeta(rootElement);
+		//container.setRoot(root);
+		//r.getContents().add(container);
+		try {
+			r.save(null);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		//return container;
+	}
+
+	private static Element getRootElement(String fileName) {
 		File file = new File(fileName);
 		Document document = null;
 
@@ -90,31 +79,15 @@ public class Parser {
 			e1.printStackTrace();
 		}
 
-		final Element rootFile = document.getRootElement();
-
-		// Setup RessourceSet
-		ResourceSet rs = new ResourceSetImpl();
-		rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());
-		Resource r = rs.createResource(URI.createURI(fileNameWoEnd+"Test.xmi"));
-
-//		Generate XML Model
-		XMLModel container = ModelxmlFactory.eINSTANCE.createXMLModel();
-		parseHeader(file, container);
-
-		parseNode(rootFile);
-		r.getContents().add(container);
-		try {
-			r.save(null);
-		} catch (IOException er) {
-			er.printStackTrace();
-		}
-		return r;
+		return document.getRootElement();
 	}
 	
-	
-	public static XMLModel parseXMLFile() {
-		return parseXMLFile("misc/xample.xml");
+
+	public static Resource parseXMLFile(URI uri) {
+		var fileName = uri.toFileString();
+		return parseXMLFile(fileName).eResource();
 	}
+	
 
 	private static void parseHeader(File file, XMLModel container) {
 		try {
@@ -167,40 +140,30 @@ public class Parser {
 			eAttributes.add(a);
 		}
 		
+		// map children by their name into lists
 		var childMap = new HashMap<String, List<EClass>>();
 		for (var child: element.getChildren()) {
 			var eChild = parseNodeMeta(child);
 			
-			// merge nodes with the same name
 			if (childMap.containsKey(child.getName())) {
-				childMap.get(eChild.getName())
+				var entry = childMap.get(child.getName());
+				entry.add(eChild);
+			} else {
+				var entry = new ArrayList<EClass>();
+				entry.add(eChild);
+				childMap.put(child.getName(), entry);
 			}
-			try {
-				var child2 = childMap.stream().filter(c -> c.getName().equals(eChild.getName())).findFirst().get();
-				var cAttributes = new HashSet<>(child2.getEAttributes());
-				var childAttributes = new HashSet<>(eChild.getEAttributes());
-				cAttributes.addAll(childAttributes);
-				child2.getEAttributes().clear();
-				child2.getEAllAttributes().addAll(cAttributes);				
-			} catch(NoSuchElementException e) {
-				// child with unique name
-				childMap.add(eChild);				
-			}
-			// TODO: something with value
 		}
-		return eclass;
-	}
-	
-	private static boolean addOrMerge(XMLObject obj) {
-		if (xmlObjects == null) return false;
 		
-		if (xmlObjects.contains(obj)) return false;
-		for (var o: xmlObjects) {
-			// if obj with same name exists, merge attributes
-			if (o.name.equals(obj.name)) {
-				return o.attributes.addAll(obj.attributes);
+		// merge children with the same name
+		for (var c: childMap.entrySet()) {
+			var attributes = new HashSet<EAttribute>();
+			for (var ch: c.getValue()) {
+				attributes.addAll(ch.getEAttributes());
 			}
+			// TODO: something with value			
 		}
-		return xmlObjects.add(obj);
+		
+		return eclass;
 	}
 }
