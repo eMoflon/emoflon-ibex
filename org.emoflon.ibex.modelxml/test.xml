@@ -2,162 +2,244 @@
 <UANodeSet>
  <Aliases>
   <Alias Alias="HasTypeDefinition">
+   
    i=40
+  
   </Alias>
   <Alias Alias="HasSubtype">
+   
    i=45
+  
   </Alias>
   <Alias Alias="HasProperty">
+   
    i=46
+  
   </Alias>
   <Alias Alias="HasComponent">
+   
    i=47
+  
   </Alias>
   <Alias Alias="Organizes">
+   
    i=35
+  
   </Alias>
   <Alias Alias="Float">
+   
    i=10
+  
   </Alias>
   <Alias Alias="String">
+   
    i=12
+  
   </Alias>
  </Aliases>
  <NamespaceUris>
   <Uri>
+   
    urx:mycompany:myproject
+  
   </Uri>
  </NamespaceUris>
  <UAObjectType BrowseName="1:MyDevice" NodeId="ns=1;i=2001">
   <DisplayName>
+   
    MyDevice
+  
   </DisplayName>
   <Description>
+   
    MyDevice
+  
   </Description>
   <References>
    <Reference IsForward="false" ReferenceType="HasSubtype">
+    
     i=58
+   
    </Reference>
    <Reference ReferenceType="HasComponent">
+    
     ns=1;i=2005
+   
    </Reference>
   </References>
  </UAObjectType>
  <UAObject BrowseName="1:obj1" NodeId="ns=1;i=2002" ParentNodeId="i=85">
   <DisplayName>
+   
    BaseObjectType
+  
   </DisplayName>
   <Description>
+   
    The base type for all object nodes.
+  
   </Description>
   <References>
    <Reference IsForward="false" ReferenceType="Organizes">
+    
     i=85
+   
    </Reference>
    <Reference ReferenceType="HasTypeDefinition">
+    
     i=58
+   
    </Reference>
    <Reference ReferenceType="HasComponent">
+    
     ns=1;i=2003
+   
    </Reference>
    <Reference ReferenceType="HasProperty">
+    
     ns=1;i=2004
+   
    </Reference>
    <Reference ReferenceType="HasComponent">
+    
     ns=1;i=2006
+   
    </Reference>
   </References>
  </UAObject>
  <UAVariable BrowseName="1:var1" DataType="Float" NodeId="ns=1;i=2003" ParentNodeId="ns=1;i=2002">
   <DisplayName>
+   
    var1
+  
   </DisplayName>
   <Description>
+   
    var1
+  
   </Description>
   <Value>
    <Float>
+    
     9.99
+   
    </Float>
   </Value>
   <References>
    <Reference IsForward="false" ReferenceType="HasComponent">
+    
     ns=1;i=2002
+   
    </Reference>
    <Reference ReferenceType="HasTypeDefinition">
+    
     i=63
+   
    </Reference>
   </References>
  </UAVariable>
  <UAVariable BrowseName="1:myproperty" DataType="String" NodeId="ns=1;i=2004" ParentNodeId="ns=1;i=2002">
   <DisplayName>
+   
    myproperty
+  
   </DisplayName>
   <Description>
+   
    myproperty
+  
   </Description>
   <Value>
    <String>
+    
     property_value
+   
    </String>
   </Value>
   <References>
    <Reference IsForward="false" ReferenceType="HasProperty">
+    
     ns=1;i=2002
+   
    </Reference>
    <Reference ReferenceType="HasTypeDefinition">
+    
     i=68
+   
    </Reference>
   </References>
  </UAVariable>
  <UAVariable BrowseName="1:DeviceName" DataType="String" NodeId="ns=1;i=2005" ParentNodeId="ns=1;i=2001">
   <DisplayName>
+   
    DeviceName
+  
   </DisplayName>
   <Description>
+   
    DeviceName
+  
   </Description>
   <Value>
    <String>
+    
     MyName
+   
    </String>
   </Value>
   <References>
    <Reference IsForward="false" ReferenceType="HasComponent">
+    
     ns=1;i=2001
+   
    </Reference>
    <Reference ReferenceType="HasTypeDefinition">
+    
     i=63
+   
    </Reference>
   </References>
  </UAVariable>
  <UAVariable ArrayDimensions="3" BrowseName="1:varList" DataType="String" NodeId="ns=1;i=2006" ParentNodeId="ns=1;i=2002">
   <DisplayName>
+   
    varList
+  
   </DisplayName>
   <Description>
+   
    varList
+  
   </Description>
   <Value>
    <ListOfString>
     <String>
+     
      one
+    
     </String>
     <String>
+     
      two
+    
     </String>
     <String>
+     
      three
+    
     </String>
    </ListOfString>
   </Value>
   <References>
    <Reference IsForward="false" ReferenceType="HasComponent">
+    
     ns=1;i=2002
+   
    </Reference>
    <Reference ReferenceType="HasTypeDefinition">
+    
     i=63
+   
    </Reference>
   </References>
  </UAVariable>

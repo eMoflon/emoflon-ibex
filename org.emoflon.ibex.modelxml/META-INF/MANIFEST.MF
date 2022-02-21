@@ -15,6 +15,6 @@ Export-Package: org.emoflon.ibex.modelxml,
  org.emoflon.ibex.modelxml.validation
 Require-Bundle: org.eclipse.emf.ecore;visibility:=reexport,
  org.eclipse.core.runtime,
- org.eclipse.emf.ecore.xmi
+ org.eclipse.emf.ecore.xmi,
+ org.junit;bundle-version="4.13.2"
 Bundle-ActivationPolicy: lazy
-Import-Package: org.junit

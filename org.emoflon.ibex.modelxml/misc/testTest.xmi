@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="ASCII"?>
+<modelXML:XMLModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:modelXML="platform:/resource/ModelXML/model/modelXML.ecore" header="&lt;?xml version='1.0' encoding='utf-8'?>">
+  <root name="UANodeSet">
+    <children name="Aliases">
+      <children name="Alias">
+        <attributes name="Alias" value="HasTypeDefinition"/>
+        <value text="&#xA;   i=40&#xA;  "/>
+      </children>
+      <children name="Alias">
+        <attributes name="Alias" value="HasSubtype"/>
+        <value text="&#xA;   i=45&#xA;  "/>
+      </children>
+      <children name="Alias">
+        <attributes name="Alias" value="HasProperty"/>
+        <value text="&#xA;   i=46&#xA;  "/>
+      </children>
+      <children name="Alias">
+        <attributes name="Alias" value="HasComponent"/>
+        <value text="&#xA;   i=47&#xA;  "/>
+      </children>
+      <children name="Alias">
+        <attributes name="Alias" value="Organizes"/>
+        <value text="&#xA;   i=35&#xA;  "/>
+      </children>
+      <children name="Alias">
+        <attributes name="Alias" value="Float"/>
+        <value text="&#xA;   i=10&#xA;  "/>
+      </children>
+      <children name="Alias">
+        <attributes name="Alias" value="String"/>
+        <value text="&#xA;   i=12&#xA;  "/>
+      </children>
+      <value text="&#xA;  &#xA;   i=40&#xA;  &#xA;  &#xA;   i=45&#xA;  &#xA;  &#xA;   i=46&#xA;  &#xA;  &#xA;   i=47&#xA;  &#xA;  &#xA;   i=35&#xA;  &#xA;  &#xA;   i=10&#xA;  &#xA;  &#xA;   i=12&#xA;  &#xA; "/>
+    </children>
+    <children name="NamespaceUris">
+      <children name="Uri">
+        <value text="&#xA;   urx:mycompany:myproject&#xA;  "/>
+      </children>
+      <value text="&#xA;  &#xA;   urx:mycompany:myproject&#xA;  &#xA; "/>
+    </children>
+    <children name="UAObjectType">
+      <attributes name="BrowseName" value="1:MyDevice"/>
+      <attributes name="NodeId" value="ns=1;i=2001"/>
+      <children name="DisplayName">
+        <value text="&#xA;   MyDevice&#xA;  "/>
+      </children>
+      <children name="Description">
+        <value text="&#xA;   MyDevice&#xA;  "/>
+      </children>
+      <children name="References">
+        <children name="Reference">
+          <attributes name="IsForward" value="false"/>
+          <attributes name="ReferenceType" value="HasSubtype"/>
+          <value text="&#xA;    i=58&#xA;   "/>
+        </children>
+        <children name="Reference">
+          <attributes name="ReferenceType" value="HasComponent"/>
+          <value text="&#xA;    ns=1;i=2005&#xA;   "/>
+        </children>
+        <value text="&#xA;   &#xA;    i=58&#xA;   &#xA;   &#xA;    ns=1;i=2005&#xA;   &#xA;  "/>
+      </children>
+      <value text="&#xA;  &#xA;   MyDevice&#xA;  &#xA;  &#xA;   MyDevice&#xA;  &#xA;  &#xA;   &#xA;    i=58&#xA;   &#xA;   &#xA;    ns=1;i=2005&#xA;   &#xA;  &#xA; "/>
+    </children>
+    <children name="UAObject">
+      <attributes name="BrowseName" value="1:obj1"/>
+      <attributes name="NodeId" value="ns=1;i=2002"/>
+      <attributes name="ParentNodeId" value="i=85"/>
+      <children name="DisplayName">
+        <value text="&#xA;   BaseObjectType&#xA;  "/>
+      </children>
+      <children name="Description">
+        <value text="&#xA;   The base type for all object nodes.&#xA;  "/>
+      </children>
+      <children name="References">
+        <children name="Reference">
+          <attributes name="IsForward" value="false"/>
+          <attributes name="ReferenceType" value="Organizes"/>
+          <value text="&#xA;    i=85&#xA;   "/>
+        </children>
+        <children name="Reference">
+          <attributes name="ReferenceType" value="HasTypeDefinition"/>
+          <value text="&#xA;    i=58&#xA;   "/>
+        </children>
+        <children name="Reference">
+          <attributes name="ReferenceType" value="HasComponent"/>
+          <value text="&#xA;    ns=1;i=2003&#xA;   "/>
+        </children>
+        <children name="Reference">
+          <attributes name="ReferenceType" value="HasProperty"/>
+          <value text="&#xA;    ns=1;i=2004&#xA;   "/>
+        </children>
+        <children name="Reference">
+          <attributes name="ReferenceType" value="HasComponent"/>
+          <value text="&#xA;    ns=1;i=2006&#xA;   "/>
+        </children>
+        <value text="&#xA;   &#xA;    i=85&#xA;   &#xA;   &#xA;    i=58&#xA;   &#xA;   &#xA;    ns=1;i=2003&#xA;   &#xA;   &#xA;    ns=1;i=2004&#xA;   &#xA;   &#xA;    ns=1;i=2006&#xA;   &#xA;  "/>
+      </children>
+      <value text="&#xA;  &#xA;   BaseObjectType&#xA;  &#xA;  &#xA;   The base type for all object nodes.&#xA;  &#xA;  &#xA;   &#xA;    i=85&#xA;   &#xA;   &#xA;    i=58&#xA;   &#xA;   &#xA;    ns=1;i=2003&#xA;   &#xA;   &#xA;    ns=1;i=2004&#xA;   &#xA;   &#xA;    ns=1;i=2006&#xA;   &#xA;  &#xA; "/>
+    </children>
+    <children name="UAVariable">
+      <attributes name="BrowseName" value="1:var1"/>
+      <attributes name="DataType" value="Float"/>
+      <attributes name="NodeId" value="ns=1;i=2003"/>
+      <attributes name="ParentNodeId" value="ns=1;i=2002"/>
+      <children name="DisplayName">
+        <value text="&#xA;   var1&#xA;  "/>
+      </children>
+      <children name="Description">
+        <value text="&#xA;   var1&#xA;  "/>
+      </children>
+      <children name="Value">
+        <children name="Float">
+          <value text="&#xA;    9.99&#xA;   "/>
+        </children>
+        <value text="&#xA;   &#xA;    9.99&#xA;   &#xA;  "/>
+      </children>
+      <children name="References">
+        <children name="Reference">
+          <attributes name="IsForward" value="false"/>
+          <attributes name="ReferenceType" value="HasComponent"/>
+          <value text="&#xA;    ns=1;i=2002&#xA;   "/>
+        </children>
+        <children name="Reference">
+          <attributes name="ReferenceType" value="HasTypeDefinition"/>
+          <value text="&#xA;    i=63&#xA;   "/>
+        </children>
+        <value text="&#xA;   &#xA;    ns=1;i=2002&#xA;   &#xA;   &#xA;    i=63&#xA;   &#xA;  "/>
+      </children>
+      <value text="&#xA;  &#xA;   var1&#xA;  &#xA;  &#xA;   var1&#xA;  &#xA;  &#xA;   &#xA;    9.99&#xA;   &#xA;  &#xA;  &#xA;   &#xA;    ns=1;i=2002&#xA;   &#xA;   &#xA;    i=63&#xA;   &#xA;  &#xA; "/>
+    </children>
+    <children name="UAVariable">
+      <attributes name="BrowseName" value="1:myproperty"/>
+      <attributes name="DataType" value="String"/>
+      <attributes name="NodeId" value="ns=1;i=2004"/>
+      <attributes name="ParentNodeId" value="ns=1;i=2002"/>
+      <children name="DisplayName">
+        <value text="&#xA;   myproperty&#xA;  "/>
+      </children>
+      <children name="Description">
+        <value text="&#xA;   myproperty&#xA;  "/>
+      </children>
+      <children name="Value">
+        <children name="String">
+          <value text="&#xA;    property_value&#xA;   "/>
+        </children>
+        <value text="&#xA;   &#xA;    property_value&#xA;   &#xA;  "/>
+      </children>
+      <children name="References">
+        <children name="Reference">
+          <attributes name="IsForward" value="false"/>
+          <attributes name="ReferenceType" value="HasProperty"/>
+          <value text="&#xA;    ns=1;i=2002&#xA;   "/>
+        </children>
+        <children name="Reference">
+          <attributes name="ReferenceType" value="HasTypeDefinition"/>
+          <value text="&#xA;    i=68&#xA;   "/>
+        </children>
+        <value text="&#xA;   &#xA;    ns=1;i=2002&#xA;   &#xA;   &#xA;    i=68&#xA;   &#xA;  "/>
+      </children>
+      <value text="&#xA;  &#xA;   myproperty&#xA;  &#xA;  &#xA;   myproperty&#xA;  &#xA;  &#xA;   &#xA;    property_value&#xA;   &#xA;  &#xA;  &#xA;   &#xA;    ns=1;i=2002&#xA;   &#xA;   &#xA;    i=68&#xA;   &#xA;  &#xA; "/>
+    </children>
+    <children name="UAVariable">
+      <attributes name="BrowseName" value="1:DeviceName"/>
+      <attributes name="DataType" value="String"/>
+      <attributes name="NodeId" value="ns=1;i=2005"/>
+      <attributes name="ParentNodeId" value="ns=1;i=2001"/>
+      <children name="DisplayName">
+        <value text="&#xA;   DeviceName&#xA;  "/>
+      </children>
+      <children name="Description">
+        <value text="&#xA;   DeviceName&#xA;  "/>
+      </children>
+      <children name="Value">
+        <children name="String">
+          <value text="&#xA;    MyName&#xA;   "/>
+        </children>
+        <value text="&#xA;   &#xA;    MyName&#xA;   &#xA;  "/>
+      </children>
+      <children name="References">
+        <children name="Reference">
+          <attributes name="IsForward" value="false"/>
+          <attributes name="ReferenceType" value="HasComponent"/>
+          <value text="&#xA;    ns=1;i=2001&#xA;   "/>
+        </children>
+        <children name="Reference">
+          <attributes name="ReferenceType" value="HasTypeDefinition"/>
+          <value text="&#xA;    i=63&#xA;   "/>
+        </children>
+        <value text="&#xA;   &#xA;    ns=1;i=2001&#xA;   &#xA;   &#xA;    i=63&#xA;   &#xA;  "/>
+      </children>
+      <value text="&#xA;  &#xA;   DeviceName&#xA;  &#xA;  &#xA;   DeviceName&#xA;  &#xA;  &#xA;   &#xA;    MyName&#xA;   &#xA;  &#xA;  &#xA;   &#xA;    ns=1;i=2001&#xA;   &#xA;   &#xA;    i=63&#xA;   &#xA;  &#xA; "/>
+    </children>
+    <children name="UAVariable">
+      <attributes name="ArrayDimensions" value="3"/>
+      <attributes name="BrowseName" value="1:varList"/>
+      <attributes name="DataType" value="String"/>
+      <attributes name="NodeId" value="ns=1;i=2006"/>
+      <attributes name="ParentNodeId" value="ns=1;i=2002"/>
+      <children name="DisplayName">
+        <value text="&#xA;   varList&#xA;  "/>
+      </children>
+      <children name="Description">
+        <value text="&#xA;   varList&#xA;  "/>
+      </children>
+      <children name="Value">
+        <children name="ListOfString">
+          <children name="String">
+            <value text="&#xA;     one&#xA;    "/>
+          </children>
+          <children name="String">
+            <value text="&#xA;     two&#xA;    "/>
+          </children>
+          <children name="String">
+            <value text="&#xA;     three&#xA;    "/>
+          </children>
+          <value text="&#xA;    &#xA;     one&#xA;    &#xA;    &#xA;     two&#xA;    &#xA;    &#xA;     three&#xA;    &#xA;   "/>
+        </children>
+        <value text="&#xA;   &#xA;    &#xA;     one&#xA;    &#xA;    &#xA;     two&#xA;    &#xA;    &#xA;     three&#xA;    &#xA;   &#xA;  "/>
+      </children>
+      <children name="References">
+        <children name="Reference">
+          <attributes name="IsForward" value="false"/>
+          <attributes name="ReferenceType" value="HasComponent"/>
+          <value text="&#xA;    ns=1;i=2002&#xA;   "/>
+        </children>
+        <children name="Reference">
+          <attributes name="ReferenceType" value="HasTypeDefinition"/>
+          <value text="&#xA;    i=63&#xA;   "/>
+        </children>
+        <value text="&#xA;   &#xA;    ns=1;i=2002&#xA;   &#xA;   &#xA;    i=63&#xA;   &#xA;  "/>
+      </children>
+      <value text="&#xA;  &#xA;   varList&#xA;  &#xA;  &#xA;   varList&#xA;  &#xA;  &#xA;   &#xA;    &#xA;     one&#xA;    &#xA;    &#xA;     two&#xA;    &#xA;    &#xA;     three&#xA;    &#xA;   &#xA;  &#xA;  &#xA;   &#xA;    ns=1;i=2002&#xA;   &#xA;   &#xA;    i=63&#xA;   &#xA;  &#xA; "/>
+    </children>
+    <value text="&#xA; &#xA;  &#xA;   i=40&#xA;  &#xA;  &#xA;   i=45&#xA;  &#xA;  &#xA;   i=46&#xA;  &#xA;  &#xA;   i=47&#xA;  &#xA;  &#xA;   i=35&#xA;  &#xA;  &#xA;   i=10&#xA;  &#xA;  &#xA;   i=12&#xA;  &#xA; &#xA; &#xA;  &#xA;   urx:mycompany:myproject&#xA;  &#xA; &#xA; &#xA;  &#xA;   MyDevice&#xA;  &#xA;  &#xA;   MyDevice&#xA;  &#xA;  &#xA;   &#xA;    i=58&#xA;   &#xA;   &#xA;    ns=1;i=2005&#xA;   &#xA;  &#xA; &#xA; &#xA;  &#xA;   BaseObjectType&#xA;  &#xA;  &#xA;   The base type for all object nodes.&#xA;  &#xA;  &#xA;   &#xA;    i=85&#xA;   &#xA;   &#xA;    i=58&#xA;   &#xA;   &#xA;    ns=1;i=2003&#xA;   &#xA;   &#xA;    ns=1;i=2004&#xA;   &#xA;   &#xA;    ns=1;i=2006&#xA;   &#xA;  &#xA; &#xA; &#xA;  &#xA;   var1&#xA;  &#xA;  &#xA;   var1&#xA;  &#xA;  &#xA;   &#xA;    9.99&#xA;   &#xA;  &#xA;  &#xA;   &#xA;    ns=1;i=2002&#xA;   &#xA;   &#xA;    i=63&#xA;   &#xA;  &#xA; &#xA; &#xA;  &#xA;   myproperty&#xA;  &#xA;  &#xA;   myproperty&#xA;  &#xA;  &#xA;   &#xA;    property_value&#xA;   &#xA;  &#xA;  &#xA;   &#xA;    ns=1;i=2002&#xA;   &#xA;   &#xA;    i=68&#xA;   &#xA;  &#xA; &#xA; &#xA;  &#xA;   DeviceName&#xA;  &#xA;  &#xA;   DeviceName&#xA;  &#xA;  &#xA;   &#xA;    MyName&#xA;   &#xA;  &#xA;  &#xA;   &#xA;    ns=1;i=2001&#xA;   &#xA;   &#xA;    i=63&#xA;   &#xA;  &#xA; &#xA; &#xA;  &#xA;   varList&#xA;  &#xA;  &#xA;   varList&#xA;  &#xA;  &#xA;   &#xA;    &#xA;     one&#xA;    &#xA;    &#xA;     two&#xA;    &#xA;    &#xA;     three&#xA;    &#xA;   &#xA;  &#xA;  &#xA;   &#xA;    ns=1;i=2002&#xA;   &#xA;   &#xA;    i=63&#xA;   &#xA;  &#xA; &#xA;"/>
+  </root>
+</modelXML:XMLModel>
