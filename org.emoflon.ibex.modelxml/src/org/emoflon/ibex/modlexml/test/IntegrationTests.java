@@ -18,7 +18,6 @@ public class IntegrationTests {
 	@Test
 	public void loadTestXML() {
 		XMLModel expectModel = Parser.parseXMLFile("misc/test.xml");
-		Writer.createXMLFile(expectModel); ;
 		XMLModel actualModel = Parser.parseXMLFile("test.xml");
 		assertEquals(expectModel.getHeader(), actualModel.getHeader());
 		assertTrue(compareNodes(expectModel.getRoot(),actualModel.getRoot()));

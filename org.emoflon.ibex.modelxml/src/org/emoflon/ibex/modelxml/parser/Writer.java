@@ -7,9 +7,9 @@ import java.io.IOException;
 import org.emoflon.ibex.modelxml.*;
 
 public class Writer {
-	public static void createXMLFile(XMLModel container) {
+	public static void createXMLFile(XMLModel container, String filename) {
 		try {
-			FileWriter file = new FileWriter("test.xml");
+			FileWriter file = new FileWriter(filename);
 			BufferedWriter buffer = new BufferedWriter(file);
 			String str = container.getHeader() + "\n";
 			if (str.charAt(1) != '?')
