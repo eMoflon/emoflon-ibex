@@ -3,13 +3,15 @@ package org.emoflon.ibex.tgg.operational.strategies.opt;
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.emf.EMFEdge;
+import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
@@ -31,10 +33,10 @@ public class CC extends OPT {
 
 	@Override
 	public double getDefaultWeightForMatch(IMatch comatch, String ruleName) {
-		return getGreenFactory(ruleName).getGreenSrcEdgesInRule().size()
-				+ getGreenFactory(ruleName).getGreenSrcNodesInRule().size()
-				+ getGreenFactory(ruleName).getGreenTrgEdgesInRule().size()
-				+ getGreenFactory(ruleName).getGreenTrgNodesInRule().size();
+		return greenFactories.get(ruleName).getGreenSrcEdgesInRule().size()
+				+ greenFactories.get(ruleName).getGreenSrcNodesInRule().size()
+				+ greenFactories.get(ruleName).getGreenTrgEdgesInRule().size()
+				+ greenFactories.get(ruleName).getGreenTrgNodesInRule().size();
 	}
 
 	@Override
@@ -46,33 +48,33 @@ public class CC extends OPT {
 		String ruleName = match.getRuleName();
 
 		if (ruleName == null) {
-			removeOperationalRuleMatch(match);
+			matchHandler.removeOperationalMatch(match);
 			return true;
 		}
 
 		processOperationalRuleMatch(ruleName, match);
-		removeOperationalRuleMatch(match);
+		matchHandler.removeOperationalMatch(match);
 
 		return true;
 	}
 
 	@Override
 	protected void wrapUp() {
-		ArrayList<EObject> objectsToDelete = new ArrayList<EObject>();
+		Set<EObject> objectsToDelete = new HashSet<EObject>();
 
 		for (int v : chooseTGGRuleApplications()) {
 			int id = v < 0 ? -v : v;
 			ITGGMatch comatch = idToMatch.get(id);
 			if (v < 0) {
-				for (TGGRuleCorr createdCorr : getGreenFactory(matchIdToRuleName.get(id)).getGreenCorrNodesInRule())
+				for (TGGRuleCorr createdCorr : greenFactories.get(matchIdToRuleName.get(id)).getGreenCorrNodesInRule())
 					objectsToDelete.add((EObject) comatch.get(createdCorr.getName()));
 
-				objectsToDelete.add(getRuleApplicationNode(comatch));
+				objectsToDelete.add(comatch.getRuleApplicationNode());
 			} else
 				processValidMatch(comatch);
 		}
 
-		EcoreUtil.deleteAll(objectsToDelete, true);
+		EMFManipulationUtils.deleteNodes(objectsToDelete, true);
 		consistencyReporter.init(this);
 	}
 
@@ -174,7 +176,7 @@ public class CC extends OPT {
 	}
 
 	@Override
-	public Collection<PatternType> getPatternRelevantForCompiler() {
-		return PatternType.getCCTypes();
+	protected Set<PatternType> getRelevantOperationalPatterns() {
+		return new HashSet<>(Arrays.asList(PatternType.CC, PatternType.GENForCC));
 	}
 }

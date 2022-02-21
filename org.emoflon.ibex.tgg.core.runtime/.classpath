@@ -15,11 +15,11 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/org.emoflon.ibex.tgg.runtime/lib/gurobi-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="lib/javabdd-1.0b2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/glpk-java.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/com.google.ortools.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/protobuf.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/mipcl.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/gurobi-javadoc.jar"/>
+	<classpathentry kind="lib" path="lib/javabdd-silent.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -1,9 +1,11 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.detection;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
@@ -11,6 +13,9 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.EltFilter;
+import org.emoflon.ibex.tgg.operational.strategies.modules.MatchConsumer;
+import org.emoflon.ibex.tgg.operational.strategies.modules.MatchDistributor;
 
 import language.BindingType;
 import language.DomainType;
@@ -18,7 +23,7 @@ import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
-public class MultiplicityCounter {
+public class MultiplicityCounter extends MatchConsumer {
 
 	protected final INTEGRATE integrate;
 
@@ -38,13 +43,14 @@ public class MultiplicityCounter {
 	private Map<OutgoingEdge, Map<ITGGMatch, Integer>> outgoingEdge2removedMatches2numOfEdges;
 
 	public MultiplicityCounter(INTEGRATE integrate) {
+		super(integrate.getOptions());
 		this.integrate = integrate;
 		ruleName2contextNodeName2refs2numOfEdges = new HashMap<>();
 		subject2reference2numOfEdges = new HashMap<>();
 		outgoingEdge2addedMatches2numOfEdges = new HashMap<>();
 		outgoingEdge2removedMatches2numOfEdges = new HashMap<>();
 
-		for (TGGRule rule : integrate.getOptions().tgg.getFlattenedConcreteTGGRules()) {
+		for (TGGRule rule : options.tgg.getFlattenedConcreteTGGRules()) {
 			for (TGGRuleEdge greenEdge : TGGFilterUtil.filterEdges(rule.getEdges(), BindingType.CREATE)) {
 				if (greenEdge.getDomainType() == DomainType.CORR)
 					continue;
@@ -61,6 +67,13 @@ public class MultiplicityCounter {
 //				}
 			}
 		}
+	}
+
+	@Override
+	protected void registerAtMatchDistributor(MatchDistributor matchDistributor) {
+		Set<PatternType> patternSet = Collections.singleton(PatternType.CONSISTENCY);
+		matchDistributor.registerSingle(patternSet, this::notifyAddedMatch, this::notifyRemovedMatch);
+		matchDistributor.registerMultiple(patternSet, m -> m.forEach(this::notifyAddedMatch), m -> m.forEach(this::notifyRemovedMatch));
 	}
 
 	public static class OutgoingEdge {
@@ -120,7 +133,7 @@ public class MultiplicityCounter {
 			if (subject == null)
 				throw new RuntimeException("MultiplicityCounter: node must exist in match!");
 
-			if (integrate.getGeneralModelChanges().isDeleted(subject)) {
+			if (integrate.generalModelChanges().isDeleted(subject)) {
 				if (subject2reference2numOfEdges.remove(subject) != null) {
 					entry.getValue().forEach((ref, numOfEdges) -> {
 						OutgoingEdge outgoingEdge = new OutgoingEdge(subject, ref);
@@ -129,7 +142,7 @@ public class MultiplicityCounter {
 					});
 				}
 			} else {
-				boolean isBroken = match.getType() == PatternType.CONSISTENCY && integrate.getPrecedenceGraph().getNode(match).isBroken();
+				boolean isBroken = match.getType() == PatternType.CONSISTENCY && integrate.precedenceGraph().getNode(match).isBroken();
 
 				Map<EReference, Integer> reference2numOfEdges = subject2reference2numOfEdges.get(subject);
 				entry.getValue().forEach((ref, numOfEdges) -> {
@@ -144,6 +157,19 @@ public class MultiplicityCounter {
 
 					if (isBroken)
 						outgoingEdge2removedMatches2numOfEdges.computeIfAbsent(outgoingEdge, k -> new HashMap<>()).put(match, numOfEdges);
+				});
+			}
+		}
+	}
+
+	public void removeMatch(ITGGMatch match) {
+		Set<EObject> greenSubjects = integrate.matchUtils().get(match).getObjects(new EltFilter().create().srcAndTrg());
+		for (EObject subject : greenSubjects) {
+			if (subject2reference2numOfEdges.remove(subject) != null) {
+				subject.eClass().getEAllReferences().forEach(ref -> {
+					OutgoingEdge outgoingEdge = new OutgoingEdge(subject, ref);
+					outgoingEdge2addedMatches2numOfEdges.remove(outgoingEdge);
+					outgoingEdge2removedMatches2numOfEdges.remove(outgoingEdge);
 				});
 			}
 		}

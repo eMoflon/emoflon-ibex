@@ -28,7 +28,7 @@ public class InconsDomainChangesConflict extends InconsistentChangesConflict imp
 	@Override
 	public void crs_revokeChanges() {
 		// TODO adrianm: fix this
-		restoreDomain(integrate().getClassifiedBrokenMatches().get(getMatch()), changedDomain);
+		restoreDomain(integrate().matchClassifier().get(getMatch()), changedDomain);
 		
 		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by REVOKE_CHANGES");
 		resolved = true;

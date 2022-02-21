@@ -4,6 +4,7 @@ Bundle-SymbolicName: org.emoflon.ibex.gt;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: eMoflon::IBeX Developers
 Bundle-ManifestVersion: 2
+Bundle-ActivationPolicy: lazy
 Export-Package: org.emoflon.ibex.gt.api,
  org.emoflon.ibex.gt.arithmetic,
  org.emoflon.ibex.gt.codegen,
@@ -30,7 +31,7 @@ Require-Bundle: org.emoflon.ibex.dependencies;bundle-version="1.0.0";visibility:
  org.emoflon.ibex.gt.statemodel;visibility:=reexport,
  org.apache.commons.io.source;bundle-version="2.8.0",
  org.emoflon.ibex.modelxml;bundle-version="0.1.0"
+ org.emoflon.smartemf;bundle-version="1.0.0"
 Bundle-ClassPath: .
 Automatic-Module-Name: org.emoflon.ibex.gt
 Bundle-RequiredExecutionEnvironment: JavaSE-16
-Bundle-ActivationPolicy: lazy

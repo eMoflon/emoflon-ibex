@@ -1,13 +1,13 @@
 package org.emoflon.ibex.tgg.operational.defaults;
 
+import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
+
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 import org.emoflon.ibex.tgg.operational.IRedInterpreter;
@@ -16,9 +16,8 @@ import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 
-import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
-
 import language.TGGRuleNode;
+import runtime.CorrespondenceNode;
 import runtime.TGGRuleApplication;
 
 public class IbexRedInterpreter implements IRedInterpreter {
@@ -41,7 +40,7 @@ public class IbexRedInterpreter implements IRedInterpreter {
 
 	@Override
 	public void revokeOperationalRule(final ITGGMatch match) {
-		TGGRuleApplication ra = strategy.getRuleApplicationNode(match);
+		TGGRuleApplication ra = match.getRuleApplicationNode();
 		IGreenPattern pattern = strategy.revokes(match);
 
 		// Revoke nodes and edges in the correspondence model.
@@ -50,7 +49,7 @@ public class IbexRedInterpreter implements IRedInterpreter {
 		// Revoke nodes and edges in the source and target model.
 		revoke(getNodesToRevoke(match, pattern), getEdgesToRevoke(match, pattern));
 
-		EcoreUtil.delete(ra);
+		EMFManipulationUtils.delete(ra);
 	}
 
 	/**
@@ -151,11 +150,10 @@ public class IbexRedInterpreter implements IRedInterpreter {
 	 */
 	public void revoke(final Set<EObject> nodesToRevoke, final Set<EMFEdge> edgesToRevoke) {
 		nodesToRevoke.forEach(n -> {
-			Resource r = n.eResource();
-			if (resourceHandler.getSourceResource().equals(r) || resourceHandler.getTargetResource().equals(r))
-				numOfDeletedNodes++;
-			else if (resourceHandler.getCorrResource().equals(r))
+			if (n instanceof CorrespondenceNode)
 				numOfDeletedCorrNodes++;
+			else
+				numOfDeletedNodes++;
 		});
 		
 		if(options.blackInterpreter().getProperties().needs_trash_resource()) 

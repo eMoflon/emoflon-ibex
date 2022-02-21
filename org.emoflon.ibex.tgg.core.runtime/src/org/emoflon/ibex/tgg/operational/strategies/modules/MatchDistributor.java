@@ -63,7 +63,7 @@ public class MatchDistributor implements IMatchObserver, TimeMeasurable {
 		if (initialized)
 			return;
 
-		rs = options.resourceHandler().getResourceSet();
+		rs = options.resourceHandler().getModelResourceSet();
 		if (options.blackInterpreter() == null)
 			logger.warn("No pattern matcher is registered!");
 		else

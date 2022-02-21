@@ -2,21 +2,18 @@
  */
 package language.repair.impl;
 
-import language.LanguagePackage;
-
-import language.impl.LanguagePackageImpl;
-
-import language.repair.ExternalShortcutRule;
-import language.repair.RepairFactory;
-import language.repair.RepairPackage;
-import language.repair.TGGRuleElementMapping;
-
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
-
 import org.eclipse.emf.ecore.impl.EPackageImpl;
+
+import language.LanguagePackage;
+import language.impl.LanguagePackageImpl;
+import language.repair.ExternalShortcutRule;
+import language.repair.RepairFactory;
+import language.repair.RepairPackage;
+import language.repair.TGGRuleElementMapping;
 
 /**
  * <!-- begin-user-doc -->

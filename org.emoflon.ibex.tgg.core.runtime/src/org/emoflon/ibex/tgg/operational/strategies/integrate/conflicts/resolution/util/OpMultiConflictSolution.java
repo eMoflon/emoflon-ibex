@@ -46,7 +46,7 @@ public class OpMultiConflictSolution {
 		}
 		totalNumOfEdges += conflict.getIntactMatches2numOfEdges().values().stream().reduce(0, Integer::sum);
 
-		if (conflict.integrate().getMultiplicityCounter().violatesMultiplicity(conflict.getReference(), totalNumOfEdges) != 0)
+		if (conflict.integrate().multiplicityCounter().violatesMultiplicity(conflict.getReference(), totalNumOfEdges) != 0)
 			return false;
 
 		return true;

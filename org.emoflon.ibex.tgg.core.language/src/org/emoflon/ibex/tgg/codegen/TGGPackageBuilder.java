@@ -110,17 +110,11 @@ public class TGGPackageBuilder implements TGGBuilderExtension{
 			IFile schemaFile = project.getFile(IbexTGGNature.SCHEMA_FILE);
 			if (schemaFile.exists()) {
 				Resource schemaResource = loadSchema(resourceSet, schemaFile);
-//				ResourceSet resourceSet2 = new ResourceSetImpl();
-//				registerMetamodels(resourceSet, (TripleGraphGrammarFile) schemaResource.getContents().get(0));
-//				resourceSet = resourceSet2;
-//				schemaResource = loadSchema(resourceSet, schemaFile);
 
 				if (schemaIsOfExpectedType(schemaResource)) {
 					// Load
 					visitAllFiles(resourceSet, project.getFolder(IbexTGGBuilder.SRC_FOLDER), this::loadRules);
 					visitAllFiles(resourceSet, project.getFolder(IbexTGGBuilder.SRC_FOLDER), this::loadRules);
-//					EcoreUtil2.resolveLazyCrossReferences(schemaResource, () -> false);
-//					resourceSet.getResources().forEach(r -> EcoreUtil2.resolveLazyCrossReferences(r, () -> false));
 					EcoreUtil.resolveAll(resourceSet);
 
 					// Combine to form single tgg model
@@ -198,20 +192,7 @@ public class TGGPackageBuilder implements TGGBuilderExtension{
 	private XtextResource loadSchema(ResourceSet resourceSet, IFile schemaFile) throws IOException {
 		XtextResource schemaResource = (XtextResource) resourceSet.createResource(URI.createPlatformResourceURI(schemaFile.getFullPath().toString(), false));
 		schemaResource.load(null);
-//		EcoreUtil.resolveAll(resourceSet);
 		return schemaResource;
-	}
-	
-	private void registerMetamodels(ResourceSet resourceSet, TripleGraphGrammarFile schema) {
-		org.eclipse.emf.ecore.EPackage.Registry reg = EPackage.Registry.INSTANCE;
-		for(String imp : schema.getImports().stream().map(imp -> imp.getName()).collect(Collectors.toList())) {
-			ResourceSet rmm = new ResourceSetImpl();
-			rmm.getResourceFactoryRegistry().getExtensionToFactoryMap().put("ecore", new EcoreResourceFactoryImpl());
-			Resource modelResource = rmm.getResource(URI.createURI(imp), true);
-			EPackage model = (EPackage)modelResource.getContents().get(0);
-			reg.put(imp, model);
-			resourceSet.getPackageRegistry().put(imp, model);
-		}
 	}
 	
 	private boolean schemaIsOfExpectedType(Resource schemaResource) {

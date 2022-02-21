@@ -74,7 +74,7 @@ public enum DeletionType {
 		this.pattern = pattern;
 	}
 
-	public boolean isType(BrokenMatch brokenMatch) {
+	public boolean isType(ClassifiedMatch brokenMatch) {
 		return pattern.matches(brokenMatch.getDeletionPattern());
 	}
 

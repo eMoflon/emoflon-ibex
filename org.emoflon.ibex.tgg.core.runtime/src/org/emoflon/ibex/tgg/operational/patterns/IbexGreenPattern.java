@@ -34,24 +34,32 @@ public abstract class IbexGreenPattern implements IGreenPattern {
 	private boolean optimizeMarkerCreation = false;
 	private Map<TGGRuleNode, EReference> name2ref = new HashMap<>();
 	
+	protected List<TGGAttributeConstraint> sortedAttributeConstraints;
+	
 	public IbexGreenPattern(IGreenPatternFactory factory) {
 		this.factory = factory;
 		options = factory.getOptions();
 		resourceHandler = options.resourceHandler();
 		optimizeMarkerCreation = options.blackInterpreter() != null && options.blackInterpreter().getClass().getName().contains("HiPE");
+		initialize(factory);
 	}
 	
+	private void initialize(IGreenPatternFactory factory) {
+		try {
+			sortedAttributeConstraints = sortConstraints(factory.getAttributeCSPVariables(), factory.getAttributeConstraints());
+		} catch (Exception e) {
+			throw new IllegalStateException("Unable to sort attribute constraints, " + e.getMessage(), e);
+		}
+	}
+
 	@Override
 	public IRuntimeTGGAttrConstrContainer getAttributeConstraintContainer(ITGGMatch match) {
-		try {			
-			return new RuntimeTGGAttributeConstraintContainer(
-					factory.getAttributeCSPVariables(), 
-					sortConstraints(factory.getAttributeCSPVariables(), factory.getAttributeConstraints()),
-					match,
-					factory.getOptions().csp.constraintProvider());
-		} catch (Exception e) {
-			throw new IllegalStateException("Unable to sort attribute constraints for " + match.getPatternName() + ", " + e.getMessage(), e);
-		}
+		return new RuntimeTGGAttributeConstraintContainer(
+				factory.getAttributeCSPVariables(), 
+				sortedAttributeConstraints,
+				match,
+				factory.getOptions().csp.constraintProvider());
+		
 	}
 	
 	protected List<TGGAttributeConstraint> sortConstraints(List<TGGParamValue> variables, List<TGGAttributeConstraint> constraints) {

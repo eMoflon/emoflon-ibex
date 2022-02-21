@@ -18,7 +18,9 @@ import org.eclipse.emf.ecore.resource.ContentHandler;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.emoflon.ibex.common.emf.EMFEdge;
+import org.emoflon.ibex.common.emf.EMFSaveUtils;
 import org.emoflon.ibex.tgg.compiler.defaults.IRegistrationHelper;
 import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
@@ -34,6 +36,7 @@ import org.emoflon.ibex.tgg.operational.strategies.opt.MetamodelRelaxer;
 import org.emoflon.ibex.tgg.operational.strategies.sync.INITIAL_BWD;
 import org.emoflon.ibex.tgg.operational.strategies.sync.INITIAL_FWD;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
+import org.emoflon.smartemf.runtime.SmartObject;
 import org.moflon.core.utilities.MoflonUtil;
 
 import language.TGG;
@@ -51,6 +54,7 @@ public class TGGResourceHandler {
 	protected IRegistrationHelper registrationHelper;
 
 	protected final URI base;
+	protected ResourceSet specificationRS;
 	protected ResourceSet rs;
 
 	protected Resource source;
@@ -83,14 +87,16 @@ public class TGGResourceHandler {
 			return;
 
 		try {
-			createAndPrepareResourceSet();
+			createAndPrepareResourceSets();
 			registerInternalMetamodels();
 			registerUserMetamodels();
 			loadTGG();
 			loadRelevantModels();
 
-			trash = createResource("instances/trash.xmi");
-			trash.getContents().add(RuntimeFactory.eINSTANCE.createTempContainer());
+			if (options.blackInterpreter() != null && options.blackInterpreter().getClass().getName().contains("Democles")) {
+				trash = createResource("instances/trash.xmi");
+				trash.getContents().add(RuntimeFactory.eINSTANCE.createTempContainer());
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -107,11 +113,17 @@ public class TGGResourceHandler {
 	}
 
 	private void initializeCorrCaching() {
+		if (options.project.usesSmartEMF())
+			return;
+
 		node2corrs = Collections.synchronizedMap(new HashMap<>());
 		corr.getContents().parallelStream().forEach(corr -> doAddCorrCachingNode(corr));
 	}
 
 	public void addCorrCachingNode(EObject corr) {
+		if (options.project.usesSmartEMF())
+			return;
+
 		if (node2corrs == null)
 			initializeCorrCaching();
 
@@ -119,6 +131,12 @@ public class TGGResourceHandler {
 	}
 
 	public void addCorrCachingEdge(EMFEdge corrEdge) {
+		if (options.project.usesSmartEMF())
+			return;
+
+		if (node2corrs == null)
+			initializeCorrCaching();
+
 		EObject corrNode = null;
 		EObject node = null;
 		if (Objects.equals(corr, corrEdge.getSource().eResource())) {
@@ -134,8 +152,12 @@ public class TGGResourceHandler {
 	}
 
 	private void doAddCorrCachingNode(EObject corr) {
-		for (EObject node : corr.eCrossReferences())
+		for (EObject node : corr.eCrossReferences()) {
+			if (corr instanceof SmartObject)
+				break;
+
 			doAddCorrCachingNode(corr, node);
+		}
 	}
 
 	private void doAddCorrCachingNode(EObject corr, EObject node) {
@@ -149,6 +171,9 @@ public class TGGResourceHandler {
 	}
 
 	public void removeCorrCachingNode(EObject corr) {
+		if (options.project.usesSmartEMF())
+			return;
+
 		if (node2corrs == null)
 			initializeCorrCaching();
 
@@ -260,7 +285,7 @@ public class TGGResourceHandler {
 		}
 
 		loadModels();
-		EcoreUtil.resolveAll(rs);
+		EMFSaveUtils.resolveAll(rs);
 	}
 
 	public void loadModels() throws IOException {
@@ -326,15 +351,25 @@ public class TGGResourceHandler {
 			protocol = loadResource(options.project.path() + "/instances/protocol.xmi");
 		}
 
-		EcoreUtil.resolveAll(rs);
+		EMFSaveUtils.resolveAll(rs);
 	}
 
-	protected void createAndPrepareResourceSet() {
+	protected void createAndPrepareResourceSets() {
 		rs = options.blackInterpreter().createAndPrepareResourceSet(options.project.workspacePath());
+		specificationRS = options.blackInterpreter().createAndPrepareResourceSet(options.project.workspacePath());
+
+		// set the factory of metamodelRs to EMFResourceFactory as SmartEMF does not supported loading
+		// metamodels alongside models within the same resourceset
+		specificationRS.getResourceFactoryRegistry().getExtensionToFactoryMap().put(Resource.Factory.Registry.DEFAULT_EXTENSION,
+				new XMIResourceFactoryImpl());
 	}
 
-	public ResourceSet getResourceSet() {
+	public ResourceSet getModelResourceSet() {
 		return rs;
+	}
+
+	public ResourceSet getSpecificationResourceSet() {
+		return specificationRS;
 	}
 
 	public Resource getSourceResource() {
@@ -355,15 +390,15 @@ public class TGGResourceHandler {
 
 	public EPackage loadAndRegisterMetamodel(String workspaceRelativePath) throws IOException {
 		String uri = URI.createURI(workspaceRelativePath).toString();
-		if (rs.getPackageRegistry().containsKey(uri)) {
-			return rs.getPackageRegistry().getEPackage(uri);
+		if (specificationRS.getPackageRegistry().containsKey(uri)) {
+			return specificationRS.getPackageRegistry().getEPackage(uri);
 		}
-		Resource res = loadResource(workspaceRelativePath);
+		Resource res = loadResource(specificationRS, workspaceRelativePath);
 		EPackage pack = (EPackage) res.getContents().get(0);
-		pack = (EPackage) rs.getPackageRegistry().getOrDefault(res.getURI().toString(), pack);
-		rs.getPackageRegistry().put(res.getURI().toString(), pack);
-		rs.getPackageRegistry().put(pack.getNsURI(), pack);
-		rs.getResources().remove(res);
+		pack = (EPackage) specificationRS.getPackageRegistry().getOrDefault(res.getURI().toString(), pack);
+		specificationRS.getPackageRegistry().put(res.getURI().toString(), pack);
+		specificationRS.getPackageRegistry().put(pack.getNsURI(), pack);
+		specificationRS.getResources().remove(res);
 		return pack;
 	}
 
@@ -383,11 +418,28 @@ public class TGGResourceHandler {
 		} catch (FileNotFoundException e) {
 			throw new TGGFileNotFoundException(e, res.getURI());
 		}
-		EcoreUtil.resolveAll(res);
+		EMFSaveUtils.resolveAll(res);
 		return res;
 	}
 
 	public Resource createResource(String workspaceRelativePath) {
+		URI uri = URI.createURI(workspaceRelativePath);
+		Resource res = rs.createResource(uri.resolve(base), ContentHandler.UNSPECIFIED_CONTENT_TYPE);
+		return res;
+	}
+
+	private Resource loadResource(ResourceSet rs, String workspaceRelativePath) throws IOException {
+		Resource res = createResource(rs, workspaceRelativePath);
+		try {
+			res.load(null);
+		} catch (FileNotFoundException e) {
+			throw new TGGFileNotFoundException(e, res.getURI());
+		}
+		EMFSaveUtils.resolveAll(res);
+		return res;
+	}
+
+	public Resource createResource(ResourceSet rs, String workspaceRelativePath) {
 		URI uri = URI.createURI(workspaceRelativePath);
 		Resource res = rs.createResource(uri.resolve(base), ContentHandler.UNSPECIFIED_CONTENT_TYPE);
 		return res;
@@ -428,7 +480,7 @@ public class TGGResourceHandler {
 		// first, try to load TGG resource via workspace relative path
 		try {
 			String workspaceRelativePath = options.project.path() + "/" + projectRelativePath;
-			res = loadResource(workspaceRelativePath);
+			res = loadResource(specificationRS, workspaceRelativePath);
 		} catch (TGGFileNotFoundException e1) {
 			// if file could not be found, try to load TGG resource via protection domain
 			try {
@@ -461,7 +513,7 @@ public class TGGResourceHandler {
 		canonicalPath = canonicalPath.replace("%20", " ");
 
 		URI uri = URI.createFileURI(canonicalPath);
-		Resource res = rs.createResource(uri);
+		Resource res = specificationRS.createResource(uri);
 		try {
 			res.load(null);
 		} catch (FileNotFoundException e) {
@@ -479,15 +531,17 @@ public class TGGResourceHandler {
 	}
 
 	protected void registerUserMetamodels() throws IOException {
-		options.registrationHelper().registerMetamodels(rs, options.executable());
+		options.registrationHelper().registerMetamodels(specificationRS, options.executable());
 
 		// Register correspondence metamodel last
 		loadAndRegisterCorrMetamodel();
 	}
 
 	public void addToTrash(EObject o) {
-		TempContainer c = (TempContainer) trash.getContents().get(0);
-		c.getObjects().add(EcoreUtil.getRootContainer(o));
+		if (trash != null) {
+			TempContainer c = (TempContainer) trash.getContents().get(0);
+			c.getObjects().add(EcoreUtil.getRootContainer(o));
+		}
 	}
 
 	public Resource getTrashResource() {
