@@ -1,0 +1,14 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<node id="01" attr2="attr2">
+    <child subID="01"> Text1.1 </child1>
+    <child subID="02"> Text1.2 </child1>
+    <child subID="03"> Text1.3 </child1>
+    <child subID="04"> Text1.4 </child1>
+</node>
+<node id="02" attr2="attr2">
+    <child subID="01"> Text2.1 </child1>
+    <child subID="02"> Text2.2 </child1>
+    <child subID="03"> Text2.3 </child1>
+    <child subID="04"> Text2.4 </child1>
+</node>
+<tag name="ref01" refNode="01" refChild="02"/>
