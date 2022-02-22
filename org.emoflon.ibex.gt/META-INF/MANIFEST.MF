@@ -2,6 +2,9 @@ Manifest-Version: 1.0
 Bundle-Name: eMoflon::IBeX Unidirectional Model Transformation via Graph Transformation
 Bundle-SymbolicName: org.emoflon.ibex.gt;singleton:=true
 Bundle-Version: 1.0.0.qualifier
+Bundle-ClassPath: .
+Automatic-Module-Name: org.emoflon.ibex.gt
+Bundle-RequiredExecutionEnvironment: JavaSE-16
 Bundle-Vendor: eMoflon::IBeX Developers
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
@@ -13,7 +16,7 @@ Export-Package: org.emoflon.ibex.gt.api,
  org.emoflon.ibex.gt.transformations,
  org.emoflon.ibex.gt.ui
 Bundle-Localization: plugin
-Require-Bundle: org.emoflon.ibex.dependencies;bundle-version="1.0.0";visibility:=reexport,
+Require-Bundle: org.emoflon.ibex.dependencies;visibility:=reexport,
  org.apache.log4j,
  org.eclipse.core.resources,
  org.eclipse.core.runtime,
@@ -30,8 +33,5 @@ Require-Bundle: org.emoflon.ibex.dependencies;bundle-version="1.0.0";visibility:
  org.emoflon.ibex.patternmodel;visibility:=reexport,
  org.emoflon.ibex.gt.statemodel;visibility:=reexport,
  org.apache.commons.io.source;bundle-version="2.8.0",
- org.emoflon.ibex.modelxml;bundle-version="0.1.0"
+ org.emoflon.ibex.modelxml;bundle-version="0.1.0",
  org.emoflon.smartemf;bundle-version="1.0.0"
-Bundle-ClassPath: .
-Automatic-Module-Name: org.emoflon.ibex.gt
-Bundle-RequiredExecutionEnvironment: JavaSE-16

@@ -23,10 +23,16 @@ public class IntegrationTests {
 		assertTrue(compareNodes(expectModel.getRoot(),actualModel.getRoot()));
 	}
 	private boolean compareNodes(Node expect, Node actual) {
+		//TODO Compare Children
+		if(expect.getName() != actual.getName()) return false;
 		if((expect == null) && (actual == null)) return true;
 		if(!(compareValues(expect.getValue(), actual.getValue())))return false;
 		for(var attr : expect.getAttributes())
 			if(!(actual.getAttributes().contains(attr))) return false;
+		
+//		for(var child: expect.getChildren()) {
+//			
+//		}
 		return true;
 	}
 	private boolean compareAttributes(Attribute expect, Attribute actual) {
