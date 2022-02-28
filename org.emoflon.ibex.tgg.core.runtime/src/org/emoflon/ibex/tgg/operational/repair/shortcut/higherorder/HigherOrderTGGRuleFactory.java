@@ -47,6 +47,8 @@ public class HigherOrderTGGRuleFactory {
 		this.mu = mu;
 	}
 
+	//// MAPPING FROM CONSISTENCY ////
+
 	public HigherOrderTGGRule createHigherOrderTGGRuleFromConsMatches(List<PrecedenceNode> nodes) {
 		validateInputNodes(nodes);
 
@@ -81,7 +83,10 @@ public class HigherOrderTGGRuleFactory {
 					TGGRuleElement mappedRuleElement = mappedMatchUtil.getElement(obj);
 					contextMapping.put(ruleElement, mappedComponent.getComponentSpecificRuleElement(mappedRuleElement));
 				} else {
+					// context to context mapping:
 					for (PrecedenceNode reqNode : mappedNode.getRequiredBy()) {
+						if (reqNode.getMatch().getType() != PatternType.CONSISTENCY)
+							continue;
 						if (reqNode.getMatch().getObjects().contains(obj)) {
 							mappedComponent = higherOrderRule.getComponent(reqNode.getMatch());
 							if (mappedComponent == null)
@@ -98,6 +103,8 @@ public class HigherOrderTGGRuleFactory {
 
 		return contextMapping;
 	}
+
+	//// MAPPING FROM SRC/TRG ////
 
 	public HigherOrderTGGRule createHigherOrderTGGRuleFromSrcTrgNodes(List<PrecedenceNode> nodes, DomainType propagationDomain) {
 		validateInputNodes(nodes);
@@ -176,8 +183,6 @@ public class HigherOrderTGGRuleFactory {
 			List<PrecedenceNode> nodes) {
 		MatchRelatedRuleElementMap contextMapping = new MatchRelatedRuleElementMap();
 
-		// FIXME handle context to context mapping
-
 		Set<Object> objects = matchUtil.getObjects(new EltFilter().domains(propagationDomain).context());
 		objLoop: for (Object obj : objects) {
 			TGGRuleElement ruleElement = matchUtil.getElement(obj);
@@ -186,19 +191,31 @@ public class HigherOrderTGGRuleFactory {
 			Set<MatchRelatedRuleElement> mappedElements = new HashSet<>();
 			for (PrecedenceNode mappedNode : mappedNodes) {
 				// if there is an intact consistency match covering that object, we don't want to map the object's
-				// rule node
+				// rule node at all
 				if (mappedNode.getMatch().getType() == PatternType.CONSISTENCY && !mappedNode.isBroken())
+					// FIXME handle context to context mapping
 					continue objLoop;
 
 				if (mappedNode.getMatch().getType() != node.getMatch().getType())
 					continue;
 
-				if (!nodes.contains(mappedNode))
-					continue;
-
-				TGGMatchUtil mappedMatchUtil = mu.get(mappedNode.getMatch());
-				TGGRuleElement mappedRuleElement = mappedMatchUtil.getElement(obj);
-				mappedElements.add(new MatchRelatedRuleElement(mappedRuleElement, mappedNode.getMatch()));
+				if (nodes.contains(mappedNode)) {
+					TGGMatchUtil mappedMatchUtil = mu.get(mappedNode.getMatch());
+					TGGRuleElement mappedRuleElement = mappedMatchUtil.getElement(obj);
+					mappedElements.add(new MatchRelatedRuleElement(mappedRuleElement, mappedNode.getMatch()));
+				} else {
+					// context to context mapping:
+					for (PrecedenceNode reqNode : mappedNode.getRequiredBy()) {
+						if (reqNode.getMatch().getType() != node.getMatch().getType())
+							continue;
+						if (reqNode.getMatch().getObjects().contains(obj)) {
+							TGGMatchUtil reqMatchUtil = mu.get(reqNode.getMatch());
+							TGGRuleElement mappedRuleElement = reqMatchUtil.getElement(obj);
+							if (mappedRuleElement.getBindingType() == BindingType.CONTEXT)
+								mappedElements.add(new MatchRelatedRuleElement(mappedRuleElement, reqNode.getMatch()));
+						}
+					}
+				}
 			}
 
 			if (!mappedElements.isEmpty())
