@@ -100,9 +100,8 @@ public class SearchPlanAction extends Algorithm<SimpleCombiner, TGGAttributeCons
 	 * @return
 	 */
 	public static boolean isBoundInPattern(TGGParamValue variable, Predicate<String> patternContainsNode) {
-		if (variable instanceof TGGAttributeExpression) {
-			TGGAttributeExpression attrExp = (TGGAttributeExpression) variable;
-			String nameOfObj = attrExp.getObjectVar().getName();
+		if (variable instanceof TGGAttributeExpression attrExpr) {
+			String nameOfObj = attrExpr.getObjectVar().getName();
 			return patternContainsNode.test(nameOfObj);
 		}
 

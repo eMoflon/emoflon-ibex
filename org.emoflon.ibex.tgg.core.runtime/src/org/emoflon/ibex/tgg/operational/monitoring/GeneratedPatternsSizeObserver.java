@@ -36,8 +36,7 @@ public class GeneratedPatternsSizeObserver extends AbstractIbexObserver {
 	public void update(ObservableEvent eventType, Object... additionalInformation) {
 		switch (eventType) {
 			case DONEINIT, MATCHAPPLIED -> {
-				if (this.getObservable() instanceof OperationalStrategy) {
-					OperationalStrategy op = (OperationalStrategy) this.getObservable();
+				if (this.getObservable() instanceof OperationalStrategy op) {
 					factories = op.getGreenFactories().getAll();
 					this.calculateSize();
 				}

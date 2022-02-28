@@ -85,8 +85,7 @@ public class Adornment implements Iterable<Boolean> {
 		if (this == obj) {
 			return true;
 		}
-		if (obj instanceof Adornment) {
-			Adornment other = (Adornment) obj;
+		if (obj instanceof Adornment other) {
 			if (length != other.length) {
 				return false;
 			}

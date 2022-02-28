@@ -157,10 +157,10 @@ public class ConflictDetector {
 
 	private synchronized boolean skipCheckDomainSpecificViolations(ConflictContainer container, DomainType domain) {
 		for (Conflict conflict : container.getConflicts()) {
-			if (!(conflict instanceof DeletePreserveConflict))
-				continue;
-			if (((DeletePreserveConflict) conflict).getDomainToBePreserved() == domain)
-				return true;
+			if (conflict instanceof DeletePreserveConflict delPresConflict) {
+				if (delPresConflict.getDomainToBePreserved() == domain)
+					return true;
+			}
 		}
 		return false;
 	}

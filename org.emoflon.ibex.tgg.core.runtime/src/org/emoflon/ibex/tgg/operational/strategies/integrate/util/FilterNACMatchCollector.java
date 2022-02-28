@@ -90,10 +90,8 @@ public class FilterNACMatchCollector extends MatchConsumer {
 
 		@Override
 		public boolean equals(Object obj) {
-			if (obj instanceof NACOverlap) {
-				NACOverlap otherOverlap = (NACOverlap) obj;
+			if (obj instanceof NACOverlap otherOverlap)
 				return parameters.stream().allMatch(p -> match.get(p).equals(otherOverlap.match.get(p)));
-			}
 			return false;
 		}
 

@@ -66,8 +66,7 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 	}
 
 	private boolean calculateBoundState(TGGParamValue value) {
-		if (value instanceof TGGAttributeExpression) {
-			TGGAttributeExpression tae = (TGGAttributeExpression) value;
+		if (value instanceof TGGAttributeExpression tae) {
 			if (tae.isDerived())
 				return false;
 			return boundObjectNames.contains(tae.getObjectVar().getName());
@@ -79,8 +78,7 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 	}
 
 	private Object calculateValue(TGGParamValue value) {
-		if (value instanceof TGGAttributeExpression) {
-			TGGAttributeExpression tae = (TGGAttributeExpression) value;
+		if (value instanceof TGGAttributeExpression tae) {
 			String varName = tae.getObjectVar().getName();
 			if (match.isInMatch(varName)) {
 				EObject obj = (EObject) match.get(varName);
@@ -89,14 +87,14 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 
 			return null;
 		}
-		if (value instanceof TGGLiteralExpression) {
-			return extractLiteralValue((TGGLiteralExpression) value);
+		if (value instanceof TGGLiteralExpression tle) {
+			return extractLiteralValue(tle);
 		}
 		if (value instanceof TGGAttributeVariable) {
 			return null;
 		}
-		if (value instanceof TGGEnumExpression) {
-			return ((TGGEnumExpression) value).getLiteral().getInstance();
+		if (value instanceof TGGEnumExpression tee) {
+			return tee.getLiteral().getInstance();
 		}
 		throw new RuntimeException("TGGAttributeConstraintVariable value could not be recognized.");
 	}
@@ -157,15 +155,12 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 
 		// Try to handle dynamic EENums
 		if (type.getInstanceClass() == null) {
-			if (type instanceof EEnum) {
-				EEnum en = (EEnum) type;
-				if (o instanceof EEnumLiteral) {
-					EEnumLiteral enumLiteral = (EEnumLiteral) o;
+			if (type instanceof EEnum en) {
+				if (o instanceof EEnumLiteral enumLiteral) {
 					if (en.getEEnumLiteralByLiteral(enumLiteral.getLiteral()) != null) {
 						return en.getEEnumLiteralByLiteral(enumLiteral.getLiteral());
 					}
-				} else if (o instanceof Enumerator) {
-					Enumerator e = (Enumerator) o;
+				} else if (o instanceof Enumerator e) {
 					if (e.getClass().getName().equals(EcoreUtils.getFQN(en))
 							&& en.getEEnumLiteralByLiteral(e.getLiteral()) != null)
 						return en.getEEnumLiteralByLiteral(e.getLiteral());
@@ -180,13 +175,13 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 			if (type.getInstanceClass().equals(int.class) && o.getClass().equals(Double.class))
 				// Approximate result and squeeze into an int
 				return ((Double) o).intValue();
-			else if (o instanceof String && type.getInstanceClass().equals(int.class))
-				return Integer.parseInt((String) o);
-			else if (o instanceof String && type.getInstanceClass().equals(double.class))
-				return Double.parseDouble((String) o);
-			else if (o instanceof BasicEList)
+			else if (o instanceof String s && type.getInstanceClass().equals(int.class))
+				return Integer.parseInt(s);
+			else if (o instanceof String s && type.getInstanceClass().equals(double.class))
+				return Double.parseDouble(s);
+			else if (o instanceof BasicEList<?> list)
 				// Shallow copy
-				return ((BasicEList<?>) o).clone();
+				return list.clone();
 			else if (o instanceof Collection)
 				// Currently no handling for collections
 				return o;

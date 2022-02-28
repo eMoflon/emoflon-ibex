@@ -70,8 +70,7 @@ public class GreenSCPattern implements IGreenPattern {
 		List<TGGAttributeConstraint> newAttributeConstraints = newLibrary.getTggAttributeConstraints();
 		sortedAttributeConstraints = sortConstraints(cspVariables, newAttributeConstraints);
 		for(TGGParamValue pVal : cspVariables) {
-			if(pVal instanceof TGGAttributeExpression) {
-				TGGAttributeExpression attrExpr = (TGGAttributeExpression) pVal;
+			if(pVal instanceof TGGAttributeExpression attrExpr) {
 				attrExpr.setObjectVar(oscRule.opScRule.mapReplacingToSCNodeNode(attrExpr.getObjectVar().getName()));
 			}
 		}

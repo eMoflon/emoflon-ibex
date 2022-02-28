@@ -81,8 +81,8 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 	protected boolean revokeBrokenMatches() {
 		// clear pending elements since every element that has not been repaired until
 		// now has to be revoked
-		if (operationalMatchContainer instanceof PrecedenceMatchContainer)
-			((PrecedenceMatchContainer) operationalMatchContainer).clearPendingElements();
+		if (operationalMatchContainer instanceof PrecedenceMatchContainer precedenceMatchContainer)
+			precedenceMatchContainer.clearPendingElements();
 
 		if (matchHandler.noBrokenRuleApplications())
 			return false;

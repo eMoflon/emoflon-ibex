@@ -176,9 +176,9 @@ public class EditorTGGtoInternalTGG {
 		}
 	}
 
-	private Collection<ObjectVariablePattern> toOVPatterns(EList<ContextObjectVariablePattern> patterns) {
-		return patterns.stream().map(p -> toOVPattern(p)).collect(Collectors.toList());
-	}
+//	private Collection<ObjectVariablePattern> toOVPatterns(EList<ContextObjectVariablePattern> patterns) {
+//		return patterns.stream().map(p -> toOVPattern(p)).collect(Collectors.toList());
+//	}
 
 	private HashMap<ContextObjectVariablePattern, ObjectVariablePattern> cOVtoOV = new HashMap<>();
 
@@ -260,16 +260,16 @@ public class EditorTGGtoInternalTGG {
 		int index = ((AttrCond) paramValue.eContainer()).getValues().indexOf(paramValue);
 		TGGAttributeConstraintParameterDefinition paramDef = definition.getParameterDefinitions().get(index);
 
-		if (paramValue instanceof LocalVariable) {
+		if (paramValue instanceof LocalVariable localVar) {
 			TGGAttributeVariable attrVariable = LanguageFactory.eINSTANCE.createTGGAttributeVariable();
-			attrVariable.setName(((LocalVariable) paramValue).getName());
+			attrVariable.setName(localVar.getName());
 			attrVariable.setParameterDefinition(paramDef);
 			return attrVariable;
 		}
-		if (paramValue instanceof Expression) {
-			TGGExpression exp = createExpression((Expression) paramValue);
-			exp.setParameterDefinition(paramDef);
-			return exp;
+		if (paramValue instanceof Expression expr) {
+			TGGExpression tggExpr = createExpression(expr);
+			tggExpr.setParameterDefinition(paramDef);
+			return tggExpr;
 		}
 		return null;
 	}
@@ -387,21 +387,18 @@ public class EditorTGGtoInternalTGG {
 	}
 
 	private TGGExpression createExpression(org.moflon.tgg.mosl.tgg.Expression expression) {
-		if (expression instanceof LiteralExpression) {
-			LiteralExpression le = (LiteralExpression) expression;
+		if (expression instanceof LiteralExpression le) {
 			TGGLiteralExpression tle = LanguageFactory.eINSTANCE.createTGGLiteralExpression();
 			tle.setValue(le.getValue());
 			return tle;
 		}
-		if (expression instanceof EnumExpression) {
-			EnumExpression ee = (EnumExpression) expression;
+		if (expression instanceof EnumExpression ee) {
 			TGGEnumExpression tee = LanguageFactory.eINSTANCE.createTGGEnumExpression();
 			tee.setEenum(ee.getEenum());
 			tee.setLiteral(ee.getLiteral());
 			return tee;
 		}
-		if (expression instanceof AttributeExpression) {
-			AttributeExpression ae = (AttributeExpression) expression;
+		if (expression instanceof AttributeExpression ae) {
 			TGGAttributeExpression tae = LanguageFactory.eINSTANCE.createTGGAttributeExpression();
 			tae.setAttribute(ae.getAttribute());
 			tae.setObjectVar((TGGRuleNode) xtextToTGG.get(ae.getObjectVar()));

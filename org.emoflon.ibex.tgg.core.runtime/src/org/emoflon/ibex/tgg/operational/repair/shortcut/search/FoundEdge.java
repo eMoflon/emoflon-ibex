@@ -18,8 +18,7 @@ public class FoundEdge {
 	
 	@Override
 	public boolean equals(Object obj) {
-		if(obj instanceof FoundEdge) {
-			FoundEdge otherKey = (FoundEdge) obj;
+		if(obj instanceof FoundEdge otherKey) {
 			return sourceNode.equals(otherKey.sourceNode) &&
 					targetNode.equals(otherKey.targetNode) &&
 						edgeType.equals(otherKey.edgeType);

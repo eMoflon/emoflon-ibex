@@ -102,51 +102,47 @@ public abstract class OperationalPatternTransformation {
 	}
 
 	private void transformCSPs(IBeXContextPattern ibexPattern) {
-		for(TGGAttributeConstraint csp : rule.getAttributeConditionLibrary().getTggAttributeConstraints()) {
-			
-			if(tryTransformingCEPToRelationalConstraint(ibexPattern, csp))
+		for (TGGAttributeConstraint csp : rule.getAttributeConditionLibrary().getTggAttributeConstraints()) {
+
+			if (tryTransformingCEPToRelationalConstraint(ibexPattern, csp))
 				continue;
-			
+
 			IBeXCSP iCSP = IBeXPatternModelFactory.eINSTANCE.createIBeXCSP();
 			iCSP.setName(csp.getDefinition().getName());
-			if(csp.getDefinition().isUserDefined()) {
+			if (csp.getDefinition().isUserDefined()) {
 				iCSP.setName("UserDefined_" + iCSP.getName());
 				iCSP.setPackage("org.emoflon.ibex.tgg.operational.csp.constraints.custom." + ((TGG) rule.eContainer()).getName().toLowerCase());
-			}
-			else {
+			} else {
 				iCSP.setPackage("org.emoflon.ibex.tgg.operational.csp.constraints");
 			}
-			
-			for(TGGParamValue param : csp.getParameters()) {
-				if(param instanceof TGGAttributeExpression) {
-					TGGAttributeExpression tggAttrExpr = (TGGAttributeExpression) param;
+
+			for (TGGParamValue param : csp.getParameters()) {
+				if (param instanceof TGGAttributeExpression tggAttrExpr) {
 					if (tggAttrExpr.isDerived() && !this.includeDerivedCSPParams())
 						break;
 					IBeXAttributeExpression attrExpr = IBeXPatternModelFactory.eINSTANCE.createIBeXAttributeExpression();
 					Optional<IBeXNode> iBeXNode = IBeXPatternUtils.findIBeXNodeWithName(ibexPattern, tggAttrExpr.getObjectVar().getName());
-					if(iBeXNode.isPresent())
+					if (iBeXNode.isPresent())
 						attrExpr.setNode(iBeXNode.get());
 					else
 						break;
 					attrExpr.setAttribute(tggAttrExpr.getAttribute());
 					iCSP.getValues().add(attrExpr);
 				}
-				else if(param instanceof TGGEnumExpression) {
-					TGGEnumExpression tggEnumExpr = (TGGEnumExpression) param;
+				else if (param instanceof TGGEnumExpression tggEnumExpr) {
 					IBeXEnumLiteral literal = IBeXPatternModelFactory.eINSTANCE.createIBeXEnumLiteral();
 					iCSP.getValues().add(literal);
 					literal.setLiteral(tggEnumExpr.getLiteral());
 				}
-				else if(param instanceof TGGLiteralExpression) {
-					TGGLiteralExpression tggLiteralExpr = (TGGLiteralExpression) param;
+				else if (param instanceof TGGLiteralExpression tggLiteralExpr) {
 					IBeXConstant constant = IBeXPatternModelFactory.eINSTANCE.createIBeXConstant();
 					iCSP.getValues().add(constant);
 					constant.setValue(tggLiteralExpr.getValue());
 					constant.setStringValue(tggLiteralExpr.getValue());
 				}
 			}
-			
-			if(iCSP.getValues().size() == csp.getParameters().size())
+
+			if (iCSP.getValues().size() == csp.getParameters().size())
 				ibexPattern.getCsps().add(iCSP);
 		}
 	}
@@ -154,63 +150,60 @@ public abstract class OperationalPatternTransformation {
 	
 	
 	private boolean tryTransformingCEPToRelationalConstraint(IBeXContextPattern ibexPattern, TGGAttributeConstraint csp) {
-		if(!options.patterns.optimizeCSPs())
+		if (!options.patterns.optimizeCSPs())
 			return false;
-		
-		if(csp.getDefinition().isUserDefined())
+
+		if (csp.getDefinition().isUserDefined())
 			return false;
-		
-		if(csp.getParameters().size() != 2)
+
+		if (csp.getParameters().size() != 2)
 			return false;
-		
-		if(!csp.getDefinition().getName().startsWith("eq_"))
+
+		if (!csp.getDefinition().getName().startsWith("eq_"))
 			return false;
-		
+
 		IBeXAttributeConstraint ac = IBeXPatternModelFactory.eINSTANCE.createIBeXAttributeConstraint();
 		ac.setRelation(IBeXRelation.EQUAL);
-		
-		for(TGGParamValue param : csp.getParameters()) {
-			if(param instanceof TGGAttributeExpression) {
-				TGGAttributeExpression tggAttrExpr = (TGGAttributeExpression) param;
+
+		for (TGGParamValue param : csp.getParameters()) {
+			if (param instanceof TGGAttributeExpression tggAttrExpr) {
 				if (tggAttrExpr.isDerived() && !this.includeDerivedCSPParams())
 					return false;
 				IBeXAttributeExpression attrExpr = IBeXPatternModelFactory.eINSTANCE.createIBeXAttributeExpression();
 				Optional<IBeXNode> iBeXNode = IBeXPatternUtils.findIBeXNodeWithName(ibexPattern, tggAttrExpr.getObjectVar().getName());
-				if(iBeXNode.isPresent())
+				if (iBeXNode.isPresent())
 					attrExpr.setNode(iBeXNode.get());
 				else
 					return false;
 				attrExpr.setAttribute(tggAttrExpr.getAttribute());
-				
-				if(ac.getLhs() == null)
+
+				if (ac.getLhs() == null)
 					ac.setLhs(attrExpr);
 				else
 					ac.setRhs(attrExpr);
-			}
-			else if(param instanceof TGGEnumExpression) {
-				TGGEnumExpression tggEnumExpr = (TGGEnumExpression) param;
+			} 
+			else if (param instanceof TGGEnumExpression tggEnumExpr) {
 				IBeXEnumLiteral literal = IBeXPatternModelFactory.eINSTANCE.createIBeXEnumLiteral();
 				literal.setLiteral(tggEnumExpr.getLiteral());
-				
-				if(ac.getLhs() == null)
+
+				if (ac.getLhs() == null)
 					ac.setLhs(literal);
 				else
 					ac.setRhs(literal);
-			}
-			else if(param instanceof TGGLiteralExpression) {
-				TGGLiteralExpression tggLiteralExpr = (TGGLiteralExpression) param;
+			} 
+			else if (param instanceof TGGLiteralExpression tggLiteralExpr) {
 				IBeXConstant constant = IBeXPatternModelFactory.eINSTANCE.createIBeXConstant();
 				constant.setValue(tggLiteralExpr.getValue());
 				constant.setStringValue(tggLiteralExpr.getValue());
 
-				if(ac.getLhs() == null)
+				if (ac.getLhs() == null)
 					ac.setLhs(constant);
 				else
 					ac.setRhs(constant);
 			}
 		}
 		ibexPattern.getAttributeConstraint().add(ac);
-		
+
 		return true;
 	}
 

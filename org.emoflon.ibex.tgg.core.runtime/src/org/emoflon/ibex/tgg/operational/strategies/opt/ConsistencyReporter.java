@@ -115,16 +115,15 @@ public class ConsistencyReporter {
 						for (EObject edgeTrg : getResultCollection) {
 							edges.add(new EMFEdge(node, edgeTrg, ref));
 						}
-					} else if (getterResult instanceof EObject) {
-						edges.add(new EMFEdge(node, (EObject) getterResult, ref));
+					} else if (getterResult instanceof EObject eObjRes) {
+						edges.add(new EMFEdge(node, eObjRes, ref));
 					}
 				}
 			}
 		}
 
 		protocol.getContents().forEach(c -> {
-			if (c instanceof TGGRuleApplication) {
-				TGGRuleApplication ra = (TGGRuleApplication) c;
+			if (c instanceof TGGRuleApplication ra) {
 				String ruleName = ra.eClass().getName().substring(0, ra.eClass().getName().length() - 8);
 				Collection<TGGRuleEdge> specificationEdges = domain == DomainType.SRC ? strategy.getGreenFactories().get(ruleName).getGreenSrcEdgesInRule()
 						: strategy.getGreenFactories().get(ruleName).getGreenTrgEdgesInRule();

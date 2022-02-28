@@ -58,11 +58,12 @@ public class ModelChangeProtocol {
 							processRemoveManyNotif(n.getNotifier(), (EReference) n.getFeature(), (Collection<EObject>) n.getOldValue());
 						}
 						case Notification.SET -> {
-							if (n.getNotifier() instanceof EObject)
-								processSetNotif((EObject) n.getNotifier(), n.getFeature(), n.getOldValue(), n.getNewValue());
+							if (n.getNotifier() instanceof EObject eObjNotifier)
+								processSetNotif(eObjNotifier, n.getFeature(), n.getOldValue(), n.getNewValue());
 						}
 						case Notification.REMOVING_ADAPTER -> {
-							processRemovingAdapterNotif((EObject) n.getNotifier());
+							if (n.getNotifier() instanceof EObject eObjNotifier)
+								processRemovingAdapterNotif(eObjNotifier);
 						}
 					}
 				}
@@ -125,12 +126,12 @@ public class ModelChangeProtocol {
 
 		if (notifier instanceof Resource) {
 			changes.forEach(c -> c.addCreatedElement(newValue));
-		} else if (notifier instanceof EObject) {
-			changes.forEach(c -> c.addCreatedEdge(new EMFEdge((EObject) notifier, newValue, feature)));
+		} else if (notifier instanceof EObject eObjNotifier) {
+			changes.forEach(c -> c.addCreatedEdge(new EMFEdge(eObjNotifier, newValue, feature)));
 			if (feature.isContainment()) {
 				changes.forEach(c -> c.addCreatedElement(newValue));
 				if (feature.getEOpposite() != null)
-					changes.forEach(c -> c.addCreatedEdge(new EMFEdge(newValue, (EObject) notifier, feature.getEOpposite())));
+					changes.forEach(c -> c.addCreatedEdge(new EMFEdge(newValue, eObjNotifier, feature.getEOpposite())));
 			}
 		}
 	}
@@ -140,8 +141,8 @@ public class ModelChangeProtocol {
 
 		if (notifier instanceof Resource) {
 			changes.forEach(c -> c.addAllCreatedElements(newValues));
-		} else if (notifier instanceof EObject) {
-			newValues.forEach(newValue -> changes.forEach(c -> c.addCreatedEdge(new EMFEdge((EObject) notifier, newValue, feature))));
+		} else if (notifier instanceof EObject eObjNotifier) {
+			newValues.forEach(newValue -> changes.forEach(c -> c.addCreatedEdge(new EMFEdge(eObjNotifier, newValue, feature))));
 			if (feature.isContainment())
 				changes.forEach(c -> c.addAllCreatedElements(newValues));
 		}
@@ -152,8 +153,8 @@ public class ModelChangeProtocol {
 
 		if (notifier instanceof Resource)
 			changes.forEach(c -> c.addDeletedEltContainedInRes(oldValue, (Resource) notifier));
-		else if (notifier instanceof EObject)
-			changes.forEach(c -> c.addDeletedEdge(new EMFEdge((EObject) notifier, oldValue, feature)));
+		else if (notifier instanceof EObject eObjNotifier)
+			changes.forEach(c -> c.addDeletedEdge(new EMFEdge(eObjNotifier, oldValue, feature)));
 	}
 
 	private void processRemoveManyNotif(Object notifier, EReference feature, Collection<EObject> oldValues) {
@@ -161,15 +162,14 @@ public class ModelChangeProtocol {
 
 		if (notifier instanceof Resource)
 			oldValues.forEach(oldValue -> changes.forEach(c -> c.addDeletedEltContainedInRes(oldValue, (Resource) notifier)));
-		else if (notifier instanceof EObject)
-			oldValues.forEach(oldValue -> changes.forEach(c -> c.addDeletedEdge(new EMFEdge((EObject) notifier, oldValue, feature))));
+		else if (notifier instanceof EObject eObjNotifier)
+			oldValues.forEach(oldValue -> changes.forEach(c -> c.addDeletedEdge(new EMFEdge(eObjNotifier, oldValue, feature))));
 	}
 
 	private void processSetNotif(EObject notifier, Object feature, Object oldValue, Object newValue) {
 		Set<ModelChanges> changes = getCurrentModelChanges();
 
-		if (feature instanceof EReference) {
-			EReference reference = (EReference) feature;
+		if (feature instanceof EReference reference) {
 			if (oldValue != null) {
 				changes.forEach(c -> c.addDeletedEdge(new EMFEdge(notifier, (EObject) oldValue, reference)));
 			}
@@ -178,8 +178,8 @@ public class ModelChangeProtocol {
 				if (reference.isContainment())
 					changes.forEach(c -> c.addCreatedElement((EObject) newValue));
 			}
-		} else if (feature instanceof EAttribute) {
-			changes.forEach(c -> c.addAttributeChange(new AttributeChange(notifier, (EAttribute) feature, oldValue, newValue)));
+		} else if (feature instanceof EAttribute attribute) {
+			changes.forEach(c -> c.addAttributeChange(new AttributeChange(notifier, attribute, oldValue, newValue)));
 		}
 	}
 

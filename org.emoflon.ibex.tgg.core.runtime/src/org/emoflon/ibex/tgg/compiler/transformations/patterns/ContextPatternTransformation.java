@@ -482,10 +482,10 @@ public class ContextPatternTransformation {
 	}
 
 	protected Optional<IBeXAttributeValue> convertValue(IBeXContextPattern ibexPattern, TGGExpression valueExpr, EAttribute eAttribute) {
-		if (valueExpr instanceof TGGEnumExpression) {
-			return Optional.of(convertAttributeValue((TGGEnumExpression) valueExpr));
-		} else if (valueExpr instanceof TGGLiteralExpression) {
-			return Optional.of(convertAttributeValue((TGGLiteralExpression) valueExpr, eAttribute.getEAttributeType()));
+		if (valueExpr instanceof TGGEnumExpression tggEnumExpr) {
+			return Optional.of(convertAttributeValue(tggEnumExpr));
+		} else if (valueExpr instanceof TGGLiteralExpression tggLiteralExpr) {
+			return Optional.of(convertAttributeValue(tggLiteralExpr, eAttribute.getEAttributeType()));
 		} else {
 			logger.error("Invalid attribute value: " + valueExpr);
 			return Optional.empty();

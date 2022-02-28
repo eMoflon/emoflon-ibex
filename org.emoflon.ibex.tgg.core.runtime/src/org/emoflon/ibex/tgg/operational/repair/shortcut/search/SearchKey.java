@@ -29,8 +29,7 @@ public class SearchKey {
 
 	@Override
 	public boolean equals(Object obj) {
-		if(obj instanceof SearchKey) {
-			SearchKey otherKey = (SearchKey) obj;
+		if(obj instanceof SearchKey otherKey) {
 			return sourceNode.equals(otherKey.sourceNode) &&
 					targetNode.equals(otherKey.targetNode) &&
 							edge.equals(otherKey.edge) &&
