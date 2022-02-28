@@ -176,17 +176,10 @@ final class MIPCLWrapper extends ILPSolver {
 		LinSum linSum = this.createLinSum(constraint.getLinearExpression());
 
 		switch (constraint.getComparator()) {
-		case ge:
-			this.solver.addCtr(linSum, constraint.getValue(), LPshell.INF);
-			break;
-		case le:
-			this.solver.addCtr(linSum, -LPshell.INF, constraint.getValue());
-			break;
-		case eq:
-			this.solver.addCtr(linSum, constraint.getValue(), constraint.getValue());
-			break;
-		default:
-			throw new IllegalArgumentException("Unsupported comparator: " + constraint.getComparator().toString());
+			case ge -> this.solver.addCtr(linSum, constraint.getValue(), LPshell.INF);
+			case le -> this.solver.addCtr(linSum, -LPshell.INF, constraint.getValue());
+			case eq -> this.solver.addCtr(linSum, constraint.getValue(), constraint.getValue());
+			default -> throw new IllegalArgumentException("Unsupported comparator: " + constraint.getComparator().toString());
 		}
 	}
 
@@ -199,15 +192,9 @@ final class MIPCLWrapper extends ILPSolver {
 		LinSum linSum = this.createLinSum(objective.getLinearExpression());
 
 		switch (objective.getObjectiveOperation()) {
-		case maximize:
-			this.solver.maximize(linSum);
-			break;
-		case minimize:
-			this.solver.minimize(linSum);
-			break;
-		default:
-			throw new IllegalArgumentException(
-					"Unsupported operation: " + objective.getObjectiveOperation().toString());
+			case maximize -> this.solver.maximize(linSum);
+			case minimize -> this.solver.minimize(linSum);
+			default -> throw new IllegalArgumentException("Unsupported operation: " + objective.getObjectiveOperation().toString());
 		}
 	}
 

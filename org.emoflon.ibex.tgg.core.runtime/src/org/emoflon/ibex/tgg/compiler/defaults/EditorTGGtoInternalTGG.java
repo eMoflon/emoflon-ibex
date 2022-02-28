@@ -412,23 +412,15 @@ public class EditorTGGtoInternalTGG {
 	}
 
 	private TGGAttributeConstraintOperators convertOperator(String operator) {
-		switch (operator) {
-		case "==":
-		case ":=":
-			return TGGAttributeConstraintOperators.EQUAL;
-		case "!=":
-			return TGGAttributeConstraintOperators.UNEQUAL;
-		case ">=":
-			return TGGAttributeConstraintOperators.GR_EQUAL;
-		case "<=":
-			return TGGAttributeConstraintOperators.LE_EQUAL;
-		case ">":
-			return TGGAttributeConstraintOperators.GREATER;
-		case "<":
-			return TGGAttributeConstraintOperators.LESSER;
-		default:
-			return null;
-		}
+		return switch (operator) {
+			case "==", ":=" -> TGGAttributeConstraintOperators.EQUAL;
+			case "!=" -> TGGAttributeConstraintOperators.UNEQUAL;
+			case ">=" -> TGGAttributeConstraintOperators.GR_EQUAL;
+			case "<=" -> TGGAttributeConstraintOperators.LE_EQUAL;
+			case ">" -> TGGAttributeConstraintOperators.GREATER;
+			case "<" -> TGGAttributeConstraintOperators.LESSER;
+			default -> null;
+		};
 	}
 
 	private TGGRuleNode getTGGRuleNode(ObjectVariablePattern ov) {

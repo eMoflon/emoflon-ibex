@@ -33,7 +33,7 @@ public class OperationalSCFactory {
 
 			if (scRule.getOverlap().nonOperationalizablePatterns.contains(type))
 				continue;
-			
+
 			// TODO larsF, adrianM: does this make sense?
 			// we do not want rules that contain no interface edges
 			if (TGGFilterUtil.filterEdges(originalRule.getEdges(), BindingType.CREATE).size()
@@ -48,19 +48,13 @@ public class OperationalSCFactory {
 
 	private OperationalShortcutRule createOpShortcutRule(PropagatingOperationalStrategy strategy, ShortcutRule scRule, //
 			ACAnalysis filterNACAnalysis, PatternType type) {
-		switch (type) {
-		case FWD:
-			return new FWDShortcutRule(strategy, scRule, filterNACAnalysis);
-		case BWD:
-			return new BWDShortcutRule(strategy, scRule, filterNACAnalysis);
-		case CC:
-			return new CCShortcutRule(strategy, scRule, filterNACAnalysis);
-		case SRC:
-			return new SRCShortcutRule(strategy, scRule, filterNACAnalysis);
-		case TRG:
-			return new TRGShortcutRule(strategy, scRule, filterNACAnalysis);
-		default:
-			throw new RuntimeException("Shortcut Rules cannot be operationalized for " + type.toString() + " operations");
-		}
+		return switch (type) {
+			case FWD -> new FWDShortcutRule(strategy, scRule, filterNACAnalysis);
+			case BWD -> new BWDShortcutRule(strategy, scRule, filterNACAnalysis);
+			case CC -> new CCShortcutRule(strategy, scRule, filterNACAnalysis);
+			case SRC -> new SRCShortcutRule(strategy, scRule, filterNACAnalysis);
+			case TRG -> new TRGShortcutRule(strategy, scRule, filterNACAnalysis);
+			default -> throw new RuntimeException("Shortcut Rules cannot be operationalized for " + type.toString() + " operations");
+		};
 	}
 }

@@ -515,22 +515,15 @@ public class ContextPatternTransformation {
 	}
 
 	protected IBeXRelation convertRelation(TGGAttributeConstraintOperators operator) {
-		switch (operator) {
-		case GREATER:
-			return IBeXRelation.GREATER;
-		case GR_EQUAL:
-			return IBeXRelation.GREATER_OR_EQUAL;
-		case EQUAL:
-			return IBeXRelation.EQUAL;
-		case UNEQUAL:
-			return IBeXRelation.UNEQUAL;
-		case LESSER:
-			return IBeXRelation.SMALLER;
-		case LE_EQUAL:
-			return IBeXRelation.SMALLER_OR_EQUAL;
-		default:
-			throw new IllegalArgumentException("Cannot convert operator: " + operator);
-		}
+		return switch (operator) {
+			case GREATER -> IBeXRelation.GREATER;
+			case GR_EQUAL -> IBeXRelation.GREATER_OR_EQUAL;
+			case EQUAL -> IBeXRelation.EQUAL;
+			case UNEQUAL -> IBeXRelation.UNEQUAL;
+			case LESSER -> IBeXRelation.SMALLER;
+			case LE_EQUAL -> IBeXRelation.SMALLER_OR_EQUAL;
+			default -> throw new IllegalArgumentException("Cannot convert operator: " + operator);
+		};
 	}
 
 	/**

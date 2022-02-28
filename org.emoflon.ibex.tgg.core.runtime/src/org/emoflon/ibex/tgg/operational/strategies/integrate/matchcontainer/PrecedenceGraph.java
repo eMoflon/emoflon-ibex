@@ -292,17 +292,11 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 
 		// caching
 		switch (match.getType()) {
-		case CONSISTENCY:
-			consNodes.add(node);
-			break;
-		case SRC:
-			srcNodes.add(node);
-			break;
-		case TRG:
-			trgNodes.add(node);
-			break;
-		default:
-			break;
+			case CONSISTENCY -> consNodes.add(node);
+			case SRC -> srcNodes.add(node);
+			case TRG -> trgNodes.add(node);
+			default -> {
+			}
 		}
 
 		LoggerConfig.log(LoggerConfig.log_pg(), () -> "Precedence graph: added " + match.getPatternName() + "(" + match.hashCode() + ")");
@@ -354,17 +348,11 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 
 		// caching
 		switch (match.getType()) {
-		case CONSISTENCY:
-			consNodes.remove(node);
-			break;
-		case SRC:
-			srcNodes.remove(node);
-			break;
-		case TRG:
-			trgNodes.remove(node);
-			break;
-		default:
-			break;
+			case CONSISTENCY -> consNodes.remove(node);
+			case SRC -> srcNodes.remove(node);
+			case TRG -> trgNodes.remove(node);
+			default -> {
+			}
 		}
 
 		LoggerConfig.log(LoggerConfig.log_pg(), () -> "Precedence graph: removed " + match.getPatternName() + "(" + match.hashCode() + ")");

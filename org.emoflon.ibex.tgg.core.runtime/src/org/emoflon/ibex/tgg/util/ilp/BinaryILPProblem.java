@@ -801,14 +801,9 @@ public final class BinaryILPProblem extends ILPProblem {
 	@Override
 	public void fixVariable(final String variableName, final int value) {
 		switch (value) {
-		case 1:
-			this.fixVariable(variableName, true);
-			break;
-		case 0:
-			this.fixVariable(variableName, false);
-			break;
-		default:
-			throw new IllegalArgumentException("Only 0 or 1 are supported in binary ILP problems");
+			case 1 -> this.fixVariable(variableName, true);
+			case 0 -> this.fixVariable(variableName, false);
+			default -> throw new IllegalArgumentException("Only 0 or 1 are supported in binary ILP problems");
 		}
 	}
 
@@ -820,14 +815,11 @@ public final class BinaryILPProblem extends ILPProblem {
 		Integer value = this.getFixedVariable(variable);
 		if (value == null)
 			return null;
-		switch (value) {
-		case 1:
-			return true;
-		case 0:
-			return false;
-		default:
-			throw new IllegalArgumentException("Only 0 or 1 are supported in binary ILP problems");
-		}
+		return switch (value) {
+			case 1 -> true;
+			case 0 -> false;
+			default -> throw new IllegalArgumentException("Only 0 or 1 are supported in binary ILP problems");
+		};
 	}
 
 	/**

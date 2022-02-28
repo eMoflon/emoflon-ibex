@@ -176,21 +176,14 @@ final class GurobiWrapper extends ILPSolver {
 	 */
 	private void registerConstraint(final ILPConstraint constraint) throws GRBException {
 		char gurobiComparator;
-		switch (constraint.getComparator()) {
-		case eq:
-			gurobiComparator = GRB.EQUAL;
-			break;
-		case ge:
-			gurobiComparator = GRB.GREATER_EQUAL;
-			break;
-		case le:
-			gurobiComparator = GRB.LESS_EQUAL;
-			break;
-		default:
-			throw new IllegalArgumentException("Unsupported comparator: " + constraint.getComparator().toString());
-		}
-		this.model.addConstr(this.createGurobiExpression(constraint.getLinearExpression()), gurobiComparator,
-				constraint.getValue(), constraint.getName());
+		gurobiComparator = switch (constraint.getComparator()) {
+			case eq -> GRB.EQUAL;
+			case ge -> GRB.GREATER_EQUAL;
+			case le -> GRB.LESS_EQUAL;
+			default -> throw new IllegalArgumentException("Unsupported comparator: " + constraint.getComparator().toString());
+		};
+		this.model.addConstr(this.createGurobiExpression(constraint.getLinearExpression()), gurobiComparator, constraint.getValue(),
+				constraint.getName());
 	}
 
 	/**
@@ -200,17 +193,11 @@ final class GurobiWrapper extends ILPSolver {
 	 */
 	private void registerObjective(final ILPObjective objective) throws GRBException {
 		int gurobiObjectiveSelector;
-		switch (objective.getObjectiveOperation()) {
-		case maximize:
-			gurobiObjectiveSelector = GRB.MAXIMIZE;
-			break;
-		case minimize:
-			gurobiObjectiveSelector = GRB.MINIMIZE;
-			break;
-		default:
-			throw new IllegalArgumentException(
-					"Unsupported operation: " + objective.getObjectiveOperation().toString());
-		}
+		gurobiObjectiveSelector = switch (objective.getObjectiveOperation()) {
+			case maximize -> GRB.MAXIMIZE;
+			case minimize -> GRB.MINIMIZE;
+			default -> throw new IllegalArgumentException("Unsupported operation: " + objective.getObjectiveOperation().toString());
+		};
 		this.model.setObjective(this.createGurobiExpression(objective.getLinearExpression()), gurobiObjectiveSelector);
 	}
 }

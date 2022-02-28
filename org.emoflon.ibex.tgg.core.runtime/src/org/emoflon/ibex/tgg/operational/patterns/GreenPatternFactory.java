@@ -136,16 +136,16 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 	}
 
 	public IGreenPattern create(PatternType type) {
-		switch(type) {
-		case GEN: return createGreenPattern(GenGreenPattern.class);
-		case CC: return createGreenPattern(CCGreenPattern.class);
-		case CO: return createGreenPattern(COGreenPattern.class);
-		case FWD: return createGreenPattern(FWDGreenPattern.class);
-		case BWD: return createGreenPattern(BWDGreenPattern.class);
-		case FWD_OPT: return createGreenPattern(FWDOptGreenPattern.class);
-		case BWD_OPT: return createGreenPattern(BWDOptGreenPattern.class);
-		default: return createGreenPattern(EmptyGreenPattern.class);
-		}
+		return switch (type) {
+			case GEN -> createGreenPattern(GenGreenPattern.class);
+			case CC -> createGreenPattern(CCGreenPattern.class);
+			case CO -> createGreenPattern(COGreenPattern.class);
+			case FWD -> createGreenPattern(FWDGreenPattern.class);
+			case BWD -> createGreenPattern(BWDGreenPattern.class);
+			case FWD_OPT -> createGreenPattern(FWDOptGreenPattern.class);
+			case BWD_OPT -> createGreenPattern(BWDOptGreenPattern.class);
+			default -> createGreenPattern(EmptyGreenPattern.class);
+		};
 	}
 
 	public synchronized IGreenPattern createGreenPattern(Class<? extends IGreenPattern> c) {

@@ -300,14 +300,11 @@ public class ShortcutPatternTool implements TimeMeasurable {
 	}
 
 	private DomainType getObjectDomain(PatternType type) {
-		switch (type) {
-		case FWD:
-			return DomainType.TRG;
-		case BWD:
-			return DomainType.SRC;
-		default:
-			return null;
-		}
+		return switch (type) {
+			case FWD -> DomainType.TRG;
+			case BWD -> DomainType.SRC;
+			default -> null;
+		};
 	}
 
 	public int countDeletedElements() {

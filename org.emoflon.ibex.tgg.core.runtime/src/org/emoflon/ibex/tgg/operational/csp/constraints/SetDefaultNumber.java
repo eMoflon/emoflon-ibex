@@ -15,24 +15,24 @@ public class SetDefaultNumber extends RuntimeTGGAttributeConstraint {
 		String bindingStates = getBindingStates(var_0, var_1);
 
 		switch (bindingStates) {
-		case "BB":
-			setSatisfied(true);
-			return;
-		case "FB":
-			var_0.bindToValue(var_1.getValue());
-			setSatisfied(true);
-			return;
+			case "BB" -> {
+				setSatisfied(true);
+			}
 
-		// modelgen implementations
-		case "FF":
-			int number = (int) generateValue(var_0.getType());
-			var_0.bindToValue(number);
-			var_1.bindToValue(number);
-			setSatisfied(true);
-			return;
-		default:
-			throw new UnsupportedOperationException(
-					"This case in the constraint has not been implemented yet: " + bindingStates);
+			case "FB" -> {
+				var_0.bindToValue(var_1.getValue());
+				setSatisfied(true);
+			}
+
+			// modelgen implementations
+			case "FF" -> {
+				int number = (int) generateValue(var_0.getType());
+				var_0.bindToValue(number);
+				var_1.bindToValue(number);
+				setSatisfied(true);
+			}
+
+			default -> throw new UnsupportedOperationException("This case in the constraint has not been implemented yet: " + bindingStates);
 		}
 
 	}

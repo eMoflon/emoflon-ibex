@@ -132,15 +132,13 @@ public class LocalPatternSearch {
 	}
 
 	private boolean skipAttrCheck(TGGRuleNode mergedNode) {
-		if (osr.getOpScRule().getPreservedNodes().contains(mergedNode))
-			switch (mergedNode.getDomainType()) {
-			case SRC:
-				return osr.getType() == PatternType.BWD;
-			case TRG:
-				return osr.getType() == PatternType.FWD;
-			default:
-				return false;
-			}
+		if (osr.getOpScRule().getPreservedNodes().contains(mergedNode)) {
+			return switch (mergedNode.getDomainType()) {
+				case SRC -> osr.getType() == PatternType.BWD;
+				case TRG -> osr.getType() == PatternType.FWD;
+				default -> false;
+			};
+		}
 		return false;
 	}
 
@@ -153,16 +151,11 @@ public class LocalPatternSearch {
 		foundEdges = new HashSet<>();
 		currentCandidates.addAll(calculateCurrentCandidates(name2entryNodeElem));
 
-		switch (firstComponent.apply()) {
-		case SUCCESS:
-			return new SCMatch(osr.getOpScRule().getName(), name2candidates);
-		case FAILURE:
-			return null;
-		case NEGATIVE:
-			return null;
-		default:
-			return null;
-		}
+		return switch (firstComponent.apply()) {
+			case SUCCESS -> new SCMatch(osr.getOpScRule().getName(), name2candidates);
+			case FAILURE, NEGATIVE -> null;
+			default -> null;
+		};
 	}
 	
 	// This method returns the set of current candidates. If disableInjectivity is activated, it will 
@@ -254,18 +247,21 @@ public class LocalPatternSearch {
 					foundEdges.add(edge);
 
 					switch (nextComponent.apply()) {
-					case SUCCESS:
-						return ReturnState.SUCCESS;
-					case NEGATIVE:
-						currentCandidates.remove(candidate);
-						foundEdges.remove(edge);
-						if (isNegative)
-							return ReturnState.NEGATIVE;
-						continue;
-					case FAILURE:
-						currentCandidates.remove(candidate);
-						foundEdges.remove(edge);
-						continue;
+						case SUCCESS -> {
+							return ReturnState.SUCCESS;
+						}
+						case NEGATIVE -> {
+							currentCandidates.remove(candidate);
+							foundEdges.remove(edge);
+							if (isNegative)
+								return ReturnState.NEGATIVE;
+							continue;
+						}
+						case FAILURE -> {
+							currentCandidates.remove(candidate);
+							foundEdges.remove(edge);
+							continue;
+						}
 					}
 				}
 				return isRelaxed ? nextComponent.apply() : ReturnState.FAILURE;

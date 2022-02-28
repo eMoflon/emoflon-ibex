@@ -17,19 +17,17 @@ public class NumberOfMatchesObserver extends AbstractIbexObserver {
 	@Override
 	public void update(ObservableEvent eventType, Object... additionalInformation) {
 		switch (eventType) {
-		case DONEINIT:
-		case MATCHAPPLIED:
-			if (this.getObservable() instanceof OperationalStrategy) {
-				OperationalStrategy op = (OperationalStrategy) this.getObservable();
-				operationalMatchContainer = op.getMatchContainer();
-				matchesSize = operationalMatchContainer.getMatches().size();
-				String patternName = operationalMatchContainer.getNext().getRuleName();
-				logger.info("Pattern: " + patternName + " hasMatches: " + matchesSize);
-
-				break;
+			case DONEINIT, MATCHAPPLIED -> {
+				if (this.getObservable() instanceof OperationalStrategy) {
+					OperationalStrategy op = (OperationalStrategy) this.getObservable();
+					operationalMatchContainer = op.getMatchContainer();
+					matchesSize = operationalMatchContainer.getMatches().size();
+					String patternName = operationalMatchContainer.getNext().getRuleName();
+					logger.info("Pattern: " + patternName + " hasMatches: " + matchesSize);
+				}
 			}
-		default:
-			break;
+			default -> {
+			}
 		}
 	}
 }

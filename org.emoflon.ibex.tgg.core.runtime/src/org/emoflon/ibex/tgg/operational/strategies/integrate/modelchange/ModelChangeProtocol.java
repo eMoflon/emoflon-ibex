@@ -45,24 +45,25 @@ public class ModelChangeProtocol {
 			public void notifyChanged(Notification n) {
 				if (!currentKeys.isEmpty()) {
 					switch (n.getEventType()) {
-					case Notification.ADD:
-						processAddNotif(n.getNotifier(), (EReference) n.getFeature(), (EObject) n.getNewValue());
-						break;
-					case Notification.ADD_MANY:
-						processAddManyNotif(n.getNotifier(), (EReference) n.getFeature(), (Collection<EObject>) n.getNewValue());
-						break;
-					case Notification.REMOVE:
-						processRemoveNotif(n.getNotifier(), (EReference) n.getFeature(), (EObject) n.getOldValue());
-						break;
-					case Notification.REMOVE_MANY:
-						processRemoveManyNotif(n.getNotifier(), (EReference) n.getFeature(), (Collection<EObject>) n.getOldValue());
-						break;
-					case Notification.SET:
-						if (n.getNotifier() instanceof EObject)
-							processSetNotif((EObject) n.getNotifier(), n.getFeature(), n.getOldValue(), n.getNewValue());
-						break;
-					case Notification.REMOVING_ADAPTER:
-						processRemovingAdapterNotif((EObject) n.getNotifier());
+						case Notification.ADD -> {
+							processAddNotif(n.getNotifier(), (EReference) n.getFeature(), (EObject) n.getNewValue());
+						}
+						case Notification.ADD_MANY -> {
+							processAddManyNotif(n.getNotifier(), (EReference) n.getFeature(), (Collection<EObject>) n.getNewValue());
+						}
+						case Notification.REMOVE -> {
+							processRemoveNotif(n.getNotifier(), (EReference) n.getFeature(), (EObject) n.getOldValue());
+						}
+						case Notification.REMOVE_MANY -> {
+							processRemoveManyNotif(n.getNotifier(), (EReference) n.getFeature(), (Collection<EObject>) n.getOldValue());
+						}
+						case Notification.SET -> {
+							if (n.getNotifier() instanceof EObject)
+								processSetNotif((EObject) n.getNotifier(), n.getFeature(), n.getOldValue(), n.getNewValue());
+						}
+						case Notification.REMOVING_ADAPTER -> {
+							processRemovingAdapterNotif((EObject) n.getNotifier());
+						}
 					}
 				}
 

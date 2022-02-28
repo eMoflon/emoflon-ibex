@@ -51,24 +51,25 @@ public class LocalCCMatchContainer implements IMatchContainer{
 	}
 
 	public void addMatch(ITGGMatch match) {
-		if(!rule2pattern.containsKey(match.getRuleName())) {
+		if (!rule2pattern.containsKey(match.getRuleName())) {
 			IGreenPatternFactory factory = new GreenPatternFactory(options, match.getRuleName());
 			rule2factory.put(match.getRuleName(), factory);
 			rule2pattern.put(match.getRuleName(), factory.create(PatternType.GEN));
 		}
-		
-		switch(match.getType()) {
-		case CONSISTENCY: 
-			if(!initFinished)
-				addConsistencyMatch(match);
-			else 
-				unprocessedConsistencyMatches.add(match);
-			return;
-		case CC:
-		case GENForCC:
-			unprocessedCCMatches.add(match);
-		default:
-			break;
+
+		switch (match.getType()) {
+			case CONSISTENCY -> {
+				if (!initFinished)
+					addConsistencyMatch(match);
+				else
+					unprocessedConsistencyMatches.add(match);
+				return;
+			}
+			case CC, GENForCC -> {
+				unprocessedCCMatches.add(match);
+			}
+			default -> {
+			}
 		}
 	}
 
@@ -171,17 +172,19 @@ public class LocalCCMatchContainer implements IMatchContainer{
 	}
 
 	public boolean removeMatch(ITGGMatch match) {
-		switch(match.getType()) {
-		case CONSISTENCY: 
-			unprocessedConsistencyMatches.remove(match);
-			return removeConsistencyMatch(match);
-		case CC:
-		case GENForCC: 
-			ccMatches.remove(match);
-			invalidCCMatches.remove(match);
-			return unprocessedCCMatches.remove(match);
-		default:
-			return false;
+		switch (match.getType()) {
+			case CONSISTENCY -> {
+				unprocessedConsistencyMatches.remove(match);
+				return removeConsistencyMatch(match);
+			}
+			case CC, GENForCC -> {
+				ccMatches.remove(match);
+				invalidCCMatches.remove(match);
+				return unprocessedCCMatches.remove(match);
+			}
+			default -> {
+				return false;
+			}
 		}
 	}
 

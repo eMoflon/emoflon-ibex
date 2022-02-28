@@ -219,38 +219,40 @@ public class SearchPlanCreator {
 						litExpr.getValue(), inplAttrExpr.getAttribute().getEAttributeType());
 
 				switch (inplAttrExpr.getOperator()) {
-				case EQUAL:
-					if (!subjectAttr.equals(literal))
-						return false;
-					continue;
-				case UNEQUAL:
-					if (subjectAttr.equals(literal))
-						return false;
-					continue;
-				default:
-					break;
+					case EQUAL -> {
+						if (!subjectAttr.equals(literal))
+							return false;
+						continue;
+					}
+					case UNEQUAL -> {
+						if (subjectAttr.equals(literal))
+							return false;
+						continue;
+					}
+					default -> {
+					}
 				}
 
 				int compareResult = comparePrimitives(subjectAttr, literal);
 				switch (inplAttrExpr.getOperator()) {
-				case GREATER:
-					if (!(compareResult > 0))
-						return false;
-					break;
-				case GR_EQUAL:
-					if (!(compareResult >= 0))
-						return false;
-					break;
-				case LESSER:
-					if (!(compareResult < 0))
-						return false;
-					break;
-				case LE_EQUAL:
-					if (!(compareResult <= 0))
-						return false;
-					break;
-				default:
-					break;
+					case GREATER -> {
+						if (!(compareResult > 0))
+							return false;
+					}
+					case GR_EQUAL -> {
+						if (!(compareResult >= 0))
+							return false;
+					}
+					case LESSER -> {
+						if (!(compareResult < 0))
+							return false;
+					}
+					case LE_EQUAL -> {
+						if (!(compareResult <= 0))
+							return false;
+					}
+					default -> {
+					}
 				}
 			} else if (inplAttrExpr.getValueExpr() instanceof TGGEnumExpression) {
 				if (subjectAttr == null)

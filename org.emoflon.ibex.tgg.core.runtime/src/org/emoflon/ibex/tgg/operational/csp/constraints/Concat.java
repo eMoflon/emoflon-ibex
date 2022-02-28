@@ -29,78 +29,68 @@ public class Concat extends RuntimeTGGAttributeConstraint {
 		String bindingStates = getBindingStates(separator, a, b, c);
 
 		switch (bindingStates) {
-		case "BBBB": {
-			setSatisfied(checkAllValues(separator, a, b, c));
-			return;
-		}
-
-		case "BBBF": {
-			c.bindToValue("" + a.getValue() + separator.getValue() + b.getValue());
-			setSatisfied(checkAllValues(separator, a, b, c));
-			return;
-		}
-
-		case "BBFB": {
-			String[] split = ("" + c.getValue()).split(Pattern.quote("" + separator.getValue()));
-			if (split.length != 2) {
-				logger.warn(warningMessageForNonUniqueSeparator(c.getValue().toString()));
-				setSatisfied(false);
-			} else {
-				b.bindToValue(split[1]);
+			case "BBBB" -> {
 				setSatisfied(checkAllValues(separator, a, b, c));
 			}
-			return;
-		}
 
-		case "BFBB": {
-			String[] split = c.getValue().toString().split(Pattern.quote("" + separator.getValue()));
-			a.bindToValue(split[0]);
-			setSatisfied(checkAllValues(separator, a, b, c));
-			return;
-		}
+			case "BBBF" -> {
+				c.bindToValue("" + a.getValue() + separator.getValue() + b.getValue());
+				setSatisfied(checkAllValues(separator, a, b, c));
+			}
 
-		case "BFFB": {
-			String[] split = c.getValue().toString().split(Pattern.quote("" + separator.getValue()));
-			if (split.length == 2) {
+			case "BBFB" -> {
+				String[] split = ("" + c.getValue()).split(Pattern.quote("" + separator.getValue()));
+				if (split.length != 2) {
+					logger.warn(warningMessageForNonUniqueSeparator(c.getValue().toString()));
+					setSatisfied(false);
+				} else {
+					b.bindToValue(split[1]);
+					setSatisfied(checkAllValues(separator, a, b, c));
+				}
+			}
+
+			case "BFBB" -> {
+				String[] split = c.getValue().toString().split(Pattern.quote("" + separator.getValue()));
 				a.bindToValue(split[0]);
-				b.bindToValue(split[1]);
 				setSatisfied(checkAllValues(separator, a, b, c));
-			} else {
-				logger.warn(warningMessageForNonUniqueSeparator(c.getValue().toString()));
 			}
-			return;
-		}
 
-		// modelgen implementations
-		case "BFFF": {
-			setSatisfied(true);
-			String value1 = "" + generateValue(a.getType());
-			String value2 = "" + generateValue(b.getType());
-			a.bindToValue(value1);
-			b.bindToValue(value2);
-			c.bindToValue(value1 + separator.getValue() + value2);
-			return;
-		}
+			case "BFFB" -> {
+				String[] split = c.getValue().toString().split(Pattern.quote("" + separator.getValue()));
+				if (split.length == 2) {
+					a.bindToValue(split[0]);
+					b.bindToValue(split[1]);
+					setSatisfied(checkAllValues(separator, a, b, c));
+				} else {
+					logger.warn(warningMessageForNonUniqueSeparator(c.getValue().toString()));
+				}
+			}
 
-		case "BBFF": {
-			setSatisfied(true);
-			String value = "" + generateValue(b.getType());
-			b.bindToValue(value);
-			c.bindToValue("" + a.getValue() + separator.getValue() + value);
-			return;
-		}
+			// modelgen implementations
+			case "BFFF" -> {
+				setSatisfied(true);
+				String value1 = "" + generateValue(a.getType());
+				String value2 = "" + generateValue(b.getType());
+				a.bindToValue(value1);
+				b.bindToValue(value2);
+				c.bindToValue(value1 + separator.getValue() + value2);
+			}
 
-		case "BFBF": {
-			setSatisfied(true);
-			String value1 = "" + generateValue(a.getType());
-			a.bindToValue(value1);
-			c.bindToValue(value1 + separator.getValue() + b.getValue());
-			return;
-		}
+			case "BBFF" -> {
+				setSatisfied(true);
+				String value = "" + generateValue(b.getType());
+				b.bindToValue(value);
+				c.bindToValue("" + a.getValue() + separator.getValue() + value);
+			}
 
-		default:
-			throw new UnsupportedOperationException(
-					"This case in the constraint has not been implemented yet: " + bindingStates);
+			case "BFBF" -> {
+				setSatisfied(true);
+				String value1 = "" + generateValue(a.getType());
+				a.bindToValue(value1);
+				c.bindToValue(value1 + separator.getValue() + b.getValue());
+			}
+
+			default -> throw new UnsupportedOperationException("This case in the constraint has not been implemented yet: " + bindingStates);
 		}
 	}
 

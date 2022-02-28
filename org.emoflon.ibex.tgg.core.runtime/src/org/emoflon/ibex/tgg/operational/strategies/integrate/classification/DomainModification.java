@@ -21,13 +21,10 @@ public enum DomainModification {
 			return this == other;
 
 		if (this == ANY_DEL)
-			switch (other) {
-			case UNCHANGED:
-			case UNDEFINED:
-				return false;
-			default:
-				return true;
-			}
+			return switch (other) {
+				case UNCHANGED, UNDEFINED -> false;
+				default -> true;
+			};
 
 		if (this == UNSPECIFIED)
 			return true;

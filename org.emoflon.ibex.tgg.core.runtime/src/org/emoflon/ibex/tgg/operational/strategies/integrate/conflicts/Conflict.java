@@ -169,46 +169,44 @@ public abstract class Conflict {
 
 		TGGMatchUtil matchUtil = integrate().matchUtils().get(match);
 		switch (match.getType()) {
-		case FWD:
-		case SRC:
-			IGreenPattern fwdPattern = integrate().getGreenFactories().get(match.getRuleName()).create(PatternType.FWD);
-			deletedNodes = fwdPattern.getNodesMarkedByPattern().stream() //
-					.map(n -> (EObject) match.get(n.getName())) //
-					.collect(Collectors.toSet());
-			deletedContainmentEdges = Collections.emptySet(); // do we need containment edges here?
-			deletedCrossEdges = fwdPattern.getEdgesMarkedByPattern().stream() //
-					.filter(e -> !e.getType().isContainment()) //
-					.map(e -> TGGEdgeUtil.getRuntimeEdge(match, e)) //
-					.collect(Collectors.toSet());
-			break;
-		case BWD:
-		case TRG:
-			IGreenPattern bwdPattern = integrate().getGreenFactories().get(match.getRuleName()).create(PatternType.BWD);
-			deletedNodes = bwdPattern.getNodesMarkedByPattern().stream() //
-					.map(n -> (EObject) match.get(n.getName())) //
-					.collect(Collectors.toSet());
-			deletedContainmentEdges = Collections.emptySet(); // do we need containment edges here?
-			deletedCrossEdges = bwdPattern.getEdgesMarkedByPattern().stream() //
-					.filter(e -> !e.getType().isContainment()) //
-					.map(e -> TGGEdgeUtil.getRuntimeEdge(match, e)) //
-					.collect(Collectors.toSet());
-			break;
-		case CONSISTENCY:
-			EltFilter filter = new EltFilter().create();
-			deletedNodes = matchUtil.getObjects(filter);
-			deletedContainmentEdges = Collections.emptySet(); // do we need containment edges here?
-			deletedCrossEdges = matchUtil.getEMFEdgeStream(filter) //
-					.filter(e -> !e.getType().isContainment()) //
-					.collect(Collectors.toSet());
-			TGGRuleApplication ra = match.getRuleApplicationNode();
-			ra.eClass().getEAllReferences().forEach(r -> ra.eSet(r, null));
-			ra.eResource().getContents().remove(ra);
-			break;
-		default:
-			deletedNodes = Collections.emptySet();
-			deletedContainmentEdges = Collections.emptySet();
-			deletedCrossEdges = Collections.emptySet();
-			break;
+			case FWD, SRC -> {
+				IGreenPattern fwdPattern = integrate().getGreenFactories().get(match.getRuleName()).create(PatternType.FWD);
+				deletedNodes = fwdPattern.getNodesMarkedByPattern().stream() //
+						.map(n -> (EObject) match.get(n.getName())) //
+						.collect(Collectors.toSet());
+				deletedContainmentEdges = Collections.emptySet(); // do we need containment edges here?
+				deletedCrossEdges = fwdPattern.getEdgesMarkedByPattern().stream() //
+						.filter(e -> !e.getType().isContainment()) //
+						.map(e -> TGGEdgeUtil.getRuntimeEdge(match, e)) //
+						.collect(Collectors.toSet());
+			}
+			case BWD, TRG -> {
+				IGreenPattern bwdPattern = integrate().getGreenFactories().get(match.getRuleName()).create(PatternType.BWD);
+				deletedNodes = bwdPattern.getNodesMarkedByPattern().stream() //
+						.map(n -> (EObject) match.get(n.getName())) //
+						.collect(Collectors.toSet());
+				deletedContainmentEdges = Collections.emptySet(); // do we need containment edges here?
+				deletedCrossEdges = bwdPattern.getEdgesMarkedByPattern().stream() //
+						.filter(e -> !e.getType().isContainment()) //
+						.map(e -> TGGEdgeUtil.getRuntimeEdge(match, e)) //
+						.collect(Collectors.toSet());
+			}
+			case CONSISTENCY -> {
+				EltFilter filter = new EltFilter().create();
+				deletedNodes = matchUtil.getObjects(filter);
+				deletedContainmentEdges = Collections.emptySet(); // do we need containment edges here?
+				deletedCrossEdges = matchUtil.getEMFEdgeStream(filter) //
+						.filter(e -> !e.getType().isContainment()) //
+						.collect(Collectors.toSet());
+				TGGRuleApplication ra = match.getRuleApplicationNode();
+				ra.eClass().getEAllReferences().forEach(r -> ra.eSet(r, null));
+				ra.eResource().getContents().remove(ra);
+			}
+			default -> {
+				deletedNodes = Collections.emptySet();
+				deletedContainmentEdges = Collections.emptySet();
+				deletedCrossEdges = Collections.emptySet();
+			}
 		}
 
 		revokeElements(deletedNodes, deletedContainmentEdges, deletedCrossEdges);

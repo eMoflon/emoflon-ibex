@@ -25,20 +25,14 @@ public final class ILPFactory {
 	 * @return The created solver
 	 */
 	public static ILPSolver createBinaryILPSolver(final ILPProblem ilpProblem, final SupportedILPSolver solver) {
-		switch (solver) {
-		case Gurobi:
-			return new GurobiWrapper(ilpProblem, true);
-		case Sat4J:
-			return new Sat4JWrapper(ilpProblem);
-		case GLPK:
-			return new GLPKWrapper(ilpProblem, true);
-		case CBC:
-			return new CBCWrapper(ilpProblem, true);
-		case MIPCL:
-			return new MIPCLWrapper2(ilpProblem, true);
-		default:
-			throw new UnsupportedOperationException("Unknown Solver: " + solver.toString());
-		}
+		return switch (solver) {
+			case Gurobi -> new GurobiWrapper(ilpProblem, true);
+			case Sat4J -> new Sat4JWrapper(ilpProblem);
+			case GLPK -> new GLPKWrapper(ilpProblem, true);
+			case CBC -> new CBCWrapper(ilpProblem, true);
+			case MIPCL -> new MIPCLWrapper2(ilpProblem, true);
+			default -> throw new UnsupportedOperationException("Unknown Solver: " + solver.toString());
+		};
 	}
 
 	/**
@@ -52,20 +46,14 @@ public final class ILPFactory {
 		if (ilpProblem instanceof BinaryILPProblem)
 			return ILPFactory.createBinaryILPSolver(ilpProblem, solver);
 
-		switch (solver) {
-		case Gurobi:
-			return new GurobiWrapper(ilpProblem, false);
-		case GLPK:
-			return new GLPKWrapper(ilpProblem, false);
-		case Sat4J:
-			throw new UnsupportedOperationException("SAT4J does not support arbitrary ILP");
-		case CBC:
-			return new CBCWrapper(ilpProblem, false);
-		case MIPCL:
-			return new MIPCLWrapper2(ilpProblem, false);
-		default:
-			throw new UnsupportedOperationException("Unknown Solver: " + solver.toString());
-		}
+		return switch (solver) {
+			case Gurobi -> new GurobiWrapper(ilpProblem, false);
+			case GLPK -> new GLPKWrapper(ilpProblem, false);
+			case Sat4J -> throw new UnsupportedOperationException("SAT4J does not support arbitrary ILP");
+			case CBC -> new CBCWrapper(ilpProblem, false);
+			case MIPCL -> new MIPCLWrapper2(ilpProblem, false);
+			default -> throw new UnsupportedOperationException("Unknown Solver: " + solver.toString());
+		};
 	}
 
 	/**

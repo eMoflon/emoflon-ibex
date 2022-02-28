@@ -149,13 +149,10 @@ public class IntegrateRepair implements TimeMeasurable {
 			boolean trgChange = false;
 			for (TGGAttributeExpression param : attrCh.affectedParams.keySet()) {
 				switch (param.getObjectVar().getDomainType()) {
-				case SRC:
-					srcChange = true;
-					break;
-				case TRG:
-					trgChange = true;
-				default:
-					break;
+					case SRC -> srcChange = true;
+					case TRG -> trgChange = true;
+					default -> {
+					}
 				}
 			}
 			if (srcChange ^ trgChange) {
