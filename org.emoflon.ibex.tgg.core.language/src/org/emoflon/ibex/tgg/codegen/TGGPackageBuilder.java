@@ -2,7 +2,6 @@ package org.emoflon.ibex.tgg.codegen;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -32,7 +31,6 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.XMIResource;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
@@ -40,9 +38,8 @@ import org.eclipse.emf.ecore.xmi.impl.URIHandlerImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.resource.XtextResourceSet;
-import org.emoflon.ibex.tgg.ide.admin.IbexTGGBuilder;
-import org.emoflon.ibex.tgg.ide.admin.IbexTGGNature;
-import org.emoflon.ibex.tgg.ide.admin.TGGBuilderExtension;
+import org.emoflon.ibex.tgg.builder.TGGBuildUtil;
+import org.emoflon.ibex.tgg.builder.TGGBuilderExtension;
 import org.emoflon.ibex.tgg.ide.transformation.EditorTGGtoFlattenedTGG;
 import org.moflon.core.plugins.manifest.ManifestFileUpdater;
 import org.moflon.core.utilities.ExtensionsUtil;
@@ -57,7 +54,7 @@ public class TGGPackageBuilder implements TGGBuilderExtension{
 	private IProject project;
 
 	@Override
-	public void run(IProject project) {
+	public void run(IProject project, Resource schemaResource) {
 		this.project = project;
 		
 		logInfo("Generating Attribute Condition Libraries..");
@@ -67,9 +64,9 @@ public class TGGPackageBuilder implements TGGBuilderExtension{
 		logInfo("Creating editor model..");
 		TripleGraphGrammarFile editorModel = null;
 		try {
-			editorModel = generateEditorModel();
+			editorModel = generateEditorModel(schemaResource);
 		}catch(RuntimeException e) {
-			logError(e);
+//			logError(e);
 			return;
 		}
 		
@@ -85,7 +82,7 @@ public class TGGPackageBuilder implements TGGBuilderExtension{
 		
 		//Store flattened editor model
 		ResourceSet rs = editorModel.eResource().getResourceSet();
-		IFile tggFile = project.getFolder(IbexTGGBuilder.MODEL_FOLDER).getFile(filenameFromProject() + IbexTGGBuilder.EDITOR_FLATTENED_MODEL_EXTENSION);
+		IFile tggFile = project.getFolder(TGGBuildUtil.MODEL_FOLDER).getFile(filenameFromProject() + TGGBuildUtil.EDITOR_FLATTENED_MODEL_EXTENSION);
 		try {
 			saveModelInProject(tggFile, rs, flattenedEditorModel);
 		} catch (Exception e) {
@@ -100,43 +97,33 @@ public class TGGPackageBuilder implements TGGBuilderExtension{
 		updateManifest(manifest -> processManifestForProject(manifest));
 	}
 	
-	private TripleGraphGrammarFile generateEditorModel() throws RuntimeException{
+	private TripleGraphGrammarFile generateEditorModel(Resource schemaResource) throws RuntimeException{
 		try {
-			Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());
-			Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("ecore", new EcoreResourceFactoryImpl());
 			ResourceSet resourceSet = new XtextResourceSet();
 			resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());
 			
-			IFile schemaFile = project.getFile(IbexTGGNature.SCHEMA_FILE);
-			if (schemaFile.exists()) {
-				Resource schemaResource = loadSchema(resourceSet, schemaFile);
+			logInfo(project.getName());
+			logInfo(project.getLocation().toOSString());
 
-				if (schemaIsOfExpectedType(schemaResource)) {
-					// Load
-					visitAllFiles(resourceSet, project.getFolder(IbexTGGBuilder.SRC_FOLDER), this::loadRules);
-					visitAllFiles(resourceSet, project.getFolder(IbexTGGBuilder.SRC_FOLDER), this::loadRules);
-					EcoreUtil.resolveAll(resourceSet);
+			if (schemaIsOfExpectedType(schemaResource)) {
+				// Combine to form single tgg model
+				TripleGraphGrammarFile xtextParsedTGG = //
+						(TripleGraphGrammarFile) schemaResource.getContents().get(0);
+				
+				collectAllRules(xtextParsedTGG, schemaResource.getResourceSet());
+				addAttrCondDefLibraryReferencesToSchema(xtextParsedTGG);
 
-					// Combine to form single tgg model
-					TripleGraphGrammarFile xtextParsedTGG = //
-							(TripleGraphGrammarFile) schemaResource.getContents().get(0);
-					collectAllRules(xtextParsedTGG, resourceSet);
-					addAttrCondDefLibraryReferencesToSchema(xtextParsedTGG);
+				// Persist and return
+				IFile editorFile = project.getFolder(TGGBuildUtil.MODEL_FOLDER)//
+						.getFile(filenameFromProject() + TGGBuildUtil.EDITOR_MODEL_EXTENSION);
 
-					// Persist and return
-					IFile editorFile = project.getFolder(IbexTGGBuilder.MODEL_FOLDER)//
-							.getFile(filenameFromProject() + IbexTGGBuilder.EDITOR_MODEL_EXTENSION);
+				saveModelInProject(editorFile, resourceSet, xtextParsedTGG);
 
-					saveModelInProject(editorFile, resourceSet, xtextParsedTGG);
-
-					// Validate
-					validateEditorTGGModel(xtextParsedTGG, editorFile);
-					return xtextParsedTGG;
-				} else {
-					throw new RuntimeException("Schema is of unexpected type.");
-				}
+				// Validate
+				validateEditorTGGModel(xtextParsedTGG);
+				return xtextParsedTGG;
 			} else {
-				throw new RuntimeException("Schema file does not exist.");
+				throw new RuntimeException("Schema is of unexpected type.");
 			}
 		} catch (CoreException | IOException e) {
 			logError(e);
@@ -210,7 +197,7 @@ public class TGGPackageBuilder implements TGGBuilderExtension{
 	}
 	
 	private void loadRules(IFile file, ResourceSet resourceSet) {
-		if (file.getName().endsWith(IbexTGGBuilder.TGG_FILE_EXTENSION)) {
+		if (file.getName().endsWith(TGGBuildUtil.TGG_FILE_EXTENSION)) {
 			resourceSet.getResource(URI.createPlatformResourceURI(file.getFullPath().toString(), true), true);
 		}
 	}
@@ -241,7 +228,7 @@ public class TGGPackageBuilder implements TGGBuilderExtension{
 		xtextParsedTGG.getSchema().getAttributeCondDefs().addAll(usedAttrCondDefs);
 	}
 	
-	private void validateEditorTGGModel(TripleGraphGrammarFile xtextParsedTGG, IFile editorFile) throws CoreException {
+	private void validateEditorTGGModel(TripleGraphGrammarFile xtextParsedTGG) throws CoreException {
 		noTwoRulesWithTheSameName(xtextParsedTGG);
 	}
 	

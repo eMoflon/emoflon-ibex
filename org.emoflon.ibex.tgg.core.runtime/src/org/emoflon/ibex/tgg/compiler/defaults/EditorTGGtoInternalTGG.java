@@ -15,6 +15,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.common.util.BasicEMap;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAnnotation;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
@@ -22,9 +23,13 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EcoreFactory;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.emoflon.ibex.tgg.ide.admin.IbexTGGBuilder;
+import org.eclipse.emf.ecore.xmi.XMIResource;
+import org.eclipse.emf.ecore.xmi.XMLResource;
+import org.eclipse.emf.ecore.xmi.impl.URIHandlerImpl;
+import org.emoflon.ibex.tgg.builder.TGGBuildUtil;
 import org.emoflon.ibex.tgg.transformation.ParamValueSet;
 import org.emoflon.ibex.tgg.transformation.TGGProject;
 import org.emoflon.ibex.tgg.util.TGGModelUtils;
@@ -92,9 +97,9 @@ public class EditorTGGtoInternalTGG {
 	private TGGProject convertXtextTGG(TripleGraphGrammarFile xtextTGG, TripleGraphGrammarFile flattenedXtextTGG,
 			IProject project) {
 		EPackage corrPackage = createCorrModel(flattenedXtextTGG, project);
+		org.eclipse.emf.ecore.EPackage.Registry.INSTANCE.putIfAbsent(corrPackage.getNsURI(), corrPackage);
 		TGG tgg = createTGG(xtextTGG);
 		TGG flattenedTgg = createTGG(flattenedXtextTGG);
-		tgg.setCorr(corrPackage);
 		flattenedTgg.setCorr(corrPackage);
 		return new TGGProject(corrPackage, tgg, flattenedTgg);
 	}
@@ -108,16 +113,16 @@ public class EditorTGGtoInternalTGG {
 			try {
 				ResourceSet rs = xtextParsedTGG.eResource().getResourceSet();
 				EcoreUtil.resolveAll(rs);
-				IFile corrFile = project.getFolder(IbexTGGBuilder.MODEL_FOLDER)//
-						.getFile(getNameOfGeneratedFile(project) + IbexTGGBuilder.ECORE_FILE_EXTENSION);
-				IbexTGGBuilder.saveModelInProject(corrFile, rs, p.getCorrPackage());
-				IFile tggFile = project.getFolder(IbexTGGBuilder.MODEL_FOLDER)//
-						.getFile(getNameOfGeneratedFile(project) + IbexTGGBuilder.INTERNAL_TGG_MODEL_EXTENSION);
-				IbexTGGBuilder.saveModelInProject(tggFile, rs, p.getTggModel());
-				IFile flattenedTggFile = project.getFolder(IbexTGGBuilder.MODEL_FOLDER)//
+				IFile corrFile = project.getFolder(TGGBuildUtil.MODEL_FOLDER)//
+						.getFile(getNameOfGeneratedFile(project) + TGGBuildUtil.ECORE_FILE_EXTENSION);
+				TGGBuildUtil.saveModelInProject(corrFile, rs, p.getCorrPackage());
+				IFile tggFile = project.getFolder(TGGBuildUtil.MODEL_FOLDER)//
+						.getFile(getNameOfGeneratedFile(project) + TGGBuildUtil.INTERNAL_TGG_MODEL_EXTENSION);
+				TGGBuildUtil.saveModelInProject(tggFile, rs, p.getTggModel());
+				IFile flattenedTggFile = project.getFolder(TGGBuildUtil.MODEL_FOLDER)//
 						.getFile(getNameOfGeneratedFile(project)
-								+ IbexTGGBuilder.INTERNAL_TGG_FLATTENED_MODEL_EXTENSION);
-				IbexTGGBuilder.saveModelInProject(flattenedTggFile, rs, p.getFlattenedTggModel());
+								+ TGGBuildUtil.INTERNAL_TGG_FLATTENED_MODEL_EXTENSION);
+				TGGBuildUtil.saveModelInProject(flattenedTggFile, rs, p.getFlattenedTggModel());
 			} catch (IOException e) {
 				LogUtils.error(logger, e);
 			}
@@ -125,7 +130,7 @@ public class EditorTGGtoInternalTGG {
 
 		return tggProject;
 	}
-
+	
 	private String getNameOfGeneratedFile(IProject project) {
 		return MoflonUtil.lastCapitalizedSegmentOf(project.getName());
 	}
