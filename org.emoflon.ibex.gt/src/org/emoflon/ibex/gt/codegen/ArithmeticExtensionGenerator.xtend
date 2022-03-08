@@ -13,7 +13,7 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXBinaryExpression
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXUnaryExpression
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXBinaryOperator
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXMatchCount
-
+ 
 /**
  *  Enum for the different Constraint types
  */

@@ -1,6 +1,7 @@
 package org.emoflon.ibex.modelxml.parser;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -9,6 +10,7 @@ import org.emoflon.ibex.modelxml.*;
 public class Writer {
 	public static void createXMLFile(XMLModel container, String filename) {
 		try {
+
 			FileWriter file = new FileWriter(filename);
 			BufferedWriter buffer = new BufferedWriter(file);
 			String str = container.getHeader() + "\n";
@@ -40,8 +42,8 @@ public class Writer {
 			if (node.getValue().getText().isEmpty()) {
 				content.append("/>\n");
 			} else {
-				content.append(">\n" + spaces + " " + node.getValue().getText() + "\n");
-				content.append(String.format(spaces + "</%s>\n", node.getName()));
+				content.append(">" + spaces + " " + node.getValue().getText() );
+				content.append(String.format( "</%s>\n", node.getName()));
 			}
 		} else {
 			content.append(">\n");
