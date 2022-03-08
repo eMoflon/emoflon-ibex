@@ -7,6 +7,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.*;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.xmi.impl.EMOFLoadImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.emoflon.ibex.modelxml.*;
 import org.jdom2.Document;
@@ -16,6 +17,11 @@ import org.jdom2.input.SAXBuilder;
 
 public class Parser {
 
+	public static void main(String[] args) {
+		parseXMLFileToMetaModel("misc/note.xml");
+	}
+	
+	
 	public static XMLModel parseXMLFile() {
 		return parseXMLFile("misc/xample.xml");
 	}
@@ -56,11 +62,11 @@ public class Parser {
 		var rs = new ResourceSetImpl();
 		rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());
 		var r = rs.createResource(URI.createURI(fileNameWoEnd+"Ecore.idk"));
-		//var container = SomeFactory.createContainer();
+		var container = EcoreFactory.eINSTANCE.createEPackage();
 		
-		var root = parseNodeMeta(rootElement);
-		//container.setRoot(root);
-		//r.getContents().add(container);
+		var node = parseNodeMeta(rootElement, container);
+		
+		r.getContents().add(container);
 		try {
 			r.save(null);
 		} catch (IOException e) {
@@ -112,38 +118,43 @@ public class Parser {
 		val.setText(element.getValue());
 		node.setValue(val);
 		
+		var listA = new ArrayList<Attribute>();
 		for (var attr : element.getAttributes()) {
 			var a = ModelxmlFactory.eINSTANCE.createAttribute();
 			a.setName(attr.getName());
 			a.setValue(attr.getValue());
-			node.getAttributes().add(a);
+			listA.add(a);
 		}
+		node.getAttributes().addAll(listA);
 
+		var list = new ArrayList<Node>();
 		for (var child: element.getChildren()) {
 			var x = parseNode(child);
-			node.getChildren().add(x);
+			list.add(x);
 		}
+		node.getChildren().addAll(list);
 		return node;
 	}
 
-	private static EClass parseNodeMeta(Element element) {
+	private static EClass parseNodeMeta(Element element, EPackage container) {
 		var factory = EcorePackage.eINSTANCE.getEcoreFactory();
 		var eclass = factory.createEClass();
 		eclass.setName(element.getName());
 		
 		var eAttributes = eclass.getEAttributes();
+		var attributes = new HashSet<EAttribute>();
 		for (var att: element.getAttributes()) {
 			var a = factory.createEAttribute();
 			a.setName(att.getName());
-			// TODO: something with value
-			
-			eAttributes.add(a);
+			a.setEType(getDataType(att.getValue()));
+			attributes.add(a);
 		}
+		eAttributes.addAll(attributes);
 		
 		// map children by their name into lists
 		var childMap = new HashMap<String, List<EClass>>();
 		for (var child: element.getChildren()) {
-			var eChild = parseNodeMeta(child);
+			var eChild = parseNodeMeta(child, container);
 			
 			if (childMap.containsKey(child.getName())) {
 				var entry = childMap.get(child.getName());
@@ -157,13 +168,50 @@ public class Parser {
 		
 		// merge children with the same name
 		for (var c: childMap.entrySet()) {
-			var attributes = new HashSet<EAttribute>();
-			for (var ch: c.getValue()) {
-				attributes.addAll(ch.getEAttributes());
-			}
-			// TODO: something with value			
+			var mergedClass = mergeNodes(c.getValue());
+			// TODO: set containment for mergedClass to eclass
 		}
-		
+		container.getEClassifiers().add(eclass);
 		return eclass;
 	}
+	
+	/**
+	 * All elements in nodes have the same name
+	 * - they are instances of one generic class
+	 * @param nodes
+	 * @return
+	 */
+	private static EClass mergeNodes(List<EClass> nodes) {
+		var factory = EcorePackage.eINSTANCE.getEcoreFactory();
+		var eclass = factory.createEClass();
+		eclass.setName(nodes.get(0).getName());
+		
+		
+		var attributes = new HashSet<EAttribute>();
+		for (var ch: nodes) {
+			attributes.addAll(ch.getEAttributes());
+		}
+		eclass.getEAttributes().addAll(attributes);
+		//eclass.
+		return eclass;
+	}
+	
+	
+	private static EDataType getDataType(String value) {
+		try {
+			Integer.parseInt(value);
+			return EcorePackage.Literals.EINT;
+		} catch (NumberFormatException e) {
+			try {
+				Boolean.parseBoolean(value);
+				return EcorePackage.Literals.EBOOLEAN;
+			} catch (NumberFormatException e2) {
+				
+			}
+			
+		}
+		
+		return EcorePackage.Literals.ESTRING;
+	}
+	
 }
