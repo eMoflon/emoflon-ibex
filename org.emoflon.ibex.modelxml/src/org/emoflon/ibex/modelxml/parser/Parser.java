@@ -170,6 +170,10 @@ public class Parser {
 		for (var c: childMap.entrySet()) {
 			var mergedClass = mergeNodes(c.getValue());
 			// TODO: set containment for mergedClass to eclass
+			var eref = EcoreFactory.eINSTANCE.createEReference();
+			eref.setContainment(true);
+			eref.setEType(mergedClass);
+			eclass.getEReferences().add(eref);
 		}
 		container.getEClassifiers().add(eclass);
 		return eclass;
@@ -192,7 +196,7 @@ public class Parser {
 			attributes.addAll(ch.getEAttributes());
 		}
 		eclass.getEAttributes().addAll(attributes);
-		//eclass.
+		
 		return eclass;
 	}
 	
