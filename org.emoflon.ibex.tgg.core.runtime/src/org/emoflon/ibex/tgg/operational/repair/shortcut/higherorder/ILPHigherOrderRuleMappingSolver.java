@@ -21,6 +21,8 @@ import org.emoflon.ibex.tgg.util.ilp.ILPSolver;
 
 import com.google.common.collect.Sets;
 
+import language.BindingType;
+
 public class ILPHigherOrderRuleMappingSolver {
 
 	private final SupportedILPSolver solver;
@@ -43,6 +45,9 @@ public class ILPHigherOrderRuleMappingSolver {
 	private Set<Set<ITGGMatch>> overlappingMatches = cfactory.createObjectSet();
 	private Map<ITGGMatch, Integer> match2ID = cfactory.createObjectToIntHashMap();
 	private Map<Integer, ITGGMatch> id2match = cfactory.createIntToObjectHashMap();
+	
+	private static final double CONTEXT_TARGET_COEFF = 0.0000001;
+	private Set<Integer> candidatesWithContextTarget = cfactory.createIntSet();
 
 	private Map<MatchRelatedRuleElement, MatchRelatedRuleElement> mappingResult;
 
@@ -89,6 +94,8 @@ public class ILPHigherOrderRuleMappingSolver {
 		for (MatchRelatedRuleElement target : targets) {
 			ElementCandidate candidate = new ElementCandidate(source, target);
 
+			if (target.ruleElement.getBindingType() == BindingType.CONTEXT)
+				candidatesWithContextTarget.add(elementIDCounter);
 			oppositeDomainElement2Candidates.computeIfAbsent(source, k -> cfactory.createIntSet()).add(elementIDCounter);
 			oppositeDomainCandidate2ID.put(candidate, elementIDCounter);
 			oppositeDomainID2Candidate.put(elementIDCounter, candidate);
@@ -97,6 +104,7 @@ public class ILPHigherOrderRuleMappingSolver {
 	}
 
 	private void createMatchCandidates() {
+		// FIXME: how overlapping matches are defined here, is probably incorrect
 		Set<Set<ITGGMatch>> matchSets = propDomainMapping.values().stream() //
 				.map(set -> set.stream().map(e -> e.match).collect(Collectors.toSet())) //
 				.collect(Collectors.toSet());
@@ -201,7 +209,7 @@ public class ILPHigherOrderRuleMappingSolver {
 		ILPLinearExpression expression = ilpProblem.createLinearExpression();
 
 		for (int i = 0; i < elementIDCounter; i++)
-			expression.addTerm("e" + i, 1);
+			expression.addTerm("e" + i, candidatesWithContextTarget.contains(i) ? CONTEXT_TARGET_COEFF : 1);
 		for (int i = 0; i < matchIDCounter; i++)
 			expression.addTerm("m" + i, 1);
 
