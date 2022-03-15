@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
@@ -45,14 +46,17 @@ public class ShortcutRepairStrategy implements RepairStrategy {
 	}
 
 	private void initialize(PatternType[] shortcutPatternTypes) {
-		Collection<ShortcutRule> shortcutRules = new OverlapUtil(options) //
-				.calculateShortcutRules(options.tgg.flattenedTGG());
+		OverlapUtil overlapUtil = new OverlapUtil(options);
+		Collection<ShortcutRule> shortcutRules = overlapUtil.calculateOverlaps(options.tgg.flattenedTGG()).stream() //
+				.map(overlap -> new ShortcutRule(overlap, options)) //
+				.collect(Collectors.toList());
 
 		LoggerConfig.log(LoggerConfig.log_repair(), () -> "Generated " + shortcutRules.size() + " Short-Cut Rules:");
 		for (ShortcutRule scRule : shortcutRules)
 			LoggerConfig.log(LoggerConfig.log_repair(), () -> "  " + scRule.getName());
 
-		scTool = new ShortcutPatternTool(opStrat, shortcutRules, new HashSet<>(Arrays.asList(shortcutPatternTypes)));
+		scTool = new ShortcutPatternTool(options, opStrat.getGreenInterpreter(), opStrat.getRedInterpreter(), //
+				shortcutRules, new HashSet<>(Arrays.asList(shortcutPatternTypes)));
 	}
 
 	@Override

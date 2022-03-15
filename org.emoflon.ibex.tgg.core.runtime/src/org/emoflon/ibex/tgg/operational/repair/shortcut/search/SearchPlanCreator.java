@@ -17,6 +17,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
+import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.OperationalShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.AttrCheck;
@@ -26,7 +27,6 @@ import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.Lookup;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.NACNodeCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.NodeCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCMatch;
-import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 import org.emoflon.ibex.tgg.util.EMFNavigationUtil;
 import org.emoflon.ibex.tgg.util.TGGInplaceAttrExprUtil;
 import org.moflon.core.utilities.eMoflonEMFUtil;
@@ -40,7 +40,7 @@ import runtime.RuntimePackage;
 
 public class SearchPlanCreator {
 
-	protected final PropagatingOperationalStrategy strategy;
+	protected final IbexOptions options;
 	protected final OperationalShortcutRule opSCR;
 
 	protected Map<SearchKey, Lookup> key2lookup;
@@ -50,8 +50,8 @@ public class SearchPlanCreator {
 	protected Map<SearchKey, NACNodeCheck> key2nacNodeCheck;
 	protected CSPCheck cspCheck;
 
-	public SearchPlanCreator(PropagatingOperationalStrategy strategy, OperationalShortcutRule opScRule) {
-		this.strategy = strategy;
+	public SearchPlanCreator(IbexOptions options, OperationalShortcutRule opScRule) {
+		this.options = options;
 		this.opSCR = opScRule;
 		initialize();
 	}
@@ -121,7 +121,7 @@ public class SearchPlanCreator {
 				if (key.sourceNode instanceof TGGRuleCorr) {
 					key2lookup.put(key, n -> {
 						// make sure that we only get the correct corrs with the right type
-						Collection<EObject> corrs = strategy.getResourceHandler().getCorrCaching().getOrDefault(n, Collections.emptyList());
+						Collection<EObject> corrs = options.resourceHandler().getCorrCaching().getOrDefault(n, Collections.emptyList());
 						return corrs.stream().filter(c -> n.equals(c.eGet(key.edge.getType()))).collect(Collectors.toList());
 					});
 				} else

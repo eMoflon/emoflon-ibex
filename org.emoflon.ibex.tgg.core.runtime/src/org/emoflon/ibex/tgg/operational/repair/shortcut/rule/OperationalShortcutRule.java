@@ -18,12 +18,12 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.compiler.patterns.ACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule.SCInputRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.SearchPlan;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.SearchPlanCreator;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.TGGOverlap;
-import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 import org.emoflon.ibex.tgg.util.TGGFilterUtil;
 
 import language.BindingType;
@@ -50,8 +50,8 @@ import language.TGGRuleNode;
  */
 public abstract class OperationalShortcutRule {
 	protected final static Logger logger = Logger.getLogger(OperationalShortcutRule.class);
-
-	protected PropagatingOperationalStrategy strategy;
+	
+	protected final IbexOptions options;
 	protected ShortcutRule originalScRule;
 	protected ShortcutRule opScRule;
 	protected ACAnalysis filterNACAnalysis;
@@ -62,8 +62,8 @@ public abstract class OperationalShortcutRule {
 
 	private IGreenPattern greenPattern;
 
-	public OperationalShortcutRule(PropagatingOperationalStrategy strategy, ShortcutRule scRule, ACAnalysis filterNACAnalysis) {
-		this.strategy = strategy;
+	public OperationalShortcutRule(IbexOptions options, ShortcutRule scRule, ACAnalysis filterNACAnalysis) {
+		this.options = options;
 		this.originalScRule = scRule;
 		this.opScRule = scRule.copy();
 		this.filterNACAnalysis = filterNACAnalysis;
@@ -72,7 +72,7 @@ public abstract class OperationalShortcutRule {
 		operationalize();
 		createRuleApplicationNode();
 
-		this.searchPlanCreator = new SearchPlanCreator(strategy, this);
+		this.searchPlanCreator = new SearchPlanCreator(options, this);
 	}
 
 	abstract protected void operationalize();
@@ -82,7 +82,7 @@ public abstract class OperationalShortcutRule {
 	private void createRuleApplicationNode() {
 		TGGRuleNode oldRaNode = LanguageFactory.eINSTANCE.createTGGRuleNode();
 		oldRaNode.setName(getProtocolNodeName(opScRule.getOriginalRule().getName()));
-		EClass oldRaType = (EClass) strategy.getOptions().tgg.corrMetamodel() //
+		EClass oldRaType = (EClass) options.tgg.corrMetamodel() //
 				.getEClassifier(getMarkerTypeName(this.opScRule.getOriginalRule().getName()));
 		oldRaNode.setType(oldRaType);
 		oldRaNode.setBindingType(BindingType.DELETE);
@@ -271,7 +271,7 @@ public abstract class OperationalShortcutRule {
 	}
 
 	private IGreenPattern createGreenPattern() {
-		return new GreenSCPattern(strategy.getGreenFactories().get(opScRule.getReplacingRule().getName()), this);
+		return new GreenSCPattern(options.patterns.greenPatternFactories().get(opScRule.getReplacingRule().getName()), this);
 	}
 
 	@Override

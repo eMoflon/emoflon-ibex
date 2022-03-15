@@ -143,6 +143,7 @@ public class HigherOrderTGGRuleFactory {
 				options.ilpSolver(), totalPropDomainMappings, totalOppositeDomainMappings);
 		Map<MatchRelatedRuleElement, MatchRelatedRuleElement> overallContextMapping = ilpSolver.getResult();
 
+		// transform ILP solution to higher-order rule:
 		HigherOrderTGGRule higherOrderRule = new HigherOrderTGGRule();
 		for (PrecedenceNode node : nodes) {
 			TGGMatchUtil matchUtil = mu.get(node.getMatch());
@@ -159,7 +160,8 @@ public class HigherOrderTGGRuleFactory {
 						return component.getComponentSpecificRuleElement(matchRelRuleElt.ruleElement);
 					}));
 
-			// corr mapping:
+			// since the ILP solution doesn't include correspondence elements, we have to manually find the
+			// correspondence mappings:
 			Set<TGGRuleNode> corrNodes = matchUtil.getNodes(new EltFilter().corr().context());
 			for (TGGRuleNode corrNode : corrNodes) {
 				TGGRuleCorr corr = (TGGRuleCorr) corrNode;

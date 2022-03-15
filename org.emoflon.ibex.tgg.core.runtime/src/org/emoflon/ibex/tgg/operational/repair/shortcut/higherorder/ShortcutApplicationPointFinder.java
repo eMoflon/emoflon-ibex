@@ -43,20 +43,20 @@ public class ShortcutApplicationPointFinder {
 	}
 
 	private ShortcutApplicationPoint exploreShortcutApplicationPoint(ClassifiedMatch classifiedMatch) {
-		PrecedenceNode node = pg.getNode(classifiedMatch.getMatch());
+		PrecedenceNode applNode = pg.getNode(classifiedMatch.getMatch());
 
 		PatternType propagationType = calcPropagationType(classifiedMatch);
 		if (propagationType == null)
 			return null;
 
-		Map<PrecedenceNode, Set<Object>> overlappingNodes = pg.findOverlappingNodes(node, propagationType);
+		Map<PrecedenceNode, Set<Object>> overlappingNodes = pg.findOverlappingNodes(applNode, propagationType);
 
 		if (overlappingNodes.isEmpty())
 			return null;
 
 		LinkedList<PrecedenceNode> originalNodes = new LinkedList<>();
-		originalNodes.addFirst(node);
-		node.forAllRequires((act, pre) -> {
+		originalNodes.addFirst(applNode);
+		applNode.forAllRequires((act, pre) -> {
 			if (act.getMatch().getType() != PatternType.CONSISTENCY)
 				return false;
 
@@ -83,8 +83,8 @@ public class ShortcutApplicationPointFinder {
 			setOfReplacingNodes.add(replacingNodes);
 		}
 
-		ShortcutApplicationPoint shortcutApplPoint = new ShortcutApplicationPoint(originalNodes, setOfReplacingNodes, propagationType);
-		shortcutApplPoint.addOverlaps(node, overlappingNodes);
+		ShortcutApplicationPoint shortcutApplPoint = new ShortcutApplicationPoint(applNode, originalNodes, setOfReplacingNodes, propagationType);
+		shortcutApplPoint.addOverlaps(applNode, overlappingNodes);
 		return shortcutApplPoint;
 	}
 
@@ -120,31 +120,28 @@ public class ShortcutApplicationPointFinder {
 	}
 
 	public class ShortcutApplicationPoint {
+		public final PrecedenceNode applNode;
 		public final List<PrecedenceNode> originalNodes;
 		public final Set<List<PrecedenceNode>> setOfReplacingNodes;
 		public final PatternType propagationType;
 
 		public final Map<PrecedenceNode, Map<PrecedenceNode, Set<Object>>> original2replacingNodesOverlaps;
-		// do we really need this?
-//		public final Map<PrecedenceNode, PrecedenceNode> replacing2originalNodeOverlaps;
-
 		final Set<ShortcutApplicationPoint> subsetScApplications;
 
-		ShortcutApplicationPoint(List<PrecedenceNode> originalNodes, Set<List<PrecedenceNode>> setOfReplacingNodes, PatternType propagationType) {
+		ShortcutApplicationPoint(PrecedenceNode applNode, List<PrecedenceNode> originalNodes, Set<List<PrecedenceNode>> setOfReplacingNodes,
+				PatternType propagationType) {
+			this.applNode = applNode;
 			this.originalNodes = originalNodes;
 			this.setOfReplacingNodes = setOfReplacingNodes;
 			this.propagationType = propagationType;
 
 			this.original2replacingNodesOverlaps = new HashMap<>();
-//			this.replacing2originalNodeOverlaps = new HashMap<>();
 
 			this.subsetScApplications = new HashSet<>();
 		}
 
 		public void addOverlaps(PrecedenceNode originalNode, Map<PrecedenceNode, Set<Object>> replacingNodes2overlappingElts) {
 			original2replacingNodesOverlaps.put(originalNode, replacingNodes2overlappingElts);
-//			for (PrecedenceNode replacingNode : replacingNodes)
-//				replacing2originalNodeOverlaps.put(replacingNode, originalNode);
 		}
 	}
 

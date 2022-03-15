@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
@@ -54,6 +55,10 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 		return match2component.get(match);
 	}
 
+	public HigherOrderRuleComponent getClosureComponent() {
+		return components.getLast();
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
@@ -69,14 +74,21 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 	public class HigherOrderRuleComponent {
 		public final TGGRule rule;
 		public final Map<TGGRuleElement, ComponentSpecificRuleElement> contextMapping;
+		private final Map<String, TGGRuleNode> name2ruleNode;
 
 		private HigherOrderRuleComponent(TGGRule rule, Map<TGGRuleElement, ComponentSpecificRuleElement> contextMapping) {
 			this.rule = rule;
 			this.contextMapping = contextMapping;
+			this.name2ruleNode = rule.getNodes().stream() //
+					.collect(Collectors.toMap(n -> n.getName(), n -> n));
 		}
 
 		public ComponentSpecificRuleElement getComponentSpecificRuleElement(TGGRuleElement ruleElement) {
 			return new ComponentSpecificRuleElement(ruleElement, this);
+		}
+
+		public TGGRuleNode getNodeFromName(String nodeName) {
+			return name2ruleNode.get(nodeName);
 		}
 
 		@Override
@@ -92,6 +104,12 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 		private ComponentSpecificRuleElement(TGGRuleElement ruleElement, HigherOrderRuleComponent component) {
 			this.ruleElement = ruleElement;
 			this.component = component;
+		}
+
+		public TGGRuleElement getRespectiveHigherOrderElement() {
+			if (componentElt2higherOrderElt == null)
+				return null;
+			return componentElt2higherOrderElt.get(this);
 		}
 
 		@Override
@@ -262,7 +280,7 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 		Collection<NAC> copiedNacs = EcoreUtil.copyAll(rule.getNacs());
 		for (NAC nac : copiedNacs) {
 
-			// TODO
+			// TODO continue
 
 		}
 	}

@@ -197,16 +197,12 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 	}
 
 	public Set<PrecedenceNode> getNodes(PatternType patternType) {
-		switch (patternType) {
-		case CONSISTENCY:
-			return consNodes;
-		case SRC:
-			return srcNodes;
-		case TRG:
-			return trgNodes;
-		default:
-			throw new RuntimeException("Precedence graph does not support this pattern type!");
-		}
+		return switch (patternType) {
+			case CONSISTENCY -> consNodes;
+			case SRC -> srcNodes;
+			case TRG -> trgNodes;
+			default -> throw new RuntimeException("Precedence graph does not support this pattern type!");
+		};
 	}
 
 	public Set<PrecedenceNode> getNodesTranslating(Object elt) {
@@ -245,7 +241,8 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 	 * 
 	 * @param PG-node
 	 * @param overlapType
-	 * @return
+	 * @return all overlapping PG-nodes mapped to all elements that are shared between this PG-node and
+	 *         the given PG-node
 	 */
 	public Map<PrecedenceNode, Set<Object>> findOverlappingNodes(PrecedenceNode node, PatternType overlapType) {
 		Map<PrecedenceNode, Set<Object>> overlaps;
@@ -256,9 +253,10 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 
 		if (match.getType() == PatternType.CONSISTENCY) {
 			switch (overlapType) {
-			case SRC -> getGreenSrcElements(match, gFactory, translatedElts);
-			case TRG -> getGreenTrgElements(match, gFactory, translatedElts);
-			default -> throw new RuntimeException("For consistency matches, the pattern type of overlapping matches can only be source or target!");
+				case SRC -> getGreenSrcElements(match, gFactory, translatedElts);
+				case TRG -> getGreenTrgElements(match, gFactory, translatedElts);
+				default -> throw new RuntimeException(
+						"For consistency matches, the pattern type of overlapping matches can only be source or target!");
 			}
 
 			// What it does: gets all nodes that translates the elt & passes them in a (node,elt)-pair.
@@ -272,9 +270,9 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 					.collect(Collectors.groupingBy(e -> e.getKey(), Collectors.mapping(e -> e.getValue(), Collectors.toSet())));
 		} else {
 			switch (match.getType()) {
-			case SRC -> getGreenSrcElements(match, gFactory, translatedElts);
-			case TRG -> getGreenTrgElements(match, gFactory, translatedElts);
-			default -> throw new RuntimeException("The pattern type of the specified node can only to be consistency, source or target!");
+				case SRC -> getGreenSrcElements(match, gFactory, translatedElts);
+				case TRG -> getGreenTrgElements(match, gFactory, translatedElts);
+				default -> throw new RuntimeException("The pattern type of the specified node can only to be consistency, source or target!");
 			}
 
 			// What it does: see comment above

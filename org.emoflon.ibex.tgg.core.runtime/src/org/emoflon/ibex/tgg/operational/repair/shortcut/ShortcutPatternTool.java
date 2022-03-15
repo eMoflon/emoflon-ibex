@@ -24,11 +24,15 @@ import org.emoflon.ibex.tgg.operational.benchmark.Timer;
 import org.emoflon.ibex.tgg.operational.benchmark.Times;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;
+import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.SimpleTGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.TGGMatchParameterOrderProvider;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRule;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRule.ComponentSpecificRuleElement;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRule.HigherOrderRuleComponent;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.OperationalSCFactory;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.OperationalShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule;
@@ -37,7 +41,6 @@ import org.emoflon.ibex.tgg.operational.repair.shortcut.search.LocalPatternSearc
 import org.emoflon.ibex.tgg.operational.repair.shortcut.updatepolicy.IShortcutRuleUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCMatch;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCPersistence;
-import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 import org.emoflon.ibex.tgg.util.TGGFilterUtil;
 
@@ -60,28 +63,32 @@ public class ShortcutPatternTool implements TimeMeasurable {
 	protected final static Logger logger = Logger.getLogger(ShortcutPatternTool.class);
 
 	private int numOfDeletedNodes = 0;
-	
+
 	protected final Times times = new Times();
 
-	private PropagatingOperationalStrategy strategy;
+	private final IbexOptions options;
+	private final IGreenInterpreter greenInterpreter;
+	private final IRedInterpreter redInterpreter;
+
 	private TGGResourceHandler resourceHandler;
 	private Collection<ShortcutRule> scRules;
 	private Map<PatternType, Map<String, Collection<OperationalShortcutRule>>> tggRule2opSCRule;
 	private Map<OperationalShortcutRule, LocalPatternSearch> rule2matcher;
 
-	private IGreenInterpreter greenInterpreter;
-	private IRedInterpreter redInterpreter;
+	public ShortcutPatternTool(IbexOptions options, IGreenInterpreter greenInterpreter, IRedInterpreter redInterpreter, //
+			Collection<ShortcutRule> scRules, Set<PatternType> types) {
+		this.options = options;
+		this.greenInterpreter = greenInterpreter;
+		this.redInterpreter = redInterpreter;
 
-	public ShortcutPatternTool(PropagatingOperationalStrategy strategy, Collection<ShortcutRule> scRules, Set<PatternType> types) {
 		this.scRules = scRules;
-		this.strategy = strategy;
-		this.resourceHandler = strategy.getOptions().resourceHandler();
+		this.resourceHandler = options.resourceHandler();
 		TimeRegistry.register(this);
 		initialize(types);
 	}
 
 	private void initialize(Set<PatternType> types) {
-		OperationalSCFactory factory = new OperationalSCFactory(strategy, scRules);
+		OperationalSCFactory factory = new OperationalSCFactory(options, scRules);
 
 		tggRule2opSCRule = new HashMap<>();
 		for (PatternType type : types) {
@@ -92,10 +99,7 @@ public class ShortcutPatternTool implements TimeMeasurable {
 		tggRule2opSCRule.values().stream() //
 				.flatMap(m -> m.values().stream()) //
 				.flatMap(c -> c.stream()) //
-				.forEach(r -> rule2matcher.put(r, new LocalPatternSearch(r, strategy.getOptions())));
-
-		greenInterpreter = strategy.getGreenInterpreter();
-		redInterpreter = strategy.getRedInterpreter();
+				.forEach(r -> rule2matcher.put(r, new LocalPatternSearch(r, options)));
 
 		tggRule2opSCRule.forEach((type, map) -> LoggerConfig.log(LoggerConfig.log_repair(), //
 				() -> "Generated " + map.values().stream().map(s -> s.size()).reduce(0, (a, b) -> a + b) //
@@ -105,7 +109,7 @@ public class ShortcutPatternTool implements TimeMeasurable {
 	}
 
 	private void persistSCRules() {
-		SCPersistence persistence = new SCPersistence(strategy);
+		SCPersistence persistence = new SCPersistence(options);
 		persistence.saveSCRules(scRules);
 		persistence.saveOperationalFWDSCRules(tggRule2opSCRule.get(PatternType.FWD).values().stream() //
 				.flatMap(c -> c.stream()).collect(Collectors.toList()));
@@ -125,7 +129,7 @@ public class ShortcutPatternTool implements TimeMeasurable {
 
 	public Map<SCMatch, OperationalShortcutRule> isRepairable(PatternType type, ITGGMatch brokenMatch, String replacingRuleName) {
 		Map<SCMatch, OperationalShortcutRule> result = new HashMap<>();
-		
+
 		if (type == null)
 			return result;
 
@@ -147,7 +151,7 @@ public class ShortcutPatternTool implements TimeMeasurable {
 			return null;
 
 		Collection<OperationalShortcutRule> copiedRules = new ArrayList<>(rules);
-		IShortcutRuleUpdatePolicy policy = strategy.getOptions().repair.shortcutRuleUpdatePolicy();
+		IShortcutRuleUpdatePolicy policy = options.repair.shortcutRuleUpdatePolicy();
 		do {
 			OperationalShortcutRule osr = policy.chooseOneShortcutRule(copiedRules, brokenMatch);
 			if (osr == null)
@@ -173,15 +177,15 @@ public class ShortcutPatternTool implements TimeMeasurable {
 				copiedRules.remove(osr);
 				continue;
 			}
-			
+
 			Timer.start();
 			processDeletions(osr, newMatch);
 			times.addTo("processDeletions", Timer.stop());
-			
+
 			Timer.start();
 			processAttributes(osr, newMatch);
 			times.addTo("processAttributes", Timer.stop());
-			
+
 			return transformToReplacingMatch(osr, newCoMatch.get());
 
 		} while (!copiedRules.isEmpty());
@@ -191,7 +195,17 @@ public class ShortcutPatternTool implements TimeMeasurable {
 	private ITGGMatch processBrokenMatch(OperationalShortcutRule osr, ITGGMatch brokenMatch) {
 		Map<String, EObject> name2entryNodeElem = new HashMap<>();
 		for (String param : brokenMatch.getParameterNames()) {
-			TGGRuleNode scNode = osr.getOpScRule().mapOriginalToSCNodeNode(param);
+			ShortcutRule shortcutRule = osr.getOpScRule();
+
+			String originalRuleNodeName = param;
+			if (shortcutRule.getOriginalRule()instanceof HigherOrderTGGRule hoRule) {
+				HigherOrderRuleComponent closureComponent = hoRule.getClosureComponent();
+				TGGRuleNode ruleNode = closureComponent.getNodeFromName(param);
+				ComponentSpecificRuleElement componentSpecRuleElt = closureComponent.getComponentSpecificRuleElement(ruleNode);
+				originalRuleNodeName = componentSpecRuleElt.getRespectiveHigherOrderElement().getName();
+			}
+
+			TGGRuleNode scNode = shortcutRule.mapOriginalToSCNodeNode(originalRuleNodeName);
 			if (scNode == null) {
 				// special case is the rule application node which we add here!
 				if (!((EObject) brokenMatch.get(param) instanceof TGGRuleApplication))
@@ -217,7 +231,7 @@ public class ShortcutPatternTool implements TimeMeasurable {
 		osr.getOpScRule().getReplacingRule().getNodes()
 				.forEach(n -> tempMatch.put(n.getName(), scMatch.get(osr.getOpScRule().mapRuleNodeToSCRuleNode(n, SCInputRule.REPLACING).getName())));
 
-		IGreenPatternFactory greenFactory = strategy.getGreenFactories().get(osr.getOpScRule().getReplacingRule().getName());
+		IGreenPatternFactory greenFactory = options.patterns.greenPatternFactories().get(osr.getOpScRule().getReplacingRule().getName());
 		IGreenPattern greenPattern = greenFactory.create(PatternType.FWD);
 		greenPattern.createMarkers(osr.getOpScRule().getReplacingRule().getName(), tempMatch);
 
@@ -245,16 +259,18 @@ public class ShortcutPatternTool implements TimeMeasurable {
 					.filter(edge -> edge.getType().equals(e.getType())).collect(Collectors.toList());
 			for (TGGRuleEdge conflictingEdge : conflictingEdges) {
 				EMFEdge toBeCreatedRuntimeEdge = getRuntimeEdge(brokenMatch, conflictingEdge);
-				// if the runtime edge is null, this means that the element necessary to find it has been created anew by processCreations and we can ignore it.
-				if(toBeCreatedRuntimeEdge == null)
+				// if the runtime edge is null, this means that the element necessary to find it has been created
+				// anew by processCreations and we can ignore it.
+				if (toBeCreatedRuntimeEdge == null)
 					return;
-				
+
 				// we have to handle cases here where deletions should not be performed if the edge was just created
 				if (isSingle && toBeCreatedRuntimeEdge.getSource().equals(toBeDeletedRuntimeEdge.getSource()))
 					return;
-				
-				// if disable injectivity is activated and both edges are equal, we do not have to perform a deletion
-				if (strategy.getOptions().repair.disableInjectivity() && toBeCreatedRuntimeEdge.equals(toBeDeletedRuntimeEdge))
+
+				// if disable injectivity is activated and both edges are equal, we do not have to perform a
+				// deletion
+				if (options.repair.disableInjectivity() && toBeCreatedRuntimeEdge.equals(toBeDeletedRuntimeEdge))
 					return;
 			}
 

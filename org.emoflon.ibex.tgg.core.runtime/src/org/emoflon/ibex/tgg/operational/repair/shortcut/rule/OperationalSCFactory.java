@@ -7,7 +7,8 @@ import java.util.Map;
 
 import org.emoflon.ibex.tgg.compiler.patterns.ACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
+import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRule;
 import org.emoflon.ibex.tgg.util.TGGFilterUtil;
 
 import language.BindingType;
@@ -15,17 +16,18 @@ import language.TGGRule;
 
 public class OperationalSCFactory {
 
-	private Collection<ShortcutRule> scRules;
-	private PropagatingOperationalStrategy strategy;
+	private final IbexOptions options;
 
-	public OperationalSCFactory(PropagatingOperationalStrategy strategy, Collection<ShortcutRule> scRules) {
-		this.strategy = strategy;
+	private Collection<ShortcutRule> scRules;
+
+	public OperationalSCFactory(IbexOptions options, Collection<ShortcutRule> scRules) {
+		this.options = options;
 		this.scRules = scRules;
 	}
 
 	public Map<String, Collection<OperationalShortcutRule>> createOperationalRules(PatternType type) {
 		Map<String, Collection<OperationalShortcutRule>> operationalRules = new HashMap<>();
-		ACAnalysis filterNACAnalysis = new ACAnalysis(strategy.getTGG(), strategy.getOptions());
+		ACAnalysis filterNACAnalysis = new ACAnalysis(options.tgg.tgg(), options);
 
 		for (ShortcutRule scRule : scRules) {
 			TGGRule originalRule = scRule.getOriginalRule();
@@ -40,20 +42,22 @@ public class OperationalSCFactory {
 					+ TGGFilterUtil.filterEdges(replacingRule.getEdges(), BindingType.CREATE).size() == 0)
 				continue;
 
-			OperationalShortcutRule opSCR = createOpShortcutRule(strategy, scRule, filterNACAnalysis, type);
-			operationalRules.computeIfAbsent(originalRule.getName(), k -> new LinkedList<>()).add(opSCR);
+			OperationalShortcutRule opSCR = createOpShortcutRule(scRule, filterNACAnalysis, type);
+			String keyRuleName = originalRule instanceof HigherOrderTGGRule hoRule //
+					? hoRule.getClosureComponent().rule.getName()
+					: originalRule.getName();
+			operationalRules.computeIfAbsent(keyRuleName, k -> new LinkedList<>()).add(opSCR);
 		}
 		return operationalRules;
 	}
 
-	private OperationalShortcutRule createOpShortcutRule(PropagatingOperationalStrategy strategy, ShortcutRule scRule, //
-			ACAnalysis filterNACAnalysis, PatternType type) {
+	private OperationalShortcutRule createOpShortcutRule(ShortcutRule scRule, ACAnalysis filterNACAnalysis, PatternType type) {
 		return switch (type) {
-			case FWD -> new FWDShortcutRule(strategy, scRule, filterNACAnalysis);
-			case BWD -> new BWDShortcutRule(strategy, scRule, filterNACAnalysis);
-			case CC -> new CCShortcutRule(strategy, scRule, filterNACAnalysis);
-			case SRC -> new SRCShortcutRule(strategy, scRule, filterNACAnalysis);
-			case TRG -> new TRGShortcutRule(strategy, scRule, filterNACAnalysis);
+			case FWD -> new FWDShortcutRule(options, scRule, filterNACAnalysis);
+			case BWD -> new BWDShortcutRule(options, scRule, filterNACAnalysis);
+			case CC -> new CCShortcutRule(options, scRule, filterNACAnalysis);
+			case SRC -> new SRCShortcutRule(options, scRule, filterNACAnalysis);
+			case TRG -> new TRGShortcutRule(options, scRule, filterNACAnalysis);
 			default -> throw new RuntimeException("Shortcut Rules cannot be operationalized for " + type.toString() + " operations");
 		};
 	}

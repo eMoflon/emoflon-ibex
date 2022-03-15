@@ -9,7 +9,6 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.OperationalShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule;
-import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 
 import language.TGGRuleElement;
@@ -19,15 +18,13 @@ import language.repair.TGGRuleElementMapping;
 
 public class SCPersistence {
 	
-	private IbexOptions options;
 	private TGGResourceHandler resourceHandler;
 	
 	private Resource scResource;
 	private Resource oscFWDResource;
 	private Resource oscBWDResource;
 	
-	public SCPersistence(OperationalStrategy strategy) {
-		this.options = strategy.getOptions();
+	public SCPersistence(IbexOptions options) {
 		resourceHandler = options.resourceHandler();
 		
 		scResource = resourceHandler.createResource(resourceHandler.getSpecificationResourceSet(), options.project.path() + "/model/" + options.project.name() + ".sc.tgg.xmi");
