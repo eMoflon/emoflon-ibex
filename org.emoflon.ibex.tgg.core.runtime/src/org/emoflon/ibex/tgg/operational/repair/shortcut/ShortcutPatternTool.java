@@ -30,9 +30,8 @@ import org.emoflon.ibex.tgg.operational.matches.SimpleTGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.TGGMatchParameterOrderProvider;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderSupport;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRule;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRule.ComponentSpecificRuleElement;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRule.HigherOrderRuleComponent;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.OperationalSCFactory;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.OperationalShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule;
@@ -197,13 +196,9 @@ public class ShortcutPatternTool implements TimeMeasurable {
 		for (String param : brokenMatch.getParameterNames()) {
 			ShortcutRule shortcutRule = osr.getOpScRule();
 
-			String originalRuleNodeName = param;
-			if (shortcutRule.getOriginalRule()instanceof HigherOrderTGGRule hoRule) {
-				HigherOrderRuleComponent closureComponent = hoRule.getClosureComponent();
-				TGGRuleNode ruleNode = closureComponent.getNodeFromName(param);
-				ComponentSpecificRuleElement componentSpecRuleElt = closureComponent.getComponentSpecificRuleElement(ruleNode);
-				originalRuleNodeName = componentSpecRuleElt.getRespectiveHigherOrderElement().getName();
-			}
+			String originalRuleNodeName = shortcutRule.getOriginalRule() instanceof HigherOrderTGGRule hoRule //
+					? HigherOrderSupport.findEntryNodeName(hoRule, param)
+					: param;
 
 			TGGRuleNode scNode = shortcutRule.mapOriginalToSCNodeNode(originalRuleNodeName);
 			if (scNode == null) {

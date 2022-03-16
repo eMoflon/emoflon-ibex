@@ -94,7 +94,7 @@ public class ILPHigherOrderRuleMappingSolver {
 		for (MatchRelatedRuleElement target : targets) {
 			ElementCandidate candidate = new ElementCandidate(source, target);
 
-			if (target.ruleElement.getBindingType() == BindingType.CONTEXT)
+			if (target.ruleElement().getBindingType() == BindingType.CONTEXT)
 				candidatesWithContextTarget.add(elementIDCounter);
 			oppositeDomainElement2Candidates.computeIfAbsent(source, k -> cfactory.createIntSet()).add(elementIDCounter);
 			oppositeDomainCandidate2ID.put(candidate, elementIDCounter);
@@ -106,7 +106,7 @@ public class ILPHigherOrderRuleMappingSolver {
 	private void createMatchCandidates() {
 		// FIXME: how overlapping matches are defined here, is probably incorrect
 		Set<Set<ITGGMatch>> matchSets = propDomainMapping.values().stream() //
-				.map(set -> set.stream().map(e -> e.match).collect(Collectors.toSet())) //
+				.map(set -> set.stream().map(e -> e.match()).collect(Collectors.toSet())) //
 				.collect(Collectors.toSet());
 
 		for (Set<ITGGMatch> matchSet : matchSets) {
@@ -154,7 +154,7 @@ public class ILPHigherOrderRuleMappingSolver {
 				continue;
 
 			ilpProblem.addExclusion(candidates.stream().map(c -> "e" + c), //
-					"EXCL_propDomElement_" + element.ruleElement.eClass().getName() + "_" + constraintNameCounter++, //
+					"EXCL_propDomElement_" + element.ruleElement().eClass().getName() + "_" + constraintNameCounter++, //
 					1, 1);
 		}
 	}
@@ -167,7 +167,7 @@ public class ILPHigherOrderRuleMappingSolver {
 				continue;
 
 			ilpProblem.addExclusion(candidates.stream().map(c -> "e" + c), //
-					"EXCL_oppositeDomElement_" + element.ruleElement.eClass().getName() + "_" + constraintNameCounter++);
+					"EXCL_oppositeDomElement_" + element.ruleElement().eClass().getName() + "_" + constraintNameCounter++);
 		}
 	}
 
@@ -186,9 +186,9 @@ public class ILPHigherOrderRuleMappingSolver {
 			Set<Integer> candidates = propDomainElement2Candidates.get(element);
 
 			for (Integer candidateID : candidates) {
-				ITGGMatch match = propDomainID2Candidate.get(candidateID).target.match;
+				ITGGMatch match = propDomainID2Candidate.get(candidateID).target.match();
 				ilpProblem.addImplication("e" + candidateID, Stream.of("m" + match2ID.get(match)), //
-						"IMPL_propDomElement->match_" + element.ruleElement.eClass().getName() + "_" + constraintNameCounter++);
+						"IMPL_propDomElement->match_" + element.ruleElement().eClass().getName() + "_" + constraintNameCounter++);
 			}
 		}
 	}
@@ -198,9 +198,9 @@ public class ILPHigherOrderRuleMappingSolver {
 			Set<Integer> candidates = oppositeDomainElement2Candidates.get(element);
 
 			for (Integer candidateID : candidates) {
-				ITGGMatch match = oppositeDomainID2Candidate.get(candidateID).target.match;
+				ITGGMatch match = oppositeDomainID2Candidate.get(candidateID).target.match();
 				ilpProblem.addImplication("e" + candidateID, Stream.of("m" + match2ID.get(match)), //
-						"IMPL_oppositeDomElement->match_" + element.ruleElement.eClass().getName() + "_" + constraintNameCounter++);
+						"IMPL_oppositeDomElement->match_" + element.ruleElement().eClass().getName() + "_" + constraintNameCounter++);
 			}
 		}
 	}

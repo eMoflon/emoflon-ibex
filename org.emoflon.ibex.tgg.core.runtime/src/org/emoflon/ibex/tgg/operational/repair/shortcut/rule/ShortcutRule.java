@@ -210,13 +210,11 @@ public class ShortcutRule {
 		TGGRuleNode node = (TGGRuleNode) LanguageFactory.eINSTANCE.create(nodeType);
 
 		String adjustedName = name;
-		if (nodeNames.contains(adjustedName)) {
-			int i = 2;
-			while (nodeNames.contains(adjustedName + i)) {
-				i++;
-			}
-			adjustedName += i;
+		char counter = 'a';
+		while (nodeNames.contains(adjustedName + counter)) {
+			counter++;
 		}
+		adjustedName += counter;
 		nodeNames.add(adjustedName);
 		node.setName(adjustedName);
 		node.setBindingType(binding);

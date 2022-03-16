@@ -8,6 +8,7 @@ import java.util.Map;
 import org.emoflon.ibex.tgg.compiler.patterns.ACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderSupport;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRule;
 import org.emoflon.ibex.tgg.util.TGGFilterUtil;
 
@@ -44,7 +45,7 @@ public class OperationalSCFactory {
 
 			OperationalShortcutRule opSCR = createOpShortcutRule(scRule, filterNACAnalysis, type);
 			String keyRuleName = originalRule instanceof HigherOrderTGGRule hoRule //
-					? hoRule.getClosureComponent().rule.getName()
+					? HigherOrderSupport.getKeyRuleName(hoRule)
 					: originalRule.getName();
 			operationalRules.computeIfAbsent(keyRuleName, k -> new LinkedList<>()).add(opSCR);
 		}

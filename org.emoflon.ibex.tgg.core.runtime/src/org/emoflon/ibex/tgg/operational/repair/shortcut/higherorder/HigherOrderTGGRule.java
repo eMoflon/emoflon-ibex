@@ -146,14 +146,12 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 
 	private Map<ComponentSpecificRuleElement, TGGRuleElement> componentElt2higherOrderElt;
 	private Set<String> higherOrderNodeNames;
-	private Set<String> higherOrderEdgeNames;
 
 	private void initTGGRuleContents() {
 		super.setName("HigherOrder");
 		super.setAbstract(false);
 		this.componentElt2higherOrderElt = new HashMap<>();
 		this.higherOrderNodeNames = new HashSet<>();
-		this.higherOrderEdgeNames = new HashSet<>();
 	}
 
 	private void populateTGGRule(TGGRule rule, HigherOrderRuleComponent component, Map<TGGRuleElement, ComponentSpecificRuleElement> contextMapping) {
@@ -186,8 +184,6 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 		if (higherOrderNode == null)
 			throw new RuntimeException("Inconsistent context mapping!");
 
-		higherOrderNode.setBindingType(node.getBindingType());
-
 		ComponentSpecificRuleElement componentNode = component.getComponentSpecificRuleElement(node);
 		componentElt2higherOrderElt.put(componentNode, higherOrderNode);
 	}
@@ -196,8 +192,6 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 		TGGRuleEdge higherOrderEdge = (TGGRuleEdge) componentElt2higherOrderElt.get(mappedComponentNode);
 		if (higherOrderEdge == null)
 			throw new RuntimeException("Inconsistent context mapping!");
-
-		higherOrderEdge.setBindingType(edge.getBindingType());
 
 		ComponentSpecificRuleElement componentEdge = component.getComponentSpecificRuleElement(edge);
 		componentElt2higherOrderElt.put(componentEdge, higherOrderEdge);
@@ -235,11 +229,6 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 		higherOrderEdge.setTrgNode(hoTrgNode);
 
 		String newName = higherOrderEdge.getSrcNode().getName() + "__" + edge.getType().getName() + "__" + higherOrderEdge.getTrgNode().getName();
-		int i = 0;
-		while (higherOrderEdgeNames.contains(newName + "-" + i))
-			i++;
-		newName += "-" + i;
-		higherOrderEdgeNames.add(newName);
 
 		higherOrderEdge.setName(newName);
 		higherOrderEdge.setBindingType(edge.getBindingType());
