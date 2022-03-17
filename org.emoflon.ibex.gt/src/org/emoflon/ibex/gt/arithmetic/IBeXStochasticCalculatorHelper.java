@@ -80,21 +80,17 @@ public class IBeXStochasticCalculatorHelper {
 	private static double getDoubleStochasticValue(double mean, double sd, IBeXDistributionType distribution,
 			IBeXDistributionRange range) {
 		double value = 1.0;
-		switch(distribution) {
-		case NORMAL : 		value = rnd.nextGaussian()*sd + mean;
-					  		break;
-		case UNIFORM: 		value = mean + rnd.nextDouble()*(sd-mean);
-					  		break;
-		case EXPONENTIAL: 	value = Math.log(1 - rnd.nextDouble())/(-mean);
-							break;
-		default:	  		value = mean;
-					  		break;
-		}
-		switch(range) {
-		case NEGATIVE_ONLY: return -Math.abs(value);
-		case POSITIVE_ONLY: return Math.abs(value);
-		default: return value;
-		}
+		value = switch (distribution) {
+			case NORMAL -> 		rnd.nextGaussian() * sd + mean;
+			case UNIFORM -> 	mean + rnd.nextDouble() * (sd - mean);
+			case EXPONENTIAL -> Math.log(1 - rnd.nextDouble()) / (-mean);
+			default -> 			mean;
+		};
+		return switch (range) {
+			case NEGATIVE_ONLY -> -Math.abs(value);
+			case POSITIVE_ONLY -> Math.abs(value);
+			default -> 			  value;
+		};
 	}
 	
 	/**
@@ -109,21 +105,17 @@ public class IBeXStochasticCalculatorHelper {
 	private static long getIntegerStochasticValue(int mean, int sd, 
 			IBeXDistributionType distribution, IBeXDistributionRange range) {
 		long value = 1;
-		switch(distribution) {
-		case NORMAL : 		value = (int) (rnd.nextGaussian()*sd + mean);
-					  		break;
-		case UNIFORM: 		value = mean + rnd.nextInt(sd-mean+1);
-					  		break;
-		case EXPONENTIAL: 	value = (int) Math.log(1 - rnd.nextDouble())/(-mean);
-							break;
-		default:	  		value = mean;
-					  		break;
-		}
-		switch(range) {
-		case NEGATIVE_ONLY: return -Math.abs(value);
-		case POSITIVE_ONLY: return Math.abs(value);
-		default: return value;
-		}
+		value = switch (distribution) {
+			case NORMAL -> 		(int) (rnd.nextGaussian() * sd + mean);
+			case UNIFORM -> 	mean + rnd.nextInt(sd - mean + 1);
+			case EXPONENTIAL -> (int) Math.log(1 - rnd.nextDouble()) / (-mean);
+			default -> 			mean;
+		};
+		return switch (range) {
+			case NEGATIVE_ONLY -> -Math.abs(value);
+			case POSITIVE_ONLY -> Math.abs(value);
+			default -> 			  value;
+		};
 	}
 	/**
 	 * checks if the parameters of the value are not breaking stochastic definitions

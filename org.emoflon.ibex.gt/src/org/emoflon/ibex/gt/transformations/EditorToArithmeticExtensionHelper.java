@@ -71,13 +71,10 @@ public class EditorToArithmeticExtensionHelper {
 				} catch(Exception e) {
 					calculation.setLeft(transformToIBeXArithmeticExpression(data, ibexPattern, ((MultExpression) expression).getLeft()));
 					calculation.setRight(transformToIBeXArithmeticExpression(data, ibexPattern, ((MultExpression) expression).getRight()));								
-					switch(((MultExpression) expression).getMultOperator()) {
-						case DIVISION:  	calculation.setOperator(IBeXBinaryOperator.DIVISION);
-											break;
-						case MODULO:  		calculation.setOperator(IBeXBinaryOperator.MODULUS);
-											break;
-						case MULTIPLICATION:calculation.setOperator(IBeXBinaryOperator.MULTIPLICATION);
-											break;
+					switch (((MultExpression) expression).getMultOperator()) {
+						case DIVISION -> 		calculation.setOperator(IBeXBinaryOperator.DIVISION);
+						case MODULO -> 			calculation.setOperator(IBeXBinaryOperator.MODULUS);
+						case MULTIPLICATION -> 	calculation.setOperator(IBeXBinaryOperator.MULTIPLICATION);
 					}	
 				}
 				
@@ -97,13 +94,9 @@ public class EditorToArithmeticExtensionHelper {
 				} catch(Exception e) {
 					calculation.setLeft(transformToIBeXArithmeticExpression(data, ibexPattern, ((MinMaxExpression) expression).getLeft()));
 					calculation.setRight(transformToIBeXArithmeticExpression(data, ibexPattern, ((MinMaxExpression) expression).getRight()));
-					switch(((MinMaxExpression) expression).getMinMaxOperator()) {
-					case MAX:
-						calculation.setOperator(IBeXBinaryOperator.MAXIMUM);	
-						break;
-					case MIN:
-						calculation.setOperator(IBeXBinaryOperator.MINIMUM);
-						break;
+					switch (((MinMaxExpression) expression).getMinMaxOperator()) {
+						case MAX -> calculation.setOperator(IBeXBinaryOperator.MAXIMUM);
+						case MIN -> calculation.setOperator(IBeXBinaryOperator.MINIMUM);
 					}
 					
 				}
@@ -117,25 +110,16 @@ public class EditorToArithmeticExtensionHelper {
 			} catch(Exception e) {
 				IBeXUnaryExpression calculation = IBeXPatternModelFactory.eINSTANCE.createIBeXUnaryExpression();
 				calculation.setOperand(transformToIBeXArithmeticExpression(data, ibexPattern, ((OneParameterArithmetics) expression).getExpression()));
-				switch(((OneParameterArithmetics) expression).getOperator()) {
-					case ABSOLUTE: 	calculation.setOperator(IBeXUnaryOperator.ABSOLUTE);
-									break;
-					case BRACKET: 	calculation.setOperator(IBeXUnaryOperator.BRACKET);
-									break;
-					case COS: 		calculation.setOperator(IBeXUnaryOperator.COS);
-									break;
-					case SIN: 		calculation.setOperator(IBeXUnaryOperator.SIN);
-									break;
-					case TAN: 		calculation.setOperator(IBeXUnaryOperator.TAN);
-									break;
-					case EEXPONENTIAL:calculation.setOperator(IBeXUnaryOperator.EEXPONENTIAL);
-									break;
-					case LOGARITHMUS:calculation.setOperator(IBeXUnaryOperator.LOG);
-									break;
-					case NAT_LOG: 	calculation.setOperator(IBeXUnaryOperator.LG);
-									break;
-					case ROOT: 		calculation.setOperator(IBeXUnaryOperator.SQRT);
-									break;
+				switch (((OneParameterArithmetics) expression).getOperator()) {
+					case ABSOLUTE -> 		calculation.setOperator(IBeXUnaryOperator.ABSOLUTE);
+					case BRACKET -> 		calculation.setOperator(IBeXUnaryOperator.BRACKET);
+					case COS -> 			calculation.setOperator(IBeXUnaryOperator.COS);
+					case SIN -> 			calculation.setOperator(IBeXUnaryOperator.SIN);
+					case TAN -> 			calculation.setOperator(IBeXUnaryOperator.TAN);
+					case EEXPONENTIAL -> 	calculation.setOperator(IBeXUnaryOperator.EEXPONENTIAL);
+					case LOGARITHMUS -> 	calculation.setOperator(IBeXUnaryOperator.LOG);
+					case NAT_LOG -> 		calculation.setOperator(IBeXUnaryOperator.LG);
+					case ROOT -> 			calculation.setOperator(IBeXUnaryOperator.SQRT);
 				}
 				if(((OneParameterArithmetics) expression).isNegative()) calculation.setNegative(true);
 				else calculation.setNegative(false);

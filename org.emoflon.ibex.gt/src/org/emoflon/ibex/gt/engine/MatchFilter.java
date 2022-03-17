@@ -217,22 +217,15 @@ public class MatchFilter {
 	 * @return the result of the comparison
 	 */
 	public static boolean compare(final Object a, final Object b, final IBeXRelation relation) {
-		switch (relation) {
-		case GREATER_OR_EQUAL:
-			return compareTo(a, b, x -> x >= 0);
-		case EQUAL:
-			return a.equals(b);
-		case GREATER:
-			return compareTo(a, b, x -> x > 0);
-		case SMALLER:
-			return compareTo(a, b, x -> x < 0);
-		case SMALLER_OR_EQUAL:
-			return compareTo(a, b, x -> x <= 0);
-		case UNEQUAL:
-			return !a.equals(b);
-		default:
-			return false;
-		}
+		return switch (relation) {
+			case GREATER_OR_EQUAL -> compareTo(a, b, x -> x >= 0);
+			case EQUAL -> a.equals(b);
+			case GREATER -> compareTo(a, b, x -> x > 0);
+			case SMALLER -> compareTo(a, b, x -> x < 0);
+			case SMALLER_OR_EQUAL -> compareTo(a, b, x -> x <= 0);
+			case UNEQUAL -> !a.equals(b);
+			default -> false;
+		};
 	}
 
 	/**

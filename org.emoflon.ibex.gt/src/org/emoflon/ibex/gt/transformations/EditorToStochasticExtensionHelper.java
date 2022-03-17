@@ -90,11 +90,11 @@ public class EditorToStochasticExtensionHelper {
 	}
 	
 	private static IBeXDistributionType transformDistribution(StochasticDistribution distribution) {
-		switch(distribution) {
-		case EXPONENTIAL: return IBeXDistributionType.EXPONENTIAL;
-		case NORMAL: return IBeXDistributionType.NORMAL;
-		case UNIFORM: return IBeXDistributionType.UNIFORM;
-		}
-		return IBeXDistributionType.STATIC;
+		return switch (distribution) {
+			case EXPONENTIAL -> IBeXDistributionType.EXPONENTIAL;
+			case NORMAL -> IBeXDistributionType.NORMAL;
+			case UNIFORM -> IBeXDistributionType.UNIFORM;
+			default -> IBeXDistributionType.STATIC;
+		};
 	}
 }

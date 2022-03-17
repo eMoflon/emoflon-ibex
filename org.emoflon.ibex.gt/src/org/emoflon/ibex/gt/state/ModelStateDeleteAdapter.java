@@ -95,8 +95,8 @@ public class ModelStateDeleteAdapter extends EContentAdapter {
 		if(!active)
 			return;
 		
-		switch(notification.getEventType()) {
-			case Notification.REMOVE: {
+		switch (notification.getEventType()) {
+			case Notification.REMOVE -> {
 				Object feature = notification.getFeature();
 				if(feature == null)
 					break;
@@ -123,9 +123,8 @@ public class ModelStateDeleteAdapter extends EContentAdapter {
 						watchedLinks.add(link);
 					}
 				}
-				break;
 			}
-			case Notification.REMOVE_MANY: {
+			case Notification.REMOVE_MANY -> {
 				Object feature = notification.getFeature();
 				if(feature == null)
 					break;
@@ -155,9 +154,8 @@ public class ModelStateDeleteAdapter extends EContentAdapter {
 						}
 					}
 				}
-				break;
 			}
-			case Notification.REMOVING_ADAPTER: {
+			case Notification.REMOVING_ADAPTER -> {
 				Object feature = notification.getFeature();
 				if(feature == null || !(feature instanceof EReference))
 					break;
@@ -183,9 +181,8 @@ public class ModelStateDeleteAdapter extends EContentAdapter {
 						watchedLinks.add(link);
 					}
 				}
-				break;
 			}
-			case Notification.SET: {
+			case Notification.SET -> {
 				Object feature = notification.getFeature();
 				if(feature == null || !(feature instanceof EReference))
 					break;
@@ -205,7 +202,6 @@ public class ModelStateDeleteAdapter extends EContentAdapter {
 						watchedLinks.add(link);
 					}
 				}
-				break;
 			}
 		}
 	
