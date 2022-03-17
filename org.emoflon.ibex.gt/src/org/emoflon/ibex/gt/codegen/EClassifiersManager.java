@@ -57,8 +57,8 @@ public class EClassifiersManager {
 	 */
 	public void loadMetaModelClasses(final Resource ecoreFile) {
 		EObject rootElement = ecoreFile.getContents().get(0);
-		if (rootElement instanceof EPackage) {
-			loadMetaModelClasses((EPackage) rootElement);
+		if (rootElement instanceof EPackage ePackage) {
+			loadMetaModelClasses(ePackage);
 		}
 	}
 

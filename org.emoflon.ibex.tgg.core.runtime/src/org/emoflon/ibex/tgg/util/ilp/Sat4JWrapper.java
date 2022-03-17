@@ -184,17 +184,13 @@ final class Sat4JWrapper extends ILPSolver {
 		IVecInt literals = this.getLiterals(constraint.getLinearExpression());
 		IVec<BigInteger> coeffs = this.getCoefs(constraint.getLinearExpression());
 		switch (constraint.getComparator()) {
-		case ge:
-			this.solver.addPseudoBoolean(literals, coeffs, true, BigInteger.valueOf(value));
-			break;
-		case le:
-			this.solver.addPseudoBoolean(literals, coeffs, false, BigInteger.valueOf(value));
-			break;
-		case eq:
-			this.solver.addPseudoBoolean(literals, coeffs, true, BigInteger.valueOf(value));
-			this.solver.addPseudoBoolean(literals, coeffs, false, BigInteger.valueOf(value));
-		default:
-			throw new IllegalArgumentException("Unsupported comparator: " + constraint.getComparator().toString());
+			case ge -> this.solver.addPseudoBoolean(literals, coeffs, true, BigInteger.valueOf(value));
+			case le -> this.solver.addPseudoBoolean(literals, coeffs, false, BigInteger.valueOf(value));
+			case eq -> {
+				this.solver.addPseudoBoolean(literals, coeffs, true, BigInteger.valueOf(value));
+				this.solver.addPseudoBoolean(literals, coeffs, false, BigInteger.valueOf(value));
+			}
+			default -> throw new IllegalArgumentException("Unsupported comparator: " + constraint.getComparator().toString());
 		}
 	}
 
@@ -211,19 +207,17 @@ final class Sat4JWrapper extends ILPSolver {
 		}
 		ILPLinearExpression expr = objective.getLinearExpression();
 		switch (objective.getObjectiveOperation()) {
-		case maximize:
-			ILPLinearExpression invertedExpression = this.ilpProblem.createLinearExpression();
-			for (int variableId : objective.getLinearExpression().getVariables()) {
-				double coefficient = objective.getLinearExpression().getCoefficient(variableId);
-				invertedExpression.addTerm(variableId, -coefficient);
+			case maximize -> {
+				ILPLinearExpression invertedExpression = this.ilpProblem.createLinearExpression();
+				for (int variableId : objective.getLinearExpression().getVariables()) {
+					double coefficient = objective.getLinearExpression().getCoefficient(variableId);
+					invertedExpression.addTerm(variableId, -coefficient);
+				}
+				expr = invertedExpression;
 			}
-			expr = invertedExpression;
-			break;
-		case minimize:
-			break;
-		default:
-			throw new IllegalArgumentException(
-					"Unsupported comparator: " + objective.getObjectiveOperation().toString());
+			case minimize -> {
+			}
+			default -> throw new IllegalArgumentException("Unsupported comparator: " + objective.getObjectiveOperation().toString());
 		}
 		IVecInt literals = this.getLiterals(expr);
 		IVec<BigInteger> coeffs = this.getCoefs(expr);

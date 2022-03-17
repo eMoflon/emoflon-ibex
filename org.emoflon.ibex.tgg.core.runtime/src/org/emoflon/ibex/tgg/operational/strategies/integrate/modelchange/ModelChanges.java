@@ -338,8 +338,7 @@ public class ModelChanges {
 							detectAppendages(traversedElements, child);
 						}
 					});
-				} else if (content instanceof EObject) {
-					EObject child = (EObject) content;
+				} else if (content instanceof EObject child) {
 					this.raw_addCreatedEdge(new EMFEdge(createdElement, child, feature));
 					if (feature.isContainment()) {
 						this.raw_addCreatedElement(child);

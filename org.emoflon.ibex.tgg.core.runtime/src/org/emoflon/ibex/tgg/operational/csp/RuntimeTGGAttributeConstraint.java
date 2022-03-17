@@ -64,8 +64,8 @@ public abstract class RuntimeTGGAttributeConstraint {
 		Collection<Pair<TGGAttributeExpression, Object>> tuples = new ArrayList<Pair<TGGAttributeExpression, Object>>();
 		for (int i = 0; i < constraint.getParameters().size(); i++) {
 			Object obj = constraint.getParameters().get(i);
-			if (obj instanceof TGGAttributeExpression) {
-				tuples.add(Pair.of((TGGAttributeExpression) obj, variables.get(i).getValue()));
+			if (obj instanceof TGGAttributeExpression attrExpr) {
+				tuples.add(Pair.of(attrExpr, variables.get(i).getValue()));
 			}
 		}
 		return tuples;

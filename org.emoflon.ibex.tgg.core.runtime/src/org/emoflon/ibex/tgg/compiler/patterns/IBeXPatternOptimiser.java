@@ -51,15 +51,15 @@ public class IBeXPatternOptimiser {
 
 	private static boolean unequalConstantAttributeValues(TGGRuleNode left, TGGRuleNode right) {
 		for (TGGInplaceAttributeExpression attrExprLeft : left.getAttrExpr()) {
-			if (attrExprLeft.getValueExpr() instanceof TGGLiteralExpression)
+			if (attrExprLeft.getValueExpr() instanceof TGGLiteralExpression leftValExpr) {
 				for (TGGInplaceAttributeExpression attrExprRight : right.getAttrExpr()) {
-					if (attrExprRight.getValueExpr() instanceof TGGLiteralExpression
-							&& attrExprLeft.getAttribute().equals(attrExprRight.getAttribute()))
-						if (!((TGGLiteralExpression) attrExprLeft.getValueExpr()).getValue()
-								.equals(((TGGLiteralExpression) attrExprRight.getValueExpr()).getValue())) {
+					if (attrExprRight.getValueExpr() instanceof TGGLiteralExpression rightValExpr
+							&& attrExprLeft.getAttribute().equals(attrExprRight.getAttribute())) {
+						if (!leftValExpr.getValue().equals(rightValExpr.getValue()))
 							return true;
-						}
+					}
 				}
+			}
 		}
 
 		return false;

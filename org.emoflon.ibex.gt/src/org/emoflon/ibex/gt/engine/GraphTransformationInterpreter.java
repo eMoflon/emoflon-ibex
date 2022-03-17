@@ -31,11 +31,11 @@ import org.emoflon.ibex.common.operational.IMatchObserver;
 import org.emoflon.ibex.common.operational.PushoutApproach;
 import org.emoflon.ibex.common.operational.SimpleMatch;
 import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
+import org.emoflon.ibex.gt.StateModel.State;
 import org.emoflon.ibex.gt.api.GraphTransformationPattern;
 import org.emoflon.ibex.gt.state.ModelStateManager;
 import org.emoflon.ibex.gt.state.PersistenceManager;
 import org.emoflon.ibex.gt.ui.VaDoGT;
-import org.emoflon.ibex.gt.StateModel.State;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextAlternatives;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
@@ -48,7 +48,6 @@ import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRuleSet;
-import org.emoflon.smartemf.persistence.SmartEMFResourceFactoryImpl;
 
 /**
  * The GraphTransformationInterpreter implements rule application based on a
@@ -201,18 +200,15 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		Objects.requireNonNull(ibexPatternResource, "Resource must not be null!");
 		EObject resourceContent = ibexPatternResource.getContents().get(0);
 		Objects.requireNonNull("Resource must not be empty!");
-		if (resourceContent instanceof IBeXModel) {
+		if (resourceContent instanceof IBeXModel ibexModel) {
 			contextPatternInterpreter.initialise(model.getPackageRegistry(), this);
 
 			// Transform into patterns of the concrete engine.
-			ibexModel = (IBeXModel) resourceContent;
 			patternSet = ibexModel.getPatternSet();
 			patternSet.getContextPatterns().forEach(pattern -> {
 				matches.put(pattern.getName(), Collections.synchronizedSet(new HashSet<IMatch>()));
-				if(pattern instanceof IBeXContextAlternatives) {
-					IBeXContextAlternatives alt = (IBeXContextAlternatives) pattern;
+				if(pattern instanceof IBeXContextAlternatives alt) {
 					alt.getAlternativePatterns().forEach(altPattern -> name2Pattern.put(altPattern.getName(), altPattern));
-					
 				}
 				name2Pattern.put(pattern.getName(), pattern);
 			});
@@ -400,8 +396,7 @@ public class GraphTransformationInterpreter implements IMatchObserver {
 		if (IBeXPatternUtils.isEmptyPattern(pattern)) {
 			// Check for any NACs or PACs that are attached to the empty-create pattern
 			List<IBeXPatternInvocation> invocations = null;
-			if(pattern instanceof IBeXContextPattern) {
-				IBeXContextPattern context = (IBeXContextPattern)pattern;
+			if(pattern instanceof IBeXContextPattern context) {
 				if(context.getInvocations() != null && context.getInvocations().size()>0) {
 					invocations = context.getInvocations();
 				}

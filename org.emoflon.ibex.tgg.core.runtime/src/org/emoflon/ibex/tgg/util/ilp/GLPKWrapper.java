@@ -136,20 +136,10 @@ final class GLPKWrapper extends ILPSolver {
 		}
 		GLPK.glp_set_mat_row(this.problem, constraintCounter, numberOfVariables, variableIndices, coefficients);
 		switch (constraint.getComparator()) {
-		case ge:
-			GLPK.glp_set_row_bnds(this.problem, constraintCounter, GLPKConstants.GLP_LO, constraint.getValue(),
-					constraint.getValue());
-			break;
-		case le:
-			GLPK.glp_set_row_bnds(this.problem, constraintCounter, GLPKConstants.GLP_UP, constraint.getValue(),
-					constraint.getValue());
-			break;
-		case eq:
-			GLPK.glp_set_row_bnds(this.problem, constraintCounter, GLPKConstants.GLP_FX, constraint.getValue(),
-					constraint.getValue());
-			break;
-		default:
-			throw new IllegalArgumentException("Unsupported comparator: " + constraint.getComparator().toString());
+			case ge -> GLPK.glp_set_row_bnds(this.problem, constraintCounter, GLPKConstants.GLP_LO, constraint.getValue(), constraint.getValue());
+			case le -> GLPK.glp_set_row_bnds(this.problem, constraintCounter, GLPKConstants.GLP_UP, constraint.getValue(), constraint.getValue());
+			case eq -> GLPK.glp_set_row_bnds(this.problem, constraintCounter, GLPKConstants.GLP_FX, constraint.getValue(), constraint.getValue());
+			default -> throw new IllegalArgumentException("Unsupported comparator: " + constraint.getComparator().toString());
 		}
 		// Free memory
 		GLPK.delete_intArray(variableIndices);
@@ -164,15 +154,9 @@ final class GLPKWrapper extends ILPSolver {
 	private void registerObjective(final ILPObjective objective) {
 		GLPK.glp_set_obj_name(this.problem, "obj");
 		switch (objective.getObjectiveOperation()) {
-		case maximize:
-			GLPK.glp_set_obj_dir(this.problem, GLPKConstants.GLP_MAX);
-			break;
-		case minimize:
-			GLPK.glp_set_obj_dir(this.problem, GLPKConstants.GLP_MIN);
-			break;
-		default:
-			throw new IllegalArgumentException(
-					"Unsupported operation: " + objective.getObjectiveOperation().toString());
+			case maximize -> GLPK.glp_set_obj_dir(this.problem, GLPKConstants.GLP_MAX);
+			case minimize -> GLPK.glp_set_obj_dir(this.problem, GLPKConstants.GLP_MIN);
+			default -> throw new IllegalArgumentException("Unsupported operation: " + objective.getObjectiveOperation().toString());
 		}
 
 		// define terms

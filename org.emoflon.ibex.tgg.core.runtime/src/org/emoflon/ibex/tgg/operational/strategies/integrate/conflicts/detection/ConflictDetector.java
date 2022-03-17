@@ -157,10 +157,10 @@ public class ConflictDetector {
 
 	private synchronized boolean skipCheckDomainSpecificViolations(ConflictContainer container, DomainType domain) {
 		for (Conflict conflict : container.getConflicts()) {
-			if (!(conflict instanceof DeletePreserveConflict))
-				continue;
-			if (((DeletePreserveConflict) conflict).getDomainToBePreserved() == domain)
-				return true;
+			if (conflict instanceof DeletePreserveConflict delPresConflict) {
+				if (delPresConflict.getDomainToBePreserved() == domain)
+					return true;
+			}
 		}
 		return false;
 	}
@@ -234,16 +234,15 @@ public class ConflictDetector {
 		ClassifiedMatch classifiedMatch = integrate.matchClassifier().get(match);
 
 		switch (domain) {
-		case SRC:
-			if (DeletionType.getSrcDelCandidates().contains(classifiedMatch.getDeletionType()))
-				return true;
-			break;
-		case TRG:
-			if (DeletionType.getTrgDelCandidates().contains(classifiedMatch.getDeletionType()))
-				return true;
-			break;
-		default:
-			break;
+			case SRC -> {
+				if (DeletionType.getSrcDelCandidates().contains(classifiedMatch.getDeletionType()))
+					return true;
+			}
+			case TRG -> {
+				if (DeletionType.getTrgDelCandidates().contains(classifiedMatch.getDeletionType()))
+					return true;
+			}
+			default -> throw new IllegalArgumentException("Unexpected value: " + domain);
 		}
 
 		if (classifiedMatch.getFilterNacViolations().containsValue(domain))
@@ -255,16 +254,12 @@ public class ConflictDetector {
 	}
 
 	private DomainType oppositeOf(DomainType type) {
-		switch (type) {
-		case SRC:
-			return DomainType.TRG;
-		case TRG:
-			return DomainType.SRC;
-		case CORR:
-			return DomainType.CORR;
-		default:
-			return null;
-		}
+		return switch (type) {
+			case SRC -> DomainType.TRG;
+			case TRG -> DomainType.SRC;
+			case CORR -> DomainType.CORR;
+			default -> null;
+		};
 	}
 
 	private void detectBrokenMatchBasedConflicts() {
@@ -298,13 +293,10 @@ public class ConflictDetector {
 
 				for (TGGAttributeExpression param : constrAttrChanges.affectedParams.keySet()) {
 					switch (param.getObjectVar().getDomainType()) {
-					case SRC:
-						srcChange = constrAttrChanges.affectedParams.get(param);
-						break;
-					case TRG:
-						trgChange = constrAttrChanges.affectedParams.get(param);
-					default:
-						break;
+						case SRC -> srcChange = constrAttrChanges.affectedParams.get(param);
+						case TRG -> trgChange = constrAttrChanges.affectedParams.get(param);
+						default -> {
+						}
 					}
 				}
 

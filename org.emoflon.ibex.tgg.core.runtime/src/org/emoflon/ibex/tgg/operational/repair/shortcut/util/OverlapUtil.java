@@ -201,16 +201,15 @@ public class OverlapUtil {
 		overlap.revertMappings.put(replacingElement, originalElement);
 
 		switch (originalElement.getBindingType()) {
-		case CONTEXT:
-			overlap.unboundOriginalContext.remove(originalElement);
-			overlap.unboundReplacingContext.remove(replacingElement);
-			break;
-		case CREATE:
-			overlap.deletions.remove(originalElement);
-			overlap.creations.remove(replacingElement);
-			break;
-		default:
-			new IllegalStateException("TGGRuleElement are not allowed to have the binding type DELETE given by the user specification "
+			case CONTEXT -> {
+				overlap.unboundOriginalContext.remove(originalElement);
+				overlap.unboundReplacingContext.remove(replacingElement);
+			}
+			case CREATE -> {
+				overlap.deletions.remove(originalElement);
+				overlap.creations.remove(replacingElement);
+			}
+			default -> new IllegalStateException("TGGRuleElement are not allowed to have the binding type DELETE given by the user specification "
 					+ "due to the fact that TGG rules are strictly monotonic");
 		}
 	}
@@ -228,15 +227,9 @@ public class OverlapUtil {
 		for (TGGRuleElement elt : overlap.mappings.keySet())
 			if (elt.getBindingType() == BindingType.CREATE) {
 				switch (elt.getDomainType()) {
-				case SRC:
-					containsSrc = true;
-					break;
-				case TRG:
-					containsTrg = true;
-					break;
-				case CORR:
-					containsCorr = true;
-					break;
+					case SRC -> containsSrc = true;
+					case TRG -> containsTrg = true;
+					case CORR -> containsCorr = true;
 				}
 			}
 

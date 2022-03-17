@@ -482,10 +482,10 @@ public class ContextPatternTransformation {
 	}
 
 	protected Optional<IBeXAttributeValue> convertValue(IBeXContextPattern ibexPattern, TGGExpression valueExpr, EAttribute eAttribute) {
-		if (valueExpr instanceof TGGEnumExpression) {
-			return Optional.of(convertAttributeValue((TGGEnumExpression) valueExpr));
-		} else if (valueExpr instanceof TGGLiteralExpression) {
-			return Optional.of(convertAttributeValue((TGGLiteralExpression) valueExpr, eAttribute.getEAttributeType()));
+		if (valueExpr instanceof TGGEnumExpression tggEnumExpr) {
+			return Optional.of(convertAttributeValue(tggEnumExpr));
+		} else if (valueExpr instanceof TGGLiteralExpression tggLiteralExpr) {
+			return Optional.of(convertAttributeValue(tggLiteralExpr, eAttribute.getEAttributeType()));
 		} else {
 			logger.error("Invalid attribute value: " + valueExpr);
 			return Optional.empty();
@@ -515,22 +515,15 @@ public class ContextPatternTransformation {
 	}
 
 	protected IBeXRelation convertRelation(TGGAttributeConstraintOperators operator) {
-		switch (operator) {
-		case GREATER:
-			return IBeXRelation.GREATER;
-		case GR_EQUAL:
-			return IBeXRelation.GREATER_OR_EQUAL;
-		case EQUAL:
-			return IBeXRelation.EQUAL;
-		case UNEQUAL:
-			return IBeXRelation.UNEQUAL;
-		case LESSER:
-			return IBeXRelation.SMALLER;
-		case LE_EQUAL:
-			return IBeXRelation.SMALLER_OR_EQUAL;
-		default:
-			throw new IllegalArgumentException("Cannot convert operator: " + operator);
-		}
+		return switch (operator) {
+			case GREATER -> IBeXRelation.GREATER;
+			case GR_EQUAL -> IBeXRelation.GREATER_OR_EQUAL;
+			case EQUAL -> IBeXRelation.EQUAL;
+			case UNEQUAL -> IBeXRelation.UNEQUAL;
+			case LESSER -> IBeXRelation.SMALLER;
+			case LE_EQUAL -> IBeXRelation.SMALLER_OR_EQUAL;
+			default -> throw new IllegalArgumentException("Cannot convert operator: " + operator);
+		};
 	}
 
 	/**

@@ -237,22 +237,15 @@ final public class EditorToIBeXPatternHelper {
 	 * @return the IBeXRelation
 	 */
 	public static IBeXRelation convertRelation(final EditorRelation relation) {
-		switch (relation) {
-		case GREATER:
-			return IBeXRelation.GREATER;
-		case GREATER_OR_EQUAL:
-			return IBeXRelation.GREATER_OR_EQUAL;
-		case EQUAL:
-			return IBeXRelation.EQUAL;
-		case UNEQUAL:
-			return IBeXRelation.UNEQUAL;
-		case SMALLER:
-			return IBeXRelation.SMALLER;
-		case SMALLER_OR_EQUAL:
-			return IBeXRelation.SMALLER_OR_EQUAL;
-		default:
-			throw new IllegalArgumentException("Cannot convert relation: " + relation);
-		}
+		return switch (relation) {
+			case GREATER -> IBeXRelation.GREATER;
+			case GREATER_OR_EQUAL -> IBeXRelation.GREATER_OR_EQUAL;
+			case EQUAL -> IBeXRelation.EQUAL;
+			case UNEQUAL -> IBeXRelation.UNEQUAL;
+			case SMALLER -> IBeXRelation.SMALLER;
+			case SMALLER_OR_EQUAL -> IBeXRelation.SMALLER_OR_EQUAL;
+			default -> throw new IllegalArgumentException("Cannot convert relation: " + relation);
+		};
 	}
 	
 	/**

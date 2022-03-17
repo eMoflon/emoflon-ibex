@@ -86,14 +86,9 @@ public abstract class DeletePreserveConflict extends Conflict
 	@Override
 	public void crs_preferSource() {
 		switch (domainToBePreserved) {
-		case SRC:
-			revokeDeletion();
-			break;
-		case TRG:
-			revokeAddition();
-			break;
-		default:
-			break;
+			case SRC -> revokeDeletion();
+			case TRG -> revokeAddition();
+			default -> throw new IllegalArgumentException("Unexpected value: " + domainToBePreserved);
 		}
 
 		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by PREFER_SOURCE");
@@ -103,14 +98,9 @@ public abstract class DeletePreserveConflict extends Conflict
 	@Override
 	public void crs_preferTarget() {
 		switch (domainToBePreserved) {
-		case SRC:
-			revokeAddition();
-			break;
-		case TRG:
-			revokeDeletion();
-			break;
-		default:
-			break;
+			case SRC -> revokeAddition();
+			case TRG -> revokeDeletion();
+			default -> throw new IllegalArgumentException("Unexpected value: " + domainToBePreserved);
 		}
 
 		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by PREFER_TARGET");

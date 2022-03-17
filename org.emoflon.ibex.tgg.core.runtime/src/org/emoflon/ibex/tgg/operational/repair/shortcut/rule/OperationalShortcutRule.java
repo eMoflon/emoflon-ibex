@@ -163,14 +163,14 @@ public abstract class OperationalShortcutRule {
 			node.setBindingType(BindingType.NEGATIVE);
 
 			switch (dec.getEDirection()) {
-			case INCOMING:
-				edge.setSrcNode(node);
-				edge.setTrgNode(decNode);
-				break;
-			case OUTGOING:
-				edge.setSrcNode(decNode);
-				edge.setTrgNode(node);
-				break;
+				case INCOMING -> {
+					edge.setSrcNode(node);
+					edge.setTrgNode(decNode);
+				}
+				case OUTGOING -> {
+					edge.setSrcNode(decNode);
+					edge.setTrgNode(node);
+				}
 			}
 
 			edge.setName(edge.getSrcNode().getName() + "__" + dec.getEdgeType().getName() + "__" + edge.getTrgNode().getName());

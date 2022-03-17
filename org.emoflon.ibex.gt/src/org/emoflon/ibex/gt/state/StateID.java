@@ -20,9 +20,8 @@ public class StateID {
 		this.state = state;
 		state.setHash(calculateHashCode(state));
 		hashCode = state.getHash();
-		if(state instanceof RuleState) {
-			RuleState rState = (RuleState) state;
-			parameters = extractParameterFromState(rState);
+		if(state instanceof RuleState ruleState) {
+			parameters = extractParameterFromState(ruleState);
 		} else {
 			parameters = null;
 		}
@@ -43,10 +42,9 @@ public class StateID {
 	
 	@Override
 	public boolean equals(Object obj) {
-		if(!(obj instanceof StateID))
+		if(!(obj instanceof StateID other))
 			return false;
 		
-		StateID other = (StateID)obj;
 		if(hashCode != other.hashCode)
 			return false;
 		
@@ -92,10 +90,9 @@ public class StateID {
 	
 	// Calculate hash based on current state and all prior states -> see crypto currency
 	public static long calculateHashCode(final State state) {
-		if(state instanceof RuleState) {
-			RuleState rState = (RuleState)state;
+		if(state instanceof RuleState ruleState) {
 			List<Object> components = new LinkedList<>();
-			components.add(rState.getParent().getHash());
+			components.add(ruleState.getParent().getHash());
 			return HashUtil.collectionToHash(components);
 		}else {
 			return HashUtil.objectToHash(state);

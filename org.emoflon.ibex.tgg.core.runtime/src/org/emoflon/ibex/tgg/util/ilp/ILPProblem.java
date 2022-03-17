@@ -530,23 +530,13 @@ public class ILPProblem {
 		private void checkFeasibility() {
 			if (this.isEmpty()) {
 				boolean feasible = true;
-				switch (this.comparator) {
-				case eq:
-					feasible = 0 == this.value;
-					break;
-				case ge:
-					feasible = 0 >= this.value;
-					break;
-				case gt:
-					feasible = 0 > this.value;
-					break;
-				case lt:
-					feasible = 0 < this.value;
-					break;
-				case le:
-					feasible = 0 <= this.value;
-					break;
-				}
+				feasible = switch (this.comparator) {
+					case eq -> 0 == this.value;
+					case ge -> 0 >= this.value;
+					case gt -> 0 > this.value;
+					case lt -> 0 < this.value;
+					case le -> 0 <= this.value;
+				};
 				if (!feasible)
 					throw new RuntimeException("The problem is infeasible: " + this.toString());
 			}
@@ -575,16 +565,12 @@ public class ILPProblem {
 		 */
 		public boolean checkConstraint(final ILPSolution ilpSolution) {
 			double solution = this.linearExpression.getSolutionValue(ilpSolution);
-			switch (this.comparator) {
-			case ge:
-				return solution >= this.value;
-			case le:
-				return solution <= this.value;
-			case eq:
-				return solution == this.value;
-			default:
-				throw new IllegalArgumentException("Unsupported comparator: " + this.comparator.toString());
-			}
+			return switch (this.comparator) {
+				case ge -> solution >= this.value;
+				case le -> solution <= this.value;
+				case eq -> solution == this.value;
+				default -> throw new IllegalArgumentException("Unsupported comparator: " + this.comparator.toString());
+			};
 		}
 
 		/**
@@ -697,11 +683,9 @@ public class ILPProblem {
 		 */
 		ILPObjective(final ILPLinearExpression linearExpression, final Objective objectiveOperation) {
 			switch (objectiveOperation) {
-			case maximize:
-			case minimize:
-				break;
-			default:
-				throw new IllegalArgumentException("Unsupported objectiveOperation: " + objectiveOperation.toString());
+				case maximize, minimize -> {
+				}
+				default -> throw new IllegalArgumentException("Unsupported objectiveOperation: " + objectiveOperation.toString());
 			}
 			this.linearExpression = linearExpression;
 			this.objectiveOperation = objectiveOperation;

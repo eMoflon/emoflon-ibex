@@ -170,32 +170,32 @@ public class PatternSuffixes {
 			throw new RuntimeException(name + " is not a valid TGG pattern.");
 		}
 		String suffix = name.substring(name.lastIndexOf(SEP));
-		switch(suffix) {
-		case USER_NAC: return PatternType.USER_NAC;
-		case FILTER_NAC_SRC: return PatternType.FILTER_NAC_SRC;
-		case FILTER_NAC_TRG: return PatternType.FILTER_NAC_TRG;
-		case EDGE: return PatternType.EDGE;
-		case GEN_REFINEMENT_INVOCATIONS: return PatternType.GEN_REFINEMENT_INVOCATIONS;
-		case GEN: return PatternType.GEN;
-		case GEN_AXIOM_NAC: return PatternType.GEN_AXIOM_NAC;
-		case FWD: return PatternType.FWD;
-		case FWD_OPT: return PatternType.FWD_OPT;
-		case BWD: return PatternType.BWD;
-		case BWD_OPT: return PatternType.BWD_OPT;
-		case CONSISTENCY: return PatternType.CONSISTENCY;
-		case PROTOCOL: return PatternType.PROTOCOL;
-		case PROTOCOL_CORE: return PatternType.PROTOCOL_CORE;
-		case CC: return PatternType.CC;
-		case GENForCC: return PatternType.GENForCC;
-		case CO: return PatternType.CO;
-		case GENForCO: return PatternType.GENForCO;
-		case SRC: return PatternType.SRC;
-		case TRG: return PatternType.TRG;
-		case FWD_GREENCORR: return PatternType.FWD_GREENCORR;
-		case BWD_GREENCORR: return PatternType.BWD_GREENCORR;
-		case GREENCORR: return PatternType.GREENCORR;
-		case PAC: return PatternType.PAC;
-		default: throw new RuntimeException(suffix + " is an unknown suffix for TGG patterns");
-		}
+		return switch (suffix) {
+			case USER_NAC -> PatternType.USER_NAC;
+			case FILTER_NAC_SRC -> PatternType.FILTER_NAC_SRC;
+			case FILTER_NAC_TRG -> PatternType.FILTER_NAC_TRG;
+			case EDGE -> PatternType.EDGE;
+			case GEN_REFINEMENT_INVOCATIONS -> PatternType.GEN_REFINEMENT_INVOCATIONS;
+			case GEN -> PatternType.GEN;
+			case GEN_AXIOM_NAC -> PatternType.GEN_AXIOM_NAC;
+			case FWD -> PatternType.FWD;
+			case FWD_OPT -> PatternType.FWD_OPT;
+			case BWD -> PatternType.BWD;
+			case BWD_OPT -> PatternType.BWD_OPT;
+			case CONSISTENCY -> PatternType.CONSISTENCY;
+			case PROTOCOL -> PatternType.PROTOCOL;
+			case PROTOCOL_CORE -> PatternType.PROTOCOL_CORE;
+			case CC -> PatternType.CC;
+			case GENForCC -> PatternType.GENForCC;
+			case CO -> PatternType.CO;
+			case GENForCO -> PatternType.GENForCO;
+			case SRC -> PatternType.SRC;
+			case TRG -> PatternType.TRG;
+			case FWD_GREENCORR -> PatternType.FWD_GREENCORR;
+			case BWD_GREENCORR -> PatternType.BWD_GREENCORR;
+			case GREENCORR -> PatternType.GREENCORR;
+			case PAC -> PatternType.PAC;
+			default -> throw new RuntimeException(suffix + " is an unknown suffix for TGG patterns");
+		};
 	}
 }

@@ -25,65 +25,59 @@ public class RuntimeArithmeticExtensionCalculator {
 	 * @return the calculated value
 	 */
 	public static double calculateValue(final GraphTransformationInterpreter interpreter, final IBeXArithmeticExpression expression, final IMatch match){
-		if(expression instanceof IBeXUnaryExpression){
-			double value = calculateValue(interpreter, ((IBeXUnaryExpression) expression).getOperand(), match);
+		if(expression instanceof IBeXUnaryExpression unaryExpression){
+			double value = calculateValue(interpreter, unaryExpression.getOperand(), match);
 			double result = 0.0;
-			switch(((IBeXUnaryExpression) expression).getOperator()) {
-				case ABSOLUTE: 		result = Math.abs(value);
-									break;
-				case BRACKET: 		result = value;
-									break;
-				case EEXPONENTIAL: 	result = Math.exp(value);
-									break;
-				case LOG: 	if(value > 0.0) result = Math.log10(value);
-									else throw new IllegalArgumentException("The value of the log operand in the pattern "
-											+ match.getPatternName() + " needs to be positive");
-									break;
-				case LG: 		if(value > 0.0) result = Math.log(value);
-									else throw new IllegalArgumentException("The value of the ln operand in the pattern "
-											+ match.getPatternName() + " needs to be positive");
-									break;
-				case SQRT: 			if(value >= 0.0) result = Math.sqrt(value);
-									else throw new IllegalArgumentException("The value of the root operand in the pattern "
-											+ match.getPatternName() + " needs to be positive");
-									break;
-				case COS: 			result = Math.cos(value);
-									break;
-				case SIN:			result = Math.sin(value);
-									break;
-				case TAN: 			result = Math.tan(value);
-									break;
-				case COUNT: {
-						result = evaluateMatchCount(interpreter, (IBeXMatchCount) expression, match);
-					break;
-				}
-			
-			}
-			if(((IBeXUnaryExpression) expression).isNegative()) return -result;
+			result = switch (unaryExpression.getOperator()) {
+				case ABSOLUTE -> 		Math.abs(value);
+				case BRACKET -> 		value;
+				case EEXPONENTIAL -> 	Math.exp(value);
+				case LOG -> 			{
+											if (value > 0.0) yield Math.log10(value);
+											else throw new IllegalArgumentException("The value of the log operand in the pattern " 
+													+ match.getPatternName() + " needs to be positive");
+										}
+				case LG -> 				{
+											if (value > 0.0) yield Math.log(value);
+											else throw new IllegalArgumentException("The value of the ln operand in the pattern " 
+													+ match.getPatternName() + " needs to be positive");
+										}
+				case SQRT -> 			{
+											if (value >= 0.0) yield Math.sqrt(value);
+											else throw new IllegalArgumentException("The value of the root operand in the pattern " 
+													+ match.getPatternName() + " needs to be positive");
+										}
+				case COS -> 			Math.cos(value);
+				case SIN -> 			Math.sin(value);
+				case TAN -> 			Math.tan(value);
+				case COUNT -> 			evaluateMatchCount(interpreter, (IBeXMatchCount) expression, match);
+			};
+			if(unaryExpression.isNegative()) return -result;
 			else return result;
 		}
-		if(expression instanceof IBeXBinaryExpression) {
-			double left = calculateValue(interpreter, ((IBeXBinaryExpression) expression).getLeft(), match);
-			double right = calculateValue(interpreter, ((IBeXBinaryExpression) expression).getRight(), match);
-			switch(((IBeXBinaryExpression) expression).getOperator()) {
-				case ADDITION: 		return left + right;
-				case SUBTRACTION: 	return left - right;
-				case MULTIPLICATION:return left * right;
-				case DIVISION: 		if(right != 0.0) return left / right;
-									else throw new IllegalArgumentException("division by zero in the pattern "
-											+ match.getPatternName() + " not possible");
-				case MODULUS: 		return left % right;
-				case EXPONENTIATION: 	return Math.pow(left, right);
-			case MAXIMUM:			return Math.max(left, right);
-			case MINIMUM:			return Math.min(left, right);
-			default:
-				throw new IllegalArgumentException("Unknown operation.");
-			}
+		if(expression instanceof IBeXBinaryExpression binaryExpression) {
+			double left = calculateValue(interpreter, binaryExpression.getLeft(), match);
+			double right = calculateValue(interpreter, binaryExpression.getRight(), match);
+			return switch (binaryExpression.getOperator()) {
+				case ADDITION ->  		left + right;
+				case SUBTRACTION ->  	left - right;
+				case MULTIPLICATION -> 	left * right;
+				case DIVISION -> 		{
+											if (right != 0.0) yield left / right;
+											else throw new IllegalArgumentException("division by zero in the pattern " + 
+													match.getPatternName() + " not possible");
+										}
+				case MODULUS ->  		left % right;
+				case EXPONENTIATION ->  Math.pow(left, right);
+				case MAXIMUM -> 		Math.max(left, right);
+				case MINIMUM -> 		Math.min(left, right);
+				default -> 				throw new IllegalArgumentException("Unknown operation.");
+			};
 		}
-		if(expression instanceof IBeXArithmeticAttribute) {
-			EObject node = (EObject) match.get(((IBeXArithmeticAttribute) expression).getName());
-			if(!((IBeXArithmeticAttribute) expression).isNegative()) return ((Number) node.eGet(((IBeXArithmeticAttribute) expression).getAttribute())).doubleValue();
-			else return - ((Number) node.eGet(((IBeXArithmeticAttribute) expression).getAttribute())).doubleValue();
+		if(expression instanceof IBeXArithmeticAttribute arithmeticAttribute) {
+			EObject node = (EObject) match.get(arithmeticAttribute.getName());
+			if(!arithmeticAttribute.isNegative()) return ((Number) node.eGet(arithmeticAttribute.getAttribute())).doubleValue();
+			else return - ((Number) node.eGet(arithmeticAttribute.getAttribute())).doubleValue();
 		}
 		
 		return ((IBeXArithmeticValueLiteral) expression).getValue();

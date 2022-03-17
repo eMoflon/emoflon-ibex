@@ -29,8 +29,8 @@ public class ModelChangeUtil {
 					Collection<EObject> contentList = (Collection<EObject>) content;
 					element.eResource().getContents().addAll(contentList);
 					contentList.clear();
-				} else if (content instanceof EObject) {
-					element.eResource().getContents().add((EObject) content);
+				} else if (content instanceof EObject obj) {
+					element.eResource().getContents().add(obj);
 					element.eSet(feature, null);
 				}
 			});

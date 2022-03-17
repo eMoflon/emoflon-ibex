@@ -111,26 +111,22 @@ public class ACPatternTransformation {
 	private void addNodesOfSameTypeFromInvoker(IBeXContextPattern nacPattern, FilterNACCandidate candidate, IBeXNode inRuleNode) {
 		TGGRuleNode nodeInRule = candidate.getNodeInRule();
 		switch (candidate.getEDirection()) {
-		case INCOMING:
-			nodeInRule.getIncomingEdges().stream() //
-					.filter(e -> e.getType().equals(candidate.getEdgeType())) //
-					.forEach(e -> {
-						IBeXNode node = parent.transformNode(nacPattern, e.getSrcNode());
-						parent.transformEdge(candidate.getEdgeType(), node, inRuleNode, nacPattern);
-					});
-			break;
-
-		case OUTGOING:
-			nodeInRule.getOutgoingEdges().stream() //
-					.filter(e -> e.getType().equals(candidate.getEdgeType())) //
-					.forEach(e -> {
-						IBeXNode node = parent.transformNode(nacPattern, e.getTrgNode());
-						parent.transformEdge(candidate.getEdgeType(), inRuleNode, node, nacPattern);
-					});
-			break;
-
-		default:
-			break;
+			case INCOMING -> {
+				nodeInRule.getIncomingEdges().stream() //
+						.filter(e -> e.getType().equals(candidate.getEdgeType())) //
+						.forEach(e -> {
+							IBeXNode node = parent.transformNode(nacPattern, e.getSrcNode());
+							parent.transformEdge(candidate.getEdgeType(), node, inRuleNode, nacPattern);
+						});
+			}
+			case OUTGOING -> {
+				nodeInRule.getOutgoingEdges().stream() //
+						.filter(e -> e.getType().equals(candidate.getEdgeType())) //
+						.forEach(e -> {
+							IBeXNode node = parent.transformNode(nacPattern, e.getTrgNode());
+							parent.transformEdge(candidate.getEdgeType(), inRuleNode, node, nacPattern);
+						});
+			}
 		}
 	}
 

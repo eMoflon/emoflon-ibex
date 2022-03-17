@@ -14,24 +14,22 @@ public class SetDefaultString extends RuntimeTGGAttributeConstraint {
 		String bindingStates = getBindingStates(var_0, var_1);
 
 		switch (bindingStates) {
-		case "BB":
-			setSatisfied(true);
-			return;
-		case "FB":
-			var_0.bindToValue(var_1.getValue());
-			setSatisfied(true);
-			return;
+			case "BB" -> {
+				setSatisfied(true);
+			}
+			case "FB" -> {
+				var_0.bindToValue(var_1.getValue());
+				setSatisfied(true);
+			}
 
-		case "FF":
+			case "FF" -> {
 
-			var_0.bindToValue(generateValue(var_0.getType()));
-			var_1.bindToValue(generateValue(var_1.getType()));
-			setSatisfied(true);
-			return;
+				var_0.bindToValue(generateValue(var_0.getType()));
+				var_1.bindToValue(generateValue(var_1.getType()));
+				setSatisfied(true);
+			}
 
-		default:
-			throw new UnsupportedOperationException(
-					"This case in the constraint has not been implemented yet: " + bindingStates);
+			default -> throw new UnsupportedOperationException("This case in the constraint has not been implemented yet: " + bindingStates);
 		}
 
 	}

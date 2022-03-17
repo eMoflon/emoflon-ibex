@@ -94,9 +94,8 @@ public class MultiplicityCounter extends MatchConsumer {
 		public boolean equals(Object obj) {
 			if (this == obj)
 				return true;
-			if (!(obj instanceof OutgoingEdge))
+			if (!(obj instanceof OutgoingEdge other))
 				return false;
-			OutgoingEdge other = (OutgoingEdge) obj;
 			return Objects.equals(reference, other.reference) && Objects.equals(subject, other.subject);
 		}
 	}

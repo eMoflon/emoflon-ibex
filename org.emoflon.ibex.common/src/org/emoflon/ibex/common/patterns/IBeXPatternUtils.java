@@ -33,7 +33,7 @@ public class IBeXPatternUtils {
 	 * @return <code>true</code> if the pattern contains no nodes
 	 */
 	public static boolean isEmptyPattern(final IBeXContext ibexPattern) {
-		return ibexPattern instanceof IBeXContextPattern && isEmptyPattern((IBeXContextPattern) ibexPattern);
+		return ibexPattern instanceof IBeXContextPattern ibexContextPattern && isEmptyPattern(ibexContextPattern);
 	}
 
 	/**
@@ -56,12 +56,12 @@ public class IBeXPatternUtils {
 	public static Optional<IBeXNode> findIBeXNodeWithName(final IBeXPattern ibexPattern, final String name) {
 		Objects.requireNonNull(ibexPattern, "pattern must not be null!");
 
-		if (ibexPattern instanceof IBeXContextPattern) {
-			return findIBeXNodeWithName((IBeXContextPattern) ibexPattern, name);
-		} else if (ibexPattern instanceof IBeXCreatePattern) {
-			return findIBeXNodeWithName((IBeXCreatePattern) ibexPattern, name);
-		} else if (ibexPattern instanceof IBeXDeletePattern) {
-			return findIBeXNodeWithName((IBeXDeletePattern) ibexPattern, name);
+		if (ibexPattern instanceof IBeXContextPattern ibexContextPattern) {
+			return findIBeXNodeWithName(ibexContextPattern, name);
+		} else if (ibexPattern instanceof IBeXCreatePattern ibexCreatePattern) {
+			return findIBeXNodeWithName(ibexCreatePattern, name);
+		} else if (ibexPattern instanceof IBeXDeletePattern ibexDeletePattern) {
+			return findIBeXNodeWithName(ibexDeletePattern, name);
 		} else {
 			throw new IllegalArgumentException();
 		}

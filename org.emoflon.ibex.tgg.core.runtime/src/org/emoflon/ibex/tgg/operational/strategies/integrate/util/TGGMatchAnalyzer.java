@@ -69,7 +69,7 @@ public class TGGMatchAnalyzer {
 		Object value = emfEdge.getSource().eGet(emfEdge.getType());
 		if (value == null)
 			return true;
-		if (value instanceof List && !((List<?>) value).contains(emfEdge.getTarget()))
+		if (value instanceof List<?> list && !list.contains(emfEdge.getTarget()))
 			return true;
 		return false;
 	}
@@ -113,8 +113,7 @@ public class TGGMatchAnalyzer {
 			Map<TGGAttributeExpression, AttributeChange> affectedParams = new HashMap<>();
 
 			for (TGGParamValue param : constr.getParameters()) {
-				if (param instanceof TGGAttributeExpression) {
-					TGGAttributeExpression attrExpr = (TGGAttributeExpression) param;
+				if (param instanceof TGGAttributeExpression attrExpr) {
 					EObject obj = util.getObject(attrExpr.getObjectVar());
 					Set<AttributeChange> attrChanges = util.integrate.generalModelChanges().getAttributeChanges(obj);
 					for (AttributeChange attrChange : attrChanges) {

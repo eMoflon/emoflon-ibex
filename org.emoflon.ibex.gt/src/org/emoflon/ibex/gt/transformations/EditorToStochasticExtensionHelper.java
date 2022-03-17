@@ -31,11 +31,10 @@ public class EditorToStochasticExtensionHelper {
 		if(pattern.isStochastic()) {
 			EditorProbability probability = pattern.getProbability();
 			// if probability is a function
-			if(probability instanceof StochasticFunction) {
-				gtProbability.setDistribution(transformStochasticFunction(data, ibexPattern, ((StochasticFunction) probability)
-						.getFunctionExpression()));
+			if(probability instanceof StochasticFunction stochasticFunction) {
+				gtProbability.setDistribution(transformStochasticFunction(data, ibexPattern, stochasticFunction.getFunctionExpression()));
 				//if probability is depended on a parameter
-				if(((StochasticFunction) probability).getParameter() != null) {
+				if(stochasticFunction.getParameter() != null) {
 					gtProbability.setParameter(EditorToArithmeticExtensionHelper
 							.transformToIBeXArithmeticExpression(data, ibexPattern, ((StochasticFunction) probability).getParameter()));
 				}
@@ -90,11 +89,11 @@ public class EditorToStochasticExtensionHelper {
 	}
 	
 	private static IBeXDistributionType transformDistribution(StochasticDistribution distribution) {
-		switch(distribution) {
-		case EXPONENTIAL: return IBeXDistributionType.EXPONENTIAL;
-		case NORMAL: return IBeXDistributionType.NORMAL;
-		case UNIFORM: return IBeXDistributionType.UNIFORM;
-		}
-		return IBeXDistributionType.STATIC;
+		return switch (distribution) {
+			case EXPONENTIAL -> IBeXDistributionType.EXPONENTIAL;
+			case NORMAL -> IBeXDistributionType.NORMAL;
+			case UNIFORM -> IBeXDistributionType.UNIFORM;
+			default -> IBeXDistributionType.STATIC;
+		};
 	}
 }

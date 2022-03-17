@@ -210,57 +210,56 @@ public class SearchPlanCreator {
 		for (TGGInplaceAttributeExpression inplAttrExpr : key.getAttrExpr()) {
 			Object subjectAttr = node.eGet(inplAttrExpr.getAttribute());
 
-			if (inplAttrExpr.getValueExpr() instanceof TGGLiteralExpression) {
+			if (inplAttrExpr.getValueExpr() instanceof TGGLiteralExpression litExpr) {
 				if (subjectAttr == null)
 					return false;
 
-				TGGLiteralExpression litExpr = (TGGLiteralExpression) inplAttrExpr.getValueExpr();
 				Object literal = String2EPrimitive.convertLiteral( //
 						litExpr.getValue(), inplAttrExpr.getAttribute().getEAttributeType());
 
 				switch (inplAttrExpr.getOperator()) {
-				case EQUAL:
-					if (!subjectAttr.equals(literal))
-						return false;
-					continue;
-				case UNEQUAL:
-					if (subjectAttr.equals(literal))
-						return false;
-					continue;
-				default:
-					break;
+					case EQUAL -> {
+						if (!subjectAttr.equals(literal))
+							return false;
+						continue;
+					}
+					case UNEQUAL -> {
+						if (subjectAttr.equals(literal))
+							return false;
+						continue;
+					}
+					default -> {
+					}
 				}
 
 				int compareResult = comparePrimitives(subjectAttr, literal);
 				switch (inplAttrExpr.getOperator()) {
-				case GREATER:
-					if (!(compareResult > 0))
-						return false;
-					break;
-				case GR_EQUAL:
-					if (!(compareResult >= 0))
-						return false;
-					break;
-				case LESSER:
-					if (!(compareResult < 0))
-						return false;
-					break;
-				case LE_EQUAL:
-					if (!(compareResult <= 0))
-						return false;
-					break;
-				default:
-					break;
+					case GREATER -> {
+						if (!(compareResult > 0))
+							return false;
+					}
+					case GR_EQUAL -> {
+						if (!(compareResult >= 0))
+							return false;
+					}
+					case LESSER -> {
+						if (!(compareResult < 0))
+							return false;
+					}
+					case LE_EQUAL -> {
+						if (!(compareResult <= 0))
+							return false;
+					}
+					default -> {
+					}
 				}
-			} else if (inplAttrExpr.getValueExpr() instanceof TGGEnumExpression) {
+			} else if (inplAttrExpr.getValueExpr() instanceof TGGEnumExpression enumExpr) {
 				if (subjectAttr == null)
 					return false;
 
-				TGGEnumExpression enumExpr = (TGGEnumExpression) inplAttrExpr.getValueExpr();
 				if (!subjectAttr.equals(enumExpr.getLiteral().getInstance()))
 					return false;
-			} else if (inplAttrExpr.getValueExpr() instanceof TGGAttributeExpression) {
-				TGGAttributeExpression attrExpr = (TGGAttributeExpression) inplAttrExpr.getValueExpr();
+			} else if (inplAttrExpr.getValueExpr() instanceof TGGAttributeExpression attrExpr) {
 				EObject obj = candidates.get(attrExpr.getObjectVar().getName());
 				if (obj == null)
 					return false;
@@ -278,8 +277,8 @@ public class SearchPlanCreator {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private int comparePrimitives(Object p1, Object p2) {
-		if (p1 instanceof Comparable && p2 instanceof Comparable) {
-			return ((Comparable) p1).compareTo((Comparable) p2);
+		if (p1 instanceof Comparable c1 && p2 instanceof Comparable c2) {
+			return c1.compareTo(c2);
 		}
 		return 0;
 	}

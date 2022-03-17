@@ -134,19 +134,16 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	public void applyInPlaceAttributeAssignments(ITGGMatch match, TGGRuleNode node, EObject newObj) {
 		for (TGGInplaceAttributeExpression attrExpr : node.getAttrExpr()) {
 			if (attrExpr.getOperator().equals(TGGAttributeConstraintOperators.EQUAL)) {
-				if (attrExpr.getValueExpr() instanceof TGGLiteralExpression) {
-					TGGLiteralExpression tle = (TGGLiteralExpression) attrExpr.getValueExpr();
+				if (attrExpr.getValueExpr() instanceof TGGLiteralExpression tle) {
 					newObj.eSet(attrExpr.getAttribute(), String2EPrimitive.convertLiteral(tle.getValue(),
 							attrExpr.getAttribute().getEAttributeType()));
 					continue;
 				}
-				if (attrExpr.getValueExpr() instanceof TGGEnumExpression) {
-					TGGEnumExpression tee = (TGGEnumExpression) attrExpr.getValueExpr();
+				if (attrExpr.getValueExpr() instanceof TGGEnumExpression tee) {
 					newObj.eSet(attrExpr.getAttribute(), tee.getLiteral().getInstance());
 					continue;
 				}
-				if (attrExpr.getValueExpr() instanceof TGGAttributeExpression) {
-					TGGAttributeExpression tae = (TGGAttributeExpression) attrExpr.getValueExpr();
+				if (attrExpr.getValueExpr() instanceof TGGAttributeExpression tae) {
 					EObject obj = (EObject) match.get(tae.getObjectVar().getName());
 					newObj.eSet(attrExpr.getAttribute(), obj.eGet(tae.getAttribute()));
 					continue;

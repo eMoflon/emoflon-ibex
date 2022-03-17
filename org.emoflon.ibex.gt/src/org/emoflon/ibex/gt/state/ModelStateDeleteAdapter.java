@@ -95,22 +95,22 @@ public class ModelStateDeleteAdapter extends EContentAdapter {
 		if(!active)
 			return;
 		
-		switch(notification.getEventType()) {
-			case Notification.REMOVE: {
+		switch (notification.getEventType()) {
+			case Notification.REMOVE -> {
 				Object feature = notification.getFeature();
 				if(feature == null)
 					break;
 				
 //				Ignore resource notifications, since these are untyped/undefined containment edges.
-				if(!(notification.getNotifier() instanceof EObject))
+				if(!(notification.getNotifier() instanceof EObject notifier))
 					break;
 				
-				if(nodesToWatch.keySet().contains(notification.getNotifier()) || nodesToWatch.keySet().contains(notification.getOldValue())) {
+				if(nodesToWatch.keySet().contains(notifier) || nodesToWatch.keySet().contains(notification.getOldValue())) {
 					Link link = factory.createLink();
-					link.setSrc((EObject) notification.getNotifier());
+					link.setSrc(notifier);
 					link.setTrg((EObject) notification.getOldValue());
 					link.setType((EReference) feature);
-					Set<Integer> watchers  = nodesToWatch.get(notification.getNotifier());
+					Set<Integer> watchers  = nodesToWatch.get(notifier);
 					if(watchers == null)
 						watchers = nodesToWatch.get(notification.getOldValue());
 					
@@ -123,25 +123,24 @@ public class ModelStateDeleteAdapter extends EContentAdapter {
 						watchedLinks.add(link);
 					}
 				}
-				break;
 			}
-			case Notification.REMOVE_MANY: {
+			case Notification.REMOVE_MANY -> {
 				Object feature = notification.getFeature();
 				if(feature == null)
 					break;
 				
 //				Ignore resource notifications, since these are untyped/undefined containment edges.
-				if(!(notification.getNotifier() instanceof EObject))
+				if(!(notification.getNotifier() instanceof EObject notifier))
 					break;
 				
 				List<EObject> oldValues = (List<EObject>) notification.getOldValue();
 				for(EObject oldValue : oldValues) {
-					if(nodesToWatch.keySet().contains(notification.getNotifier()) || nodesToWatch.keySet().contains(oldValue)) {
+					if(nodesToWatch.keySet().contains(notifier) || nodesToWatch.keySet().contains(oldValue)) {
 						Link link = factory.createLink();
-						link.setSrc((EObject) notification.getNotifier());
+						link.setSrc(notifier);
 						link.setTrg(oldValue);
 						link.setType((EReference) feature);
-						Set<Integer> watchers  = nodesToWatch.get(notification.getNotifier());
+						Set<Integer> watchers  = nodesToWatch.get(notifier);
 						if(watchers == null)
 							watchers = nodesToWatch.get(oldValue);
 						
@@ -155,22 +154,21 @@ public class ModelStateDeleteAdapter extends EContentAdapter {
 						}
 					}
 				}
-				break;
 			}
-			case Notification.REMOVING_ADAPTER: {
+			case Notification.REMOVING_ADAPTER -> {
 				Object feature = notification.getFeature();
-				if(feature == null || !(feature instanceof EReference))
+				if(feature == null || !(feature instanceof EReference reference))
 					break;
 //				Ignore resource notifications, since these are untyped/undefined containment edges.
-				if(!(notification.getNotifier() instanceof EObject))
+				if(!(notification.getNotifier() instanceof EObject notifier))
 					break;
 				
-				if(nodesToWatch.keySet().contains(notification.getNotifier()) || nodesToWatch.keySet().contains(notification.getOldValue())) {
+				if(nodesToWatch.keySet().contains(notifier) || nodesToWatch.keySet().contains(notification.getOldValue())) {
 					Link link = factory.createLink();
-					link.setSrc((EObject) notification.getNotifier());
+					link.setSrc(notifier);
 					link.setTrg((EObject) notification.getOldValue());
-					link.setType((EReference) feature);
-					Set<Integer> watchers  = nodesToWatch.get(notification.getNotifier());
+					link.setType(reference);
+					Set<Integer> watchers  = nodesToWatch.get(notifier);
 					if(watchers == null)
 						watchers = nodesToWatch.get(notification.getOldValue());
 					
@@ -183,18 +181,17 @@ public class ModelStateDeleteAdapter extends EContentAdapter {
 						watchedLinks.add(link);
 					}
 				}
-				break;
 			}
-			case Notification.SET: {
+			case Notification.SET -> {
 				Object feature = notification.getFeature();
-				if(feature == null || !(feature instanceof EReference))
+				if(feature == null || !(feature instanceof EReference reference))
 					break;
 				
 				if(nodesToWatch.keySet().contains(notification.getNotifier()) || nodesToWatch.keySet().contains(notification.getOldValue())) {
 					Link link = factory.createLink();
 					link.setSrc((EObject) notification.getNotifier());
 					link.setTrg((EObject) notification.getOldValue());
-					link.setType((EReference) feature);
+					link.setType(reference);
 					Set<Integer> watchers  = nodesToWatch.get(notification.getNotifier());
 					for(Integer watcher : watchers) {
 						Set<Link> watchedLinks = removedLinks.get(watcher);
@@ -205,7 +202,6 @@ public class ModelStateDeleteAdapter extends EContentAdapter {
 						watchedLinks.add(link);
 					}
 				}
-				break;
 			}
 		}
 	

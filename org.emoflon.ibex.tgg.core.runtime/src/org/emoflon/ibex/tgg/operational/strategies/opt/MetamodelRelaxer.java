@@ -30,9 +30,7 @@ public class MetamodelRelaxer {
 
 			while (it.hasNext()) {
 				EObject next = it.next();
-				if (next instanceof EClassImpl) {
-					EClassImpl nextEClassImpl = (EClassImpl) next;
-
+				if (next instanceof EClassImpl nextEClassImpl) {
 					for (EReference reference : nextEClassImpl.getEAllReferences()) {
 						// Get old metamodel values
 						int upperBound = referenceToUpperBound.getInt(reference);
@@ -62,9 +60,7 @@ public class MetamodelRelaxer {
 
 			while (it.hasNext()) {
 				EObject next = it.next();
-				if (next instanceof EClassImpl) {
-					EClassImpl nextEClassImpl = (EClassImpl) next;
-
+				if (next instanceof EClassImpl nextEClassImpl) {
 					for (EReference reference : nextEClassImpl.getEAllReferences()) {
 						if (referenceToUpperBound.containsKey(reference)
 								&& referenceToLowerBound.containsKey(reference)

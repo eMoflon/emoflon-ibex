@@ -209,17 +209,10 @@ final class CBCWrapper extends ILPSolver {
 		}
 
 		switch (constraint.getComparator()) {
-		case ge:
-			constr.setBounds(constraint.getValue(), MPSolver.infinity());
-			break;
-		case le:
-			constr.setBounds(-MPSolver.infinity(), constraint.getValue());
-			break;
-		case eq:
-			constr.setBounds(constraint.getValue(), constraint.getValue());
-			break;
-		default:
-			throw new IllegalArgumentException("Unsupported comparator: " + constraint.getComparator().toString());
+			case ge -> constr.setBounds(constraint.getValue(), MPSolver.infinity());
+			case le -> constr.setBounds(-MPSolver.infinity(), constraint.getValue());
+			case eq -> constr.setBounds(constraint.getValue(), constraint.getValue());
+			default -> throw new IllegalArgumentException("Unsupported comparator: " + constraint.getComparator().toString());
 		}
 	}
 
@@ -231,15 +224,9 @@ final class CBCWrapper extends ILPSolver {
 	private void registerObjective(final ILPObjective objective) {
 		MPObjective obj = this.solver.objective();
 		switch (objective.getObjectiveOperation()) {
-		case maximize:
-			obj.setMaximization();
-			break;
-		case minimize:
-			obj.setMinimization();
-			break;
-		default:
-			throw new IllegalArgumentException(
-					"Unsupported operation: " + objective.getObjectiveOperation().toString());
+			case maximize -> obj.setMaximization();
+			case minimize -> obj.setMinimization();
+			default -> throw new IllegalArgumentException("Unsupported operation: " + objective.getObjectiveOperation().toString());
 		}
 
 		// define terms

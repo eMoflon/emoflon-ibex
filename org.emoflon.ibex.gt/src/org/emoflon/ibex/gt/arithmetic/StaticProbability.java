@@ -87,13 +87,13 @@ public class StaticProbability<M extends GraphTransformationMatch<M, P>, P exten
 	@Override
 	public double getProbability() {
 		rnd = new Random();
-		switch(distribution) {
-			case STATIC: 		return mean; 
-			case NORMAL: 		return getNormalDistribution();
-			case UNIFORM: 		return getUniformDistribution();
-			case EXPONENTIAL: 	return getExponentialDistribution();
-			default: 			return 1.0;
-		}
+		return switch (distribution) {
+			case STATIC -> 		mean;
+			case NORMAL -> 		getNormalDistribution();
+			case UNIFORM -> 	getUniformDistribution();
+			case EXPONENTIAL -> getExponentialDistribution();
+			default -> 			1.0;
+		};
 	}
 
 }

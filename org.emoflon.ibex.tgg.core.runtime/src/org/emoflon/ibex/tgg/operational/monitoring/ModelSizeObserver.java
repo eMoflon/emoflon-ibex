@@ -19,19 +19,17 @@ public class ModelSizeObserver extends AbstractIbexObserver {
 	@Override
 	public void update(ObservableEvent eventType, Object... additionalInformation) {
 		switch (eventType) {
-		case DONEINIT:
-		case MATCHAPPLIED:
-			if (this.getObservable() instanceof OperationalStrategy) {
-				OperationalStrategy op = (OperationalStrategy) this.getObservable();
-				TGGResourceHandler rHandler = op.getOptions().resourceHandler();
-				this.currentSize = this.getNumberOfObjectsInModels(rHandler.getSourceResource(), rHandler.getCorrResource(),
-						rHandler.getTargetResource());
-				logger.info("Size of input models is " + this.currentSize + " elements");
-				logger.info("***********************");
-				break;
+			case DONEINIT, MATCHAPPLIED -> {
+				if (this.getObservable() instanceof OperationalStrategy op) {
+					TGGResourceHandler rHandler = op.getOptions().resourceHandler();
+					this.currentSize = this.getNumberOfObjectsInModels(rHandler.getSourceResource(), rHandler.getCorrResource(),
+							rHandler.getTargetResource());
+					logger.info("Size of input models is " + this.currentSize + " elements");
+					logger.info("***********************");
+				}
 			}
-		default:
-			break;
+			default -> {
+			}
 		}
 	}
 
