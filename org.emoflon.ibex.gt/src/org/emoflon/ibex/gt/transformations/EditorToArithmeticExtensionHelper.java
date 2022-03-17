@@ -48,30 +48,30 @@ public class EditorToArithmeticExtensionHelper {
 		if(expression instanceof AddExpression || expression instanceof MultExpression || 
 				expression instanceof ExpExpression || expression instanceof MinMaxExpression) {
 			IBeXBinaryExpression calculation = IBeXPatternModelFactory.eINSTANCE.createIBeXBinaryExpression();
-			if(expression instanceof AddExpression) {
+			if(expression instanceof AddExpression addExpression) {
 				/* tries to parse the expression tree; if it is runtime-depended
 				 * (with node attributes) it will create a new GTArithmetics node
 				 */
 				
 				try {
-					return tryToParseExpression(expression);
+					return tryToParseExpression(addExpression);
 				} catch(Exception e) {
-					calculation.setLeft(transformToIBeXArithmeticExpression(data, ibexPattern, ((AddExpression) expression).getLeft()));
-					calculation.setRight(transformToIBeXArithmeticExpression(data, ibexPattern, ((AddExpression) expression).getRight()));								
-					if(((AddExpression) expression).getAddOperator() == AddOperator.ADDITION) {
+					calculation.setLeft(transformToIBeXArithmeticExpression(data, ibexPattern, addExpression.getLeft()));
+					calculation.setRight(transformToIBeXArithmeticExpression(data, ibexPattern, addExpression.getRight()));								
+					if(addExpression.getAddOperator() == AddOperator.ADDITION) {
 						calculation.setOperator(IBeXBinaryOperator.ADDITION);
 					}else {
 						calculation.setOperator(IBeXBinaryOperator.SUBTRACTION);
 					}
 				}
 			}
-			if(expression instanceof MultExpression) {
+			if(expression instanceof MultExpression multExpression) {
 				try {
-					return tryToParseExpression(expression);
+					return tryToParseExpression(multExpression);
 				} catch(Exception e) {
-					calculation.setLeft(transformToIBeXArithmeticExpression(data, ibexPattern, ((MultExpression) expression).getLeft()));
-					calculation.setRight(transformToIBeXArithmeticExpression(data, ibexPattern, ((MultExpression) expression).getRight()));								
-					switch (((MultExpression) expression).getMultOperator()) {
+					calculation.setLeft(transformToIBeXArithmeticExpression(data, ibexPattern, multExpression.getLeft()));
+					calculation.setRight(transformToIBeXArithmeticExpression(data, ibexPattern, multExpression.getRight()));								
+					switch (multExpression.getMultOperator()) {
 						case DIVISION -> 		calculation.setOperator(IBeXBinaryOperator.DIVISION);
 						case MODULO -> 			calculation.setOperator(IBeXBinaryOperator.MODULUS);
 						case MULTIPLICATION -> 	calculation.setOperator(IBeXBinaryOperator.MULTIPLICATION);
@@ -79,22 +79,22 @@ public class EditorToArithmeticExtensionHelper {
 				}
 				
 			}
-			if(expression instanceof ExpExpression) {
+			if(expression instanceof ExpExpression expExpression) {
 				try {
-					return tryToParseExpression(expression);
+					return tryToParseExpression(expExpression);
 				} catch(Exception e) {
-					calculation.setLeft(transformToIBeXArithmeticExpression(data, ibexPattern, ((ExpExpression) expression).getLeft()));
-					calculation.setRight(transformToIBeXArithmeticExpression(data, ibexPattern, ((ExpExpression) expression).getRight()));								
+					calculation.setLeft(transformToIBeXArithmeticExpression(data, ibexPattern, expExpression.getLeft()));
+					calculation.setRight(transformToIBeXArithmeticExpression(data, ibexPattern, expExpression.getRight()));								
 					calculation.setOperator(IBeXBinaryOperator.EXPONENTIATION);	
 				}	
 			}
-			if(expression instanceof MinMaxExpression) {
+			if(expression instanceof MinMaxExpression minMaxExpression) {
 				try {
-					return tryToParseExpression(expression);
+					return tryToParseExpression(minMaxExpression);
 				} catch(Exception e) {
-					calculation.setLeft(transformToIBeXArithmeticExpression(data, ibexPattern, ((MinMaxExpression) expression).getLeft()));
-					calculation.setRight(transformToIBeXArithmeticExpression(data, ibexPattern, ((MinMaxExpression) expression).getRight()));
-					switch (((MinMaxExpression) expression).getMinMaxOperator()) {
+					calculation.setLeft(transformToIBeXArithmeticExpression(data, ibexPattern, minMaxExpression.getLeft()));
+					calculation.setRight(transformToIBeXArithmeticExpression(data, ibexPattern, minMaxExpression.getRight()));
+					switch (minMaxExpression.getMinMaxOperator()) {
 						case MAX -> calculation.setOperator(IBeXBinaryOperator.MAXIMUM);
 						case MIN -> calculation.setOperator(IBeXBinaryOperator.MINIMUM);
 					}
@@ -104,13 +104,13 @@ public class EditorToArithmeticExtensionHelper {
 			return calculation;
 		}
 		//if the expression has only one parameter and operand
-		else if(expression instanceof OneParameterArithmetics) {
+		else if(expression instanceof OneParameterArithmetics oneParamArithmetics) {
 			try {
-				return tryToParseExpression(expression);
+				return tryToParseExpression(oneParamArithmetics);
 			} catch(Exception e) {
 				IBeXUnaryExpression calculation = IBeXPatternModelFactory.eINSTANCE.createIBeXUnaryExpression();
-				calculation.setOperand(transformToIBeXArithmeticExpression(data, ibexPattern, ((OneParameterArithmetics) expression).getExpression()));
-				switch (((OneParameterArithmetics) expression).getOperator()) {
+				calculation.setOperand(transformToIBeXArithmeticExpression(data, ibexPattern, oneParamArithmetics.getExpression()));
+				switch (oneParamArithmetics.getOperator()) {
 					case ABSOLUTE -> 		calculation.setOperator(IBeXUnaryOperator.ABSOLUTE);
 					case BRACKET -> 		calculation.setOperator(IBeXUnaryOperator.BRACKET);
 					case COS -> 			calculation.setOperator(IBeXUnaryOperator.COS);
@@ -121,28 +121,28 @@ public class EditorToArithmeticExtensionHelper {
 					case NAT_LOG -> 		calculation.setOperator(IBeXUnaryOperator.LG);
 					case ROOT -> 			calculation.setOperator(IBeXUnaryOperator.SQRT);
 				}
-				if(((OneParameterArithmetics) expression).isNegative()) calculation.setNegative(true);
+				if(oneParamArithmetics.isNegative()) calculation.setNegative(true);
 				else calculation.setNegative(false);
 				return calculation;	
 			}
 			
 		}
 		//if the parameter is an attribute from a node
-		else if(expression instanceof EditorAttributeExpression) {
+		else if(expression instanceof EditorAttributeExpression editorAttrExpression) {
 			IBeXArithmeticAttribute calculation = IBeXPatternModelFactory.eINSTANCE.createIBeXArithmeticAttribute();
-			calculation.setType(((EditorAttributeExpression) expression).getNode().getType());
-			calculation.setName(((EditorAttributeExpression) expression).getNode().getName());
-			calculation.setAttribute(((EditorAttributeExpression) expression).getAttribute());
+			calculation.setType(editorAttrExpression.getNode().getType());
+			calculation.setName(editorAttrExpression.getNode().getName());
+			calculation.setAttribute(editorAttrExpression.getAttribute());
 			return calculation;
-		} else if(expression instanceof EditorIteratorAttributeExpression) {
+		} else if(expression instanceof EditorIteratorAttributeExpression editorIteratorAttrExpression) {
 			IBeXArithmeticAttribute calculation = IBeXPatternModelFactory.eINSTANCE.createIBeXArithmeticAttribute();
-			calculation.setType((EClass)((EditorIteratorAttributeExpression) expression).getIterator().getType().getEType());
-			calculation.setName(((EditorIteratorAttributeExpression) expression).getIterator().getName());
-			calculation.setAttribute(((EditorIteratorAttributeExpression) expression).getAttribute());
+			calculation.setType((EClass) editorIteratorAttrExpression.getIterator().getType().getEType());
+			calculation.setName(editorIteratorAttrExpression.getIterator().getName());
+			calculation.setAttribute(editorIteratorAttrExpression.getAttribute());
 			return calculation;
 		}
-		else if(expression instanceof EditorCountExpression) {
-			return transformCountExpression(data, ibexPattern, (EditorCountExpression)expression);
+		else if(expression instanceof EditorCountExpression editorCountExpression) {
+			return transformCountExpression(data, ibexPattern, editorCountExpression);
 		}
 		//if the attribute is a number
 		else {
@@ -179,16 +179,16 @@ public class EditorToArithmeticExtensionHelper {
 		}
 		
 		IBeXContextPattern invokingContext = null;
-		if(invokingPattern instanceof IBeXContextPattern) {
-			invokingContext = (IBeXContextPattern) invokingPattern;		
+		if(invokingPattern instanceof IBeXContextPattern contextInvokingPattern) {
+			invokingContext = contextInvokingPattern;		
 		} else {
 			invokingContext = ((IBeXContextAlternatives) invokingPattern).getContext();
 		}
 		
 		IBeXContext invokedPattern = data.nameToPattern.get(expression.getInvokedPatten().getName());
 		IBeXContextPattern invokedContext = null;
-		if(invokedPattern instanceof IBeXContextPattern) {
-			invokedContext = (IBeXContextPattern) invokedPattern;
+		if(invokedPattern instanceof IBeXContextPattern contextInvokedPattern) {
+			invokedContext = contextInvokedPattern;
 		} else {
 			invokedContext = ((IBeXContextAlternatives) invokedPattern).getContext();
 		}

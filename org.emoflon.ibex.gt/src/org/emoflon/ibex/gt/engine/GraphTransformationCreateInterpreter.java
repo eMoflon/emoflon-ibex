@@ -126,30 +126,29 @@ public class GraphTransformationCreateInterpreter {
 			final Map<String, Object> parameters, final GraphTransformationInterpreter contextInterpreter) {
 		IBeXAttributeValue value = assignment.getValue();
 		Object calculatedValue = null;
-		if (value instanceof IBeXConstant) {
-			calculatedValue = ((IBeXConstant) value).getValue();
-		} else if (value instanceof IBeXAttributeExpression) {
-			IBeXAttributeExpression attributeExpression = (IBeXAttributeExpression) value;
+		if (value instanceof IBeXConstant constant) {
+			calculatedValue = constant.getValue();
+		} else if (value instanceof IBeXAttributeExpression attributeExpression) {
 			EObject node = (EObject) match.get(attributeExpression.getNode().getName());
 			calculatedValue = node.eGet(attributeExpression.getAttribute());
-		} else if (value instanceof IBeXEnumLiteral) {
-			EEnumLiteral enumLiteral = ((IBeXEnumLiteral) value).getLiteral();
+		} else if (value instanceof IBeXEnumLiteral enumLiteral) {
+			EEnumLiteral eEnumLiteral = enumLiteral.getLiteral();
 			// Need to get actual Java instance. Cannot use EnumLiteral here!
-			calculatedValue = enumLiteral.getInstance();
+			calculatedValue = eEnumLiteral.getInstance();
 			if (calculatedValue == null) {
-				throw new IllegalArgumentException("Missing object for " + enumLiteral);
+				throw new IllegalArgumentException("Missing object for " + eEnumLiteral);
 			}
-		} else if (value instanceof IBeXAttributeParameter) {
-			String parameterName = ((IBeXAttributeParameter) value).getName();
+		} else if (value instanceof IBeXAttributeParameter attributeParameter) {
+			String parameterName = attributeParameter.getName();
 			if (!parameters.containsKey(parameterName)) {
 				throw new IllegalArgumentException("Missing required parameter " + parameterName);
 			}
 			calculatedValue = parameters.get(parameterName);
-		} else if(value instanceof IBeXStochasticAttributeValue) {
+		} else if(value instanceof IBeXStochasticAttributeValue stochasticAttributeValue) {
 			calculatedValue = IBeXStochasticCalculatorHelper.getGeneratedValue(contextInterpreter,
-					(IBeXStochasticAttributeValue) value, match, assignment.getType().getEAttributeType());
-		} else if(value instanceof IBeXArithmeticValue) {
-			calculatedValue = IBeXArithmeticCalculatorHelper.getValue(contextInterpreter, (IBeXArithmeticValue) value, 
+					stochasticAttributeValue, match, assignment.getType().getEAttributeType());
+		} else if(value instanceof IBeXArithmeticValue arithmeticValue) {
+			calculatedValue = IBeXArithmeticCalculatorHelper.getValue(contextInterpreter, arithmeticValue, 
 					match, assignment.getType().getEAttributeType());
 		}
 		EObject object = (EObject) match.get(assignment.getNode().getName());

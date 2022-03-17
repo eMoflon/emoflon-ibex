@@ -138,10 +138,10 @@ public class ModelStateManager {
 	public Map<String, Object> extractParameterFromState(RuleState state) {
 		Map<String, Object> parameter = new HashMap<>();
 		for(Parameter param: state.getParameters()) {
-			if(param instanceof ComplexParameter) {
-				parameter.put(param.getName(), ((ComplexParameter)param).getValue());
+			if(param instanceof ComplexParameter complexParam) {
+				parameter.put(param.getName(), complexParam.getValue());
 			} else {
-				SimpleParameter pParam = (SimpleParameter)param;
+				SimpleParameter pParam = (SimpleParameter) param;
 				Object value = null;
 				try {
 					value = Integer.parseInt(pParam.getValue());
@@ -185,15 +185,11 @@ public class ModelStateManager {
 		else {
 			for(Parameter paramFirst : first.getParameters()) {
 				for(Parameter paramSecond : second.getParameters()) {
-					if(paramFirst instanceof ComplexParameter && paramSecond instanceof ComplexParameter) {
-						ComplexParameter fP = (ComplexParameter)paramFirst;
-						ComplexParameter sP = (ComplexParameter)paramSecond;
+					if(paramFirst instanceof ComplexParameter fP && paramSecond instanceof ComplexParameter sP) {
 						if(paramFirst.getName().equals(paramSecond.getName()) && !(fP.getValue().equals(sP.getValue()))) {
 							return false;
 						}
-					} else if(paramFirst instanceof SimpleParameter && paramSecond instanceof SimpleParameter) {
-						SimpleParameter fP = (SimpleParameter)paramFirst;
-						SimpleParameter sP = (SimpleParameter)paramSecond;
+					} else if(paramFirst instanceof SimpleParameter fP && paramSecond instanceof SimpleParameter sP) {
 						if(paramFirst.getName().equals(paramSecond.getName()) && !(fP.getValue().equals(sP.getValue()))) {
 							return false;
 						}
@@ -376,8 +372,8 @@ public class ModelStateManager {
 			});
 		currentState = previousState;
 		
-		if(currentState instanceof RuleState) {
-			return Optional.of(IBeXMatchToIMatch(((RuleState)currentState).getCoMatch()));
+		if(currentState instanceof RuleState ruleState) {
+			return Optional.of(IBeXMatchToIMatch(ruleState.getCoMatch()));
 		} else {
 			return Optional.empty();
 		}
@@ -410,8 +406,8 @@ public class ModelStateManager {
 			engine.updateMatches();
 		}
 		
-		if(currentState instanceof RuleState) {
-			return Optional.of(IBeXMatchToIMatch(((RuleState)currentState).getCoMatch()));
+		if(currentState instanceof RuleState ruleState) {
+			return Optional.of(IBeXMatchToIMatch(ruleState.getCoMatch()));
 		} else {
 			return Optional.empty();
 		}
@@ -580,8 +576,8 @@ public class ModelStateManager {
 		
 		currentState = childState;
 		
-		if(currentState instanceof RuleState) {
-			return Optional.of(IBeXMatchToIMatch(((RuleState)currentState).getCoMatch()));
+		if(currentState instanceof RuleState ruleState) {
+			return Optional.of(IBeXMatchToIMatch(ruleState.getCoMatch()));
 		} else {
 			return Optional.empty();
 		}

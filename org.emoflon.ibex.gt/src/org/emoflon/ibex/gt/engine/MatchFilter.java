@@ -1,12 +1,9 @@
 package org.emoflon.ibex.gt.engine;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -41,8 +38,8 @@ public class MatchFilter {
 	 */
 	public static Stream<IMatch> getFilteredMatchStream(final IBeXContext pattern, final Map<String, Object> parameters,
 			final Map<String, Collection<IMatch>> matches) {
-		if (pattern instanceof IBeXContextPattern) {
-			return MatchFilter.getFilteredMatchStream((IBeXContextPattern) pattern, parameters, matches);
+		if (pattern instanceof IBeXContextPattern contextPattern) {
+			return MatchFilter.getFilteredMatchStream(contextPattern, parameters, matches);
 		} else{
 			IBeXContextAlternatives alternatives = (IBeXContextAlternatives) pattern;
 			Function<IMatch, IMatch> renameMatchToAlternativePattern = m -> {
@@ -61,10 +58,10 @@ public class MatchFilter {
 	}
 	
 	public static boolean isMatchValid(final IMatch match, final IBeXContext pattern, final Map<String, Object> parameters, final Map<String, Collection<IMatch>> matches) {
-		if (pattern instanceof IBeXContextPattern) {
+		if (pattern instanceof IBeXContextPattern contextPattern) {
 			Stream<IMatch> matchesForPattern = Stream.of(match);
-			matchesForPattern = MatchFilter.filterNodeBindings(matchesForPattern, (IBeXContextPattern)pattern, parameters);
-			matchesForPattern = MatchFilter.filterAttributeConstraintsWithParameter(matchesForPattern, (IBeXContextPattern)pattern, parameters);
+			matchesForPattern = MatchFilter.filterNodeBindings(matchesForPattern, contextPattern, parameters);
+			matchesForPattern = MatchFilter.filterAttributeConstraintsWithParameter(matchesForPattern, contextPattern, parameters);
 			return matchesForPattern.count() > 0;
 		}
 		throw new IllegalArgumentException("Invalid pattern " + pattern);
@@ -143,9 +140,7 @@ public class MatchFilter {
 	public static Stream<IMatch> filterAttributeConstraintsWithParameter(Stream<IMatch> matches,
 			final IBeXContextPattern pattern, final Map<String, Object> parameters) {
 		for (IBeXAttributeConstraint ac : pattern.getAttributeConstraint()) {
-			if (ac.getLhs() instanceof IBeXAttributeExpression && ac.getRhs() instanceof IBeXAttributeParameter) {
-				IBeXAttributeExpression lhs = (IBeXAttributeExpression)ac.getLhs();
-				IBeXAttributeParameter rhs = (IBeXAttributeParameter)ac.getRhs();
+			if (ac.getLhs() instanceof IBeXAttributeExpression lhs && ac.getRhs() instanceof IBeXAttributeParameter rhs) {
 				String nodeName = lhs.getNode().getName();
 				String parameterName = rhs.getName();
 				if (!parameters.containsKey(parameterName)) {
@@ -156,9 +151,7 @@ public class MatchFilter {
 					Object currentValue = node.eGet(lhs.getAttribute());
 					return compare(currentValue, parameters.get(parameterName), ac.getRelation());
 				});
-			} else if(ac.getRhs() instanceof IBeXAttributeExpression && ac.getLhs() instanceof IBeXAttributeParameter) {
-				IBeXAttributeExpression lhs = (IBeXAttributeExpression)ac.getRhs();
-				IBeXAttributeParameter rhs = (IBeXAttributeParameter)ac.getLhs();
+			} else if(ac.getRhs() instanceof IBeXAttributeExpression lhs && ac.getLhs() instanceof IBeXAttributeParameter rhs) {
 				String nodeName = lhs.getNode().getName();
 				String parameterName = rhs.getName();
 				if (!parameters.containsKey(parameterName)) {
@@ -242,8 +235,8 @@ public class MatchFilter {
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static boolean compareTo(final Object a, final Object b, final Predicate<Integer> condition) {
-		return a instanceof Comparable && b instanceof Comparable //
-				&& condition.test(((Comparable) a).compareTo(b));
+		return a instanceof Comparable c && b instanceof Comparable //
+				&& condition.test(c.compareTo(b));
 	}
 	
 	/**

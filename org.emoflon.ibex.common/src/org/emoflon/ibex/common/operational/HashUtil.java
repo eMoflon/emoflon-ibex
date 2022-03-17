@@ -93,9 +93,8 @@ class StringWrap {
 	
 	@Override
 	public boolean equals(Object obj) {
-		if(!(obj instanceof StringWrap))
+		if(!(obj instanceof StringWrap other))
 			return false;
-		StringWrap other = (StringWrap)obj;
 		System.out.println("Other: "+other.data+" -> "+other.hash()+"/"+other.data.hashCode());
 		System.out.println("This: "+data+" -> "+hash()+"/"+data.hashCode());
 		return other.hash() == hash();

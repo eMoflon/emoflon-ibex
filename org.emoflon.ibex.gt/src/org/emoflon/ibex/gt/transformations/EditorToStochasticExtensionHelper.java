@@ -31,11 +31,10 @@ public class EditorToStochasticExtensionHelper {
 		if(pattern.isStochastic()) {
 			EditorProbability probability = pattern.getProbability();
 			// if probability is a function
-			if(probability instanceof StochasticFunction) {
-				gtProbability.setDistribution(transformStochasticFunction(data, ibexPattern, ((StochasticFunction) probability)
-						.getFunctionExpression()));
+			if(probability instanceof StochasticFunction stochasticFunction) {
+				gtProbability.setDistribution(transformStochasticFunction(data, ibexPattern, stochasticFunction.getFunctionExpression()));
 				//if probability is depended on a parameter
-				if(((StochasticFunction) probability).getParameter() != null) {
+				if(stochasticFunction.getParameter() != null) {
 					gtProbability.setParameter(EditorToArithmeticExtensionHelper
 							.transformToIBeXArithmeticExpression(data, ibexPattern, ((StochasticFunction) probability).getParameter()));
 				}

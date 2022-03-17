@@ -24,8 +24,8 @@ public class IBeXPatternVisualizer implements EMoflonDiagramTextProvider {
 
 	@Override
 	public String getDiagramBody(final IEditorPart editor, final ISelection selection) {
-		if (selection instanceof IStructuredSelection) {
-			return visualizeSelection((IStructuredSelection) selection);
+		if (selection instanceof IStructuredSelection structuredSelection) {
+			return visualizeSelection(structuredSelection);
 		}
 
 		throw new IllegalArgumentException("Invalid selection: " + selection);

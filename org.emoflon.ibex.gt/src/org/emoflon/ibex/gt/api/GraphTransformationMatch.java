@@ -60,8 +60,8 @@ public abstract class GraphTransformationMatch<M extends GraphTransformationMatc
 	
 	@Override
 	public boolean equals(Object obj) {
-		if(obj instanceof GraphTransformationMatch<?,?>) {
-			return match.equals(((GraphTransformationMatch<?,?>)obj).toIMatch());
+		if(obj instanceof GraphTransformationMatch<?,?> gtMatch) {
+			return match.equals(gtMatch.toIMatch());
 		} else if(obj instanceof IMatch) {
 			return match.equals(obj);
 		}

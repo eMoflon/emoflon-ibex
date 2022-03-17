@@ -56,10 +56,8 @@ public class EMFEdge {
 
 	@Override
 	public boolean equals(final Object o) {
-		if (o instanceof EMFEdge) {
-			EMFEdge e = (EMFEdge) o;
+		if (o instanceof EMFEdge e)
 			return getSource().equals(e.getSource()) && getTarget().equals(e.getTarget()) && getType().equals(e.getType());
-		}
 		return false;
 	}
 

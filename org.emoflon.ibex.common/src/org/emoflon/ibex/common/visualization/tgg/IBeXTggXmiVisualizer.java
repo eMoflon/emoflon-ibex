@@ -21,8 +21,8 @@ public class IBeXTggXmiVisualizer implements EMoflonDiagramTextProvider {
 
 	@Override
 	public String getDiagramBody(IEditorPart editor, ISelection selection) {
-		if (selection instanceof IStructuredSelection)
-			return visualizeSelection((IStructuredSelection) selection);
+		if (selection instanceof IStructuredSelection structuredSelection)
+			return visualizeSelection(structuredSelection);
 
 		throw new IllegalArgumentException("Invalid selection: " + selection);
 	}
@@ -30,15 +30,15 @@ public class IBeXTggXmiVisualizer implements EMoflonDiagramTextProvider {
 	@SuppressWarnings("unchecked")
 	private String visualizeSelection(IStructuredSelection selection) {
 		Object element = selection.getFirstElement();
-		if (element instanceof TGG)
-			return IBeXTggXmiPlantUMLGenerator.visualizeTGG((TGG) element);
-		if (element instanceof TGGRule)
-			return IBeXTggXmiPlantUMLGenerator.visualizeTGGRule((TGGRule) element);
-		if (element instanceof ExternalShortcutRule)
-			return IBeXTggXmiPlantUMLGenerator.visualizeSCRuleMerged((ExternalShortcutRule) element);
-		if (element instanceof TGGRuleElementMapping) {
+		if (element instanceof TGG tgg)
+			return IBeXTggXmiPlantUMLGenerator.visualizeTGG(tgg);
+		if (element instanceof TGGRule tggRule)
+			return IBeXTggXmiPlantUMLGenerator.visualizeTGGRule(tggRule);
+		if (element instanceof ExternalShortcutRule extShortcutRule)
+			return IBeXTggXmiPlantUMLGenerator.visualizeSCRuleMerged(extShortcutRule);
+		if (element instanceof TGGRuleElementMapping ruleEltMapping) {
 			if (selection.size() <= 1)
-				return IBeXTggXmiPlantUMLGenerator.visualizeMapping((TGGRuleElementMapping) element);
+				return IBeXTggXmiPlantUMLGenerator.visualizeMapping(ruleEltMapping);
 			else if (selection.toList().stream().allMatch(e -> e instanceof TGGRuleElementMapping))
 				return IBeXTggXmiPlantUMLGenerator.visualizeMappings(selection.toList());
 		}
