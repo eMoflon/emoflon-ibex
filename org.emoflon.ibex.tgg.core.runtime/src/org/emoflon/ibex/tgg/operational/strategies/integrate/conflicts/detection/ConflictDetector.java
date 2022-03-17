@@ -255,15 +255,6 @@ public class ConflictDetector {
 		return false;
 	}
 
-	private DomainType oppositeOf(DomainType type) {
-		return switch (type) {
-			case SRC -> DomainType.TRG;
-			case TRG -> DomainType.SRC;
-			case CORR -> DomainType.CORR;
-			default -> null;
-		};
-	}
-
 	private void detectBrokenMatchBasedConflicts() {
 		Set<PrecedenceNode> brokenNodes = new HashSet<>(integrate.precedenceGraph().getBrokenNodes());
 		brokenNodes.addAll(integrate.precedenceGraph().getImplicitBrokenNodes().parallelStream() //

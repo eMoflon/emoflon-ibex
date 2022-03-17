@@ -71,7 +71,7 @@ public class GreenSCPattern implements IGreenPattern {
 		sortedAttributeConstraints = sortConstraints(cspVariables, newAttributeConstraints);
 		for(TGGParamValue pVal : cspVariables) {
 			if(pVal instanceof TGGAttributeExpression attrExpr) {
-				attrExpr.setObjectVar(oscRule.opScRule.mapReplacingToSCNodeNode(attrExpr.getObjectVar().getName()));
+				attrExpr.setObjectVar(oscRule.operationalizedSCR.mapReplacingNodeNameToSCNode(attrExpr.getObjectVar().getName()));
 			}
 		}
 	}
@@ -79,27 +79,27 @@ public class GreenSCPattern implements IGreenPattern {
 
 	@Override
 	public Collection<TGGRuleNode> getSrcNodes() {
-		return TGGFilterUtil.filterNodes(oscRule.getOpScRule().getNodes(), DomainType.SRC, BindingType.CREATE);
+		return TGGFilterUtil.filterNodes(oscRule.getOperationalizedSCR().getNodes(), DomainType.SRC, BindingType.CREATE);
 	}
 
 	@Override
 	public Collection<TGGRuleEdge> getSrcEdges() {
-		return TGGFilterUtil.filterEdges(oscRule.getOpScRule().getEdges(), DomainType.SRC, BindingType.CREATE);
+		return TGGFilterUtil.filterEdges(oscRule.getOperationalizedSCR().getEdges(), DomainType.SRC, BindingType.CREATE);
 	}
 
 	@Override
 	public Collection<TGGRuleNode> getTrgNodes() {
-		return TGGFilterUtil.filterNodes(oscRule.getOpScRule().getNodes(), DomainType.TRG, BindingType.CREATE);
+		return TGGFilterUtil.filterNodes(oscRule.getOperationalizedSCR().getNodes(), DomainType.TRG, BindingType.CREATE);
 	}
 
 	@Override
 	public Collection<TGGRuleEdge> getTrgEdges() {
-		return TGGFilterUtil.filterEdges(oscRule.getOpScRule().getEdges(), DomainType.TRG, BindingType.CREATE);
+		return TGGFilterUtil.filterEdges(oscRule.getOperationalizedSCR().getEdges(), DomainType.TRG, BindingType.CREATE);
 	}
 
 	@Override
 	public Collection<TGGRuleCorr> getCorrNodes() {
-		return TGGFilterUtil.filterNodes(oscRule.getOpScRule().getNodes(), DomainType.CORR, BindingType.CREATE).stream().map(n -> (TGGRuleCorr) n).collect(Collectors.toList());
+		return TGGFilterUtil.filterNodes(oscRule.getOperationalizedSCR().getNodes(), DomainType.CORR, BindingType.CREATE).stream().map(n -> (TGGRuleCorr) n).collect(Collectors.toList());
 	}
 
 	@Override
@@ -143,7 +143,7 @@ public class GreenSCPattern implements IGreenPattern {
 
 	@Override
 	public Collection<TGGRuleEdge> getCorrEdges() {
-		return TGGFilterUtil.filterEdges(oscRule.getOpScRule().getEdges(), DomainType.CORR, BindingType.CREATE);
+		return TGGFilterUtil.filterEdges(oscRule.getOperationalizedSCR().getEdges(), DomainType.CORR, BindingType.CREATE);
 	}
 
 	@Override

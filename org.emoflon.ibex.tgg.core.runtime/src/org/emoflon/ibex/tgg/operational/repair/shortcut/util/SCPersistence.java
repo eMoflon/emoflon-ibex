@@ -42,7 +42,7 @@ public class SCPersistence {
 	}
 	
 	private void saveFWDOSCRule(OperationalShortcutRule oscRule) {
-		ExternalShortcutRule esc = convertToEMF(oscRule.getOpScRule(), oscRule.getName());
+		ExternalShortcutRule esc = convertToEMF(oscRule.getOperationalizedSCR(), oscRule.getName());
 		oscFWDResource.getContents().add(esc);
 	}
 	
@@ -56,7 +56,7 @@ public class SCPersistence {
 	}
 	
 	private void saveBWDOSCRule(OperationalShortcutRule oscRule) {
-		ExternalShortcutRule esc = convertToEMF(oscRule.getOpScRule(), oscRule.getName());
+		ExternalShortcutRule esc = convertToEMF(oscRule.getOperationalizedSCR(), oscRule.getName());
 		oscBWDResource.getContents().add(esc);
 	}
 

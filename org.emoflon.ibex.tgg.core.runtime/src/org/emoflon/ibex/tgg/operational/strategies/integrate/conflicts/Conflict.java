@@ -216,7 +216,7 @@ public abstract class Conflict {
 	}
 
 	protected void revertRepairable(RepairableMatch repairableMatch, DomainType revertedDomain) {
-		ShortcutRule shortcutRule = repairableMatch.opSCR.getOriginalScRule();
+		ShortcutRule shortcutRule = repairableMatch.opSCR.getRawShortcutRule();
 
 		Set<EObject> deletedNodes = TGGFilterUtil.filterNodes(shortcutRule.getNodes(), revertedDomain, BindingType.DELETE).stream() //
 				.map(n -> (EObject) getMatch().get(n.getName())) //

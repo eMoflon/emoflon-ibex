@@ -242,8 +242,8 @@ public class ShortcutRule {
 	}
 
 	private void createNewEdge(TGGRuleEdge edge, BindingType binding, SCInputRule scInput) {
-		TGGRuleNode srcSCRuleNode = mapRuleNodeToSCRuleNode(edge.getSrcNode(), scInput);
-		TGGRuleNode trgSCRuleNode = mapRuleNodeToSCRuleNode(edge.getTrgNode(), scInput);
+		TGGRuleNode srcSCRuleNode = mapRuleNodeToSCNode(edge.getSrcNode(), scInput);
+		TGGRuleNode trgSCRuleNode = mapRuleNodeToSCNode(edge.getTrgNode(), scInput);
 		
 		// if src or trg rule were not generated due to optimization, do not create this edge
 		if(srcSCRuleNode == null || trgSCRuleNode == null) 
@@ -333,17 +333,18 @@ public class ShortcutRule {
 		return ruleName.equals(originalRule.getName());
 	}
 
-	public TGGRuleNode mapRuleNodeToSCRuleNode(TGGRuleNode node, SCInputRule scInput) {
-		if (scInput == SCInputRule.ORIGINAL)
-			return original2newNodes.get(node);
-		return replacing2newNodes.getOrDefault(node, null);
+	public TGGRuleNode mapRuleNodeToSCNode(TGGRuleNode node, SCInputRule scInput) {
+		return switch (scInput) {
+			case ORIGINAL -> original2newNodes.get(node);
+			case REPLACING -> replacing2newNodes.get(node);
+		};
 	}
 
-	public TGGRuleNode mapOriginalToSCNodeNode(String name) {
+	public TGGRuleNode mapOriginalNodeNameToSCNode(String name) {
 		return original2newNodes.getOrDefault(originalName2oldNodes.getOrDefault(name, null), null);
 	}
 
-	public TGGRuleNode mapReplacingToSCNodeNode(String name) {
+	public TGGRuleNode mapReplacingNodeNameToSCNode(String name) {
 		return replacing2newNodes.getOrDefault(replacingName2oldNodes.getOrDefault(name, null), null);
 	}
 

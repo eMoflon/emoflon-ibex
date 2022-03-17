@@ -20,6 +20,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule.SCInputRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.SearchPlan;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.SearchPlanCreator;
@@ -52,8 +53,8 @@ public abstract class OperationalShortcutRule {
 	protected final static Logger logger = Logger.getLogger(OperationalShortcutRule.class);
 	
 	protected final IbexOptions options;
-	protected ShortcutRule originalScRule;
-	protected ShortcutRule opScRule;
+	protected ShortcutRule rawShortcutRule;
+	protected ShortcutRule operationalizedSCR;
 	protected ACAnalysis filterNACAnalysis;
 
 	protected SearchPlanCreator searchPlanCreator;
@@ -62,15 +63,18 @@ public abstract class OperationalShortcutRule {
 
 	private IGreenPattern greenPattern;
 
-	public OperationalShortcutRule(IbexOptions options, ShortcutRule scRule, ACAnalysis filterNACAnalysis) {
+	public OperationalShortcutRule(IbexOptions options, ShortcutRule shortcutRule, ACAnalysis filterNACAnalysis) {
 		this.options = options;
-		this.originalScRule = scRule;
-		this.opScRule = scRule.copy();
+		this.rawShortcutRule = shortcutRule;
+		this.operationalizedSCR = shortcutRule.copy();
 		this.filterNACAnalysis = filterNACAnalysis;
-
 		this.markedElements = new HashSet<>();
+		
 		operationalize();
-		createRuleApplicationNode();
+		if (operationalizedSCR.getOriginalRule() instanceof HigherOrderTGGRule hoRule)
+			createRuleApplicationNodes(hoRule);
+		else
+			createRuleApplicationNode();
 
 		this.searchPlanCreator = new SearchPlanCreator(options, this);
 	}
@@ -81,9 +85,9 @@ public abstract class OperationalShortcutRule {
 
 	private void createRuleApplicationNode() {
 		TGGRuleNode oldRaNode = LanguageFactory.eINSTANCE.createTGGRuleNode();
-		oldRaNode.setName(getProtocolNodeName(opScRule.getOriginalRule().getName()));
+		oldRaNode.setName(getProtocolNodeName(operationalizedSCR.getOriginalRule().getName()));
 		EClass oldRaType = (EClass) options.tgg.corrMetamodel() //
-				.getEClassifier(getMarkerTypeName(this.opScRule.getOriginalRule().getName()));
+				.getEClassifier(getMarkerTypeName(this.operationalizedSCR.getOriginalRule().getName()));
 		oldRaNode.setType(oldRaType);
 		oldRaNode.setBindingType(BindingType.DELETE);
 
@@ -98,7 +102,12 @@ public abstract class OperationalShortcutRule {
 		createRuleApplicationLink(createCorrRef, contextCorrRef, oldRaNode, DomainType.CORR);
 		createRuleApplicationLink(createTrgRef, contextTrgRef, oldRaNode, DomainType.TRG);
 
-		opScRule.getNodes().add(oldRaNode);
+		operationalizedSCR.getNodes().add(oldRaNode);
+	}
+
+	private void createRuleApplicationNodes(HigherOrderTGGRule hoRule) {
+		// TODO
+		
 	}
 
 	private EReference getProtocolRef(TGGRuleNode protocolNode, BindingType bType, DomainType dType, TGGRuleNode node) {
@@ -107,33 +116,34 @@ public abstract class OperationalShortcutRule {
 
 	private void createRuleApplicationLink(BiFunction<TGGRuleNode, TGGRuleNode, EReference> createdRef,
 			BiFunction<TGGRuleNode, TGGRuleNode, EReference> contextRef, TGGRuleNode oldRaNode, DomainType dType) {
-		TGGOverlap overlap = opScRule.getOverlap();
+		TGGOverlap overlap = operationalizedSCR.getOverlap();
 		Stream<TGGRuleNode> deletedNodes = TGGFilterUtil.filterNodes(TGGFilterUtil.filterNodes(overlap.deletions), dType).stream();
-		Stream<TGGRuleNode> sourceRuleUnboundContextNodes = TGGFilterUtil.filterNodes( //
+		Stream<TGGRuleNode> originalRuleUnboundContextNodes = TGGFilterUtil.filterNodes( //
 				TGGFilterUtil.filterNodes(overlap.unboundOriginalContext), dType).stream() //
-				.filter(n -> opScRule.getOriginalRule().getNodes().contains(n));
-		Stream<TGGRuleNode> sourceRuleCreatedMappingNodeKeys = TGGFilterUtil.filterNodes( //
+				.filter(n -> operationalizedSCR.getOriginalRule().getNodes().contains(n));
+		Stream<TGGRuleNode> originalRuleCreatedMappingNodeKeys = TGGFilterUtil.filterNodes( //
 				TGGFilterUtil.filterNodes(overlap.mappings.keySet()), dType, BindingType.CREATE).stream();
-		Stream<TGGRuleNode> sourceRuleContextMappingNodeKeys = TGGFilterUtil.filterNodes( //
+		Stream<TGGRuleNode> originalRuleContextMappingNodeKeys = TGGFilterUtil.filterNodes( //
 				TGGFilterUtil.filterNodes(overlap.mappings.keySet()), dType, BindingType.CONTEXT).stream();
 
-		Function<TGGRuleNode, TGGRuleNode> srcToSCNode = n -> opScRule.mapRuleNodeToSCRuleNode(n, SCInputRule.ORIGINAL);
+		Function<TGGRuleNode, TGGRuleNode> srcToSCNode = n -> operationalizedSCR.mapRuleNodeToSCNode(n, SCInputRule.ORIGINAL);
 
 		if (createdRef != null) {
-			deletedNodes.forEach(n -> createRuleApplicationEdge(createdRef.apply(oldRaNode, n), oldRaNode, n, BindingType.DELETE, srcToSCNode.apply(n)));
-			sourceRuleCreatedMappingNodeKeys.forEach( //
+			deletedNodes.forEach( //
+					n -> createRuleApplicationEdge(createdRef.apply(oldRaNode, n), oldRaNode, n, BindingType.DELETE, srcToSCNode.apply(n)));
+			originalRuleCreatedMappingNodeKeys.forEach( //
 					n -> createRuleApplicationEdge(createdRef.apply(oldRaNode, n), oldRaNode, n, BindingType.DELETE, srcToSCNode.apply(n)));
 		}
 		if (contextRef != null) {
-			sourceRuleUnboundContextNodes.forEach( //
+			originalRuleUnboundContextNodes.forEach( //
 					n -> createRuleApplicationEdge(contextRef.apply(oldRaNode, n), oldRaNode, n, BindingType.DELETE, srcToSCNode.apply(n)));
-			sourceRuleContextMappingNodeKeys.forEach( //
+			originalRuleContextMappingNodeKeys.forEach( //
 					n -> createRuleApplicationEdge(contextRef.apply(oldRaNode, n), oldRaNode, n, BindingType.DELETE, srcToSCNode.apply(n)));
 		}
 	}
 
 	private void createRuleApplicationEdge(EReference ref, TGGRuleNode raNode, TGGRuleNode node, BindingType bType, TGGRuleNode scNode) {
-		if (!opScRule.getNodes().contains(scNode))
+		if (!operationalizedSCR.getNodes().contains(scNode))
 			return;
 
 		TGGRuleEdge edge = LanguageFactory.eINSTANCE.createTGGRuleEdge();
@@ -144,13 +154,13 @@ public abstract class OperationalShortcutRule {
 		edge.setSrcNode(raNode);
 		edge.setTrgNode(scNode);
 
-		opScRule.getEdges().add(edge);
+		operationalizedSCR.getEdges().add(edge);
 	}
 
 	protected void createFilterNacs(TGGRule targetRule, DomainType domain) {
 		Collection<FilterNACCandidate> decCandidates = filterNACAnalysis.computeFilterNACCandidates(targetRule, domain);
 		for (FilterNACCandidate dec : decCandidates) {
-			TGGRuleNode decNode = opScRule.mapRuleNodeToSCRuleNode(dec.getNodeInRule(), SCInputRule.REPLACING);
+			TGGRuleNode decNode = operationalizedSCR.mapRuleNodeToSCNode(dec.getNodeInRule(), SCInputRule.REPLACING);
 			TGGRuleEdge edge = LanguageFactory.eINSTANCE.createTGGRuleEdge();
 			edge.setType(dec.getEdgeType());
 			edge.setBindingType(BindingType.NEGATIVE);
@@ -175,13 +185,13 @@ public abstract class OperationalShortcutRule {
 
 			edge.setName(edge.getSrcNode().getName() + "__" + dec.getEdgeType().getName() + "__" + edge.getTrgNode().getName());
 
-			opScRule.getNodes().add(node);
-			opScRule.getEdges().add(edge);
+			operationalizedSCR.getNodes().add(node);
+			operationalizedSCR.getEdges().add(edge);
 		}
 	}
 
-	protected void transformNodes(Collection<TGGRuleNode> filterNodes, BindingType target) {
-		filterNodes.stream().forEach(n -> n.setBindingType(target));
+	protected void transformNodes(Collection<TGGRuleNode> filteredNodes, BindingType target) {
+		filteredNodes.forEach(n -> n.setBindingType(target));
 	}
 
 	protected void transformEdges(Collection<TGGRuleEdge> filteredEdges, BindingType target) {
@@ -190,11 +200,11 @@ public abstract class OperationalShortcutRule {
 
 	protected void transformInterfaceEdges(Collection<TGGRuleEdge> filteredEdges, BindingType target) {
 		markedElements.addAll(filteredEdges.stream()
-				.filter(e -> opScRule.getPreservedNodes().contains(e.getSrcNode()) ^ opScRule.getPreservedNodes().contains(e.getTrgNode()))
+				.filter(e -> operationalizedSCR.getPreservedNodes().contains(e.getSrcNode()) ^ operationalizedSCR.getPreservedNodes().contains(e.getTrgNode()))
 				.collect(Collectors.toList()));
 
 		for (TGGRuleEdge edge : filteredEdges) {
-			if (!opScRule.getPreservedNodes().contains(edge.getSrcNode()) && !opScRule.getPreservedNodes().contains(edge.getTrgNode()))
+			if (!operationalizedSCR.getPreservedNodes().contains(edge.getSrcNode()) && !operationalizedSCR.getPreservedNodes().contains(edge.getTrgNode()))
 				continue;
 
 			BindingType srcNodeBinding = edge.getSrcNode().getBindingType();
@@ -210,13 +220,13 @@ public abstract class OperationalShortcutRule {
 	// TODO lfritsche: delete -> nac?
 	protected void removeNodes(Collection<TGGRuleNode> filterNodes) {
 		filterNodes.iterator().forEachRemaining(f -> {
-			opScRule.getEdges().removeAll(f.getIncomingEdges());
-			opScRule.getEdges().removeAll(f.getOutgoingEdges());
+			operationalizedSCR.getEdges().removeAll(f.getIncomingEdges());
+			operationalizedSCR.getEdges().removeAll(f.getOutgoingEdges());
 			f.getIncomingEdges().stream().forEach(e -> EcoreUtil.delete(e));
 			f.getOutgoingEdges().stream().forEach(e -> EcoreUtil.delete(e));
 			EcoreUtil.delete(f);
 		});
-		opScRule.getNodes().removeAll(filterNodes);
+		operationalizedSCR.getNodes().removeAll(filterNodes);
 	}
 
 	protected void removeEdges(Collection<TGGRuleEdge> filterEdges) {
@@ -228,7 +238,7 @@ public abstract class OperationalShortcutRule {
 			TGGRuleNode src = edge.getSrcNode();
 			TGGRuleNode trg = edge.getTrgNode();
 
-			if (opScRule.getPreservedNodes().contains(src) ^ opScRule.getPreservedNodes().contains(trg)) {
+			if (operationalizedSCR.getPreservedNodes().contains(src) ^ operationalizedSCR.getPreservedNodes().contains(trg)) {
 				if (edge.getBindingType() != BindingType.CREATE)
 					continue;
 
@@ -242,7 +252,7 @@ public abstract class OperationalShortcutRule {
 				nac.setSrcNode(edge.getSrcNode());
 				nac.setTrgNode(edge.getTrgNode());
 				nac.setName(edge.getSrcNode().getName() + "__" + edge.getType().getName() + "__" + edge.getTrgNode().getName());
-				opScRule.getEdges().add(nac);
+				operationalizedSCR.getEdges().add(nac);
 			}
 		}
 	}
@@ -251,16 +261,16 @@ public abstract class OperationalShortcutRule {
 		return searchPlanCreator.createSearchPlan();
 	}
 
-	public ShortcutRule getOriginalScRule() {
-		return originalScRule;
+	public ShortcutRule getRawShortcutRule() {
+		return rawShortcutRule;
 	}
 
-	public ShortcutRule getOpScRule() {
-		return opScRule;
+	public ShortcutRule getOperationalizedSCR() {
+		return operationalizedSCR;
 	}
 
 	public String getName() {
-		return getType() + "_" + opScRule.getName();
+		return getType() + "_" + operationalizedSCR.getName();
 	}
 
 	public IGreenPattern getGreenPattern() {
@@ -271,11 +281,11 @@ public abstract class OperationalShortcutRule {
 	}
 
 	private IGreenPattern createGreenPattern() {
-		return new GreenSCPattern(options.patterns.greenPatternFactories().get(opScRule.getReplacingRule().getName()), this);
+		return new GreenSCPattern(options.patterns.greenPatternFactories().get(operationalizedSCR.getReplacingRule().getName()), this);
 	}
 
 	@Override
 	public String toString() {
-		return getType() + opScRule.toString();
+		return getType() + operationalizedSCR.toString();
 	}
 }

@@ -67,11 +67,11 @@ public class SearchPlanCreator {
 	}
 
 	protected void createConstraintChecks() {
-		for (TGGRuleNode node : opSCR.getOpScRule().getNodes()) {
+		for (TGGRuleNode node : opSCR.getOperationalizedSCR().getNodes()) {
 			createNodeCheck(node);
 		}
 
-		for (TGGRuleEdge edge : opSCR.getOpScRule().getEdges()) {
+		for (TGGRuleEdge edge : opSCR.getOperationalizedSCR().getEdges()) {
 			SearchKey forwardKey = new SearchKey(edge.getSrcNode(), edge.getTrgNode(), edge, false);
 			SearchKey backwardKey = new SearchKey(edge.getSrcNode(), edge.getTrgNode(), edge, true);
 
@@ -92,7 +92,7 @@ public class SearchPlanCreator {
 		}
 
 		cspCheck = (name2candidates) -> {
-			ITGGMatch match = new SCMatch(opSCR.getOpScRule().getName(), name2candidates);
+			ITGGMatch match = new SCMatch(opSCR.getOperationalizedSCR().getName(), name2candidates);
 			IRuntimeTGGAttrConstrContainer cspContainer = opSCR.getGreenPattern().getAttributeConstraintContainer(match);
 			return cspContainer.solve();
 		};
@@ -217,9 +217,9 @@ public class SearchPlanCreator {
 	public SearchPlan createSearchPlan() {
 		Collection<TGGRuleNode> uncheckedNodes = new ArrayList<>();
 		Collection<TGGRuleNode> uncheckedRelaxedNodes = new ArrayList<>();
-		opSCR.getOpScRule().getNodes().stream() //
-				.filter(n -> !opSCR.getOpScRule().getMergedNodes().contains(n)) //
-				.filter(n -> !opSCR.getOpScRule().getNewOriginalNodes().contains(n)) //
+		opSCR.getOperationalizedSCR().getNodes().stream() //
+				.filter(n -> !opSCR.getOperationalizedSCR().getMergedNodes().contains(n)) //
+				.filter(n -> !opSCR.getOperationalizedSCR().getNewOriginalNodes().contains(n)) //
 				.filter(n -> !RuntimePackage.eINSTANCE.getTGGRuleApplication().isSuperTypeOf(n.getType())) //
 				.filter(n -> n.getBindingType() != BindingType.NEGATIVE) //
 				.filter(n -> n.getBindingType() != BindingType.CREATE) //
@@ -227,7 +227,7 @@ public class SearchPlanCreator {
 				.forEach(n -> uncheckedNodes.add(n));
 
 		LinkedList<TGGRuleEdge> uncheckedEdges = new LinkedList<>();
-		for (TGGRuleEdge edge : opSCR.getOpScRule().getEdges()) {
+		for (TGGRuleEdge edge : opSCR.getOperationalizedSCR().getEdges()) {
 			if (edge.getBindingType() == BindingType.NEGATIVE)
 				uncheckedEdges.addLast(edge);
 			else
