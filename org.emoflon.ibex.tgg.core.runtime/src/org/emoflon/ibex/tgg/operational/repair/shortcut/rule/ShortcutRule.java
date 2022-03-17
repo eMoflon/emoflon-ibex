@@ -211,10 +211,11 @@ public class ShortcutRule {
 
 		String adjustedName = name;
 		char counter = 'a';
-		while (nodeNames.contains(adjustedName + counter)) {
+		while (nodeNames.contains(adjustedName + "-" + counter)) {
 			counter++;
 		}
-		adjustedName += counter;
+		adjustedName += "-" + counter;
+
 		nodeNames.add(adjustedName);
 		node.setName(adjustedName);
 		node.setBindingType(binding);
@@ -269,10 +270,10 @@ public class ShortcutRule {
 				+ newEdge.getTrgNode().getName();
 		if (edgeNames.contains(name)) {
 			int i = 2;
-			while (edgeNames.contains(name + "_" + i)) {
+			while (edgeNames.contains(name + "-" + i)) {
 				i++;
 			}
-			name += "_" + i;
+			name += "-" + i;
 		}
 		newEdge.setName(name);
 
