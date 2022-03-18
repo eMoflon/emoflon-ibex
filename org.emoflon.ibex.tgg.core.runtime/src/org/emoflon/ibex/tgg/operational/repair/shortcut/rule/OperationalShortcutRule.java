@@ -6,10 +6,7 @@ import static org.emoflon.ibex.tgg.util.TGGModelUtils.getMarkerTypeName;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EClass;
@@ -24,8 +21,6 @@ import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderT
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule.SCInputRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.SearchPlan;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.SearchPlanCreator;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.util.TGGOverlap;
-import org.emoflon.ibex.tgg.util.TGGFilterUtil;
 
 import language.BindingType;
 import language.DomainType;
@@ -37,21 +32,20 @@ import language.TGGRuleNode;
 
 /**
  * 
- * This class represents an operationalized shortcut rule. The pattern information are
- * stored in the shortcut rule (copied instance). Operationalization means that these
- * rules are applicable in a certain translation direction (FORWARD, BACKWARD). However,
- * the operationalize() method has to be implemented by sub classes. This class also
- * creates a SearchPlan for the operationalized pattern and created Lookup and Check
- * Operations which are used by LocalPatternSearch to execute the SearchPlan. The
- * interfaces used to implement these operations are EdgeCheck, Lookup, NACNodeCheck and
- * NodeCheck.
+ * This class represents an operationalized shortcut rule. The pattern information are stored in the
+ * shortcut rule (copied instance). Operationalization means that these rules are applicable in a
+ * certain translation direction (FORWARD, BACKWARD). However, the operationalize() method has to be
+ * implemented by sub classes. This class also creates a SearchPlan for the operationalized pattern
+ * and created Lookup and Check Operations which are used by LocalPatternSearch to execute the
+ * SearchPlan. The interfaces used to implement these operations are EdgeCheck, Lookup, NACNodeCheck
+ * and NodeCheck.
  * 
  * @author lfritsche
  *
  */
 public abstract class OperationalShortcutRule {
 	protected final static Logger logger = Logger.getLogger(OperationalShortcutRule.class);
-	
+
 	protected final IbexOptions options;
 	protected ShortcutRule rawShortcutRule;
 	protected ShortcutRule operationalizedSCR;
@@ -69,7 +63,7 @@ public abstract class OperationalShortcutRule {
 		this.operationalizedSCR = shortcutRule.copy();
 		this.filterNACAnalysis = filterNACAnalysis;
 		this.markedElements = new HashSet<>();
-		
+
 		operationalize();
 		if (operationalizedSCR.getOriginalRule() instanceof HigherOrderTGGRule hoRule)
 			createRuleApplicationNodes(hoRule);
@@ -84,77 +78,47 @@ public abstract class OperationalShortcutRule {
 	abstract public PatternType getType();
 
 	private void createRuleApplicationNode() {
+		String originalRuleName = operationalizedSCR.getOriginalRule().getName();
+
 		TGGRuleNode oldRaNode = LanguageFactory.eINSTANCE.createTGGRuleNode();
-		oldRaNode.setName(getProtocolNodeName(operationalizedSCR.getOriginalRule().getName()));
-		EClass oldRaType = (EClass) options.tgg.corrMetamodel() //
-				.getEClassifier(getMarkerTypeName(this.operationalizedSCR.getOriginalRule().getName()));
+		oldRaNode.setName(getProtocolNodeName(originalRuleName));
+		EClass oldRaType = (EClass) options.tgg.corrMetamodel().getEClassifier(getMarkerTypeName(originalRuleName));
 		oldRaNode.setType(oldRaType);
 		oldRaNode.setBindingType(BindingType.DELETE);
 
-		BiFunction<TGGRuleNode, TGGRuleNode, EReference> createSrcRef = (raNode, n) -> getProtocolRef(raNode, BindingType.CREATE, DomainType.SRC, n);
-		BiFunction<TGGRuleNode, TGGRuleNode, EReference> createCorrRef = (raNode, n) -> getProtocolRef(raNode, BindingType.CREATE, DomainType.CORR, n);
-		BiFunction<TGGRuleNode, TGGRuleNode, EReference> createTrgRef = (raNode, n) -> getProtocolRef(raNode, BindingType.CREATE, DomainType.TRG, n);
-		BiFunction<TGGRuleNode, TGGRuleNode, EReference> contextSrcRef = (raNode, n) -> getProtocolRef(raNode, BindingType.CONTEXT, DomainType.SRC, n);
-		BiFunction<TGGRuleNode, TGGRuleNode, EReference> contextCorrRef = (raNode, n) -> getProtocolRef(raNode, BindingType.CONTEXT, DomainType.CORR, n);
-		BiFunction<TGGRuleNode, TGGRuleNode, EReference> contextTrgRef = (raNode, n) -> getProtocolRef(raNode, BindingType.CONTEXT, DomainType.TRG, n);
-
-		createRuleApplicationLink(createSrcRef, contextSrcRef, oldRaNode, DomainType.SRC);
-		createRuleApplicationLink(createCorrRef, contextCorrRef, oldRaNode, DomainType.CORR);
-		createRuleApplicationLink(createTrgRef, contextTrgRef, oldRaNode, DomainType.TRG);
+		createRuleApplicationLinks(oldRaNode);
 
 		operationalizedSCR.getNodes().add(oldRaNode);
 	}
 
 	private void createRuleApplicationNodes(HigherOrderTGGRule hoRule) {
 		// TODO
-		
 	}
 
-	private EReference getProtocolRef(TGGRuleNode protocolNode, BindingType bType, DomainType dType, TGGRuleNode node) {
-		return (EReference) protocolNode.getType().getEStructuralFeature(getMarkerRefName(bType, dType, node.getName()));
+	private void createRuleApplicationLinks(TGGRuleNode oldRaNode) {
+		operationalizedSCR.getOriginalRule().getNodes().forEach(n -> createRuleApplicationEdge(oldRaNode, n));
 	}
 
-	private void createRuleApplicationLink(BiFunction<TGGRuleNode, TGGRuleNode, EReference> createdRef,
-			BiFunction<TGGRuleNode, TGGRuleNode, EReference> contextRef, TGGRuleNode oldRaNode, DomainType dType) {
-		TGGOverlap overlap = operationalizedSCR.getOverlap();
-		Stream<TGGRuleNode> deletedNodes = TGGFilterUtil.filterNodes(TGGFilterUtil.filterNodes(overlap.deletions), dType).stream();
-		Stream<TGGRuleNode> originalRuleUnboundContextNodes = TGGFilterUtil.filterNodes( //
-				TGGFilterUtil.filterNodes(overlap.unboundOriginalContext), dType).stream() //
-				.filter(n -> operationalizedSCR.getOriginalRule().getNodes().contains(n));
-		Stream<TGGRuleNode> originalRuleCreatedMappingNodeKeys = TGGFilterUtil.filterNodes( //
-				TGGFilterUtil.filterNodes(overlap.mappings.keySet()), dType, BindingType.CREATE).stream();
-		Stream<TGGRuleNode> originalRuleContextMappingNodeKeys = TGGFilterUtil.filterNodes( //
-				TGGFilterUtil.filterNodes(overlap.mappings.keySet()), dType, BindingType.CONTEXT).stream();
-
-		Function<TGGRuleNode, TGGRuleNode> srcToSCNode = n -> operationalizedSCR.mapRuleNodeToSCNode(n, SCInputRule.ORIGINAL);
-
-		if (createdRef != null) {
-			deletedNodes.forEach( //
-					n -> createRuleApplicationEdge(createdRef.apply(oldRaNode, n), oldRaNode, n, BindingType.DELETE, srcToSCNode.apply(n)));
-			originalRuleCreatedMappingNodeKeys.forEach( //
-					n -> createRuleApplicationEdge(createdRef.apply(oldRaNode, n), oldRaNode, n, BindingType.DELETE, srcToSCNode.apply(n)));
-		}
-		if (contextRef != null) {
-			originalRuleUnboundContextNodes.forEach( //
-					n -> createRuleApplicationEdge(contextRef.apply(oldRaNode, n), oldRaNode, n, BindingType.DELETE, srcToSCNode.apply(n)));
-			originalRuleContextMappingNodeKeys.forEach( //
-					n -> createRuleApplicationEdge(contextRef.apply(oldRaNode, n), oldRaNode, n, BindingType.DELETE, srcToSCNode.apply(n)));
-		}
-	}
-
-	private void createRuleApplicationEdge(EReference ref, TGGRuleNode raNode, TGGRuleNode node, BindingType bType, TGGRuleNode scNode) {
-		if (!operationalizedSCR.getNodes().contains(scNode))
+	private void createRuleApplicationEdge(TGGRuleNode raNode, TGGRuleNode node) {
+		TGGRuleNode scNode = operationalizedSCR.mapRuleNodeToSCNode(node, SCInputRule.ORIGINAL);
+		if (scNode == null || !operationalizedSCR.getNodes().contains(scNode))
 			return;
 
+		EReference ref = getProtocolRef(raNode, node);
 		TGGRuleEdge edge = LanguageFactory.eINSTANCE.createTGGRuleEdge();
 		edge.setName(raNode.getName() + "__" + ref.getName() + "__" + scNode.getName());
 		edge.setType(ref);
-		edge.setBindingType(bType);
+		edge.setBindingType(BindingType.DELETE);
 		edge.setDomainType(node.getDomainType());
 		edge.setSrcNode(raNode);
 		edge.setTrgNode(scNode);
 
 		operationalizedSCR.getEdges().add(edge);
+	}
+
+	private EReference getProtocolRef(TGGRuleNode protocolNode, TGGRuleNode node) {
+		String markerRefName = getMarkerRefName(node.getBindingType(), node.getDomainType(), node.getName());
+		return (EReference) protocolNode.getType().getEStructuralFeature(markerRefName);
 	}
 
 	protected void createFilterNacs(TGGRule targetRule, DomainType domain) {

@@ -153,7 +153,8 @@ public class ShortcutRule {
 	private void createNewNodeIfNecessary(TGGRuleNode oldNode, BindingType binding, SCInputRule scInput) {
 		if(options.repair.omitUnnecessaryContext()) {
 			if(scInput == SCInputRule.ORIGINAL) {
-				boolean isNecessary = overlap.deletions.stream().anyMatch(e -> oldNode.getIncomingEdges().contains(e) || oldNode.getOutgoingEdges().contains(e));
+				boolean isNecessary = overlap.deletions.stream() //
+						.anyMatch(e -> oldNode.getIncomingEdges().contains(e) || oldNode.getOutgoingEdges().contains(e));
 				if(isNecessary)
 					createNewNode(oldNode, binding, scInput);
 				else {
@@ -206,7 +207,8 @@ public class ShortcutRule {
 			preservedNodes.add(newNode);
 	}
 
-	private TGGRuleNode createNode(EClass nodeType, String name, BindingType binding, DomainType domain, EClass type, List<TGGInplaceAttributeExpression> attrExprs) {
+	private TGGRuleNode createNode(EClass nodeType, String name, BindingType binding, DomainType domain, EClass type,
+			List<TGGInplaceAttributeExpression> attrExprs) {
 		TGGRuleNode node = (TGGRuleNode) LanguageFactory.eINSTANCE.create(nodeType);
 
 		String adjustedName = name;
