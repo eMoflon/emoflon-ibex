@@ -210,12 +210,14 @@ public class ShortcutRule {
 		TGGRuleNode node = (TGGRuleNode) LanguageFactory.eINSTANCE.create(nodeType);
 
 		String adjustedName = name;
-		char counter = 'a';
-		while (nodeNames.contains(adjustedName + "-" + counter)) {
-			counter++;
+		// don't change how name allocation is done here, other code depends on it!
+		if (nodeNames.contains(adjustedName)) {
+			int i = 2;
+			while (nodeNames.contains(adjustedName + i)) {
+				i++;
+			}
+			adjustedName += i;
 		}
-		adjustedName += "-" + counter;
-
 		nodeNames.add(adjustedName);
 		node.setName(adjustedName);
 		node.setBindingType(binding);
@@ -268,6 +270,7 @@ public class ShortcutRule {
 
 		String name = newEdge.getSrcNode().getName() + "__" + edge.getType().getName() + "__"
 				+ newEdge.getTrgNode().getName();
+		// don't change how name allocation is done here, other code depends on it!
 		if (edgeNames.contains(name)) {
 			int i = 2;
 			while (edgeNames.contains(name + "-" + i)) {

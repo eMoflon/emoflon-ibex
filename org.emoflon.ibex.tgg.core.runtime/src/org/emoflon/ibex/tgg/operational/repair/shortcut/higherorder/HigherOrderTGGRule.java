@@ -201,10 +201,10 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 		TGGRuleNode higherOrderNode = (TGGRuleNode) LanguageFactory.eINSTANCE.create(node.eClass());
 
 		String newName = node.getName();
-		int i = 0;
-		while (higherOrderNodeNames.contains(newName + "-" + i))
-			i++;
-		newName += "-" + i;
+		char c = 'a';
+		while (higherOrderNodeNames.contains(newName + "-" + c))
+			c++;
+		newName += "-" + c;
 		higherOrderNodeNames.add(newName);
 
 		higherOrderNode.setName(newName);
