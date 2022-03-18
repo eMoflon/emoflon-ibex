@@ -17,7 +17,9 @@ import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderSupport;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRule;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRule.HigherOrderRuleComponent;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule.SCInputRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.SearchPlan;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.SearchPlanCreator;
@@ -66,9 +68,9 @@ public abstract class OperationalShortcutRule {
 
 		operationalize();
 		if (operationalizedSCR.getOriginalRule() instanceof HigherOrderTGGRule hoRule)
-			createRuleApplicationNodes(hoRule);
+			createOldRuleApplicationNodes(hoRule);
 		else
-			createRuleApplicationNode();
+			createOldRuleApplicationNode();
 
 		this.searchPlanCreator = new SearchPlanCreator(options, this);
 	}
@@ -77,7 +79,7 @@ public abstract class OperationalShortcutRule {
 
 	abstract public PatternType getType();
 
-	private void createRuleApplicationNode() {
+	private void createOldRuleApplicationNode() {
 		String originalRuleName = operationalizedSCR.getOriginalRule().getName();
 
 		TGGRuleNode oldRaNode = LanguageFactory.eINSTANCE.createTGGRuleNode();
@@ -91,12 +93,9 @@ public abstract class OperationalShortcutRule {
 		operationalizedSCR.getNodes().add(oldRaNode);
 	}
 
-	private void createRuleApplicationNodes(HigherOrderTGGRule hoRule) {
-		// TODO
-	}
-
 	private void createRuleApplicationLinks(TGGRuleNode oldRaNode) {
-		operationalizedSCR.getOriginalRule().getNodes().forEach(n -> createRuleApplicationEdge(oldRaNode, n));
+		for (TGGRuleNode node : operationalizedSCR.getOriginalRule().getNodes())
+			createRuleApplicationEdge(oldRaNode, node);
 	}
 
 	private void createRuleApplicationEdge(TGGRuleNode raNode, TGGRuleNode node) {
@@ -119,6 +118,49 @@ public abstract class OperationalShortcutRule {
 	private EReference getProtocolRef(TGGRuleNode protocolNode, TGGRuleNode node) {
 		String markerRefName = getMarkerRefName(node.getBindingType(), node.getDomainType(), node.getName());
 		return (EReference) protocolNode.getType().getEStructuralFeature(markerRefName);
+	}
+
+	private void createOldRuleApplicationNodes(HigherOrderTGGRule originalHoRule) {
+		for (HigherOrderRuleComponent component : originalHoRule.getComponents())
+			createOldRuleApplicationNode(component);
+	}
+
+	private void createOldRuleApplicationNode(HigherOrderRuleComponent component) {
+		String ruleName = component.rule.getName();
+
+		TGGRuleNode oldRaNode = LanguageFactory.eINSTANCE.createTGGRuleNode();
+		oldRaNode.setName(getProtocolNodeName(ruleName));
+		EClass oldRaType = (EClass) options.tgg.corrMetamodel().getEClassifier(getMarkerTypeName(ruleName));
+		oldRaNode.setType(oldRaType);
+		oldRaNode.setBindingType(BindingType.DELETE);
+
+		createRuleApplicationLinks(component, oldRaNode);
+
+		operationalizedSCR.getNodes().add(oldRaNode);
+	}
+
+	private void createRuleApplicationLinks(HigherOrderRuleComponent component, TGGRuleNode oldRaNode) {
+		for (TGGRuleNode node : component.rule.getNodes())
+			createRuleApplicationEdge(component, oldRaNode, node);
+	}
+
+	private void createRuleApplicationEdge(HigherOrderRuleComponent component, TGGRuleNode raNode, TGGRuleNode node) {
+		TGGRuleNode higherOrderNode = (TGGRuleNode) HigherOrderSupport.getHigherOrderElement(component, node);
+
+		TGGRuleNode scNode = operationalizedSCR.mapRuleNodeToSCNode(higherOrderNode, SCInputRule.ORIGINAL);
+		if (scNode == null || !operationalizedSCR.getNodes().contains(scNode))
+			return;
+
+		EReference ref = getProtocolRef(raNode, node);
+		TGGRuleEdge edge = LanguageFactory.eINSTANCE.createTGGRuleEdge();
+		edge.setName(raNode.getName() + "__" + ref.getName() + "__" + scNode.getName());
+		edge.setType(ref);
+		edge.setBindingType(BindingType.DELETE);
+		edge.setDomainType(higherOrderNode.getDomainType());
+		edge.setSrcNode(raNode);
+		edge.setTrgNode(scNode);
+
+		operationalizedSCR.getEdges().add(edge);
 	}
 
 	protected void createFilterNacs(TGGRule targetRule, DomainType domain) {
