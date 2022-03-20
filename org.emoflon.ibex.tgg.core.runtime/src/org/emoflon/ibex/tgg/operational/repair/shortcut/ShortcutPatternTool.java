@@ -75,15 +75,20 @@ public class ShortcutPatternTool implements TimeMeasurable {
 	private Map<OperationalShortcutRule, LocalPatternSearch> rule2matcher;
 
 	public ShortcutPatternTool(IbexOptions options, IGreenInterpreter greenInterpreter, IRedInterpreter redInterpreter, //
-			Collection<ShortcutRule> scRules, Set<PatternType> types) {
+			Collection<ShortcutRule> scRules, Set<PatternType> types, boolean persistShortcutRules) {
+		TimeRegistry.register(this);
+
 		this.options = options;
 		this.greenInterpreter = greenInterpreter;
 		this.redInterpreter = redInterpreter;
 
 		this.scRules = scRules;
 		this.resourceHandler = options.resourceHandler();
-		TimeRegistry.register(this);
+
 		initialize(types);
+
+		if (persistShortcutRules)
+			persistShortcutRules();
 	}
 
 	private void initialize(Set<PatternType> types) {
@@ -103,17 +108,21 @@ public class ShortcutPatternTool implements TimeMeasurable {
 		tggRule2opSCRule.forEach((type, map) -> LoggerConfig.log(LoggerConfig.log_repair(), //
 				() -> "Generated " + map.values().stream().map(s -> s.size()).reduce(0, (a, b) -> a + b) //
 						+ " " + type.name() + " Repair Rules"));
-
-		persistSCRules();
 	}
 
-	private void persistSCRules() {
+	private void persistShortcutRules() {
 		SCPersistence persistence = new SCPersistence(options);
 		persistence.saveSCRules(scRules);
-		persistence.saveOperationalFWDSCRules(tggRule2opSCRule.get(PatternType.FWD).values().stream() //
-				.flatMap(c -> c.stream()).collect(Collectors.toList()));
-		persistence.saveOperationalBWDSCRules(tggRule2opSCRule.get(PatternType.BWD).values().stream() //
-				.flatMap(c -> c.stream()).collect(Collectors.toList()));
+		Map<String, Collection<OperationalShortcutRule>> fwdOpSCRs = tggRule2opSCRule.get(PatternType.FWD);
+		if (fwdOpSCRs != null) {
+			persistence.saveOperationalFWDSCRules(fwdOpSCRs.values().stream() //
+					.flatMap(c -> c.stream()).collect(Collectors.toList()));
+		}
+		Map<String, Collection<OperationalShortcutRule>> bwdOpSCRs = tggRule2opSCRule.get(PatternType.BWD);
+		if (bwdOpSCRs != null) {
+			persistence.saveOperationalBWDSCRules(bwdOpSCRs.values().stream() //
+					.flatMap(c -> c.stream()).collect(Collectors.toList()));
+		}
 	}
 
 	public ITGGMatch processBrokenMatch(PatternType type, ITGGMatch brokenMatch) {
@@ -195,19 +204,24 @@ public class ShortcutPatternTool implements TimeMeasurable {
 		Map<String, EObject> name2entryNodeElem = new HashMap<>();
 		for (String param : brokenMatch.getParameterNames()) {
 			ShortcutRule shortcutRule = osr.getOperationalizedSCR();
+			EObject mappedObject = (EObject) brokenMatch.get(param);
 
 			String originalRuleNodeName = shortcutRule.getOriginalRule() instanceof HigherOrderTGGRule hoRule //
 					? HigherOrderSupport.findEntryNodeName(hoRule, param)
 					: param;
 
-			TGGRuleNode scNode = shortcutRule.mapOriginalNodeNameToSCNode(originalRuleNodeName);
+			TGGRuleNode scNode = null;
+			if (originalRuleNodeName != null)
+				scNode = shortcutRule.mapOriginalNodeNameToSCNode(originalRuleNodeName);
+
 			if (scNode == null) {
-				// special case is the rule application node which we add here!
-				if (!((EObject) brokenMatch.get(param) instanceof TGGRuleApplication))
-					continue;
+				// special case is the rule application node which we want to add anyway:
+				if (mappedObject instanceof TGGRuleApplication)
+					name2entryNodeElem.put(param, mappedObject);
+				continue;
 			}
 
-			name2entryNodeElem.put(param, (EObject) brokenMatch.get(param));
+			name2entryNodeElem.put(scNode.getName(), mappedObject);
 		}
 		return rule2matcher.get(osr).findMatch(name2entryNodeElem);
 	}
@@ -243,7 +257,7 @@ public class ShortcutPatternTool implements TimeMeasurable {
 
 	private void processDeletions(OperationalShortcutRule osr, ITGGMatch brokenMatch) {
 		ShortcutRule shortcutRule = osr.getOperationalizedSCR();
-		
+
 		Collection<TGGRuleNode> deletedRuleNodes = TGGFilterUtil.filterNodes(shortcutRule.getNodes(), BindingType.DELETE);
 		Collection<TGGRuleEdge> deletedRuleEdges = TGGFilterUtil.filterEdges(shortcutRule.getEdges(), BindingType.DELETE);
 		Collection<TGGRuleEdge> createdRuleEdges = TGGFilterUtil.filterEdges(shortcutRule.getEdges(), BindingType.CREATE);

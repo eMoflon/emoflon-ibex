@@ -20,6 +20,7 @@ import language.TGGAttributeConstraintLibrary;
 import language.TGGAttributeExpression;
 import language.TGGParamValue;
 import language.TGGRule;
+import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
@@ -84,7 +85,10 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 		}
 
 		public ComponentSpecificRuleElement getComponentSpecificRuleElement(TGGRuleElement ruleElement) {
-			return new ComponentSpecificRuleElement(ruleElement, this);
+			if (rule.getNodes().contains(ruleElement) || rule.getEdges().contains(ruleElement))
+				return new ComponentSpecificRuleElement(ruleElement, this);
+			else
+				return null;
 		}
 
 		public TGGRuleNode getNodeFromName(String nodeName) {
@@ -227,6 +231,14 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 
 		higherOrderEdge.setSrcNode(hoSrcNode);
 		higherOrderEdge.setTrgNode(hoTrgNode);
+
+		if (hoSrcNode instanceof TGGRuleCorr hoCorrNode) {
+			switch (hoTrgNode.getDomainType()) {
+				case SRC -> hoCorrNode.setSource(hoTrgNode);
+				case TRG -> hoCorrNode.setTarget(hoTrgNode);
+				default -> throw new IllegalArgumentException("Unexpected value: " + hoTrgNode.getDomainType());
+			}
+		}
 
 		String newName = higherOrderEdge.getSrcNode().getName() + "__" + edge.getType().getName() + "__" + higherOrderEdge.getTrgNode().getName();
 

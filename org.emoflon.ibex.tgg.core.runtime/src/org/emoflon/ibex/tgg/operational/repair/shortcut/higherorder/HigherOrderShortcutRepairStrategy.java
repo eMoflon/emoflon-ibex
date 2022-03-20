@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.IGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.IRedInterpreter;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
@@ -81,10 +82,15 @@ public class HigherOrderShortcutRepairStrategy {
 				.map(overlap -> new ShortcutRule(overlap, options)) //
 				.collect(Collectors.toList());
 
+		PatternType shortcutPatternType = switch (applPoint.propagationType) {
+			case SRC -> PatternType.FWD;
+			case TRG -> PatternType.BWD;
+			default -> throw new IllegalArgumentException("Unexpected value: " + applPoint.propagationType);
+		};
 		ShortcutPatternTool shortcutPatternTool = new ShortcutPatternTool( //
-				options, greenInterpreter, redInterpreter, shortcutRules, Collections.singleton(applPoint.propagationType));
+				options, greenInterpreter, redInterpreter, shortcutRules, Collections.singleton(shortcutPatternType), true);
 
-		ITGGMatch repairedMatch = shortcutPatternTool.processBrokenMatch(applPoint.propagationType, applPoint.applNode.getMatch());
+		ITGGMatch repairedMatch = shortcutPatternTool.processBrokenMatch(shortcutPatternType, applPoint.applNode.getMatch());
 		if (repairedMatch == null)
 			throw new RuntimeException("Repair failed (prototype exception)");
 	}
