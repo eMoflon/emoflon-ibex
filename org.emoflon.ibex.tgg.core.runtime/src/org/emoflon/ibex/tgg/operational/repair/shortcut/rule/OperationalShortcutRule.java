@@ -16,7 +16,9 @@ import org.emoflon.ibex.tgg.compiler.patterns.ACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
+import org.emoflon.ibex.tgg.operational.patterns.GreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
+import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderSupport;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRule.HigherOrderRuleComponent;
@@ -287,7 +289,13 @@ public abstract class OperationalShortcutRule {
 	}
 
 	private IGreenPattern createGreenPattern() {
-		return new GreenSCPattern(options.patterns.greenPatternFactories().get(operationalizedSCR.getReplacingRule().getName()), this);
+		IGreenPatternFactory greenPatternFactory;
+		if (operationalizedSCR.getReplacingRule() instanceof HigherOrderTGGRule hoRule)
+			greenPatternFactory = new GreenPatternFactory(options, hoRule);
+		else
+			greenPatternFactory = options.patterns.greenPatternFactories().get(operationalizedSCR.getReplacingRule().getName());
+
+		return new GreenSCPattern(greenPatternFactory, this);
 	}
 
 	@Override
