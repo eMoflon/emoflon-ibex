@@ -35,7 +35,10 @@ public class XMLToMetamodelParser extends ParserUtil{
 		var r = rs.createResource(URI.createURI(fileNameWoEnd+".ecore"));
 		var container = EcoreFactory.eINSTANCE.createEPackage();
 		
-		var node = parseNodeMeta(rootElement, container);
+		container.getEClassifiers().add(parseNodeMeta(rootElement, container));
+		container.setName(fileNameWoEnd);
+		container.setNsPrefix(fileNameWoEnd);
+		container.setNsURI("platform:/resource/org.emoflon.ibex.modelxml/" + fileNameWoEnd + ".ecore");
 		
 		r.getContents().add(container);
 		try {
@@ -50,25 +53,22 @@ public class XMLToMetamodelParser extends ParserUtil{
 		var factory = EcorePackage.eINSTANCE.getEcoreFactory();
 		var eclass = factory.createEClass();
 		eclass.setName(element.getName());
-		
+
 		var eAttributes = eclass.getEStructuralFeatures();
-		var attributes = new HashSet<EAttribute>();
 		for (var att: element.getAttributes()) {
 			var a = factory.createEAttribute();
 			a.setName(att.getName());
 			a.setEType(getDataType(att.getValue()));
-			attributes.add(a);
 			eAttributes.add(a);
 		}  
-//		if(attributes.size() != 0)
-//			eAttributes.addAll(attributes);
+//		for(var att : eclass.getEAttributes())
+//			System.out.println(att.getName()+ " -> " + att.getEType().toString());
 
-		
 		// map children by their name into lists
 		var childMap = new HashMap<String, List<EClass>>();
 		for (var child: element.getChildren()) {
 			var eChild = parseNodeMeta(child, container);
-			
+//			System.out.println(eChild.getName());
 			if (childMap.containsKey(child.getName())) {
 				var entry = childMap.get(child.getName());
 				entry.add(eChild);
@@ -82,13 +82,18 @@ public class XMLToMetamodelParser extends ParserUtil{
 		// merge children with the same name
 		for (var c: childMap.entrySet()) {
 			var mergedClass = mergeNodes(c.getValue());
+			container.getEClassifiers().add(mergedClass);
+			System.out.println(mergedClass.getName() + " " + mergedClass.getEAttributes().toString());
 			// TODO: set containment for mergedClass to eclass
 			var eref = EcoreFactory.eINSTANCE.createEReference();
+			eref.setName(mergedClass.getName());
 			eref.setContainment(true);
 			eref.setEType(mergedClass);
 			eclass.getEStructuralFeatures().add(eref);
 		}
-		container.getEClassifiers().add(eclass);
+//		for(var ref : eclass.getEReferences())
+//			System.out.println(ref.getName() + " " + ref.getClass().toString());
+//		container.getEClassifiers().add(eclass);
 		return eclass;
 	}
 	
@@ -103,14 +108,18 @@ public class XMLToMetamodelParser extends ParserUtil{
 		var eclass = factory.createEClass();
 		eclass.setName(nodes.get(0).getName());
 		
-		var attributes = new HashSet<EAttribute>();
+		var attributes = new HashMap<String, EAttribute>();
 		for (var ch: nodes) {
 			var mem = ch.getEStructuralFeatures();
-			var mem2 = mem.stream().filter(e -> e instanceof EAttribute).map(e -> (EAttribute) e).toList();
-			attributes.addAll(mem2);
+			var attributesNode = mem.stream().filter(e -> e instanceof EAttribute).map(e -> (EAttribute) e).toList();
+			for(var attr : attributesNode) {
+				if(!attributes.containsKey(attr.getName())) {
+					attributes.put(attr.getName(), attr);
+				}
+			}
 		}
-		for(var att:attributes) {
-			eclass.getEStructuralFeatures().add(att);
+		for(var att:attributes.entrySet()) {
+			eclass.getEStructuralFeatures().add(att.getValue());
 		}
 		
 		return eclass;

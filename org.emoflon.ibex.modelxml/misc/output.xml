@@ -2,6 +2,7 @@
 <Speisekarte>
  <Vorspeise>
   <Suppe price="5.00" id="01"/>
+  <Suppe price="5.00" id="01" test="hallo"/>
   <Salat price="6.00" id="02"/>
  </Vorspeise>
  <Hauptgang>
