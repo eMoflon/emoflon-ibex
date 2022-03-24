@@ -20,17 +20,18 @@ import org.emoflon.ibex.modelxml.Value;
 import org.emoflon.ibex.modelxml.XMLModel;
 import org.emoflon.ibex.modelxml.parser.Parser;
 import org.emoflon.ibex.modelxml.parser.Writer;
+import org.emoflon.ibex.modelxml.parser.XMLParser;
 import org.junit.Test;
 
-public class IntegrationTests {
+public class XMLParserTest {
 
 	@Test
 	public void loadTestXML() {
-		XMLModel actualModel = Parser.parseXMLFile("misc/test.xml");
-		Writer.createXMLFile(actualModel, "misc/output.xml");
-		XMLModel expectModel = Parser.parseXMLFile("misc/output.xml");
-		assertEquals(expectModel.getHeader(), actualModel.getHeader());
-		assertTrue(compareNodes(expectModel.getRoot(), actualModel.getRoot()));
+		XMLModel actualModel = XMLParser.parseXMLFile("misc/Beispiel.xml");// load an xml model into the actual model
+		Writer.createXMLFile(actualModel, "misc/output.xml"); //Write the content of the actual model into a xml file
+		XMLModel expectModel = XMLParser.parseXMLFile("misc/output.xml"); //Parse the content of output.xml file into the expected model
+		assertEquals(expectModel.getHeader(), actualModel.getHeader());//Compares the header of the models
+		assertTrue(compareNodes(expectModel.getRoot(), actualModel.getRoot()));//Compares the content of the models
 	}
 
 	@Test
@@ -132,118 +133,11 @@ public class IntegrationTests {
 		node2.getAttributes().add(attr6);
 	}
 
-//	@Test
-//	public void generateStringTests() {
-//		Node node = ModelxmlFactory.eINSTANCE.createNode();
-//		Node node1 = ModelxmlFactory.eINSTANCE.createNode();
-//
-//		Attribute attr1 = ModelxmlFactory.eINSTANCE.createAttribute();
-//		Attribute attr2 = ModelxmlFactory.eINSTANCE.createAttribute();
-//		Value val1 = ModelxmlFactory.eINSTANCE.createValue();
-//		val1.setText("101");
-//		node.setName("node1");
-//		node.setValue(val1);
-//		attr1.setName("attr");
-//		attr2.setValue("bbc");
-//		attr2.setName("attr");
-//		attr1.setValue("hal");
-//		node.getAttributes().add(attr1);
-//		node.getAttributes().add(attr2);
-//		node.getChildren().add(node1);
-//		System.out.println(generateNodeString(node));
-//		assertTrue(true);
-//	}
-
-//	private boolean compareNodes(Node expect, Node actual) {
-//
-//		if ((expect == null) && (actual == null)) {
-//			return true;
-//		}
-//		if (!compareElements(expect, actual))
-//			return false;
-//		if (!compareAttributes(expect.getAttributes(), actual.getAttributes()))
-//			return false;
-//
-//		printNode(expect);
-//		printNode(actual);
-//
-//		// Compare Children
-//		if (expect.getChildren().isEmpty() && actual.getChildren().isEmpty()) {
-//			return true;
-//		} else {
-//			Set<Node> tmp = new HashSet<Node>();
-//			for (var exp : expect.getChildren()) {
-//				boolean successful = false;
-//				for (var act : actual.getChildren()) {
-//					if (compareElements(exp, act) && compareAttributes(exp.getAttributes(), act.getAttributes()))
-//						if (compareNodes(exp, act)) {
-//							tmp.add(act);
-//							successful = true;
-//						}
-//				}
-//				if (!successful) {
-//					System.out.println("Node only in expect");
-//					return false;
-//				}
-//			}
-//			if (!tmp.containsAll(actual.getChildren()))
-//				return false;
-//		}
-//
-//		// TODO Compare CrossReferences
-//		return true;
-//	}
 
 	private boolean compareNodes(Node expect, Node actual) {
-		System.out.println(XMLNodeGenerator.generateStringOfNode(expect));
-		System.out.println(XMLNodeGenerator.generateStringOfNode(actual));
-		if (XMLNodeGenerator.generateStringOfNode(actual).equals(XMLNodeGenerator.generateStringOfNode(expect)))
+		if (XMLTestUtil.generateStringOfNode(actual).equals(XMLTestUtil.generateStringOfNode(expect)))
 			return true;
 		return false;
 	}
-//	private void printNode(Node node) {
-//		System.out.println("----------------" + node.getName() + "----------------");
-//		EList<Attribute> attributes = node.getAttributes();
-//		if (attributes.isEmpty())
-//			System.out.println("leer");
-//		for (var attr : attributes)
-//			printAttribute(attr);
-//	}
 
-//	private void printAttribute(Attribute attr) {
-//		System.out.println(attr.getName() + "=" + attr.getValue());
-//	}
-
-//	private boolean compareAttributes(EList<Attribute> expect, EList<Attribute> actual) {
-//		if (actual == null && expect == null)
-//			return true;
-//		Set<Attribute> tmp = new HashSet<Attribute>();
-//		for (var act : actual) {
-////			printAttribute(act);
-//			boolean successful = false;
-//			for (var exp : expect) {
-////				printAttribute(exp);
-//				if ((exp.getName().equals(act.getName()) && exp.getValue().equals(act.getValue()))
-//						&& (exp.isId() == act.isId())) {
-//					tmp.add(exp);
-//					successful = true;
-//				}
-//			}
-////			System.out.println("-------------");
-//			if (!successful) {
-////				System.out.println("Attribut Fehler");
-//				return false;
-//			}
-//		}
-//		if (tmp.containsAll(expect))
-//			return true;
-//		return false;
-//	}
-
-	
-//	private static void printList(List<String> list) {
-//		System.out.println("-----------------printList----------------");
-//		for(var a : list)
-//			System.out.println(a);
-//	}
 }

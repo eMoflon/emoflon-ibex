@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.emoflon.ibex.modelxml.Node;
 
-public class XMLNodeGenerator {
+public class XMLTestUtil {
 	/**
 	 * 
 	 * This method generate a String, which contains all information of the given
@@ -21,8 +21,8 @@ public class XMLNodeGenerator {
 			return "";
 		// Format of string: <name>;<attributes>;<children>;<crossref>;
 		StringBuilder sb = new StringBuilder();
-		if(node.getValue()!=null && node.getValue().getText() != "")
-			sb.append(String.format(node.getName() + "=%s;", node.getValue().getText()));
+		if(node.getValue()!=null && !node.getValue().getText().isEmpty())
+			sb.append(String.format(node.getName() + "=%s;", node.getValue().getText().replaceAll("\n", "").replaceAll(" ", "").replaceAll("\t", "")));
 		else
 			sb.append(String.format("%s;", node.getName()));
 		// Format of attributes: <attribute1.name>=<attribute1.value>,
