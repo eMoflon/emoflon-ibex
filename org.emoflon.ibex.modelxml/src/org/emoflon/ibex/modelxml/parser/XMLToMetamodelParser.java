@@ -14,12 +14,13 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EcoreFactory;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.jdom2.Element;
 
-public class XMLToMetamodelParser extends Parser{
+public class XMLToMetamodelParser extends ParserUtil{
 	public static void main(String[] args) {
-		parseXMLFileToMetaModel("misc/note.xml");
+		parseXMLFileToMetaModel("misc/output.xml");
 	}
 
 	public static void parseXMLFileToMetaModel(String fileName) {
@@ -30,8 +31,8 @@ public class XMLToMetamodelParser extends Parser{
 		
 		// TODO: persistieren
 		var rs = new ResourceSetImpl();
-		rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());
-		var r = rs.createResource(URI.createURI(fileNameWoEnd+"Ecore.idk"));
+		rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put("ecore", new EcoreResourceFactoryImpl());
+		var r = rs.createResource(URI.createURI(fileNameWoEnd+".ecore"));
 		var container = EcoreFactory.eINSTANCE.createEPackage();
 		
 		var node = parseNodeMeta(rootElement, container);
@@ -50,15 +51,18 @@ public class XMLToMetamodelParser extends Parser{
 		var eclass = factory.createEClass();
 		eclass.setName(element.getName());
 		
-		var eAttributes = eclass.getEAttributes();
+		var eAttributes = eclass.getEStructuralFeatures();
 		var attributes = new HashSet<EAttribute>();
 		for (var att: element.getAttributes()) {
 			var a = factory.createEAttribute();
 			a.setName(att.getName());
 			a.setEType(getDataType(att.getValue()));
 			attributes.add(a);
-		}
-		eAttributes.addAll(attributes);
+			eAttributes.add(a);
+		}  
+//		if(attributes.size() != 0)
+//			eAttributes.addAll(attributes);
+
 		
 		// map children by their name into lists
 		var childMap = new HashMap<String, List<EClass>>();
@@ -82,7 +86,7 @@ public class XMLToMetamodelParser extends Parser{
 			var eref = EcoreFactory.eINSTANCE.createEReference();
 			eref.setContainment(true);
 			eref.setEType(mergedClass);
-			eclass.getEReferences().add(eref);
+			eclass.getEStructuralFeatures().add(eref);
 		}
 		container.getEClassifiers().add(eclass);
 		return eclass;
@@ -99,12 +103,15 @@ public class XMLToMetamodelParser extends Parser{
 		var eclass = factory.createEClass();
 		eclass.setName(nodes.get(0).getName());
 		
-		
 		var attributes = new HashSet<EAttribute>();
 		for (var ch: nodes) {
-			attributes.addAll(ch.getEAttributes());
+			var mem = ch.getEStructuralFeatures();
+			var mem2 = mem.stream().filter(e -> e instanceof EAttribute).map(e -> (EAttribute) e).toList();
+			attributes.addAll(mem2);
 		}
-		eclass.getEAttributes().addAll(attributes);
+		for(var att:attributes) {
+			eclass.getEStructuralFeatures().add(att);
+		}
 		
 		return eclass;
 	}
@@ -115,10 +122,15 @@ public class XMLToMetamodelParser extends Parser{
 			return EcorePackage.Literals.EINT;
 		} catch (NumberFormatException e) {
 			try {
-				Boolean.parseBoolean(value);
-				return EcorePackage.Literals.EBOOLEAN;
+				Double.parseDouble(value);
+				return EcorePackage.Literals.EDOUBLE;
 			} catch (NumberFormatException e2) {
-				
+				try {
+					Boolean.parseBoolean(value);
+					return EcorePackage.Literals.EBOOLEAN;
+				}catch(NumberFormatException e3) {
+					
+				}
 			}
 			
 		}

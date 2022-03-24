@@ -21,11 +21,16 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
 
-public class XMLParser  extends Parser{
+public class XMLParser  extends ParserUtil{
 	public static XMLModel parseXMLFile(){
 		return parseXMLFile("misc/xample.xml");
 	}
 	
+	/**
+	 * This method parses the content of a XML file into {@link org.emoflon.ibex.modelxml.XMLModel} 
+	 * @param fileName Give the path of the XML file
+	 * @return A XMLModel with the parsed content
+	 */
 	public static XMLModel parseXMLFile(String fileName) {
 		var end = fileName.lastIndexOf(".");
 		var fileNameWoEnd = fileName.substring(0, end);
@@ -52,13 +57,22 @@ public class XMLParser  extends Parser{
 		return container;
 	}
 	
+	/**
+	 * This method parses the content of a XML file into the XML metamodel.
+	 * @param uri Contains the path of the XML file
+	 * @return Give the resource of the parsed model.
+	 */
 	public static Resource parseXMLFile(URI uri) {
 		var fileName = uri.toFileString();
 		return parseXMLFile(fileName).eResource();
 	}
 	
 
-
+	/**
+	 * This method parses the content of a Node from Element into an {@link org.emoflon.ibex.modelxml.Node}
+	 * @param element 
+	 * @return
+	 */
 	private static Node parseNode(final Element element) {
 		Node node = ModelxmlFactory.eINSTANCE.createNode();
 		
@@ -86,6 +100,11 @@ public class XMLParser  extends Parser{
 		return node;
 	}
 	
+	/**
+	 * This method parses the header of a given xml file into {@link org.emoflon.ibex.modelxml.XMLModel}
+	 * @param file Give the path of the XML file
+	 * @param container Consists the model, which should be store the parsed haeder
+	 */
 	private static void parseHeader(File file, XMLModel container) {
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(file));

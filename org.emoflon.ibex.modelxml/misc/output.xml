@@ -1,0 +1,16 @@
+<?xml version="1.1" encoding="ASCII"?>
+<Speisekarte>
+ <Vorspeise>
+  <Suppe price="5.00" id="01"/>
+  <Salat price="6.00" id="02"/>
+ </Vorspeise>
+ <Hauptgang>
+  <Pizza price="10.00" id="11"/>
+  <Risotto price="10.00" id="11" suggested="23"/>
+ </Hauptgang>
+ <Trinken>
+  <Wasser price="0.50" id="21"/>
+  <Cola price="1.50" id="22"/>
+  <Wein price="2.00" id="23"/>
+ </Trinken>
+</Speisekarte>

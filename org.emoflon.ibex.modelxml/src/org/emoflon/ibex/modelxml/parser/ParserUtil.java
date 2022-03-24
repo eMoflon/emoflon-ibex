@@ -15,7 +15,7 @@ import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
 
 
-public  class Parser {
+public  class ParserUtil {
 	
 	
 	protected static Element getRootElement(String fileName) {

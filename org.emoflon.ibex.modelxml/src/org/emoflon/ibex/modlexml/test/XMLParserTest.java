@@ -18,7 +18,7 @@ import org.emoflon.ibex.modelxml.ModelxmlFactory;
 import org.emoflon.ibex.modelxml.Node;
 import org.emoflon.ibex.modelxml.Value;
 import org.emoflon.ibex.modelxml.XMLModel;
-import org.emoflon.ibex.modelxml.parser.Parser;
+import org.emoflon.ibex.modelxml.parser.ParserUtil;
 import org.emoflon.ibex.modelxml.parser.Writer;
 import org.emoflon.ibex.modelxml.parser.XMLParser;
 import org.junit.Test;
