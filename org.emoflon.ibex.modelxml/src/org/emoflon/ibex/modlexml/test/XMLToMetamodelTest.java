@@ -3,12 +3,10 @@ package org.emoflon.ibex.modlexml.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.File;
-import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
@@ -22,7 +20,6 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.eclipse.sirius.ecore.extender.tool.api.ModelUtils;
 import org.emoflon.ibex.modelxml.parser.XMLToMetamodelParser;
 import org.junit.jupiter.api.Test;
 
@@ -74,21 +71,28 @@ class XMLToMetamodelTest {
 			return null;
 		var classifiers = pack.getEClassifiers();
 		List<EClass> classes = classifiers.stream().map(e -> (EClass) e).toList();
-		List<String> contentString = new ArrayList<String>();
+		List<String> contentList = new ArrayList<String>();
 		for (var run : classes) {
 			StringBuilder sb = new StringBuilder();
 			sb.append(String.format("%s;", run.getName()));
+			List<String> attributes = new ArrayList<>();
 			for (var attr : run.getEAttributes()) {
-				sb.append(String.format("%s=>%s,", attr.getName(), attr.getEType().getName()));
+				attributes.add(String.format("%s=>%s,", attr.getName(), attr.getEType().getName()));
 			}
+			Collections.sort(attributes);
+			sb.append(attributes);
 			sb.append(";");
-			for (var ref : run.getEReferences()) {
-				sb.append(String.format("%s=>%s,", ref.getName(), ref.getEType().getName()));
+			List<String> references = new ArrayList<>(); 
+			for (var ref :  run.getEReferences()) {
+				references.add(String.format("%s=>%s,", ref.getName(), ref.getEType().getName()));
 			}
-			contentString.add(sb.toString());
+			Collections.sort(references);
+			sb.append(references);
+			contentList.add(sb.toString());
 		}
-		Collections.sort(contentString);
-		return contentString;
+		Collections.sort(contentList);
+		System.out.println(contentList);
+		return contentList;
 	}
 
 }

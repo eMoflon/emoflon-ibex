@@ -27,7 +27,7 @@ public class XMLParserTest {
 
 	@Test
 	public void loadTestXML() {
-		XMLModel actualModel = XMLParser.parseXMLFile("misc/Beispiel.xml");// load an xml model into the actual model
+		XMLModel actualModel = XMLParser.parseXMLFile("misc/test.xml");// load an xml model into the actual model
 		Writer.createXMLFile(actualModel, "misc/output.xml"); //Write the content of the actual model into a xml file
 		XMLModel expectModel = XMLParser.parseXMLFile("misc/output.xml"); //Parse the content of output.xml file into the expected model
 		assertEquals(expectModel.getHeader(), actualModel.getHeader());//Compares the header of the models

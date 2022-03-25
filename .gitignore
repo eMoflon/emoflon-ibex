@@ -36,3 +36,15 @@ org.emoflon.ibex.tgg.tests/ClassInheritanceHierarchy/xtend-gen/org/benchmarx/cla
 *.xtendbin
 *.orig
 **.class
+org.emoflon.ibex.modelxml/misc/testTest.xmi
+org.emoflon.ibex.modelxml/misc/test1.ecore
+org.emoflon.ibex.modelxml/misc/test.xml
+org.emoflon.ibex.modelxml/misc/outputTest.xmi
+org.emoflon.ibex.modelxml/misc/output.ecore
+org.emoflon.ibex.modelxml/misc/memTest.xmi
+org.emoflon.ibex.modelxml/misc/mem.xml
+org.emoflon.ibex.modelxml/misc/Ferryman.xml
+org.emoflon.ibex.modelxml/misc/falseTest.xmi
+org.emoflon.ibex.modelxml/misc/BeispielTest.xmi
+org.emoflon.ibex.modelxml/misc/test.xml
+org.emoflon.ibex.modelxml/misc/testTest.xmi
