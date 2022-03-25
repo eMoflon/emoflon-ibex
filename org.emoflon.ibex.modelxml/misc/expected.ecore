@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="test1" nsURI="platform:/resource/org.emoflon.ibex.modelxml/misc/test1.ecore"
+    nsPrefix="test1">
+  <eClassifiers xsi:type="ecore:EClass" name="Speisekarte">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="hauptgang" eType="#//Hauptgang"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="vorspeise" eType="#//Vorspeise"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="trinken" eType="#//Trinken"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Vorspeise">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="suppe" eType="#//Suppe"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="salat" eType="#//Salat"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Hauptgang">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="pizza" eType="#//Pizza"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="risotto" eType="#//Risotto"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Trinken">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="cola" eType="#//Cola"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="wasser" eType="#//Wasser"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="wein" eType="#//Wein"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Suppe">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="price" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="test" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Salat">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="price" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Pizza">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="price" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Risotto">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="price" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="suggested" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Cola">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="price" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Wasser">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="price" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Wein">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="price" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="id" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+  </eClassifiers>
+</ecore:EPackage>

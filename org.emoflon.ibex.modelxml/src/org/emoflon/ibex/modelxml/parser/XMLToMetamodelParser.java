@@ -20,10 +20,10 @@ import org.jdom2.Element;
 
 public class XMLToMetamodelParser extends ParserUtil{
 	public static void main(String[] args) {
-		parseXMLFileToMetaModel("misc/output.xml");
+		parseXMLFileToMetaModel("misc/test1.xml");
 	}
 
-	public static void parseXMLFileToMetaModel(String fileName) {
+	public static EPackage parseXMLFileToMetaModel(String fileName) {
 		var end = fileName.lastIndexOf(".");
 		var fileNameWoEnd = fileName.substring(0, end);
 		
@@ -46,7 +46,7 @@ public class XMLToMetamodelParser extends ParserUtil{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		//return container;
+		return container;
 	}
 	
 	private static EClass parseNodeMeta(Element element, EPackage container) {
@@ -86,7 +86,7 @@ public class XMLToMetamodelParser extends ParserUtil{
 			System.out.println(mergedClass.getName() + " " + mergedClass.getEAttributes().toString());
 			// TODO: set containment for mergedClass to eclass
 			var eref = EcoreFactory.eINSTANCE.createEReference();
-			eref.setName(mergedClass.getName());
+			eref.setName(mergedClass.getName().toLowerCase());
 			eref.setContainment(true);
 			eref.setEType(mergedClass);
 			eclass.getEStructuralFeatures().add(eref);
