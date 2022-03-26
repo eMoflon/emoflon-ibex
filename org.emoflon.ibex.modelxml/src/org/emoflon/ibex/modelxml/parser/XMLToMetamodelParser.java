@@ -56,12 +56,11 @@ public class XMLToMetamodelParser extends ParserUtil {
 		name += element.getName();
 		if (classMap.containsKey(name)) {
 			// add to existing
-			EClass eclass = classMap.get(name);
-			var echild = eclass;
 			/** check attr
 			 *  check its children
 			 */
-			var features = echild.getEStructuralFeatures();
+			EClass eclass = classMap.get(name);
+			var features = eclass.getEStructuralFeatures();
 			var attributes = features.stream().filter(e -> e instanceof EAttribute).map(e -> {
 				var a = (EAttribute) e;
 				return a.getName() + a.getEAttributeType().getName();
