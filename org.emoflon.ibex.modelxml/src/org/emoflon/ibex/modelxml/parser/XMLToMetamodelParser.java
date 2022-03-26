@@ -1,22 +1,12 @@
 package org.emoflon.ibex.modelxml.parser;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EAttribute;
-import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EDataType;
-import org.eclipse.emf.ecore.EPackage;
-import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.EcoreFactory;
-import org.eclipse.emf.ecore.EcorePackage;
+import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
-import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.jdom2.Element;
 
 public class XMLToMetamodelParser extends ParserUtil {
@@ -45,7 +35,7 @@ public class XMLToMetamodelParser extends ParserUtil {
 		EClass clss = parseNodeMeta(rootElement, container);
 		
 		for(var cl : clss.getEReferences())
-			System.out.println(cl.getName() + cl.getEReferenceType().toString());
+			System.out.println(cl.getName() + " ref: " + cl.getEReferenceType().getName());
 		container.getEClassifiers().add(clss);
 
 		r.getContents().add(container);
@@ -94,7 +84,7 @@ public class XMLToMetamodelParser extends ParserUtil {
 	private static EClass saveMergedChildren(EPackage container, EClass eclass,
 			HashMap<String, List<EClass>> childMap) {
 		for (var c : childMap.entrySet()) {
-			var mergedClass = mergeNodes(c.getValue());
+			var mergedClass = mergeNodes(c.getValue(), container);
 			container.getEClassifiers().add(mergedClass);
 			// TODO: set containment for mergedClass to eclass
 			var eref = EcoreFactory.eINSTANCE.createEReference();
@@ -137,7 +127,7 @@ public class XMLToMetamodelParser extends ParserUtil {
 	 * @param nodes
 	 * @return
 	 */
-	private static EClass mergeNodes(List<EClass> nodes) {
+	private static EClass mergeNodes(List<EClass> nodes, EPackage container) {
 		var factory = EcorePackage.eINSTANCE.getEcoreFactory();
 		var eclass = factory.createEClass();
 		eclass.setName(nodes.get(0).getName());
@@ -166,6 +156,7 @@ public class XMLToMetamodelParser extends ParserUtil {
 			eclass.getEStructuralFeatures().add(ref.getValue());
 		}
 
+		container.getEClassifiers().add(eclass);
 
 		return eclass;
 	}
