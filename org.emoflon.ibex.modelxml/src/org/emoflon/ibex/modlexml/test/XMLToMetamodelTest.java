@@ -3,7 +3,6 @@ package org.emoflon.ibex.modlexml.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.*;
 
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -27,37 +26,31 @@ class XMLToMetamodelTest {
 
 	@Test
 	public void test2() {
-		
+
 		XMLToMetamodelParser.parseXMLFileToMetaModel("misc/test1.xml");
-		// TODO Auto-generated method stub
-				// Create a resource set.
-				ResourceSet resourceSet = new ResourceSetImpl();
+		// Create a resource set.
+		ResourceSet resourceSet = new ResourceSetImpl();
 
-				// Register the default resource factory -- only needed for stand-alone!
-				resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put(
-				"ecore", new EcoreResourceFactoryImpl());
+		// Register the default resource factory -- only needed for stand-alone!
+		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("ecore",
+				new EcoreResourceFactoryImpl());
 
-//				// Register the package -- only needed for stand-alone!
-//				EcorePackage ecorePackage = EcorePackage.eINSTANCE;
+		// Get the URI of the model file.
+		URI fileURIAct = URI.createURI("misc/test1.ecore", false);
+		URI fileURIExp = URI.createURI("misc/expected.ecore", false);
 
-				// Get the URI of the model file.
-				URI fileURIAct = URI.createURI("misc/test1.ecore",false);
-				URI fileURIExp = URI.createURI("misc/expected.ecore",false);
-				
+		// Demand load the resource for this file.
+		Resource resourceAct = resourceSet.getResource(fileURIAct, true);
+		Resource resourceExp = resourceSet.getResource(fileURIExp, true);
 
-				// Demand load the resource for this file.
-				Resource resourceAct = resourceSet.getResource(fileURIAct, true);
-				Resource resourceExp = resourceSet.getResource(fileURIExp, true);
-				
-
-				var actual = resourceToString(resourceAct);
-				var expected = resourceToString(resourceExp);
-				if( actual.size() != expected.size())
-					fail();
-				for(int i = 0 ; i <actual.size(); i++) {
-					assertEquals( expected.get(i), actual.get(i));
-				}
-				assertEquals(expected, expected, "not Equal");
+		var actual = resourceToString(resourceAct);
+		var expected = resourceToString(resourceExp);
+		if (actual.size() != expected.size())
+			fail();
+		for (int i = 0; i < actual.size(); i++) {
+			assertEquals(expected.get(i), actual.get(i));
+		}
+		assertEquals(expected, expected, "not Equal");
 
 	}
 
@@ -66,7 +59,6 @@ class XMLToMetamodelTest {
 		EPackage pack;
 		if (expectContent.get(0) instanceof EPackageImpl) {
 			pack = (EPackage) expectContent.get(0);
-			System.out.println();
 		} else
 			return null;
 		var classifiers = pack.getEClassifiers();
@@ -82,8 +74,8 @@ class XMLToMetamodelTest {
 			Collections.sort(attributes);
 			sb.append(attributes);
 			sb.append(";");
-			List<String> references = new ArrayList<>(); 
-			for (var ref :  run.getEReferences()) {
+			List<String> references = new ArrayList<>();
+			for (var ref : run.getEReferences()) {
 				references.add(String.format("%s=>%s,", ref.getName(), ref.getEType().getName()));
 			}
 			Collections.sort(references);
@@ -91,7 +83,6 @@ class XMLToMetamodelTest {
 			contentList.add(sb.toString());
 		}
 		Collections.sort(contentList);
-		System.out.println(contentList);
 		return contentList;
 	}
 
