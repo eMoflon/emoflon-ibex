@@ -309,23 +309,24 @@ public class ShortcutPatternTool implements TimeMeasurable {
 		}
 	}
 
-	private Optional<ITGGMatch> processCreations(OperationalShortcutRule osr, ITGGMatch brokenMatch) {
-		return greenInterpreter.apply(osr.getGreenPattern(), osr.getOperationalizedSCR().getReplacingRule().getName(), brokenMatch);
+	private Optional<ITGGMatch> processCreations(OperationalShortcutRule osr, ITGGMatch newMatch) {
+		return greenInterpreter.apply(osr.getGreenPattern(), osr.getOperationalizedSCR().getReplacingRule().getName(), newMatch);
 	}
 
-	private void processAttributes(OperationalShortcutRule osr, ITGGMatch match) {
+	private void processAttributes(OperationalShortcutRule osr, ITGGMatch newMatch) {
 		DomainType objDomain = getObjectDomain(osr.getType());
 		if (objDomain == null)
 			return;
 
+		IbexGreenInterpreter ibexGreenInterpr;
 		try {
-			IbexGreenInterpreter ibexGI = (IbexGreenInterpreter) greenInterpreter;
-			TGGFilterUtil.filterNodes(osr.getOperationalizedSCR().getNodes(), objDomain).stream() //
-					.filter(n -> osr.getOperationalizedSCR().getPreservedNodes().contains(n)) //
-					.forEach(n -> ibexGI.applyInPlaceAttributeAssignments(match, n, (EObject) match.get(n.getName())));
+			ibexGreenInterpr = (IbexGreenInterpreter) greenInterpreter;
 		} catch (Exception e) {
 			throw new RuntimeException("IbexGreenInterpreter implementation is needed", e);
 		}
+		TGGFilterUtil.filterNodes(osr.getOperationalizedSCR().getNodes(), objDomain).stream() //
+		.filter(n -> osr.getOperationalizedSCR().getPreservedNodes().contains(n)) //
+		.forEach(n -> ibexGreenInterpr.applyInPlaceAttributeAssignments(newMatch, n, (EObject) newMatch.get(n.getName())));
 	}
 
 	private DomainType getObjectDomain(PatternType type) {

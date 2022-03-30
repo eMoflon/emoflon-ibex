@@ -20,6 +20,7 @@ import language.LanguageFactory;
 import language.TGGAttributeExpression;
 import language.TGGInplaceAttributeExpression;
 import language.TGGRule;
+import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
@@ -287,6 +288,15 @@ public class ShortcutRule {
 			throw new RuntimeException("Shortcutrules are not allowed to have duplicate edges");
 		}
 		edgeNames.add(newEdge.getName());
+
+		// add missing source/target node references for correspondence nodes:
+		if (newEdge.getSrcNode() instanceof TGGRuleCorr corrNode) {
+			switch (newEdge.getTrgNode().getDomainType()) {
+				case SRC -> corrNode.setSource(newEdge.getTrgNode());
+				case TRG -> corrNode.setTarget(newEdge.getTrgNode());
+				default -> throw new IllegalArgumentException("Unexpected value: " + newEdge.getTrgNode().getDomainType());
+			}
+		}
 	}
 
 	private Collection<TGGRuleNode> extractNodes(Collection<TGGRuleElement> elements) {

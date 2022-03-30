@@ -162,6 +162,7 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 		super.setName(super.getName() + "_" + rule.getName());
 
 		populateElts(rule, component, contextMapping);
+		adaptInplaceAttrExpr(component);
 		transferAttrCondLibrary(rule, component);
 		transferNACs(rule, component);
 	}
@@ -251,6 +252,17 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 
 		ComponentSpecificRuleElement componentEdge = component.getComponentSpecificRuleElement(edge);
 		componentElt2higherOrderElt.put(componentEdge, higherOrderEdge);
+	}
+
+	private void adaptInplaceAttrExpr(HigherOrderRuleComponent component) {
+		nodes.stream() //
+				.flatMap(n -> n.getAttrExpr().stream()) //
+				.filter(e -> e.getValueExpr() instanceof TGGAttributeExpression) //
+				.map(e -> (TGGAttributeExpression) e.getValueExpr()) //
+				.forEach(attrExpr -> {
+					ComponentSpecificRuleElement compSpecRuleElt = component.getComponentSpecificRuleElement(attrExpr.getObjectVar());
+					attrExpr.setObjectVar((TGGRuleNode) componentElt2higherOrderElt.get(compSpecRuleElt));
+				});
 	}
 
 	private void transferAttrCondLibrary(TGGRule rule, HigherOrderRuleComponent component) {
