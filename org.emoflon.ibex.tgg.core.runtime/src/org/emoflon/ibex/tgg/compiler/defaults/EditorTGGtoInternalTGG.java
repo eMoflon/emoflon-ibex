@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +16,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.common.util.BasicEMap;
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAnnotation;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
@@ -23,12 +23,8 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EcoreFactory;
-import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.emf.ecore.xmi.XMIResource;
-import org.eclipse.emf.ecore.xmi.XMLResource;
-import org.eclipse.emf.ecore.xmi.impl.URIHandlerImpl;
 import org.emoflon.ibex.tgg.builder.TGGBuildUtil;
 import org.emoflon.ibex.tgg.transformation.ParamValueSet;
 import org.emoflon.ibex.tgg.transformation.TGGProject;
@@ -164,8 +160,8 @@ public class EditorTGGtoInternalTGG {
 			tgg.getRules().add(tggRule);
 			map(xtextRule, tggRule);
 
-			tggRule.getNodes().addAll(createTGGRuleNodes(xtextRule.getSourcePatterns(), DomainType.SRC));
-			tggRule.getNodes().addAll(createTGGRuleNodes(xtextRule.getTargetPatterns(), DomainType.TRG));
+			tggRule.getNodes().addAll(createTGGRuleNodes(xtextRule, xtextRule.getSourcePatterns(), DomainType.SRC));
+			tggRule.getNodes().addAll(createTGGRuleNodes(xtextRule, xtextRule.getTargetPatterns(), DomainType.TRG));
 			tggRule.getNodes().addAll(createTGGRuleNodesFromCorrOVs(tggRule, xtextRule.getCorrespondencePatterns()));
 
 			tggRule.getEdges().addAll(createTGGRuleEdges(tggRule.getNodes()));
@@ -344,20 +340,47 @@ public class EditorTGGtoInternalTGG {
 		return result;
 	}
 
-	private Collection<TGGRuleNode> createTGGRuleNodes(Collection<ObjectVariablePattern> ovs, DomainType domainType) {
-		ArrayList<TGGRuleNode> result = new ArrayList<>();
-		Map<TGGRuleNode, ObjectVariablePattern> rule2patMap = new HashMap<TGGRuleNode, ObjectVariablePattern>();
+	private Collection<TGGRuleNode> createTGGRuleNodes(Rule xtextRule, Collection<ObjectVariablePattern> ovs, DomainType domainType) { ArrayList<TGGRuleNode> result = new ArrayList<>();
+		Collection<ObjectVariablePattern> additionalOVs = new HashSet<>();
+		Map<ObjectVariablePattern, ObjectVariablePattern> ovToCopy = new HashMap<>(); 
 		for (ObjectVariablePattern ov : ovs) {
-			TGGRuleNode tggNode = getTGGRuleNode(ov);
-			tggNode.setDomainType(domainType);
-			rule2patMap.put(tggNode, ov);
-			result.add(tggNode);
+			result.add(createTGGRuleNode(ov, domainType));
+			
+			// We can not rely for all nodes to be directly contained in the pattern. 
+			// Some nodes may stem from refined rules and are referenced as targets of references.
+			for(LinkVariablePattern lv : ov.getLinkVariablePatterns()) {
+				ObjectVariablePattern targetOV = lv.getTarget();
+				
+				// if the source and target share the same container, we can continue
+				if(targetOV.eContainer().equals(ov.eContainer()))
+					continue;
+				
+				ObjectVariablePattern targetOVCopy = ovToCopy.get(targetOV);
+				if(targetOVCopy == null) {
+					targetOVCopy = EcoreUtil.copy(targetOV);
+
+					// clear copy of all linkvariables, attribute assignments and constraints as they become redundant when flattening the rules
+					targetOVCopy.getLinkVariablePatterns().forEach(EcoreUtil::delete);
+					targetOVCopy.getAttributeAssignments().forEach(EcoreUtil::delete);
+					targetOVCopy.getAttributeConstraints().forEach(EcoreUtil::delete);
+					
+					ovToCopy.put(targetOV, targetOVCopy);
+					additionalOVs.add(targetOVCopy);
+					result.add(createTGGRuleNode(targetOVCopy, domainType));
+				}
+
+				// replace target of linkvariable with copy
+				lv.setTarget(targetOVCopy);
+			}
 		}
+		
+		// add all newly created ovs that are copies from refined nodes to the original collection
+		ovs.addAll(additionalOVs);
 
 		// This has to be done separately since some attribute expression may
 		// reference nodes that are not yet existent
 		for (TGGRuleNode tggNode : result) {
-			ObjectVariablePattern ov = rule2patMap.get(tggNode);
+			ObjectVariablePattern ov = (ObjectVariablePattern) tggToXtext.get(tggNode);
 			tggNode.getAttrExpr()
 					.addAll(ov.getAttributeAssignments().stream()
 							.map(assignment -> createTGGInplaceAttributeExpression(result, tggNode, assignment))
@@ -425,12 +448,16 @@ public class EditorTGGtoInternalTGG {
 		};
 	}
 
-	private TGGRuleNode getTGGRuleNode(ObjectVariablePattern ov) {
+	private TGGRuleNode createTGGRuleNode(ObjectVariablePattern ov, DomainType domain) {
+		if(xtextToTGG.containsKey(ov)) {
+			return (TGGRuleNode) xtextToTGG.get(ov);
+		}
 		TGGRuleNode tggNode = tggFactory.createTGGRuleNode();
 		tggNode.setName(ov.getName());
 		tggNode.setType(ov.getType());
 		tggNode.setBindingType(getBindingType(ov.getOp()));
 		map(ov, tggNode);
+		tggNode.setDomainType(domain);
 		return tggNode;
 	}
 
