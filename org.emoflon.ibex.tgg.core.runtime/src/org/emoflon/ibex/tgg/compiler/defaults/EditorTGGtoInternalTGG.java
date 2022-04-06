@@ -154,15 +154,17 @@ public class EditorTGGtoInternalTGG {
 
 	private void translateXTextRulesToTGGRules(TripleGraphGrammarFile xtextTGG, TGG tgg) {
 		for (Rule xtextRule : xtextTGG.getRules()) {
+			Map<ObjectVariablePattern, ObjectVariablePattern> ovToCopy = new HashMap<>();
+			
 			TGGRule tggRule = tggFactory.createTGGRule();
 			tggRule.setName(xtextRule.getName());
 			tggRule.setAbstract(xtextRule.isAbstractRule());
 			tgg.getRules().add(tggRule);
 			map(xtextRule, tggRule);
 
-			tggRule.getNodes().addAll(createTGGRuleNodes(xtextRule, xtextRule.getSourcePatterns(), DomainType.SRC));
-			tggRule.getNodes().addAll(createTGGRuleNodes(xtextRule, xtextRule.getTargetPatterns(), DomainType.TRG));
-			tggRule.getNodes().addAll(createTGGRuleNodesFromCorrOVs(tggRule, xtextRule.getCorrespondencePatterns()));
+			tggRule.getNodes().addAll(createTGGRuleNodes(xtextRule, xtextRule.getSourcePatterns(), DomainType.SRC, ovToCopy));
+			tggRule.getNodes().addAll(createTGGRuleNodes(xtextRule, xtextRule.getTargetPatterns(), DomainType.TRG, ovToCopy));
+			tggRule.getNodes().addAll(createTGGRuleNodesFromCorrOVs(xtextRule, tggRule, xtextRule.getCorrespondencePatterns(), ovToCopy));
 
 			tggRule.getEdges().addAll(createTGGRuleEdges(tggRule.getNodes()));
 
@@ -320,7 +322,7 @@ public class EditorTGGtoInternalTGG {
 		return tggEdge;
 	}
 
-	private Collection<TGGRuleNode> createTGGRuleNodesFromCorrOVs(TGGRule rule, Collection<CorrVariablePattern> corrOVs) {
+	private Collection<TGGRuleNode> createTGGRuleNodesFromCorrOVs(Rule xtextRule, TGGRule rule, Collection<CorrVariablePattern> corrOVs, Map<ObjectVariablePattern, ObjectVariablePattern> ovToCopy) {
 		ArrayList<TGGRuleNode> result = new ArrayList<>();
 		for (CorrVariablePattern cv : corrOVs) {
 			TGGRuleCorr corrNode = tggFactory.createTGGRuleCorr();
@@ -329,7 +331,33 @@ public class EditorTGGtoInternalTGG {
 			corrNode.setBindingType(getBindingType(cv.getOp()));
 			corrNode.setDomainType(DomainType.CORR);
 			corrNode.setSource((TGGRuleNode) xtextToTGG.get(cv.getSource()));
-			corrNode.setTarget((TGGRuleNode) xtextToTGG.get(cv.getTarget()));
+			
+			// the source may stem from another rule (refinement)
+			TGGRuleNode sourceNode = (TGGRuleNode) xtextToTGG.get(cv.getSource());
+			if(sourceNode == null) {
+				sourceNode = (TGGRuleNode) xtextToTGG.get(ovToCopy.get(cv.getSource()));
+			}
+			if(sourceNode == null) {
+				ObjectVariablePattern sourceOVCopy = createOVCopy(ovToCopy, cv.getSource());
+				xtextRule.getSourcePatterns().add(sourceOVCopy);
+				sourceNode = createTGGRuleNode(sourceOVCopy, DomainType.SRC);
+				rule.getNodes().add(sourceNode);
+			}
+			corrNode.setSource(sourceNode);
+			
+			// the target may stem from another rule (refinement)
+			TGGRuleNode targetNode = (TGGRuleNode) xtextToTGG.get(cv.getTarget());
+			if(targetNode == null) {
+				targetNode = (TGGRuleNode) xtextToTGG.get(ovToCopy.get(cv.getTarget()));
+			}
+			if(targetNode == null) {
+				ObjectVariablePattern targetOVCopy = createOVCopy(ovToCopy, cv.getTarget());
+				xtextRule.getTargetPatterns().add(targetOVCopy);
+				targetNode = createTGGRuleNode(targetOVCopy, DomainType.TRG);
+				rule.getNodes().add(targetNode);
+			}
+			corrNode.setTarget(targetNode);
+
 
 			rule.getEdges().add(createTGGRuleEdge(corrNode, corrNode.getSource(), (EReference) corrNode.getType().getEStructuralFeature("source"), corrNode.getBindingType()));
 			rule.getEdges().add(createTGGRuleEdge(corrNode, corrNode.getTarget(), (EReference) corrNode.getType().getEStructuralFeature("target"), corrNode.getBindingType()));
@@ -340,9 +368,20 @@ public class EditorTGGtoInternalTGG {
 		return result;
 	}
 
-	private Collection<TGGRuleNode> createTGGRuleNodes(Rule xtextRule, Collection<ObjectVariablePattern> ovs, DomainType domainType) { ArrayList<TGGRuleNode> result = new ArrayList<>();
+	private ObjectVariablePattern createOVCopy(Map<ObjectVariablePattern, ObjectVariablePattern> ovToCopy, ObjectVariablePattern ov) {
+		ObjectVariablePattern targetOVCopy = EcoreUtil.copy(ov);
+
+		// clear copy of all linkvariables, attribute assignments and constraints as they become redundant when flattening the rules
+		targetOVCopy.getLinkVariablePatterns().clear();
+		targetOVCopy.getAttributeAssignments().clear();
+		targetOVCopy.getAttributeConstraints().clear();
+		
+		ovToCopy.put(ov, targetOVCopy);
+		return targetOVCopy;
+	}
+
+	private Collection<TGGRuleNode> createTGGRuleNodes(Rule xtextRule, Collection<ObjectVariablePattern> ovs, DomainType domainType, Map<ObjectVariablePattern, ObjectVariablePattern> ovToCopy) { ArrayList<TGGRuleNode> result = new ArrayList<>();
 		Collection<ObjectVariablePattern> additionalOVs = new HashSet<>();
-		Map<ObjectVariablePattern, ObjectVariablePattern> ovToCopy = new HashMap<>(); 
 		for (ObjectVariablePattern ov : ovs) {
 			result.add(createTGGRuleNode(ov, domainType));
 			
@@ -357,14 +396,7 @@ public class EditorTGGtoInternalTGG {
 				
 				ObjectVariablePattern targetOVCopy = ovToCopy.get(targetOV);
 				if(targetOVCopy == null) {
-					targetOVCopy = EcoreUtil.copy(targetOV);
-
-					// clear copy of all linkvariables, attribute assignments and constraints as they become redundant when flattening the rules
-					targetOVCopy.getLinkVariablePatterns().forEach(EcoreUtil::delete);
-					targetOVCopy.getAttributeAssignments().forEach(EcoreUtil::delete);
-					targetOVCopy.getAttributeConstraints().forEach(EcoreUtil::delete);
-					
-					ovToCopy.put(targetOV, targetOVCopy);
+					targetOVCopy = createOVCopy(ovToCopy, targetOV);
 					additionalOVs.add(targetOVCopy);
 					result.add(createTGGRuleNode(targetOVCopy, domainType));
 				}
