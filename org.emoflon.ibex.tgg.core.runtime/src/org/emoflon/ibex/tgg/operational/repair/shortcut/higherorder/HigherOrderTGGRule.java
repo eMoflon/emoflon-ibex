@@ -10,14 +10,22 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.util.ConsoleUtil;
+import org.emoflon.ibex.tgg.util.TGGFilterUtil;
 
+import language.BindingType;
 import language.LanguageFactory;
 import language.NAC;
+import language.TGG;
+import language.TGGAttributeConstraint;
+import language.TGGAttributeConstraintDefinition;
 import language.TGGAttributeConstraintLibrary;
+import language.TGGAttributeConstraintParameterDefinition;
 import language.TGGAttributeExpression;
+import language.TGGInplaceAttributeExpression;
 import language.TGGParamValue;
 import language.TGGRule;
 import language.TGGRuleCorr;
@@ -162,8 +170,8 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 		super.setName(super.getName() + "_" + rule.getName());
 
 		populateElts(rule, component, contextMapping);
-		adaptInplaceAttrExpr(component);
 		transferAttrCondLibrary(rule, component);
+		adaptInplaceAttrExpr(rule, component);
 		transferNACs(rule, component);
 	}
 
@@ -254,7 +262,7 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 		componentElt2higherOrderElt.put(componentEdge, higherOrderEdge);
 	}
 
-	private void adaptInplaceAttrExpr(HigherOrderRuleComponent component) {
+	private void adaptInplaceAttrExpr(TGGRule rule, HigherOrderRuleComponent component) {
 		nodes.stream() //
 				.flatMap(n -> n.getAttrExpr().stream()) //
 				.filter(e -> e.getValueExpr() instanceof TGGAttributeExpression) //
@@ -263,6 +271,69 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 					ComponentSpecificRuleElement compSpecRuleElt = component.getComponentSpecificRuleElement(attrExpr.getObjectVar());
 					attrExpr.setObjectVar((TGGRuleNode) componentElt2higherOrderElt.get(compSpecRuleElt));
 				});
+
+		// Edge case: higher-order rules are able to create multiple rule applications at once. This causes
+		// in-place attribute assignment expressions to reference green nodes. In case of utilizing
+		// higher-order rules to create short-cut rules, green nodes with such in-place attribute
+		// expressions may turn to context nodes, but it's referenced node doesn't. This creates a scenario
+		// where the in-place attribute assignment expression has to be converted to a CSP to be applied
+		// properly:
+
+		Collection<TGGInplaceAttributeExpression> toBeDeletedInplAttrExpr = new LinkedList<>();
+		for (TGGRuleNode node : TGGFilterUtil.filterNodes(nodes, BindingType.CREATE)) {
+			for (TGGInplaceAttributeExpression inplAttrExpr : node.getAttrExpr()) {
+				if (inplAttrExpr.getValueExpr()instanceof TGGAttributeExpression attrExpr) {
+					if (attrExpr.getObjectVar().getBindingType() == BindingType.CREATE) {
+						toBeDeletedInplAttrExpr.add(inplAttrExpr);
+						createEqualityCSP(rule, node, inplAttrExpr.getAttribute(), EcoreUtil.copy(attrExpr));
+					}
+				}
+			}
+		}
+		toBeDeletedInplAttrExpr.forEach(e -> EcoreUtil.delete(e));
+	}
+
+	private void createEqualityCSP(TGGRule rule, TGGRuleNode lhsNode, EAttribute lhsAttr, TGGAttributeExpression rhsAttrExpr) {
+		TGGAttributeExpression lhsAttrExpr = LanguageFactory.eINSTANCE.createTGGAttributeExpression();
+		lhsAttrExpr.setAttribute(lhsAttr);
+		lhsAttrExpr.setObjectVar(lhsNode);
+
+		TGGAttributeConstraintDefinition attrConstraintDef = getAttrConstraintDef(lhsAttr, (TGG) rule.eContainer());
+		TGGAttributeConstraintParameterDefinition lhsParamDef;
+		TGGAttributeConstraintParameterDefinition rhsParamDef;
+		try {
+			lhsParamDef = attrConstraintDef.getParameterDefinitions().get(0);
+			rhsParamDef = attrConstraintDef.getParameterDefinitions().get(1);
+		} catch (IndexOutOfBoundsException e) {
+			throw new RuntimeException("This attribute constraint definition must have two parameter definitions!", e);
+		}
+		lhsAttrExpr.setParameterDefinition(lhsParamDef);
+		rhsAttrExpr.setParameterDefinition(rhsParamDef);
+
+		TGGAttributeConstraint attrConstraint = LanguageFactory.eINSTANCE.createTGGAttributeConstraint();
+		attrConstraint.getParameters().add(lhsAttrExpr);
+		attrConstraint.getParameters().add(rhsAttrExpr);
+		attrConstraint.setDefinition(attrConstraintDef);
+
+		rule.getAttributeConditionLibrary().getTggAttributeConstraints().add(attrConstraint);
+	}
+
+	private TGGAttributeConstraintDefinition getAttrConstraintDef(EAttribute attr, TGG tgg) {
+		String defName = switch (attr.getEAttributeType().getName()) {
+			case "EString" -> "eq_string";
+			case "EInt" -> "eq_int";
+			case "EFloat" -> "eq_float";
+			case "EDouble" -> "eq_double";
+			case "ELong" -> "eq_long";
+			case "EChar" -> "eq_char";
+			case "EBoolean" -> "eq_boolean";
+			default -> throw new IllegalArgumentException("Unexpected value: " + attr.getEAttributeType());
+		};
+		for (TGGAttributeConstraintDefinition def : tgg.getAttributeConstraintDefinitionLibrary().getTggAttributeConstraintDefinitions()) {
+			if (def.getName().equals(defName))
+				return def;
+		}
+		return null;
 	}
 
 	private void transferAttrCondLibrary(TGGRule rule, HigherOrderRuleComponent component) {
