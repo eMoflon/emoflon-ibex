@@ -93,7 +93,7 @@ public class EditorTGGtoInternalTGG {
 	private TGGProject convertXtextTGG(TripleGraphGrammarFile xtextTGG, TripleGraphGrammarFile flattenedXtextTGG,
 			IProject project) {
 		EPackage corrPackage = createCorrModel(flattenedXtextTGG, project);
-		org.eclipse.emf.ecore.EPackage.Registry.INSTANCE.putIfAbsent(corrPackage.getNsURI(), corrPackage);
+		org.eclipse.emf.ecore.EPackage.Registry.INSTANCE.put(corrPackage.getNsURI(), corrPackage);
 		TGG tgg = createTGG(xtextTGG);
 		TGG flattenedTgg = createTGG(flattenedXtextTGG);
 		flattenedTgg.setCorr(corrPackage);
