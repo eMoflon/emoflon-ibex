@@ -54,13 +54,13 @@ import org.moflon.core.utilities.WorkspaceHelper;
  * rule module with an own API.
  */
 public class GTPackageBuilder implements GTBuilderExtension {
-	
+
 	/**
 	 * The name of the source folder. The builds are only triggered for changes in
 	 * this folder.
 	 */
 	public final static String SOURCE_FOLDER = "src";
-	
+
 	/**
 	 * The name of the source folder containing the generated API.
 	 */
@@ -87,7 +87,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		IFolder srcFolder = project.getFolder(SOURCE_FOLDER);
 		buildPackages(project, findFolders(srcFolder, srcFolder));
 	}
-	
+
 	@Override
 	public void run(final IProject project, final IPath packagePath) {
 		if (!WorkspaceHelper.isPluginProjectNoThrow(project)) {
@@ -97,7 +97,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		this.path = packagePath;
 		this.packageName = this.path.toString().replace("/", ".");
 		IFolder apiPackage = ensureSourceGenPackageExists();
-	
+
 		// Load files into editor models.
 		XtextResourceSet resourceSet = new XtextResourceSet();
 		Map<IFile, EditorGTFile> editorModels = new HashMap<IFile, EditorGTFile>();
@@ -110,25 +110,29 @@ public class GTPackageBuilder implements GTBuilderExtension {
 			} catch (WrappedException e) {
 				logError(String.format("Error resolving cross references in file %s.", gtFile.getName()));
 			}
-	
+
 			EditorGTFile editorModel = (EditorGTFile) file.getContents().get(0);
 			editorModels.put(gtFile, editorModel);
 			editorModel.getImports().forEach(i -> metaModels.add(i.getName()));
 		});
 		EcoreUtil.resolveAll(resourceSet);
-	
+
 		checkEditorModelsForDuplicatePatternNames(editorModels);
-	
+
 		// Transform editor models to IBeXPatterns.
 		IBeXModel ibexModel = transformEditorModels(editorModels, new EditorToIBeXPatternTransformation(),
 				"%s errors during editor model to pattern transformation");
 		saveModelFile(apiPackage.getFile("ibex-patterns.xmi"), resourceSet, ibexModel);
 		// Run possible pattern matcher builder extensions (e.g. hipe builder)
 		collectEngineBuilderExtensions().forEach(builder -> builder.run(project, packagePath, ibexModel));
-	
+
 		// Generate the Java code.
 		generateAPI(apiPackage, ibexModel, loadMetaModels(metaModels, resourceSet));
 		updateManifest(manifest -> processManifestForPackage(manifest));
+
+		// Generate code of plugins depending on gt
+		collectDependingBuilderExtensions().forEach(builder -> builder.run(project, packagePath, ibexModel));
+
 		log("Finished build.");
 	}
 
@@ -155,17 +159,18 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		}
 		return set;
 	}
-	
+
 	/**
 	 * Performs a build for the given packages.
-	 * @param project2 
+	 * 
+	 * @param project2
 	 * 
 	 * @param packages the packages to build
 	 */
 	private void buildPackages(IProject project2, final Set<IPath> packages) {
 		packages.forEach(packagePath -> runBuilderExtensions(ext -> ext.run(project, packagePath)));
 	}
-	
+
 	/**
 	 * Checks whether the given resources contain at least one gt file.
 	 * 
@@ -177,7 +182,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 				.filter(m -> m instanceof IFile).map(m -> (IFile) m) // find a file
 				.anyMatch(f -> "gt".equals(f.getFileExtension())); // with extension gt
 	}
-	
+
 	/**
 	 * Runs the registered GTBuilderExtensions for the package.
 	 * 
@@ -199,7 +204,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		};
 		SafeRunner.run(runnable);
 	}
-	
+
 	/**
 	 * Creates the target package.
 	 * 
@@ -242,12 +247,9 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	/**
 	 * Saves the model in the file.
 	 * 
-	 * @param file
-	 *            the file
-	 * @param resourceSet
-	 *            the resource set
-	 * @param model
-	 *            the model to save
+	 * @param file        the file
+	 * @param resourceSet the resource set
+	 * @param model       the model to save
 	 */
 	private void saveModelFile(final IFile file, final ResourceSet resourceSet, final EObject model) {
 		String uriString = project.getName() + "/" + file.getProjectRelativePath().toString();
@@ -265,21 +267,20 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		try {
 			resource.save(options);
 		} catch (IOException e) {
-			logError("Could not save " + file.getName() + " Error Message:\n"+e.getMessage());
+			logError("Could not save " + file.getName() + " Error Message:\n" + e.getMessage());
 		}
 	}
 
 	/**
 	 * Loads the EClassifiers from the meta-models into an EClassifiersManager.
 	 * 
-	 * @param metaModels
-	 *            the meta-model URIs
-	 * @param resourceSet
-	 *            the resource set
+	 * @param metaModels  the meta-model URIs
+	 * @param resourceSet the resource set
 	 * @return the mapping between EClassifier names to meta-model names
 	 */
 	private EClassifiersManager loadMetaModels(final Set<String> metaModels, final ResourceSet resourceSet) {
-		MoflonPropertiesContainerHelper moflonPropertiesContainerHelper = new MoflonPropertiesContainerHelper(project, new NullProgressMonitor());
+		MoflonPropertiesContainerHelper moflonPropertiesContainerHelper = new MoflonPropertiesContainerHelper(project,
+				new NullProgressMonitor());
 		Map<String, String> map = moflonPropertiesContainerHelper.mappingsToMap();
 
 		EClassifiersManager eClassifiersManager = new EClassifiersManager(map);
@@ -299,8 +300,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	 * Checks the editor models for duplicate rule definitions. For duplicates an
 	 * error is logged and the rule is removed.
 	 * 
-	 * @param editorModels
-	 *            the editor files and models
+	 * @param editorModels the editor files and models
 	 */
 	private void checkEditorModelsForDuplicatePatternNames(final Map<IFile, EditorGTFile> editorModels) {
 		Map<String, IFile> ruleNameToFile = new HashMap<String, IFile>();
@@ -325,8 +325,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	/**
 	 * Transforms the given editor models to the target model.
 	 * 
-	 * @param editorModels
-	 *            the editor files and models
+	 * @param editorModels the editor files and models
 	 * @return the target model
 	 */
 	private <T> T transformEditorModels(final Map<IFile, EditorGTFile> editorModels,
@@ -347,12 +346,9 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	/**
 	 * Generate a Rule and a Match class for every rule and the API class.
 	 * 
-	 * @param apiPackage
-	 *            the package containing the API code
-	 * @param gtRuleSet
-	 *            the graph transformation rules
-	 * @param eClassifiersManager
-	 *            the EClassifiers handler
+	 * @param apiPackage          the package containing the API code
+	 * @param gtRuleSet           the graph transformation rules
+	 * @param eClassifiersManager the EClassifiers handler
 	 */
 	private void generateAPI(final IFolder apiPackage, final IBeXModel ibexModel,
 			final EClassifiersManager eClassifiersManager) {
@@ -360,7 +356,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		IFolder matchesPackage = ensureFolderExists(apiPackage.getFolder("matches"));
 		IFolder rulesPackage = ensureFolderExists(apiPackage.getFolder("rules"));
 		IFolder probabilitiesPackage = ensureFolderExists(apiPackage.getFolder("probabilities"));
-		
+
 		Set<IBeXPattern> ruleContextPatterns = new HashSet<>();
 		ibexModel.getRuleSet().getRules().forEach(ibexRule -> {
 			generator.generateMatchClass(matchesPackage, ibexRule);
@@ -368,14 +364,13 @@ public class GTPackageBuilder implements GTBuilderExtension {
 			generator.generateProbabilityClass(probabilitiesPackage, ibexRule);
 			ruleContextPatterns.add(ibexRule.getLhs());
 		});
-		
+
 		ibexModel.getPatternSet().getContextPatterns().stream()
-			.filter(pattern -> !ruleContextPatterns.contains(pattern))
-			.filter(pattern -> !pattern.getName().contains("CONDITION"))
-			.forEach(pattern -> {
-				generator.generateMatchClass(matchesPackage, pattern);
-				generator.generatePatternClass(rulesPackage, pattern);
-			});
+				.filter(pattern -> !ruleContextPatterns.contains(pattern))
+				.filter(pattern -> !pattern.getName().contains("CONDITION")).forEach(pattern -> {
+					generator.generateMatchClass(matchesPackage, pattern);
+					generator.generatePatternClass(rulesPackage, pattern);
+				});
 
 		generator.generateAPIClass(apiPackage, ibexModel,
 				String.format("%s/%s/%s/api/ibex-patterns.xmi", project.getName(), SOURCE_GEN_FOLDER, path.toString()));
@@ -438,7 +433,7 @@ public class GTPackageBuilder implements GTBuilderExtension {
 		}
 		return folder;
 	}
-	
+
 	/**
 	 * Collects the GTEngine builder extensions.
 	 * 
@@ -460,6 +455,16 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	}
 
 	/**
+	 * Collects the GTEngine builder extensions.
+	 * 
+	 * @return the extensions
+	 */
+	private Collection<GTDependingBuilderExtension> collectDependingBuilderExtensions() {
+		return ExtensionsUtil.collectExtensions(GTDependingBuilderExtension.BUILDER_EXTENSON_ID, "class",
+				GTDependingBuilderExtension.class);
+	}
+
+	/**
 	 * Updates the project's manifest file.
 	 */
 	private void updateManifest(final Function<Manifest, Boolean> updateFunction) {
@@ -471,46 +476,28 @@ public class GTPackageBuilder implements GTBuilderExtension {
 	}
 
 	/**
-	 * Updates the manifest such that it contains at least basic properties and the
-	 * dependencies for the API.
-	 * 
-	 * @param manifest
-	 *            the manifest to update
-	 * @return whether the manifest was changed
-	 */
-	private boolean processManifestForProject(final Manifest manifest) {
-		List<String> dependencies = new ArrayList<String>();
-		dependencies.addAll(Arrays.asList("org.emoflon.ibex.common", "org.emoflon.ibex.gt", "org.emoflon.ibex.patternmodel"));
-		collectEngineExtensions().forEach(engine -> dependencies.addAll(engine.getDependencies()));
-
-		boolean changedBasics = ManifestFileUpdater.setBasicProperties(manifest, project.getName());
-		if (changedBasics) {
-			log("Initialized MANIFEST.MF.");
-		}
-
-		boolean updatedDependencies = ManifestFileUpdater.updateDependencies(manifest, dependencies);
-		if (updatedDependencies) {
-			log("Updated dependencies");
-		}
-
-		return changedBasics || updatedDependencies;
-	}
-
-	/**
 	 * Updates the exports in the MANIFEST.MF for the API.
 	 * 
-	 * @param the
-	 *            manifest to update
+	 * @param the manifest to update
 	 * @return whether the manifest was changed
 	 */
 	private boolean processManifestForPackage(final Manifest manifest) {
+		boolean changedBasics = ManifestFileUpdater.setBasicProperties(manifest, project.getName());
+
+		List<String> dependencies = new ArrayList<String>();
+		dependencies.addAll(
+				Arrays.asList("org.emoflon.ibex.common", "org.emoflon.ibex.gt", "org.emoflon.ibex.patternmodel"));
+		collectEngineExtensions().forEach(engine -> dependencies.addAll(engine.getDependencies()));
+		boolean updatedDependencies = ManifestFileUpdater.updateDependencies(manifest, dependencies);
+
 		String apiPackageName = (packageName.equals("") ? "" : packageName + ".") + "api";
 		boolean updateExports = ManifestFileUpdater.updateExports(manifest,
 				Arrays.asList(apiPackageName, apiPackageName + ".matches", apiPackageName + ".rules"));
 		if (updateExports) {
 			log("Updated exports");
 		}
-		return updateExports;
+
+		return updateExports || updatedDependencies || changedBasics;
 	}
 
 }
