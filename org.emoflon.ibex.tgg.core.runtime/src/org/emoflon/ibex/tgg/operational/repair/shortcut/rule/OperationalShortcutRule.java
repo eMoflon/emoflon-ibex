@@ -131,7 +131,7 @@ public abstract class OperationalShortcutRule {
 		String ruleName = component.rule.getName();
 
 		TGGRuleNode oldRaNode = LanguageFactory.eINSTANCE.createTGGRuleNode();
-		oldRaNode.setName(getProtocolNodeName(ruleName));
+		oldRaNode.setName(getProtocolNodeName(ruleName) + component.id);
 		EClass oldRaType = (EClass) options.tgg.corrMetamodel().getEClassifier(getMarkerTypeName(ruleName));
 		oldRaNode.setType(oldRaType);
 		oldRaNode.setBindingType(BindingType.DELETE);
@@ -147,7 +147,7 @@ public abstract class OperationalShortcutRule {
 	}
 
 	private void createRuleApplicationEdge(HigherOrderRuleComponent component, TGGRuleNode raNode, TGGRuleNode node) {
-		TGGRuleNode higherOrderNode = (TGGRuleNode) HigherOrderSupport.getHigherOrderElement(component, node);
+		TGGRuleNode higherOrderNode = HigherOrderSupport.getHigherOrderElement(component, node);
 
 		TGGRuleNode scNode = operationalizedSCR.mapRuleNodeToSCNode(higherOrderNode, SCInputRule.ORIGINAL);
 		if (scNode == null || !operationalizedSCR.getNodes().contains(scNode))

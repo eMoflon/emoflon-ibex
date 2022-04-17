@@ -4,8 +4,10 @@ import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -32,6 +34,7 @@ import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderSupport;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRule;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRule.HigherOrderRuleComponent;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.OperationalSCFactory;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.OperationalShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule;
@@ -125,7 +128,7 @@ public class ShortcutPatternTool implements TimeMeasurable {
 		}
 	}
 
-	public ITGGMatch processBrokenMatch(PatternType type, ITGGMatch brokenMatch) {
+	public Collection<ITGGMatch> processBrokenMatch(PatternType type, ITGGMatch brokenMatch) {
 		if (type == null)
 			return null;
 
@@ -145,7 +148,7 @@ public class ShortcutPatternTool implements TimeMeasurable {
 			Collection<OperationalShortcutRule> opSCRs = tggRule2opSCRule.get(type).get(brokenMatch.getRuleName());
 			for (OperationalShortcutRule opSCR : opSCRs) {
 				if (opSCR.getOperationalizedSCR().getReplacingRule().getName().equals(replacingRuleName)) {
-					SCMatch shortcutMatch = (SCMatch) processBrokenMatch(opSCR, brokenMatch);
+					SCMatch shortcutMatch = (SCMatch) matchShortcutRule(opSCR, brokenMatch);
 					if (shortcutMatch != null)
 						result.put(shortcutMatch, opSCR);
 				}
@@ -154,7 +157,7 @@ public class ShortcutPatternTool implements TimeMeasurable {
 		return result;
 	}
 
-	private ITGGMatch processBrokenMatch(Collection<OperationalShortcutRule> rules, ITGGMatch brokenMatch) {
+	private Collection<ITGGMatch> processBrokenMatch(Collection<OperationalShortcutRule> rules, ITGGMatch brokenMatch) {
 		if (rules == null)
 			return null;
 
@@ -168,7 +171,7 @@ public class ShortcutPatternTool implements TimeMeasurable {
 			LoggerConfig.log(LoggerConfig.log_repair(), () -> //
 			"Repair attempt: " + brokenMatch.getPatternName() + "(" + brokenMatch.hashCode() + ") with " + osr.getName());
 			Timer.start();
-			ITGGMatch newMatch = processBrokenMatch(osr, brokenMatch);
+			ITGGMatch newMatch = matchShortcutRule(osr, brokenMatch);
 			times.addTo("processBrokenMatch", Timer.stop());
 			if (newMatch == null) {
 				copiedRules.remove(osr);
@@ -194,49 +197,86 @@ public class ShortcutPatternTool implements TimeMeasurable {
 			processAttributes(osr, newMatch);
 			times.addTo("processAttributes", Timer.stop());
 
-			return transformToReplacingMatch(osr, newCoMatch.get());
+			return transformToReplacingMatches(osr, newCoMatch.get());
 
 		} while (!copiedRules.isEmpty());
 		return null;
 	}
 
-	private ITGGMatch processBrokenMatch(OperationalShortcutRule osr, ITGGMatch brokenMatch) {
-		Map<String, EObject> name2entryNodeElem = new HashMap<>();
-		for (String param : brokenMatch.getParameterNames()) {
-			ShortcutRule shortcutRule = osr.getOperationalizedSCR();
-			EObject mappedObject = (EObject) brokenMatch.get(param);
+	private SCMatch matchShortcutRule(OperationalShortcutRule osr, ITGGMatch brokenMatch) {
+		ShortcutRule shortcutRule = osr.getOperationalizedSCR();
 
-			String originalRuleNodeName = shortcutRule.getOriginalRule() instanceof HigherOrderTGGRule hoRule //
-					? HigherOrderSupport.findEntryNodeName(hoRule, param)
-					: param;
+		Map<String, EObject> name2entryNodeElt = shortcutRule.getOriginalRule() instanceof HigherOrderTGGRule hoRule //
+				? getEntryNodeElts(shortcutRule, hoRule)
+				: getEntryNodeElts(shortcutRule, brokenMatch);
 
-			TGGRuleNode scNode = null;
-			if (originalRuleNodeName != null)
-				scNode = shortcutRule.mapOriginalNodeNameToSCNode(originalRuleNodeName);
+		return rule2matcher.get(osr).findMatch(name2entryNodeElt);
+	}
 
+	private Map<String, EObject> getEntryNodeElts(ShortcutRule shortcutRule, ITGGMatch entryMatch) {
+		Map<String, EObject> name2entryNodeElt = new HashMap<>();
+
+		for (String param : entryMatch.getParameterNames()) {
+			EObject mappedObject = (EObject) entryMatch.get(param);
+
+			TGGRuleNode scNode = shortcutRule.mapOriginalNodeNameToSCNode(param);
 			if (scNode == null) {
 				// special case is the rule application node which we want to add anyway:
-				if (mappedObject instanceof TGGRuleApplication)
-					name2entryNodeElem.put(param, mappedObject);
-				continue;
+				if (!(mappedObject instanceof TGGRuleApplication))
+					continue;
 			}
 
-			name2entryNodeElem.put(scNode.getName(), mappedObject);
+			name2entryNodeElt.put(param, mappedObject);
 		}
-		return rule2matcher.get(osr).findMatch(name2entryNodeElem);
+
+		return name2entryNodeElt;
+	}
+
+	private Map<String, EObject> getEntryNodeElts(ShortcutRule shortcutRule, HigherOrderTGGRule hoRule) {
+		Map<String, EObject> name2entryNodeElt = new HashMap<>();
+
+		for (HigherOrderRuleComponent component : hoRule.getComponents()) {
+			for (String param : component.match.getParameterNames()) {
+				EObject mappedObject = (EObject) component.match.get(param);
+				String hoRuleNodeName = HigherOrderSupport.findHigherOrderNodeName(component, param);
+
+				TGGRuleNode scNode = null;
+				if (hoRuleNodeName != null)
+					scNode = shortcutRule.mapOriginalNodeNameToSCNode(hoRuleNodeName);
+
+				if (scNode == null) {
+					// special case is the rule application node which we want to add anyway:
+					if (mappedObject instanceof TGGRuleApplication) {
+						name2entryNodeElt.put(param + component.id, mappedObject);
+					}
+					continue;
+				}
+
+				name2entryNodeElt.putIfAbsent(scNode.getName(), mappedObject);
+			}
+		}
+
+		return name2entryNodeElt;
 	}
 
 	/**
-	 * transforms the given operationalized shortcut rule match into a match conforming to a target rule
+	 * Transforms the given operationalized shortcut rule match into a match conforming to a target rule
 	 * match
 	 * 
 	 * @param osr
 	 * @param scMatch
 	 * @return
 	 */
-	private ITGGMatch transformToReplacingMatch(OperationalShortcutRule osr, ITGGMatch scMatch) {
+	private Collection<ITGGMatch> transformToReplacingMatches(OperationalShortcutRule osr, ITGGMatch scMatch) {
 		ShortcutRule shortcutRule = osr.getOperationalizedSCR();
 
+		if (shortcutRule.getReplacingRule() instanceof HigherOrderTGGRule hoRule)
+			return transformToReplacingMatches(shortcutRule, hoRule, scMatch);
+		else
+			return Collections.singletonList(transformToReplacingMatch(shortcutRule, scMatch));
+	}
+
+	private ITGGMatch transformToReplacingMatch(ShortcutRule shortcutRule, ITGGMatch scMatch) {
 		ITGGMatch tempMatch = new SimpleTGGMatch(shortcutRule.getReplacingRule().getName() + PatternSuffixes.CONSISTENCY);
 
 		shortcutRule.getReplacingRule().getNodes().forEach( //
@@ -253,6 +293,33 @@ public class ShortcutPatternTool implements TimeMeasurable {
 		}
 
 		return newMatch;
+	}
+
+	private Collection<ITGGMatch> transformToReplacingMatches(ShortcutRule shortcutRule, HigherOrderTGGRule hoRule, ITGGMatch scMatch) {
+		Collection<ITGGMatch> result = new LinkedList<>();
+
+		for (HigherOrderRuleComponent component : hoRule.getComponents()) {
+			ITGGMatch tempMatch = new SimpleTGGMatch(component.rule.getName() + PatternSuffixes.CONSISTENCY);
+
+			for (TGGRuleNode node : component.rule.getNodes()) {
+				TGGRuleNode hoNode = HigherOrderSupport.getHigherOrderElement(component, node);
+				TGGRuleNode scNode = shortcutRule.mapRuleNodeToSCNode(hoNode, SCInputRule.REPLACING);
+				tempMatch.put(node.getName(), scMatch.get(scNode.getName()));
+			}
+
+			IGreenPatternFactory greenFactory = options.patterns.greenPatternFactories().get(component.rule.getName());
+			IGreenPattern greenPattern = greenFactory.create(PatternType.FWD);
+			greenPattern.createMarkers(component.rule.getName(), tempMatch);
+
+			ITGGMatch newMatch = new SimpleTGGMatch(tempMatch.getPatternName());
+			for (String p : TGGMatchParameterOrderProvider.getParams(PatternSuffixes.removeSuffix(tempMatch.getPatternName()))) {
+				if (tempMatch.getParameterNames().contains(p))
+					newMatch.put(p, tempMatch.get(p));
+			}
+			result.add(tempMatch);
+		}
+
+		return result;
 	}
 
 	private void processDeletions(OperationalShortcutRule osr, ITGGMatch brokenMatch) {

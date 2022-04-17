@@ -1,5 +1,7 @@
 package org.emoflon.ibex.tgg.operational.repair.strategies;
 
+import java.util.Collection;
+
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
@@ -17,10 +19,11 @@ public class PropDirectedShortcutRepairStrategy extends ShortcutRepairStrategy i
 	
 	@Override
 	public ITGGMatch repair(ITGGMatch repairCandidate) {
-		ITGGMatch repairedMatch = scTool.processBrokenMatch(propDirHolder.get().getPatternType(), repairCandidate);
-		if (repairedMatch != null)
-			logSuccessfulRepair(repairCandidate, repairedMatch);
-		return repairedMatch;
+		// FIXME hotfix: please adapt to multiple output matches
+		Collection<ITGGMatch> repairedMatches = scTool.processBrokenMatch(propDirHolder.get().getPatternType(), repairCandidate);
+		if (repairedMatches != null)
+			logSuccessfulRepair(repairCandidate, repairedMatches.iterator().next());
+		return repairedMatches.iterator().next();
 	}
 
 }

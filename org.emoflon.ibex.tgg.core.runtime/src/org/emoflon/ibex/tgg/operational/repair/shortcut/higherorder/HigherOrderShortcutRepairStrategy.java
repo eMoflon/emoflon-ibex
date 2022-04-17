@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.IGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.IRedInterpreter;
+import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.ShortcutPatternTool;
@@ -35,6 +36,7 @@ public class HigherOrderShortcutRepairStrategy {
 
 	private final IbexOptions options;
 
+	private final PrecedenceGraph pg;
 	private final TGGMatchUtilProvider mup;
 	private final IGreenInterpreter greenInterpreter;
 	private final IRedInterpreter redInterpreter;
@@ -47,6 +49,7 @@ public class HigherOrderShortcutRepairStrategy {
 			IGreenInterpreter greenInterpreter, IRedInterpreter redInterpreter) {
 		this.options = options;
 
+		this.pg = pg;
 		this.mup = mup;
 		this.greenInterpreter = greenInterpreter;
 		this.redInterpreter = redInterpreter;
@@ -58,11 +61,23 @@ public class HigherOrderShortcutRepairStrategy {
 
 	public void repair() {
 		Set<ShortcutApplicationPoint> shortcutApplPoints = scApplPointFinder.searchForShortcutApplications();
-		for (ShortcutApplicationPoint applPoint : shortcutApplPoints)
-			repairAtApplicationPoint(applPoint);
+		for (ShortcutApplicationPoint applPoint : shortcutApplPoints) {
+			Collection<ITGGMatch> repairedMatches = repairAtApplicationPoint(applPoint);
+			if (repairedMatches != null) {
+				for (PrecedenceNode originalNode : applPoint.originalNodes) {
+					options.matchHandler().removeBrokenRuleApplication(originalNode.getMatch().getRuleApplicationNode());
+					pg.removeMatch(originalNode.getMatch());
+				}
+				for (ITGGMatch repairedMatch : repairedMatches) {
+					options.matchHandler().addBrokenRuleApplication(repairedMatch.getRuleApplicationNode(), repairedMatch);
+					pg.notifyAddedMatch(repairedMatch);
+					pg.notifyRemovedMatch(repairedMatch);
+				}
+			}
+		}
 	}
 
-	private void repairAtApplicationPoint(ShortcutApplicationPoint applPoint) {
+	private Collection<ITGGMatch> repairAtApplicationPoint(ShortcutApplicationPoint applPoint) {
 		DomainType propagationDomain = switch (applPoint.propagationType) {
 			case SRC -> DomainType.SRC;
 			case TRG -> DomainType.TRG;
@@ -90,9 +105,10 @@ public class HigherOrderShortcutRepairStrategy {
 		ShortcutPatternTool shortcutPatternTool = new ShortcutPatternTool( //
 				options, greenInterpreter, redInterpreter, shortcutRules, Collections.singleton(shortcutPatternType), true);
 
-		ITGGMatch repairedMatch = shortcutPatternTool.processBrokenMatch(shortcutPatternType, applPoint.applNode.getMatch());
-		if (repairedMatch == null)
-			throw new RuntimeException("Repair failed (prototype exception)");
+		Collection<ITGGMatch> repairedMatches = shortcutPatternTool.processBrokenMatch(shortcutPatternType, applPoint.applNode.getMatch());
+		if (repairedMatches != null)
+			logSuccessfulRepair(applPoint.applNode.getMatch(), repairedMatches);
+		return repairedMatches;
 	}
 
 	private void createHigherOrderTGGOverlaps(HigherOrderTGGRule originalHigherOrderRule, HigherOrderTGGRule replacingHigherOrderRule,
@@ -132,6 +148,16 @@ public class HigherOrderShortcutRepairStrategy {
 		TGGRuleElement element = mu.getElement(sharingObject);
 		ComponentSpecificRuleElement componentSpecRuleElt = component.getComponentSpecificRuleElement(element);
 		return componentSpecRuleElt.getRespectiveHigherOrderElement();
+	}
+
+	private void logSuccessfulRepair(ITGGMatch repairCandidate, Collection<ITGGMatch> repairedMatches) {
+		LoggerConfig.log(LoggerConfig.log_repair(), () -> {
+			StringBuilder b = new StringBuilder();
+			b.append("  '-> repaired: '" + repairCandidate.getPatternName() + "' -> '");
+			b.append(String.join("--", repairedMatches.stream().map(m -> m.getPatternName()).toList()));
+			b.append("'");
+			return b.toString();
+		});
 	}
 
 }

@@ -8,19 +8,19 @@ import language.TGGRuleNode;
 
 public class HigherOrderSupport {
 
-	public static TGGRuleElement getHigherOrderElement(HigherOrderRuleComponent component, TGGRuleElement element) {
+	@SuppressWarnings("unchecked")
+	public static <E extends TGGRuleElement> E getHigherOrderElement(HigherOrderRuleComponent component, E element) {
 		ComponentSpecificRuleElement componentSpecRuleElt = component.getComponentSpecificRuleElement(element);
 		if (componentSpecRuleElt == null)
 			return null;
-		return componentSpecRuleElt.getRespectiveHigherOrderElement();
+		return (E) componentSpecRuleElt.getRespectiveHigherOrderElement();
 	}
 
-	public static String findEntryNodeName(HigherOrderTGGRule higherOrderRule, String tggRuleNodeName) {
-		HigherOrderRuleComponent closureComponent = higherOrderRule.getClosureComponent();
-		TGGRuleNode ruleNode = closureComponent.getNodeFromName(tggRuleNodeName);
+	public static String findHigherOrderNodeName(HigherOrderRuleComponent component, String tggRuleNodeName) {
+		TGGRuleNode ruleNode = component.getNodeFromName(tggRuleNodeName);
 		if (ruleNode == null)
 			return null;
-		ComponentSpecificRuleElement componentSpecRuleElt = closureComponent.getComponentSpecificRuleElement(ruleNode);
+		ComponentSpecificRuleElement componentSpecRuleElt = component.getComponentSpecificRuleElement(ruleNode);
 		if (componentSpecRuleElt == null)
 			return null;
 		return componentSpecRuleElt.getRespectiveHigherOrderElement().getName();

@@ -40,16 +40,20 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 	private final LinkedList<HigherOrderRuleComponent> components;
 	private final Map<ITGGMatch, HigherOrderRuleComponent> match2component;
 
+	private int componentCounter;
+
 	protected HigherOrderTGGRule() {
 		super();
 		this.components = new LinkedList<>();
 		this.match2component = new HashMap<>();
 
+		this.componentCounter = 0;
+
 		initTGGRuleContents();
 	}
 
 	protected void addComponent(TGGRule rule, ITGGMatch match, Map<TGGRuleElement, ComponentSpecificRuleElement> contextMapping) {
-		HigherOrderRuleComponent component = new HigherOrderRuleComponent(rule, contextMapping);
+		HigherOrderRuleComponent component = new HigherOrderRuleComponent(rule, match, contextMapping);
 		components.addLast(component);
 		match2component.put(match, component);
 
@@ -82,12 +86,16 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 
 	public class HigherOrderRuleComponent {
 		public final TGGRule rule;
+		public final ITGGMatch match;
 		public final Map<TGGRuleElement, ComponentSpecificRuleElement> contextMapping;
+		public final int id;
 		private final Map<String, TGGRuleNode> name2ruleNode;
 
-		private HigherOrderRuleComponent(TGGRule rule, Map<TGGRuleElement, ComponentSpecificRuleElement> contextMapping) {
+		private HigherOrderRuleComponent(TGGRule rule, ITGGMatch match, Map<TGGRuleElement, ComponentSpecificRuleElement> contextMapping) {
 			this.rule = rule;
+			this.match = match;
 			this.contextMapping = contextMapping;
+			this.id = componentCounter++;
 			this.name2ruleNode = rule.getNodes().stream() //
 					.collect(Collectors.toMap(n -> n.getName(), n -> n));
 		}
@@ -282,7 +290,7 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 		Collection<TGGInplaceAttributeExpression> toBeDeletedInplAttrExpr = new LinkedList<>();
 		for (TGGRuleNode node : TGGFilterUtil.filterNodes(nodes, BindingType.CREATE)) {
 			for (TGGInplaceAttributeExpression inplAttrExpr : node.getAttrExpr()) {
-				if (inplAttrExpr.getValueExpr()instanceof TGGAttributeExpression attrExpr) {
+				if (inplAttrExpr.getValueExpr() instanceof TGGAttributeExpression attrExpr) {
 					if (attrExpr.getObjectVar().getBindingType() == BindingType.CREATE) {
 						toBeDeletedInplAttrExpr.add(inplAttrExpr);
 						createEqualityCSP(rule, node, inplAttrExpr.getAttribute(), EcoreUtil.copy(attrExpr));
@@ -315,7 +323,9 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 		attrConstraint.getParameters().add(rhsAttrExpr);
 		attrConstraint.setDefinition(attrConstraintDef);
 
-		rule.getAttributeConditionLibrary().getTggAttributeConstraints().add(attrConstraint);
+		this.getAttributeConditionLibrary().getParameterValues().add(lhsAttrExpr);
+		this.getAttributeConditionLibrary().getParameterValues().add(rhsAttrExpr);
+		this.getAttributeConditionLibrary().getTggAttributeConstraints().add(attrConstraint);
 	}
 
 	private TGGAttributeConstraintDefinition getAttrConstraintDef(EAttribute attr, TGG tgg) {
