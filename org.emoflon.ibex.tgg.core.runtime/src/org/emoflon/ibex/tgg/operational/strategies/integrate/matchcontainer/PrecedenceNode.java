@@ -96,11 +96,11 @@ public class PrecedenceNode {
 	//// UTILS ////
 
 	/**
-	 * Executes the specified <code>action</code> for all nodes that are (transitively)
-	 * required by this node.<br>
-	 * The first predicate of the <code>action</code> is the actual node, while the second one
-	 * is the hierarchically previously processed node. If the <code>action</code> returns
-	 * <code>false</code>, the transition of the current branch stops at this point.
+	 * Executes the specified <code>action</code> for all nodes that are (transitively) required by this
+	 * node.<br>
+	 * The first predicate of the <code>action</code> is the actual node, while the second one is the
+	 * hierarchically previously processed node. If the <code>action</code> returns <code>false</code>,
+	 * the transition of the current branch stops at this point.
 	 * 
 	 * @param action the action
 	 */
@@ -120,11 +120,40 @@ public class PrecedenceNode {
 	}
 
 	/**
-	 * Executes the specified <code>action</code> for all nodes that (transitively) requires
-	 * this node.<br>
-	 * The first predicate of the <code>action</code> is the actual node, while the second one
-	 * is the hierarchically previously processed node. If the <code>action</code> returns
-	 * <code>false</code>, the transition of the current branch stops at this point.
+	 * Executes the specified <code>action</code> for all nodes that are (transitively) required by this
+	 * node.<br>
+	 * The first predicate of the <code>action</code> is the actual node, while the second one is the
+	 * hierarchically previously processed node. If the <code>action</code> returns <code>false</code>,
+	 * the transition of the current branch stops at this point.<br>
+	 * <br>
+	 * <b>Note:</b> this is the thread-safe version. For normal version see
+	 * {@link PrecedenceNode#forAllRequires(BiPredicate)}.
+	 * 
+	 * @param action the action
+	 */
+	public void forAllRequires_ts(BiPredicate<? super PrecedenceNode, ? super PrecedenceNode> action) {
+		Set<PrecedenceNode> processed = cfactory.createObjectSet();
+		forAllRequires_ts(this, action, processed);
+	}
+
+	private void forAllRequires_ts(PrecedenceNode node, BiPredicate<? super PrecedenceNode, ? super PrecedenceNode> action, Set<PrecedenceNode> processed) {
+		synchronized (node.getRequires()) {
+			for (PrecedenceNode n : node.getRequires()) {
+				if (!processed.contains(n)) {
+					processed.add(n);
+					if (action.test(n, node))
+						forAllRequires_ts(n, action, processed);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Executes the specified <code>action</code> for all nodes that (transitively) requires this
+	 * node.<br>
+	 * The first predicate of the <code>action</code> is the actual node, while the second one is the
+	 * hierarchically previously processed node. If the <code>action</code> returns <code>false</code>,
+	 * the transition of the current branch stops at this point.
 	 * 
 	 * @param action the action
 	 */
@@ -144,13 +173,42 @@ public class PrecedenceNode {
 	}
 
 	/**
-	 * Executes the specified <code>action</code> for all nodes that (transitively) requires
-	 * this node.<br>
-	 * <b>Important note:</b> this implementation may visit some nodes multiple times. For one
-	 * time visitation use {@link PrecedenceNode#forAllRequiredBy(BiPredicate)}.<br>
-	 * The first predicate of the <code>action</code> is the actual node, while the second one
-	 * is the hierarchically previously processed node. If the <code>action</code> returns
-	 * <code>false</code>, the transition of the current branch stops at this point.
+	 * Executes the specified <code>action</code> for all nodes that (transitively) requires this
+	 * node.<br>
+	 * The first predicate of the <code>action</code> is the actual node, while the second one is the
+	 * hierarchically previously processed node. If the <code>action</code> returns <code>false</code>,
+	 * the transition of the current branch stops at this point.<br>
+	 * <br>
+	 * <b>Note:</b> this is the thread-safe version. For normal version see
+	 * {@link PrecedenceNode#forAllRequiredBy(BiPredicate)}.
+	 * 
+	 * @param action the action
+	 */
+	public void forAllRequiredBy_ts(BiPredicate<? super PrecedenceNode, ? super PrecedenceNode> action) {
+		Set<PrecedenceNode> processed = cfactory.createObjectSet();
+		forAllRequiredBy_ts(this, action, processed);
+	}
+
+	private void forAllRequiredBy_ts(PrecedenceNode node, BiPredicate<? super PrecedenceNode, ? super PrecedenceNode> action, Set<PrecedenceNode> processed) {
+		synchronized (node.getRequiredBy()) {
+			for (PrecedenceNode n : node.getRequiredBy()) {
+				if (!processed.contains(n)) {
+					processed.add(n);
+					if (action.test(n, node))
+						forAllRequiredBy_ts(n, action, processed);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Executes the specified <code>action</code> for all nodes that (transitively) requires this
+	 * node.<br>
+	 * <b>Important note:</b> this implementation may visit some nodes multiple times. For one time
+	 * visitation use {@link PrecedenceNode#forAllRequiredBy(BiPredicate)}.<br>
+	 * The first predicate of the <code>action</code> is the actual node, while the second one is the
+	 * hierarchically previously processed node. If the <code>action</code> returns <code>false</code>,
+	 * the transition of the current branch stops at this point.
 	 * 
 	 * @param action the action
 	 */
@@ -166,11 +224,11 @@ public class PrecedenceNode {
 	}
 
 	/**
-	 * Executes the specified <code>action</code> for all nodes that directly or indirectly
-	 * are going to roll back this node.<br>
-	 * The first predicate of the <code>action</code> is the actual node, while the second one
-	 * is the hierarchically previously processed node. If the <code>action</code> returns
-	 * <code>false</code>, the transition of the current branch stops at this point.
+	 * Executes the specified <code>action</code> for all nodes that directly or indirectly are going to
+	 * roll back this node.<br>
+	 * The first predicate of the <code>action</code> is the actual node, while the second one is the
+	 * hierarchically previously processed node. If the <code>action</code> returns <code>false</code>,
+	 * the transition of the current branch stops at this point.
 	 * 
 	 * @param action the action
 	 */

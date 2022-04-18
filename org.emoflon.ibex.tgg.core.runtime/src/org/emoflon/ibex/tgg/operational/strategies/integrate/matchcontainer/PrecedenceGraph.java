@@ -281,7 +281,7 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 		}
 		if (!node.getToBeRolledBackBy().isEmpty()) {
 			implicitBrokenNodes.add(node);
-			node.forAllRequiredBy((n, pre) -> {
+			node.forAllRequiredBy_ts((n, pre) -> {
 				boolean wasIntact = n.getToBeRolledBackBy().isEmpty();
 				n.addToBeRolledBackBy(pre);
 				if (wasIntact && !n.isBroken())
