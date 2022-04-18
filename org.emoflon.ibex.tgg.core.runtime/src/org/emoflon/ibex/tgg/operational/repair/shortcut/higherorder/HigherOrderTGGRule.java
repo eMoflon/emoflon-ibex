@@ -373,9 +373,14 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 
 		Collection<NAC> copiedNacs = EcoreUtil.copyAll(rule.getNacs());
 		for (NAC nac : copiedNacs) {
-
-			// TODO continue
-
+			// TODO check if this works
+			for (TGGRuleNode nacNode : nac.getNodes()) {
+				TGGRuleNode ruleNode = component.getNodeFromName(nacNode.getName());
+				if (ruleNode != null) {
+					TGGRuleNode hoNode = HigherOrderSupport.getHigherOrderElement(component, ruleNode);
+					nacNode.setName(hoNode.getName());
+				}
+			}
 		}
 	}
 
