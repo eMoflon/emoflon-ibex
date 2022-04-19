@@ -16,6 +16,7 @@ import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.matches.BrokenMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.repair.strategies.AttributeRepairStrategy;
+import org.emoflon.ibex.tgg.operational.repair.strategies.RepairApplicationPoint;
 import org.emoflon.ibex.tgg.operational.repair.strategies.RepairStrategy;
 import org.emoflon.ibex.tgg.operational.repair.strategies.ShortcutRepairStrategy;
 import org.emoflon.ibex.tgg.operational.repair.strategies.ShortcutRepairStrategy.RepairableMatch;
@@ -161,7 +162,8 @@ public class ConcRepair implements TimeMeasurable {
 				PatternType type = srcChange ? PatternType.FWD : PatternType.BWD;
 				List<TGGAttributeConstraint> constraints = new LinkedList<>();
 				constraints.add(attrCh.constraint);
-				ITGGMatch repairedMatch = attributeRepairStrat.repair(constraints, classifiedMatch.getMatch(), type);
+				RepairApplicationPoint applPoint = new RepairApplicationPoint(classifiedMatch.getMatch(), type);
+				ITGGMatch repairedMatch = attributeRepairStrat.repair(constraints, applPoint);
 				if (repairedMatch != null)
 					repairedSth = true;
 			}
@@ -173,12 +175,12 @@ public class ConcRepair implements TimeMeasurable {
 	private ITGGMatch repairViaShortcut(ClassifiedMatch classifiedMatch) {
 		DeletionType delType = classifiedMatch.getDeletionType();
 		if (DeletionType.shortcutCCCandidates.contains(delType)) {
-			return shortcutRepairStrat.repair(classifiedMatch.getMatch(), PatternType.CC);
+			return shortcutRepairStrat.repair(new RepairApplicationPoint(classifiedMatch.getMatch(), PatternType.CC));
 		} else if (DeletionType.shortcutPropCandidates.contains(delType)) {
 			PatternType type = delType == DeletionType.SRC_PARTLY_TRG_NOT ? PatternType.FWD : PatternType.BWD;
-			ITGGMatch repairedMatch = shortcutRepairStrat.repair(classifiedMatch.getMatch(), type);
+			ITGGMatch repairedMatch = shortcutRepairStrat.repair(new RepairApplicationPoint(classifiedMatch.getMatch(), type));
 			if (repairedMatch == null) {
-				repairedMatch = shortcutRepairStrat.repair(classifiedMatch.getMatch(), PatternType.CC);
+				repairedMatch = shortcutRepairStrat.repair(new RepairApplicationPoint(classifiedMatch.getMatch(), PatternType.CC));
 			}
 			return repairedMatch;
 		}
@@ -200,7 +202,7 @@ public class ConcRepair implements TimeMeasurable {
 	private ITGGMatch repairOneMatch(RepairStrategy repairStrat, ITGGMatch repairCandidate, PatternType type) {
 		ITGGMatch repairedMatch = null;
 		if (type != null)
-			repairedMatch = repairStrat.repair(repairCandidate, type);
+			repairedMatch = repairStrat.repair(new RepairApplicationPoint(repairCandidate, type));
 
 		if (repairedMatch != null) {
 			opStrat.getMatchHandler().removeBrokenRuleApplication(repairCandidate.getRuleApplicationNode());

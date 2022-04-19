@@ -60,12 +60,12 @@ public class ShortcutRepairStrategy implements RepairStrategy {
 	}
 
 	@Override
-	public ITGGMatch repair(ITGGMatch repairCandidate, PatternType type) {
+	public ITGGMatch repair(RepairApplicationPoint applPoint) {
 		// FIXME hotfix: please adapt to multiple output matches
-		Collection<ITGGMatch> repairedMatches = scTool.processBrokenMatch(type, repairCandidate);
+		Collection<ITGGMatch> repairedMatches = scTool.repairAtApplicationPoint(applPoint);
 		if (repairedMatches != null) {
 			ITGGMatch repairedMatch = repairedMatches.iterator().next();
-			logSuccessfulRepair(repairCandidate, repairedMatch);
+			logSuccessfulRepair(applPoint.getApplicationMatch(), repairedMatch);
 			return repairedMatch;
 		}
 		return null;

@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.IGreenInterpreter;
 import org.emoflon.ibex.tgg.operational.IRedInterpreter;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
@@ -17,7 +16,6 @@ import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.ShortcutPatternTool;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRule.ComponentSpecificRuleElement;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRule.HigherOrderRuleComponent;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.ShortcutApplicationPointFinder.ShortcutApplicationPoint;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.OverlapCategory;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.OverlapUtil;
@@ -64,7 +62,7 @@ public class HigherOrderShortcutRepairStrategy {
 		for (ShortcutApplicationPoint applPoint : shortcutApplPoints) {
 			Collection<ITGGMatch> repairedMatches = repairAtApplicationPoint(applPoint);
 			if (repairedMatches != null) {
-				for (PrecedenceNode originalNode : applPoint.originalNodes) {
+				for (PrecedenceNode originalNode : applPoint.getOriginalNodes()) {
 					options.matchHandler().removeBrokenRuleApplication(originalNode.getMatch().getRuleApplicationNode());
 					pg.removeMatch(originalNode.getMatch());
 				}
@@ -78,14 +76,14 @@ public class HigherOrderShortcutRepairStrategy {
 	}
 
 	private Collection<ITGGMatch> repairAtApplicationPoint(ShortcutApplicationPoint applPoint) {
-		DomainType propagationDomain = switch (applPoint.propagationType) {
+		DomainType propagationDomain = switch (applPoint.getPropagationMatchType()) {
 			case SRC -> DomainType.SRC;
 			case TRG -> DomainType.TRG;
-			default -> throw new RuntimeException("Unexpected propagation type: " + applPoint.propagationType);
+			default -> throw new RuntimeException("Unexpected propagation type: " + applPoint.getRepairType());
 		};
 
-		HigherOrderTGGRule originalHigherOrderRule = ruleFactory.createHigherOrderTGGRuleFromConsMatches(applPoint.originalNodes);
-		Set<HigherOrderTGGRule> replacingHigherOrderRules = applPoint.setOfReplacingNodes.stream() //
+		HigherOrderTGGRule originalHigherOrderRule = ruleFactory.createHigherOrderTGGRuleFromConsMatches(applPoint.getOriginalNodes());
+		Set<HigherOrderTGGRule> replacingHigherOrderRules = applPoint.getSetOfReplacingNodes().stream() //
 				.map(n -> ruleFactory.createHigherOrderTGGRuleFromSrcTrgNodes(n, propagationDomain)) //
 				.collect(Collectors.toSet());
 
@@ -97,17 +95,12 @@ public class HigherOrderShortcutRepairStrategy {
 				.map(overlap -> new ShortcutRule(overlap, options)) //
 				.collect(Collectors.toList());
 
-		PatternType shortcutPatternType = switch (applPoint.propagationType) {
-			case SRC -> PatternType.FWD;
-			case TRG -> PatternType.BWD;
-			default -> throw new IllegalArgumentException("Unexpected value: " + applPoint.propagationType);
-		};
 		ShortcutPatternTool shortcutPatternTool = new ShortcutPatternTool( //
-				options, greenInterpreter, redInterpreter, shortcutRules, Collections.singleton(shortcutPatternType), true);
+				options, greenInterpreter, redInterpreter, shortcutRules, Collections.singleton(applPoint.getRepairType()), true);
 
-		Collection<ITGGMatch> repairedMatches = shortcutPatternTool.processBrokenMatch(shortcutPatternType, applPoint.applNode.getMatch());
+		Collection<ITGGMatch> repairedMatches = shortcutPatternTool.repairAtApplicationPoint(applPoint);
 		if (repairedMatches != null)
-			logSuccessfulRepair(applPoint.applNode.getMatch(), repairedMatches);
+			logSuccessfulRepair(applPoint.getApplicationMatch(), repairedMatches);
 		return repairedMatches;
 	}
 
@@ -117,7 +110,7 @@ public class HigherOrderShortcutRepairStrategy {
 		Set<TGGRuleElement> replacingElts = new HashSet<>();
 		Map<TGGRuleElement, TGGRuleElement> mappings = new HashMap<>();
 
-		Map<PrecedenceNode, Map<PrecedenceNode, Set<Object>>> pgNodeOverlaps = applPoint.original2replacingNodesOverlaps;
+		Map<PrecedenceNode, Map<PrecedenceNode, Set<Object>>> pgNodeOverlaps = applPoint.getOriginal2replacingNodesOverlaps();
 		for (PrecedenceNode originalPGNode : pgNodeOverlaps.keySet()) {
 			HigherOrderRuleComponent originalComponent = originalHigherOrderRule.getComponent(originalPGNode.getMatch());
 			if (originalComponent == null)

@@ -43,6 +43,7 @@ import org.emoflon.ibex.tgg.operational.repair.shortcut.search.LocalPatternSearc
 import org.emoflon.ibex.tgg.operational.repair.shortcut.updatepolicy.IShortcutRuleUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCMatch;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCPersistence;
+import org.emoflon.ibex.tgg.operational.repair.strategies.RepairApplicationPoint;
 import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 import org.emoflon.ibex.tgg.util.TGGFilterUtil;
 
@@ -128,13 +129,15 @@ public class ShortcutPatternTool implements TimeMeasurable {
 		}
 	}
 
-	public Collection<ITGGMatch> processBrokenMatch(PatternType type, ITGGMatch brokenMatch) {
-		if (type == null)
-			return null;
+	public Collection<ITGGMatch> repairAtApplicationPoint(RepairApplicationPoint applPoint) {
+		PatternType repairType = applPoint.getRepairType();
+		ITGGMatch applMatch = applPoint.getApplicationMatch();
 
-		if (tggRule2opSCRule.containsKey(type)) {
-			return processBrokenMatch(tggRule2opSCRule.get(type).get(brokenMatch.getRuleName()), brokenMatch);
+		if (tggRule2opSCRule.containsKey(repairType)) {
+			Collection<OperationalShortcutRule> shortcutRules = tggRule2opSCRule.get(repairType).get(applMatch.getRuleName());
+			return repairAtApplicationMatch(shortcutRules, applMatch);
 		}
+
 		return null;
 	}
 
@@ -157,7 +160,7 @@ public class ShortcutPatternTool implements TimeMeasurable {
 		return result;
 	}
 
-	private Collection<ITGGMatch> processBrokenMatch(Collection<OperationalShortcutRule> rules, ITGGMatch brokenMatch) {
+	private Collection<ITGGMatch> repairAtApplicationMatch(Collection<OperationalShortcutRule> rules, ITGGMatch brokenMatch) {
 		if (rules == null)
 			return null;
 
@@ -200,6 +203,7 @@ public class ShortcutPatternTool implements TimeMeasurable {
 			return transformToReplacingMatches(osr, newCoMatch.get());
 
 		} while (!copiedRules.isEmpty());
+
 		return null;
 	}
 

@@ -1,6 +1,5 @@
 package org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -99,50 +98,24 @@ public class ShortcutApplicationPointFinder {
 
 	private void processSubsetShortcutApplications(Set<ShortcutApplicationPoint> shortcutApplications) {
 		Map<PrecedenceNode, ShortcutApplicationPoint> upperNode2scApplication = shortcutApplications.stream() //
-				.collect(Collectors.toMap(a -> a.originalNodes.get(0), a -> a));
+				.collect(Collectors.toMap(a -> a.getOriginalNodes().get(0), a -> a));
 
 		Set<ShortcutApplicationPoint> subsetScApplications = new HashSet<>();
 		for (ShortcutApplicationPoint shortcutApplication : shortcutApplications) {
-			for (int i = 1; i < shortcutApplication.originalNodes.size(); i++) {
-				PrecedenceNode originalNode = shortcutApplication.originalNodes.get(i);
+			for (int i = 1; i < shortcutApplication.getOriginalNodes().size(); i++) {
+				PrecedenceNode originalNode = shortcutApplication.getOriginalNodes().get(i);
 				if (upperNode2scApplication.containsKey(originalNode)) {
 					ShortcutApplicationPoint subsetScAppl = upperNode2scApplication.get(originalNode);
 					shortcutApplication.subsetScApplications.add(subsetScAppl);
 					subsetScApplications.add(subsetScAppl);
 
 					// add missing overlaps
-					Map<PrecedenceNode, Set<Object>> replacingNodeOverlaps = subsetScAppl.original2replacingNodesOverlaps.get(originalNode);
+					Map<PrecedenceNode, Set<Object>> replacingNodeOverlaps = subsetScAppl.getOriginal2replacingNodesOverlaps().get(originalNode);
 					shortcutApplication.addOverlaps(originalNode, replacingNodeOverlaps);
 				}
 			}
 		}
 		shortcutApplications.removeAll(subsetScApplications);
-	}
-
-	public class ShortcutApplicationPoint {
-		public final PrecedenceNode applNode;
-		public final List<PrecedenceNode> originalNodes;
-		public final Set<List<PrecedenceNode>> setOfReplacingNodes;
-		public final PatternType propagationType;
-
-		public final Map<PrecedenceNode, Map<PrecedenceNode, Set<Object>>> original2replacingNodesOverlaps;
-		final Set<ShortcutApplicationPoint> subsetScApplications;
-
-		ShortcutApplicationPoint(PrecedenceNode applNode, List<PrecedenceNode> originalNodes, Set<List<PrecedenceNode>> setOfReplacingNodes,
-				PatternType propagationType) {
-			this.applNode = applNode;
-			this.originalNodes = originalNodes;
-			this.setOfReplacingNodes = setOfReplacingNodes;
-			this.propagationType = propagationType;
-
-			this.original2replacingNodesOverlaps = new HashMap<>();
-
-			this.subsetScApplications = new HashSet<>();
-		}
-
-		public void addOverlaps(PrecedenceNode originalNode, Map<PrecedenceNode, Set<Object>> replacingNodes2overlappingElts) {
-			original2replacingNodesOverlaps.put(originalNode, replacingNodes2overlappingElts);
-		}
 	}
 
 }
