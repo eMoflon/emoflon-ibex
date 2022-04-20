@@ -18,17 +18,15 @@ import language.TGGRule;
 public class OperationalSCFactory {
 
 	private final IbexOptions options;
+	private final ACAnalysis filterNACAnalysis;
 
-	private Collection<ShortcutRule> scRules;
-
-	public OperationalSCFactory(IbexOptions options, Collection<ShortcutRule> scRules) {
+	public OperationalSCFactory(IbexOptions options) {
 		this.options = options;
-		this.scRules = scRules;
+		this.filterNACAnalysis = new ACAnalysis(options.tgg.tgg(), options);
 	}
 
-	public Map<String, Collection<OperationalShortcutRule>> createOperationalRules(PatternType type) {
+	public Map<String, Collection<OperationalShortcutRule>> createOperationalRules(Collection<ShortcutRule> scRules, PatternType type) {
 		Map<String, Collection<OperationalShortcutRule>> operationalRules = new HashMap<>();
-		ACAnalysis filterNACAnalysis = new ACAnalysis(options.tgg.tgg(), options);
 
 		for (ShortcutRule scRule : scRules) {
 			TGGRule originalRule = scRule.getOriginalRule();
@@ -49,6 +47,7 @@ public class OperationalSCFactory {
 					: originalRule.getName();
 			operationalRules.computeIfAbsent(keyRuleName, k -> new LinkedList<>()).add(opSCR);
 		}
+
 		return operationalRules;
 	}
 

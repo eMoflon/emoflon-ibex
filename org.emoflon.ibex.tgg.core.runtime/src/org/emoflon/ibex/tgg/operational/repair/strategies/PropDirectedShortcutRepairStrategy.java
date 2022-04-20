@@ -21,7 +21,7 @@ public class PropDirectedShortcutRepairStrategy extends ShortcutRepairStrategy i
 	public ITGGMatch repair(ITGGMatch repairCandidate) {
 		// FIXME hotfix: please adapt to multiple output matches
 		RepairApplicationPoint applPoint = new RepairApplicationPoint(repairCandidate, propDirHolder.get().getPatternType());
-		Collection<ITGGMatch> repairedMatches = scTool.repairAtApplicationPoint(applPoint);
+		Collection<ITGGMatch> repairedMatches = shortcutPatternTool.repairAtApplicationPoint(applPoint);
 		if (repairedMatches != null) {
 			ITGGMatch repairedMatch = repairedMatches.iterator().next();
 			logSuccessfulRepair(repairCandidate, repairedMatch);

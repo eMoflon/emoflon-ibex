@@ -35,14 +35,11 @@ import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderSupport;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRule.HigherOrderRuleComponent;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.OperationalSCFactory;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.OperationalShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule.SCInputRule;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.search.LocalPatternSearch;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.updatepolicy.IShortcutRuleUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCMatch;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCPersistence;
 import org.emoflon.ibex.tgg.operational.repair.strategies.RepairApplicationPoint;
 import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 import org.emoflon.ibex.tgg.util.TGGFilterUtil;
@@ -72,109 +69,58 @@ public class ShortcutPatternTool implements TimeMeasurable {
 	private final IbexOptions options;
 	private final IGreenInterpreter greenInterpreter;
 	private final IRedInterpreter redInterpreter;
+	private final ShortcutPatternProvider shortcutPatternProvider;
 
 	private TGGResourceHandler resourceHandler;
-	private Collection<ShortcutRule> scRules;
-	private Map<PatternType, Map<String, Collection<OperationalShortcutRule>>> tggRule2opSCRule;
-	private Map<OperationalShortcutRule, LocalPatternSearch> rule2matcher;
 
 	public ShortcutPatternTool(IbexOptions options, IGreenInterpreter greenInterpreter, IRedInterpreter redInterpreter, //
-			Collection<ShortcutRule> scRules, Set<PatternType> types, boolean persistShortcutRules) {
+			ShortcutPatternProvider shortcutPatternProvider) {
 		TimeRegistry.register(this);
 
 		this.options = options;
 		this.greenInterpreter = greenInterpreter;
 		this.redInterpreter = redInterpreter;
+		this.shortcutPatternProvider = shortcutPatternProvider;
 
-		this.scRules = scRules;
 		this.resourceHandler = options.resourceHandler();
-
-		initialize(types);
-
-		if (persistShortcutRules)
-			persistShortcutRules();
-	}
-
-	private void initialize(Set<PatternType> types) {
-		OperationalSCFactory factory = new OperationalSCFactory(options, scRules);
-
-		tggRule2opSCRule = new HashMap<>();
-		for (PatternType type : types) {
-			tggRule2opSCRule.put(type, factory.createOperationalRules(type));
-		}
-
-		rule2matcher = new HashMap<>();
-		tggRule2opSCRule.values().stream() //
-				.flatMap(m -> m.values().stream()) //
-				.flatMap(c -> c.stream()) //
-				.forEach(r -> rule2matcher.put(r, new LocalPatternSearch(r, options)));
-
-		tggRule2opSCRule.forEach((type, map) -> LoggerConfig.log(LoggerConfig.log_repair(), //
-				() -> "Generated " + map.values().stream().map(s -> s.size()).reduce(0, (a, b) -> a + b) //
-						+ " " + type.name() + " Repair Rules"));
-	}
-
-	private void persistShortcutRules() {
-		SCPersistence persistence = new SCPersistence(options);
-		persistence.saveSCRules(scRules);
-		Map<String, Collection<OperationalShortcutRule>> fwdOpSCRs = tggRule2opSCRule.get(PatternType.FWD);
-		if (fwdOpSCRs != null) {
-			persistence.saveOperationalFWDSCRules(fwdOpSCRs.values().stream() //
-					.flatMap(c -> c.stream()).collect(Collectors.toList()));
-		}
-		Map<String, Collection<OperationalShortcutRule>> bwdOpSCRs = tggRule2opSCRule.get(PatternType.BWD);
-		if (bwdOpSCRs != null) {
-			persistence.saveOperationalBWDSCRules(bwdOpSCRs.values().stream() //
-					.flatMap(c -> c.stream()).collect(Collectors.toList()));
-		}
 	}
 
 	public Collection<ITGGMatch> repairAtApplicationPoint(RepairApplicationPoint applPoint) {
-		PatternType repairType = applPoint.getRepairType();
-		ITGGMatch applMatch = applPoint.getApplicationMatch();
-
-		if (tggRule2opSCRule.containsKey(repairType)) {
-			Collection<OperationalShortcutRule> shortcutRules = tggRule2opSCRule.get(repairType).get(applMatch.getRuleName());
-			return repairAtApplicationMatch(shortcutRules, applMatch);
-		}
-
-		return null;
+		Collection<OperationalShortcutRule> opShortcutRules = shortcutPatternProvider.getOperationalShortcutRules(applPoint);
+		return repairAtApplicationMatch(opShortcutRules, applPoint.getApplicationMatch());
 	}
 
-	public Map<SCMatch, OperationalShortcutRule> isRepairable(PatternType type, ITGGMatch brokenMatch, String replacingRuleName) {
+	public Map<SCMatch, OperationalShortcutRule> isRepairable(RepairApplicationPoint applPoint, String replacingRuleName) {
 		Map<SCMatch, OperationalShortcutRule> result = new HashMap<>();
 
-		if (type == null)
-			return result;
+		Collection<OperationalShortcutRule> opShortcutRules = shortcutPatternProvider.getOperationalShortcutRules(applPoint);
 
-		if (tggRule2opSCRule.containsKey(type)) {
-			Collection<OperationalShortcutRule> opSCRs = tggRule2opSCRule.get(type).get(brokenMatch.getRuleName());
-			for (OperationalShortcutRule opSCR : opSCRs) {
-				if (opSCR.getOperationalizedSCR().getReplacingRule().getName().equals(replacingRuleName)) {
-					SCMatch shortcutMatch = (SCMatch) matchShortcutRule(opSCR, brokenMatch);
-					if (shortcutMatch != null)
-						result.put(shortcutMatch, opSCR);
-				}
+		for (OperationalShortcutRule opSCR : opShortcutRules) {
+			if (opSCR.getOperationalizedSCR().getReplacingRule().getName().equals(replacingRuleName)) {
+				SCMatch shortcutMatch = (SCMatch) matchShortcutRule(opSCR, applPoint.getApplicationMatch());
+				if (shortcutMatch != null)
+					result.put(shortcutMatch, opSCR);
 			}
 		}
+
 		return result;
 	}
 
-	private Collection<ITGGMatch> repairAtApplicationMatch(Collection<OperationalShortcutRule> rules, ITGGMatch brokenMatch) {
-		if (rules == null)
+	private Collection<ITGGMatch> repairAtApplicationMatch(Collection<OperationalShortcutRule> rules, ITGGMatch applMatch) {
+		if (rules == null || rules.isEmpty())
 			return null;
 
 		Collection<OperationalShortcutRule> copiedRules = new ArrayList<>(rules);
 		IShortcutRuleUpdatePolicy policy = options.repair.shortcutRuleUpdatePolicy();
 		do {
-			OperationalShortcutRule osr = policy.chooseOneShortcutRule(copiedRules, brokenMatch);
+			OperationalShortcutRule osr = policy.chooseOneShortcutRule(copiedRules, applMatch);
 			if (osr == null)
 				return null;
 
 			LoggerConfig.log(LoggerConfig.log_repair(), () -> //
-			"Repair attempt: " + brokenMatch.getPatternName() + "(" + brokenMatch.hashCode() + ") with " + osr.getName());
+			"Repair attempt at: " + applMatch.getPatternName() + "(" + applMatch.hashCode() + ") with " + osr.getName());
 			Timer.start();
-			ITGGMatch newMatch = matchShortcutRule(osr, brokenMatch);
+			ITGGMatch newMatch = matchShortcutRule(osr, applMatch);
 			times.addTo("processBrokenMatch", Timer.stop());
 			if (newMatch == null) {
 				copiedRules.remove(osr);
@@ -207,14 +153,14 @@ public class ShortcutPatternTool implements TimeMeasurable {
 		return null;
 	}
 
-	private SCMatch matchShortcutRule(OperationalShortcutRule osr, ITGGMatch brokenMatch) {
+	private SCMatch matchShortcutRule(OperationalShortcutRule osr, ITGGMatch applMatch) {
 		ShortcutRule shortcutRule = osr.getOperationalizedSCR();
 
 		Map<String, EObject> name2entryNodeElt = shortcutRule.getOriginalRule() instanceof HigherOrderTGGRule hoRule //
 				? getEntryNodeElts(shortcutRule, hoRule)
-				: getEntryNodeElts(shortcutRule, brokenMatch);
+				: getEntryNodeElts(shortcutRule, applMatch);
 
-		return rule2matcher.get(osr).findMatch(name2entryNodeElt);
+		return shortcutPatternProvider.getPatternSearch(osr).findMatch(name2entryNodeElt);
 	}
 
 	private Map<String, EObject> getEntryNodeElts(ShortcutRule shortcutRule, ITGGMatch entryMatch) {
@@ -359,7 +305,8 @@ public class ShortcutPatternTool implements TimeMeasurable {
 			}
 
 			if (toBeDeletedRuntimeEdge.getSource() != null && toBeDeletedRuntimeEdge.getTarget() != null)
-				edgesToRevoke.add(new EMFEdge(toBeDeletedRuntimeEdge.getSource(), toBeDeletedRuntimeEdge.getTarget(), toBeDeletedRuntimeEdge.getType()));
+				edgesToRevoke
+						.add(new EMFEdge(toBeDeletedRuntimeEdge.getSource(), toBeDeletedRuntimeEdge.getTarget(), toBeDeletedRuntimeEdge.getType()));
 		});
 
 		Set<EObject> nodesToRevoke = new HashSet<>();
@@ -371,7 +318,8 @@ public class ShortcutPatternTool implements TimeMeasurable {
 		Collection<TGGRuleNode> contextRuleNodes = TGGFilterUtil.filterNodes(shortcutRule.getNodes(), BindingType.CONTEXT);
 		for (TGGRuleNode n : contextRuleNodes) {
 			EObject e = (EObject) brokenMatch.get(n.getName());
-			if (e.eContainer() == null && e.eResource() == null || e.eResource() != null && e.eResource().getContents().get(0) instanceof TempContainer) {
+			if (e.eContainer() == null && e.eResource() == null
+					|| e.eResource() != null && e.eResource().getContents().get(0) instanceof TempContainer) {
 				if (n.getDomainType().equals(DomainType.SRC))
 					resourceHandler.getSourceResource().getContents().add(e);
 				if (n.getDomainType().equals(DomainType.TRG))
@@ -396,8 +344,8 @@ public class ShortcutPatternTool implements TimeMeasurable {
 			throw new RuntimeException("IbexGreenInterpreter implementation is needed", e);
 		}
 		TGGFilterUtil.filterNodes(osr.getOperationalizedSCR().getNodes(), objDomain).stream() //
-		.filter(n -> osr.getOperationalizedSCR().getPreservedNodes().contains(n)) //
-		.forEach(n -> ibexGreenInterpr.applyInPlaceAttributeAssignments(newMatch, n, (EObject) newMatch.get(n.getName())));
+				.filter(n -> osr.getOperationalizedSCR().getPreservedNodes().contains(n)) //
+				.forEach(n -> ibexGreenInterpr.applyInPlaceAttributeAssignments(newMatch, n, (EObject) newMatch.get(n.getName())));
 	}
 
 	private DomainType getObjectDomain(PatternType type) {
