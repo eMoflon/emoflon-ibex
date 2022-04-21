@@ -10,7 +10,7 @@ import runtime.TGGRuleApplication;
 
 public interface RepairStrategy {
 
-	ITGGMatch repair(RepairApplicationPoint applPoint);
+	Collection<ITGGMatch> repair(RepairApplicationPoint applPoint);
 
 	default Collection<ITGGMatch> chooseMatches(Map<TGGRuleApplication, ITGGMatch> brokenRuleApplications) {
 		return brokenRuleApplications.keySet() //

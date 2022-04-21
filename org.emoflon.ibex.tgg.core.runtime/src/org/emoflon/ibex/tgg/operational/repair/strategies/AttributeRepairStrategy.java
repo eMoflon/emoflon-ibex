@@ -1,5 +1,7 @@
 package org.emoflon.ibex.tgg.operational.repair.strategies;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,22 +31,22 @@ public class AttributeRepairStrategy implements RepairStrategy {
 	}
 
 	@Override
-	public ITGGMatch repair(RepairApplicationPoint applPoint) {
+	public Collection<ITGGMatch> repair(RepairApplicationPoint applPoint) {
 		PropagationDirection propDir = PropagationDirection.byPatternType(applPoint.getRepairType());
 		if (propDir == null)
 			return null;
 
 		ITGGMatch applMatch = applPoint.getApplicationMatch();
-		return repair(applMatch, determineCSP(propDir, opStrat.getGreenFactories().get(applMatch), applMatch));
+		return Collections.singletonList(repair(applMatch, determineCSP(propDir, opStrat.getGreenFactories().get(applMatch), applMatch)));
 	}
 
-	public ITGGMatch repair(List<TGGAttributeConstraint> constraints, RepairApplicationPoint applPoint) {
+	public Collection<ITGGMatch> repair(List<TGGAttributeConstraint> constraints, RepairApplicationPoint applPoint) {
 		PropagationDirection propDir = PropagationDirection.byPatternType(applPoint.getRepairType());
 		if (propDir == null)
 			return null;
 
 		ITGGMatch applMatch = applPoint.getApplicationMatch();
-		return repair(applMatch, determineCSP(propDir, constraints, applMatch));
+		return Collections.singletonList(repair(applMatch, determineCSP(propDir, constraints, applMatch)));
 	}
 
 	protected ITGGMatch repair(ITGGMatch repairCandidate, IRuntimeTGGAttrConstrContainer csp) {

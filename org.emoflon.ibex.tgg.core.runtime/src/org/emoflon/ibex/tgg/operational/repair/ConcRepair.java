@@ -3,6 +3,7 @@ package org.emoflon.ibex.tgg.operational.repair;
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -15,6 +16,7 @@ import org.emoflon.ibex.tgg.operational.benchmark.Times;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.matches.BrokenMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.ShortcutApplicationPoint;
 import org.emoflon.ibex.tgg.operational.repair.strategies.AttributeRepairStrategy;
 import org.emoflon.ibex.tgg.operational.repair.strategies.RepairApplicationPoint;
 import org.emoflon.ibex.tgg.operational.repair.strategies.RepairStrategy;
@@ -25,6 +27,7 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.Clas
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DeletionPattern;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DeletionType;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DomainModification;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceNode;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchAnalyzer.ConstrainedAttributeChanges;
 
 import language.BindingType;
@@ -85,7 +88,7 @@ public class ConcRepair implements TimeMeasurable {
 					DomainModification srcModType = pattern.getModType(DomainType.SRC, BindingType.CREATE);
 					DomainModification trgModType = pattern.getModType(DomainType.TRG, BindingType.CREATE);
 					return !(srcModType == DomainModification.COMPL_DEL && trgModType == DomainModification.UNCHANGED || //
-					srcModType == DomainModification.UNCHANGED && trgModType == DomainModification.COMPL_DEL);
+							srcModType == DomainModification.UNCHANGED && trgModType == DomainModification.COMPL_DEL);
 				}) //
 				.forEach(dependencyContainer::addMatch);
 
@@ -102,21 +105,15 @@ public class ConcRepair implements TimeMeasurable {
 				boolean repairedSth = false;
 				ClassifiedMatch classifiedMatch = opStrat.matchClassifier().get(repairCandidate);
 
-				ITGGMatch repairedMatch = repairAttributes(classifiedMatch);
-				if (repairedMatch != null) {
+				Collection<ITGGMatch> repairedMatches = repairAttributes(classifiedMatch);
+				if (repairedMatches != null) {
 					repairedSth = true;
 				}
 
-				repairedMatch = repairViaShortcut(classifiedMatch);
-				if (repairedMatch != null) {
+				repairedMatches = repairViaShortcut(classifiedMatch);
+				if (repairedMatches != null) {
 					repairedSth = true;
-
-					opStrat.getMatchHandler().removeBrokenRuleApplication(repairCandidate.getRuleApplicationNode());
-					opStrat.precedenceGraph().removeMatch(repairCandidate);
-					opStrat.getMatchHandler().addBrokenRuleApplication(repairedMatch.getRuleApplicationNode(), repairedMatch);
-					opStrat.precedenceGraph().notifyAddedMatch(repairedMatch);
-					opStrat.precedenceGraph().notifyRemovedMatch(repairedMatch);
-					alreadyProcessed.add(repairedMatch);
+					alreadyProcessed.addAll(repairedMatches);
 				}
 
 				if (repairedSth)
@@ -141,7 +138,7 @@ public class ConcRepair implements TimeMeasurable {
 		return !alreadyProcessed.isEmpty();
 	}
 
-	private ITGGMatch repairAttributes(ClassifiedMatch classifiedMatch) {
+	private Collection<ITGGMatch> repairAttributes(ClassifiedMatch classifiedMatch) {
 		Set<ConstrainedAttributeChanges> attrChanges = classifiedMatch.getConstrainedAttrChanges();
 		if (attrChanges.isEmpty())
 			return null;
@@ -163,62 +160,82 @@ public class ConcRepair implements TimeMeasurable {
 				List<TGGAttributeConstraint> constraints = new LinkedList<>();
 				constraints.add(attrCh.constraint);
 				RepairApplicationPoint applPoint = new RepairApplicationPoint(classifiedMatch.getMatch(), type);
-				ITGGMatch repairedMatch = attributeRepairStrat.repair(constraints, applPoint);
-				if (repairedMatch != null)
+				Collection<ITGGMatch> repairedMatches = attributeRepairStrat.repair(constraints, applPoint);
+				if (repairedMatches != null)
 					repairedSth = true;
 			}
 		}
 
-		return repairedSth ? classifiedMatch.getMatch() : null;
+		return repairedSth ? Collections.singletonList(classifiedMatch.getMatch()) : null;
 	}
 
-	private ITGGMatch repairViaShortcut(ClassifiedMatch classifiedMatch) {
+	private Collection<ITGGMatch> repairViaShortcut(ClassifiedMatch classifiedMatch) {
 		DeletionType delType = classifiedMatch.getDeletionType();
+		RepairApplicationPoint applPoint = null;
+		Collection<ITGGMatch> repairedMatches = null;
+
 		if (DeletionType.shortcutCCCandidates.contains(delType)) {
-			return shortcutRepairStrat.repair(new RepairApplicationPoint(classifiedMatch.getMatch(), PatternType.CC));
+			applPoint = new RepairApplicationPoint(classifiedMatch.getMatch(), PatternType.CC);
+			repairedMatches = shortcutRepairStrat.repair(applPoint);
 		} else if (DeletionType.shortcutPropCandidates.contains(delType)) {
 			PatternType type = delType == DeletionType.SRC_PARTLY_TRG_NOT ? PatternType.FWD : PatternType.BWD;
-			ITGGMatch repairedMatch = shortcutRepairStrat.repair(new RepairApplicationPoint(classifiedMatch.getMatch(), type));
-			if (repairedMatch == null) {
-				repairedMatch = shortcutRepairStrat.repair(new RepairApplicationPoint(classifiedMatch.getMatch(), PatternType.CC));
+			applPoint = new RepairApplicationPoint(classifiedMatch.getMatch(), type);
+			repairedMatches = shortcutRepairStrat.repair(applPoint);
+			if (repairedMatches == null) {
+				applPoint = new RepairApplicationPoint(classifiedMatch.getMatch(), PatternType.CC);
+				repairedMatches = shortcutRepairStrat.repair(applPoint);
 			}
-			return repairedMatch;
 		}
-		return null;
+
+		if (repairedMatches != null)
+			processRepairedMatches(applPoint, repairedMatches);
+		return repairedMatches;
 	}
 
-	public ITGGMatch attributeRepairOneMatch(ITGGMatch repairCandidate, PatternType type) {
+	public Collection<ITGGMatch> attributeRepairOneMatch(ITGGMatch repairCandidate, PatternType type) {
 		initializeStrategies();
 
 		return repairOneMatch(attributeRepairStrat, repairCandidate, type);
 	}
 
-	public ITGGMatch shortcutRepairOneMatch(ITGGMatch repairCandidate, PatternType type) {
+	public Collection<ITGGMatch> shortcutRepairOneMatch(ITGGMatch repairCandidate, PatternType type) {
 		initializeStrategies();
 
 		return repairOneMatch(shortcutRepairStrat, repairCandidate, type);
 	}
 
-	private ITGGMatch repairOneMatch(RepairStrategy repairStrat, ITGGMatch repairCandidate, PatternType type) {
-		ITGGMatch repairedMatch = null;
-		if (type != null)
-			repairedMatch = repairStrat.repair(new RepairApplicationPoint(repairCandidate, type));
+	private Collection<ITGGMatch> repairOneMatch(RepairStrategy repairStrat, ITGGMatch repairCandidate, PatternType type) {
+		RepairApplicationPoint applPoint = new RepairApplicationPoint(repairCandidate, type);
+		Collection<ITGGMatch> repairedMatches = repairStrat.repair(applPoint);
 
-		if (repairedMatch != null) {
-			opStrat.getMatchHandler().removeBrokenRuleApplication(repairCandidate.getRuleApplicationNode());
-			opStrat.precedenceGraph().removeMatch(repairCandidate);
-			opStrat.getMatchHandler().addBrokenRuleApplication(repairedMatch.getRuleApplicationNode(), repairedMatch);
-			opStrat.precedenceGraph().notifyAddedMatch(repairedMatch);
-			opStrat.precedenceGraph().notifyRemovedMatch(repairedMatch);
-		}
+		if (repairedMatches != null)
+			processRepairedMatches(applPoint, repairedMatches);
 
-		return repairedMatch;
+		return repairedMatches;
 	}
 
 	public RepairableMatch isShortcutRepairable(ITGGMatch repairCandidate, ITGGMatch replacingMatch) {
 		initializeStrategies();
 
 		return shortcutRepairStrat.isRepairable(repairCandidate, replacingMatch);
+	}
+
+	private void processRepairedMatches(RepairApplicationPoint applPoint, Collection<ITGGMatch> repairedMatches) {
+		if (applPoint instanceof ShortcutApplicationPoint scApplPoint) {
+			for (PrecedenceNode originalNode : scApplPoint.getOriginalNodes()) {
+				opStrat.getMatchHandler().removeBrokenRuleApplication(originalNode.getMatch().getRuleApplicationNode());
+				opStrat.precedenceGraph().removeMatch(originalNode.getMatch());
+			}
+		} else {
+			opStrat.getMatchHandler().removeBrokenRuleApplication(applPoint.getApplicationMatch().getRuleApplicationNode());
+			opStrat.precedenceGraph().removeMatch(applPoint.getApplicationMatch());
+		}
+
+		for (ITGGMatch repairedMatch : repairedMatches) {
+			opStrat.getMatchHandler().addBrokenRuleApplication(repairedMatch.getRuleApplicationNode(), repairedMatch);
+			opStrat.precedenceGraph().notifyAddedMatch(repairedMatch);
+			opStrat.precedenceGraph().notifyRemovedMatch(repairedMatch);
+		}
 	}
 
 	@Override

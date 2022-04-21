@@ -13,13 +13,14 @@ import org.emoflon.ibex.tgg.operational.benchmark.Times;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.matches.BrokenMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.operational.repair.strategies.PropDirectedAttributeRepairStrategy;
-import org.emoflon.ibex.tgg.operational.repair.strategies.PropDirectedShortcutRepairStrategy;
-import org.emoflon.ibex.tgg.operational.repair.strategies.PropagationDirectedRepairStrategy;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.ShortcutApplicationPoint;
+import org.emoflon.ibex.tgg.operational.repair.strategies.AttributeRepairStrategy;
+import org.emoflon.ibex.tgg.operational.repair.strategies.RepairApplicationPoint;
+import org.emoflon.ibex.tgg.operational.repair.strategies.RepairStrategy;
+import org.emoflon.ibex.tgg.operational.repair.strategies.ShortcutRepairStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.PropagationDirectionHolder;
-
-import runtime.TGGRuleApplication;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceNode;
 
 public class SeqRepair implements TimeMeasurable {
 
@@ -30,7 +31,7 @@ public class SeqRepair implements TimeMeasurable {
 	protected final PropagatingOperationalStrategy opStrat;
 	protected final PropagationDirectionHolder propDirHolder;
 
-	protected Collection<PropagationDirectedRepairStrategy> repairStrategies = new ArrayList<>();
+	protected Collection<RepairStrategy> repairStrategies = new ArrayList<>();
 
 	protected BrokenMatchContainer dependencyContainer;
 
@@ -54,10 +55,10 @@ public class SeqRepair implements TimeMeasurable {
 			Timer.start();
 
 			if (opStrat.getOptions().repair.useShortcutRules()) {
-				repairStrategies.add(new PropDirectedShortcutRepairStrategy(opStrat, shortcutPatternTypes, propDirHolder));
+				repairStrategies.add(new ShortcutRepairStrategy(opStrat, shortcutPatternTypes));
 			}
 			if (opStrat.getOptions().repair.repairAttributes()) {
-				repairStrategies.add(new PropDirectedAttributeRepairStrategy(opStrat, propDirHolder));
+				repairStrategies.add(new AttributeRepairStrategy(opStrat));
 			}
 
 			times.addTo("initializeStrategies", Timer.stop());
@@ -85,21 +86,18 @@ public class SeqRepair implements TimeMeasurable {
 
 				processedOnce = true;
 
-				for (PropagationDirectedRepairStrategy rStrategy : repairStrategies) {
+				for (RepairStrategy rStrategy : repairStrategies) {
 					if (alreadyProcessed.contains(repairCandidate)) {
 						continue;
 					}
 
-					ITGGMatch repairedMatch = rStrategy.repair(repairCandidate);
+					RepairApplicationPoint applPoint = new RepairApplicationPoint(repairCandidate, propDirHolder.get().getPatternType());
+					Collection<ITGGMatch> repairedMatch = rStrategy.repair(applPoint);
 					if (repairedMatch != null) {
+						processRepairedMatches(applPoint, repairedMatch);
 
-						TGGRuleApplication oldRa = repairCandidate.getRuleApplicationNode();
-						opStrat.getMatchHandler().removeBrokenRuleApplication(oldRa);
-
-						TGGRuleApplication newRa = repairedMatch.getRuleApplicationNode();
-						opStrat.getMatchHandler().addBrokenRuleApplication(newRa, repairedMatch);
 						alreadyProcessed.add(repairCandidate);
-						alreadyProcessed.add(repairedMatch);
+						alreadyProcessed.addAll(repairedMatch);
 					}
 				}
 				dependencyContainer.matchApplied(repairCandidate);
@@ -116,6 +114,20 @@ public class SeqRepair implements TimeMeasurable {
 
 		times.addTo("repairBrokenMatches", Timer.stop());
 		return !alreadyProcessed.isEmpty();
+	}
+
+	private void processRepairedMatches(RepairApplicationPoint applPoint, Collection<ITGGMatch> repairedMatches) {
+		if (applPoint instanceof ShortcutApplicationPoint scApplPoint) {
+			for (PrecedenceNode originalNode : scApplPoint.getOriginalNodes()) {
+				opStrat.getMatchHandler().removeBrokenRuleApplication(originalNode.getMatch().getRuleApplicationNode());
+			}
+		} else {
+			opStrat.getMatchHandler().removeBrokenRuleApplication(applPoint.getApplicationMatch().getRuleApplicationNode());
+		}
+
+		for (ITGGMatch repairedMatch : repairedMatches) {
+			opStrat.getMatchHandler().addBrokenRuleApplication(repairedMatch.getRuleApplicationNode(), repairedMatch);
+		}
 	}
 
 	@Override

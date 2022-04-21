@@ -16,16 +16,17 @@ public class PropDirectedShortcutRepairStrategy extends ShortcutRepairStrategy i
 		super(opStrat, shortcutPatternTypes);
 		this.propDirHolder = propDirHolder;
 	}
-	
+
 	@Override
-	public ITGGMatch repair(ITGGMatch repairCandidate) {
-		// FIXME hotfix: please adapt to multiple output matches
+	public Collection<ITGGMatch> repair(ITGGMatch repairCandidate) {
 		RepairApplicationPoint applPoint = new RepairApplicationPoint(repairCandidate, propDirHolder.get().getPatternType());
 		Collection<ITGGMatch> repairedMatches = shortcutPatternTool.repairAtApplicationPoint(applPoint);
 		if (repairedMatches != null) {
-			ITGGMatch repairedMatch = repairedMatches.iterator().next();
-			logSuccessfulRepair(repairCandidate, repairedMatch);
-			return repairedMatch;
+			if (repairedMatches.size() == 1)
+				logSuccessfulRepair(repairCandidate, repairedMatches.iterator().next());
+			else
+				logSuccessfulRepair(repairCandidate, repairedMatches);
+			return repairedMatches;
 		}
 		return null;
 	}

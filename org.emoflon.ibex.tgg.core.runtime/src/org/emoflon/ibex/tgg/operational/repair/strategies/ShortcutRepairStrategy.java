@@ -44,13 +44,14 @@ public class ShortcutRepairStrategy implements RepairStrategy {
 	}
 
 	@Override
-	public ITGGMatch repair(RepairApplicationPoint applPoint) {
-		// FIXME hotfix: please adapt to multiple output matches
+	public Collection<ITGGMatch> repair(RepairApplicationPoint applPoint) {
 		Collection<ITGGMatch> repairedMatches = shortcutPatternTool.repairAtApplicationPoint(applPoint);
 		if (repairedMatches != null) {
-			ITGGMatch repairedMatch = repairedMatches.iterator().next();
-			logSuccessfulRepair(applPoint.getApplicationMatch(), repairedMatch);
-			return repairedMatch;
+			if (repairedMatches.size() == 1)
+				logSuccessfulRepair(applPoint.getApplicationMatch(), repairedMatches.iterator().next());
+			else
+				logSuccessfulRepair(null, repairedMatches);
+			return repairedMatches;
 		}
 		return null;
 	}
@@ -93,5 +94,15 @@ public class ShortcutRepairStrategy implements RepairStrategy {
 		LoggerConfig.log(LoggerConfig.log_repair(), () -> //
 		"  '-> repaired: '" + repairCandidate.getPatternName() + "' -> '" + repairedMatch.getPatternName() + //
 				"' (" + repairCandidate.hashCode() + " -> " + repairedMatch.hashCode() + ")");
+	}
+
+	protected void logSuccessfulRepair(ITGGMatch repairCandidate, Collection<ITGGMatch> repairedMatches) {
+		LoggerConfig.log(LoggerConfig.log_repair(), () -> {
+			StringBuilder b = new StringBuilder();
+			b.append("  '-> repaired: '" + repairCandidate.getPatternName() + "' -> '");
+			b.append(String.join("--", repairedMatches.stream().map(m -> m.getPatternName()).toList()));
+			b.append("'");
+			return b.toString();
+		});
 	}
 }
