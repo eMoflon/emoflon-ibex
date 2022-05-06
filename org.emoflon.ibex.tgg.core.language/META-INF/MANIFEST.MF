@@ -24,6 +24,6 @@ Require-Bundle: com.google.guava,
  org.moflon.core.utilities,
  org.eclipse.xtext,
  org.moflon.core.plugins
-Bundle-RequiredExecutionEnvironment: JavaSE-16
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-Vendor: eMoflon::IBeX Developers
 Bundle-ManifestVersion: 2
