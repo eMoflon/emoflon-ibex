@@ -38,7 +38,7 @@ This repository contains only the part which is independent from a concrete patt
 	from your development workspace:
 	- To start the runtime workspace, do the following steps inside your development workspace: *Run &rarr; Run Configurations...;* double click on *Eclipse Application*, give it a name (e.g. *test-workspace*) and click on *Run*.
 	- Inside your runtime workspace:
-		- Check and/or apply the git setting of **step 9** again.
+		- Check and/or apply the git setting of **step 8** again.
 		- Import this PSF file:<br/>
 		https://raw.githubusercontent.com/eMoflon/emoflon-ibex-tests/master/testProjectSet.psf
 1. Execute MWE2
