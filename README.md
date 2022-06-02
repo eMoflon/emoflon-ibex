@@ -12,6 +12,32 @@ This repository contains only the part which is independent from a concrete patt
 - [eMoflon::IBeX HiPE](https://github.com/eMoflon/emoflon-ibex-hipe)
 	uses eMoflon::IBeX with our new HiPE parallel pattern matching engine.
 
+There are 3 ways how to use eMoflon::IBeX:
+1. Use our [pre-built Eclipse download](#pre-build-eclipse) with eMoflon::IBeX installed (or the version without eMoflon::IBeX to develop it).
+1. Prepare your Eclipse environment step-by-step with the section [how to develop](#how-to-develop).
+1. [Install eMoflon::IBeX](#how-to-install) into your existing Eclipse installtion.
+
+
+## Pre-build Eclipse
+
+1. Install [GraphViz](http://www.graphviz.org/download/).
+1. Choose the right pre-built Eclipse version for your need. A comparisson table can be found in the [readme of the emoflon-eclipse-build repository](https://github.com/maxkratz/emoflon-eclipse-build). Typically, you want to download:
+	+ `eclipse-emoflon-$yourOS-dev.zip` if you want to develop eMoflon::IBeX
+	+ `eclipse-emoflon-$yourOS-user.zip` if you want to use eMoflon::IBeX without developing it
+1. Download your chosen [Eclipse archive](https://github.com/maxkratz/emoflon-eclipse-build/releases/latest).
+1. Extract the archive to a folder, e.g., to `~/eclipse-apps/emoflon-ibex`.
+1. Start your Eclipse (= the binary in the extracted folder) and create a new workspace.
+
+### eclipse-emoflon-user
+
+You can now create eMoflon projects and/or start using it with existing projects, e.g., from the [tutorial](https://github.com/eMoflon/emoflon-ibex-tutorial).
+
+### eclipse-emoflon-dev
+
+Some additional steps are needed:
+Complete steps 9, 10, 12-15 from [the next section](#how-to-develop) to clone the code and verify your build.
+
+
 ## How to develop
 1. Install [GraphViz](http://www.graphviz.org/download/).
 1. Get the latest version of the [Eclipse Modeling Tools](https://www.eclipse.org/downloads/packages/).
@@ -26,9 +52,8 @@ This repository contains only the part which is independent from a concrete patt
     - In Eclipse: Go to ```Window->Preferences->General->Workspace```.
     - Change the text file encoding to 'Other: UTF-8'.
 1. (Important!) Set standard git folder to (workspace) relative path, e.g., (Eclipse ->) Window -> Preferences -> Team (or Version Control) -> Git -> Default Repository Folder = `${workspace_loc}\git` (for Windows) or `${workspace_loc}/git` (for Linux and macOS)
-1. Go to ```File/Import.../Team/Team Project Set```, check URL and enter in and import one of these PSF files:<br/>
-   For eMoflon including everything:	<br/>
-	- https://raw.githubusercontent.com/eMoflon/emoflon-ibex-deployment/master/devProjectSet.psf <br/>
+1. Go to ```File/Import.../Team/Team Project Set```, check URL and enter in and import this PSF file:
+	- https://raw.githubusercontent.com/eMoflon/emoflon-ibex-deployment/master/devProjectSet.psf
 1. Execute MWE2
     - Open packages ```org.emoflon.ibex.gt.editor/src/org.emoflon.ibex.gt.editor```, ```org.emoflon.ibex.tgg.editor/src/org.moflon.tgg.mosl```, and ```org.emoflon.ibex.tgg.integrate/src/org.emoflon.ibex.tgg.integrate```
     - Right-click on ```GenerateGT.mwe2``` in the first package, ```GenerateTGG.mwe2``` in the second, and ```GenerateIntegrate.mwe2``` in the third.
@@ -39,7 +64,7 @@ This repository contains only the part which is independent from a concrete patt
 	- To start the runtime workspace, do the following steps inside your development workspace: *Run &rarr; Run Configurations...;* double click on *Eclipse Application*, give it a name (e.g. *test-workspace*) and click on *Run*.
 	- Inside your runtime workspace:
 		- Check and/or apply the git setting of **step 8** again.
-		- Import this PSF file:<br/>
+		- Import this PSF file:  
 		https://raw.githubusercontent.com/eMoflon/emoflon-ibex-tests/master/testProjectSet.psf
 1. Execute MWE2
     - Open package ```/org.emoflon.express/src/org.emoflon.express```
@@ -61,8 +86,12 @@ Running ```Testsuite_CBC.launch``` requires Google OR tools (see installation st
 
 ```Testsuite_SAT4J.launch``` uses the SAT4J (automatically installed, but the slowest option).  
 
+
 ## How to install
 
-eMoflon::IBeX can be installed via https://github.com/eMoflon/emoflon-ibex-updatesite
+eMoflon::IBeX can be installed via its updatesite: https://github.com/eMoflon/emoflon-ibex-updatesite
 
-(Please notice: This section is for *installation purpose* only. If you already setup your development workspace as described above, this section is irrelevant for you.)
+(Please notice:
+This section is for *installation purpose* only.
+If you already setup your development workspace as described above, this section is irrelevant for you.
+Furthermore, you may need to install some additional dependencies if Eclipse tells you to.)
