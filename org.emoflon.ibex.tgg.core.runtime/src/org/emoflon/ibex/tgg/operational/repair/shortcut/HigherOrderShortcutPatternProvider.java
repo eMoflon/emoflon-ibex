@@ -44,7 +44,7 @@ public class HigherOrderShortcutPatternProvider extends BasicShortcutPatternProv
 	private final Map<String, Map<String, Map<PatternType, Collection<OperationalShortcutRule>>>> higherOrderShortcutPatterns;
 
 	public HigherOrderShortcutPatternProvider(IbexOptions options, PrecedenceGraph pg, TGGMatchUtilProvider mup, //
-			Set<PatternType> types, boolean persistShortcutRules) {
+			PatternType[] types, boolean persistShortcutRules) {
 		super(options, types, persistShortcutRules);
 
 		this.mup = mup;

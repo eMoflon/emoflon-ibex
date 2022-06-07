@@ -58,9 +58,9 @@ import runtime.TempContainer;
  * @author lfritsche
  *
  */
-public class ShortcutPatternTool implements TimeMeasurable {
+public class ShortcutApplicationTool implements TimeMeasurable {
 
-	protected final static Logger logger = Logger.getLogger(ShortcutPatternTool.class);
+	protected final static Logger logger = Logger.getLogger(ShortcutApplicationTool.class);
 
 	private int numOfDeletedNodes = 0;
 
@@ -73,7 +73,7 @@ public class ShortcutPatternTool implements TimeMeasurable {
 
 	private TGGResourceHandler resourceHandler;
 
-	public ShortcutPatternTool(IbexOptions options, IGreenInterpreter greenInterpreter, IRedInterpreter redInterpreter, //
+	public ShortcutApplicationTool(IbexOptions options, IGreenInterpreter greenInterpreter, IRedInterpreter redInterpreter, //
 			ShortcutPatternProvider shortcutPatternProvider) {
 		TimeRegistry.register(this);
 

@@ -1,20 +1,18 @@
 package org.emoflon.ibex.tgg.operational.repair.strategies;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.operational.IGreenInterpreter;
+import org.emoflon.ibex.tgg.operational.IRedInterpreter;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.BasicShortcutPatternProvider;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.ShortcutPatternTool;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.ShortcutApplicationTool;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.ShortcutPatternProvider;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.OperationalShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCMatch;
-import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 import org.emoflon.smartemf.runtime.notification.SmartEMFCrossReferenceAdapter;
 
 /**
@@ -27,25 +25,21 @@ import org.emoflon.smartemf.runtime.notification.SmartEMFCrossReferenceAdapter;
  */
 public class ShortcutRepairStrategy implements RepairStrategy {
 
-	protected final ShortcutPatternTool shortcutPatternTool;
+	protected final ShortcutApplicationTool shortcutApplTool;
 
-	public ShortcutRepairStrategy(PropagatingOperationalStrategy opStrat, PatternType... shortcutPatternTypes) {
-		IbexOptions options = opStrat.getOptions();
-
+	public ShortcutRepairStrategy(IbexOptions options, //
+			IGreenInterpreter greenInterpreter, IRedInterpreter redInterpreter, //
+			ShortcutPatternProvider shortcutPatternProvider) {
 		// enable backward navigation for emf edges if smartemf is not enabled
 		if (!options.project.usesSmartEMF())
 			options.resourceHandler().getModelResourceSet().eAdapters().add(new SmartEMFCrossReferenceAdapter());
 
-		BasicShortcutPatternProvider shortcutPatternProvider = new BasicShortcutPatternProvider( //
-				options, new HashSet<>(Arrays.asList(shortcutPatternTypes)), true);
-
-		this.shortcutPatternTool = new ShortcutPatternTool( //
-				options, opStrat.getGreenInterpreter(), opStrat.getRedInterpreter(), shortcutPatternProvider);
+		this.shortcutApplTool = new ShortcutApplicationTool(options, greenInterpreter, redInterpreter, shortcutPatternProvider);
 	}
 
 	@Override
 	public Collection<ITGGMatch> repair(RepairApplicationPoint applPoint) {
-		Collection<ITGGMatch> repairedMatches = shortcutPatternTool.repairAtApplicationPoint(applPoint);
+		Collection<ITGGMatch> repairedMatches = shortcutApplTool.repairAtApplicationPoint(applPoint);
 		if (repairedMatches != null) {
 			if (repairedMatches.size() == 1)
 				logSuccessfulRepair(applPoint.getApplicationMatch(), repairedMatches.iterator().next());
@@ -60,7 +54,7 @@ public class ShortcutRepairStrategy implements RepairStrategy {
 		RepairableMatch result = null;
 
 		RepairApplicationPoint applPoint = new RepairApplicationPoint(repairCandidate, replacingMatch.getType());
-		Map<SCMatch, OperationalShortcutRule> repMatches = shortcutPatternTool.isRepairable(applPoint, replacingMatch.getRuleName());
+		Map<SCMatch, OperationalShortcutRule> repMatches = shortcutApplTool.isRepairable(applPoint, replacingMatch.getRuleName());
 		for (Entry<SCMatch, OperationalShortcutRule> entry : repMatches.entrySet()) {
 			boolean validSCMatch = true;
 			for (String paramName : replacingMatch.getParameterNames()) {
@@ -87,7 +81,7 @@ public class ShortcutRepairStrategy implements RepairStrategy {
 	}
 
 	public int countDeletedElements() {
-		return shortcutPatternTool.countDeletedElements();
+		return shortcutApplTool.countDeletedElements();
 	}
 
 	protected void logSuccessfulRepair(ITGGMatch repairCandidate, ITGGMatch repairedMatch) {

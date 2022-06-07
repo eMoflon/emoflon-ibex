@@ -1,8 +1,6 @@
 package org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
@@ -12,8 +10,8 @@ import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.HigherOrderShortcutPatternProvider;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.ShortcutApplicationTool;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.ShortcutPatternProvider;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.ShortcutPatternTool;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassifier;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceGraph;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceNode;
@@ -26,19 +24,17 @@ public class HigherOrderShortcutRepairStrategy {
 
 	private final ShortcutApplicationPointFinder scApplPointFinder;
 	private final ShortcutPatternProvider shortcutPatternProvider;
-	private final ShortcutPatternTool shortcutPatternTool;
+	private final ShortcutApplicationTool shortcutApplTool;
 
 	public HigherOrderShortcutRepairStrategy(IbexOptions options, PrecedenceGraph pg, MatchClassifier mc, TGGMatchUtilProvider mup, //
 			IGreenInterpreter greenInterpreter, IRedInterpreter redInterpreter) {
 		this.options = options;
 		this.pg = pg;
 
-		HashSet<PatternType> types = new HashSet<>(Arrays.asList( //
-				PatternType.FWD, PatternType.BWD, PatternType.CC, PatternType.SRC, PatternType.TRG //
-		));
+		PatternType[] types = { PatternType.FWD, PatternType.BWD, PatternType.CC, PatternType.SRC, PatternType.TRG };
 		this.scApplPointFinder = new ShortcutApplicationPointFinder(pg, mc);
 		this.shortcutPatternProvider = new HigherOrderShortcutPatternProvider(options, pg, mup, types, true);
-		this.shortcutPatternTool = new ShortcutPatternTool(options, greenInterpreter, redInterpreter, shortcutPatternProvider);
+		this.shortcutApplTool = new ShortcutApplicationTool(options, greenInterpreter, redInterpreter, shortcutPatternProvider);
 	}
 
 	public void repair() {
@@ -60,7 +56,7 @@ public class HigherOrderShortcutRepairStrategy {
 	}
 
 	private Collection<ITGGMatch> repairAtApplicationPoint(ShortcutApplicationPoint applPoint) {
-		Collection<ITGGMatch> repairedMatches = shortcutPatternTool.repairAtApplicationPoint(applPoint);
+		Collection<ITGGMatch> repairedMatches = shortcutApplTool.repairAtApplicationPoint(applPoint);
 		if (repairedMatches != null)
 			logSuccessfulRepair(applPoint.getApplicationMatch(), repairedMatches);
 		return repairedMatches;

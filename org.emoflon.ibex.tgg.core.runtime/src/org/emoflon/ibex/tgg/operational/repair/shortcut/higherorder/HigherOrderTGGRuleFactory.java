@@ -39,12 +39,12 @@ public class HigherOrderTGGRuleFactory {
 
 	private final IbexOptions options;
 	private final PrecedenceGraph pg;
-	private final TGGMatchUtilProvider mu;
+	private final TGGMatchUtilProvider mup;
 
-	public HigherOrderTGGRuleFactory(IbexOptions options, PrecedenceGraph pg, TGGMatchUtilProvider mu) {
+	public HigherOrderTGGRuleFactory(IbexOptions options, PrecedenceGraph pg, TGGMatchUtilProvider mup) {
 		this.options = options;
 		this.pg = pg;
-		this.mu = mu;
+		this.mup = mup;
 	}
 
 	//// MAPPING FROM CONSISTENCY ////
@@ -54,7 +54,7 @@ public class HigherOrderTGGRuleFactory {
 
 		HigherOrderTGGRule higherOrderRule = new HigherOrderTGGRule();
 		for (PrecedenceNode pgNode : pgNodes) {
-			TGGMatchUtil matchUtil = mu.get(pgNode.getMatch());
+			TGGMatchUtil matchUtil = mup.get(pgNode.getMatch());
 			TGGRule rule = matchUtil.getRule();
 			// the first PG-node in the list will have no predecessors in the higher-order rule, therefore we
 			// don't need to create a mapping for it's context:
@@ -84,7 +84,7 @@ public class HigherOrderTGGRuleFactory {
 				// rule-element & create a mapping:
 				HigherOrderRuleComponent mappedComponent = higherOrderRule.getComponent(mappedPGNode.getMatch());
 				if (mappedComponent != null) {
-					TGGMatchUtil mappedMatchUtil = mu.get(mappedPGNode.getMatch());
+					TGGMatchUtil mappedMatchUtil = mup.get(mappedPGNode.getMatch());
 					TGGRuleElement mappedRuleElement = mappedMatchUtil.getElement(obj);
 					contextMapping.put(ruleElement, mappedComponent.getComponentSpecificRuleElement(mappedRuleElement));
 				} else {
@@ -98,7 +98,7 @@ public class HigherOrderTGGRuleFactory {
 							mappedComponent = higherOrderRule.getComponent(reqPGNode.getMatch());
 							if (mappedComponent == null)
 								continue;
-							TGGMatchUtil mappedMatchUtil = mu.get(reqPGNode.getMatch());
+							TGGMatchUtil mappedMatchUtil = mup.get(reqPGNode.getMatch());
 							TGGRuleElement mappedRuleElement = mappedMatchUtil.getElement(obj);
 							contextMapping.put(ruleElement, mappedComponent.getComponentSpecificRuleElement(mappedRuleElement));
 						}
@@ -130,7 +130,7 @@ public class HigherOrderTGGRuleFactory {
 			if (pgNodes.indexOf(pgNode) == 0)
 				continue;
 
-			TGGMatchUtil matchUtil = mu.get(pgNode.getMatch());
+			TGGMatchUtil matchUtil = mup.get(pgNode.getMatch());
 			Set<MatchRelatedRuleElement> matchRelatedRuleElements = new HashSet<>();
 
 			MatchRelatedRuleElementMap propDomainMapping = createMappingForPropagationDomain(pgNode, matchUtil, propagationDomain, pgNodes);
@@ -157,7 +157,7 @@ public class HigherOrderTGGRuleFactory {
 		// transform ILP solution to higher-order rule:
 		HigherOrderTGGRule higherOrderRule = new HigherOrderTGGRule();
 		for (PrecedenceNode pgNode : pgNodes) {
-			TGGRule rule = mu.get(pgNode.getMatch()).getRule();
+			TGGRule rule = mup.get(pgNode.getMatch()).getRule();
 
 			if (pgNodes.indexOf(pgNode) == 0) {
 				higherOrderRule.addComponent(rule, pgNode.getMatch(), Collections.emptyMap());
@@ -225,7 +225,7 @@ public class HigherOrderTGGRuleFactory {
 					continue;
 
 				if (pgNodes.contains(mappedPGNode)) {
-					TGGMatchUtil mappedMatchUtil = mu.get(mappedPGNode.getMatch());
+					TGGMatchUtil mappedMatchUtil = mup.get(mappedPGNode.getMatch());
 					TGGRuleElement mappedRuleElement = mappedMatchUtil.getElement(obj);
 					mappedElements.add(new MatchRelatedRuleElement(mappedRuleElement, mappedPGNode.getMatch()));
 				} else {
@@ -248,7 +248,7 @@ public class HigherOrderTGGRuleFactory {
 			if (reqPGNode.equals(pgNode))
 				continue;
 			if (reqPGNode.getMatch().getObjects().contains(obj)) {
-				TGGMatchUtil reqMatchUtil = mu.get(reqPGNode.getMatch());
+				TGGMatchUtil reqMatchUtil = mup.get(reqPGNode.getMatch());
 				TGGRuleElement mappedRuleElement = reqMatchUtil.getElement(obj);
 				if (mappedRuleElement.getBindingType() == BindingType.CONTEXT)
 					mappedElements.add(new MatchRelatedRuleElement(mappedRuleElement, reqPGNode.getMatch()));
@@ -337,7 +337,7 @@ public class HigherOrderTGGRuleFactory {
 			if (!pgNodes.contains(requiredPGNode))
 				continue;
 
-			TGGRule requiredNodesRule = mu.get(requiredPGNode.getMatch()).getRule();
+			TGGRule requiredNodesRule = mup.get(requiredPGNode.getMatch()).getRule();
 			rule2matches.computeIfAbsent(requiredNodesRule, k -> new HashSet<>()).add(requiredPGNode.getMatch());
 		}
 		return rule2matches;

@@ -11,8 +11,11 @@ import org.emoflon.ibex.tgg.operational.benchmark.TimeRegistry;
 import org.emoflon.ibex.tgg.operational.benchmark.Timer;
 import org.emoflon.ibex.tgg.operational.benchmark.Times;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
+import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.BrokenMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.BasicShortcutPatternProvider;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.ShortcutPatternProvider;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.ShortcutApplicationPoint;
 import org.emoflon.ibex.tgg.operational.repair.strategies.AttributeRepairStrategy;
 import org.emoflon.ibex.tgg.operational.repair.strategies.RepairApplicationPoint;
@@ -55,7 +58,9 @@ public class SeqRepair implements TimeMeasurable {
 			Timer.start();
 
 			if (opStrat.getOptions().repair.useShortcutRules()) {
-				repairStrategies.add(new ShortcutRepairStrategy(opStrat, shortcutPatternTypes));
+				ShortcutPatternProvider shortcutPatternProvider = initShortcutPatternProvider(opStrat.getOptions());
+				repairStrategies.add(new ShortcutRepairStrategy(opStrat.getOptions(), //
+						opStrat.getGreenInterpreter(), opStrat.getRedInterpreter(), shortcutPatternProvider));
 			}
 			if (opStrat.getOptions().repair.repairAttributes()) {
 				repairStrategies.add(new AttributeRepairStrategy(opStrat));
@@ -64,6 +69,10 @@ public class SeqRepair implements TimeMeasurable {
 			times.addTo("initializeStrategies", Timer.stop());
 			LoggerConfig.log(LoggerConfig.log_repair(), () -> "Repair: init strategies - done\n");
 		}
+	}
+
+	private ShortcutPatternProvider initShortcutPatternProvider(IbexOptions options) {
+		return new BasicShortcutPatternProvider(options, shortcutPatternTypes, true);
 	}
 
 	public boolean repairBrokenMatches() {

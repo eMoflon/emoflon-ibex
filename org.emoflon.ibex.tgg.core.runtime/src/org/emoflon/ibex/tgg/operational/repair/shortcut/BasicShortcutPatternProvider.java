@@ -1,8 +1,10 @@
 package org.emoflon.ibex.tgg.operational.repair.shortcut;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,12 +35,12 @@ public class BasicShortcutPatternProvider implements ShortcutPatternProvider {
 
 	protected final Map<OperationalShortcutRule, LocalPatternSearch> opShortcutRule2patternMatcher;
 
-	public BasicShortcutPatternProvider(IbexOptions options, Set<PatternType> types, boolean persistShortcutRules) {
+	public BasicShortcutPatternProvider(IbexOptions options, PatternType[] types, boolean persistShortcutRules) {
 		this.options = options;
 		this.overlapUtil = new OverlapUtil(options);
 		this.opSCFactory = new OperationalSCFactory(options);
 
-		this.types = types;
+		this.types = new HashSet<>(Arrays.asList(types));
 
 		this.basicShortcutPatterns = new HashMap<>();
 		this.opShortcutRule2patternMatcher = new HashMap<>();
