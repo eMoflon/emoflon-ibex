@@ -15,7 +15,7 @@ This repository contains only the part which is independent from a concrete patt
 There are 3 ways how to use eMoflon::IBeX:
 1. Use our [pre-built Eclipse download](#pre-build-eclipse) with eMoflon::IBeX installed (or the version without eMoflon::IBeX to develop it).
 1. Prepare your Eclipse environment step-by-step with the section [how to develop](#how-to-develop).
-1. [Install eMoflon::IBeX](#how-to-install) into your existing Eclipse installtion.
+1. [Install eMoflon::IBeX](#how-to-install) into your existing Eclipse installation.
 
 
 ## Pre-build Eclipse
@@ -59,9 +59,9 @@ Complete steps 9, 10, 12-15 from [the next section](#how-to-develop) to clone th
     - Right-click on ```GenerateGT.mwe2``` in the first package, ```GenerateTGG.mwe2``` in the second, and ```GenerateIntegrate.mwe2``` in the third.
     - Press ```Run As -> MWE2 Workflow``` respectively.
 1. Set UTF-8 as file encoding for the development workspace (*Window &rarr; Preferences &rarr; General/Workspace*) and manually build all projects by clicking (*Project &rarr; Clean... &rarr; Clean all projects*) to trigger code generation (and get rid of errors). Make sure to check *Project &rarr; Build Automatically*.
-1. Set up your runtime and test workspaces by starting a runtime Eclipse workspace
-	from your development workspace:
-	- To start the runtime workspace, do the following steps inside your development workspace: *Run &rarr; Run Configurations...;* double click on *Eclipse Application*, give it a name (e.g. *test-workspace*) and click on *Run*.
+1. Set up your runtime and test workspaces by starting a runtime Eclipse workspace from your development workspace:
+	- To start the runtime workspace, do the following steps *inside* your development workspace: *Run &rarr; Run Configurations...;* double click on *Eclipse Application*, give it a name (e.g., *test-workspace*) and click on *Run*.
+		- Your development Eclipse should now start another Eclipse instance with all eMoflon plug-ins installed.
 	- Inside your runtime workspace:
 		- Check and/or apply the git setting of **step 8** again.
 		- Import this PSF file:  
