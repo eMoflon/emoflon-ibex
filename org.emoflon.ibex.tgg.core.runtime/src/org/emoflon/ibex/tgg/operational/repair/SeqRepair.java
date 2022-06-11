@@ -11,17 +11,21 @@ import org.emoflon.ibex.tgg.operational.benchmark.TimeRegistry;
 import org.emoflon.ibex.tgg.operational.benchmark.Timer;
 import org.emoflon.ibex.tgg.operational.benchmark.Times;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
+import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.BrokenMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.operational.repair.strategies.PropDirectedAttributeRepairStrategy;
-import org.emoflon.ibex.tgg.operational.repair.strategies.PropDirectedShortcutRepairStrategy;
-import org.emoflon.ibex.tgg.operational.repair.strategies.PropagationDirectedRepairStrategy;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.BasicShortcutPatternProvider;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.ShortcutPatternProvider;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.ShortcutApplicationPoint;
+import org.emoflon.ibex.tgg.operational.repair.strategies.AttributeRepairStrategy;
+import org.emoflon.ibex.tgg.operational.repair.strategies.RepairApplicationPoint;
+import org.emoflon.ibex.tgg.operational.repair.strategies.RepairStrategy;
+import org.emoflon.ibex.tgg.operational.repair.strategies.ShortcutRepairStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.PropagationDirectionHolder;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceNode;
 
-import runtime.TGGRuleApplication;
-
-public class SyncRepair implements TimeMeasurable {
+public class SeqRepair implements TimeMeasurable {
 
 	protected Times times;
 
@@ -30,13 +34,13 @@ public class SyncRepair implements TimeMeasurable {
 	protected final PropagatingOperationalStrategy opStrat;
 	protected final PropagationDirectionHolder propDirHolder;
 
-	protected Collection<PropagationDirectedRepairStrategy> repairStrategies = new ArrayList<>();
+	protected Collection<RepairStrategy> repairStrategies = new ArrayList<>();
 
 	protected BrokenMatchContainer dependencyContainer;
 
 	protected boolean strategiesInitialized;
 
-	public SyncRepair(PropagatingOperationalStrategy opStrat, PropagationDirectionHolder propDirHolder) {
+	public SeqRepair(PropagatingOperationalStrategy opStrat, PropagationDirectionHolder propDirHolder) {
 		this.opStrat = opStrat;
 		this.propDirHolder = propDirHolder;
 		this.dependencyContainer = new BrokenMatchContainer(opStrat);
@@ -54,15 +58,21 @@ public class SyncRepair implements TimeMeasurable {
 			Timer.start();
 
 			if (opStrat.getOptions().repair.useShortcutRules()) {
-				repairStrategies.add(new PropDirectedShortcutRepairStrategy(opStrat, shortcutPatternTypes, propDirHolder));
+				ShortcutPatternProvider shortcutPatternProvider = initShortcutPatternProvider(opStrat.getOptions());
+				repairStrategies.add(new ShortcutRepairStrategy(opStrat.getOptions(), //
+						opStrat.getGreenInterpreter(), opStrat.getRedInterpreter(), shortcutPatternProvider));
 			}
 			if (opStrat.getOptions().repair.repairAttributes()) {
-				repairStrategies.add(new PropDirectedAttributeRepairStrategy(opStrat, propDirHolder));
+				repairStrategies.add(new AttributeRepairStrategy(opStrat));
 			}
 
 			times.addTo("initializeStrategies", Timer.stop());
 			LoggerConfig.log(LoggerConfig.log_repair(), () -> "Repair: init strategies - done\n");
 		}
+	}
+
+	private ShortcutPatternProvider initShortcutPatternProvider(IbexOptions options) {
+		return new BasicShortcutPatternProvider(options, shortcutPatternTypes, true);
 	}
 
 	public boolean repairBrokenMatches() {
@@ -85,21 +95,18 @@ public class SyncRepair implements TimeMeasurable {
 
 				processedOnce = true;
 
-				for (PropagationDirectedRepairStrategy rStrategy : repairStrategies) {
+				for (RepairStrategy rStrategy : repairStrategies) {
 					if (alreadyProcessed.contains(repairCandidate)) {
 						continue;
 					}
 
-					ITGGMatch repairedMatch = rStrategy.repair(repairCandidate);
+					RepairApplicationPoint applPoint = new RepairApplicationPoint(repairCandidate, propDirHolder.get().getPatternType());
+					Collection<ITGGMatch> repairedMatch = rStrategy.repair(applPoint);
 					if (repairedMatch != null) {
+						processRepairedMatches(applPoint, repairedMatch);
 
-						TGGRuleApplication oldRa = repairCandidate.getRuleApplicationNode();
-						opStrat.getMatchHandler().removeBrokenRuleApplication(oldRa);
-
-						TGGRuleApplication newRa = repairedMatch.getRuleApplicationNode();
-						opStrat.getMatchHandler().addBrokenRuleApplication(newRa, repairedMatch);
 						alreadyProcessed.add(repairCandidate);
-						alreadyProcessed.add(repairedMatch);
+						alreadyProcessed.addAll(repairedMatch);
 					}
 				}
 				dependencyContainer.matchApplied(repairCandidate);
@@ -116,6 +123,20 @@ public class SyncRepair implements TimeMeasurable {
 
 		times.addTo("repairBrokenMatches", Timer.stop());
 		return !alreadyProcessed.isEmpty();
+	}
+
+	private void processRepairedMatches(RepairApplicationPoint applPoint, Collection<ITGGMatch> repairedMatches) {
+		if (applPoint instanceof ShortcutApplicationPoint scApplPoint) {
+			for (PrecedenceNode originalNode : scApplPoint.getOriginalNodes()) {
+				opStrat.getMatchHandler().removeBrokenRuleApplication(originalNode.getMatch().getRuleApplicationNode());
+			}
+		} else {
+			opStrat.getMatchHandler().removeBrokenRuleApplication(applPoint.getApplicationMatch().getRuleApplicationNode());
+		}
+
+		for (ITGGMatch repairedMatch : repairedMatches) {
+			opStrat.getMatchHandler().addBrokenRuleApplication(repairedMatch.getRuleApplicationNode(), repairedMatch);
+		}
 	}
 
 	@Override

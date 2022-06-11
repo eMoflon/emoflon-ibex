@@ -1,25 +1,19 @@
 package org.emoflon.ibex.tgg.operational.repair.strategies;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
-import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.operational.IGreenInterpreter;
+import org.emoflon.ibex.tgg.operational.IRedInterpreter;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.ShortcutPatternTool;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.ShortcutApplicationTool;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.ShortcutPatternProvider;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.OperationalShortcutRule;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.util.OverlapUtil;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCMatch;
-import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 import org.emoflon.smartemf.runtime.notification.SmartEMFCrossReferenceAdapter;
-
-import runtime.TGGRuleApplication;
 
 /**
  * This class attempts to repair broken matches by using operationalized shortcut rules (OSR). These
@@ -31,60 +25,36 @@ import runtime.TGGRuleApplication;
  */
 public class ShortcutRepairStrategy implements RepairStrategy {
 
-	private PropagatingOperationalStrategy opStrat;
-	private IbexOptions options;
+	protected final ShortcutApplicationTool shortcutApplTool;
 
-	protected ShortcutPatternTool scTool;
-
-	public ShortcutRepairStrategy(PropagatingOperationalStrategy opStrat, PatternType... shortcutPatternTypes) {
-		this.opStrat = opStrat;
-		this.options = opStrat.getOptions();
-
+	public ShortcutRepairStrategy(IbexOptions options, //
+			IGreenInterpreter greenInterpreter, IRedInterpreter redInterpreter, //
+			ShortcutPatternProvider shortcutPatternProvider) {
 		// enable backward navigation for emf edges if smartemf is not enabled
 		if (!options.project.usesSmartEMF())
 			options.resourceHandler().getModelResourceSet().eAdapters().add(new SmartEMFCrossReferenceAdapter());
 
-		initialize(shortcutPatternTypes);
-	}
-
-	private void initialize(PatternType[] shortcutPatternTypes) {
-		Collection<ShortcutRule> shortcutRules = new OverlapUtil(options) //
-				.calculateShortcutRules(options.tgg.flattenedTGG());
-
-		LoggerConfig.log(LoggerConfig.log_repair(), () -> "Generated " + shortcutRules.size() + " Short-Cut Rules:");
-		for (ShortcutRule scRule : shortcutRules)
-			LoggerConfig.log(LoggerConfig.log_repair(), () -> "  " + scRule.getName());
-
-		scTool = new ShortcutPatternTool(opStrat, shortcutRules, new HashSet<>(Arrays.asList(shortcutPatternTypes)));
+		this.shortcutApplTool = new ShortcutApplicationTool(options, greenInterpreter, redInterpreter, shortcutPatternProvider);
 	}
 
 	@Override
-	public Collection<ITGGMatch> chooseMatches(Map<TGGRuleApplication, ITGGMatch> brokenRuleApplications) {
-		return brokenRuleApplications.keySet() //
-				.stream() //
-				.filter(this::noMissingNodes) //
-				.map(brokenRuleApplications::get) //
-				.collect(Collectors.toList());
-	}
-
-	private boolean noMissingNodes(TGGRuleApplication ra) {
-//		return TGGPatternUtil.getAllNodes(ra).stream().noneMatch(n -> n == null);
-		return true;
-	}
-
-	@Override
-	public ITGGMatch repair(ITGGMatch repairCandidate, PatternType type) {
-		ITGGMatch repairedMatch = scTool.processBrokenMatch(type, repairCandidate);
-		if (repairedMatch != null)
-			logSuccessfulRepair(repairCandidate, repairedMatch);
-		return repairedMatch;
+	public Collection<ITGGMatch> repair(RepairApplicationPoint applPoint) {
+		Collection<ITGGMatch> repairedMatches = shortcutApplTool.repairAtApplicationPoint(applPoint);
+		if (repairedMatches != null) {
+			if (repairedMatches.size() == 1)
+				logSuccessfulRepair(applPoint.getApplicationMatch(), repairedMatches.iterator().next());
+			else
+				logSuccessfulRepair(null, repairedMatches);
+			return repairedMatches;
+		}
+		return null;
 	}
 
 	public RepairableMatch isRepairable(ITGGMatch repairCandidate, ITGGMatch replacingMatch) {
 		RepairableMatch result = null;
 
-		Map<SCMatch, OperationalShortcutRule> repMatches = scTool.isRepairable(replacingMatch.getType(), repairCandidate,
-				replacingMatch.getRuleName());
+		RepairApplicationPoint applPoint = new RepairApplicationPoint(repairCandidate, replacingMatch.getType());
+		Map<SCMatch, OperationalShortcutRule> repMatches = shortcutApplTool.isRepairable(applPoint, replacingMatch.getRuleName());
 		for (Entry<SCMatch, OperationalShortcutRule> entry : repMatches.entrySet()) {
 			boolean validSCMatch = true;
 			for (String paramName : replacingMatch.getParameterNames()) {
@@ -111,12 +81,22 @@ public class ShortcutRepairStrategy implements RepairStrategy {
 	}
 
 	public int countDeletedElements() {
-		return scTool.countDeletedElements();
+		return shortcutApplTool.countDeletedElements();
 	}
 
 	protected void logSuccessfulRepair(ITGGMatch repairCandidate, ITGGMatch repairedMatch) {
 		LoggerConfig.log(LoggerConfig.log_repair(), () -> //
 		"  '-> repaired: '" + repairCandidate.getPatternName() + "' -> '" + repairedMatch.getPatternName() + //
 				"' (" + repairCandidate.hashCode() + " -> " + repairedMatch.hashCode() + ")");
+	}
+
+	protected void logSuccessfulRepair(ITGGMatch repairCandidate, Collection<ITGGMatch> repairedMatches) {
+		LoggerConfig.log(LoggerConfig.log_repair(), () -> {
+			StringBuilder b = new StringBuilder();
+			b.append("  '-> repaired: '" + repairCandidate.getPatternName() + "' -> '");
+			b.append(String.join("--", repairedMatches.stream().map(m -> m.getPatternName()).toList()));
+			b.append("'");
+			return b.toString();
+		});
 	}
 }

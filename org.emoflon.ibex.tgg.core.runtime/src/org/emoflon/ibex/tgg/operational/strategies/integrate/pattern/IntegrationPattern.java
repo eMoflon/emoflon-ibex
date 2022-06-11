@@ -17,12 +17,12 @@ public class IntegrationPattern {
 	
 	public IntegrationPattern(List<IntegrationFragment> fragments) {
 		this.fragments = fragments;
-		this.deletionTypes = DeletionType.getDefaultDeletionTypes();
+		this.deletionTypes = DeletionType.defaultTypes;
 	}
 
 	public IntegrationPattern() {
 		this.fragments = FragmentProvider.DEFAULT_FRAGMENTS;
-		this.deletionTypes = DeletionType.getDefaultDeletionTypes();
+		this.deletionTypes = DeletionType.defaultTypes;
 	}
 
 	public List<DeletionType> getDeletionTypes() {

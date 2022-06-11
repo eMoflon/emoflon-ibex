@@ -12,7 +12,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.TGGOverlap;
-import org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil;
+import org.emoflon.ibex.tgg.util.TGGFilterUtil;
 
 import language.BindingType;
 import language.DomainType;
@@ -20,6 +20,7 @@ import language.LanguageFactory;
 import language.TGGAttributeExpression;
 import language.TGGInplaceAttributeExpression;
 import language.TGGRule;
+import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
 import language.TGGRuleNode;
@@ -153,7 +154,8 @@ public class ShortcutRule {
 	private void createNewNodeIfNecessary(TGGRuleNode oldNode, BindingType binding, SCInputRule scInput) {
 		if(options.repair.omitUnnecessaryContext()) {
 			if(scInput == SCInputRule.ORIGINAL) {
-				boolean isNecessary = overlap.deletions.stream().anyMatch(e -> oldNode.getIncomingEdges().contains(e) || oldNode.getOutgoingEdges().contains(e));
+				boolean isNecessary = overlap.deletions.stream() //
+						.anyMatch(e -> oldNode.getIncomingEdges().contains(e) || oldNode.getOutgoingEdges().contains(e));
 				if(isNecessary)
 					createNewNode(oldNode, binding, scInput);
 				else {
@@ -206,10 +208,12 @@ public class ShortcutRule {
 			preservedNodes.add(newNode);
 	}
 
-	private TGGRuleNode createNode(EClass nodeType, String name, BindingType binding, DomainType domain, EClass type, List<TGGInplaceAttributeExpression> attrExprs) {
+	private TGGRuleNode createNode(EClass nodeType, String name, BindingType binding, DomainType domain, EClass type,
+			List<TGGInplaceAttributeExpression> attrExprs) {
 		TGGRuleNode node = (TGGRuleNode) LanguageFactory.eINSTANCE.create(nodeType);
 
 		String adjustedName = name;
+		// don't change how name allocation is done here, other code depends on it!
 		if (nodeNames.contains(adjustedName)) {
 			int i = 2;
 			while (nodeNames.contains(adjustedName + i)) {
@@ -241,8 +245,8 @@ public class ShortcutRule {
 	}
 
 	private void createNewEdge(TGGRuleEdge edge, BindingType binding, SCInputRule scInput) {
-		TGGRuleNode srcSCRuleNode = mapRuleNodeToSCRuleNode(edge.getSrcNode(), scInput);
-		TGGRuleNode trgSCRuleNode = mapRuleNodeToSCRuleNode(edge.getTrgNode(), scInput);
+		TGGRuleNode srcSCRuleNode = mapRuleNodeToSCNode(edge.getSrcNode(), scInput);
+		TGGRuleNode trgSCRuleNode = mapRuleNodeToSCNode(edge.getTrgNode(), scInput);
 		
 		// if src or trg rule were not generated due to optimization, do not create this edge
 		if(srcSCRuleNode == null || trgSCRuleNode == null) 
@@ -269,12 +273,13 @@ public class ShortcutRule {
 
 		String name = newEdge.getSrcNode().getName() + "__" + edge.getType().getName() + "__"
 				+ newEdge.getTrgNode().getName();
+		// don't change how name allocation is done here, other code depends on it!
 		if (edgeNames.contains(name)) {
 			int i = 2;
-			while (edgeNames.contains(name + "_" + i)) {
+			while (edgeNames.contains(name + "-" + i)) {
 				i++;
 			}
-			name += "_" + i;
+			name += "-" + i;
 		}
 		newEdge.setName(name);
 
@@ -283,6 +288,15 @@ public class ShortcutRule {
 			throw new RuntimeException("Shortcutrules are not allowed to have duplicate edges");
 		}
 		edgeNames.add(newEdge.getName());
+
+		// add missing source/target node references for correspondence nodes:
+		if (newEdge.getSrcNode() instanceof TGGRuleCorr corrNode) {
+			switch (newEdge.getTrgNode().getDomainType()) {
+				case SRC -> corrNode.setSource(newEdge.getTrgNode());
+				case TRG -> corrNode.setTarget(newEdge.getTrgNode());
+				default -> throw new IllegalArgumentException("Unexpected value: " + newEdge.getTrgNode().getDomainType());
+			}
+		}
 	}
 
 	private Collection<TGGRuleNode> extractNodes(Collection<TGGRuleElement> elements) {
@@ -331,17 +345,18 @@ public class ShortcutRule {
 		return ruleName.equals(originalRule.getName());
 	}
 
-	public TGGRuleNode mapRuleNodeToSCRuleNode(TGGRuleNode node, SCInputRule scInput) {
-		if (scInput == SCInputRule.ORIGINAL)
-			return original2newNodes.get(node);
-		return replacing2newNodes.getOrDefault(node, null);
+	public TGGRuleNode mapRuleNodeToSCNode(TGGRuleNode node, SCInputRule scInput) {
+		return switch (scInput) {
+			case ORIGINAL -> original2newNodes.get(node);
+			case REPLACING -> replacing2newNodes.get(node);
+		};
 	}
 
-	public TGGRuleNode mapOriginalToSCNodeNode(String name) {
+	public TGGRuleNode mapOriginalNodeNameToSCNode(String name) {
 		return original2newNodes.getOrDefault(originalName2oldNodes.getOrDefault(name, null), null);
 	}
 
-	public TGGRuleNode mapReplacingToSCNodeNode(String name) {
+	public TGGRuleNode mapReplacingNodeNameToSCNode(String name) {
 		return replacing2newNodes.getOrDefault(replacingName2oldNodes.getOrDefault(name, null), null);
 	}
 

@@ -1,6 +1,11 @@
 package org.emoflon.ibex.tgg.operational.repair.shortcut.util;
 
 public enum OverlapCategory {
+	
+	/**
+	 * If no other category fits
+	 */
+	OTHER,
 
 	/**
 	 * Switches from one to another similar structure remaining with the same rule
@@ -25,7 +30,7 @@ public enum OverlapCategory {
 	CUTTER,
 
 	/**
-	 * Connects to structures
+	 * Connects two structures
 	 */
 	JOINER,
 

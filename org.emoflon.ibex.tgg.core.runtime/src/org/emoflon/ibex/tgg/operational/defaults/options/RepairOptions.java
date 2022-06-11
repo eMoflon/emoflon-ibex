@@ -5,24 +5,26 @@ import org.emoflon.ibex.tgg.operational.repair.shortcut.updatepolicy.DefaultSCRU
 import org.emoflon.ibex.tgg.operational.repair.shortcut.updatepolicy.IShortcutRuleUpdatePolicy;
 
 public class RepairOptions extends IbexSubOptions {
-	
+
 	private boolean repairAttributes;
 	private boolean useShortcutRules;
 	private boolean relaxedSCPatternMatching;
 	private boolean disableInjectivity;
 	private boolean omitUnnecessaryContext;
- 	private boolean advancedOverlapStrategies;
+	private boolean advancedOverlapStrategies;
+	private boolean usePGbasedSCruleCreation;
 	private IShortcutRuleUpdatePolicy scrUpdatePolicy;
 
 	public RepairOptions(IbexOptions options) {
 		super(options);
-		
+
 		repairAttributes = true;
 		useShortcutRules = false;
 		relaxedSCPatternMatching = true;
 		advancedOverlapStrategies = false;
 		disableInjectivity = true;
 		omitUnnecessaryContext = true;
+		usePGbasedSCruleCreation = false;
 		scrUpdatePolicy = new DefaultSCRUpdatePolicy();
 	}
 
@@ -52,7 +54,7 @@ public class RepairOptions extends IbexSubOptions {
 		this.repairAttributes = repairAttributes;
 		return options;
 	}
-	
+
 	public boolean disableInjectivity() {
 		return disableInjectivity;
 	}
@@ -61,7 +63,7 @@ public class RepairOptions extends IbexSubOptions {
 		this.disableInjectivity = disableInjectivity;
 		return options;
 	}
-	
+
 	public boolean omitUnnecessaryContext() {
 		return omitUnnecessaryContext;
 	}
@@ -70,14 +72,22 @@ public class RepairOptions extends IbexSubOptions {
 		this.omitUnnecessaryContext = omitUnnecessaryContext;
 		return options;
 	}
-	
+
 	public boolean advancedOverlapStrategies() {
 		return advancedOverlapStrategies;
 	}
-	
+
 	public IbexOptions advancedOverlapStrategies(boolean advancedOverlapStrategies) {
 		this.advancedOverlapStrategies = advancedOverlapStrategies;
 		return options;
+	}
+
+	public boolean usePGbasedSCruleCreation() {
+		return usePGbasedSCruleCreation;
+	}
+
+	public void usePGbasedSCruleCreation(boolean usePGbasedSCruleCreation) {
+		this.usePGbasedSCruleCreation = usePGbasedSCruleCreation;
 	}
 
 	public IShortcutRuleUpdatePolicy shortcutRuleUpdatePolicy() {
