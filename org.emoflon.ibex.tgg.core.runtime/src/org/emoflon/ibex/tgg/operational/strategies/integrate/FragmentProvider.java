@@ -36,7 +36,8 @@ public class FragmentProvider {
 
 		@Override
 		public void apply(INTEGRATE i) throws IOException {
-			TRANSLATE.apply(i);
+			if (!i.getOptions().repair.usePGbasedSCruleCreation())
+				TRANSLATE.apply(i);
 
 			FragmentProvider.logFragmentStart(this);
 			Timer.start();

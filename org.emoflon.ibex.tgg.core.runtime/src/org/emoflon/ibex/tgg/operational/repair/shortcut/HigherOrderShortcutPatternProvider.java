@@ -56,10 +56,12 @@ public class HigherOrderShortcutPatternProvider extends BasicShortcutPatternProv
 
 	@Override
 	public Collection<OperationalShortcutRule> getOperationalShortcutRules(RepairApplicationPoint applPoint) {
-		Collection<OperationalShortcutRule> operationalShortcutRules = super.getOperationalShortcutRules(applPoint);
+		Collection<OperationalShortcutRule> operationalShortcutRules = new LinkedList<>();
 
 		if (applPoint instanceof ShortcutApplicationPoint scApplPoint)
 			operationalShortcutRules.addAll(getHigherOrderOpShortcutRules(scApplPoint));
+
+		operationalShortcutRules.addAll(super.getOperationalShortcutRules(applPoint));
 
 		return operationalShortcutRules;
 	}

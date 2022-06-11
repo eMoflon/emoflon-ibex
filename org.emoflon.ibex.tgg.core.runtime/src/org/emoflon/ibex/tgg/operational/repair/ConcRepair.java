@@ -141,8 +141,11 @@ public class ConcRepair implements TimeMeasurable {
 					repairedSth = true;
 				}
 
-				if (usePGbasedSCruleCreation && applPoints.containsKey(repairCandidate)) {
-					repairedMatches = repairViaShortcut(applPoints.get(repairCandidate));
+				if (usePGbasedSCruleCreation) {
+					if (applPoints.containsKey(repairCandidate))
+						repairedMatches = repairViaShortcut(applPoints.get(repairCandidate));
+					else
+						repairedMatches = null;
 				} else {
 					repairedMatches = repairViaShortcut(classifiedMatch);
 				}
@@ -235,7 +238,10 @@ public class ConcRepair implements TimeMeasurable {
 	}
 
 	private Collection<ITGGMatch> repairViaShortcut(ShortcutApplicationPoint applPoint) {
-		return shortcutRepairStrat.repair(applPoint);
+		Collection<ITGGMatch> repairedMatches = shortcutRepairStrat.repair(applPoint);
+		if (repairedMatches != null)
+			processRepairedMatches(applPoint, repairedMatches);
+		return repairedMatches;
 	}
 
 	public Collection<ITGGMatch> attributeRepairOneMatch(ITGGMatch repairCandidate, PatternType type) {
