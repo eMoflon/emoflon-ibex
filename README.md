@@ -21,10 +21,10 @@ There are 3 ways how to use eMoflon::IBeX:
 ## Pre-build Eclipse
 
 1. Install [GraphViz](http://www.graphviz.org/download/).
-1. Choose the right pre-built Eclipse version for your need. A comparisson table can be found in the [readme of the emoflon-eclipse-build repository](https://github.com/maxkratz/emoflon-eclipse-build). Typically, you want to download:
+1. Choose the right pre-built Eclipse version for your need. A comparisson table can be found in the [readme of the emoflon-eclipse-build repository](https://github.com/eMoflon/emoflon-eclipse-build). Typically, you want to download:
 	+ `eclipse-emoflon-$yourOS-dev.zip` if you want to develop eMoflon::IBeX
 	+ `eclipse-emoflon-$yourOS-user.zip` if you want to use eMoflon::IBeX without developing it
-1. Download your chosen [Eclipse archive](https://github.com/maxkratz/emoflon-eclipse-build/releases/latest).
+1. Download your chosen [Eclipse archive](https://github.com/eMoflon/emoflon-eclipse-build/releases/latest).
 1. Extract the archive to a folder, e.g., to `~/eclipse-apps/emoflon-ibex`.
 1. Start your Eclipse (= the binary in the extracted folder) and create a new workspace.
 
