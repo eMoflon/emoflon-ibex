@@ -28,7 +28,6 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
 public class GreenPatternFactory implements IGreenPatternFactory {
-	protected String ruleName;
 	protected IbexOptions options;
 	protected List<TGGParamValue> variables = new LinkedList<>();
 	protected List<TGGAttributeConstraint> constraints = new LinkedList<>();
@@ -39,30 +38,34 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 	private TGGRule rule;
 
 	protected List<TGGRuleNode> greenSrcNodesInRule = new LinkedList<>();
-	protected List<TGGRuleNode> greenTrgNodesInRule = new LinkedList<>();;
-	protected List<TGGRuleCorr> greenCorrNodesInRule = new LinkedList<>();;
-	protected List<TGGRuleEdge> greenSrcEdgesInRule = new LinkedList<>();;
-	protected List<TGGRuleEdge> greenTrgEdgesInRule = new LinkedList<>();;
-	protected List<TGGRuleEdge> greenCorrEdgesInRule = new LinkedList<>();;
+	protected List<TGGRuleNode> greenTrgNodesInRule = new LinkedList<>();
+	protected List<TGGRuleCorr> greenCorrNodesInRule = new LinkedList<>();
+	protected List<TGGRuleEdge> greenSrcEdgesInRule = new LinkedList<>();
+	protected List<TGGRuleEdge> greenTrgEdgesInRule = new LinkedList<>();
+	protected List<TGGRuleEdge> greenCorrEdgesInRule = new LinkedList<>();
 
-	protected List<TGGRuleNode> blackSrcNodesInRule = new LinkedList<>();;
-	protected List<TGGRuleNode> blackTrgNodesInRule = new LinkedList<>();;
-	protected List<TGGRuleCorr> blackCorrNodesInRule = new LinkedList<>();;
-	protected List<TGGRuleEdge> blackSrcEdgesInRule = new LinkedList<>();;
-	protected List<TGGRuleEdge> blackTrgEdgesInRule = new LinkedList<>();;
-	protected List<TGGRuleEdge> blackCorrEdgesInRule = new LinkedList<>();;
+	protected List<TGGRuleNode> blackSrcNodesInRule = new LinkedList<>();
+	protected List<TGGRuleNode> blackTrgNodesInRule = new LinkedList<>();
+	protected List<TGGRuleCorr> blackCorrNodesInRule = new LinkedList<>();
+	protected List<TGGRuleEdge> blackSrcEdgesInRule = new LinkedList<>();
+	protected List<TGGRuleEdge> blackTrgEdgesInRule = new LinkedList<>();
+	protected List<TGGRuleEdge> blackCorrEdgesInRule = new LinkedList<>();
 
 	public GreenPatternFactory(IbexOptions options, String ruleName) {
-		this(options);
-		this.ruleName = ruleName;
+		this(options, options.tgg.flattenedTGG().getRules().stream() //
+				.filter(r -> r.getName().equals(ruleName)) //
+				.findAny() //
+				.orElseThrow(() -> new IllegalStateException("Could not find " + ruleName + " in the TGG.")) //
+		);
+	}
 
-		rule = options.tgg.flattenedTGG().getRules().stream().filter(r -> r.getName().equals(ruleName)).findAny()
-				.orElseThrow(() -> new IllegalStateException("Could not find " + ruleName + " in the TGG."));
+	public GreenPatternFactory(IbexOptions options, TGGRule rule) {
+		this(options);
+		this.rule = rule;
 
 		greenSrcNodesInRule.addAll(getNodes(BindingType.CREATE, DomainType.SRC));
 		greenTrgNodesInRule.addAll(getNodes(BindingType.CREATE, DomainType.TRG));
-		greenCorrNodesInRule.addAll(getNodes(BindingType.CREATE, DomainType.CORR).stream().map(TGGRuleCorr.class::cast)
-				.collect(Collectors.toList()));
+		greenCorrNodesInRule.addAll(getNodes(BindingType.CREATE, DomainType.CORR).stream().map(TGGRuleCorr.class::cast).collect(Collectors.toList()));
 
 		greenSrcEdgesInRule.addAll(validate(getEdges(BindingType.CREATE, DomainType.SRC)));
 		greenTrgEdgesInRule.addAll(validate(getEdges(BindingType.CREATE, DomainType.TRG)));
@@ -79,11 +82,11 @@ public class GreenPatternFactory implements IGreenPatternFactory {
 
 		constraints.addAll(rule.getAttributeConditionLibrary().getTggAttributeConstraints());
 		variables.addAll(rule.getAttributeConditionLibrary().getParameterValues());
-		
+
 		greenSrcEdgesInRule.sort((a, b) -> compareEdges(a, b));
 		greenTrgEdgesInRule.sort((a, b) -> compareEdges(a, b));
 	}
-	
+
 	private int compareEdges(TGGRuleEdge a, TGGRuleEdge b) {
 		boolean a_val = a.getSrcNode().getBindingType() == BindingType.CONTEXT && a.getTrgNode().getBindingType() == BindingType.CREATE;
 		boolean b_val = b.getSrcNode().getBindingType() == BindingType.CONTEXT && b.getTrgNode().getBindingType() == BindingType.CREATE;

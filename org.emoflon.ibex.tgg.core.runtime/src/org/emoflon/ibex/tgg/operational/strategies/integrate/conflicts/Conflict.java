@@ -18,7 +18,6 @@ import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.strategies.ShortcutRepairStrategy.RepairableMatch;
-import org.emoflon.ibex.tgg.operational.repair.util.TGGFilterUtil;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.ClassifiedMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.util.ConflictElements;
@@ -27,6 +26,7 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelCh
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.EltFilter;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil;
 import org.emoflon.ibex.tgg.util.TGGEdgeUtil;
+import org.emoflon.ibex.tgg.util.TGGFilterUtil;
 
 import language.BindingType;
 import language.DomainType;
@@ -108,7 +108,7 @@ public abstract class Conflict {
 			else
 				deletedCrossEdges.add(edge);
 		});
-		integrate().matchUtils().get(match).getObjects(filter).forEach(node -> {
+		integrate().matchUtils().get(match).getEObjects(filter).forEach(node -> {
 			if (integrate().generalModelChanges().isDeleted(node))
 				deletedNodes.add(node);
 		});
@@ -143,7 +143,7 @@ public abstract class Conflict {
 					deletedCrossEdges.add(edge);
 			}
 		});
-		matchUtil.getObjects(filter).forEach(node -> {
+		matchUtil.getEObjects(filter).forEach(node -> {
 			if (integrate().generalModelChanges().isDeleted(node))
 				deletedNodes.add(node);
 		});
@@ -193,7 +193,7 @@ public abstract class Conflict {
 			}
 			case CONSISTENCY -> {
 				EltFilter filter = new EltFilter().create();
-				deletedNodes = matchUtil.getObjects(filter);
+				deletedNodes = matchUtil.getEObjects(filter);
 				deletedContainmentEdges = Collections.emptySet(); // do we need containment edges here?
 				deletedCrossEdges = matchUtil.getEMFEdgeStream(filter) //
 						.filter(e -> !e.getType().isContainment()) //
@@ -216,7 +216,7 @@ public abstract class Conflict {
 	}
 
 	protected void revertRepairable(RepairableMatch repairableMatch, DomainType revertedDomain) {
-		ShortcutRule shortcutRule = repairableMatch.opSCR.getOriginalScRule();
+		ShortcutRule shortcutRule = repairableMatch.opSCR.getRawShortcutRule();
 
 		Set<EObject> deletedNodes = TGGFilterUtil.filterNodes(shortcutRule.getNodes(), revertedDomain, BindingType.DELETE).stream() //
 				.map(n -> (EObject) getMatch().get(n.getName())) //

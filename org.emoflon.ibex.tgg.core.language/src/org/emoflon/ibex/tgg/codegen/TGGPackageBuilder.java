@@ -97,11 +97,11 @@ public class TGGPackageBuilder implements TGGBuilderExtension{
 		updateManifest(manifest -> processManifestForProject(manifest));
 	}
 	
-	private TripleGraphGrammarFile generateEditorModel(Resource schemaResource) throws RuntimeException{
+	private TripleGraphGrammarFile generateEditorModel(Resource schemaResource) throws RuntimeException {
 		try {
 			ResourceSet resourceSet = new XtextResourceSet();
 			resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());
-			
+
 			logInfo(project.getName());
 			logInfo(project.getLocation().toOSString());
 
@@ -109,9 +109,11 @@ public class TGGPackageBuilder implements TGGBuilderExtension{
 				// Combine to form single tgg model
 				TripleGraphGrammarFile xtextParsedTGG = //
 						(TripleGraphGrammarFile) schemaResource.getContents().get(0);
-				
+
 				collectAllRules(xtextParsedTGG, schemaResource.getResourceSet());
-				addAttrCondDefLibraryReferencesToSchema(xtextParsedTGG);
+				// We always want to add all predefined definitions since at some points we need to generate additional CSPs manually:
+				addAttrCondDefLibraryToSchema(xtextParsedTGG, schemaResource.getResourceSet());
+//				addAttrCondDefLibraryReferencesToSchema(xtextParsedTGG);
 
 				// Persist and return
 				IFile editorFile = project.getFolder(TGGBuildUtil.MODEL_FOLDER)//
@@ -127,7 +129,7 @@ public class TGGPackageBuilder implements TGGBuilderExtension{
 			}
 		} catch (CoreException | IOException e) {
 			logError(e);
-			throw new RuntimeException("Could not generate editor model. Message: "+e.getMessage());
+			throw new RuntimeException("Could not generate editor model. Message: " + e.getMessage());
 		}
 	}
 	
@@ -208,14 +210,26 @@ public class TGGPackageBuilder implements TGGBuilderExtension{
 			assert (resource.getContents().size() == 1);
 			if (!resource.getContents().isEmpty()) {
 				EObject root = resource.getContents().get(0);
-				if (root instanceof TripleGraphGrammarFile) {
-					TripleGraphGrammarFile f = (TripleGraphGrammarFile) root;
-					xtextParsedTGG.getRules().addAll(f.getRules());
+				if (root instanceof TripleGraphGrammarFile tggFile) {
+					xtextParsedTGG.getRules().addAll(tggFile.getRules());
 				}
 			}
 		}
 	}
 	
+	private void addAttrCondDefLibraryToSchema(TripleGraphGrammarFile xtextParsedTGG, ResourceSet resourceSet) {
+		Collection<Resource> resources = resourceSet.getResources();
+		for (Resource resource : resources) {
+			if (!resource.getContents().isEmpty()) {
+				EObject root = resource.getContents().get(0);
+				if (root instanceof TripleGraphGrammarFile tggFile) {
+					if (tggFile.getLibrary() != null)
+						xtextParsedTGG.getSchema().getAttributeCondDefs().addAll(tggFile.getLibrary().getAttributeCondDefs());
+				}
+			}
+		}
+	}
+
 	private void addAttrCondDefLibraryReferencesToSchema(TripleGraphGrammarFile xtextParsedTGG) {
 		EList<AttrCondDef> usedAttrCondDefs = new BasicEList<AttrCondDef>();
 		for (Rule rule : xtextParsedTGG.getRules()) {

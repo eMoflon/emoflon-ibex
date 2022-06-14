@@ -22,6 +22,8 @@ import language.impl.TGGEnumExpressionImpl
 import language.impl.TGGLiteralExpressionImpl
 import language.repair.ExternalShortcutRule
 import language.repair.TGGRuleElementMapping
+import java.util.Set
+import java.util.HashSet
 
 class IBeXTggXmiPlantUMLGenerator {
 
@@ -103,6 +105,8 @@ class IBeXTggXmiPlantUMLGenerator {
 	}
 
 	private def static visualizeTGGRule(String namespace, TGGRule rule) {
+		var Set<TGGRuleEdge> processedOpposites = new HashSet();
+		
 		'''
 			together {
 				«FOR node : rule.trgNodes»
@@ -123,7 +127,7 @@ class IBeXTggXmiPlantUMLGenerator {
 			}
 			
 			«FOR edge : rule.srcTrgEdges»
-				«visualizeEdge(namespace, edge)»
+				«visualizeEdge(namespace, edge, processedOpposites)»
 			«ENDFOR»
 		'''
 	}
@@ -231,11 +235,28 @@ class IBeXTggXmiPlantUMLGenerator {
 		'''
 	}
 
-	private def static visualizeEdge(String namespace, TGGRuleEdge edge) {
-		if (!edge.type.name.endsWith("Inverse") || edge.type.EOpposite === null)
+	private def static visualizeEdge(String namespace, TGGRuleEdge edge, Set<TGGRuleEdge> processedOpposites) {
+		if (edge.type.EOpposite !== null) {
+			if (processedOpposites.contains(edge) || edge.type.name.endsWith("Inverse"))
+				return null
+			processedOpposites.add(getOppositeEdge(edge))
+			return '''
+				«idOf(namespace, edge.srcNode)» "«edge.type.EOpposite.name»" <-«edge.bindingType.color.color»-> "«edge.type.name»" «idOf(namespace, edge.trgNode)»
 			'''
-				«idOf(namespace, edge.srcNode)» -«edge.bindingType.color.color»-> «idOf(namespace, edge.trgNode)» : «edge.type.name»
-			'''
+		}
+
+		return '''
+			«idOf(namespace, edge.srcNode)» -«edge.bindingType.color.color»-> «idOf(namespace, edge.trgNode)» : «edge.type.name»
+		'''
+	}
+	
+	private def static getOppositeEdge(TGGRuleEdge edge) {
+		val rule = edge.eContainer as TGGRule
+		val oppositeType = edge.type.EOpposite
+		return rule.edges.filter[e|e.type === oppositeType]
+				.filter[e|e.srcNode === edge.trgNode]
+				.filter[e|e.trgNode === edge.srcNode]
+				.findFirst[e|true]
 	}
 
 	private def static idOf(String namespace, TGGRuleNode node) {
@@ -293,6 +314,8 @@ class IBeXTggXmiPlantUMLGenerator {
 		var namespace = scrule.name
 		var namespaceSrc = "[S] " + scrule.sourceRule.name
 		var namespaceTrg = "[T] " + scrule.targetRule.name
+		
+		var Set<TGGRuleEdge> processedOpposites = new HashSet();
 
 		'''
 			«plantUMLPreamble»
@@ -352,19 +375,19 @@ class IBeXTggXmiPlantUMLGenerator {
 			}
 			
 			«FOR mapping : scrule.mapping.filter[m|m.sourceRuleElement.domainType != DomainType.CORR]»
-				«visualizeEdgeMapping(namespace, mapping)»
+				«visualizeEdgeMapping(namespace, mapping, processedOpposites)»
 			«ENDFOR»
 			«FOR element : scrule.unboundSrcContext.filterInverse(DomainType.CORR)»
-				«visualizeEdge(namespace, element, "BLACK", "S", scrule.mapping)»
+				«visualizeEdge(namespace, element, "BLACK", "S", scrule.mapping, processedOpposites)»
 			«ENDFOR»
 			«FOR element : scrule.unboundTrgContext.filterInverse(DomainType.CORR)»
-				«visualizeEdge(namespace, element, "BLACK", "T", scrule.mapping)»
+				«visualizeEdge(namespace, element, "BLACK", "T", scrule.mapping, processedOpposites)»
 			«ENDFOR»
 			«FOR element : scrule.creations.filterInverse(DomainType.CORR)»
-				«visualizeEdge(namespace, element, "GREEN", "T", scrule.mapping)»
+				«visualizeEdge(namespace, element, "GREEN", "T", scrule.mapping, processedOpposites)»
 			«ENDFOR»
 			«FOR element : scrule.deletions.filterInverse(DomainType.CORR)»
-				«visualizeEdge(namespace, element, "RED", "S", scrule.mapping)»
+				«visualizeEdge(namespace, element, "RED", "S", scrule.mapping, processedOpposites)»
 			«ENDFOR»
 			
 			«visualizeTGGRule(namespaceSrc, scrule.sourceRule)»
@@ -421,34 +444,51 @@ class IBeXTggXmiPlantUMLGenerator {
 		}
 	}
 
-	private def static visualizeEdgeMapping(String namespace, TGGRuleElementMapping mapping) {
+	private def static visualizeEdgeMapping(String namespace, TGGRuleElementMapping mapping, Set<TGGRuleEdge> processedOpposites) {
 		if (mapping.sourceRuleElement instanceof TGGRuleEdge) {
 			var srcEdge = mapping.sourceRuleElement as TGGRuleEdge
-			if (!srcEdge.type.name.endsWith("Inverse") || srcEdge.type.EOpposite === null)
+			
+			if (srcEdge.type.EOpposite !== null) {
+				if (processedOpposites.contains(srcEdge) || srcEdge.type.name.endsWith("Inverse"))
+					return null
+				processedOpposites.add(getOppositeEdge(srcEdge))
+				return '''
+					«idOfMapped(namespace, srcEdge.srcNode)» "«srcEdge.type.EOpposite.name»" <-«"BLUE".color»-> "«srcEdge.type.name»" «idOfMapped(namespace, srcEdge.trgNode)»
 				'''
-					«idOfMapped(namespace, srcEdge.srcNode)» -«"BLUE".color»-> «idOfMapped(namespace, srcEdge.trgNode)» : «srcEdge.type.name»
-				'''
+			}
+			
+			return '''
+				«idOfMapped(namespace, srcEdge.srcNode)» -«"BLUE".color»-> «idOfMapped(namespace, srcEdge.trgNode)» : «srcEdge.type.name»
+			'''
 		}
 	}
 
 	private def static visualizeEdge(String namespace, TGGRuleElement elt, String binding, String origin,
-		List<TGGRuleElementMapping> mappings) {
+		List<TGGRuleElementMapping> mappings, Set<TGGRuleEdge> processedOpposites) {
 		if (elt instanceof TGGRuleEdge) {
 			var edge = elt as TGGRuleEdge
-			if (!edge.type.name.endsWith("Inverse") || edge.type.EOpposite === null) {
-				var srcMapping = edge.srcNode.isMapped(mappings)
-				var trgMapping = edge.trgNode.isMapped(mappings)
-				var srcId = srcMapping === null
-						? idOf(namespace, edge.srcNode, origin)
-						: idOfMapped(namespace, srcMapping.sourceRuleElement as TGGRuleNode)
-				var trgId = trgMapping === null
-						? idOf(namespace, edge.trgNode, origin)
-						: idOfMapped(namespace, trgMapping.sourceRuleElement as TGGRuleNode)
+			
+			var srcMapping = edge.srcNode.isMapped(mappings)
+			var trgMapping = edge.trgNode.isMapped(mappings)
+			var srcId = srcMapping === null
+					? idOf(namespace, edge.srcNode, origin)
+					: idOfMapped(namespace, srcMapping.sourceRuleElement as TGGRuleNode)
+			var trgId = trgMapping === null
+					? idOf(namespace, edge.trgNode, origin)
+					: idOfMapped(namespace, trgMapping.sourceRuleElement as TGGRuleNode)
 
-				'''
-					«srcId» -«binding.color»-> «trgId» : «edge.type.name»
+			if (edge.type.EOpposite !== null) {
+				if (processedOpposites.contains(edge) || edge.type.name.endsWith("Inverse"))
+					return null
+				processedOpposites.add(getOppositeEdge(edge))
+				return '''
+					«srcId» "«edge.type.EOpposite.name»" <-«binding.color»-> "«edge.type.name»" «trgId»
 				'''
 			}
+			
+			return '''
+				«srcId» -«binding.color»-> «trgId» : «edge.type.name»
+			'''
 		}
 	}
 

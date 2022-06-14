@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.delta.validation.InvalidDeltaException;
@@ -20,13 +19,12 @@ import org.emoflon.ibex.tgg.operational.matches.IMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.matches.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.operational.matches.PrecedenceMatchContainer;
-import org.emoflon.ibex.tgg.operational.repair.IntegrateRepair;
+import org.emoflon.ibex.tgg.operational.repair.ConcRepair;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassifier;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.ConflictHandler;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.detection.MultiplicityCounter;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceGraph;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceNode;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeProtocol;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeProtocol.ChangeKey;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChanges;
@@ -47,7 +45,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 	//// TOOLS ////
 	protected ModelChangeProtocol modelChangeProtocol;
-	protected IntegrateRepair repair;
+	protected ConcRepair repair;
 	protected MatchClassifier matchClassifier;
 	protected TGGMatchUtilProvider matchUtils;
 	protected Revoker revoker;
@@ -76,7 +74,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		generalDeltaKey = new ChangeKey();
 		modelChangeProtocol.registerKey(generalDeltaKey);
 
-		repair = new IntegrateRepair(this);
+		repair = new ConcRepair(this);
 		filterNACMatchCollector = new FilterNACMatchCollector(options);
 		matchClassifier = new MatchClassifier(this);
 		matchUtils = new TGGMatchUtilProvider(this);
@@ -95,11 +93,11 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	}
 
 	private void removeBrokenMatchesAfterCCMatchApplication(ITGGMatch ccMatch) {
-		Set<EObject> ccObjects = matchUtils.get(ccMatch).getObjects(new EltFilter().srcAndTrg().create());
+		Set<EObject> ccObjects = matchUtils.get(ccMatch).getEObjects(new EltFilter().srcAndTrg().create());
 
 		Collection<ITGGMatch> brokenMatches = new HashSet<>(matchHandler.getBrokenMatches());
 		for (ITGGMatch brokenMatch : brokenMatches) {
-			Set<EObject> brokenObjects = matchUtils.get(brokenMatch).getObjects(new EltFilter().srcAndTrg().create());
+			Set<EObject> brokenObjects = matchUtils.get(brokenMatch).getEObjects(new EltFilter().srcAndTrg().create());
 			if (!Sets.intersection(ccObjects, brokenObjects).isEmpty())
 				revoker.removeBrokenMatch(brokenMatch);
 		}
@@ -148,23 +146,6 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		modelChangeProtocol.deregisterKey(generalDeltaKey);
 		modelChangeProtocol.detachAdapter();
 		super.terminate();
-	}
-
-	public void classifyBrokenMatches(boolean includeImplicitBroken) {
-		matchDistributor.updateMatches();
-
-		Timer.start();
-
-		matchClassifier.clear();
-
-		Set<PrecedenceNode> brokenNodes = new HashSet<>(precedenceGraph.getBrokenNodes());
-		if (includeImplicitBroken)
-			brokenNodes.addAll(precedenceGraph.getImplicitBrokenNodes().parallelStream() //
-					.filter(n -> n.getMatch().getType() == PatternType.CONSISTENCY).collect(Collectors.toSet()) //
-			);
-		matchClassifier.classifyAllByNode(brokenNodes);
-
-		times.addTo("operations:classifyBrokenMatches", Timer.stop());
 	}
 
 	protected void translateConflictFree() {
@@ -274,7 +255,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 	//// GETTER ////
 
-	public IntegrateRepair repair() {
+	public ConcRepair repair() {
 		return repair;
 	}
 

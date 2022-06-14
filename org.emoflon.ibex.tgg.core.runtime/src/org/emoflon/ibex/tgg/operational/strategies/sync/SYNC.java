@@ -13,7 +13,7 @@ import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.EmptyGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.operational.patterns.IGreenPatternFactory;
-import org.emoflon.ibex.tgg.operational.repair.SyncRepair;
+import org.emoflon.ibex.tgg.operational.repair.SeqRepair;
 import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.PropagationDirectionHolder;
 import org.emoflon.ibex.tgg.operational.strategies.PropagationDirectionHolder.PropagationDirection;
@@ -24,7 +24,7 @@ public class SYNC extends PropagatingOperationalStrategy {
 	protected PropagationDirectionHolder propagationDirectionHolder;
 
 	// Repair
-	protected SyncRepair repairer;
+	protected SeqRepair repairer;
 
 	public SYNC(IbexOptions options) throws IOException {
 		super(options);
@@ -34,7 +34,7 @@ public class SYNC extends PropagatingOperationalStrategy {
 	protected void initializeAdditionalModules(IbexOptions options) throws IOException {
 		super.initializeAdditionalModules(options);
 		this.propagationDirectionHolder = new PropagationDirectionHolder();
-		this.repairer = new SyncRepair(this, propagationDirectionHolder);
+		this.repairer = new SeqRepair(this, propagationDirectionHolder);
 	}
 
 	/***** Sync algorithm *****/

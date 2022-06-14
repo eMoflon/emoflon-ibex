@@ -89,14 +89,14 @@ public class ConflictElements {
 		Stream<EObject> objects;
 
 		if (!created) {
-			objects = this.matches.flatMap(m -> integrate.matchUtils().get(m).getObjectStream(consistencyFilter));
+			objects = this.matches.flatMap(m -> integrate.matchUtils().get(m).getEObjectStream(consistencyFilter));
 		} else if (!deleted && !intact) {
-			objects = this.matches.flatMap(m -> integrate.matchUtils().get(m).getObjectStream(srcTrgFilter));
+			objects = this.matches.flatMap(m -> integrate.matchUtils().get(m).getEObjectStream(srcTrgFilter));
 		} else {
 			objects = this.matches.flatMap(m -> {
 				if (created && m.getType() == PatternType.CONSISTENCY)
-					return integrate.matchUtils().get(m).getObjectStream(consistencyFilter);
-				return integrate.matchUtils().get(m).getObjectStream(srcTrgFilter);
+					return integrate.matchUtils().get(m).getEObjectStream(consistencyFilter);
+				return integrate.matchUtils().get(m).getEObjectStream(srcTrgFilter);
 			});
 		}
 

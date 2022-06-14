@@ -17,6 +17,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
+import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.OperationalShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.AttrCheck;
@@ -26,16 +27,12 @@ import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.Lookup;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.NACNodeCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.lambda.NodeCheck;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCMatch;
-import org.emoflon.ibex.tgg.operational.repair.util.EMFNavigationUtil;
-import org.emoflon.ibex.tgg.operational.strategies.PropagatingOperationalStrategy;
-import org.emoflon.ibex.tgg.util.String2EPrimitive;
+import org.emoflon.ibex.tgg.util.EMFNavigationUtil;
+import org.emoflon.ibex.tgg.util.TGGInplaceAttrExprUtil;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 
 import language.BindingType;
-import language.TGGAttributeExpression;
-import language.TGGEnumExpression;
 import language.TGGInplaceAttributeExpression;
-import language.TGGLiteralExpression;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
@@ -43,7 +40,7 @@ import runtime.RuntimePackage;
 
 public class SearchPlanCreator {
 
-	protected final PropagatingOperationalStrategy strategy;
+	protected final IbexOptions options;
 	protected final OperationalShortcutRule opSCR;
 
 	protected Map<SearchKey, Lookup> key2lookup;
@@ -53,8 +50,8 @@ public class SearchPlanCreator {
 	protected Map<SearchKey, NACNodeCheck> key2nacNodeCheck;
 	protected CSPCheck cspCheck;
 
-	public SearchPlanCreator(PropagatingOperationalStrategy strategy, OperationalShortcutRule opScRule) {
-		this.strategy = strategy;
+	public SearchPlanCreator(IbexOptions options, OperationalShortcutRule opScRule) {
+		this.options = options;
 		this.opSCR = opScRule;
 		initialize();
 	}
@@ -70,11 +67,11 @@ public class SearchPlanCreator {
 	}
 
 	protected void createConstraintChecks() {
-		for (TGGRuleNode node : opSCR.getOpScRule().getNodes()) {
+		for (TGGRuleNode node : opSCR.getOperationalizedSCR().getNodes()) {
 			createNodeCheck(node);
 		}
 
-		for (TGGRuleEdge edge : opSCR.getOpScRule().getEdges()) {
+		for (TGGRuleEdge edge : opSCR.getOperationalizedSCR().getEdges()) {
 			SearchKey forwardKey = new SearchKey(edge.getSrcNode(), edge.getTrgNode(), edge, false);
 			SearchKey backwardKey = new SearchKey(edge.getSrcNode(), edge.getTrgNode(), edge, true);
 
@@ -95,7 +92,7 @@ public class SearchPlanCreator {
 		}
 
 		cspCheck = (name2candidates) -> {
-			ITGGMatch match = new SCMatch(opSCR.getOpScRule().getName(), name2candidates);
+			ITGGMatch match = new SCMatch(opSCR.getOperationalizedSCR().getName(), name2candidates);
 			IRuntimeTGGAttrConstrContainer cspContainer = opSCR.getGreenPattern().getAttributeConstraintContainer(match);
 			return cspContainer.solve();
 		};
@@ -124,7 +121,7 @@ public class SearchPlanCreator {
 				if (key.sourceNode instanceof TGGRuleCorr) {
 					key2lookup.put(key, n -> {
 						// make sure that we only get the correct corrs with the right type
-						Collection<EObject> corrs = strategy.getResourceHandler().getCorrCaching().getOrDefault(n, Collections.emptyList());
+						Collection<EObject> corrs = options.resourceHandler().getCorrCaching().getOrDefault(n, Collections.emptyList());
 						return corrs.stream().filter(c -> n.equals(c.eGet(key.edge.getType()))).collect(Collectors.toList());
 					});
 				} else
@@ -142,7 +139,8 @@ public class SearchPlanCreator {
 	private void createEdgeCheck(SearchKey key) {
 		boolean negative = key.edge.getBindingType() == BindingType.NEGATIVE;
 		if (negative) {
-			if (key.edge.getSrcNode().getBindingType().equals(BindingType.NEGATIVE) || key.edge.getTrgNode().getBindingType().equals(BindingType.NEGATIVE))
+			if (key.edge.getSrcNode().getBindingType().equals(BindingType.NEGATIVE)
+					|| key.edge.getTrgNode().getBindingType().equals(BindingType.NEGATIVE))
 				return;
 
 			key2edgeCheck.put(key, (s, t) -> {
@@ -210,85 +208,18 @@ public class SearchPlanCreator {
 		for (TGGInplaceAttributeExpression inplAttrExpr : key.getAttrExpr()) {
 			Object subjectAttr = node.eGet(inplAttrExpr.getAttribute());
 
-			if (inplAttrExpr.getValueExpr() instanceof TGGLiteralExpression litExpr) {
-				if (subjectAttr == null)
-					return false;
-
-				Object literal = String2EPrimitive.convertLiteral( //
-						litExpr.getValue(), inplAttrExpr.getAttribute().getEAttributeType());
-
-				switch (inplAttrExpr.getOperator()) {
-					case EQUAL -> {
-						if (!subjectAttr.equals(literal))
-							return false;
-						continue;
-					}
-					case UNEQUAL -> {
-						if (subjectAttr.equals(literal))
-							return false;
-						continue;
-					}
-					default -> {
-					}
-				}
-
-				int compareResult = comparePrimitives(subjectAttr, literal);
-				switch (inplAttrExpr.getOperator()) {
-					case GREATER -> {
-						if (!(compareResult > 0))
-							return false;
-					}
-					case GR_EQUAL -> {
-						if (!(compareResult >= 0))
-							return false;
-					}
-					case LESSER -> {
-						if (!(compareResult < 0))
-							return false;
-					}
-					case LE_EQUAL -> {
-						if (!(compareResult <= 0))
-							return false;
-					}
-					default -> {
-					}
-				}
-			} else if (inplAttrExpr.getValueExpr() instanceof TGGEnumExpression enumExpr) {
-				if (subjectAttr == null)
-					return false;
-
-				if (!subjectAttr.equals(enumExpr.getLiteral().getInstance()))
-					return false;
-			} else if (inplAttrExpr.getValueExpr() instanceof TGGAttributeExpression attrExpr) {
-				EObject obj = candidates.get(attrExpr.getObjectVar().getName());
-				if (obj == null)
-					return false;
-				Object objectAttr = obj.eGet(attrExpr.getAttribute());
-
-				if (subjectAttr == null) {
-					if (objectAttr != null)
-						return false;
-				} else if (!subjectAttr.equals(objectAttr))
-					return false;
-			}
+			if (!TGGInplaceAttrExprUtil.checkInplaceAttributeCondition(inplAttrExpr, subjectAttr, candidates))
+				return false;
 		}
 		return true;
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private int comparePrimitives(Object p1, Object p2) {
-		if (p1 instanceof Comparable c1 && p2 instanceof Comparable c2) {
-			return c1.compareTo(c2);
-		}
-		return 0;
 	}
 
 	public SearchPlan createSearchPlan() {
 		Collection<TGGRuleNode> uncheckedNodes = new ArrayList<>();
 		Collection<TGGRuleNode> uncheckedRelaxedNodes = new ArrayList<>();
-		opSCR.getOpScRule().getNodes().stream() //
-				.filter(n -> !opSCR.getOpScRule().getMergedNodes().contains(n)) //
-				.filter(n -> !opSCR.getOpScRule().getNewOriginalNodes().contains(n)) //
+		opSCR.getOperationalizedSCR().getNodes().stream() //
+				.filter(n -> !opSCR.getOperationalizedSCR().getMergedNodes().contains(n)) //
+				.filter(n -> !opSCR.getOperationalizedSCR().getNewOriginalNodes().contains(n)) //
 				.filter(n -> !RuntimePackage.eINSTANCE.getTGGRuleApplication().isSuperTypeOf(n.getType())) //
 				.filter(n -> n.getBindingType() != BindingType.NEGATIVE) //
 				.filter(n -> n.getBindingType() != BindingType.CREATE) //
@@ -296,7 +227,7 @@ public class SearchPlanCreator {
 				.forEach(n -> uncheckedNodes.add(n));
 
 		LinkedList<TGGRuleEdge> uncheckedEdges = new LinkedList<>();
-		for (TGGRuleEdge edge : opSCR.getOpScRule().getEdges()) {
+		for (TGGRuleEdge edge : opSCR.getOperationalizedSCR().getEdges()) {
 			if (edge.getBindingType() == BindingType.NEGATIVE)
 				uncheckedEdges.addLast(edge);
 			else

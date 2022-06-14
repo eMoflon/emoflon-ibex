@@ -1,14 +1,13 @@
 package org.emoflon.ibex.tgg.operational.repair.strategies;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintContainer;
@@ -32,20 +31,22 @@ public class AttributeRepairStrategy implements RepairStrategy {
 	}
 
 	@Override
-	public ITGGMatch repair(ITGGMatch repairCandidate, PatternType type) {
-		PropagationDirection propDir = PropagationDirection.byPatternType(type);
+	public Collection<ITGGMatch> repair(RepairApplicationPoint applPoint) {
+		PropagationDirection propDir = PropagationDirection.byPatternType(applPoint.getRepairType());
 		if (propDir == null)
 			return null;
 
-		return repair(repairCandidate, determineCSP(propDir, opStrat.getGreenFactories().get(repairCandidate), repairCandidate));
+		ITGGMatch applMatch = applPoint.getApplicationMatch();
+		return Collections.singletonList(repair(applMatch, determineCSP(propDir, opStrat.getGreenFactories().get(applMatch), applMatch)));
 	}
 
-	public ITGGMatch repair(List<TGGAttributeConstraint> constraints, ITGGMatch repairCandidate, PatternType type) {
-		PropagationDirection propDir = PropagationDirection.byPatternType(type);
+	public Collection<ITGGMatch> repair(List<TGGAttributeConstraint> constraints, RepairApplicationPoint applPoint) {
+		PropagationDirection propDir = PropagationDirection.byPatternType(applPoint.getRepairType());
 		if (propDir == null)
 			return null;
 
-		return repair(repairCandidate, determineCSP(propDir, constraints, repairCandidate));
+		ITGGMatch applMatch = applPoint.getApplicationMatch();
+		return Collections.singletonList(repair(applMatch, determineCSP(propDir, constraints, applMatch)));
 	}
 
 	protected ITGGMatch repair(ITGGMatch repairCandidate, IRuntimeTGGAttrConstrContainer csp) {
@@ -61,15 +62,7 @@ public class AttributeRepairStrategy implements RepairStrategy {
 	}
 
 	@Override
-	public Collection<ITGGMatch> chooseMatches(Map<TGGRuleApplication, ITGGMatch> brokenRuleApplications) {
-		return brokenRuleApplications.keySet() //
-				.stream() //
-				.filter(this::noMissingNodes) //
-				.map(brokenRuleApplications::get) //
-				.collect(Collectors.toList());
-	}
-
-	private boolean noMissingNodes(TGGRuleApplication ra) {
+	public boolean noMissingNodes(TGGRuleApplication ra) {
 		return TGGPatternUtil.getAllNodes(ra).stream().noneMatch(n -> n == null);
 	}
 

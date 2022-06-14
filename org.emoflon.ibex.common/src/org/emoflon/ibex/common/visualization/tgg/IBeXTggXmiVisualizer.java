@@ -52,7 +52,15 @@ public class IBeXTggXmiVisualizer implements EMoflonDiagramTextProvider {
 		if(elements == null)
 			return false;
 
-		return elements.stream().filter(elt -> elt.eClass().getEPackage().getName().contains("language")).findAny().isPresent();
+		return elements.stream() //
+				.filter(this::isPartOfTGGLanguage) //
+				.findAny() //
+				.isPresent();
+	}
+
+	private boolean isPartOfTGGLanguage(EObject element) {
+		String packageName = element.eClass().getEPackage().getName();
+		return packageName.contains("language") || packageName.contains("repair");
 	}
 
 	@Override

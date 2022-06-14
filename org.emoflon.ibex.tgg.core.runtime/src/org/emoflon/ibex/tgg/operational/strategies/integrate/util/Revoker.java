@@ -1,10 +1,8 @@
 package org.emoflon.ibex.tgg.operational.strategies.integrate.util;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
@@ -23,9 +21,9 @@ import org.emoflon.ibex.tgg.operational.matches.PrecedenceMatchContainer;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.ClassifiedMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DeletionType;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeProtocol.ChangeKey;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeUtil;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChanges;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.ModelChangeProtocol.ChangeKey;
 import org.emoflon.ibex.tgg.util.ConsoleUtil;
 
 import runtime.TGGRuleApplication;
@@ -46,7 +44,7 @@ public class Revoker implements TimeMeasurable {
 		Timer.start();
 
 		do {
-			opStrat.classifyBrokenMatches(false);
+			opStrat.getOptions().matchDistributor().updateMatches();
 			revokeCurrentlyBrokenMatches();
 		} while (!opStrat.getMatchHandler().noBrokenRuleApplications());
 
@@ -54,42 +52,42 @@ public class Revoker implements TimeMeasurable {
 	}
 
 	private void revokeCurrentlyBrokenMatches() {
-		Collection<ITGGMatch> brokenMatches = new LinkedList<>(opStrat.getMatchHandler().getBrokenMatches());
+		opStrat.matchClassifier().clearAndClassifyAll(opStrat.getMatchHandler().getBrokenMatches());
 
-		for (ITGGMatch brokenMatch : brokenMatches)
-			revokeBrokenMatch(brokenMatch);
+		for (ClassifiedMatch classifiedBrokenMatch : opStrat.matchClassifier().getAllClassifiedMatches())
+			revokeBrokenMatch(classifiedBrokenMatch);
 		((PrecedenceMatchContainer) opStrat.getMatchContainer()).clearPendingElements();
 
 		if (!opStrat.getMatchHandler().noBrokenRuleApplications())
 			LoggerConfig.log(LoggerConfig.log_ruleApplication(), () -> "");
 	}
 
-	private void revokeBrokenMatch(ITGGMatch match) {
-		ClassifiedMatch classifiedMatch = opStrat.matchClassifier().get(match);
+	private void revokeBrokenMatch(ClassifiedMatch classifiedMatch) {
+		ITGGMatch brokenMatch = classifiedMatch.getMatch();
 
-		deleteGreenCorrs(match);
+		deleteGreenCorrs(brokenMatch);
 
 		Set<EObject> nodesToBeDeleted = new HashSet<>();
 		Set<EMFEdge> edgesToBeDeleted = new HashSet<>();
 
 		EltFilter filter = new EltFilter().create().notDeleted();
-		if (DeletionType.getPropFWDCandidates().contains(classifiedMatch.getDeletionType()))
+		if (DeletionType.propFWDCandidates.contains(classifiedMatch.getDeletionType()))
 			filter.trg();
-		else if (DeletionType.getPropBWDCandidates().contains(classifiedMatch.getDeletionType()))
+		else if (DeletionType.propBWDCandidates.contains(classifiedMatch.getDeletionType()))
 			filter.src();
 		else
 			filter.srcAndTrg();
 
-		TGGMatchUtil matchUtil = opStrat.matchUtils().get(match);
-		matchUtil.getObjects(filter).forEach((o) -> nodesToBeDeleted.add(o));
+		TGGMatchUtil matchUtil = opStrat.matchUtils().get(brokenMatch);
+		matchUtil.getEObjects(filter).forEach((o) -> nodesToBeDeleted.add(o));
 		matchUtil.getEMFEdges(filter).forEach((e) -> edgesToBeDeleted.add(e));
 		opStrat.getRedInterpreter().revoke(nodesToBeDeleted, edgesToBeDeleted);
 
-		removeBrokenMatch(match);
+		removeBrokenMatch(brokenMatch);
 
 		LoggerConfig.log(LoggerConfig.log_ruleApplication(),
-				() -> "Rule application: rolled back " + match.getPatternName() + "(" + match.hashCode() + ")\n" //
-						+ ConsoleUtil.indent(ConsoleUtil.printMatchParameter(match), 18, true));
+				() -> "Rule application: rolled back " + brokenMatch.getPatternName() + "(" + brokenMatch.hashCode() + ")\n" //
+						+ ConsoleUtil.indent(ConsoleUtil.printMatchParameter(brokenMatch), 18, true));
 	}
 
 	public void removeBrokenMatch(ITGGMatch brokenMatch) {
@@ -142,7 +140,7 @@ public class Revoker implements TimeMeasurable {
 	 * @param edgesToRevoke
 	 */
 	private void prepareGreenCorrDeletion(ITGGMatch match, Set<EObject> nodesToRevoke, Set<EMFEdge> edgesToRevoke) {
-		opStrat.matchUtils().get(match).getObjects(new EltFilter().corr().create()) //
+		opStrat.matchUtils().get(match).getEObjects(new EltFilter().corr().create()) //
 				.forEach(obj -> opStrat.ibexRedInterpreter().revokeCorr(obj, nodesToRevoke, edgesToRevoke));
 	}
 
@@ -187,7 +185,7 @@ public class Revoker implements TimeMeasurable {
 
 		ModelChanges changes = opStrat.modelChangeProtocol().getModelChanges(key);
 		opStrat.getMatchHandler().getBrokenRA2ConsMatches().forEach(
-				(ra, m) -> opStrat.matchUtils().get(m).getObjects(new EltFilter().corr().create()).forEach(obj -> restoreNode(changes, obj)));
+				(ra, m) -> opStrat.matchUtils().get(m).getEObjects(new EltFilter().corr().create()).forEach(obj -> restoreNode(changes, obj)));
 		opStrat.getMatchHandler().getBrokenRA2ConsMatches().forEach((ra, m) -> restoreNode(changes, ra));
 	}
 
