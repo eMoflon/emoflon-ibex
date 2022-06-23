@@ -6,8 +6,8 @@ import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IProject;
 import org.emoflon.ibex.tgg.codegen.AttrCondDefLibraryProvider;
 import org.emoflon.ibex.tgg.codegen.TGGInternalModelBuilder;
+import org.emoflon.ibex.tgg.editor.tgg.TripleGraphGrammarFile;
 import org.emoflon.ibex.tgg.transformation.TGGProject;
-import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile;
 
 public class InternalModelBuilder implements TGGInternalModelBuilder {
 	
