@@ -25,35 +25,35 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EcoreFactory;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.emoflon.ibex.tgg.builder.TGGBuildUtil;
+import org.emoflon.ibex.tgg.editor.builder.TGGBuildUtil;
+import org.emoflon.ibex.tgg.editor.tgg.Adornment;
+import org.emoflon.ibex.tgg.editor.tgg.AttrCond;
+import org.emoflon.ibex.tgg.editor.tgg.AttrCondDef;
+import org.emoflon.ibex.tgg.editor.tgg.AttributeAssignment;
+import org.emoflon.ibex.tgg.editor.tgg.AttributeConstraint;
+import org.emoflon.ibex.tgg.editor.tgg.AttributeExpression;
+import org.emoflon.ibex.tgg.editor.tgg.ContextLinkVariablePattern;
+import org.emoflon.ibex.tgg.editor.tgg.ContextObjectVariablePattern;
+import org.emoflon.ibex.tgg.editor.tgg.CorrType;
+import org.emoflon.ibex.tgg.editor.tgg.CorrVariablePattern;
+import org.emoflon.ibex.tgg.editor.tgg.EnumExpression;
+import org.emoflon.ibex.tgg.editor.tgg.Expression;
+import org.emoflon.ibex.tgg.editor.tgg.LinkVariablePattern;
+import org.emoflon.ibex.tgg.editor.tgg.LiteralExpression;
+import org.emoflon.ibex.tgg.editor.tgg.LocalVariable;
+import org.emoflon.ibex.tgg.editor.tgg.ObjectVariablePattern;
+import org.emoflon.ibex.tgg.editor.tgg.Operator;
+import org.emoflon.ibex.tgg.editor.tgg.OperatorPattern;
+import org.emoflon.ibex.tgg.editor.tgg.Param;
+import org.emoflon.ibex.tgg.editor.tgg.ParamValue;
+import org.emoflon.ibex.tgg.editor.tgg.Rule;
+import org.emoflon.ibex.tgg.editor.tgg.TggFactory;
+import org.emoflon.ibex.tgg.editor.tgg.TripleGraphGrammarFile;
 import org.emoflon.ibex.tgg.transformation.ParamValueSet;
 import org.emoflon.ibex.tgg.transformation.TGGProject;
 import org.emoflon.ibex.tgg.util.TGGModelUtils;
 import org.moflon.core.utilities.LogUtils;
 import org.moflon.core.utilities.MoflonUtil;
-import org.moflon.tgg.mosl.tgg.Adornment;
-import org.moflon.tgg.mosl.tgg.AttrCond;
-import org.moflon.tgg.mosl.tgg.AttrCondDef;
-import org.moflon.tgg.mosl.tgg.AttributeAssignment;
-import org.moflon.tgg.mosl.tgg.AttributeConstraint;
-import org.moflon.tgg.mosl.tgg.AttributeExpression;
-import org.moflon.tgg.mosl.tgg.ContextLinkVariablePattern;
-import org.moflon.tgg.mosl.tgg.ContextObjectVariablePattern;
-import org.moflon.tgg.mosl.tgg.CorrType;
-import org.moflon.tgg.mosl.tgg.CorrVariablePattern;
-import org.moflon.tgg.mosl.tgg.EnumExpression;
-import org.moflon.tgg.mosl.tgg.Expression;
-import org.moflon.tgg.mosl.tgg.LinkVariablePattern;
-import org.moflon.tgg.mosl.tgg.LiteralExpression;
-import org.moflon.tgg.mosl.tgg.LocalVariable;
-import org.moflon.tgg.mosl.tgg.ObjectVariablePattern;
-import org.moflon.tgg.mosl.tgg.Operator;
-import org.moflon.tgg.mosl.tgg.OperatorPattern;
-import org.moflon.tgg.mosl.tgg.Param;
-import org.moflon.tgg.mosl.tgg.ParamValue;
-import org.moflon.tgg.mosl.tgg.Rule;
-import org.moflon.tgg.mosl.tgg.TggFactory;
-import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile;
 
 import language.BindingType;
 import language.DomainType;
@@ -446,7 +446,7 @@ public class EditorTGGtoInternalTGG {
 		return tiae;
 	}
 
-	private TGGExpression createExpression(org.moflon.tgg.mosl.tgg.Expression expression) {
+	private TGGExpression createExpression(org.emoflon.ibex.tgg.editor.tgg.Expression expression) {
 		if (expression instanceof LiteralExpression le) {
 			TGGLiteralExpression tle = LanguageFactory.eINSTANCE.createTGGLiteralExpression();
 			tle.setValue(le.getValue());
