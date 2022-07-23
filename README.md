@@ -30,7 +30,7 @@ This repository contains only the part which is independent from a concrete patt
    For eMoflon including everything:	<br/>
 	- https://raw.githubusercontent.com/eMoflon/emoflon-ibex-deployment/master/devProjectSet.psf <br/>
 1. Execute MWE2
-    - Open packages ```org.emoflon.ibex.gt.editor/src/org.emoflon.ibex.gt.editor```, ```org.emoflon.ibex.tgg.editor/src/org.moflon.tgg.mosl```, and ```org.emoflon.ibex.tgg.integrate/src/org.emoflon.ibex.tgg.integrate```
+    - Open packages ```org.emoflon.ibex.gt.editor/src/org.emoflon.ibex.gt.editor```, ```org.emoflon.ibex.tgg.editor/src/org.emoflon.ibex.tgg.editor```, and ```org.emoflon.ibex.tgg.integrate/src/org.emoflon.ibex.tgg.integrate```
     - Right-click on ```GenerateGT.mwe2``` in the first package, ```GenerateTGG.mwe2``` in the second, and ```GenerateIntegrate.mwe2``` in the third.
     - Press ```Run As -> MWE2 Workflow``` respectively.
 1. Set UTF-8 as file encoding for the development workspace (*Window &rarr; Preferences &rarr; General/Workspace*) and manually build all projects by clicking (*Project &rarr; Clean... &rarr; Clean all projects*) to trigger code generation (and get rid of errors). Make sure to check *Project &rarr; Build Automatically*.
