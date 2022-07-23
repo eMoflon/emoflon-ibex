@@ -89,7 +89,7 @@ public class DefaultFilesGenerator {
     _builder.newLine();
     return _builder.toString();
   }
-  
+
   public static String generateUserAttrCondDefStub(final TGGAttributeConstraintDefinition tacd, final String projectName) {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("package org.emoflon.ibex.tgg.operational.csp.constraints.custom.");
@@ -202,7 +202,7 @@ public class DefaultFilesGenerator {
     _builder.newLine();
     return _builder.toString();
   }
-  
+
   public static String generateBasicStructure(final String additionalImports, final String fileName, final String strategy, final String projectName, final String setUpRoutine) {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("package org.emoflon.ibex.tgg.run.");
@@ -346,7 +346,7 @@ public class DefaultFilesGenerator {
     _builder.newLine();
     return _builder.toString();
   }
-  
+
   public static String generateDebugStructure(final String additionalImports, final String fileName, final String strategy, final String projectName, final String setUpRoutine, final String body) {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("package org.emoflon.ibex.tgg.run.");
@@ -430,7 +430,7 @@ public class DefaultFilesGenerator {
     _builder.newLine();
     return _builder.toString();
   }
-  
+
   public static String generateModelGenFile(final String projectName, final String fileName) {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGEN;");
@@ -475,7 +475,7 @@ public class DefaultFilesGenerator {
     return DefaultFilesGenerator.generateBasicStructure(_builder.toString(), fileName, 
       "MODELGEN", projectName, _builder_1.toString());
   }
-  
+
   public static String generateModelGenDebugFile(final String projectName, final String fileName) {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGEN;");
@@ -571,7 +571,7 @@ public class DefaultFilesGenerator {
       "MODELGEN", projectName, _builder_1.toString(), 
       "");
   }
-  
+
   public static String generateSyncAppFile(final String projectName, final String fileName) {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;");
@@ -607,7 +607,7 @@ public class DefaultFilesGenerator {
     return DefaultFilesGenerator.generateBasicStructure(_builder.toString(), fileName, 
       "SYNC", projectName, _builder_1.toString());
   }
-  
+
   public static String generateCCAppFile(final String projectName, final String fileName) {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("import org.emoflon.ibex.tgg.operational.strategies.opt.CC;");
@@ -639,7 +639,7 @@ public class DefaultFilesGenerator {
     return DefaultFilesGenerator.generateBasicStructure(_builder.toString(), fileName, 
       "CC", projectName, _builder_1.toString());
   }
-  
+
   public static String generateCOAppFile(final String projectName, final String fileName) {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("import org.emoflon.ibex.tgg.operational.strategies.opt.CO;");
@@ -671,7 +671,7 @@ public class DefaultFilesGenerator {
     return DefaultFilesGenerator.generateBasicStructure(_builder.toString(), fileName, 
       "CO", projectName, _builder_1.toString());
   }
-  
+
   public static String generateFWDOptAppFile(final String projectName, final String fileName) {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("import org.emoflon.ibex.tgg.operational.strategies.opt.FWD_OPT;");
@@ -701,7 +701,7 @@ public class DefaultFilesGenerator {
     return DefaultFilesGenerator.generateBasicStructure(_builder.toString(), fileName, 
       "FWD_OPT", projectName, _builder_1.toString());
   }
-  
+
   public static String generateBWDOptAppFile(final String projectName, final String fileName) {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("import org.emoflon.ibex.tgg.operational.strategies.opt.BWD_OPT;");
@@ -731,7 +731,7 @@ public class DefaultFilesGenerator {
     return DefaultFilesGenerator.generateBasicStructure(_builder.toString(), fileName, 
       "BWD_OPT", projectName, _builder_1.toString());
   }
-  
+
   public static String generateInitialFwdAppFile(final String projectName, final String fileName) {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("import org.emoflon.ibex.tgg.operational.strategies.sync.INITIAL_FWD;");
@@ -767,7 +767,7 @@ public class DefaultFilesGenerator {
     return DefaultFilesGenerator.generateBasicStructure(_builder.toString(), fileName, 
       "INITIAL_FWD", projectName, _builder_1.toString());
   }
-  
+
   public static String generateInitialFwdDebugAppFile(final String projectName, final String fileName) {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("import org.emoflon.ibex.tgg.run.");
@@ -855,7 +855,7 @@ public class DefaultFilesGenerator {
       "INITIAL_FWD_App", projectName, _builder_1.toString(), 
       "");
   }
-  
+
   public static String generateInitialBwdAppFile(final String projectName, final String fileName) {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("import org.emoflon.ibex.tgg.operational.strategies.sync.INITIAL_BWD;");
@@ -891,7 +891,7 @@ public class DefaultFilesGenerator {
     return DefaultFilesGenerator.generateBasicStructure(_builder.toString(), fileName, 
       "INITIAL_BWD", projectName, _builder_1.toString());
   }
-  
+
   public static String generateIntegrateAppFile(final String projectName, final String fileName) {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;");
@@ -927,7 +927,7 @@ public class DefaultFilesGenerator {
     return DefaultFilesGenerator.generateBasicStructure(_builder.toString(), fileName, 
       "INTEGRATE", projectName, _builder_1.toString());
   }
-  
+
   public static String generateInitialBwdDebugAppFile(final String projectName, final String fileName) {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("import org.emoflon.ibex.tgg.run.");
@@ -1015,7 +1015,7 @@ public class DefaultFilesGenerator {
       "INITIAL_BWD_App", projectName, _builder_1.toString(), 
       "");
   }
-  
+
   public static String generateDefaultRegHelperFile(final String projectName) {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("package org.emoflon.ibex.tgg.run.");
@@ -1072,7 +1072,7 @@ public class DefaultFilesGenerator {
     _builder.newLine();
     return _builder.toString();
   }
-  
+
   public static String generateRegHelperFile(final String projectName, final TripleGraphGrammarFile tgg) {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("package org.emoflon.ibex.tgg.run.");
