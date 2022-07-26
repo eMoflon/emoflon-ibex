@@ -44,7 +44,7 @@ public class ShortcutRepairStrategy implements RepairStrategy {
 			if (repairedMatches.size() == 1)
 				logSuccessfulRepair(applPoint.getApplicationMatch(), repairedMatches.iterator().next());
 			else
-				logSuccessfulRepair(null, repairedMatches);
+				logSuccessfulRepair(applPoint.getApplicationMatch(), repairedMatches);
 			return repairedMatches;
 		}
 		return null;
