@@ -96,7 +96,11 @@ public class LocalPatternSearch {
 		}
 
 		List<SearchKey> edgeChecks = new LinkedList<>(searchPlan.key2edgeCheck.keySet());
-		edgeChecks.sort((a, b) -> a.edge.getBindingType() == BindingType.NEGATIVE ? 1 : -1);
+		edgeChecks.sort((a, b) -> {
+			int aVal = a.edge.getBindingType() == BindingType.NEGATIVE ? 1 : 0;
+			int bVal = b.edge.getBindingType() == BindingType.NEGATIVE ? 1 : 0;
+			return aVal - bVal;
+		});
 		for (SearchKey key : edgeChecks) {
 			Component edgeNodeCheckComp = new EdgeCheckComponent(searchPlan.key2edgeCheck.get(key), key);
 			if (firstComponent == null)
