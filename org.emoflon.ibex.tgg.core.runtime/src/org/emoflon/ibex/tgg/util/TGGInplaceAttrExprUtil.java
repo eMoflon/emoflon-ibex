@@ -21,7 +21,7 @@ public class TGGInplaceAttrExprUtil {
 	 * @param attributeExpression
 	 * @param value
 	 * @param nodeReferences      (may be {@code null})
-	 * @return
+	 * @return {@code true} if the attribute expression evaluates to {@code true}
 	 */
 	public static boolean checkInplaceAttributeCondition(TGGInplaceAttributeExpression attributeExpression, Object value,
 			Map<String, EObject> nodeReferences) {

@@ -176,6 +176,8 @@ public class ConcRepair implements TimeMeasurable {
 	}
 
 	private boolean filterRepairCandidates(ITGGMatch match) {
+		// we do not need to consider matches which are completely broken at one domain since these are not
+		// meant to be repaired but to be rolled back:
 		DeletionPattern pattern = opStrat.matchClassifier().get(match).getDeletionPattern();
 		DomainModification srcModType = pattern.getModType(DomainType.SRC, BindingType.CREATE);
 		DomainModification trgModType = pattern.getModType(DomainType.TRG, BindingType.CREATE);
@@ -223,6 +225,7 @@ public class ConcRepair implements TimeMeasurable {
 			applPoint = new RepairApplicationPoint(classifiedMatch.getMatch(), PatternType.CC);
 			repairedMatches = shortcutRepairStrat.repair(applPoint);
 		} else if (DeletionType.shortcutPropCandidates.contains(delType)) {
+			// FIXME inplace attributes and filter NACS are not considered here!
 			PatternType type = delType == DeletionType.SRC_PARTLY_TRG_NOT ? PatternType.FWD : PatternType.BWD;
 			applPoint = new RepairApplicationPoint(classifiedMatch.getMatch(), type);
 			repairedMatches = shortcutRepairStrat.repair(applPoint);

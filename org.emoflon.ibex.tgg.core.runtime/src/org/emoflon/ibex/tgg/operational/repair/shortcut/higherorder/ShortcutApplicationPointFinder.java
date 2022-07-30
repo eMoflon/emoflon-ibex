@@ -44,7 +44,7 @@ public class ShortcutApplicationPointFinder {
 	private ShortcutApplicationPoint exploreShortcutApplicationPoint(ClassifiedMatch classifiedMatch) {
 		PrecedenceNode applNode = pg.getNode(classifiedMatch.getMatch());
 
-		PatternType propagationType = calcPropagationType(classifiedMatch);
+		PatternType propagationType = filterMatchesAndCalcPropagationType(classifiedMatch);
 		if (propagationType == null)
 			return null;
 
@@ -60,7 +60,7 @@ public class ShortcutApplicationPointFinder {
 				return false;
 
 			ClassifiedMatch classifiedAct = mc.get(act.getMatch());
-			if (propagationType == calcPropagationType(classifiedAct)) {
+			if (propagationType == filterMatchesAndCalcPropagationType(classifiedAct)) {
 				originalNodes.addFirst(act);
 				return true;
 			}
@@ -87,25 +87,53 @@ public class ShortcutApplicationPointFinder {
 		return shortcutApplPoint;
 	}
 
-	private PatternType calcPropagationType(ClassifiedMatch classifiedMatch) {
+	private PatternType filterMatchesAndCalcPropagationType(ClassifiedMatch classifiedMatch) {
+		// TODO differentiate between application note and subsequent node for deletion type
+		// -> important: then, subset application points won't work
+		
+		boolean srcViolations = false;
+		boolean trgViolations = false;
+
+		// deletions:
 		DeletionType deletionType = classifiedMatch.getDeletionType();
-		if (DeletionType.propFWDCandidates.contains(deletionType) || classifiedMatch.getFilterNacViolations().containsValue(DomainType.SRC))
+		if (DeletionType.propFWDCandidates.contains(deletionType))
+			srcViolations = true;
+		else if (DeletionType.propBWDCandidates.contains(deletionType))
+			trgViolations = true;
+		else if (deletionType != DeletionType.NOTHING)
+			return null;
+
+		// filter NACs & inplace attributes:
+		if (classifiedMatch.getFilterNacViolations().containsValue(DomainType.SRC)
+				|| classifiedMatch.getInplaceAttrChanges().containsValue(DomainType.SRC)) {
+			if (trgViolations)
+				return null;
+			srcViolations = true;
+		}
+		if (classifiedMatch.getFilterNacViolations().containsValue(DomainType.TRG)
+				|| classifiedMatch.getInplaceAttrChanges().containsValue(DomainType.TRG)) {
+			if (srcViolations)
+				return null;
+			trgViolations = true;
+		}
+
+		if (srcViolations)
 			return PatternType.SRC;
-		else if (DeletionType.propBWDCandidates.contains(deletionType) || classifiedMatch.getFilterNacViolations().containsValue(DomainType.TRG))
+		if (trgViolations)
 			return PatternType.TRG;
 		return null;
 	}
 
 	private void processSubsetShortcutApplications(Set<ShortcutApplicationPoint> shortcutApplications) {
-		Map<PrecedenceNode, ShortcutApplicationPoint> upperNode2scApplication = shortcutApplications.stream() //
-				.collect(Collectors.toMap(a -> a.getOriginalNodes().get(0), a -> a));
+		Map<PrecedenceNode, ShortcutApplicationPoint> applNode2scApplication = shortcutApplications.stream() //
+				.collect(Collectors.toMap(a -> pg.getNode(a.getApplicationMatch()), a -> a));
 
 		Set<ShortcutApplicationPoint> subsetScApplications = new HashSet<>();
 		for (ShortcutApplicationPoint shortcutApplication : shortcutApplications) {
-			for (int i = 1; i < shortcutApplication.getOriginalNodes().size(); i++) {
+			for (int i = 0; i < shortcutApplication.getOriginalNodes().size() - 1; i++) {
 				PrecedenceNode originalNode = shortcutApplication.getOriginalNodes().get(i);
-				if (upperNode2scApplication.containsKey(originalNode)) {
-					ShortcutApplicationPoint subsetScAppl = upperNode2scApplication.get(originalNode);
+				if (applNode2scApplication.containsKey(originalNode)) {
+					ShortcutApplicationPoint subsetScAppl = applNode2scApplication.get(originalNode);
 					shortcutApplication.subsetScApplications.add(subsetScAppl);
 					subsetScApplications.add(subsetScAppl);
 

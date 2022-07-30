@@ -7,6 +7,7 @@ import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceNode;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchAnalyzer.ConstrainedAttributeChanges;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchAnalyzer.InplAttributeChange;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil;
 
 import language.DomainType;
@@ -24,8 +25,8 @@ public class ClassifiedMatch {
 	private DeletionType deletionType;
 	private final Map<ITGGMatch, DomainType> filterNacViolations;
 	private final Set<ConstrainedAttributeChanges> constrainedAttrChanges;
-	// TODO adrianm: add violated in-place attribute expressions
-	
+	private final Map<InplAttributeChange, DomainType> inplaceAttrChanges;
+
 	public enum MatchStatus {
 		INTACT, BROKEN, IMPLICIT_BROKEN;
 	}
@@ -37,10 +38,11 @@ public class ClassifiedMatch {
 		this.util = integrate.matchUtils().get(match);
 		this.deletionPattern = util.analyzer().createDelPattern();
 		this.filterNacViolations = util.analyzer().analyzeFilterNACViolations();
-		this.constrainedAttrChanges = util.analyzer().analyzeAttributeChanges();
+		this.constrainedAttrChanges = util.analyzer().analyzeConstrainedAttributeChanges();
+		this.inplaceAttrChanges = util.analyzer().analyzeInplaceAttributeChanges();
 		fillDeletionTypes();
 	}
-	
+
 	public ClassifiedMatch(INTEGRATE integrate, ITGGMatch match) {
 		this(integrate, integrate.precedenceGraph().getNode(match));
 	}
@@ -78,6 +80,10 @@ public class ClassifiedMatch {
 
 	public Set<ConstrainedAttributeChanges> getConstrainedAttrChanges() {
 		return constrainedAttrChanges;
+	}
+
+	public Map<InplAttributeChange, DomainType> getInplaceAttrChanges() {
+		return inplaceAttrChanges;
 	}
 
 	public boolean isImplicitBroken() {
@@ -118,6 +124,10 @@ public class ClassifiedMatch {
 		b.append("ConstrainedAttributeChanges [");
 		b.append("\n  " + printConstrAttrChanges().replace("\n", "\n  "));
 		b.append("\n]");
+		b.append("\n");
+		b.append("InplaceAttributeChanges [");
+		b.append("\n  " + printInplaceAttrChanges().replace("\n", "\n  "));
+		b.append("\n]");
 		return b.toString();
 	}
 
@@ -137,6 +147,10 @@ public class ClassifiedMatch {
 			b.append("\n");
 		}
 		return b.length() == 0 ? b.toString() : b.substring(0, b.length() - 1);
+	}
+
+	private String printInplaceAttrChanges() {
+		return String.join("\n", inplaceAttrChanges.keySet().stream().map(c -> c.toString()).toList());
 	}
 
 }

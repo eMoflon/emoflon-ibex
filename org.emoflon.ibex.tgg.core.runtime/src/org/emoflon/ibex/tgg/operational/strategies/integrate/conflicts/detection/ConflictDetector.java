@@ -235,22 +235,19 @@ public class ConflictDetector {
 	private boolean hasDomainSpecificViolations(ITGGMatch match, DomainType domain) {
 		ClassifiedMatch classifiedMatch = integrate.matchClassifier().get(match);
 
-		switch (domain) {
-			case SRC -> {
-				if (DeletionType.srcDelCandidates.contains(classifiedMatch.getDeletionType()))
-					return true;
-			}
-			case TRG -> {
-				if (DeletionType.trgDelCandidates.contains(classifiedMatch.getDeletionType()))
-					return true;
-			}
+		Set<DeletionType> expectedDeletionTypes = switch (domain) {
+			case SRC -> DeletionType.srcDelCandidates;
+			case TRG -> DeletionType.trgDelCandidates;
 			default -> throw new IllegalArgumentException("Unexpected value: " + domain);
-		}
+		};
+		if (expectedDeletionTypes.contains(classifiedMatch.getDeletionType()))
+			return true;
 
 		if (classifiedMatch.getFilterNacViolations().containsValue(domain))
 			return true;
 
-		// TODO adrianm: check attributes
+		if (classifiedMatch.getInplaceAttrChanges().containsValue(domain))
+			return true;
 
 		return false;
 	}
