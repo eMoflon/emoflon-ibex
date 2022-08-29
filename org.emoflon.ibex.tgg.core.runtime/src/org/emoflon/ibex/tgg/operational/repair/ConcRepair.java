@@ -53,6 +53,7 @@ public class ConcRepair implements TimeMeasurable {
 	protected AttributeRepairStrategy attributeRepairStrat;
 
 	protected boolean strategiesInitialized;
+	protected Runnable patternPersister = () -> {};
 
 	protected static final PatternType[] shortcutPatternTypes = //
 			{ PatternType.FWD, PatternType.BWD, PatternType.CC, PatternType.SRC, PatternType.TRG };
@@ -88,8 +89,10 @@ public class ConcRepair implements TimeMeasurable {
 
 	private ShortcutPatternProvider initShortcutPatternProvider(IbexOptions options) {
 		if (options.repair.usePGbasedSCruleCreation()) {
-			return new HigherOrderShortcutPatternProvider(options, //
-					opStrat.precedenceGraph(), opStrat.matchUtils(), shortcutPatternTypes, true);
+			ShortcutPatternProvider scpp = new HigherOrderShortcutPatternProvider(options, //
+					opStrat.precedenceGraph(), opStrat.matchUtils(), shortcutPatternTypes, false);
+			patternPersister = () -> scpp.persistShortcutRules();
+			return scpp;
 		} else {
 			return new BasicShortcutPatternProvider(options, shortcutPatternTypes, true);
 		}
@@ -291,6 +294,10 @@ public class ConcRepair implements TimeMeasurable {
 			opStrat.precedenceGraph().notifyAddedMatch(repairedMatch);
 			opStrat.precedenceGraph().notifyRemovedMatch(repairedMatch);
 		}
+	}
+	
+	public void terminate() {
+		patternPersister.run();
 	}
 
 	@Override

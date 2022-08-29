@@ -11,5 +11,7 @@ public interface ShortcutPatternProvider {
 	Collection<OperationalShortcutRule> getOperationalShortcutRules(RepairApplicationPoint applPoint);
 
 	LocalPatternSearch getPatternSearch(OperationalShortcutRule opShortcutRule);
+	
+	void persistShortcutRules();
 
 }

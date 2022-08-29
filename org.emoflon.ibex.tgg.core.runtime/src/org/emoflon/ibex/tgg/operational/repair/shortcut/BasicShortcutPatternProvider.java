@@ -28,14 +28,14 @@ public class BasicShortcutPatternProvider implements ShortcutPatternProvider {
 	protected final OverlapUtil overlapUtil;
 	protected final OperationalSCFactory opSCFactory;
 
-	private final Set<PatternType> types;
+	protected final Set<PatternType> types;
 
-	private Collection<ShortcutRule> basicShortcutRules;
-	private final Map<PatternType, Map<String, Collection<OperationalShortcutRule>>> basicShortcutPatterns;
+	protected Collection<ShortcutRule> basicShortcutRules;
+	protected final Map<PatternType, Map<String, Collection<OperationalShortcutRule>>> basicShortcutPatterns;
 
 	protected final Map<OperationalShortcutRule, LocalPatternSearch> opShortcutRule2patternMatcher;
 
-	public BasicShortcutPatternProvider(IbexOptions options, PatternType[] types, boolean persistShortcutRules) {
+	public BasicShortcutPatternProvider(IbexOptions options, PatternType[] types, boolean initiallyPersistShortcutRules) {
 		this.options = options;
 		this.overlapUtil = new OverlapUtil(options);
 		this.opSCFactory = new OperationalSCFactory(options);
@@ -47,7 +47,7 @@ public class BasicShortcutPatternProvider implements ShortcutPatternProvider {
 
 		createBasicShortcutPatterns();
 
-		if (persistShortcutRules)
+		if (initiallyPersistShortcutRules)
 			persistShortcutRules();
 	}
 
@@ -89,7 +89,7 @@ public class BasicShortcutPatternProvider implements ShortcutPatternProvider {
 		return opShortcutRule2patternMatcher.get(opShortcutRule);
 	}
 
-	private void persistShortcutRules() {
+	public void persistShortcutRules() {
 		SCPersistence persistence = new SCPersistence(options);
 
 		persistence.saveSCRules(basicShortcutRules);

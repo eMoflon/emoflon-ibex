@@ -143,6 +143,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 	@Override
 	public void terminate() throws IOException {
+		repair.terminate();
 		modelChangeProtocol.deregisterKey(generalDeltaKey);
 		modelChangeProtocol.detachAdapter();
 		super.terminate();
