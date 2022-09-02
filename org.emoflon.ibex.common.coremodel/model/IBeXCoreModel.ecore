@@ -34,16 +34,16 @@
   <eClassifiers xsi:type="ecore:EClass" name="IBeXNode" eSuperTypes="#//IBeXNamedElement">
     <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EClass"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="incomingEdges" upperBound="-1"
-        eType="#//IBeXEdge" eOpposite="#//IBeXEdge/trg"/>
+        eType="#//IBeXEdge" eOpposite="#//IBeXEdge/target"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="outgoingEdges" upperBound="-1"
-        eType="#//IBeXEdge" eOpposite="#//IBeXEdge/src"/>
+        eType="#//IBeXEdge" eOpposite="#//IBeXEdge/source"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBeXEdge" eSuperTypes="#//IBeXNamedElement">
     <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EReference"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="src" lowerBound="1" eType="#//IBeXNode"
-        eOpposite="#//IBeXNode/outgoingEdges"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="trg" lowerBound="1" eType="#//IBeXNode"
-        eOpposite="#//IBeXNode/incomingEdges"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="source" lowerBound="1"
+        eType="#//IBeXNode" eOpposite="#//IBeXNode/outgoingEdges"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="target" lowerBound="1"
+        eType="#//IBeXNode" eOpposite="#//IBeXNode/incomingEdges"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBeXPattern" eSuperTypes="#//IBeXNamedElement">
     <eStructuralFeatures xsi:type="ecore:EReference" name="dependencies" upperBound="-1"

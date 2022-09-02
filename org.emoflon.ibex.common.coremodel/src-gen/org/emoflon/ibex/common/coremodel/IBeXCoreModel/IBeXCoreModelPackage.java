@@ -410,22 +410,22 @@ public interface IBeXCoreModelPackage extends EPackage {
 	int IBE_XEDGE__TYPE = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 0;
 
 	/**
-	 * The feature id for the '<em><b>Src</b></em>' reference.
+	 * The feature id for the '<em><b>Source</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XEDGE__SRC = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 1;
+	int IBE_XEDGE__SOURCE = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 1;
 
 	/**
-	 * The feature id for the '<em><b>Trg</b></em>' reference.
+	 * The feature id for the '<em><b>Target</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XEDGE__TRG = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 2;
+	int IBE_XEDGE__TARGET = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 2;
 
 	/**
 	 * The number of structural features of the '<em>IBe XEdge</em>' class.
@@ -1356,26 +1356,26 @@ public interface IBeXCoreModelPackage extends EPackage {
 	EReference getIBeXEdge_Type();
 
 	/**
-	 * Returns the meta object for the reference '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge#getSrc <em>Src</em>}'.
+	 * Returns the meta object for the reference '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge#getSource <em>Source</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the reference '<em>Src</em>'.
-	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge#getSrc()
+	 * @return the meta object for the reference '<em>Source</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge#getSource()
 	 * @see #getIBeXEdge()
 	 * @generated
 	 */
-	EReference getIBeXEdge_Src();
+	EReference getIBeXEdge_Source();
 
 	/**
-	 * Returns the meta object for the reference '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge#getTrg <em>Trg</em>}'.
+	 * Returns the meta object for the reference '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge#getTarget <em>Target</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the reference '<em>Trg</em>'.
-	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge#getTrg()
+	 * @return the meta object for the reference '<em>Target</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge#getTarget()
 	 * @see #getIBeXEdge()
 	 * @generated
 	 */
-	EReference getIBeXEdge_Trg();
+	EReference getIBeXEdge_Target();
 
 	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern <em>IBe XPattern</em>}'.
@@ -2059,20 +2059,20 @@ public interface IBeXCoreModelPackage extends EPackage {
 		EReference IBE_XEDGE__TYPE = eINSTANCE.getIBeXEdge_Type();
 
 		/**
-		 * The meta object literal for the '<em><b>Src</b></em>' reference feature.
+		 * The meta object literal for the '<em><b>Source</b></em>' reference feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference IBE_XEDGE__SRC = eINSTANCE.getIBeXEdge_Src();
+		EReference IBE_XEDGE__SOURCE = eINSTANCE.getIBeXEdge_Source();
 
 		/**
-		 * The meta object literal for the '<em><b>Trg</b></em>' reference feature.
+		 * The meta object literal for the '<em><b>Target</b></em>' reference feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference IBE_XEDGE__TRG = eINSTANCE.getIBeXEdge_Trg();
+		EReference IBE_XEDGE__TARGET = eINSTANCE.getIBeXEdge_Target();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXPatternImpl <em>IBe XPattern</em>}' class.

@@ -560,22 +560,22 @@ public interface IBeXTGGModelPackage extends EPackage {
 	int TGG_EDGE__TYPE = IBeXCoreModelPackage.IBE_XEDGE__TYPE;
 
 	/**
-	 * The feature id for the '<em><b>Src</b></em>' reference.
+	 * The feature id for the '<em><b>Source</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_EDGE__SRC = IBeXCoreModelPackage.IBE_XEDGE__SRC;
+	int TGG_EDGE__SOURCE = IBeXCoreModelPackage.IBE_XEDGE__SOURCE;
 
 	/**
-	 * The feature id for the '<em><b>Trg</b></em>' reference.
+	 * The feature id for the '<em><b>Target</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_EDGE__TRG = IBeXCoreModelPackage.IBE_XEDGE__TRG;
+	int TGG_EDGE__TARGET = IBeXCoreModelPackage.IBE_XEDGE__TARGET;
 
 	/**
 	 * The feature id for the '<em><b>Domain Type</b></em>' attribute.

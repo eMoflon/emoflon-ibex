@@ -38,8 +38,8 @@
     </genClasses>
     <genClasses ecoreClass="IBeXCoreModel.ecore#//IBeXEdge">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXEdge/type"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXEdge/src"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXEdge/trg"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXEdge/source"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXEdge/target"/>
     </genClasses>
     <genClasses ecoreClass="IBeXCoreModel.ecore#//IBeXPattern">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXPattern/dependencies"/>

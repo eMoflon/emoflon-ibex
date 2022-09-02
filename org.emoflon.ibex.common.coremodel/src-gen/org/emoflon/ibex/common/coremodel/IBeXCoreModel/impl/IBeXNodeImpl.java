@@ -133,7 +133,7 @@ public class IBeXNodeImpl extends IBeXNamedElementImpl implements IBeXNode {
 	public EList<IBeXEdge> getIncomingEdges() {
 		if (incomingEdges == null) {
 			incomingEdges = new EObjectWithInverseResolvingEList<IBeXEdge>(IBeXEdge.class, this,
-					IBeXCoreModelPackage.IBE_XNODE__INCOMING_EDGES, IBeXCoreModelPackage.IBE_XEDGE__TRG);
+					IBeXCoreModelPackage.IBE_XNODE__INCOMING_EDGES, IBeXCoreModelPackage.IBE_XEDGE__TARGET);
 		}
 		return incomingEdges;
 	}
@@ -146,7 +146,7 @@ public class IBeXNodeImpl extends IBeXNamedElementImpl implements IBeXNode {
 	public EList<IBeXEdge> getOutgoingEdges() {
 		if (outgoingEdges == null) {
 			outgoingEdges = new EObjectWithInverseResolvingEList<IBeXEdge>(IBeXEdge.class, this,
-					IBeXCoreModelPackage.IBE_XNODE__OUTGOING_EDGES, IBeXCoreModelPackage.IBE_XEDGE__SRC);
+					IBeXCoreModelPackage.IBE_XNODE__OUTGOING_EDGES, IBeXCoreModelPackage.IBE_XEDGE__SOURCE);
 		}
 		return outgoingEdges;
 	}

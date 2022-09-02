@@ -24,8 +24,8 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
  * </p>
  * <ul>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXEdgeImpl#getType <em>Type</em>}</li>
- *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXEdgeImpl#getSrc <em>Src</em>}</li>
- *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXEdgeImpl#getTrg <em>Trg</em>}</li>
+ *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXEdgeImpl#getSource <em>Source</em>}</li>
+ *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXEdgeImpl#getTarget <em>Target</em>}</li>
  * </ul>
  *
  * @generated
@@ -42,24 +42,24 @@ public class IBeXEdgeImpl extends IBeXNamedElementImpl implements IBeXEdge {
 	protected EReference type;
 
 	/**
-	 * The cached value of the '{@link #getSrc() <em>Src</em>}' reference.
+	 * The cached value of the '{@link #getSource() <em>Source</em>}' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getSrc()
+	 * @see #getSource()
 	 * @generated
 	 * @ordered
 	 */
-	protected IBeXNode src;
+	protected IBeXNode source;
 
 	/**
-	 * The cached value of the '{@link #getTrg() <em>Trg</em>}' reference.
+	 * The cached value of the '{@link #getTarget() <em>Target</em>}' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getTrg()
+	 * @see #getTarget()
 	 * @generated
 	 * @ordered
 	 */
-	protected IBeXNode trg;
+	protected IBeXNode target;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -124,17 +124,17 @@ public class IBeXEdgeImpl extends IBeXNamedElementImpl implements IBeXEdge {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public IBeXNode getSrc() {
-		if (src != null && src.eIsProxy()) {
-			InternalEObject oldSrc = (InternalEObject) src;
-			src = (IBeXNode) eResolveProxy(oldSrc);
-			if (src != oldSrc) {
+	public IBeXNode getSource() {
+		if (source != null && source.eIsProxy()) {
+			InternalEObject oldSource = (InternalEObject) source;
+			source = (IBeXNode) eResolveProxy(oldSource);
+			if (source != oldSource) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, IBeXCoreModelPackage.IBE_XEDGE__SRC,
-							oldSrc, src));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, IBeXCoreModelPackage.IBE_XEDGE__SOURCE,
+							oldSource, source));
 			}
 		}
-		return src;
+		return source;
 	}
 
 	/**
@@ -142,8 +142,8 @@ public class IBeXEdgeImpl extends IBeXNamedElementImpl implements IBeXEdge {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public IBeXNode basicGetSrc() {
-		return src;
+	public IBeXNode basicGetSource() {
+		return source;
 	}
 
 	/**
@@ -151,12 +151,12 @@ public class IBeXEdgeImpl extends IBeXNamedElementImpl implements IBeXEdge {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public NotificationChain basicSetSrc(IBeXNode newSrc, NotificationChain msgs) {
-		IBeXNode oldSrc = src;
-		src = newSrc;
+	public NotificationChain basicSetSource(IBeXNode newSource, NotificationChain msgs) {
+		IBeXNode oldSource = source;
+		source = newSource;
 		if (eNotificationRequired()) {
 			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
-					IBeXCoreModelPackage.IBE_XEDGE__SRC, oldSrc, newSrc);
+					IBeXCoreModelPackage.IBE_XEDGE__SOURCE, oldSource, newSource);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -170,20 +170,21 @@ public class IBeXEdgeImpl extends IBeXNamedElementImpl implements IBeXEdge {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setSrc(IBeXNode newSrc) {
-		if (newSrc != src) {
+	public void setSource(IBeXNode newSource) {
+		if (newSource != source) {
 			NotificationChain msgs = null;
-			if (src != null)
-				msgs = ((InternalEObject) src).eInverseRemove(this, IBeXCoreModelPackage.IBE_XNODE__OUTGOING_EDGES,
+			if (source != null)
+				msgs = ((InternalEObject) source).eInverseRemove(this, IBeXCoreModelPackage.IBE_XNODE__OUTGOING_EDGES,
 						IBeXNode.class, msgs);
-			if (newSrc != null)
-				msgs = ((InternalEObject) newSrc).eInverseAdd(this, IBeXCoreModelPackage.IBE_XNODE__OUTGOING_EDGES,
+			if (newSource != null)
+				msgs = ((InternalEObject) newSource).eInverseAdd(this, IBeXCoreModelPackage.IBE_XNODE__OUTGOING_EDGES,
 						IBeXNode.class, msgs);
-			msgs = basicSetSrc(newSrc, msgs);
+			msgs = basicSetSource(newSource, msgs);
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXCoreModelPackage.IBE_XEDGE__SRC, newSrc, newSrc));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXCoreModelPackage.IBE_XEDGE__SOURCE, newSource,
+					newSource));
 	}
 
 	/**
@@ -191,17 +192,17 @@ public class IBeXEdgeImpl extends IBeXNamedElementImpl implements IBeXEdge {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public IBeXNode getTrg() {
-		if (trg != null && trg.eIsProxy()) {
-			InternalEObject oldTrg = (InternalEObject) trg;
-			trg = (IBeXNode) eResolveProxy(oldTrg);
-			if (trg != oldTrg) {
+	public IBeXNode getTarget() {
+		if (target != null && target.eIsProxy()) {
+			InternalEObject oldTarget = (InternalEObject) target;
+			target = (IBeXNode) eResolveProxy(oldTarget);
+			if (target != oldTarget) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, IBeXCoreModelPackage.IBE_XEDGE__TRG,
-							oldTrg, trg));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, IBeXCoreModelPackage.IBE_XEDGE__TARGET,
+							oldTarget, target));
 			}
 		}
-		return trg;
+		return target;
 	}
 
 	/**
@@ -209,8 +210,8 @@ public class IBeXEdgeImpl extends IBeXNamedElementImpl implements IBeXEdge {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public IBeXNode basicGetTrg() {
-		return trg;
+	public IBeXNode basicGetTarget() {
+		return target;
 	}
 
 	/**
@@ -218,12 +219,12 @@ public class IBeXEdgeImpl extends IBeXNamedElementImpl implements IBeXEdge {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public NotificationChain basicSetTrg(IBeXNode newTrg, NotificationChain msgs) {
-		IBeXNode oldTrg = trg;
-		trg = newTrg;
+	public NotificationChain basicSetTarget(IBeXNode newTarget, NotificationChain msgs) {
+		IBeXNode oldTarget = target;
+		target = newTarget;
 		if (eNotificationRequired()) {
 			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
-					IBeXCoreModelPackage.IBE_XEDGE__TRG, oldTrg, newTrg);
+					IBeXCoreModelPackage.IBE_XEDGE__TARGET, oldTarget, newTarget);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -237,20 +238,21 @@ public class IBeXEdgeImpl extends IBeXNamedElementImpl implements IBeXEdge {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setTrg(IBeXNode newTrg) {
-		if (newTrg != trg) {
+	public void setTarget(IBeXNode newTarget) {
+		if (newTarget != target) {
 			NotificationChain msgs = null;
-			if (trg != null)
-				msgs = ((InternalEObject) trg).eInverseRemove(this, IBeXCoreModelPackage.IBE_XNODE__INCOMING_EDGES,
+			if (target != null)
+				msgs = ((InternalEObject) target).eInverseRemove(this, IBeXCoreModelPackage.IBE_XNODE__INCOMING_EDGES,
 						IBeXNode.class, msgs);
-			if (newTrg != null)
-				msgs = ((InternalEObject) newTrg).eInverseAdd(this, IBeXCoreModelPackage.IBE_XNODE__INCOMING_EDGES,
+			if (newTarget != null)
+				msgs = ((InternalEObject) newTarget).eInverseAdd(this, IBeXCoreModelPackage.IBE_XNODE__INCOMING_EDGES,
 						IBeXNode.class, msgs);
-			msgs = basicSetTrg(newTrg, msgs);
+			msgs = basicSetTarget(newTarget, msgs);
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXCoreModelPackage.IBE_XEDGE__TRG, newTrg, newTrg));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXCoreModelPackage.IBE_XEDGE__TARGET, newTarget,
+					newTarget));
 	}
 
 	/**
@@ -261,16 +263,16 @@ public class IBeXEdgeImpl extends IBeXNamedElementImpl implements IBeXEdge {
 	@Override
 	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-		case IBeXCoreModelPackage.IBE_XEDGE__SRC:
-			if (src != null)
-				msgs = ((InternalEObject) src).eInverseRemove(this, IBeXCoreModelPackage.IBE_XNODE__OUTGOING_EDGES,
+		case IBeXCoreModelPackage.IBE_XEDGE__SOURCE:
+			if (source != null)
+				msgs = ((InternalEObject) source).eInverseRemove(this, IBeXCoreModelPackage.IBE_XNODE__OUTGOING_EDGES,
 						IBeXNode.class, msgs);
-			return basicSetSrc((IBeXNode) otherEnd, msgs);
-		case IBeXCoreModelPackage.IBE_XEDGE__TRG:
-			if (trg != null)
-				msgs = ((InternalEObject) trg).eInverseRemove(this, IBeXCoreModelPackage.IBE_XNODE__INCOMING_EDGES,
+			return basicSetSource((IBeXNode) otherEnd, msgs);
+		case IBeXCoreModelPackage.IBE_XEDGE__TARGET:
+			if (target != null)
+				msgs = ((InternalEObject) target).eInverseRemove(this, IBeXCoreModelPackage.IBE_XNODE__INCOMING_EDGES,
 						IBeXNode.class, msgs);
-			return basicSetTrg((IBeXNode) otherEnd, msgs);
+			return basicSetTarget((IBeXNode) otherEnd, msgs);
 		}
 		return super.eInverseAdd(otherEnd, featureID, msgs);
 	}
@@ -283,10 +285,10 @@ public class IBeXEdgeImpl extends IBeXNamedElementImpl implements IBeXEdge {
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-		case IBeXCoreModelPackage.IBE_XEDGE__SRC:
-			return basicSetSrc(null, msgs);
-		case IBeXCoreModelPackage.IBE_XEDGE__TRG:
-			return basicSetTrg(null, msgs);
+		case IBeXCoreModelPackage.IBE_XEDGE__SOURCE:
+			return basicSetSource(null, msgs);
+		case IBeXCoreModelPackage.IBE_XEDGE__TARGET:
+			return basicSetTarget(null, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -303,14 +305,14 @@ public class IBeXEdgeImpl extends IBeXNamedElementImpl implements IBeXEdge {
 			if (resolve)
 				return getType();
 			return basicGetType();
-		case IBeXCoreModelPackage.IBE_XEDGE__SRC:
+		case IBeXCoreModelPackage.IBE_XEDGE__SOURCE:
 			if (resolve)
-				return getSrc();
-			return basicGetSrc();
-		case IBeXCoreModelPackage.IBE_XEDGE__TRG:
+				return getSource();
+			return basicGetSource();
+		case IBeXCoreModelPackage.IBE_XEDGE__TARGET:
 			if (resolve)
-				return getTrg();
-			return basicGetTrg();
+				return getTarget();
+			return basicGetTarget();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -326,11 +328,11 @@ public class IBeXEdgeImpl extends IBeXNamedElementImpl implements IBeXEdge {
 		case IBeXCoreModelPackage.IBE_XEDGE__TYPE:
 			setType((EReference) newValue);
 			return;
-		case IBeXCoreModelPackage.IBE_XEDGE__SRC:
-			setSrc((IBeXNode) newValue);
+		case IBeXCoreModelPackage.IBE_XEDGE__SOURCE:
+			setSource((IBeXNode) newValue);
 			return;
-		case IBeXCoreModelPackage.IBE_XEDGE__TRG:
-			setTrg((IBeXNode) newValue);
+		case IBeXCoreModelPackage.IBE_XEDGE__TARGET:
+			setTarget((IBeXNode) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -347,11 +349,11 @@ public class IBeXEdgeImpl extends IBeXNamedElementImpl implements IBeXEdge {
 		case IBeXCoreModelPackage.IBE_XEDGE__TYPE:
 			setType((EReference) null);
 			return;
-		case IBeXCoreModelPackage.IBE_XEDGE__SRC:
-			setSrc((IBeXNode) null);
+		case IBeXCoreModelPackage.IBE_XEDGE__SOURCE:
+			setSource((IBeXNode) null);
 			return;
-		case IBeXCoreModelPackage.IBE_XEDGE__TRG:
-			setTrg((IBeXNode) null);
+		case IBeXCoreModelPackage.IBE_XEDGE__TARGET:
+			setTarget((IBeXNode) null);
 			return;
 		}
 		super.eUnset(featureID);
@@ -367,10 +369,10 @@ public class IBeXEdgeImpl extends IBeXNamedElementImpl implements IBeXEdge {
 		switch (featureID) {
 		case IBeXCoreModelPackage.IBE_XEDGE__TYPE:
 			return type != null;
-		case IBeXCoreModelPackage.IBE_XEDGE__SRC:
-			return src != null;
-		case IBeXCoreModelPackage.IBE_XEDGE__TRG:
-			return trg != null;
+		case IBeXCoreModelPackage.IBE_XEDGE__SOURCE:
+			return source != null;
+		case IBeXCoreModelPackage.IBE_XEDGE__TARGET:
+			return target != null;
 		}
 		return super.eIsSet(featureID);
 	}

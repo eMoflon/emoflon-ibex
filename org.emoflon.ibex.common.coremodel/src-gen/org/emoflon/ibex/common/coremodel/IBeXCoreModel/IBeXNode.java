@@ -50,13 +50,13 @@ public interface IBeXNode extends IBeXNamedElement {
 	/**
 	 * Returns the value of the '<em><b>Incoming Edges</b></em>' reference list.
 	 * The list contents are of type {@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge}.
-	 * It is bidirectional and its opposite is '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge#getTrg <em>Trg</em>}'.
+	 * It is bidirectional and its opposite is '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge#getTarget <em>Target</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Incoming Edges</em>' reference list.
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage#getIBeXNode_IncomingEdges()
-	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge#getTrg
-	 * @model opposite="trg"
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge#getTarget
+	 * @model opposite="target"
 	 * @generated
 	 */
 	EList<IBeXEdge> getIncomingEdges();
@@ -64,13 +64,13 @@ public interface IBeXNode extends IBeXNamedElement {
 	/**
 	 * Returns the value of the '<em><b>Outgoing Edges</b></em>' reference list.
 	 * The list contents are of type {@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge}.
-	 * It is bidirectional and its opposite is '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge#getSrc <em>Src</em>}'.
+	 * It is bidirectional and its opposite is '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge#getSource <em>Source</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Outgoing Edges</em>' reference list.
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage#getIBeXNode_OutgoingEdges()
-	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge#getSrc
-	 * @model opposite="src"
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge#getSource
+	 * @model opposite="source"
 	 * @generated
 	 */
 	EList<IBeXEdge> getOutgoingEdges();

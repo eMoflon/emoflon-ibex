@@ -451,7 +451,7 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getIBeXEdge_Src() {
+	public EReference getIBeXEdge_Source() {
 		return (EReference) iBeXEdgeEClass.getEStructuralFeatures().get(1);
 	}
 
@@ -460,7 +460,7 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getIBeXEdge_Trg() {
+	public EReference getIBeXEdge_Target() {
 		return (EReference) iBeXEdgeEClass.getEStructuralFeatures().get(2);
 	}
 
@@ -917,8 +917,8 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 
 		iBeXEdgeEClass = createEClass(IBE_XEDGE);
 		createEReference(iBeXEdgeEClass, IBE_XEDGE__TYPE);
-		createEReference(iBeXEdgeEClass, IBE_XEDGE__SRC);
-		createEReference(iBeXEdgeEClass, IBE_XEDGE__TRG);
+		createEReference(iBeXEdgeEClass, IBE_XEDGE__SOURCE);
+		createEReference(iBeXEdgeEClass, IBE_XEDGE__TARGET);
 
 		iBeXPatternEClass = createEClass(IBE_XPATTERN);
 		createEReference(iBeXPatternEClass, IBE_XPATTERN__DEPENDENCIES);
@@ -1075,22 +1075,22 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 		initEReference(getIBeXNode_Type(), ecorePackage.getEClass(), null, "type", null, 0, 1, IBeXNode.class,
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getIBeXNode_IncomingEdges(), this.getIBeXEdge(), this.getIBeXEdge_Trg(), "incomingEdges", null,
-				0, -1, IBeXNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
-				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getIBeXNode_OutgoingEdges(), this.getIBeXEdge(), this.getIBeXEdge_Src(), "outgoingEdges", null,
-				0, -1, IBeXNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
-				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getIBeXNode_IncomingEdges(), this.getIBeXEdge(), this.getIBeXEdge_Target(), "incomingEdges",
+				null, 0, -1, IBeXNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
+				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getIBeXNode_OutgoingEdges(), this.getIBeXEdge(), this.getIBeXEdge_Source(), "outgoingEdges",
+				null, 0, -1, IBeXNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
+				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(iBeXEdgeEClass, IBeXEdge.class, "IBeXEdge", !IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getIBeXEdge_Type(), ecorePackage.getEReference(), null, "type", null, 0, 1, IBeXEdge.class,
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getIBeXEdge_Src(), this.getIBeXNode(), this.getIBeXNode_OutgoingEdges(), "src", null, 1, 1,
+		initEReference(getIBeXEdge_Source(), this.getIBeXNode(), this.getIBeXNode_OutgoingEdges(), "source", null, 1, 1,
 				IBeXEdge.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getIBeXEdge_Trg(), this.getIBeXNode(), this.getIBeXNode_IncomingEdges(), "trg", null, 1, 1,
+		initEReference(getIBeXEdge_Target(), this.getIBeXNode(), this.getIBeXNode_IncomingEdges(), "target", null, 1, 1,
 				IBeXEdge.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
