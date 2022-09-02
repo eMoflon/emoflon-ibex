@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="IBeXCoreModel" nsURI="platform:/resource/org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore"
+    nsPrefix="IBeXCoreModel">
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXNamedElement" abstract="true">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXModel" eSuperTypes="#//IBeXNamedElement">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="patternSet" lowerBound="1"
+        eType="#//IBeXPatternSet" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="nodeSet" lowerBound="1"
+        eType="#//IBeXNodeSet" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="edgeSet" lowerBound="1"
+        eType="#//IBeXEdgeSet" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXPatternSet">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="patterns" upperBound="-1"
+        eType="#//IBeXPattern" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXNodeSet">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="nodes" upperBound="-1"
+        eType="#//IBeXNode" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXEdgeSet">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="edges" upperBound="-1"
+        eType="#//IBeXEdge" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXNode" eSuperTypes="#//IBeXNamedElement">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EClass"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="incomingEdges" upperBound="-1"
+        eType="#//IBeXEdge" eOpposite="#//IBeXEdge/trg"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="outgoingEdges" upperBound="-1"
+        eType="#//IBeXEdge" eOpposite="#//IBeXEdge/src"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXEdge" eSuperTypes="#//IBeXNamedElement">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EReference"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="src" lowerBound="1" eType="#//IBeXNode"
+        eOpposite="#//IBeXNode/outgoingEdges"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="trg" lowerBound="1" eType="#//IBeXNode"
+        eOpposite="#//IBeXNode/incomingEdges"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXPattern" eSuperTypes="#//IBeXNamedElement">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="countRequired" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
+        defaultValueLiteral="false"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dependencies" upperBound="-1"
+        eType="#//IBeXPattern"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="signatureNodes" upperBound="-1"
+        eType="#//IBeXNode"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="localNodes" upperBound="-1"
+        eType="#//IBeXNode"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="edges" upperBound="-1"
+        eType="#//IBeXEdge"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="attributeConstraints" upperBound="-1"
+        eType="#//IBeXCoreArithmetic/RelationalExpression" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="injectivityConstraints"
+        upperBound="-1" eType="#//IBeXInjectivityConstraint" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXInjectivityConstraint">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="nodes" lowerBound="2" upperBound="2"
+        eType="#//IBeXNode"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXPatternInvocation">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="positive" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="invokedBy" lowerBound="1"
+        eType="#//IBeXPattern"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="invocation" lowerBound="1"
+        eType="#//IBeXPattern"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="mapping" upperBound="-1"
+        eType="#//IBeXNodeMapping" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXNodeMapping" instanceClassName="java.util.Map$Entry">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="key" lowerBound="1" eType="#//IBeXNode"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="value" lowerBound="1" eType="#//IBeXNode"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXEnumValue" eSuperTypes="#//IBeXCoreArithmetic/ValueExpression">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="literal" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EEnumLiteral"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXStringValue" eSuperTypes="#//IBeXCoreArithmetic/ValueExpression">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXBooleanValue" eSuperTypes="#//IBeXCoreArithmetic/ValueExpression">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXAttributeValue" eSuperTypes="#//IBeXCoreArithmetic/ArithmeticValue">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="node" lowerBound="1" eType="#//IBeXNode"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="attribute" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EAttribute"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXMatchCountValue" eSuperTypes="#//IBeXCoreArithmetic/ArithmeticValue">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="invocation" lowerBound="1"
+        eType="#//IBeXPatternInvocation" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXRule" eSuperTypes="#//IBeXNamedElement">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="precondition" lowerBound="1"
+        eType="#//IBeXPattern"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="postcondition" lowerBound="1"
+        eType="#//IBeXPattern" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="creation" eType="#//IBeXRuleDelta"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="deletion" eType="#//IBeXRuleDelta"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="attributeAssignments" upperBound="-1"
+        eType="#//IBeXAttributeAssignment" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXRuleDelta">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="nodes" upperBound="-1"
+        eType="#//IBeXNode"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="edges" upperBound="-1"
+        eType="#//IBeXEdge"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXAttributeAssignment">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="node" lowerBound="1" eType="#//IBeXNode"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="attribute" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EAttribute"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="value" lowerBound="1" eType="#//IBeXCoreArithmetic/ValueExpression"
+        containment="true"/>
+  </eClassifiers>
+  <eSubpackages name="IBeXCoreArithmetic" nsURI="platform:/resource/org.emoflon.ibex.common.coremodel/model/IBeXCoreArithmetic.ecore"
+      nsPrefix="IBeXCoreArithmetic">
+    <eClassifiers xsi:type="ecore:EClass" name="ValueExpression" abstract="true">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EDataType"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="ArithmeticExpression" abstract="true"
+        interface="true" eSuperTypes="#//IBeXCoreArithmetic/ValueExpression"/>
+    <eClassifiers xsi:type="ecore:EClass" name="UnaryExpression" eSuperTypes="#//IBeXCoreArithmetic/ArithmeticExpression">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="operand" lowerBound="1"
+          eType="#//IBeXCoreArithmetic/ArithmeticExpression" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="operator" eType="#//IBeXCoreArithmetic/UnaryOperator"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="BinaryExpression" eSuperTypes="#//IBeXCoreArithmetic/ArithmeticExpression">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="lhs" lowerBound="1" eType="#//IBeXCoreArithmetic/ArithmeticExpression"
+          containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="rhs" lowerBound="1" eType="#//IBeXCoreArithmetic/ArithmeticExpression"
+          containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="operator" eType="#//IBeXCoreArithmetic/BinaryOperator"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="ArithmeticValue" abstract="true" eSuperTypes="#//IBeXCoreArithmetic/ArithmeticExpression"/>
+    <eClassifiers xsi:type="ecore:EClass" name="DoubleLiteral" eSuperTypes="#//IBeXCoreArithmetic/ArithmeticValue">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="IntegerLiteral" eSuperTypes="#//IBeXCoreArithmetic/ArithmeticValue">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EEnum" name="BinaryOperator">
+      <eLiterals name="ADD" literal="ADD"/>
+      <eLiterals name="MULTIPLY" value="1"/>
+      <eLiterals name="DIVIDE" value="2"/>
+      <eLiterals name="MOD" value="3"/>
+      <eLiterals name="POW" value="4"/>
+      <eLiterals name="SUBTRACT" value="5"/>
+      <eLiterals name="MIN" value="6"/>
+      <eLiterals name="MAX" value="7"/>
+      <eLiterals name="NORMAL_DISTRIBUTION" value="8"/>
+      <eLiterals name="UNIFORM_DISTRIBUTION" value="9"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EEnum" name="UnaryOperator">
+      <eLiterals name="SQRT"/>
+      <eLiterals name="ABSOLUTE" value="1"/>
+      <eLiterals name="SIN" value="2"/>
+      <eLiterals name="COS" value="3"/>
+      <eLiterals name="TAN" value="4"/>
+      <eLiterals name="BRACKET" value="5"/>
+      <eLiterals name="NEGATIVE" value="6"/>
+      <eLiterals name="EXPONENTIAL_DISTRIBUTION" value="7"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="RelationalExpression">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="lhs" lowerBound="1" eType="#//IBeXCoreArithmetic/ValueExpression"
+          containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="rhs" lowerBound="1" eType="#//IBeXCoreArithmetic/ValueExpression"
+          containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="operator" eType="#//IBeXCoreArithmetic/RelationalOperator"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EEnum" name="RelationalOperator">
+      <eLiterals name="GREATER_OR_EQUAL"/>
+      <eLiterals name="GREATER" value="1"/>
+      <eLiterals name="EQUAL" value="2"/>
+      <eLiterals name="UNEQUAL" value="3"/>
+      <eLiterals name="SMALLER_OR_EQUAL" value="4"/>
+      <eLiterals name="SMALLER" value="5"/>
+    </eClassifiers>
+  </eSubpackages>
+</ecore:EPackage>
