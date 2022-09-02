@@ -60,6 +60,8 @@ public class IBeXCoreModelFactoryImpl extends EFactoryImpl implements IBeXCoreMo
 		switch (eClass.getClassifierID()) {
 		case IBeXCoreModelPackage.IBE_XMODEL:
 			return createIBeXModel();
+		case IBeXCoreModelPackage.IBE_XFEATURE_CONFIG:
+			return createIBeXFeatureConfig();
 		case IBeXCoreModelPackage.IBE_XPATTERN_SET:
 			return createIBeXPatternSet();
 		case IBeXCoreModelPackage.IBE_XNODE_SET:
@@ -107,6 +109,16 @@ public class IBeXCoreModelFactoryImpl extends EFactoryImpl implements IBeXCoreMo
 	public IBeXModel createIBeXModel() {
 		IBeXModelImpl iBeXModel = new IBeXModelImpl();
 		return iBeXModel;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public IBeXFeatureConfig createIBeXFeatureConfig() {
+		IBeXFeatureConfigImpl iBeXFeatureConfig = new IBeXFeatureConfigImpl();
+		return iBeXFeatureConfig;
 	}
 
 	/**

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel"
+    modelDirectory="/org.emoflon.ibex.tgg.tggmodel/src-gen" creationIcons="false"
+    editDirectory="/org.emoflon.ibex.tgg.tggmodel.edit/src-gen" editorDirectory="/org.emoflon.ibex.tgg.tggmodel.editor/src-gen"
+    modelPluginID="org.emoflon.ibex.tgg.tggmodel" modelName="IBeXTGGModel" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
+    codeFormatting="true" importerID="org.eclipse.emf.importer.ecore" complianceLevel="5.0"
+    copyrightFields="false" usedGenPackages="../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.genmodel#//IBeXCoreModel"
+    operationReflection="true" importOrganizing="true">
+  <foreignModel>IBeXTGGModel.ecore</foreignModel>
+  <testsDirectory xsi:nil="true"/>
+  <genPackages prefix="IBeXTGGModel" basePackage="org.emoflon.ibex.tgg.tggmodel" disposableProviderFactory="true"
+      ecorePackage="IBeXTGGModel.ecore#/">
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="IBeXTGGModel.ecore#//DomainType">
+      <genEnumLiterals ecoreEnumLiteral="IBeXTGGModel.ecore#//DomainType/SRC"/>
+      <genEnumLiterals ecoreEnumLiteral="IBeXTGGModel.ecore#//DomainType/TRG"/>
+      <genEnumLiterals ecoreEnumLiteral="IBeXTGGModel.ecore#//DomainType/CORR"/>
+    </genEnums>
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="IBeXTGGModel.ecore#//BindingType">
+      <genEnumLiterals ecoreEnumLiteral="IBeXTGGModel.ecore#//BindingType/CONTEXT"/>
+      <genEnumLiterals ecoreEnumLiteral="IBeXTGGModel.ecore#//BindingType/CREATE"/>
+      <genEnumLiterals ecoreEnumLiteral="IBeXTGGModel.ecore#//BindingType/DELETE"/>
+      <genEnumLiterals ecoreEnumLiteral="IBeXTGGModel.ecore#//BindingType/NEGATIVE"/>
+      <genEnumLiterals ecoreEnumLiteral="IBeXTGGModel.ecore#//BindingType/RELAXED"/>
+    </genEnums>
+    <genClasses ecoreClass="IBeXTGGModel.ecore#//TGGModel">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGModel/source"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGModel/target"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGModel/correspondence"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGModel/rules"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXTGGModel.ecore#//TGGRule">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGRule/refines"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXTGGModel.ecore#//TGGRule/abstract"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGRule/nodes"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGRule/edges"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGRule/correspondenceNodes"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXTGGModel.ecore#//TGGNode">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGNode/incomingCorrespondence"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGNode/outgoingCorrespondence"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXTGGModel.ecore#//TGGRuleCorrespondence">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGRuleCorrespondence/source"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGRuleCorrespondence/target"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXTGGModel.ecore#//TGGEdge"/>
+    <genClasses image="false" ecoreClass="IBeXTGGModel.ecore#//TGGRuleElement">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXTGGModel.ecore#//TGGRuleElement/domainType"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXTGGModel.ecore#//TGGRuleElement/bindingType"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXTGGModel.ecore#//TGGAttributeConstraintLibrary">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGAttributeConstraintLibrary/tggAttributeConstraints"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXTGGModel.ecore#//TGGAttributeConstraintDefinitionLibrary">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGAttributeConstraintDefinitionLibrary/tggAttributeConstraintDefinitions"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXTGGModel.ecore#//TGGAttributeConstraint">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGAttributeConstraint/definition"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGAttributeConstraint/parameters"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXTGGModel.ecore#//TGGParameterValue">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGParameterValue/parameterDefinition"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGParameterValue/expression"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXTGGModel.ecore#//TGGAttributeConstraintParameterDefinition">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGAttributeConstraintParameterDefinition/type"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXTGGModel.ecore#//TGGAttributeConstraintParameterDefinition/name"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXTGGModel.ecore#//TGGAttributeConstraintBinding">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXTGGModel.ecore#//TGGAttributeConstraintBinding/value"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXTGGModel.ecore#//TGGAttributeConstraintDefinition">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXTGGModel.ecore#//TGGAttributeConstraintDefinition/userDefined"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGAttributeConstraintDefinition/parameterDefinitions"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGAttributeConstraintDefinition/syncBindings"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGAttributeConstraintDefinition/genBindings"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

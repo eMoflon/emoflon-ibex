@@ -18,6 +18,8 @@ import org.eclipse.emf.common.util.EList;
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRule#getCreation <em>Creation</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRule#getDeletion <em>Deletion</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRule#getAttributeAssignments <em>Attribute Assignments</em>}</li>
+ *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRule#getAllNodes <em>All Nodes</em>}</li>
+ *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRule#getAllEdges <em>All Edges</em>}</li>
  * </ul>
  *
  * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage#getIBeXRule()
@@ -124,5 +126,29 @@ public interface IBeXRule extends IBeXNamedElement {
 	 * @generated
 	 */
 	EList<IBeXAttributeAssignment> getAttributeAssignments();
+
+	/**
+	 * Returns the value of the '<em><b>All Nodes</b></em>' reference list.
+	 * The list contents are of type {@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>All Nodes</em>' reference list.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage#getIBeXRule_AllNodes()
+	 * @model
+	 * @generated
+	 */
+	EList<IBeXNode> getAllNodes();
+
+	/**
+	 * Returns the value of the '<em><b>All Edges</b></em>' reference list.
+	 * The list contents are of type {@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>All Edges</em>' reference list.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage#getIBeXRule_AllEdges()
+	 * @model
+	 * @generated
+	 */
+	EList<IBeXEdge> getAllEdges();
 
 } // IBeXRule

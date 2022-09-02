@@ -88,6 +88,13 @@ public class IBeXCoreModelSwitch<T> extends Switch<T> {
 				result = defaultCase(theEObject);
 			return result;
 		}
+		case IBeXCoreModelPackage.IBE_XFEATURE_CONFIG: {
+			IBeXFeatureConfig iBeXFeatureConfig = (IBeXFeatureConfig) theEObject;
+			T result = caseIBeXFeatureConfig(iBeXFeatureConfig);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
 		case IBeXCoreModelPackage.IBE_XPATTERN_SET: {
 			IBeXPatternSet iBeXPatternSet = (IBeXPatternSet) theEObject;
 			T result = caseIBeXPatternSet(iBeXPatternSet);
@@ -266,6 +273,21 @@ public class IBeXCoreModelSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseIBeXModel(IBeXModel object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>IBe XFeature Config</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>IBe XFeature Config</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseIBeXFeatureConfig(IBeXFeatureConfig object) {
 		return null;
 	}
 

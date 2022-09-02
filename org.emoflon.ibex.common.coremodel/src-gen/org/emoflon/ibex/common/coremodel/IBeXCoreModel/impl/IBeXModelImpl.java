@@ -12,6 +12,7 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdgeSet;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXFeatureConfig;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNodeSet;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternSet;
@@ -27,6 +28,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternSet;
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXModelImpl#getPatternSet <em>Pattern Set</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXModelImpl#getNodeSet <em>Node Set</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXModelImpl#getEdgeSet <em>Edge Set</em>}</li>
+ *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXModelImpl#getFeatureConfig <em>Feature Config</em>}</li>
  * </ul>
  *
  * @generated
@@ -61,6 +63,16 @@ public class IBeXModelImpl extends IBeXNamedElementImpl implements IBeXModel {
 	 * @ordered
 	 */
 	protected IBeXEdgeSet edgeSet;
+
+	/**
+	 * The cached value of the '{@link #getFeatureConfig() <em>Feature Config</em>}' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getFeatureConfig()
+	 * @generated
+	 * @ordered
+	 */
+	protected IBeXFeatureConfig featureConfig;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -236,6 +248,46 @@ public class IBeXModelImpl extends IBeXNamedElementImpl implements IBeXModel {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public IBeXFeatureConfig getFeatureConfig() {
+		if (featureConfig != null && featureConfig.eIsProxy()) {
+			InternalEObject oldFeatureConfig = (InternalEObject) featureConfig;
+			featureConfig = (IBeXFeatureConfig) eResolveProxy(oldFeatureConfig);
+			if (featureConfig != oldFeatureConfig) {
+				if (eNotificationRequired())
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							IBeXCoreModelPackage.IBE_XMODEL__FEATURE_CONFIG, oldFeatureConfig, featureConfig));
+			}
+		}
+		return featureConfig;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public IBeXFeatureConfig basicGetFeatureConfig() {
+		return featureConfig;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setFeatureConfig(IBeXFeatureConfig newFeatureConfig) {
+		IBeXFeatureConfig oldFeatureConfig = featureConfig;
+		featureConfig = newFeatureConfig;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXCoreModelPackage.IBE_XMODEL__FEATURE_CONFIG,
+					oldFeatureConfig, featureConfig));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
@@ -263,6 +315,10 @@ public class IBeXModelImpl extends IBeXNamedElementImpl implements IBeXModel {
 			return getNodeSet();
 		case IBeXCoreModelPackage.IBE_XMODEL__EDGE_SET:
 			return getEdgeSet();
+		case IBeXCoreModelPackage.IBE_XMODEL__FEATURE_CONFIG:
+			if (resolve)
+				return getFeatureConfig();
+			return basicGetFeatureConfig();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -283,6 +339,9 @@ public class IBeXModelImpl extends IBeXNamedElementImpl implements IBeXModel {
 			return;
 		case IBeXCoreModelPackage.IBE_XMODEL__EDGE_SET:
 			setEdgeSet((IBeXEdgeSet) newValue);
+			return;
+		case IBeXCoreModelPackage.IBE_XMODEL__FEATURE_CONFIG:
+			setFeatureConfig((IBeXFeatureConfig) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -305,6 +364,9 @@ public class IBeXModelImpl extends IBeXNamedElementImpl implements IBeXModel {
 		case IBeXCoreModelPackage.IBE_XMODEL__EDGE_SET:
 			setEdgeSet((IBeXEdgeSet) null);
 			return;
+		case IBeXCoreModelPackage.IBE_XMODEL__FEATURE_CONFIG:
+			setFeatureConfig((IBeXFeatureConfig) null);
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -323,6 +385,8 @@ public class IBeXModelImpl extends IBeXNamedElementImpl implements IBeXModel {
 			return nodeSet != null;
 		case IBeXCoreModelPackage.IBE_XMODEL__EDGE_SET:
 			return edgeSet != null;
+		case IBeXCoreModelPackage.IBE_XMODEL__FEATURE_CONFIG:
+			return featureConfig != null;
 		}
 		return super.eIsSet(featureID);
 	}

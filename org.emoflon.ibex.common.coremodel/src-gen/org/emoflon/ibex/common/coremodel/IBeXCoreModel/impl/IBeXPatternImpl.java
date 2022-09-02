@@ -3,17 +3,12 @@
 package org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl;
 
 import java.util.Collection;
-
-import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 
 import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
-
-import org.eclipse.emf.ecore.impl.ENotificationImpl;
-
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
@@ -25,6 +20,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXInjectivityConstraint;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternInvocation;
 
 /**
  * <!-- begin-user-doc -->
@@ -34,38 +30,18 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern;
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXPatternImpl#isCountRequired <em>Count Required</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXPatternImpl#getDependencies <em>Dependencies</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXPatternImpl#getSignatureNodes <em>Signature Nodes</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXPatternImpl#getLocalNodes <em>Local Nodes</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXPatternImpl#getEdges <em>Edges</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXPatternImpl#getAttributeConstraints <em>Attribute Constraints</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXPatternImpl#getInjectivityConstraints <em>Injectivity Constraints</em>}</li>
+ *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXPatternImpl#getInvocations <em>Invocations</em>}</li>
  * </ul>
  *
  * @generated
  */
 public class IBeXPatternImpl extends IBeXNamedElementImpl implements IBeXPattern {
-	/**
-	 * The default value of the '{@link #isCountRequired() <em>Count Required</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #isCountRequired()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final boolean COUNT_REQUIRED_EDEFAULT = false;
-
-	/**
-	 * The cached value of the '{@link #isCountRequired() <em>Count Required</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #isCountRequired()
-	 * @generated
-	 * @ordered
-	 */
-	protected boolean countRequired = COUNT_REQUIRED_EDEFAULT;
-
 	/**
 	 * The cached value of the '{@link #getDependencies() <em>Dependencies</em>}' reference list.
 	 * <!-- begin-user-doc -->
@@ -127,6 +103,16 @@ public class IBeXPatternImpl extends IBeXNamedElementImpl implements IBeXPattern
 	protected EList<IBeXInjectivityConstraint> injectivityConstraints;
 
 	/**
+	 * The cached value of the '{@link #getInvocations() <em>Invocations</em>}' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getInvocations()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<IBeXPatternInvocation> invocations;
+
+	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -143,28 +129,6 @@ public class IBeXPatternImpl extends IBeXNamedElementImpl implements IBeXPattern
 	@Override
 	protected EClass eStaticClass() {
 		return IBeXCoreModelPackage.Literals.IBE_XPATTERN;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public boolean isCountRequired() {
-		return countRequired;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public void setCountRequired(boolean newCountRequired) {
-		boolean oldCountRequired = countRequired;
-		countRequired = newCountRequired;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXCoreModelPackage.IBE_XPATTERN__COUNT_REQUIRED,
-					oldCountRequired, countRequired));
 	}
 
 	/**
@@ -249,6 +213,19 @@ public class IBeXPatternImpl extends IBeXNamedElementImpl implements IBeXPattern
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EList<IBeXPatternInvocation> getInvocations() {
+		if (invocations == null) {
+			invocations = new EObjectContainmentEList<IBeXPatternInvocation>(IBeXPatternInvocation.class, this,
+					IBeXCoreModelPackage.IBE_XPATTERN__INVOCATIONS);
+		}
+		return invocations;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
@@ -256,6 +233,8 @@ public class IBeXPatternImpl extends IBeXNamedElementImpl implements IBeXPattern
 			return ((InternalEList<?>) getAttributeConstraints()).basicRemove(otherEnd, msgs);
 		case IBeXCoreModelPackage.IBE_XPATTERN__INJECTIVITY_CONSTRAINTS:
 			return ((InternalEList<?>) getInjectivityConstraints()).basicRemove(otherEnd, msgs);
+		case IBeXCoreModelPackage.IBE_XPATTERN__INVOCATIONS:
+			return ((InternalEList<?>) getInvocations()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -268,8 +247,6 @@ public class IBeXPatternImpl extends IBeXNamedElementImpl implements IBeXPattern
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case IBeXCoreModelPackage.IBE_XPATTERN__COUNT_REQUIRED:
-			return isCountRequired();
 		case IBeXCoreModelPackage.IBE_XPATTERN__DEPENDENCIES:
 			return getDependencies();
 		case IBeXCoreModelPackage.IBE_XPATTERN__SIGNATURE_NODES:
@@ -282,6 +259,8 @@ public class IBeXPatternImpl extends IBeXNamedElementImpl implements IBeXPattern
 			return getAttributeConstraints();
 		case IBeXCoreModelPackage.IBE_XPATTERN__INJECTIVITY_CONSTRAINTS:
 			return getInjectivityConstraints();
+		case IBeXCoreModelPackage.IBE_XPATTERN__INVOCATIONS:
+			return getInvocations();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -295,9 +274,6 @@ public class IBeXPatternImpl extends IBeXNamedElementImpl implements IBeXPattern
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case IBeXCoreModelPackage.IBE_XPATTERN__COUNT_REQUIRED:
-			setCountRequired((Boolean) newValue);
-			return;
 		case IBeXCoreModelPackage.IBE_XPATTERN__DEPENDENCIES:
 			getDependencies().clear();
 			getDependencies().addAll((Collection<? extends IBeXPattern>) newValue);
@@ -322,6 +298,10 @@ public class IBeXPatternImpl extends IBeXNamedElementImpl implements IBeXPattern
 			getInjectivityConstraints().clear();
 			getInjectivityConstraints().addAll((Collection<? extends IBeXInjectivityConstraint>) newValue);
 			return;
+		case IBeXCoreModelPackage.IBE_XPATTERN__INVOCATIONS:
+			getInvocations().clear();
+			getInvocations().addAll((Collection<? extends IBeXPatternInvocation>) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -334,9 +314,6 @@ public class IBeXPatternImpl extends IBeXNamedElementImpl implements IBeXPattern
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case IBeXCoreModelPackage.IBE_XPATTERN__COUNT_REQUIRED:
-			setCountRequired(COUNT_REQUIRED_EDEFAULT);
-			return;
 		case IBeXCoreModelPackage.IBE_XPATTERN__DEPENDENCIES:
 			getDependencies().clear();
 			return;
@@ -355,6 +332,9 @@ public class IBeXPatternImpl extends IBeXNamedElementImpl implements IBeXPattern
 		case IBeXCoreModelPackage.IBE_XPATTERN__INJECTIVITY_CONSTRAINTS:
 			getInjectivityConstraints().clear();
 			return;
+		case IBeXCoreModelPackage.IBE_XPATTERN__INVOCATIONS:
+			getInvocations().clear();
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -367,8 +347,6 @@ public class IBeXPatternImpl extends IBeXNamedElementImpl implements IBeXPattern
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case IBeXCoreModelPackage.IBE_XPATTERN__COUNT_REQUIRED:
-			return countRequired != COUNT_REQUIRED_EDEFAULT;
 		case IBeXCoreModelPackage.IBE_XPATTERN__DEPENDENCIES:
 			return dependencies != null && !dependencies.isEmpty();
 		case IBeXCoreModelPackage.IBE_XPATTERN__SIGNATURE_NODES:
@@ -381,25 +359,10 @@ public class IBeXPatternImpl extends IBeXNamedElementImpl implements IBeXPattern
 			return attributeConstraints != null && !attributeConstraints.isEmpty();
 		case IBeXCoreModelPackage.IBE_XPATTERN__INJECTIVITY_CONSTRAINTS:
 			return injectivityConstraints != null && !injectivityConstraints.isEmpty();
+		case IBeXCoreModelPackage.IBE_XPATTERN__INVOCATIONS:
+			return invocations != null && !invocations.isEmpty();
 		}
 		return super.eIsSet(featureID);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public String toString() {
-		if (eIsProxy())
-			return super.toString();
-
-		StringBuilder result = new StringBuilder(super.toString());
-		result.append(" (countRequired: ");
-		result.append(countRequired);
-		result.append(')');
-		return result.toString();
 	}
 
 } //IBeXPatternImpl

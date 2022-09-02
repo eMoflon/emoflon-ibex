@@ -32,6 +32,15 @@ public interface IBeXCoreModelFactory extends EFactory {
 	IBeXModel createIBeXModel();
 
 	/**
+	 * Returns a new object of class '<em>IBe XFeature Config</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>IBe XFeature Config</em>'.
+	 * @generated
+	 */
+	IBeXFeatureConfig createIBeXFeatureConfig();
+
+	/**
 	 * Returns a new object of class '<em>IBe XPattern Set</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

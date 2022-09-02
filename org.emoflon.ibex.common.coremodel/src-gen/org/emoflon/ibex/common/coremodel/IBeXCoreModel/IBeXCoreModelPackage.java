@@ -143,13 +143,22 @@ public interface IBeXCoreModelPackage extends EPackage {
 	int IBE_XMODEL__EDGE_SET = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 2;
 
 	/**
+	 * The feature id for the '<em><b>Feature Config</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XMODEL__FEATURE_CONFIG = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 3;
+
+	/**
 	 * The number of structural features of the '<em>IBe XModel</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XMODEL_FEATURE_COUNT = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 3;
+	int IBE_XMODEL_FEATURE_COUNT = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 4;
 
 	/**
 	 * The number of operations of the '<em>IBe XModel</em>' class.
@@ -161,6 +170,43 @@ public interface IBeXCoreModelPackage extends EPackage {
 	int IBE_XMODEL_OPERATION_COUNT = IBE_XNAMED_ELEMENT_OPERATION_COUNT + 0;
 
 	/**
+	 * The meta object id for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXFeatureConfigImpl <em>IBe XFeature Config</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXFeatureConfigImpl
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXFeatureConfig()
+	 * @generated
+	 */
+	int IBE_XFEATURE_CONFIG = 2;
+
+	/**
+	 * The feature id for the '<em><b>Count Required</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XFEATURE_CONFIG__COUNT_REQUIRED = 0;
+
+	/**
+	 * The number of structural features of the '<em>IBe XFeature Config</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XFEATURE_CONFIG_FEATURE_COUNT = 1;
+
+	/**
+	 * The number of operations of the '<em>IBe XFeature Config</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XFEATURE_CONFIG_OPERATION_COUNT = 0;
+
+	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXPatternSetImpl <em>IBe XPattern Set</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -168,7 +214,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXPatternSet()
 	 * @generated
 	 */
-	int IBE_XPATTERN_SET = 2;
+	int IBE_XPATTERN_SET = 3;
 
 	/**
 	 * The feature id for the '<em><b>Patterns</b></em>' containment reference list.
@@ -205,7 +251,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXNodeSet()
 	 * @generated
 	 */
-	int IBE_XNODE_SET = 3;
+	int IBE_XNODE_SET = 4;
 
 	/**
 	 * The feature id for the '<em><b>Nodes</b></em>' containment reference list.
@@ -242,7 +288,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXEdgeSet()
 	 * @generated
 	 */
-	int IBE_XEDGE_SET = 4;
+	int IBE_XEDGE_SET = 5;
 
 	/**
 	 * The feature id for the '<em><b>Edges</b></em>' containment reference list.
@@ -279,7 +325,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXNode()
 	 * @generated
 	 */
-	int IBE_XNODE = 5;
+	int IBE_XNODE = 6;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -343,7 +389,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXEdge()
 	 * @generated
 	 */
-	int IBE_XEDGE = 6;
+	int IBE_XEDGE = 7;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -407,7 +453,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXPattern()
 	 * @generated
 	 */
-	int IBE_XPATTERN = 7;
+	int IBE_XPATTERN = 8;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -419,22 +465,13 @@ public interface IBeXCoreModelPackage extends EPackage {
 	int IBE_XPATTERN__NAME = IBE_XNAMED_ELEMENT__NAME;
 
 	/**
-	 * The feature id for the '<em><b>Count Required</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int IBE_XPATTERN__COUNT_REQUIRED = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 0;
-
-	/**
 	 * The feature id for the '<em><b>Dependencies</b></em>' reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XPATTERN__DEPENDENCIES = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 1;
+	int IBE_XPATTERN__DEPENDENCIES = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 0;
 
 	/**
 	 * The feature id for the '<em><b>Signature Nodes</b></em>' reference list.
@@ -443,7 +480,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XPATTERN__SIGNATURE_NODES = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 2;
+	int IBE_XPATTERN__SIGNATURE_NODES = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 1;
 
 	/**
 	 * The feature id for the '<em><b>Local Nodes</b></em>' reference list.
@@ -452,7 +489,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XPATTERN__LOCAL_NODES = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 3;
+	int IBE_XPATTERN__LOCAL_NODES = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 2;
 
 	/**
 	 * The feature id for the '<em><b>Edges</b></em>' reference list.
@@ -461,7 +498,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XPATTERN__EDGES = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 4;
+	int IBE_XPATTERN__EDGES = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 3;
 
 	/**
 	 * The feature id for the '<em><b>Attribute Constraints</b></em>' containment reference list.
@@ -470,7 +507,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XPATTERN__ATTRIBUTE_CONSTRAINTS = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 5;
+	int IBE_XPATTERN__ATTRIBUTE_CONSTRAINTS = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 4;
 
 	/**
 	 * The feature id for the '<em><b>Injectivity Constraints</b></em>' containment reference list.
@@ -479,7 +516,16 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XPATTERN__INJECTIVITY_CONSTRAINTS = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 6;
+	int IBE_XPATTERN__INJECTIVITY_CONSTRAINTS = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 5;
+
+	/**
+	 * The feature id for the '<em><b>Invocations</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XPATTERN__INVOCATIONS = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 6;
 
 	/**
 	 * The number of structural features of the '<em>IBe XPattern</em>' class.
@@ -507,7 +553,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXInjectivityConstraint()
 	 * @generated
 	 */
-	int IBE_XINJECTIVITY_CONSTRAINT = 8;
+	int IBE_XINJECTIVITY_CONSTRAINT = 9;
 
 	/**
 	 * The feature id for the '<em><b>Nodes</b></em>' reference list.
@@ -544,7 +590,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXPatternInvocation()
 	 * @generated
 	 */
-	int IBE_XPATTERN_INVOCATION = 9;
+	int IBE_XPATTERN_INVOCATION = 10;
 
 	/**
 	 * The feature id for the '<em><b>Positive</b></em>' attribute.
@@ -608,7 +654,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXNodeMapping()
 	 * @generated
 	 */
-	int IBE_XNODE_MAPPING = 10;
+	int IBE_XNODE_MAPPING = 11;
 
 	/**
 	 * The feature id for the '<em><b>Key</b></em>' reference.
@@ -654,7 +700,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXEnumValue()
 	 * @generated
 	 */
-	int IBE_XENUM_VALUE = 11;
+	int IBE_XENUM_VALUE = 12;
 
 	/**
 	 * The feature id for the '<em><b>Type</b></em>' reference.
@@ -700,7 +746,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXStringValue()
 	 * @generated
 	 */
-	int IBE_XSTRING_VALUE = 12;
+	int IBE_XSTRING_VALUE = 13;
 
 	/**
 	 * The feature id for the '<em><b>Type</b></em>' reference.
@@ -746,7 +792,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXBooleanValue()
 	 * @generated
 	 */
-	int IBE_XBOOLEAN_VALUE = 13;
+	int IBE_XBOOLEAN_VALUE = 14;
 
 	/**
 	 * The feature id for the '<em><b>Type</b></em>' reference.
@@ -792,7 +838,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXAttributeValue()
 	 * @generated
 	 */
-	int IBE_XATTRIBUTE_VALUE = 14;
+	int IBE_XATTRIBUTE_VALUE = 15;
 
 	/**
 	 * The feature id for the '<em><b>Type</b></em>' reference.
@@ -847,7 +893,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXMatchCountValue()
 	 * @generated
 	 */
-	int IBE_XMATCH_COUNT_VALUE = 15;
+	int IBE_XMATCH_COUNT_VALUE = 16;
 
 	/**
 	 * The feature id for the '<em><b>Type</b></em>' reference.
@@ -893,7 +939,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXRule()
 	 * @generated
 	 */
-	int IBE_XRULE = 16;
+	int IBE_XRULE = 17;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -950,13 +996,31 @@ public interface IBeXCoreModelPackage extends EPackage {
 	int IBE_XRULE__ATTRIBUTE_ASSIGNMENTS = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 4;
 
 	/**
+	 * The feature id for the '<em><b>All Nodes</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XRULE__ALL_NODES = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 5;
+
+	/**
+	 * The feature id for the '<em><b>All Edges</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XRULE__ALL_EDGES = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 6;
+
+	/**
 	 * The number of structural features of the '<em>IBe XRule</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XRULE_FEATURE_COUNT = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 5;
+	int IBE_XRULE_FEATURE_COUNT = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 7;
 
 	/**
 	 * The number of operations of the '<em>IBe XRule</em>' class.
@@ -975,7 +1039,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXRuleDelta()
 	 * @generated
 	 */
-	int IBE_XRULE_DELTA = 17;
+	int IBE_XRULE_DELTA = 18;
 
 	/**
 	 * The feature id for the '<em><b>Nodes</b></em>' reference list.
@@ -1021,7 +1085,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXAttributeAssignment()
 	 * @generated
 	 */
-	int IBE_XATTRIBUTE_ASSIGNMENT = 18;
+	int IBE_XATTRIBUTE_ASSIGNMENT = 19;
 
 	/**
 	 * The feature id for the '<em><b>Node</b></em>' reference.
@@ -1131,6 +1195,38 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getIBeXModel_EdgeSet();
+
+	/**
+	 * Returns the meta object for the reference '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel#getFeatureConfig <em>Feature Config</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Feature Config</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel#getFeatureConfig()
+	 * @see #getIBeXModel()
+	 * @generated
+	 */
+	EReference getIBeXModel_FeatureConfig();
+
+	/**
+	 * Returns the meta object for class '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXFeatureConfig <em>IBe XFeature Config</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>IBe XFeature Config</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXFeatureConfig
+	 * @generated
+	 */
+	EClass getIBeXFeatureConfig();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXFeatureConfig#isCountRequired <em>Count Required</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Count Required</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXFeatureConfig#isCountRequired()
+	 * @see #getIBeXFeatureConfig()
+	 * @generated
+	 */
+	EAttribute getIBeXFeatureConfig_CountRequired();
 
 	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternSet <em>IBe XPattern Set</em>}'.
@@ -1292,17 +1388,6 @@ public interface IBeXCoreModelPackage extends EPackage {
 	EClass getIBeXPattern();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern#isCountRequired <em>Count Required</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Count Required</em>'.
-	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern#isCountRequired()
-	 * @see #getIBeXPattern()
-	 * @generated
-	 */
-	EAttribute getIBeXPattern_CountRequired();
-
-	/**
 	 * Returns the meta object for the reference list '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern#getDependencies <em>Dependencies</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1367,6 +1452,17 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getIBeXPattern_InjectivityConstraints();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern#getInvocations <em>Invocations</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Invocations</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern#getInvocations()
+	 * @see #getIBeXPattern()
+	 * @generated
+	 */
+	EReference getIBeXPattern_Invocations();
 
 	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXInjectivityConstraint <em>IBe XInjectivity Constraint</em>}'.
@@ -1659,6 +1755,28 @@ public interface IBeXCoreModelPackage extends EPackage {
 	EReference getIBeXRule_AttributeAssignments();
 
 	/**
+	 * Returns the meta object for the reference list '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRule#getAllNodes <em>All Nodes</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference list '<em>All Nodes</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRule#getAllNodes()
+	 * @see #getIBeXRule()
+	 * @generated
+	 */
+	EReference getIBeXRule_AllNodes();
+
+	/**
+	 * Returns the meta object for the reference list '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRule#getAllEdges <em>All Edges</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference list '<em>All Edges</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRule#getAllEdges()
+	 * @see #getIBeXRule()
+	 * @generated
+	 */
+	EReference getIBeXRule_AllEdges();
+
+	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta <em>IBe XRule Delta</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1809,6 +1927,32 @@ public interface IBeXCoreModelPackage extends EPackage {
 		EReference IBE_XMODEL__EDGE_SET = eINSTANCE.getIBeXModel_EdgeSet();
 
 		/**
+		 * The meta object literal for the '<em><b>Feature Config</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XMODEL__FEATURE_CONFIG = eINSTANCE.getIBeXModel_FeatureConfig();
+
+		/**
+		 * The meta object literal for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXFeatureConfigImpl <em>IBe XFeature Config</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXFeatureConfigImpl
+		 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXFeatureConfig()
+		 * @generated
+		 */
+		EClass IBE_XFEATURE_CONFIG = eINSTANCE.getIBeXFeatureConfig();
+
+		/**
+		 * The meta object literal for the '<em><b>Count Required</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute IBE_XFEATURE_CONFIG__COUNT_REQUIRED = eINSTANCE.getIBeXFeatureConfig_CountRequired();
+
+		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXPatternSetImpl <em>IBe XPattern Set</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -1941,14 +2085,6 @@ public interface IBeXCoreModelPackage extends EPackage {
 		EClass IBE_XPATTERN = eINSTANCE.getIBeXPattern();
 
 		/**
-		 * The meta object literal for the '<em><b>Count Required</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute IBE_XPATTERN__COUNT_REQUIRED = eINSTANCE.getIBeXPattern_CountRequired();
-
-		/**
 		 * The meta object literal for the '<em><b>Dependencies</b></em>' reference list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -1995,6 +2131,14 @@ public interface IBeXCoreModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference IBE_XPATTERN__INJECTIVITY_CONSTRAINTS = eINSTANCE.getIBeXPattern_InjectivityConstraints();
+
+		/**
+		 * The meta object literal for the '<em><b>Invocations</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XPATTERN__INVOCATIONS = eINSTANCE.getIBeXPattern_Invocations();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXInjectivityConstraintImpl <em>IBe XInjectivity Constraint</em>}' class.
@@ -2229,6 +2373,22 @@ public interface IBeXCoreModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference IBE_XRULE__ATTRIBUTE_ASSIGNMENTS = eINSTANCE.getIBeXRule_AttributeAssignments();
+
+		/**
+		 * The meta object literal for the '<em><b>All Nodes</b></em>' reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XRULE__ALL_NODES = eINSTANCE.getIBeXRule_AllNodes();
+
+		/**
+		 * The meta object literal for the '<em><b>All Edges</b></em>' reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XRULE__ALL_EDGES = eINSTANCE.getIBeXRule_AllEdges();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXRuleDeltaImpl <em>IBe XRule Delta</em>}' class.

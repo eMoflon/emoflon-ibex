@@ -12,6 +12,12 @@
         eType="#//IBeXNodeSet" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="edgeSet" lowerBound="1"
         eType="#//IBeXEdgeSet" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="featureConfig" lowerBound="1"
+        eType="#//IBeXFeatureConfig"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXFeatureConfig">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="countRequired" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
+        defaultValueLiteral="false"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBeXPatternSet">
     <eStructuralFeatures xsi:type="ecore:EReference" name="patterns" upperBound="-1"
@@ -40,8 +46,6 @@
         eOpposite="#//IBeXNode/incomingEdges"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBeXPattern" eSuperTypes="#//IBeXNamedElement">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="countRequired" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
-        defaultValueLiteral="false"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="dependencies" upperBound="-1"
         eType="#//IBeXPattern"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="signatureNodes" upperBound="-1"
@@ -54,6 +58,8 @@
         eType="#//IBeXCoreArithmetic/RelationalExpression" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="injectivityConstraints"
         upperBound="-1" eType="#//IBeXInjectivityConstraint" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="invocations" upperBound="-1"
+        eType="#//IBeXPatternInvocation" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBeXInjectivityConstraint">
     <eStructuralFeatures xsi:type="ecore:EReference" name="nodes" lowerBound="2" upperBound="2"
@@ -100,6 +106,10 @@
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="attributeAssignments" upperBound="-1"
         eType="#//IBeXAttributeAssignment" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="allNodes" upperBound="-1"
+        eType="#//IBeXNode"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="allEdges" upperBound="-1"
+        eType="#//IBeXEdge"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBeXRuleDelta">
     <eStructuralFeatures xsi:type="ecore:EReference" name="nodes" upperBound="-1"

@@ -15,10 +15,13 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
+import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeAssignment;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRule;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta;
@@ -36,6 +39,8 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta;
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXRuleImpl#getCreation <em>Creation</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXRuleImpl#getDeletion <em>Deletion</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXRuleImpl#getAttributeAssignments <em>Attribute Assignments</em>}</li>
+ *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXRuleImpl#getAllNodes <em>All Nodes</em>}</li>
+ *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXRuleImpl#getAllEdges <em>All Edges</em>}</li>
  * </ul>
  *
  * @generated
@@ -90,6 +95,26 @@ public class IBeXRuleImpl extends IBeXNamedElementImpl implements IBeXRule {
 	 * @ordered
 	 */
 	protected EList<IBeXAttributeAssignment> attributeAssignments;
+
+	/**
+	 * The cached value of the '{@link #getAllNodes() <em>All Nodes</em>}' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getAllNodes()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<IBeXNode> allNodes;
+
+	/**
+	 * The cached value of the '{@link #getAllEdges() <em>All Edges</em>}' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getAllEdges()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<IBeXEdge> allEdges;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -318,6 +343,32 @@ public class IBeXRuleImpl extends IBeXNamedElementImpl implements IBeXRule {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EList<IBeXNode> getAllNodes() {
+		if (allNodes == null) {
+			allNodes = new EObjectResolvingEList<IBeXNode>(IBeXNode.class, this,
+					IBeXCoreModelPackage.IBE_XRULE__ALL_NODES);
+		}
+		return allNodes;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EList<IBeXEdge> getAllEdges() {
+		if (allEdges == null) {
+			allEdges = new EObjectResolvingEList<IBeXEdge>(IBeXEdge.class, this,
+					IBeXCoreModelPackage.IBE_XRULE__ALL_EDGES);
+		}
+		return allEdges;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
@@ -353,6 +404,10 @@ public class IBeXRuleImpl extends IBeXNamedElementImpl implements IBeXRule {
 			return getDeletion();
 		case IBeXCoreModelPackage.IBE_XRULE__ATTRIBUTE_ASSIGNMENTS:
 			return getAttributeAssignments();
+		case IBeXCoreModelPackage.IBE_XRULE__ALL_NODES:
+			return getAllNodes();
+		case IBeXCoreModelPackage.IBE_XRULE__ALL_EDGES:
+			return getAllEdges();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -382,6 +437,14 @@ public class IBeXRuleImpl extends IBeXNamedElementImpl implements IBeXRule {
 			getAttributeAssignments().clear();
 			getAttributeAssignments().addAll((Collection<? extends IBeXAttributeAssignment>) newValue);
 			return;
+		case IBeXCoreModelPackage.IBE_XRULE__ALL_NODES:
+			getAllNodes().clear();
+			getAllNodes().addAll((Collection<? extends IBeXNode>) newValue);
+			return;
+		case IBeXCoreModelPackage.IBE_XRULE__ALL_EDGES:
+			getAllEdges().clear();
+			getAllEdges().addAll((Collection<? extends IBeXEdge>) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -409,6 +472,12 @@ public class IBeXRuleImpl extends IBeXNamedElementImpl implements IBeXRule {
 		case IBeXCoreModelPackage.IBE_XRULE__ATTRIBUTE_ASSIGNMENTS:
 			getAttributeAssignments().clear();
 			return;
+		case IBeXCoreModelPackage.IBE_XRULE__ALL_NODES:
+			getAllNodes().clear();
+			return;
+		case IBeXCoreModelPackage.IBE_XRULE__ALL_EDGES:
+			getAllEdges().clear();
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -431,6 +500,10 @@ public class IBeXRuleImpl extends IBeXNamedElementImpl implements IBeXRule {
 			return deletion != null;
 		case IBeXCoreModelPackage.IBE_XRULE__ATTRIBUTE_ASSIGNMENTS:
 			return attributeAssignments != null && !attributeAssignments.isEmpty();
+		case IBeXCoreModelPackage.IBE_XRULE__ALL_NODES:
+			return allNodes != null && !allNodes.isEmpty();
+		case IBeXCoreModelPackage.IBE_XRULE__ALL_EDGES:
+			return allEdges != null && !allEdges.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

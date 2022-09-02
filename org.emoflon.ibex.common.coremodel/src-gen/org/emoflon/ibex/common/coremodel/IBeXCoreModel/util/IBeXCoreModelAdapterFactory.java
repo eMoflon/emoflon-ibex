@@ -83,6 +83,11 @@ public class IBeXCoreModelAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
+		public Adapter caseIBeXFeatureConfig(IBeXFeatureConfig object) {
+			return createIBeXFeatureConfigAdapter();
+		}
+
+		@Override
 		public Adapter caseIBeXPatternSet(IBeXPatternSet object) {
 			return createIBeXPatternSetAdapter();
 		}
@@ -226,6 +231,20 @@ public class IBeXCoreModelAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createIBeXModelAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXFeatureConfig <em>IBe XFeature Config</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXFeatureConfig
+	 * @generated
+	 */
+	public Adapter createIBeXFeatureConfigAdapter() {
 		return null;
 	}
 

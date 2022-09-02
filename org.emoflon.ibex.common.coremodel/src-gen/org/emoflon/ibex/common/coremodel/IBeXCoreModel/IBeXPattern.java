@@ -15,13 +15,13 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.Relati
  * The following features are supported:
  * </p>
  * <ul>
- *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern#isCountRequired <em>Count Required</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern#getDependencies <em>Dependencies</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern#getSignatureNodes <em>Signature Nodes</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern#getLocalNodes <em>Local Nodes</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern#getEdges <em>Edges</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern#getAttributeConstraints <em>Attribute Constraints</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern#getInjectivityConstraints <em>Injectivity Constraints</em>}</li>
+ *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern#getInvocations <em>Invocations</em>}</li>
  * </ul>
  *
  * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage#getIBeXPattern()
@@ -29,29 +29,6 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.Relati
  * @generated
  */
 public interface IBeXPattern extends IBeXNamedElement {
-	/**
-	 * Returns the value of the '<em><b>Count Required</b></em>' attribute.
-	 * The default value is <code>"false"</code>.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Count Required</em>' attribute.
-	 * @see #setCountRequired(boolean)
-	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage#getIBeXPattern_CountRequired()
-	 * @model default="false"
-	 * @generated
-	 */
-	boolean isCountRequired();
-
-	/**
-	 * Sets the value of the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern#isCountRequired <em>Count Required</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Count Required</em>' attribute.
-	 * @see #isCountRequired()
-	 * @generated
-	 */
-	void setCountRequired(boolean value);
-
 	/**
 	 * Returns the value of the '<em><b>Dependencies</b></em>' reference list.
 	 * The list contents are of type {@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern}.
@@ -123,5 +100,17 @@ public interface IBeXPattern extends IBeXNamedElement {
 	 * @generated
 	 */
 	EList<IBeXInjectivityConstraint> getInjectivityConstraints();
+
+	/**
+	 * Returns the value of the '<em><b>Invocations</b></em>' containment reference list.
+	 * The list contents are of type {@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternInvocation}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Invocations</em>' containment reference list.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage#getIBeXPattern_Invocations()
+	 * @model containment="true"
+	 * @generated
+	 */
+	EList<IBeXPatternInvocation> getInvocations();
 
 } // IBeXPattern
