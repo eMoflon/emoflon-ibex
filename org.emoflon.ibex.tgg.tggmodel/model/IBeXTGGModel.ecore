@@ -8,6 +8,10 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="target" upperBound="-1"
         eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EPackage"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="correspondence" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EPackage"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="ruleSet" lowerBound="1"
+        eType="#//TGGRuleSet" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="TGGRuleSet">
     <eStructuralFeatures xsi:type="ecore:EReference" name="rules" upperBound="-1"
         eType="#//TGGRule" containment="true"/>
   </eClassifiers>
@@ -87,5 +91,11 @@
         eType="#//TGGAttributeConstraintBinding" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="genBindings" upperBound="-1"
         eType="#//TGGAttributeConstraintBinding" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="TGGCSP" eSuperTypes="../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXNamedElement">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="package" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="values" upperBound="-1"
+        eType="ecore:EClass ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXCoreArithmetic/ValueExpression"
+        containment="true"/>
   </eClassifiers>
 </ecore:EPackage>

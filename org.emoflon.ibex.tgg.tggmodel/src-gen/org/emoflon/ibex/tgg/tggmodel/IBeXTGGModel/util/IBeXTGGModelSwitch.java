@@ -83,6 +83,13 @@ public class IBeXTGGModelSwitch<T> extends Switch<T> {
 				result = defaultCase(theEObject);
 			return result;
 		}
+		case IBeXTGGModelPackage.TGG_RULE_SET: {
+			TGGRuleSet tggRuleSet = (TGGRuleSet) theEObject;
+			T result = caseTGGRuleSet(tggRuleSet);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
 		case IBeXTGGModelPackage.TGG_RULE: {
 			TGGRule tggRule = (TGGRule) theEObject;
 			T result = caseTGGRule(tggRule);
@@ -193,6 +200,15 @@ public class IBeXTGGModelSwitch<T> extends Switch<T> {
 				result = defaultCase(theEObject);
 			return result;
 		}
+		case IBeXTGGModelPackage.TGGCSP: {
+			TGGCSP tggcsp = (TGGCSP) theEObject;
+			T result = caseTGGCSP(tggcsp);
+			if (result == null)
+				result = caseIBeXNamedElement(tggcsp);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
 		default:
 			return defaultCase(theEObject);
 		}
@@ -210,6 +226,21 @@ public class IBeXTGGModelSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseTGGModel(TGGModel object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>TGG Rule Set</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>TGG Rule Set</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseTGGRuleSet(TGGRuleSet object) {
 		return null;
 	}
 
@@ -390,6 +421,21 @@ public class IBeXTGGModelSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseTGGAttributeConstraintDefinition(TGGAttributeConstraintDefinition object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>TGGCSP</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>TGGCSP</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseTGGCSP(TGGCSP object) {
 		return null;
 	}
 

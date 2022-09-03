@@ -20,7 +20,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel;
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel#getSource <em>Source</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel#getTarget <em>Target</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel#getCorrespondence <em>Correspondence</em>}</li>
- *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel#getRules <em>Rules</em>}</li>
+ *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel#getRuleSet <em>Rule Set</em>}</li>
  * </ul>
  *
  * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage#getTGGModel()
@@ -75,15 +75,25 @@ public interface TGGModel extends IBeXModel {
 	void setCorrespondence(EPackage value);
 
 	/**
-	 * Returns the value of the '<em><b>Rules</b></em>' containment reference list.
-	 * The list contents are of type {@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule}.
+	 * Returns the value of the '<em><b>Rule Set</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Rules</em>' containment reference list.
-	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage#getTGGModel_Rules()
-	 * @model containment="true"
+	 * @return the value of the '<em>Rule Set</em>' containment reference.
+	 * @see #setRuleSet(TGGRuleSet)
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage#getTGGModel_RuleSet()
+	 * @model containment="true" required="true"
 	 * @generated
 	 */
-	EList<TGGRule> getRules();
+	TGGRuleSet getRuleSet();
+
+	/**
+	 * Sets the value of the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel#getRuleSet <em>Rule Set</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Rule Set</em>' containment reference.
+	 * @see #getRuleSet()
+	 * @generated
+	 */
+	void setRuleSet(TGGRuleSet value);
 
 } // TGGModel

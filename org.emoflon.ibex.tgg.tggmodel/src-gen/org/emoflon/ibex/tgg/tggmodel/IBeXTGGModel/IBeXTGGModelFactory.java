@@ -31,6 +31,15 @@ public interface IBeXTGGModelFactory extends EFactory {
 	TGGModel createTGGModel();
 
 	/**
+	 * Returns a new object of class '<em>TGG Rule Set</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>TGG Rule Set</em>'.
+	 * @generated
+	 */
+	TGGRuleSet createTGGRuleSet();
+
+	/**
 	 * Returns a new object of class '<em>TGG Rule</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -128,6 +137,15 @@ public interface IBeXTGGModelFactory extends EFactory {
 	 * @generated
 	 */
 	TGGAttributeConstraintDefinition createTGGAttributeConstraintDefinition();
+
+	/**
+	 * Returns a new object of class '<em>TGGCSP</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>TGGCSP</em>'.
+	 * @generated
+	 */
+	TGGCSP createTGGCSP();
 
 	/**
 	 * Returns the package supported by this factory.

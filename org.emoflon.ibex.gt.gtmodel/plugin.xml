@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+-->
+
+<plugin>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated IBeXGTModel -->
+      <package
+            uri="platform:/resource/org.emoflon.ibex.gt.gtmodel/model/IBeXGTModel.ecore"
+            class="org.emoflon.ibex.gt.gtmodel.IBeXGTModel.IBeXGTModelPackage"
+            genModel="model/IBeXGTModel.genmodel"/>
+   </extension>
+
+</plugin>

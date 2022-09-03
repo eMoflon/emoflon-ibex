@@ -14,16 +14,12 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-
-import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EObjectResolvingEList;
-import org.eclipse.emf.ecore.util.InternalEList;
-
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXModelImpl;
 
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleSet;
 
 /**
  * <!-- begin-user-doc -->
@@ -36,7 +32,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGModelImpl#getSource <em>Source</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGModelImpl#getTarget <em>Target</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGModelImpl#getCorrespondence <em>Correspondence</em>}</li>
- *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGModelImpl#getRules <em>Rules</em>}</li>
+ *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGModelImpl#getRuleSet <em>Rule Set</em>}</li>
  * </ul>
  *
  * @generated
@@ -73,14 +69,14 @@ public class TGGModelImpl extends IBeXModelImpl implements TGGModel {
 	protected EPackage correspondence;
 
 	/**
-	 * The cached value of the '{@link #getRules() <em>Rules</em>}' containment reference list.
+	 * The cached value of the '{@link #getRuleSet() <em>Rule Set</em>}' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getRules()
+	 * @see #getRuleSet()
 	 * @generated
 	 * @ordered
 	 */
-	protected EList<TGGRule> rules;
+	protected TGGRuleSet ruleSet;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -170,11 +166,49 @@ public class TGGModelImpl extends IBeXModelImpl implements TGGModel {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EList<TGGRule> getRules() {
-		if (rules == null) {
-			rules = new EObjectContainmentEList<TGGRule>(TGGRule.class, this, IBeXTGGModelPackage.TGG_MODEL__RULES);
+	public TGGRuleSet getRuleSet() {
+		return ruleSet;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public NotificationChain basicSetRuleSet(TGGRuleSet newRuleSet, NotificationChain msgs) {
+		TGGRuleSet oldRuleSet = ruleSet;
+		ruleSet = newRuleSet;
+		if (eNotificationRequired()) {
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
+					IBeXTGGModelPackage.TGG_MODEL__RULE_SET, oldRuleSet, newRuleSet);
+			if (msgs == null)
+				msgs = notification;
+			else
+				msgs.add(notification);
 		}
-		return rules;
+		return msgs;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setRuleSet(TGGRuleSet newRuleSet) {
+		if (newRuleSet != ruleSet) {
+			NotificationChain msgs = null;
+			if (ruleSet != null)
+				msgs = ((InternalEObject) ruleSet).eInverseRemove(this,
+						EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_MODEL__RULE_SET, null, msgs);
+			if (newRuleSet != null)
+				msgs = ((InternalEObject) newRuleSet).eInverseAdd(this,
+						EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_MODEL__RULE_SET, null, msgs);
+			msgs = basicSetRuleSet(newRuleSet, msgs);
+			if (msgs != null)
+				msgs.dispatch();
+		} else if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_MODEL__RULE_SET, newRuleSet,
+					newRuleSet));
 	}
 
 	/**
@@ -185,8 +219,8 @@ public class TGGModelImpl extends IBeXModelImpl implements TGGModel {
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-		case IBeXTGGModelPackage.TGG_MODEL__RULES:
-			return ((InternalEList<?>) getRules()).basicRemove(otherEnd, msgs);
+		case IBeXTGGModelPackage.TGG_MODEL__RULE_SET:
+			return basicSetRuleSet(null, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -207,8 +241,8 @@ public class TGGModelImpl extends IBeXModelImpl implements TGGModel {
 			if (resolve)
 				return getCorrespondence();
 			return basicGetCorrespondence();
-		case IBeXTGGModelPackage.TGG_MODEL__RULES:
-			return getRules();
+		case IBeXTGGModelPackage.TGG_MODEL__RULE_SET:
+			return getRuleSet();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -233,9 +267,8 @@ public class TGGModelImpl extends IBeXModelImpl implements TGGModel {
 		case IBeXTGGModelPackage.TGG_MODEL__CORRESPONDENCE:
 			setCorrespondence((EPackage) newValue);
 			return;
-		case IBeXTGGModelPackage.TGG_MODEL__RULES:
-			getRules().clear();
-			getRules().addAll((Collection<? extends TGGRule>) newValue);
+		case IBeXTGGModelPackage.TGG_MODEL__RULE_SET:
+			setRuleSet((TGGRuleSet) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -258,8 +291,8 @@ public class TGGModelImpl extends IBeXModelImpl implements TGGModel {
 		case IBeXTGGModelPackage.TGG_MODEL__CORRESPONDENCE:
 			setCorrespondence((EPackage) null);
 			return;
-		case IBeXTGGModelPackage.TGG_MODEL__RULES:
-			getRules().clear();
+		case IBeXTGGModelPackage.TGG_MODEL__RULE_SET:
+			setRuleSet((TGGRuleSet) null);
 			return;
 		}
 		super.eUnset(featureID);
@@ -279,8 +312,8 @@ public class TGGModelImpl extends IBeXModelImpl implements TGGModel {
 			return target != null && !target.isEmpty();
 		case IBeXTGGModelPackage.TGG_MODEL__CORRESPONDENCE:
 			return correspondence != null;
-		case IBeXTGGModelPackage.TGG_MODEL__RULES:
-			return rules != null && !rules.isEmpty();
+		case IBeXTGGModelPackage.TGG_MODEL__RULE_SET:
+			return ruleSet != null;
 		}
 		return super.eIsSet(featureID);
 	}

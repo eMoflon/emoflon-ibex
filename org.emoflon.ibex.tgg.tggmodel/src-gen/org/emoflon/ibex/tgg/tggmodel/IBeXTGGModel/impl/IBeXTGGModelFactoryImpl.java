@@ -59,6 +59,8 @@ public class IBeXTGGModelFactoryImpl extends EFactoryImpl implements IBeXTGGMode
 		switch (eClass.getClassifierID()) {
 		case IBeXTGGModelPackage.TGG_MODEL:
 			return createTGGModel();
+		case IBeXTGGModelPackage.TGG_RULE_SET:
+			return createTGGRuleSet();
 		case IBeXTGGModelPackage.TGG_RULE:
 			return createTGGRule();
 		case IBeXTGGModelPackage.TGG_NODE:
@@ -81,6 +83,8 @@ public class IBeXTGGModelFactoryImpl extends EFactoryImpl implements IBeXTGGMode
 			return createTGGAttributeConstraintBinding();
 		case IBeXTGGModelPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION:
 			return createTGGAttributeConstraintDefinition();
+		case IBeXTGGModelPackage.TGGCSP:
+			return createTGGCSP();
 		default:
 			throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -128,6 +132,16 @@ public class IBeXTGGModelFactoryImpl extends EFactoryImpl implements IBeXTGGMode
 	public TGGModel createTGGModel() {
 		TGGModelImpl tggModel = new TGGModelImpl();
 		return tggModel;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public TGGRuleSet createTGGRuleSet() {
+		TGGRuleSetImpl tggRuleSet = new TGGRuleSetImpl();
+		return tggRuleSet;
 	}
 
 	/**
@@ -238,6 +252,16 @@ public class IBeXTGGModelFactoryImpl extends EFactoryImpl implements IBeXTGGMode
 	public TGGAttributeConstraintDefinition createTGGAttributeConstraintDefinition() {
 		TGGAttributeConstraintDefinitionImpl tggAttributeConstraintDefinition = new TGGAttributeConstraintDefinitionImpl();
 		return tggAttributeConstraintDefinition;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public TGGCSP createTGGCSP() {
+		TGGCSPImpl tggcsp = new TGGCSPImpl();
+		return tggcsp;
 	}
 
 	/**

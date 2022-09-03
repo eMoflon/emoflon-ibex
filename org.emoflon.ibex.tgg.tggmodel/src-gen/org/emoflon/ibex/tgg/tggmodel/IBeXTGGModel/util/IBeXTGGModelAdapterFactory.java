@@ -78,6 +78,11 @@ public class IBeXTGGModelAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
+		public Adapter caseTGGRuleSet(TGGRuleSet object) {
+			return createTGGRuleSetAdapter();
+		}
+
+		@Override
 		public Adapter caseTGGRule(TGGRule object) {
 			return createTGGRuleAdapter();
 		}
@@ -138,6 +143,11 @@ public class IBeXTGGModelAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
+		public Adapter caseTGGCSP(TGGCSP object) {
+			return createTGGCSPAdapter();
+		}
+
+		@Override
 		public Adapter caseIBeXNamedElement(IBeXNamedElement object) {
 			return createIBeXNamedElementAdapter();
 		}
@@ -192,6 +202,20 @@ public class IBeXTGGModelAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createTGGModelAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleSet <em>TGG Rule Set</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleSet
+	 * @generated
+	 */
+	public Adapter createTGGRuleSetAdapter() {
 		return null;
 	}
 
@@ -360,6 +384,20 @@ public class IBeXTGGModelAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createTGGAttributeConstraintDefinitionAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCSP <em>TGGCSP</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCSP
+	 * @generated
+	 */
+	public Adapter createTGGCSPAdapter() {
 		return null;
 	}
 
