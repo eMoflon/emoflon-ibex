@@ -12,13 +12,14 @@ This repository contains only the part which is independent from a concrete patt
 - [eMoflon::IBeX HiPE](https://github.com/eMoflon/emoflon-ibex-hipe)
 	uses eMoflon::IBeX with our new HiPE parallel pattern matching engine.
 
-There are 3 ways how to use eMoflon::IBeX:
-1. Use our [pre-built Eclipse download](#pre-build-eclipse) with eMoflon::IBeX installed (or the version without eMoflon::IBeX to develop it).
+There are 4 ways how to use eMoflon::IBeX:
+1. Use our [pre-built Eclipse download](#pre-built-eclipse) with eMoflon::IBeX installed (or the version without eMoflon::IBeX to develop it).
+1. Use our [pre-built virtual machine (VM)](#pre-built-virtual-machine-vm) with eMoflon::IBeX installed.
 1. Prepare your Eclipse environment step-by-step with the section [how to develop](#how-to-develop).
 1. [Install eMoflon::IBeX](#how-to-install) into your existing Eclipse installation.
 
 
-## Pre-build Eclipse
+## Pre-built Eclipse
 
 1. Install [GraphViz](http://www.graphviz.org/download/).
 1. Choose the right pre-built Eclipse version for your need. A comparisson table can be found in the [readme of the emoflon-eclipse-build repository](https://github.com/eMoflon/emoflon-eclipse-build). Typically, you want to download:
@@ -36,6 +37,12 @@ You can now create eMoflon projects and/or start using it with existing projects
 
 Some additional steps are needed:
 Complete steps 9, 10, 12-15 from [the next section](#how-to-develop) to clone the code and verify your build.
+
+
+## Pre-built virtual machine (VM)
+
+You can download the latest version of our pre-built virtual machine image from the [release section](https://github.com/eMoflon/emoflon-vm/releases).
+For detailed installation instructions, please refer to the [README.md file](https://github.com/eMoflon/emoflon-vm#usageinstallation) within the repository.
 
 
 ## How to develop
