@@ -27,29 +27,26 @@ import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.XMIResource;
 import org.eclipse.emf.ecore.xmi.XMLResource;
-import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.impl.URIHandlerImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.resource.XtextResourceSet;
-import org.emoflon.ibex.tgg.builder.TGGBuildUtil;
-import org.emoflon.ibex.tgg.builder.TGGBuilderExtension;
-import org.emoflon.ibex.tgg.ide.transformation.EditorTGGtoFlattenedTGG;
+import org.emoflon.ibex.tgg.editor.builder.TGGBuildUtil;
+import org.emoflon.ibex.tgg.editor.builder.TGGBuilderExtension;
+import org.emoflon.ibex.tgg.editor.ide.transformation.EditorTGGtoFlattenedTGG;
+import org.emoflon.ibex.tgg.editor.tgg.AttrCond;
+import org.emoflon.ibex.tgg.editor.tgg.AttrCondDef;
+import org.emoflon.ibex.tgg.editor.tgg.Rule;
+import org.emoflon.ibex.tgg.editor.tgg.TripleGraphGrammarFile;
 import org.moflon.core.plugins.manifest.ManifestFileUpdater;
 import org.moflon.core.utilities.ExtensionsUtil;
 import org.moflon.core.utilities.MoflonUtil;
-import org.moflon.tgg.mosl.tgg.AttrCond;
-import org.moflon.tgg.mosl.tgg.AttrCondDef;
-import org.moflon.tgg.mosl.tgg.Rule;
-import org.moflon.tgg.mosl.tgg.TripleGraphGrammarFile;
 
-public class TGGPackageBuilder implements TGGBuilderExtension{
+public class TGGPackageBuilder implements TGGBuilderExtension {
 	
 	private IProject project;
 
@@ -309,7 +306,7 @@ public class TGGPackageBuilder implements TGGBuilderExtension{
 	
 	private void generateAttrCondLib() {
 		try {
-			org.moflon.tgg.mosl.defaults.AttrCondDefLibraryProvider.syncAttrCondDefLibrary(project);
+			org.emoflon.ibex.tgg.editor.defaults.AttrCondDefLibraryProvider.syncAttrCondDefLibrary(project);
 		} catch (CoreException | IOException e) {
 			logError(e);
 		}

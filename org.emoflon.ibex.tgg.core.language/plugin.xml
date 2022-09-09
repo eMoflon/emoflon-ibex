@@ -9,7 +9,7 @@
     <package class="language.repair.RepairPackage" genModel="model/Language.genmodel" uri="platform:/plugin/org.emoflon.ibex.tgg.language/model/Language.ecore#/repair"/>
   </extension>
   <extension
-        point="org.emoflon.ibex.tgg.ide.TGGBuilderExtension">
+        point="org.emoflon.ibex.tgg.editor.TGGBuilderExtension">
      <builder_extension
            class="org.emoflon.ibex.tgg.codegen.TGGPackageBuilder">
      </builder_extension>
