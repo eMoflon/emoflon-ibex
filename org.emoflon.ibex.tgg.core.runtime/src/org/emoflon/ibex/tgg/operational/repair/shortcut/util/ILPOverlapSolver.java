@@ -74,8 +74,8 @@ public class ILPOverlapSolver {
 		nodeCdt2id.put(cdt, idCounter);
 		id2nodeCdt.put(idCounter, cdt);
 		idCounter++;
-		addNode2CdtMapping(cdt.originalNode, cdt);
-		addNode2CdtMapping(cdt.replacingNode, cdt);
+		addNode2CdtMapping(cdt.originalNode(), cdt);
+		addNode2CdtMapping(cdt.replacingNode(), cdt);
 	}
 
 	private void addNode2CdtMapping(TGGRuleNode node, NodeCandidate cdt) {
@@ -85,19 +85,19 @@ public class ILPOverlapSolver {
 	}
 
 	private void registerEdgeCdt(EdgeCandidate cdt) {
-		if (!node2cdts.containsKey(cdt.originalEdge.getSrcNode()))
+		if (!node2cdts.containsKey(cdt.originalEdge().getSrcNode()))
 			return;
-		if (!node2cdts.containsKey(cdt.originalEdge.getTrgNode()))
+		if (!node2cdts.containsKey(cdt.originalEdge().getTrgNode()))
 			return;
-		if (!node2cdts.containsKey(cdt.replacingEdge.getSrcNode()))
+		if (!node2cdts.containsKey(cdt.replacingEdge().getSrcNode()))
 			return;
-		if (!node2cdts.containsKey(cdt.replacingEdge.getTrgNode()))
+		if (!node2cdts.containsKey(cdt.replacingEdge().getTrgNode()))
 			return;
 		edgeCdt2id.put(cdt, idCounter);
 		id2edgeCdt.put(idCounter, cdt);
 		idCounter++;
-		addEdge2CdtMapping(cdt.originalEdge, cdt);
-		addEdge2CdtMapping(cdt.replacingEdge, cdt);
+		addEdge2CdtMapping(cdt.originalEdge(), cdt);
+		addEdge2CdtMapping(cdt.replacingEdge(), cdt);
 	}
 
 	private void addEdge2CdtMapping(TGGRuleEdge edge, EdgeCandidate cdt) {

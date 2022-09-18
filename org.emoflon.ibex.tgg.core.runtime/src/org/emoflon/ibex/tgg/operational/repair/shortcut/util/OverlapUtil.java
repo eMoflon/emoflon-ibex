@@ -352,23 +352,31 @@ public class OverlapUtil {
 		void add(BinaryILPProblem ilpProblem, int nameCounter, Map<TGGRuleNode, Set<Integer>> node2cdts);
 	}
 
-	class NodeCandidate {
-		public TGGRuleNode originalNode;
-		public TGGRuleNode replacingNode;
-
-		public NodeCandidate(TGGRuleNode originalNode, TGGRuleNode replacingNode) {
-			this.originalNode = originalNode;
-			this.replacingNode = replacingNode;
+	record NodeCandidate(TGGRuleNode originalNode, TGGRuleNode replacingNode) {
+		@Override
+		public String toString() {
+			StringBuilder b = new StringBuilder();
+			b.append("NodeCandidate [\n");
+			b.append("  originalNode:  ");
+			b.append(originalNode);
+			b.append("\n  replacingNode: ");
+			b.append(replacingNode);
+			b.append("\n]");
+			return b.toString();
 		}
 	}
 
-	class EdgeCandidate {
-		public TGGRuleEdge originalEdge;
-		public TGGRuleEdge replacingEdge;
-
-		public EdgeCandidate(TGGRuleEdge originalEdge, TGGRuleEdge replacingEdge) {
-			this.originalEdge = originalEdge;
-			this.replacingEdge = replacingEdge;
+	record EdgeCandidate(TGGRuleEdge originalEdge, TGGRuleEdge replacingEdge) {
+		@Override
+		public String toString() {
+			StringBuilder b = new StringBuilder();
+			b.append("EdgeCandidate [\n");
+			b.append("  originalEdge:  ");
+			b.append(originalEdge);
+			b.append("\n  replacingEdge: ");
+			b.append(replacingEdge);
+			b.append("\n]");
+			return b.toString();
 		}
 	}
 
