@@ -12,6 +12,8 @@
   <genPackages prefix="IBeXGTModel" basePackage="org.emoflon.ibex.gt.gtmodel" disposableProviderFactory="true"
       ecorePackage="IBeXGTModel.ecore#/">
     <genClasses ecoreClass="IBeXGTModel.ecore#//GTModel">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXGTModel.ecore#//GTModel/package"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXGTModel.ecore#//GTModel/project"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTModel/ruleSet"/>
     </genClasses>
     <genClasses ecoreClass="IBeXGTModel.ecore#//GTRuleSet">
@@ -34,6 +36,10 @@
     </genClasses>
     <genClasses ecoreClass="IBeXGTModel.ecore#//GTParameterValue">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTParameterValue/parameter"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXGTModel.ecore#//GTWatchDog">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTWatchDog/node"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTWatchDog/attribute"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>

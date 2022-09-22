@@ -14,6 +14,12 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.Arithm
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ArithmeticValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BinaryExpression;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BinaryOperator;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanBinaryExpression;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanBinaryOperator;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanExpression;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanUnaryExpression;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanUnaryOperator;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.DoubleLiteral;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.IBeXCoreArithmeticFactory;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.IBeXCoreArithmeticPackage;
@@ -89,6 +95,34 @@ public class IBeXCoreArithmeticPackageImpl extends EPackageImpl implements IBeXC
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	private EClass booleanExpressionEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass booleanBinaryExpressionEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass booleanUnaryExpressionEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass booleanValueEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	private EClass relationalExpressionEClass = null;
 
 	/**
@@ -104,6 +138,20 @@ public class IBeXCoreArithmeticPackageImpl extends EPackageImpl implements IBeXC
 	 * @generated
 	 */
 	private EEnum unaryOperatorEEnum = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EEnum booleanBinaryOperatorEEnum = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EEnum booleanUnaryOperatorEEnum = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -325,6 +373,87 @@ public class IBeXCoreArithmeticPackageImpl extends EPackageImpl implements IBeXC
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getBooleanExpression() {
+		return booleanExpressionEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getBooleanBinaryExpression() {
+		return booleanBinaryExpressionEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getBooleanBinaryExpression_Lhs() {
+		return (EReference) booleanBinaryExpressionEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getBooleanBinaryExpression_Rhs() {
+		return (EReference) booleanBinaryExpressionEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getBooleanBinaryExpression_Operator() {
+		return (EAttribute) booleanBinaryExpressionEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getBooleanUnaryExpression() {
+		return booleanUnaryExpressionEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getBooleanUnaryExpression_Operand() {
+		return (EReference) booleanUnaryExpressionEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getBooleanUnaryExpression_Operator() {
+		return (EAttribute) booleanUnaryExpressionEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getBooleanValue() {
+		return booleanValueEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getRelationalExpression() {
 		return relationalExpressionEClass;
 	}
@@ -372,6 +501,24 @@ public class IBeXCoreArithmeticPackageImpl extends EPackageImpl implements IBeXC
 	 */
 	public EEnum getUnaryOperator() {
 		return unaryOperatorEEnum;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EEnum getBooleanBinaryOperator() {
+		return booleanBinaryOperatorEEnum;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EEnum getBooleanUnaryOperator() {
+		return booleanUnaryOperatorEEnum;
 	}
 
 	/**
@@ -434,6 +581,19 @@ public class IBeXCoreArithmeticPackageImpl extends EPackageImpl implements IBeXC
 		integerLiteralEClass = createEClass(INTEGER_LITERAL);
 		createEAttribute(integerLiteralEClass, INTEGER_LITERAL__VALUE);
 
+		booleanExpressionEClass = createEClass(BOOLEAN_EXPRESSION);
+
+		booleanBinaryExpressionEClass = createEClass(BOOLEAN_BINARY_EXPRESSION);
+		createEReference(booleanBinaryExpressionEClass, BOOLEAN_BINARY_EXPRESSION__LHS);
+		createEReference(booleanBinaryExpressionEClass, BOOLEAN_BINARY_EXPRESSION__RHS);
+		createEAttribute(booleanBinaryExpressionEClass, BOOLEAN_BINARY_EXPRESSION__OPERATOR);
+
+		booleanUnaryExpressionEClass = createEClass(BOOLEAN_UNARY_EXPRESSION);
+		createEReference(booleanUnaryExpressionEClass, BOOLEAN_UNARY_EXPRESSION__OPERAND);
+		createEAttribute(booleanUnaryExpressionEClass, BOOLEAN_UNARY_EXPRESSION__OPERATOR);
+
+		booleanValueEClass = createEClass(BOOLEAN_VALUE);
+
 		relationalExpressionEClass = createEClass(RELATIONAL_EXPRESSION);
 		createEReference(relationalExpressionEClass, RELATIONAL_EXPRESSION__LHS);
 		createEReference(relationalExpressionEClass, RELATIONAL_EXPRESSION__RHS);
@@ -442,6 +602,8 @@ public class IBeXCoreArithmeticPackageImpl extends EPackageImpl implements IBeXC
 		// Create enums
 		binaryOperatorEEnum = createEEnum(BINARY_OPERATOR);
 		unaryOperatorEEnum = createEEnum(UNARY_OPERATOR);
+		booleanBinaryOperatorEEnum = createEEnum(BOOLEAN_BINARY_OPERATOR);
+		booleanUnaryOperatorEEnum = createEEnum(BOOLEAN_UNARY_OPERATOR);
 		relationalOperatorEEnum = createEEnum(RELATIONAL_OPERATOR);
 	}
 
@@ -480,6 +642,10 @@ public class IBeXCoreArithmeticPackageImpl extends EPackageImpl implements IBeXC
 		arithmeticValueEClass.getESuperTypes().add(this.getArithmeticExpression());
 		doubleLiteralEClass.getESuperTypes().add(this.getArithmeticValue());
 		integerLiteralEClass.getESuperTypes().add(this.getArithmeticValue());
+		booleanBinaryExpressionEClass.getESuperTypes().add(this.getBooleanExpression());
+		booleanUnaryExpressionEClass.getESuperTypes().add(this.getBooleanExpression());
+		booleanValueEClass.getESuperTypes().add(this.getBooleanExpression());
+		relationalExpressionEClass.getESuperTypes().add(this.getBooleanExpression());
 
 		// Initialize classes, features, and operations; add parameters
 		initEClass(valueExpressionEClass, ValueExpression.class, "ValueExpression", IS_ABSTRACT, !IS_INTERFACE,
@@ -525,6 +691,33 @@ public class IBeXCoreArithmeticPackageImpl extends EPackageImpl implements IBeXC
 		initEAttribute(getIntegerLiteral_Value(), ecorePackage.getEInt(), "value", null, 0, 1, IntegerLiteral.class,
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
+		initEClass(booleanExpressionEClass, BooleanExpression.class, "BooleanExpression", IS_ABSTRACT, IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+
+		initEClass(booleanBinaryExpressionEClass, BooleanBinaryExpression.class, "BooleanBinaryExpression",
+				!IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getBooleanBinaryExpression_Lhs(), this.getBooleanExpression(), null, "lhs", null, 1, 1,
+				BooleanBinaryExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
+				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getBooleanBinaryExpression_Rhs(), this.getBooleanExpression(), null, "rhs", null, 1, 1,
+				BooleanBinaryExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
+				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getBooleanBinaryExpression_Operator(), this.getBooleanBinaryOperator(), "operator", null, 0, 1,
+				BooleanBinaryExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(booleanUnaryExpressionEClass, BooleanUnaryExpression.class, "BooleanUnaryExpression", !IS_ABSTRACT,
+				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getBooleanUnaryExpression_Operand(), this.getBooleanExpression(), null, "operand", null, 1, 1,
+				BooleanUnaryExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
+				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getBooleanUnaryExpression_Operator(), this.getBooleanUnaryOperator(), "operator", null, 0, 1,
+				BooleanUnaryExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(booleanValueEClass, BooleanValue.class, "BooleanValue", IS_ABSTRACT, IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+
 		initEClass(relationalExpressionEClass, RelationalExpression.class, "RelationalExpression", !IS_ABSTRACT,
 				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getRelationalExpression_Lhs(), this.getValueExpression(), null, "lhs", null, 1, 1,
@@ -560,6 +753,16 @@ public class IBeXCoreArithmeticPackageImpl extends EPackageImpl implements IBeXC
 		addEEnumLiteral(unaryOperatorEEnum, UnaryOperator.NEGATIVE);
 		addEEnumLiteral(unaryOperatorEEnum, UnaryOperator.EXPONENTIAL_DISTRIBUTION);
 
+		initEEnum(booleanBinaryOperatorEEnum, BooleanBinaryOperator.class, "BooleanBinaryOperator");
+		addEEnumLiteral(booleanBinaryOperatorEEnum, BooleanBinaryOperator.IMPLICATION);
+		addEEnumLiteral(booleanBinaryOperatorEEnum, BooleanBinaryOperator.AND);
+		addEEnumLiteral(booleanBinaryOperatorEEnum, BooleanBinaryOperator.OR);
+		addEEnumLiteral(booleanBinaryOperatorEEnum, BooleanBinaryOperator.XOR);
+
+		initEEnum(booleanUnaryOperatorEEnum, BooleanUnaryOperator.class, "BooleanUnaryOperator");
+		addEEnumLiteral(booleanUnaryOperatorEEnum, BooleanUnaryOperator.NEGATION);
+		addEEnumLiteral(booleanUnaryOperatorEEnum, BooleanUnaryOperator.BRACKET);
+
 		initEEnum(relationalOperatorEEnum, RelationalOperator.class, "RelationalOperator");
 		addEEnumLiteral(relationalOperatorEEnum, RelationalOperator.GREATER_OR_EQUAL);
 		addEEnumLiteral(relationalOperatorEEnum, RelationalOperator.GREATER);
@@ -567,6 +770,8 @@ public class IBeXCoreArithmeticPackageImpl extends EPackageImpl implements IBeXC
 		addEEnumLiteral(relationalOperatorEEnum, RelationalOperator.UNEQUAL);
 		addEEnumLiteral(relationalOperatorEEnum, RelationalOperator.SMALLER_OR_EQUAL);
 		addEEnumLiteral(relationalOperatorEEnum, RelationalOperator.SMALLER);
+		addEEnumLiteral(relationalOperatorEEnum, RelationalOperator.OBJECT_EQUALS);
+		addEEnumLiteral(relationalOperatorEEnum, RelationalOperator.OBJECT_NOT_EQUALS);
 	}
 
 } //IBeXCoreArithmeticPackageImpl

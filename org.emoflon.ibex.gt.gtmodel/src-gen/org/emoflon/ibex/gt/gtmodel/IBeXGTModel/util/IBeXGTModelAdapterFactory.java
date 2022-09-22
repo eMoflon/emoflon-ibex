@@ -105,6 +105,11 @@ public class IBeXGTModelAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
+		public Adapter caseGTWatchDog(GTWatchDog object) {
+			return createGTWatchDogAdapter();
+		}
+
+		@Override
 		public Adapter caseIBeXNamedElement(IBeXNamedElement object) {
 			return createIBeXNamedElementAdapter();
 		}
@@ -234,6 +239,20 @@ public class IBeXGTModelAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createGTParameterValueAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTWatchDog <em>GT Watch Dog</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTWatchDog
+	 * @generated
+	 */
+	public Adapter createGTWatchDogAdapter() {
 		return null;
 	}
 

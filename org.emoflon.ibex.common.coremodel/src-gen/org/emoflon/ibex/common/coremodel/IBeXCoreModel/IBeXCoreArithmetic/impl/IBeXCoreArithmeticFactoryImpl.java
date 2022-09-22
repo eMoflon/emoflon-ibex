@@ -65,6 +65,10 @@ public class IBeXCoreArithmeticFactoryImpl extends EFactoryImpl implements IBeXC
 			return createDoubleLiteral();
 		case IBeXCoreArithmeticPackage.INTEGER_LITERAL:
 			return createIntegerLiteral();
+		case IBeXCoreArithmeticPackage.BOOLEAN_BINARY_EXPRESSION:
+			return createBooleanBinaryExpression();
+		case IBeXCoreArithmeticPackage.BOOLEAN_UNARY_EXPRESSION:
+			return createBooleanUnaryExpression();
 		case IBeXCoreArithmeticPackage.RELATIONAL_EXPRESSION:
 			return createRelationalExpression();
 		default:
@@ -84,6 +88,10 @@ public class IBeXCoreArithmeticFactoryImpl extends EFactoryImpl implements IBeXC
 			return createBinaryOperatorFromString(eDataType, initialValue);
 		case IBeXCoreArithmeticPackage.UNARY_OPERATOR:
 			return createUnaryOperatorFromString(eDataType, initialValue);
+		case IBeXCoreArithmeticPackage.BOOLEAN_BINARY_OPERATOR:
+			return createBooleanBinaryOperatorFromString(eDataType, initialValue);
+		case IBeXCoreArithmeticPackage.BOOLEAN_UNARY_OPERATOR:
+			return createBooleanUnaryOperatorFromString(eDataType, initialValue);
 		case IBeXCoreArithmeticPackage.RELATIONAL_OPERATOR:
 			return createRelationalOperatorFromString(eDataType, initialValue);
 		default:
@@ -103,6 +111,10 @@ public class IBeXCoreArithmeticFactoryImpl extends EFactoryImpl implements IBeXC
 			return convertBinaryOperatorToString(eDataType, instanceValue);
 		case IBeXCoreArithmeticPackage.UNARY_OPERATOR:
 			return convertUnaryOperatorToString(eDataType, instanceValue);
+		case IBeXCoreArithmeticPackage.BOOLEAN_BINARY_OPERATOR:
+			return convertBooleanBinaryOperatorToString(eDataType, instanceValue);
+		case IBeXCoreArithmeticPackage.BOOLEAN_UNARY_OPERATOR:
+			return convertBooleanUnaryOperatorToString(eDataType, instanceValue);
 		case IBeXCoreArithmeticPackage.RELATIONAL_OPERATOR:
 			return convertRelationalOperatorToString(eDataType, instanceValue);
 		default:
@@ -148,6 +160,26 @@ public class IBeXCoreArithmeticFactoryImpl extends EFactoryImpl implements IBeXC
 	public IntegerLiteral createIntegerLiteral() {
 		IntegerLiteralImpl integerLiteral = new IntegerLiteralImpl();
 		return integerLiteral;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public BooleanBinaryExpression createBooleanBinaryExpression() {
+		BooleanBinaryExpressionImpl booleanBinaryExpression = new BooleanBinaryExpressionImpl();
+		return booleanBinaryExpression;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public BooleanUnaryExpression createBooleanUnaryExpression() {
+		BooleanUnaryExpressionImpl booleanUnaryExpression = new BooleanUnaryExpressionImpl();
+		return booleanUnaryExpression;
 	}
 
 	/**
@@ -201,6 +233,50 @@ public class IBeXCoreArithmeticFactoryImpl extends EFactoryImpl implements IBeXC
 	 * @generated
 	 */
 	public String convertUnaryOperatorToString(EDataType eDataType, Object instanceValue) {
+		return instanceValue == null ? null : instanceValue.toString();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public BooleanBinaryOperator createBooleanBinaryOperatorFromString(EDataType eDataType, String initialValue) {
+		BooleanBinaryOperator result = BooleanBinaryOperator.get(initialValue);
+		if (result == null)
+			throw new IllegalArgumentException(
+					"The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
+		return result;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public String convertBooleanBinaryOperatorToString(EDataType eDataType, Object instanceValue) {
+		return instanceValue == null ? null : instanceValue.toString();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public BooleanUnaryOperator createBooleanUnaryOperatorFromString(EDataType eDataType, String initialValue) {
+		BooleanUnaryOperator result = BooleanUnaryOperator.get(initialValue);
+		if (result == null)
+			throw new IllegalArgumentException(
+					"The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
+		return result;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public String convertBooleanUnaryOperatorToString(EDataType eDataType, Object instanceValue) {
 		return instanceValue == null ? null : instanceValue.toString();
 	}
 

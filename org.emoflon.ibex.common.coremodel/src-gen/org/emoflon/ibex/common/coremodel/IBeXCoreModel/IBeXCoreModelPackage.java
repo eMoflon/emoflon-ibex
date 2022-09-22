@@ -180,13 +180,22 @@ public interface IBeXCoreModelPackage extends EPackage {
 	int IBE_XFEATURE_CONFIG = 2;
 
 	/**
-	 * The feature id for the '<em><b>Count Required</b></em>' attribute.
+	 * The feature id for the '<em><b>Count Expressions</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XFEATURE_CONFIG__COUNT_REQUIRED = 0;
+	int IBE_XFEATURE_CONFIG__COUNT_EXPRESSIONS = 0;
+
+	/**
+	 * The feature id for the '<em><b>Arithmetic Expressions</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XFEATURE_CONFIG__ARITHMETIC_EXPRESSIONS = 1;
 
 	/**
 	 * The number of structural features of the '<em>IBe XFeature Config</em>' class.
@@ -195,7 +204,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XFEATURE_CONFIG_FEATURE_COUNT = 1;
+	int IBE_XFEATURE_CONFIG_FEATURE_COUNT = 2;
 
 	/**
 	 * The number of operations of the '<em>IBe XFeature Config</em>' class.
@@ -1218,15 +1227,26 @@ public interface IBeXCoreModelPackage extends EPackage {
 	EClass getIBeXFeatureConfig();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXFeatureConfig#isCountRequired <em>Count Required</em>}'.
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXFeatureConfig#isCountExpressions <em>Count Expressions</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Count Required</em>'.
-	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXFeatureConfig#isCountRequired()
+	 * @return the meta object for the attribute '<em>Count Expressions</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXFeatureConfig#isCountExpressions()
 	 * @see #getIBeXFeatureConfig()
 	 * @generated
 	 */
-	EAttribute getIBeXFeatureConfig_CountRequired();
+	EAttribute getIBeXFeatureConfig_CountExpressions();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXFeatureConfig#isArithmeticExpressions <em>Arithmetic Expressions</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Arithmetic Expressions</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXFeatureConfig#isArithmeticExpressions()
+	 * @see #getIBeXFeatureConfig()
+	 * @generated
+	 */
+	EAttribute getIBeXFeatureConfig_ArithmeticExpressions();
 
 	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternSet <em>IBe XPattern Set</em>}'.
@@ -1945,12 +1965,20 @@ public interface IBeXCoreModelPackage extends EPackage {
 		EClass IBE_XFEATURE_CONFIG = eINSTANCE.getIBeXFeatureConfig();
 
 		/**
-		 * The meta object literal for the '<em><b>Count Required</b></em>' attribute feature.
+		 * The meta object literal for the '<em><b>Count Expressions</b></em>' attribute feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute IBE_XFEATURE_CONFIG__COUNT_REQUIRED = eINSTANCE.getIBeXFeatureConfig_CountRequired();
+		EAttribute IBE_XFEATURE_CONFIG__COUNT_EXPRESSIONS = eINSTANCE.getIBeXFeatureConfig_CountExpressions();
+
+		/**
+		 * The meta object literal for the '<em><b>Arithmetic Expressions</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute IBE_XFEATURE_CONFIG__ARITHMETIC_EXPRESSIONS = eINSTANCE.getIBeXFeatureConfig_ArithmeticExpressions();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXPatternSetImpl <em>IBe XPattern Set</em>}' class.

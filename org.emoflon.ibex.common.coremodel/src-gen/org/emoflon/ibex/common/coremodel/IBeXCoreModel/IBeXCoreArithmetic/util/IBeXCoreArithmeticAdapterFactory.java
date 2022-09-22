@@ -102,6 +102,26 @@ public class IBeXCoreArithmeticAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
+		public Adapter caseBooleanExpression(BooleanExpression object) {
+			return createBooleanExpressionAdapter();
+		}
+
+		@Override
+		public Adapter caseBooleanBinaryExpression(BooleanBinaryExpression object) {
+			return createBooleanBinaryExpressionAdapter();
+		}
+
+		@Override
+		public Adapter caseBooleanUnaryExpression(BooleanUnaryExpression object) {
+			return createBooleanUnaryExpressionAdapter();
+		}
+
+		@Override
+		public Adapter caseBooleanValue(BooleanValue object) {
+			return createBooleanValueAdapter();
+		}
+
+		@Override
 		public Adapter caseRelationalExpression(RelationalExpression object) {
 			return createRelationalExpressionAdapter();
 		}
@@ -220,6 +240,62 @@ public class IBeXCoreArithmeticAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createIntegerLiteralAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanExpression <em>Boolean Expression</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanExpression
+	 * @generated
+	 */
+	public Adapter createBooleanExpressionAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanBinaryExpression <em>Boolean Binary Expression</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanBinaryExpression
+	 * @generated
+	 */
+	public Adapter createBooleanBinaryExpressionAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanUnaryExpression <em>Boolean Unary Expression</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanUnaryExpression
+	 * @generated
+	 */
+	public Adapter createBooleanUnaryExpressionAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanValue <em>Boolean Value</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanValue
+	 * @generated
+	 */
+	public Adapter createBooleanValueAdapter() {
 		return null;
 	}
 

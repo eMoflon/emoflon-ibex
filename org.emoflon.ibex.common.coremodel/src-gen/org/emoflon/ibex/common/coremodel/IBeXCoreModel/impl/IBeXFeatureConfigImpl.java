@@ -20,31 +20,52 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXFeatureConfig;
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXFeatureConfigImpl#isCountRequired <em>Count Required</em>}</li>
+ *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXFeatureConfigImpl#isCountExpressions <em>Count Expressions</em>}</li>
+ *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXFeatureConfigImpl#isArithmeticExpressions <em>Arithmetic Expressions</em>}</li>
  * </ul>
  *
  * @generated
  */
 public class IBeXFeatureConfigImpl extends MinimalEObjectImpl.Container implements IBeXFeatureConfig {
 	/**
-	 * The default value of the '{@link #isCountRequired() <em>Count Required</em>}' attribute.
+	 * The default value of the '{@link #isCountExpressions() <em>Count Expressions</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #isCountRequired()
+	 * @see #isCountExpressions()
 	 * @generated
 	 * @ordered
 	 */
-	protected static final boolean COUNT_REQUIRED_EDEFAULT = false;
+	protected static final boolean COUNT_EXPRESSIONS_EDEFAULT = false;
 
 	/**
-	 * The cached value of the '{@link #isCountRequired() <em>Count Required</em>}' attribute.
+	 * The cached value of the '{@link #isCountExpressions() <em>Count Expressions</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #isCountRequired()
+	 * @see #isCountExpressions()
 	 * @generated
 	 * @ordered
 	 */
-	protected boolean countRequired = COUNT_REQUIRED_EDEFAULT;
+	protected boolean countExpressions = COUNT_EXPRESSIONS_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #isArithmeticExpressions() <em>Arithmetic Expressions</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isArithmeticExpressions()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final boolean ARITHMETIC_EXPRESSIONS_EDEFAULT = false;
+
+	/**
+	 * The cached value of the '{@link #isArithmeticExpressions() <em>Arithmetic Expressions</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isArithmeticExpressions()
+	 * @generated
+	 * @ordered
+	 */
+	protected boolean arithmeticExpressions = ARITHMETIC_EXPRESSIONS_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -70,8 +91,8 @@ public class IBeXFeatureConfigImpl extends MinimalEObjectImpl.Container implemen
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public boolean isCountRequired() {
-		return countRequired;
+	public boolean isCountExpressions() {
+		return countExpressions;
 	}
 
 	/**
@@ -79,12 +100,36 @@ public class IBeXFeatureConfigImpl extends MinimalEObjectImpl.Container implemen
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setCountRequired(boolean newCountRequired) {
-		boolean oldCountRequired = countRequired;
-		countRequired = newCountRequired;
+	public void setCountExpressions(boolean newCountExpressions) {
+		boolean oldCountExpressions = countExpressions;
+		countExpressions = newCountExpressions;
 		if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET,
-					IBeXCoreModelPackage.IBE_XFEATURE_CONFIG__COUNT_REQUIRED, oldCountRequired, countRequired));
+					IBeXCoreModelPackage.IBE_XFEATURE_CONFIG__COUNT_EXPRESSIONS, oldCountExpressions,
+					countExpressions));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public boolean isArithmeticExpressions() {
+		return arithmeticExpressions;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setArithmeticExpressions(boolean newArithmeticExpressions) {
+		boolean oldArithmeticExpressions = arithmeticExpressions;
+		arithmeticExpressions = newArithmeticExpressions;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					IBeXCoreModelPackage.IBE_XFEATURE_CONFIG__ARITHMETIC_EXPRESSIONS, oldArithmeticExpressions,
+					arithmeticExpressions));
 	}
 
 	/**
@@ -95,8 +140,10 @@ public class IBeXFeatureConfigImpl extends MinimalEObjectImpl.Container implemen
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case IBeXCoreModelPackage.IBE_XFEATURE_CONFIG__COUNT_REQUIRED:
-			return isCountRequired();
+		case IBeXCoreModelPackage.IBE_XFEATURE_CONFIG__COUNT_EXPRESSIONS:
+			return isCountExpressions();
+		case IBeXCoreModelPackage.IBE_XFEATURE_CONFIG__ARITHMETIC_EXPRESSIONS:
+			return isArithmeticExpressions();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -109,8 +156,11 @@ public class IBeXFeatureConfigImpl extends MinimalEObjectImpl.Container implemen
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case IBeXCoreModelPackage.IBE_XFEATURE_CONFIG__COUNT_REQUIRED:
-			setCountRequired((Boolean) newValue);
+		case IBeXCoreModelPackage.IBE_XFEATURE_CONFIG__COUNT_EXPRESSIONS:
+			setCountExpressions((Boolean) newValue);
+			return;
+		case IBeXCoreModelPackage.IBE_XFEATURE_CONFIG__ARITHMETIC_EXPRESSIONS:
+			setArithmeticExpressions((Boolean) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -124,8 +174,11 @@ public class IBeXFeatureConfigImpl extends MinimalEObjectImpl.Container implemen
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case IBeXCoreModelPackage.IBE_XFEATURE_CONFIG__COUNT_REQUIRED:
-			setCountRequired(COUNT_REQUIRED_EDEFAULT);
+		case IBeXCoreModelPackage.IBE_XFEATURE_CONFIG__COUNT_EXPRESSIONS:
+			setCountExpressions(COUNT_EXPRESSIONS_EDEFAULT);
+			return;
+		case IBeXCoreModelPackage.IBE_XFEATURE_CONFIG__ARITHMETIC_EXPRESSIONS:
+			setArithmeticExpressions(ARITHMETIC_EXPRESSIONS_EDEFAULT);
 			return;
 		}
 		super.eUnset(featureID);
@@ -139,8 +192,10 @@ public class IBeXFeatureConfigImpl extends MinimalEObjectImpl.Container implemen
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case IBeXCoreModelPackage.IBE_XFEATURE_CONFIG__COUNT_REQUIRED:
-			return countRequired != COUNT_REQUIRED_EDEFAULT;
+		case IBeXCoreModelPackage.IBE_XFEATURE_CONFIG__COUNT_EXPRESSIONS:
+			return countExpressions != COUNT_EXPRESSIONS_EDEFAULT;
+		case IBeXCoreModelPackage.IBE_XFEATURE_CONFIG__ARITHMETIC_EXPRESSIONS:
+			return arithmeticExpressions != ARITHMETIC_EXPRESSIONS_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
 	}
@@ -156,8 +211,10 @@ public class IBeXFeatureConfigImpl extends MinimalEObjectImpl.Container implemen
 			return super.toString();
 
 		StringBuilder result = new StringBuilder(super.toString());
-		result.append(" (countRequired: ");
-		result.append(countRequired);
+		result.append(" (countExpressions: ");
+		result.append(countExpressions);
+		result.append(", arithmeticExpressions: ");
+		result.append(arithmeticExpressions);
 		result.append(')');
 		return result.toString();
 	}

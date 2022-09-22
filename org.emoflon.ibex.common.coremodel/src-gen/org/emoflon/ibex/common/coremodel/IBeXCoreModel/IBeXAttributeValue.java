@@ -5,6 +5,7 @@ package org.emoflon.ibex.common.coremodel.IBeXCoreModel;
 import org.eclipse.emf.ecore.EAttribute;
 
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ArithmeticValue;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanValue;
 
 /**
  * <!-- begin-user-doc -->
@@ -23,7 +24,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.Arithm
  * @model
  * @generated
  */
-public interface IBeXAttributeValue extends ArithmeticValue {
+public interface IBeXAttributeValue extends ArithmeticValue, BooleanValue {
 	/**
 	 * Returns the value of the '<em><b>Node</b></em>' reference.
 	 * <!-- begin-user-doc -->

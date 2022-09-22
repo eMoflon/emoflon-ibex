@@ -76,6 +76,15 @@ public interface IBeXGTModelFactory extends EFactory {
 	GTParameterValue createGTParameterValue();
 
 	/**
+	 * Returns a new object of class '<em>GT Watch Dog</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>GT Watch Dog</em>'.
+	 * @generated
+	 */
+	GTWatchDog createGTWatchDog();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

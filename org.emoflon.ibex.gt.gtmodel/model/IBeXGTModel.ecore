@@ -3,6 +3,8 @@
     xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="IBeXGTModel" nsURI="platform:/resource/org.emoflon.ibex.gt.gtmodel/model/IBeXGTModel.ecore"
     nsPrefix="IBeXGTModel">
   <eClassifiers xsi:type="ecore:EClass" name="GTModel" eSuperTypes="../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXModel">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="package" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="project" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="ruleSet" lowerBound="1"
         eType="#//GTRuleSet" containment="true"/>
   </eClassifiers>
@@ -37,5 +39,10 @@
   <eClassifiers xsi:type="ecore:EClass" name="GTParameterValue" eSuperTypes="../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXCoreArithmetic/ArithmeticValue">
     <eStructuralFeatures xsi:type="ecore:EReference" name="parameter" lowerBound="1"
         eType="#//GTParameter"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="GTWatchDog">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="node" lowerBound="1" eType="ecore:EClass ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXNode"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="attribute" lowerBound="1"
+        eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EAttribute"/>
   </eClassifiers>
 </ecore:EPackage>

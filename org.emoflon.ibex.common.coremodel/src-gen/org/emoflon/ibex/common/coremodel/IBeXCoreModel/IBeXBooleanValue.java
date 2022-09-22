@@ -2,6 +2,7 @@
  */
 package org.emoflon.ibex.common.coremodel.IBeXCoreModel;
 
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ValueExpression;
 
 /**
@@ -20,7 +21,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ValueE
  * @model
  * @generated
  */
-public interface IBeXBooleanValue extends ValueExpression {
+public interface IBeXBooleanValue extends ValueExpression, BooleanValue {
 	/**
 	 * Returns the value of the '<em><b>Value</b></em>' attribute.
 	 * <!-- begin-user-doc -->

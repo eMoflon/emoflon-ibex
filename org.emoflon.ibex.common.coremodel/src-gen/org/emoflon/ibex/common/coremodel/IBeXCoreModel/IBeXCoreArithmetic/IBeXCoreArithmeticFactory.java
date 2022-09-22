@@ -59,6 +59,24 @@ public interface IBeXCoreArithmeticFactory extends EFactory {
 	IntegerLiteral createIntegerLiteral();
 
 	/**
+	 * Returns a new object of class '<em>Boolean Binary Expression</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Boolean Binary Expression</em>'.
+	 * @generated
+	 */
+	BooleanBinaryExpression createBooleanBinaryExpression();
+
+	/**
+	 * Returns a new object of class '<em>Boolean Unary Expression</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Boolean Unary Expression</em>'.
+	 * @generated
+	 */
+	BooleanUnaryExpression createBooleanUnaryExpression();
+
+	/**
 	 * Returns a new object of class '<em>Relational Expression</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

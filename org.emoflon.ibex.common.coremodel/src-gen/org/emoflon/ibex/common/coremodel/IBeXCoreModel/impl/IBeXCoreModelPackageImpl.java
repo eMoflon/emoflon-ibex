@@ -334,8 +334,17 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getIBeXFeatureConfig_CountRequired() {
+	public EAttribute getIBeXFeatureConfig_CountExpressions() {
 		return (EAttribute) iBeXFeatureConfigEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getIBeXFeatureConfig_ArithmeticExpressions() {
+		return (EAttribute) iBeXFeatureConfigEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -899,7 +908,8 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 		createEReference(iBeXModelEClass, IBE_XMODEL__FEATURE_CONFIG);
 
 		iBeXFeatureConfigEClass = createEClass(IBE_XFEATURE_CONFIG);
-		createEAttribute(iBeXFeatureConfigEClass, IBE_XFEATURE_CONFIG__COUNT_REQUIRED);
+		createEAttribute(iBeXFeatureConfigEClass, IBE_XFEATURE_CONFIG__COUNT_EXPRESSIONS);
+		createEAttribute(iBeXFeatureConfigEClass, IBE_XFEATURE_CONFIG__ARITHMETIC_EXPRESSIONS);
 
 		iBeXPatternSetEClass = createEClass(IBE_XPATTERN_SET);
 		createEReference(iBeXPatternSetEClass, IBE_XPATTERN_SET__PATTERNS);
@@ -1020,7 +1030,9 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 		iBeXEnumValueEClass.getESuperTypes().add(theIBeXCoreArithmeticPackage.getValueExpression());
 		iBeXStringValueEClass.getESuperTypes().add(theIBeXCoreArithmeticPackage.getValueExpression());
 		iBeXBooleanValueEClass.getESuperTypes().add(theIBeXCoreArithmeticPackage.getValueExpression());
+		iBeXBooleanValueEClass.getESuperTypes().add(theIBeXCoreArithmeticPackage.getBooleanValue());
 		iBeXAttributeValueEClass.getESuperTypes().add(theIBeXCoreArithmeticPackage.getArithmeticValue());
+		iBeXAttributeValueEClass.getESuperTypes().add(theIBeXCoreArithmeticPackage.getBooleanValue());
 		iBeXMatchCountValueEClass.getESuperTypes().add(theIBeXCoreArithmeticPackage.getArithmeticValue());
 		iBeXRuleEClass.getESuperTypes().add(this.getIBeXNamedElement());
 
@@ -1048,9 +1060,12 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 
 		initEClass(iBeXFeatureConfigEClass, IBeXFeatureConfig.class, "IBeXFeatureConfig", !IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getIBeXFeatureConfig_CountRequired(), ecorePackage.getEBoolean(), "countRequired", "false", 0, 1,
-				IBeXFeatureConfig.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
-				!IS_DERIVED, IS_ORDERED);
+		initEAttribute(getIBeXFeatureConfig_CountExpressions(), ecorePackage.getEBoolean(), "countExpressions", "false",
+				0, 1, IBeXFeatureConfig.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getIBeXFeatureConfig_ArithmeticExpressions(), ecorePackage.getEBoolean(),
+				"arithmeticExpressions", "false", 0, 1, IBeXFeatureConfig.class, !IS_TRANSIENT, !IS_VOLATILE,
+				IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(iBeXPatternSetEClass, IBeXPatternSet.class, "IBeXPatternSet", !IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);

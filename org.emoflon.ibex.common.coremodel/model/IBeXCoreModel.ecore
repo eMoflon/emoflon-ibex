@@ -16,8 +16,10 @@
         eType="#//IBeXFeatureConfig"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBeXFeatureConfig">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="countRequired" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="countExpressions" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
         defaultValueLiteral="false"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="arithmeticExpressions"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean" defaultValueLiteral="false"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBeXPatternSet">
     <eStructuralFeatures xsi:type="ecore:EReference" name="patterns" upperBound="-1"
@@ -84,10 +86,10 @@
   <eClassifiers xsi:type="ecore:EClass" name="IBeXStringValue" eSuperTypes="#//IBeXCoreArithmetic/ValueExpression">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="IBeXBooleanValue" eSuperTypes="#//IBeXCoreArithmetic/ValueExpression">
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXBooleanValue" eSuperTypes="#//IBeXCoreArithmetic/ValueExpression #//IBeXCoreArithmetic/BooleanValue">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="IBeXAttributeValue" eSuperTypes="#//IBeXCoreArithmetic/ArithmeticValue">
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXAttributeValue" eSuperTypes="#//IBeXCoreArithmetic/ArithmeticValue #//IBeXCoreArithmetic/BooleanValue">
     <eStructuralFeatures xsi:type="ecore:EReference" name="node" lowerBound="1" eType="#//IBeXNode"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="attribute" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EAttribute"/>
   </eClassifiers>
@@ -171,7 +173,33 @@
       <eLiterals name="NEGATIVE" value="6"/>
       <eLiterals name="EXPONENTIAL_DISTRIBUTION" value="7"/>
     </eClassifiers>
-    <eClassifiers xsi:type="ecore:EClass" name="RelationalExpression">
+    <eClassifiers xsi:type="ecore:EClass" name="BooleanExpression" abstract="true"
+        interface="true"/>
+    <eClassifiers xsi:type="ecore:EClass" name="BooleanBinaryExpression" eSuperTypes="#//IBeXCoreArithmetic/BooleanExpression">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="lhs" lowerBound="1" eType="#//IBeXCoreArithmetic/BooleanExpression"
+          containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="rhs" lowerBound="1" eType="#//IBeXCoreArithmetic/BooleanExpression"
+          containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="operator" eType="#//IBeXCoreArithmetic/BooleanBinaryOperator"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="BooleanUnaryExpression" eSuperTypes="#//IBeXCoreArithmetic/BooleanExpression">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="operand" lowerBound="1"
+          eType="#//IBeXCoreArithmetic/BooleanExpression" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="operator" eType="#//IBeXCoreArithmetic/BooleanUnaryOperator"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="BooleanValue" abstract="true" interface="true"
+        eSuperTypes="#//IBeXCoreArithmetic/BooleanExpression"/>
+    <eClassifiers xsi:type="ecore:EEnum" name="BooleanBinaryOperator">
+      <eLiterals name="IMPLICATION" literal="IMPLICATION"/>
+      <eLiterals name="AND" value="1"/>
+      <eLiterals name="OR" value="2"/>
+      <eLiterals name="XOR" value="3"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EEnum" name="BooleanUnaryOperator">
+      <eLiterals name="NEGATION" literal="NEGATION"/>
+      <eLiterals name="BRACKET" value="1" literal="BRACKET"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="RelationalExpression" eSuperTypes="#//IBeXCoreArithmetic/BooleanExpression">
       <eStructuralFeatures xsi:type="ecore:EReference" name="lhs" lowerBound="1" eType="#//IBeXCoreArithmetic/ValueExpression"
           containment="true"/>
       <eStructuralFeatures xsi:type="ecore:EReference" name="rhs" lowerBound="1" eType="#//IBeXCoreArithmetic/ValueExpression"
@@ -185,6 +213,8 @@
       <eLiterals name="UNEQUAL" value="3"/>
       <eLiterals name="SMALLER_OR_EQUAL" value="4"/>
       <eLiterals name="SMALLER" value="5"/>
+      <eLiterals name="OBJECT_EQUALS" value="6"/>
+      <eLiterals name="OBJECT_NOT_EQUALS" value="7" literal="OBJECT_NOT_EQUALS"/>
     </eClassifiers>
   </eSubpackages>
 </ecore:EPackage>

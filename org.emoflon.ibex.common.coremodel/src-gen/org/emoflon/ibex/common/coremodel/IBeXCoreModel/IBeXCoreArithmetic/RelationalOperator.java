@@ -76,7 +76,25 @@ public enum RelationalOperator implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	SMALLER(5, "SMALLER", "SMALLER");
+	SMALLER(5, "SMALLER", "SMALLER"),
+	/**
+	 * The '<em><b>OBJECT EQUALS</b></em>' literal object.
+	 * <!-- begin-user-doc -->
+	* <!-- end-user-doc -->
+	 * @see #OBJECT_EQUALS_VALUE
+	 * @generated
+	 * @ordered
+	 */
+	OBJECT_EQUALS(6, "OBJECT_EQUALS", "OBJECT_EQUALS"),
+	/**
+	 * The '<em><b>OBJECT NOT EQUALS</b></em>' literal object.
+	 * <!-- begin-user-doc -->
+	* <!-- end-user-doc -->
+	 * @see #OBJECT_NOT_EQUALS_VALUE
+	 * @generated
+	 * @ordered
+	 */
+	OBJECT_NOT_EQUALS(7, "OBJECT_NOT_EQUALS", "OBJECT_NOT_EQUALS");
 
 	/**
 	 * The '<em><b>GREATER OR EQUAL</b></em>' literal value.
@@ -145,13 +163,35 @@ public enum RelationalOperator implements Enumerator {
 	public static final int SMALLER_VALUE = 5;
 
 	/**
+	 * The '<em><b>OBJECT EQUALS</b></em>' literal value.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #OBJECT_EQUALS
+	 * @model
+	 * @generated
+	 * @ordered
+	 */
+	public static final int OBJECT_EQUALS_VALUE = 6;
+
+	/**
+	 * The '<em><b>OBJECT NOT EQUALS</b></em>' literal value.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #OBJECT_NOT_EQUALS
+	 * @model
+	 * @generated
+	 * @ordered
+	 */
+	public static final int OBJECT_NOT_EQUALS_VALUE = 7;
+
+	/**
 	 * An array of all the '<em><b>Relational Operator</b></em>' enumerators.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	private static final RelationalOperator[] VALUES_ARRAY = new RelationalOperator[] { GREATER_OR_EQUAL, GREATER,
-			EQUAL, UNEQUAL, SMALLER_OR_EQUAL, SMALLER, };
+			EQUAL, UNEQUAL, SMALLER_OR_EQUAL, SMALLER, OBJECT_EQUALS, OBJECT_NOT_EQUALS, };
 
 	/**
 	 * A public read-only list of all the '<em><b>Relational Operator</b></em>' enumerators.
@@ -219,6 +259,10 @@ public enum RelationalOperator implements Enumerator {
 			return SMALLER_OR_EQUAL;
 		case SMALLER_VALUE:
 			return SMALLER;
+		case OBJECT_EQUALS_VALUE:
+			return OBJECT_EQUALS;
+		case OBJECT_NOT_EQUALS_VALUE:
+			return OBJECT_NOT_EQUALS;
 		}
 		return null;
 	}

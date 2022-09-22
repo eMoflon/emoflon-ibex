@@ -2,6 +2,7 @@
  */
 package org.emoflon.ibex.gt.gtmodel.IBeXGTModel;
 
+import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
@@ -115,13 +116,31 @@ public interface IBeXGTModelPackage extends EPackage {
 	int GT_MODEL__FEATURE_CONFIG = IBeXCoreModelPackage.IBE_XMODEL__FEATURE_CONFIG;
 
 	/**
+	 * The feature id for the '<em><b>Package</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_MODEL__PACKAGE = IBeXCoreModelPackage.IBE_XMODEL_FEATURE_COUNT + 0;
+
+	/**
+	 * The feature id for the '<em><b>Project</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_MODEL__PROJECT = IBeXCoreModelPackage.IBE_XMODEL_FEATURE_COUNT + 1;
+
+	/**
 	 * The feature id for the '<em><b>Rule Set</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int GT_MODEL__RULE_SET = IBeXCoreModelPackage.IBE_XMODEL_FEATURE_COUNT + 0;
+	int GT_MODEL__RULE_SET = IBeXCoreModelPackage.IBE_XMODEL_FEATURE_COUNT + 2;
 
 	/**
 	 * The number of structural features of the '<em>GT Model</em>' class.
@@ -130,7 +149,7 @@ public interface IBeXGTModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int GT_MODEL_FEATURE_COUNT = IBeXCoreModelPackage.IBE_XMODEL_FEATURE_COUNT + 1;
+	int GT_MODEL_FEATURE_COUNT = IBeXCoreModelPackage.IBE_XMODEL_FEATURE_COUNT + 3;
 
 	/**
 	 * The number of operations of the '<em>GT Model</em>' class.
@@ -471,6 +490,52 @@ public interface IBeXGTModelPackage extends EPackage {
 	int GT_PARAMETER_VALUE_OPERATION_COUNT = IBeXCoreArithmeticPackage.ARITHMETIC_VALUE_OPERATION_COUNT + 0;
 
 	/**
+	 * The meta object id for the '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTWatchDogImpl <em>GT Watch Dog</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTWatchDogImpl
+	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.IBeXGTModelPackageImpl#getGTWatchDog()
+	 * @generated
+	 */
+	int GT_WATCH_DOG = 6;
+
+	/**
+	 * The feature id for the '<em><b>Node</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_WATCH_DOG__NODE = 0;
+
+	/**
+	 * The feature id for the '<em><b>Attribute</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_WATCH_DOG__ATTRIBUTE = 1;
+
+	/**
+	 * The number of structural features of the '<em>GT Watch Dog</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_WATCH_DOG_FEATURE_COUNT = 2;
+
+	/**
+	 * The number of operations of the '<em>GT Watch Dog</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_WATCH_DOG_OPERATION_COUNT = 0;
+
+	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTModel <em>GT Model</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -479,6 +544,28 @@ public interface IBeXGTModelPackage extends EPackage {
 	 * @generated
 	 */
 	EClass getGTModel();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTModel#getPackage <em>Package</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Package</em>'.
+	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTModel#getPackage()
+	 * @see #getGTModel()
+	 * @generated
+	 */
+	EAttribute getGTModel_Package();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTModel#getProject <em>Project</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Project</em>'.
+	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTModel#getProject()
+	 * @see #getGTModel()
+	 * @generated
+	 */
+	EAttribute getGTModel_Project();
 
 	/**
 	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTModel#getRuleSet <em>Rule Set</em>}'.
@@ -663,6 +750,38 @@ public interface IBeXGTModelPackage extends EPackage {
 	EReference getGTParameterValue_Parameter();
 
 	/**
+	 * Returns the meta object for class '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTWatchDog <em>GT Watch Dog</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>GT Watch Dog</em>'.
+	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTWatchDog
+	 * @generated
+	 */
+	EClass getGTWatchDog();
+
+	/**
+	 * Returns the meta object for the reference '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTWatchDog#getNode <em>Node</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Node</em>'.
+	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTWatchDog#getNode()
+	 * @see #getGTWatchDog()
+	 * @generated
+	 */
+	EReference getGTWatchDog_Node();
+
+	/**
+	 * Returns the meta object for the reference '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTWatchDog#getAttribute <em>Attribute</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Attribute</em>'.
+	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTWatchDog#getAttribute()
+	 * @see #getGTWatchDog()
+	 * @generated
+	 */
+	EReference getGTWatchDog_Attribute();
+
+	/**
 	 * Returns the factory that creates the instances of the model.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -694,6 +813,22 @@ public interface IBeXGTModelPackage extends EPackage {
 		 * @generated
 		 */
 		EClass GT_MODEL = eINSTANCE.getGTModel();
+
+		/**
+		 * The meta object literal for the '<em><b>Package</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute GT_MODEL__PACKAGE = eINSTANCE.getGTModel_Package();
+
+		/**
+		 * The meta object literal for the '<em><b>Project</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute GT_MODEL__PROJECT = eINSTANCE.getGTModel_Project();
 
 		/**
 		 * The meta object literal for the '<em><b>Rule Set</b></em>' containment reference feature.
@@ -840,6 +975,32 @@ public interface IBeXGTModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference GT_PARAMETER_VALUE__PARAMETER = eINSTANCE.getGTParameterValue_Parameter();
+
+		/**
+		 * The meta object literal for the '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTWatchDogImpl <em>GT Watch Dog</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTWatchDogImpl
+		 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.IBeXGTModelPackageImpl#getGTWatchDog()
+		 * @generated
+		 */
+		EClass GT_WATCH_DOG = eINSTANCE.getGTWatchDog();
+
+		/**
+		 * The meta object literal for the '<em><b>Node</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference GT_WATCH_DOG__NODE = eINSTANCE.getGTWatchDog_Node();
+
+		/**
+		 * The meta object literal for the '<em><b>Attribute</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference GT_WATCH_DOG__ATTRIBUTE = eINSTANCE.getGTWatchDog_Attribute();
 
 	}
 

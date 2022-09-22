@@ -2,8 +2,6 @@
  */
 package org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic;
 
-import org.eclipse.emf.ecore.EObject;
-
 /**
  * <!-- begin-user-doc -->
  * A representation of the model object '<em><b>Relational Expression</b></em>'.
@@ -22,7 +20,7 @@ import org.eclipse.emf.ecore.EObject;
  * @model
  * @generated
  */
-public interface RelationalExpression extends EObject {
+public interface RelationalExpression extends BooleanExpression {
 	/**
 	 * Returns the value of the '<em><b>Lhs</b></em>' containment reference.
 	 * <!-- begin-user-doc -->

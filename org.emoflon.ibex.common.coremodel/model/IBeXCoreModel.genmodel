@@ -20,7 +20,8 @@
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXModel/featureConfig"/>
     </genClasses>
     <genClasses ecoreClass="IBeXCoreModel.ecore#//IBeXFeatureConfig">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//IBeXFeatureConfig/countRequired"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//IBeXFeatureConfig/countExpressions"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//IBeXFeatureConfig/arithmeticExpressions"/>
     </genClasses>
     <genClasses ecoreClass="IBeXCoreModel.ecore#//IBeXPatternSet">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXPatternSet/patterns"/>
@@ -121,6 +122,16 @@
         <genEnumLiterals ecoreEnumLiteral="IBeXCoreModel.ecore#//IBeXCoreArithmetic/UnaryOperator/NEGATIVE"/>
         <genEnumLiterals ecoreEnumLiteral="IBeXCoreModel.ecore#//IBeXCoreArithmetic/UnaryOperator/EXPONENTIAL_DISTRIBUTION"/>
       </genEnums>
+      <genEnums typeSafeEnumCompatible="false" ecoreEnum="IBeXCoreModel.ecore#//IBeXCoreArithmetic/BooleanBinaryOperator">
+        <genEnumLiterals ecoreEnumLiteral="IBeXCoreModel.ecore#//IBeXCoreArithmetic/BooleanBinaryOperator/IMPLICATION"/>
+        <genEnumLiterals ecoreEnumLiteral="IBeXCoreModel.ecore#//IBeXCoreArithmetic/BooleanBinaryOperator/AND"/>
+        <genEnumLiterals ecoreEnumLiteral="IBeXCoreModel.ecore#//IBeXCoreArithmetic/BooleanBinaryOperator/OR"/>
+        <genEnumLiterals ecoreEnumLiteral="IBeXCoreModel.ecore#//IBeXCoreArithmetic/BooleanBinaryOperator/XOR"/>
+      </genEnums>
+      <genEnums typeSafeEnumCompatible="false" ecoreEnum="IBeXCoreModel.ecore#//IBeXCoreArithmetic/BooleanUnaryOperator">
+        <genEnumLiterals ecoreEnumLiteral="IBeXCoreModel.ecore#//IBeXCoreArithmetic/BooleanUnaryOperator/NEGATION"/>
+        <genEnumLiterals ecoreEnumLiteral="IBeXCoreModel.ecore#//IBeXCoreArithmetic/BooleanUnaryOperator/BRACKET"/>
+      </genEnums>
       <genEnums typeSafeEnumCompatible="false" ecoreEnum="IBeXCoreModel.ecore#//IBeXCoreArithmetic/RelationalOperator">
         <genEnumLiterals ecoreEnumLiteral="IBeXCoreModel.ecore#//IBeXCoreArithmetic/RelationalOperator/GREATER_OR_EQUAL"/>
         <genEnumLiterals ecoreEnumLiteral="IBeXCoreModel.ecore#//IBeXCoreArithmetic/RelationalOperator/GREATER"/>
@@ -128,6 +139,8 @@
         <genEnumLiterals ecoreEnumLiteral="IBeXCoreModel.ecore#//IBeXCoreArithmetic/RelationalOperator/UNEQUAL"/>
         <genEnumLiterals ecoreEnumLiteral="IBeXCoreModel.ecore#//IBeXCoreArithmetic/RelationalOperator/SMALLER_OR_EQUAL"/>
         <genEnumLiterals ecoreEnumLiteral="IBeXCoreModel.ecore#//IBeXCoreArithmetic/RelationalOperator/SMALLER"/>
+        <genEnumLiterals ecoreEnumLiteral="IBeXCoreModel.ecore#//IBeXCoreArithmetic/RelationalOperator/OBJECT_EQUALS"/>
+        <genEnumLiterals ecoreEnumLiteral="IBeXCoreModel.ecore#//IBeXCoreArithmetic/RelationalOperator/OBJECT_NOT_EQUALS"/>
       </genEnums>
       <genClasses image="false" ecoreClass="IBeXCoreModel.ecore#//IBeXCoreArithmetic/ValueExpression">
         <genFeatures notify="false" createChild="false" propertySortChoices="true"
@@ -150,6 +163,17 @@
       <genClasses ecoreClass="IBeXCoreModel.ecore#//IBeXCoreArithmetic/IntegerLiteral">
         <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//IBeXCoreArithmetic/IntegerLiteral/value"/>
       </genClasses>
+      <genClasses image="false" ecoreClass="IBeXCoreModel.ecore#//IBeXCoreArithmetic/BooleanExpression"/>
+      <genClasses ecoreClass="IBeXCoreModel.ecore#//IBeXCoreArithmetic/BooleanBinaryExpression">
+        <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXCoreArithmetic/BooleanBinaryExpression/lhs"/>
+        <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXCoreArithmetic/BooleanBinaryExpression/rhs"/>
+        <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//IBeXCoreArithmetic/BooleanBinaryExpression/operator"/>
+      </genClasses>
+      <genClasses ecoreClass="IBeXCoreModel.ecore#//IBeXCoreArithmetic/BooleanUnaryExpression">
+        <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXCoreArithmetic/BooleanUnaryExpression/operand"/>
+        <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//IBeXCoreArithmetic/BooleanUnaryExpression/operator"/>
+      </genClasses>
+      <genClasses image="false" ecoreClass="IBeXCoreModel.ecore#//IBeXCoreArithmetic/BooleanValue"/>
       <genClasses ecoreClass="IBeXCoreModel.ecore#//IBeXCoreArithmetic/RelationalExpression">
         <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXCoreArithmetic/RelationalExpression/lhs"/>
         <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXCoreArithmetic/RelationalExpression/rhs"/>

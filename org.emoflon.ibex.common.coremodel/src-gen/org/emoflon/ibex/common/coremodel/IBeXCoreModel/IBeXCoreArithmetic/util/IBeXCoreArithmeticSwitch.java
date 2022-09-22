@@ -141,9 +141,45 @@ public class IBeXCoreArithmeticSwitch<T> extends Switch<T> {
 				result = defaultCase(theEObject);
 			return result;
 		}
+		case IBeXCoreArithmeticPackage.BOOLEAN_EXPRESSION: {
+			BooleanExpression booleanExpression = (BooleanExpression) theEObject;
+			T result = caseBooleanExpression(booleanExpression);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case IBeXCoreArithmeticPackage.BOOLEAN_BINARY_EXPRESSION: {
+			BooleanBinaryExpression booleanBinaryExpression = (BooleanBinaryExpression) theEObject;
+			T result = caseBooleanBinaryExpression(booleanBinaryExpression);
+			if (result == null)
+				result = caseBooleanExpression(booleanBinaryExpression);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case IBeXCoreArithmeticPackage.BOOLEAN_UNARY_EXPRESSION: {
+			BooleanUnaryExpression booleanUnaryExpression = (BooleanUnaryExpression) theEObject;
+			T result = caseBooleanUnaryExpression(booleanUnaryExpression);
+			if (result == null)
+				result = caseBooleanExpression(booleanUnaryExpression);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case IBeXCoreArithmeticPackage.BOOLEAN_VALUE: {
+			BooleanValue booleanValue = (BooleanValue) theEObject;
+			T result = caseBooleanValue(booleanValue);
+			if (result == null)
+				result = caseBooleanExpression(booleanValue);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
 		case IBeXCoreArithmeticPackage.RELATIONAL_EXPRESSION: {
 			RelationalExpression relationalExpression = (RelationalExpression) theEObject;
 			T result = caseRelationalExpression(relationalExpression);
+			if (result == null)
+				result = caseBooleanExpression(relationalExpression);
 			if (result == null)
 				result = defaultCase(theEObject);
 			return result;
@@ -255,6 +291,66 @@ public class IBeXCoreArithmeticSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseIntegerLiteral(IntegerLiteral object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Boolean Expression</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Boolean Expression</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseBooleanExpression(BooleanExpression object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Boolean Binary Expression</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Boolean Binary Expression</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseBooleanBinaryExpression(BooleanBinaryExpression object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Boolean Unary Expression</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Boolean Unary Expression</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseBooleanUnaryExpression(BooleanUnaryExpression object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Boolean Value</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Boolean Value</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseBooleanValue(BooleanValue object) {
 		return null;
 	}
 

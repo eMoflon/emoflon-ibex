@@ -68,6 +68,8 @@ public class IBeXGTModelFactoryImpl extends EFactoryImpl implements IBeXGTModelF
 			return createGTParameter();
 		case IBeXGTModelPackage.GT_PARAMETER_VALUE:
 			return createGTParameterValue();
+		case IBeXGTModelPackage.GT_WATCH_DOG:
+			return createGTWatchDog();
 		default:
 			throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -131,6 +133,16 @@ public class IBeXGTModelFactoryImpl extends EFactoryImpl implements IBeXGTModelF
 	public GTParameterValue createGTParameterValue() {
 		GTParameterValueImpl gtParameterValue = new GTParameterValueImpl();
 		return gtParameterValue;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public GTWatchDog createGTWatchDog() {
+		GTWatchDogImpl gtWatchDog = new GTWatchDogImpl();
+		return gtWatchDog;
 	}
 
 	/**
