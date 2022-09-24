@@ -4,6 +4,7 @@ package org.emoflon.ibex.common.coremodel.IBeXCoreModel.util;
 
 import java.util.Map;
 
+import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 
@@ -86,6 +87,36 @@ public class IBeXCoreModelSwitch<T> extends Switch<T> {
 			T result = caseIBeXModel(iBeXModel);
 			if (result == null)
 				result = caseIBeXNamedElement(iBeXModel);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case IBeXCoreModelPackage.IBE_XMODEL_METADATA: {
+			IBeXModelMetadata iBeXModelMetadata = (IBeXModelMetadata) theEObject;
+			T result = caseIBeXModelMetadata(iBeXModelMetadata);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case IBeXCoreModelPackage.IMPORT_NAME_TO_PACKAGE_DEPENDENCY_MAPPING: {
+			@SuppressWarnings("unchecked")
+			Map.Entry<String, EPackageDependency> importNameToPackageDependencyMapping = (Map.Entry<String, EPackageDependency>) theEObject;
+			T result = caseImportNameToPackageDependencyMapping(importNameToPackageDependencyMapping);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case IBeXCoreModelPackage.EPACKAGE_DEPENDENCY: {
+			EPackageDependency ePackageDependency = (EPackageDependency) theEObject;
+			T result = caseEPackageDependency(ePackageDependency);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case IBeXCoreModelPackage.NAME_TO_ECLASSIFIER_MAPPING: {
+			@SuppressWarnings("unchecked")
+			Map.Entry<String, EClassifier> nameToEClassifierMapping = (Map.Entry<String, EClassifier>) theEObject;
+			T result = caseNameToEClassifierMapping(nameToEClassifierMapping);
 			if (result == null)
 				result = defaultCase(theEObject);
 			return result;
@@ -283,6 +314,66 @@ public class IBeXCoreModelSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseIBeXModel(IBeXModel object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>IBe XModel Metadata</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>IBe XModel Metadata</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseIBeXModelMetadata(IBeXModelMetadata object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Import Name To Package Dependency Mapping</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Import Name To Package Dependency Mapping</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseImportNameToPackageDependencyMapping(Map.Entry<String, EPackageDependency> object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>EPackage Dependency</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>EPackage Dependency</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseEPackageDependency(EPackageDependency object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Name To EClassifier Mapping</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Name To EClassifier Mapping</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseNameToEClassifierMapping(Map.Entry<String, EClassifier> object) {
 		return null;
 	}
 

@@ -2,7 +2,6 @@
  */
 package org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl;
 
-import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
@@ -160,26 +159,8 @@ public class IBeXGTModelPackageImpl extends EPackageImpl implements IBeXGTModelP
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getGTModel_Package() {
-		return (EAttribute) gtModelEClass.getEStructuralFeatures().get(0);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EAttribute getGTModel_Project() {
-		return (EAttribute) gtModelEClass.getEStructuralFeatures().get(1);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	public EReference getGTModel_RuleSet() {
-		return (EReference) gtModelEClass.getEStructuralFeatures().get(2);
+		return (EReference) gtModelEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -383,8 +364,6 @@ public class IBeXGTModelPackageImpl extends EPackageImpl implements IBeXGTModelP
 
 		// Create classes and their features
 		gtModelEClass = createEClass(GT_MODEL);
-		createEAttribute(gtModelEClass, GT_MODEL__PACKAGE);
-		createEAttribute(gtModelEClass, GT_MODEL__PROJECT);
 		createEReference(gtModelEClass, GT_MODEL__RULE_SET);
 
 		gtRuleSetEClass = createEClass(GT_RULE_SET);
@@ -455,10 +434,6 @@ public class IBeXGTModelPackageImpl extends EPackageImpl implements IBeXGTModelP
 
 		// Initialize classes, features, and operations; add parameters
 		initEClass(gtModelEClass, GTModel.class, "GTModel", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getGTModel_Package(), ecorePackage.getEString(), "package", null, 0, 1, GTModel.class,
-				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getGTModel_Project(), ecorePackage.getEString(), "project", null, 0, 1, GTModel.class,
-				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getGTModel_RuleSet(), this.getGTRuleSet(), null, "ruleSet", null, 1, 1, GTModel.class,
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

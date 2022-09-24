@@ -14,10 +14,46 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//IBeXNamedElement/name"/>
     </genClasses>
     <genClasses ecoreClass="IBeXCoreModel.ecore#//IBeXModel">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXModel/metaData"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXModel/featureConfig"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXModel/patternSet"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXModel/nodeSet"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXModel/edgeSet"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXModel/featureConfig"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXCoreModel.ecore#//IBeXModelMetadata">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//IBeXModelMetadata/project"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//IBeXModelMetadata/projectPath"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//IBeXModelMetadata/package"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//IBeXModelMetadata/packagePath"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXModelMetadata/dependencies"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXModelMetadata/name2package"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXCoreModel.ecore#//ImportNameToPackageDependencyMapping">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//ImportNameToPackageDependencyMapping/key"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//ImportNameToPackageDependencyMapping/value"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXCoreModel.ecore#//EPackageDependency">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//EPackageDependency/simpleName"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//EPackageDependency/hasAlias"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//EPackageDependency/alias"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//EPackageDependency/fullyQualifiedName"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//EPackageDependency/package"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//EPackageDependency/packageURI"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//EPackageDependency/packageHasProject"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//EPackageDependency/projectLocation"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//EPackageDependency/factoryClassName"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//EPackageDependency/packageClassName"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//EPackageDependency/ecoreURI"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//EPackageDependency/ecoreHasLocation"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//EPackageDependency/ecoreLocation"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//EPackageDependency/genmodelURI"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//EPackageDependency/genmodelHasLocation"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//EPackageDependency/genmodelLocation"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//EPackageDependency/name2classifier"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXCoreModel.ecore#//NameToEClassifierMapping">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//NameToEClassifierMapping/key"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//NameToEClassifierMapping/value"/>
     </genClasses>
     <genClasses ecoreClass="IBeXCoreModel.ecore#//IBeXFeatureConfig">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//IBeXFeatureConfig/countExpressions"/>

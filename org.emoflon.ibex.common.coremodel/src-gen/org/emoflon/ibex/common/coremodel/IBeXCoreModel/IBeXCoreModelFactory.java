@@ -32,6 +32,24 @@ public interface IBeXCoreModelFactory extends EFactory {
 	IBeXModel createIBeXModel();
 
 	/**
+	 * Returns a new object of class '<em>IBe XModel Metadata</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>IBe XModel Metadata</em>'.
+	 * @generated
+	 */
+	IBeXModelMetadata createIBeXModelMetadata();
+
+	/**
+	 * Returns a new object of class '<em>EPackage Dependency</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>EPackage Dependency</em>'.
+	 * @generated
+	 */
+	EPackageDependency createEPackageDependency();
+
+	/**
 	 * Returns a new object of class '<em>IBe XFeature Config</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

@@ -5,6 +5,7 @@ package org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl;
 import java.util.Map;
 
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 
@@ -60,6 +61,14 @@ public class IBeXCoreModelFactoryImpl extends EFactoryImpl implements IBeXCoreMo
 		switch (eClass.getClassifierID()) {
 		case IBeXCoreModelPackage.IBE_XMODEL:
 			return createIBeXModel();
+		case IBeXCoreModelPackage.IBE_XMODEL_METADATA:
+			return createIBeXModelMetadata();
+		case IBeXCoreModelPackage.IMPORT_NAME_TO_PACKAGE_DEPENDENCY_MAPPING:
+			return (EObject) createImportNameToPackageDependencyMapping();
+		case IBeXCoreModelPackage.EPACKAGE_DEPENDENCY:
+			return createEPackageDependency();
+		case IBeXCoreModelPackage.NAME_TO_ECLASSIFIER_MAPPING:
+			return (EObject) createNameToEClassifierMapping();
 		case IBeXCoreModelPackage.IBE_XFEATURE_CONFIG:
 			return createIBeXFeatureConfig();
 		case IBeXCoreModelPackage.IBE_XPATTERN_SET:
@@ -109,6 +118,46 @@ public class IBeXCoreModelFactoryImpl extends EFactoryImpl implements IBeXCoreMo
 	public IBeXModel createIBeXModel() {
 		IBeXModelImpl iBeXModel = new IBeXModelImpl();
 		return iBeXModel;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public IBeXModelMetadata createIBeXModelMetadata() {
+		IBeXModelMetadataImpl iBeXModelMetadata = new IBeXModelMetadataImpl();
+		return iBeXModelMetadata;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public Map.Entry<String, EPackageDependency> createImportNameToPackageDependencyMapping() {
+		ImportNameToPackageDependencyMappingImpl importNameToPackageDependencyMapping = new ImportNameToPackageDependencyMappingImpl();
+		return importNameToPackageDependencyMapping;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EPackageDependency createEPackageDependency() {
+		EPackageDependencyImpl ePackageDependency = new EPackageDependencyImpl();
+		return ePackageDependency;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public Map.Entry<String, EClassifier> createNameToEClassifierMapping() {
+		NameToEClassifierMappingImpl nameToEClassifierMapping = new NameToEClassifierMappingImpl();
+		return nameToEClassifierMapping;
 	}
 
 	/**

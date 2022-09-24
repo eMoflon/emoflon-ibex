@@ -79,6 +79,24 @@ public interface IBeXTGGModelPackage extends EPackage {
 	int TGG_MODEL__NAME = IBeXCoreModelPackage.IBE_XMODEL__NAME;
 
 	/**
+	 * The feature id for the '<em><b>Meta Data</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_MODEL__META_DATA = IBeXCoreModelPackage.IBE_XMODEL__META_DATA;
+
+	/**
+	 * The feature id for the '<em><b>Feature Config</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_MODEL__FEATURE_CONFIG = IBeXCoreModelPackage.IBE_XMODEL__FEATURE_CONFIG;
+
+	/**
 	 * The feature id for the '<em><b>Pattern Set</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -104,15 +122,6 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int TGG_MODEL__EDGE_SET = IBeXCoreModelPackage.IBE_XMODEL__EDGE_SET;
-
-	/**
-	 * The feature id for the '<em><b>Feature Config</b></em>' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int TGG_MODEL__FEATURE_CONFIG = IBeXCoreModelPackage.IBE_XMODEL__FEATURE_CONFIG;
 
 	/**
 	 * The feature id for the '<em><b>Source</b></em>' reference list.

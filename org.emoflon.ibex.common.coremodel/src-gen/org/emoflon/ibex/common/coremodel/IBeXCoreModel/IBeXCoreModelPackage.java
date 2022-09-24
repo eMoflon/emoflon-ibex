@@ -116,31 +116,13 @@ public interface IBeXCoreModelPackage extends EPackage {
 	int IBE_XMODEL__NAME = IBE_XNAMED_ELEMENT__NAME;
 
 	/**
-	 * The feature id for the '<em><b>Pattern Set</b></em>' containment reference.
+	 * The feature id for the '<em><b>Meta Data</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XMODEL__PATTERN_SET = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 0;
-
-	/**
-	 * The feature id for the '<em><b>Node Set</b></em>' containment reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int IBE_XMODEL__NODE_SET = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 1;
-
-	/**
-	 * The feature id for the '<em><b>Edge Set</b></em>' containment reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int IBE_XMODEL__EDGE_SET = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 2;
+	int IBE_XMODEL__META_DATA = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 0;
 
 	/**
 	 * The feature id for the '<em><b>Feature Config</b></em>' reference.
@@ -149,7 +131,34 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XMODEL__FEATURE_CONFIG = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 3;
+	int IBE_XMODEL__FEATURE_CONFIG = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 1;
+
+	/**
+	 * The feature id for the '<em><b>Pattern Set</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XMODEL__PATTERN_SET = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 2;
+
+	/**
+	 * The feature id for the '<em><b>Node Set</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XMODEL__NODE_SET = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 3;
+
+	/**
+	 * The feature id for the '<em><b>Edge Set</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XMODEL__EDGE_SET = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 4;
 
 	/**
 	 * The number of structural features of the '<em>IBe XModel</em>' class.
@@ -158,7 +167,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XMODEL_FEATURE_COUNT = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 4;
+	int IBE_XMODEL_FEATURE_COUNT = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 5;
 
 	/**
 	 * The number of operations of the '<em>IBe XModel</em>' class.
@@ -170,6 +179,361 @@ public interface IBeXCoreModelPackage extends EPackage {
 	int IBE_XMODEL_OPERATION_COUNT = IBE_XNAMED_ELEMENT_OPERATION_COUNT + 0;
 
 	/**
+	 * The meta object id for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXModelMetadataImpl <em>IBe XModel Metadata</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXModelMetadataImpl
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXModelMetadata()
+	 * @generated
+	 */
+	int IBE_XMODEL_METADATA = 2;
+
+	/**
+	 * The feature id for the '<em><b>Project</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XMODEL_METADATA__PROJECT = 0;
+
+	/**
+	 * The feature id for the '<em><b>Project Path</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XMODEL_METADATA__PROJECT_PATH = 1;
+
+	/**
+	 * The feature id for the '<em><b>Package</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XMODEL_METADATA__PACKAGE = 2;
+
+	/**
+	 * The feature id for the '<em><b>Package Path</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XMODEL_METADATA__PACKAGE_PATH = 3;
+
+	/**
+	 * The feature id for the '<em><b>Dependencies</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XMODEL_METADATA__DEPENDENCIES = 4;
+
+	/**
+	 * The feature id for the '<em><b>Name2package</b></em>' map.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XMODEL_METADATA__NAME2PACKAGE = 5;
+
+	/**
+	 * The number of structural features of the '<em>IBe XModel Metadata</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XMODEL_METADATA_FEATURE_COUNT = 6;
+
+	/**
+	 * The number of operations of the '<em>IBe XModel Metadata</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XMODEL_METADATA_OPERATION_COUNT = 0;
+
+	/**
+	 * The meta object id for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.ImportNameToPackageDependencyMappingImpl <em>Import Name To Package Dependency Mapping</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.ImportNameToPackageDependencyMappingImpl
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getImportNameToPackageDependencyMapping()
+	 * @generated
+	 */
+	int IMPORT_NAME_TO_PACKAGE_DEPENDENCY_MAPPING = 3;
+
+	/**
+	 * The feature id for the '<em><b>Key</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IMPORT_NAME_TO_PACKAGE_DEPENDENCY_MAPPING__KEY = 0;
+
+	/**
+	 * The feature id for the '<em><b>Value</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IMPORT_NAME_TO_PACKAGE_DEPENDENCY_MAPPING__VALUE = 1;
+
+	/**
+	 * The number of structural features of the '<em>Import Name To Package Dependency Mapping</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IMPORT_NAME_TO_PACKAGE_DEPENDENCY_MAPPING_FEATURE_COUNT = 2;
+
+	/**
+	 * The number of operations of the '<em>Import Name To Package Dependency Mapping</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IMPORT_NAME_TO_PACKAGE_DEPENDENCY_MAPPING_OPERATION_COUNT = 0;
+
+	/**
+	 * The meta object id for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.EPackageDependencyImpl <em>EPackage Dependency</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.EPackageDependencyImpl
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getEPackageDependency()
+	 * @generated
+	 */
+	int EPACKAGE_DEPENDENCY = 4;
+
+	/**
+	 * The feature id for the '<em><b>Simple Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EPACKAGE_DEPENDENCY__SIMPLE_NAME = 0;
+
+	/**
+	 * The feature id for the '<em><b>Has Alias</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EPACKAGE_DEPENDENCY__HAS_ALIAS = 1;
+
+	/**
+	 * The feature id for the '<em><b>Alias</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EPACKAGE_DEPENDENCY__ALIAS = 2;
+
+	/**
+	 * The feature id for the '<em><b>Fully Qualified Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EPACKAGE_DEPENDENCY__FULLY_QUALIFIED_NAME = 3;
+
+	/**
+	 * The feature id for the '<em><b>Package</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EPACKAGE_DEPENDENCY__PACKAGE = 4;
+
+	/**
+	 * The feature id for the '<em><b>Package URI</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EPACKAGE_DEPENDENCY__PACKAGE_URI = 5;
+
+	/**
+	 * The feature id for the '<em><b>Package Has Project</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EPACKAGE_DEPENDENCY__PACKAGE_HAS_PROJECT = 6;
+
+	/**
+	 * The feature id for the '<em><b>Project Location</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EPACKAGE_DEPENDENCY__PROJECT_LOCATION = 7;
+
+	/**
+	 * The feature id for the '<em><b>Factory Class Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EPACKAGE_DEPENDENCY__FACTORY_CLASS_NAME = 8;
+
+	/**
+	 * The feature id for the '<em><b>Package Class Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EPACKAGE_DEPENDENCY__PACKAGE_CLASS_NAME = 9;
+
+	/**
+	 * The feature id for the '<em><b>Ecore URI</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EPACKAGE_DEPENDENCY__ECORE_URI = 10;
+
+	/**
+	 * The feature id for the '<em><b>Ecore Has Location</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EPACKAGE_DEPENDENCY__ECORE_HAS_LOCATION = 11;
+
+	/**
+	 * The feature id for the '<em><b>Ecore Location</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EPACKAGE_DEPENDENCY__ECORE_LOCATION = 12;
+
+	/**
+	 * The feature id for the '<em><b>Genmodel URI</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EPACKAGE_DEPENDENCY__GENMODEL_URI = 13;
+
+	/**
+	 * The feature id for the '<em><b>Genmodel Has Location</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EPACKAGE_DEPENDENCY__GENMODEL_HAS_LOCATION = 14;
+
+	/**
+	 * The feature id for the '<em><b>Genmodel Location</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EPACKAGE_DEPENDENCY__GENMODEL_LOCATION = 15;
+
+	/**
+	 * The feature id for the '<em><b>Name2classifier</b></em>' map.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EPACKAGE_DEPENDENCY__NAME2CLASSIFIER = 16;
+
+	/**
+	 * The number of structural features of the '<em>EPackage Dependency</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EPACKAGE_DEPENDENCY_FEATURE_COUNT = 17;
+
+	/**
+	 * The number of operations of the '<em>EPackage Dependency</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EPACKAGE_DEPENDENCY_OPERATION_COUNT = 0;
+
+	/**
+	 * The meta object id for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.NameToEClassifierMappingImpl <em>Name To EClassifier Mapping</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.NameToEClassifierMappingImpl
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getNameToEClassifierMapping()
+	 * @generated
+	 */
+	int NAME_TO_ECLASSIFIER_MAPPING = 5;
+
+	/**
+	 * The feature id for the '<em><b>Key</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int NAME_TO_ECLASSIFIER_MAPPING__KEY = 0;
+
+	/**
+	 * The feature id for the '<em><b>Value</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int NAME_TO_ECLASSIFIER_MAPPING__VALUE = 1;
+
+	/**
+	 * The number of structural features of the '<em>Name To EClassifier Mapping</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int NAME_TO_ECLASSIFIER_MAPPING_FEATURE_COUNT = 2;
+
+	/**
+	 * The number of operations of the '<em>Name To EClassifier Mapping</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int NAME_TO_ECLASSIFIER_MAPPING_OPERATION_COUNT = 0;
+
+	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXFeatureConfigImpl <em>IBe XFeature Config</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -177,7 +541,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXFeatureConfig()
 	 * @generated
 	 */
-	int IBE_XFEATURE_CONFIG = 2;
+	int IBE_XFEATURE_CONFIG = 6;
 
 	/**
 	 * The feature id for the '<em><b>Count Expressions</b></em>' attribute.
@@ -223,7 +587,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXPatternSet()
 	 * @generated
 	 */
-	int IBE_XPATTERN_SET = 3;
+	int IBE_XPATTERN_SET = 7;
 
 	/**
 	 * The feature id for the '<em><b>Patterns</b></em>' containment reference list.
@@ -260,7 +624,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXNodeSet()
 	 * @generated
 	 */
-	int IBE_XNODE_SET = 4;
+	int IBE_XNODE_SET = 8;
 
 	/**
 	 * The feature id for the '<em><b>Nodes</b></em>' containment reference list.
@@ -297,7 +661,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXEdgeSet()
 	 * @generated
 	 */
-	int IBE_XEDGE_SET = 5;
+	int IBE_XEDGE_SET = 9;
 
 	/**
 	 * The feature id for the '<em><b>Edges</b></em>' containment reference list.
@@ -334,7 +698,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXNode()
 	 * @generated
 	 */
-	int IBE_XNODE = 6;
+	int IBE_XNODE = 10;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -398,7 +762,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXEdge()
 	 * @generated
 	 */
-	int IBE_XEDGE = 7;
+	int IBE_XEDGE = 11;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -462,7 +826,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXPattern()
 	 * @generated
 	 */
-	int IBE_XPATTERN = 8;
+	int IBE_XPATTERN = 12;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -562,7 +926,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXInjectivityConstraint()
 	 * @generated
 	 */
-	int IBE_XINJECTIVITY_CONSTRAINT = 9;
+	int IBE_XINJECTIVITY_CONSTRAINT = 13;
 
 	/**
 	 * The feature id for the '<em><b>Nodes</b></em>' reference list.
@@ -599,7 +963,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXPatternInvocation()
 	 * @generated
 	 */
-	int IBE_XPATTERN_INVOCATION = 10;
+	int IBE_XPATTERN_INVOCATION = 14;
 
 	/**
 	 * The feature id for the '<em><b>Positive</b></em>' attribute.
@@ -663,7 +1027,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXNodeMapping()
 	 * @generated
 	 */
-	int IBE_XNODE_MAPPING = 11;
+	int IBE_XNODE_MAPPING = 15;
 
 	/**
 	 * The feature id for the '<em><b>Key</b></em>' reference.
@@ -709,7 +1073,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXEnumValue()
 	 * @generated
 	 */
-	int IBE_XENUM_VALUE = 12;
+	int IBE_XENUM_VALUE = 16;
 
 	/**
 	 * The feature id for the '<em><b>Type</b></em>' reference.
@@ -755,7 +1119,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXStringValue()
 	 * @generated
 	 */
-	int IBE_XSTRING_VALUE = 13;
+	int IBE_XSTRING_VALUE = 17;
 
 	/**
 	 * The feature id for the '<em><b>Type</b></em>' reference.
@@ -801,7 +1165,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXBooleanValue()
 	 * @generated
 	 */
-	int IBE_XBOOLEAN_VALUE = 14;
+	int IBE_XBOOLEAN_VALUE = 18;
 
 	/**
 	 * The feature id for the '<em><b>Type</b></em>' reference.
@@ -847,7 +1211,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXAttributeValue()
 	 * @generated
 	 */
-	int IBE_XATTRIBUTE_VALUE = 15;
+	int IBE_XATTRIBUTE_VALUE = 19;
 
 	/**
 	 * The feature id for the '<em><b>Type</b></em>' reference.
@@ -902,7 +1266,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXMatchCountValue()
 	 * @generated
 	 */
-	int IBE_XMATCH_COUNT_VALUE = 16;
+	int IBE_XMATCH_COUNT_VALUE = 20;
 
 	/**
 	 * The feature id for the '<em><b>Type</b></em>' reference.
@@ -948,7 +1312,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXRule()
 	 * @generated
 	 */
-	int IBE_XRULE = 17;
+	int IBE_XRULE = 21;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -1048,7 +1412,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXRuleDelta()
 	 * @generated
 	 */
-	int IBE_XRULE_DELTA = 18;
+	int IBE_XRULE_DELTA = 22;
 
 	/**
 	 * The feature id for the '<em><b>Nodes</b></em>' reference list.
@@ -1094,7 +1458,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXAttributeAssignment()
 	 * @generated
 	 */
-	int IBE_XATTRIBUTE_ASSIGNMENT = 19;
+	int IBE_XATTRIBUTE_ASSIGNMENT = 23;
 
 	/**
 	 * The feature id for the '<em><b>Node</b></em>' reference.
@@ -1173,6 +1537,17 @@ public interface IBeXCoreModelPackage extends EPackage {
 	EClass getIBeXModel();
 
 	/**
+	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel#getMetaData <em>Meta Data</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Meta Data</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel#getMetaData()
+	 * @see #getIBeXModel()
+	 * @generated
+	 */
+	EReference getIBeXModel_MetaData();
+
+	/**
 	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel#getPatternSet <em>Pattern Set</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1204,6 +1579,347 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getIBeXModel_EdgeSet();
+
+	/**
+	 * Returns the meta object for class '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModelMetadata <em>IBe XModel Metadata</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>IBe XModel Metadata</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModelMetadata
+	 * @generated
+	 */
+	EClass getIBeXModelMetadata();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModelMetadata#getProject <em>Project</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Project</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModelMetadata#getProject()
+	 * @see #getIBeXModelMetadata()
+	 * @generated
+	 */
+	EAttribute getIBeXModelMetadata_Project();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModelMetadata#getProjectPath <em>Project Path</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Project Path</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModelMetadata#getProjectPath()
+	 * @see #getIBeXModelMetadata()
+	 * @generated
+	 */
+	EAttribute getIBeXModelMetadata_ProjectPath();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModelMetadata#getPackage <em>Package</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Package</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModelMetadata#getPackage()
+	 * @see #getIBeXModelMetadata()
+	 * @generated
+	 */
+	EAttribute getIBeXModelMetadata_Package();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModelMetadata#getPackagePath <em>Package Path</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Package Path</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModelMetadata#getPackagePath()
+	 * @see #getIBeXModelMetadata()
+	 * @generated
+	 */
+	EAttribute getIBeXModelMetadata_PackagePath();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModelMetadata#getDependencies <em>Dependencies</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Dependencies</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModelMetadata#getDependencies()
+	 * @see #getIBeXModelMetadata()
+	 * @generated
+	 */
+	EReference getIBeXModelMetadata_Dependencies();
+
+	/**
+	 * Returns the meta object for the map '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModelMetadata#getName2package <em>Name2package</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the map '<em>Name2package</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModelMetadata#getName2package()
+	 * @see #getIBeXModelMetadata()
+	 * @generated
+	 */
+	EReference getIBeXModelMetadata_Name2package();
+
+	/**
+	 * Returns the meta object for class '{@link java.util.Map.Entry <em>Import Name To Package Dependency Mapping</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Import Name To Package Dependency Mapping</em>'.
+	 * @see java.util.Map.Entry
+	 * @model keyDataType="org.eclipse.emf.ecore.EString"
+	 *        valueType="org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency" valueRequired="true"
+	 * @generated
+	 */
+	EClass getImportNameToPackageDependencyMapping();
+
+	/**
+	 * Returns the meta object for the attribute '{@link java.util.Map.Entry <em>Key</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Key</em>'.
+	 * @see java.util.Map.Entry
+	 * @see #getImportNameToPackageDependencyMapping()
+	 * @generated
+	 */
+	EAttribute getImportNameToPackageDependencyMapping_Key();
+
+	/**
+	 * Returns the meta object for the reference '{@link java.util.Map.Entry <em>Value</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Value</em>'.
+	 * @see java.util.Map.Entry
+	 * @see #getImportNameToPackageDependencyMapping()
+	 * @generated
+	 */
+	EReference getImportNameToPackageDependencyMapping_Value();
+
+	/**
+	 * Returns the meta object for class '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency <em>EPackage Dependency</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>EPackage Dependency</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency
+	 * @generated
+	 */
+	EClass getEPackageDependency();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getSimpleName <em>Simple Name</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Simple Name</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getSimpleName()
+	 * @see #getEPackageDependency()
+	 * @generated
+	 */
+	EAttribute getEPackageDependency_SimpleName();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#isHasAlias <em>Has Alias</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Has Alias</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#isHasAlias()
+	 * @see #getEPackageDependency()
+	 * @generated
+	 */
+	EAttribute getEPackageDependency_HasAlias();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getAlias <em>Alias</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Alias</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getAlias()
+	 * @see #getEPackageDependency()
+	 * @generated
+	 */
+	EAttribute getEPackageDependency_Alias();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getFullyQualifiedName <em>Fully Qualified Name</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Fully Qualified Name</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getFullyQualifiedName()
+	 * @see #getEPackageDependency()
+	 * @generated
+	 */
+	EAttribute getEPackageDependency_FullyQualifiedName();
+
+	/**
+	 * Returns the meta object for the reference '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getPackage <em>Package</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Package</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getPackage()
+	 * @see #getEPackageDependency()
+	 * @generated
+	 */
+	EReference getEPackageDependency_Package();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getPackageURI <em>Package URI</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Package URI</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getPackageURI()
+	 * @see #getEPackageDependency()
+	 * @generated
+	 */
+	EAttribute getEPackageDependency_PackageURI();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#isPackageHasProject <em>Package Has Project</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Package Has Project</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#isPackageHasProject()
+	 * @see #getEPackageDependency()
+	 * @generated
+	 */
+	EAttribute getEPackageDependency_PackageHasProject();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getProjectLocation <em>Project Location</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Project Location</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getProjectLocation()
+	 * @see #getEPackageDependency()
+	 * @generated
+	 */
+	EAttribute getEPackageDependency_ProjectLocation();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getFactoryClassName <em>Factory Class Name</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Factory Class Name</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getFactoryClassName()
+	 * @see #getEPackageDependency()
+	 * @generated
+	 */
+	EAttribute getEPackageDependency_FactoryClassName();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getPackageClassName <em>Package Class Name</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Package Class Name</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getPackageClassName()
+	 * @see #getEPackageDependency()
+	 * @generated
+	 */
+	EAttribute getEPackageDependency_PackageClassName();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getEcoreURI <em>Ecore URI</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Ecore URI</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getEcoreURI()
+	 * @see #getEPackageDependency()
+	 * @generated
+	 */
+	EAttribute getEPackageDependency_EcoreURI();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#isEcoreHasLocation <em>Ecore Has Location</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Ecore Has Location</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#isEcoreHasLocation()
+	 * @see #getEPackageDependency()
+	 * @generated
+	 */
+	EAttribute getEPackageDependency_EcoreHasLocation();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getEcoreLocation <em>Ecore Location</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Ecore Location</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getEcoreLocation()
+	 * @see #getEPackageDependency()
+	 * @generated
+	 */
+	EAttribute getEPackageDependency_EcoreLocation();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getGenmodelURI <em>Genmodel URI</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Genmodel URI</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getGenmodelURI()
+	 * @see #getEPackageDependency()
+	 * @generated
+	 */
+	EAttribute getEPackageDependency_GenmodelURI();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#isGenmodelHasLocation <em>Genmodel Has Location</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Genmodel Has Location</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#isGenmodelHasLocation()
+	 * @see #getEPackageDependency()
+	 * @generated
+	 */
+	EAttribute getEPackageDependency_GenmodelHasLocation();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getGenmodelLocation <em>Genmodel Location</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Genmodel Location</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getGenmodelLocation()
+	 * @see #getEPackageDependency()
+	 * @generated
+	 */
+	EAttribute getEPackageDependency_GenmodelLocation();
+
+	/**
+	 * Returns the meta object for the map '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getName2classifier <em>Name2classifier</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the map '<em>Name2classifier</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getName2classifier()
+	 * @see #getEPackageDependency()
+	 * @generated
+	 */
+	EReference getEPackageDependency_Name2classifier();
+
+	/**
+	 * Returns the meta object for class '{@link java.util.Map.Entry <em>Name To EClassifier Mapping</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Name To EClassifier Mapping</em>'.
+	 * @see java.util.Map.Entry
+	 * @model keyDataType="org.eclipse.emf.ecore.EString"
+	 *        valueType="org.eclipse.emf.ecore.EClassifier" valueRequired="true"
+	 * @generated
+	 */
+	EClass getNameToEClassifierMapping();
+
+	/**
+	 * Returns the meta object for the attribute '{@link java.util.Map.Entry <em>Key</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Key</em>'.
+	 * @see java.util.Map.Entry
+	 * @see #getNameToEClassifierMapping()
+	 * @generated
+	 */
+	EAttribute getNameToEClassifierMapping_Key();
+
+	/**
+	 * Returns the meta object for the reference '{@link java.util.Map.Entry <em>Value</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Value</em>'.
+	 * @see java.util.Map.Entry
+	 * @see #getNameToEClassifierMapping()
+	 * @generated
+	 */
+	EReference getNameToEClassifierMapping_Value();
 
 	/**
 	 * Returns the meta object for the reference '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel#getFeatureConfig <em>Feature Config</em>}'.
@@ -1923,6 +2639,14 @@ public interface IBeXCoreModelPackage extends EPackage {
 		EClass IBE_XMODEL = eINSTANCE.getIBeXModel();
 
 		/**
+		 * The meta object literal for the '<em><b>Meta Data</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XMODEL__META_DATA = eINSTANCE.getIBeXModel_MetaData();
+
+		/**
 		 * The meta object literal for the '<em><b>Pattern Set</b></em>' containment reference feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -1945,6 +2669,264 @@ public interface IBeXCoreModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference IBE_XMODEL__EDGE_SET = eINSTANCE.getIBeXModel_EdgeSet();
+
+		/**
+		 * The meta object literal for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXModelMetadataImpl <em>IBe XModel Metadata</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXModelMetadataImpl
+		 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXModelMetadata()
+		 * @generated
+		 */
+		EClass IBE_XMODEL_METADATA = eINSTANCE.getIBeXModelMetadata();
+
+		/**
+		 * The meta object literal for the '<em><b>Project</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute IBE_XMODEL_METADATA__PROJECT = eINSTANCE.getIBeXModelMetadata_Project();
+
+		/**
+		 * The meta object literal for the '<em><b>Project Path</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute IBE_XMODEL_METADATA__PROJECT_PATH = eINSTANCE.getIBeXModelMetadata_ProjectPath();
+
+		/**
+		 * The meta object literal for the '<em><b>Package</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute IBE_XMODEL_METADATA__PACKAGE = eINSTANCE.getIBeXModelMetadata_Package();
+
+		/**
+		 * The meta object literal for the '<em><b>Package Path</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute IBE_XMODEL_METADATA__PACKAGE_PATH = eINSTANCE.getIBeXModelMetadata_PackagePath();
+
+		/**
+		 * The meta object literal for the '<em><b>Dependencies</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XMODEL_METADATA__DEPENDENCIES = eINSTANCE.getIBeXModelMetadata_Dependencies();
+
+		/**
+		 * The meta object literal for the '<em><b>Name2package</b></em>' map feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XMODEL_METADATA__NAME2PACKAGE = eINSTANCE.getIBeXModelMetadata_Name2package();
+
+		/**
+		 * The meta object literal for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.ImportNameToPackageDependencyMappingImpl <em>Import Name To Package Dependency Mapping</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.ImportNameToPackageDependencyMappingImpl
+		 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getImportNameToPackageDependencyMapping()
+		 * @generated
+		 */
+		EClass IMPORT_NAME_TO_PACKAGE_DEPENDENCY_MAPPING = eINSTANCE.getImportNameToPackageDependencyMapping();
+
+		/**
+		 * The meta object literal for the '<em><b>Key</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute IMPORT_NAME_TO_PACKAGE_DEPENDENCY_MAPPING__KEY = eINSTANCE
+				.getImportNameToPackageDependencyMapping_Key();
+
+		/**
+		 * The meta object literal for the '<em><b>Value</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IMPORT_NAME_TO_PACKAGE_DEPENDENCY_MAPPING__VALUE = eINSTANCE
+				.getImportNameToPackageDependencyMapping_Value();
+
+		/**
+		 * The meta object literal for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.EPackageDependencyImpl <em>EPackage Dependency</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.EPackageDependencyImpl
+		 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getEPackageDependency()
+		 * @generated
+		 */
+		EClass EPACKAGE_DEPENDENCY = eINSTANCE.getEPackageDependency();
+
+		/**
+		 * The meta object literal for the '<em><b>Simple Name</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute EPACKAGE_DEPENDENCY__SIMPLE_NAME = eINSTANCE.getEPackageDependency_SimpleName();
+
+		/**
+		 * The meta object literal for the '<em><b>Has Alias</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute EPACKAGE_DEPENDENCY__HAS_ALIAS = eINSTANCE.getEPackageDependency_HasAlias();
+
+		/**
+		 * The meta object literal for the '<em><b>Alias</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute EPACKAGE_DEPENDENCY__ALIAS = eINSTANCE.getEPackageDependency_Alias();
+
+		/**
+		 * The meta object literal for the '<em><b>Fully Qualified Name</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute EPACKAGE_DEPENDENCY__FULLY_QUALIFIED_NAME = eINSTANCE.getEPackageDependency_FullyQualifiedName();
+
+		/**
+		 * The meta object literal for the '<em><b>Package</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference EPACKAGE_DEPENDENCY__PACKAGE = eINSTANCE.getEPackageDependency_Package();
+
+		/**
+		 * The meta object literal for the '<em><b>Package URI</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute EPACKAGE_DEPENDENCY__PACKAGE_URI = eINSTANCE.getEPackageDependency_PackageURI();
+
+		/**
+		 * The meta object literal for the '<em><b>Package Has Project</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute EPACKAGE_DEPENDENCY__PACKAGE_HAS_PROJECT = eINSTANCE.getEPackageDependency_PackageHasProject();
+
+		/**
+		 * The meta object literal for the '<em><b>Project Location</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute EPACKAGE_DEPENDENCY__PROJECT_LOCATION = eINSTANCE.getEPackageDependency_ProjectLocation();
+
+		/**
+		 * The meta object literal for the '<em><b>Factory Class Name</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute EPACKAGE_DEPENDENCY__FACTORY_CLASS_NAME = eINSTANCE.getEPackageDependency_FactoryClassName();
+
+		/**
+		 * The meta object literal for the '<em><b>Package Class Name</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute EPACKAGE_DEPENDENCY__PACKAGE_CLASS_NAME = eINSTANCE.getEPackageDependency_PackageClassName();
+
+		/**
+		 * The meta object literal for the '<em><b>Ecore URI</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute EPACKAGE_DEPENDENCY__ECORE_URI = eINSTANCE.getEPackageDependency_EcoreURI();
+
+		/**
+		 * The meta object literal for the '<em><b>Ecore Has Location</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute EPACKAGE_DEPENDENCY__ECORE_HAS_LOCATION = eINSTANCE.getEPackageDependency_EcoreHasLocation();
+
+		/**
+		 * The meta object literal for the '<em><b>Ecore Location</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute EPACKAGE_DEPENDENCY__ECORE_LOCATION = eINSTANCE.getEPackageDependency_EcoreLocation();
+
+		/**
+		 * The meta object literal for the '<em><b>Genmodel URI</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute EPACKAGE_DEPENDENCY__GENMODEL_URI = eINSTANCE.getEPackageDependency_GenmodelURI();
+
+		/**
+		 * The meta object literal for the '<em><b>Genmodel Has Location</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute EPACKAGE_DEPENDENCY__GENMODEL_HAS_LOCATION = eINSTANCE.getEPackageDependency_GenmodelHasLocation();
+
+		/**
+		 * The meta object literal for the '<em><b>Genmodel Location</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute EPACKAGE_DEPENDENCY__GENMODEL_LOCATION = eINSTANCE.getEPackageDependency_GenmodelLocation();
+
+		/**
+		 * The meta object literal for the '<em><b>Name2classifier</b></em>' map feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference EPACKAGE_DEPENDENCY__NAME2CLASSIFIER = eINSTANCE.getEPackageDependency_Name2classifier();
+
+		/**
+		 * The meta object literal for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.NameToEClassifierMappingImpl <em>Name To EClassifier Mapping</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.NameToEClassifierMappingImpl
+		 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getNameToEClassifierMapping()
+		 * @generated
+		 */
+		EClass NAME_TO_ECLASSIFIER_MAPPING = eINSTANCE.getNameToEClassifierMapping();
+
+		/**
+		 * The meta object literal for the '<em><b>Key</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute NAME_TO_ECLASSIFIER_MAPPING__KEY = eINSTANCE.getNameToEClassifierMapping_Key();
+
+		/**
+		 * The meta object literal for the '<em><b>Value</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference NAME_TO_ECLASSIFIER_MAPPING__VALUE = eINSTANCE.getNameToEClassifierMapping_Value();
 
 		/**
 		 * The meta object literal for the '<em><b>Feature Config</b></em>' reference feature.

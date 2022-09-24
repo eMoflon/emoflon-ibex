@@ -24,50 +24,12 @@ import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.IBeXGTModelPackage;
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTModelImpl#getPackage <em>Package</em>}</li>
- *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTModelImpl#getProject <em>Project</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTModelImpl#getRuleSet <em>Rule Set</em>}</li>
  * </ul>
  *
  * @generated
  */
 public class GTModelImpl extends IBeXModelImpl implements GTModel {
-	/**
-	 * The default value of the '{@link #getPackage() <em>Package</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getPackage()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final String PACKAGE_EDEFAULT = null;
-	/**
-	 * The cached value of the '{@link #getPackage() <em>Package</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getPackage()
-	 * @generated
-	 * @ordered
-	 */
-	protected String package_ = PACKAGE_EDEFAULT;
-	/**
-	 * The default value of the '{@link #getProject() <em>Project</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getProject()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final String PROJECT_EDEFAULT = null;
-	/**
-	 * The cached value of the '{@link #getProject() <em>Project</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getProject()
-	 * @generated
-	 * @ordered
-	 */
-	protected String project = PROJECT_EDEFAULT;
 	/**
 	 * The cached value of the '{@link #getRuleSet() <em>Rule Set</em>}' containment reference.
 	 * <!-- begin-user-doc -->
@@ -95,50 +57,6 @@ public class GTModelImpl extends IBeXModelImpl implements GTModel {
 	@Override
 	protected EClass eStaticClass() {
 		return IBeXGTModelPackage.Literals.GT_MODEL;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public String getPackage() {
-		return package_;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public void setPackage(String newPackage) {
-		String oldPackage = package_;
-		package_ = newPackage;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXGTModelPackage.GT_MODEL__PACKAGE, oldPackage,
-					package_));
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public String getProject() {
-		return project;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public void setProject(String newProject) {
-		String oldProject = project;
-		project = newProject;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXGTModelPackage.GT_MODEL__PROJECT, oldProject,
-					project));
 	}
 
 	/**
@@ -213,10 +131,6 @@ public class GTModelImpl extends IBeXModelImpl implements GTModel {
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case IBeXGTModelPackage.GT_MODEL__PACKAGE:
-			return getPackage();
-		case IBeXGTModelPackage.GT_MODEL__PROJECT:
-			return getProject();
 		case IBeXGTModelPackage.GT_MODEL__RULE_SET:
 			return getRuleSet();
 		}
@@ -231,12 +145,6 @@ public class GTModelImpl extends IBeXModelImpl implements GTModel {
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case IBeXGTModelPackage.GT_MODEL__PACKAGE:
-			setPackage((String) newValue);
-			return;
-		case IBeXGTModelPackage.GT_MODEL__PROJECT:
-			setProject((String) newValue);
-			return;
 		case IBeXGTModelPackage.GT_MODEL__RULE_SET:
 			setRuleSet((GTRuleSet) newValue);
 			return;
@@ -252,12 +160,6 @@ public class GTModelImpl extends IBeXModelImpl implements GTModel {
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case IBeXGTModelPackage.GT_MODEL__PACKAGE:
-			setPackage(PACKAGE_EDEFAULT);
-			return;
-		case IBeXGTModelPackage.GT_MODEL__PROJECT:
-			setProject(PROJECT_EDEFAULT);
-			return;
 		case IBeXGTModelPackage.GT_MODEL__RULE_SET:
 			setRuleSet((GTRuleSet) null);
 			return;
@@ -273,33 +175,10 @@ public class GTModelImpl extends IBeXModelImpl implements GTModel {
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case IBeXGTModelPackage.GT_MODEL__PACKAGE:
-			return PACKAGE_EDEFAULT == null ? package_ != null : !PACKAGE_EDEFAULT.equals(package_);
-		case IBeXGTModelPackage.GT_MODEL__PROJECT:
-			return PROJECT_EDEFAULT == null ? project != null : !PROJECT_EDEFAULT.equals(project);
 		case IBeXGTModelPackage.GT_MODEL__RULE_SET:
 			return ruleSet != null;
 		}
 		return super.eIsSet(featureID);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public String toString() {
-		if (eIsProxy())
-			return super.toString();
-
-		StringBuilder result = new StringBuilder(super.toString());
-		result.append(" (package: ");
-		result.append(package_);
-		result.append(", project: ");
-		result.append(project);
-		result.append(')');
-		return result.toString();
 	}
 
 } //GTModelImpl

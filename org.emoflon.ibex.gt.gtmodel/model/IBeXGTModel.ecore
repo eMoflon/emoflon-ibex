@@ -3,8 +3,6 @@
     xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="IBeXGTModel" nsURI="platform:/resource/org.emoflon.ibex.gt.gtmodel/model/IBeXGTModel.ecore"
     nsPrefix="IBeXGTModel">
   <eClassifiers xsi:type="ecore:EClass" name="GTModel" eSuperTypes="../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXModel">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="package" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="project" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="ruleSet" lowerBound="1"
         eType="#//GTRuleSet" containment="true"/>
   </eClassifiers>

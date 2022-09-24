@@ -2,7 +2,6 @@
  */
 package org.emoflon.ibex.gt.gtmodel.IBeXGTModel;
 
-import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
@@ -80,6 +79,24 @@ public interface IBeXGTModelPackage extends EPackage {
 	int GT_MODEL__NAME = IBeXCoreModelPackage.IBE_XMODEL__NAME;
 
 	/**
+	 * The feature id for the '<em><b>Meta Data</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_MODEL__META_DATA = IBeXCoreModelPackage.IBE_XMODEL__META_DATA;
+
+	/**
+	 * The feature id for the '<em><b>Feature Config</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_MODEL__FEATURE_CONFIG = IBeXCoreModelPackage.IBE_XMODEL__FEATURE_CONFIG;
+
+	/**
 	 * The feature id for the '<em><b>Pattern Set</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -107,40 +124,13 @@ public interface IBeXGTModelPackage extends EPackage {
 	int GT_MODEL__EDGE_SET = IBeXCoreModelPackage.IBE_XMODEL__EDGE_SET;
 
 	/**
-	 * The feature id for the '<em><b>Feature Config</b></em>' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int GT_MODEL__FEATURE_CONFIG = IBeXCoreModelPackage.IBE_XMODEL__FEATURE_CONFIG;
-
-	/**
-	 * The feature id for the '<em><b>Package</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int GT_MODEL__PACKAGE = IBeXCoreModelPackage.IBE_XMODEL_FEATURE_COUNT + 0;
-
-	/**
-	 * The feature id for the '<em><b>Project</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int GT_MODEL__PROJECT = IBeXCoreModelPackage.IBE_XMODEL_FEATURE_COUNT + 1;
-
-	/**
 	 * The feature id for the '<em><b>Rule Set</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int GT_MODEL__RULE_SET = IBeXCoreModelPackage.IBE_XMODEL_FEATURE_COUNT + 2;
+	int GT_MODEL__RULE_SET = IBeXCoreModelPackage.IBE_XMODEL_FEATURE_COUNT + 0;
 
 	/**
 	 * The number of structural features of the '<em>GT Model</em>' class.
@@ -149,7 +139,7 @@ public interface IBeXGTModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int GT_MODEL_FEATURE_COUNT = IBeXCoreModelPackage.IBE_XMODEL_FEATURE_COUNT + 3;
+	int GT_MODEL_FEATURE_COUNT = IBeXCoreModelPackage.IBE_XMODEL_FEATURE_COUNT + 1;
 
 	/**
 	 * The number of operations of the '<em>GT Model</em>' class.
@@ -546,28 +536,6 @@ public interface IBeXGTModelPackage extends EPackage {
 	EClass getGTModel();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTModel#getPackage <em>Package</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Package</em>'.
-	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTModel#getPackage()
-	 * @see #getGTModel()
-	 * @generated
-	 */
-	EAttribute getGTModel_Package();
-
-	/**
-	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTModel#getProject <em>Project</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Project</em>'.
-	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTModel#getProject()
-	 * @see #getGTModel()
-	 * @generated
-	 */
-	EAttribute getGTModel_Project();
-
-	/**
 	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTModel#getRuleSet <em>Rule Set</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -813,22 +781,6 @@ public interface IBeXGTModelPackage extends EPackage {
 		 * @generated
 		 */
 		EClass GT_MODEL = eINSTANCE.getGTModel();
-
-		/**
-		 * The meta object literal for the '<em><b>Package</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute GT_MODEL__PACKAGE = eINSTANCE.getGTModel_Package();
-
-		/**
-		 * The meta object literal for the '<em><b>Project</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute GT_MODEL__PROJECT = eINSTANCE.getGTModel_Project();
 
 		/**
 		 * The meta object literal for the '<em><b>Rule Set</b></em>' containment reference feature.

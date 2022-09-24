@@ -11,10 +11,11 @@ package org.emoflon.ibex.common.coremodel.IBeXCoreModel;
  * The following features are supported:
  * </p>
  * <ul>
+ *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel#getMetaData <em>Meta Data</em>}</li>
+ *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel#getFeatureConfig <em>Feature Config</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel#getPatternSet <em>Pattern Set</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel#getNodeSet <em>Node Set</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel#getEdgeSet <em>Edge Set</em>}</li>
- *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel#getFeatureConfig <em>Feature Config</em>}</li>
  * </ul>
  *
  * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage#getIBeXModel()
@@ -22,6 +23,28 @@ package org.emoflon.ibex.common.coremodel.IBeXCoreModel;
  * @generated
  */
 public interface IBeXModel extends IBeXNamedElement {
+	/**
+	 * Returns the value of the '<em><b>Meta Data</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Meta Data</em>' containment reference.
+	 * @see #setMetaData(IBeXModelMetadata)
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage#getIBeXModel_MetaData()
+	 * @model containment="true" required="true"
+	 * @generated
+	 */
+	IBeXModelMetadata getMetaData();
+
+	/**
+	 * Sets the value of the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel#getMetaData <em>Meta Data</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Meta Data</em>' containment reference.
+	 * @see #getMetaData()
+	 * @generated
+	 */
+	void setMetaData(IBeXModelMetadata value);
+
 	/**
 	 * Returns the value of the '<em><b>Pattern Set</b></em>' containment reference.
 	 * <!-- begin-user-doc -->

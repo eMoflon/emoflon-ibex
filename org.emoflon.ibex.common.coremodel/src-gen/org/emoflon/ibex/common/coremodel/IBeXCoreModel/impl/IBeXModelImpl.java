@@ -14,6 +14,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdgeSet;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXFeatureConfig;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModelMetadata;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNodeSet;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternSet;
 
@@ -25,15 +26,36 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternSet;
  * The following features are implemented:
  * </p>
  * <ul>
+ *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXModelImpl#getMetaData <em>Meta Data</em>}</li>
+ *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXModelImpl#getFeatureConfig <em>Feature Config</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXModelImpl#getPatternSet <em>Pattern Set</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXModelImpl#getNodeSet <em>Node Set</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXModelImpl#getEdgeSet <em>Edge Set</em>}</li>
- *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXModelImpl#getFeatureConfig <em>Feature Config</em>}</li>
  * </ul>
  *
  * @generated
  */
 public class IBeXModelImpl extends IBeXNamedElementImpl implements IBeXModel {
+	/**
+	 * The cached value of the '{@link #getMetaData() <em>Meta Data</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getMetaData()
+	 * @generated
+	 * @ordered
+	 */
+	protected IBeXModelMetadata metaData;
+
+	/**
+	 * The cached value of the '{@link #getFeatureConfig() <em>Feature Config</em>}' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getFeatureConfig()
+	 * @generated
+	 * @ordered
+	 */
+	protected IBeXFeatureConfig featureConfig;
+
 	/**
 	 * The cached value of the '{@link #getPatternSet() <em>Pattern Set</em>}' containment reference.
 	 * <!-- begin-user-doc -->
@@ -65,16 +87,6 @@ public class IBeXModelImpl extends IBeXNamedElementImpl implements IBeXModel {
 	protected IBeXEdgeSet edgeSet;
 
 	/**
-	 * The cached value of the '{@link #getFeatureConfig() <em>Feature Config</em>}' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getFeatureConfig()
-	 * @generated
-	 * @ordered
-	 */
-	protected IBeXFeatureConfig featureConfig;
-
-	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -91,6 +103,56 @@ public class IBeXModelImpl extends IBeXNamedElementImpl implements IBeXModel {
 	@Override
 	protected EClass eStaticClass() {
 		return IBeXCoreModelPackage.Literals.IBE_XMODEL;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public IBeXModelMetadata getMetaData() {
+		return metaData;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public NotificationChain basicSetMetaData(IBeXModelMetadata newMetaData, NotificationChain msgs) {
+		IBeXModelMetadata oldMetaData = metaData;
+		metaData = newMetaData;
+		if (eNotificationRequired()) {
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
+					IBeXCoreModelPackage.IBE_XMODEL__META_DATA, oldMetaData, newMetaData);
+			if (msgs == null)
+				msgs = notification;
+			else
+				msgs.add(notification);
+		}
+		return msgs;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setMetaData(IBeXModelMetadata newMetaData) {
+		if (newMetaData != metaData) {
+			NotificationChain msgs = null;
+			if (metaData != null)
+				msgs = ((InternalEObject) metaData).eInverseRemove(this,
+						EOPPOSITE_FEATURE_BASE - IBeXCoreModelPackage.IBE_XMODEL__META_DATA, null, msgs);
+			if (newMetaData != null)
+				msgs = ((InternalEObject) newMetaData).eInverseAdd(this,
+						EOPPOSITE_FEATURE_BASE - IBeXCoreModelPackage.IBE_XMODEL__META_DATA, null, msgs);
+			msgs = basicSetMetaData(newMetaData, msgs);
+			if (msgs != null)
+				msgs.dispatch();
+		} else if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXCoreModelPackage.IBE_XMODEL__META_DATA,
+					newMetaData, newMetaData));
 	}
 
 	/**
@@ -291,6 +353,8 @@ public class IBeXModelImpl extends IBeXNamedElementImpl implements IBeXModel {
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
+		case IBeXCoreModelPackage.IBE_XMODEL__META_DATA:
+			return basicSetMetaData(null, msgs);
 		case IBeXCoreModelPackage.IBE_XMODEL__PATTERN_SET:
 			return basicSetPatternSet(null, msgs);
 		case IBeXCoreModelPackage.IBE_XMODEL__NODE_SET:
@@ -309,16 +373,18 @@ public class IBeXModelImpl extends IBeXNamedElementImpl implements IBeXModel {
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
+		case IBeXCoreModelPackage.IBE_XMODEL__META_DATA:
+			return getMetaData();
+		case IBeXCoreModelPackage.IBE_XMODEL__FEATURE_CONFIG:
+			if (resolve)
+				return getFeatureConfig();
+			return basicGetFeatureConfig();
 		case IBeXCoreModelPackage.IBE_XMODEL__PATTERN_SET:
 			return getPatternSet();
 		case IBeXCoreModelPackage.IBE_XMODEL__NODE_SET:
 			return getNodeSet();
 		case IBeXCoreModelPackage.IBE_XMODEL__EDGE_SET:
 			return getEdgeSet();
-		case IBeXCoreModelPackage.IBE_XMODEL__FEATURE_CONFIG:
-			if (resolve)
-				return getFeatureConfig();
-			return basicGetFeatureConfig();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -331,6 +397,12 @@ public class IBeXModelImpl extends IBeXNamedElementImpl implements IBeXModel {
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
+		case IBeXCoreModelPackage.IBE_XMODEL__META_DATA:
+			setMetaData((IBeXModelMetadata) newValue);
+			return;
+		case IBeXCoreModelPackage.IBE_XMODEL__FEATURE_CONFIG:
+			setFeatureConfig((IBeXFeatureConfig) newValue);
+			return;
 		case IBeXCoreModelPackage.IBE_XMODEL__PATTERN_SET:
 			setPatternSet((IBeXPatternSet) newValue);
 			return;
@@ -339,9 +411,6 @@ public class IBeXModelImpl extends IBeXNamedElementImpl implements IBeXModel {
 			return;
 		case IBeXCoreModelPackage.IBE_XMODEL__EDGE_SET:
 			setEdgeSet((IBeXEdgeSet) newValue);
-			return;
-		case IBeXCoreModelPackage.IBE_XMODEL__FEATURE_CONFIG:
-			setFeatureConfig((IBeXFeatureConfig) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -355,6 +424,12 @@ public class IBeXModelImpl extends IBeXNamedElementImpl implements IBeXModel {
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
+		case IBeXCoreModelPackage.IBE_XMODEL__META_DATA:
+			setMetaData((IBeXModelMetadata) null);
+			return;
+		case IBeXCoreModelPackage.IBE_XMODEL__FEATURE_CONFIG:
+			setFeatureConfig((IBeXFeatureConfig) null);
+			return;
 		case IBeXCoreModelPackage.IBE_XMODEL__PATTERN_SET:
 			setPatternSet((IBeXPatternSet) null);
 			return;
@@ -363,9 +438,6 @@ public class IBeXModelImpl extends IBeXNamedElementImpl implements IBeXModel {
 			return;
 		case IBeXCoreModelPackage.IBE_XMODEL__EDGE_SET:
 			setEdgeSet((IBeXEdgeSet) null);
-			return;
-		case IBeXCoreModelPackage.IBE_XMODEL__FEATURE_CONFIG:
-			setFeatureConfig((IBeXFeatureConfig) null);
 			return;
 		}
 		super.eUnset(featureID);
@@ -379,14 +451,16 @@ public class IBeXModelImpl extends IBeXNamedElementImpl implements IBeXModel {
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
+		case IBeXCoreModelPackage.IBE_XMODEL__META_DATA:
+			return metaData != null;
+		case IBeXCoreModelPackage.IBE_XMODEL__FEATURE_CONFIG:
+			return featureConfig != null;
 		case IBeXCoreModelPackage.IBE_XMODEL__PATTERN_SET:
 			return patternSet != null;
 		case IBeXCoreModelPackage.IBE_XMODEL__NODE_SET:
 			return nodeSet != null;
 		case IBeXCoreModelPackage.IBE_XMODEL__EDGE_SET:
 			return edgeSet != null;
-		case IBeXCoreModelPackage.IBE_XMODEL__FEATURE_CONFIG:
-			return featureConfig != null;
 		}
 		return super.eIsSet(featureID);
 	}

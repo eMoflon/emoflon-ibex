@@ -9,6 +9,7 @@ import org.eclipse.emf.common.notify.Notifier;
 
 import org.eclipse.emf.common.notify.impl.AdapterFactoryImpl;
 
+import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
 
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.*;
@@ -82,6 +83,26 @@ public class IBeXCoreModelAdapterFactory extends AdapterFactoryImpl {
 		@Override
 		public Adapter caseIBeXModel(IBeXModel object) {
 			return createIBeXModelAdapter();
+		}
+
+		@Override
+		public Adapter caseIBeXModelMetadata(IBeXModelMetadata object) {
+			return createIBeXModelMetadataAdapter();
+		}
+
+		@Override
+		public Adapter caseImportNameToPackageDependencyMapping(Map.Entry<String, EPackageDependency> object) {
+			return createImportNameToPackageDependencyMappingAdapter();
+		}
+
+		@Override
+		public Adapter caseEPackageDependency(EPackageDependency object) {
+			return createEPackageDependencyAdapter();
+		}
+
+		@Override
+		public Adapter caseNameToEClassifierMapping(Map.Entry<String, EClassifier> object) {
+			return createNameToEClassifierMappingAdapter();
 		}
 
 		@Override
@@ -243,6 +264,62 @@ public class IBeXCoreModelAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createIBeXModelAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModelMetadata <em>IBe XModel Metadata</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModelMetadata
+	 * @generated
+	 */
+	public Adapter createIBeXModelMetadataAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link java.util.Map.Entry <em>Import Name To Package Dependency Mapping</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see java.util.Map.Entry
+	 * @generated
+	 */
+	public Adapter createImportNameToPackageDependencyMappingAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency <em>EPackage Dependency</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency
+	 * @generated
+	 */
+	public Adapter createEPackageDependencyAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link java.util.Map.Entry <em>Name To EClassifier Mapping</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see java.util.Map.Entry
+	 * @generated
+	 */
+	public Adapter createNameToEClassifierMappingAdapter() {
 		return null;
 	}
 
