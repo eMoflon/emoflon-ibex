@@ -10,6 +10,11 @@
   <testsDirectory xsi:nil="true"/>
   <genPackages prefix="IBeXCoreModel" basePackage="org.emoflon.ibex.common.coremodel"
       disposableProviderFactory="true" ecorePackage="IBeXCoreModel.ecore#/">
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="IBeXCoreModel.ecore#//IBeXOperationType">
+      <genEnumLiterals ecoreEnumLiteral="IBeXCoreModel.ecore#//IBeXOperationType/CONTEXT"/>
+      <genEnumLiterals ecoreEnumLiteral="IBeXCoreModel.ecore#//IBeXOperationType/CREATION"/>
+      <genEnumLiterals ecoreEnumLiteral="IBeXCoreModel.ecore#//IBeXOperationType/DELETION"/>
+    </genEnums>
     <genClasses ecoreClass="IBeXCoreModel.ecore#//IBeXNamedElement">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//IBeXNamedElement/name"/>
     </genClasses>
@@ -70,11 +75,13 @@
     </genClasses>
     <genClasses ecoreClass="IBeXCoreModel.ecore#//IBeXNode">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXNode/type"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//IBeXNode/operationType"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXNode/incomingEdges"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXNode/outgoingEdges"/>
     </genClasses>
     <genClasses ecoreClass="IBeXCoreModel.ecore#//IBeXEdge">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXEdge/type"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//IBeXEdge/operationType"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXEdge/source"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXEdge/target"/>
     </genClasses>

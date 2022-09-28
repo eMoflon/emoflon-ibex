@@ -16,6 +16,7 @@ import org.eclipse.emf.ecore.EClass;
  * </p>
  * <ul>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode#getType <em>Type</em>}</li>
+ *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode#getOperationType <em>Operation Type</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode#getIncomingEdges <em>Incoming Edges</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode#getOutgoingEdges <em>Outgoing Edges</em>}</li>
  * </ul>
@@ -46,6 +47,31 @@ public interface IBeXNode extends IBeXNamedElement {
 	 * @generated
 	 */
 	void setType(EClass value);
+
+	/**
+	 * Returns the value of the '<em><b>Operation Type</b></em>' attribute.
+	 * The literals are from the enumeration {@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXOperationType}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Operation Type</em>' attribute.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXOperationType
+	 * @see #setOperationType(IBeXOperationType)
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage#getIBeXNode_OperationType()
+	 * @model required="true"
+	 * @generated
+	 */
+	IBeXOperationType getOperationType();
+
+	/**
+	 * Sets the value of the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode#getOperationType <em>Operation Type</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Operation Type</em>' attribute.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXOperationType
+	 * @see #getOperationType()
+	 * @generated
+	 */
+	void setOperationType(IBeXOperationType value);
 
 	/**
 	 * Returns the value of the '<em><b>Incoming Edges</b></em>' reference list.

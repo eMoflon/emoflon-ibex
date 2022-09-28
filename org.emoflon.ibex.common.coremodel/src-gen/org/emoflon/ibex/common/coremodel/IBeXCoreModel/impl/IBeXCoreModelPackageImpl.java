@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 
@@ -33,6 +34,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModelMetadata;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNamedElement;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNodeSet;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXOperationType;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternInvocation;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternSet;
@@ -214,6 +216,13 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 	 * @generated
 	 */
 	private EClass iBeXAttributeAssignmentEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EEnum iBeXOperationTypeEEnum = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -742,8 +751,17 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EAttribute getIBeXNode_OperationType() {
+		return (EAttribute) iBeXNodeEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EReference getIBeXNode_IncomingEdges() {
-		return (EReference) iBeXNodeEClass.getEStructuralFeatures().get(1);
+		return (EReference) iBeXNodeEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
@@ -752,7 +770,7 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 	 * @generated
 	 */
 	public EReference getIBeXNode_OutgoingEdges() {
-		return (EReference) iBeXNodeEClass.getEStructuralFeatures().get(2);
+		return (EReference) iBeXNodeEClass.getEStructuralFeatures().get(3);
 	}
 
 	/**
@@ -778,8 +796,17 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EAttribute getIBeXEdge_OperationType() {
+		return (EAttribute) iBeXEdgeEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EReference getIBeXEdge_Source() {
-		return (EReference) iBeXEdgeEClass.getEStructuralFeatures().get(1);
+		return (EReference) iBeXEdgeEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
@@ -788,7 +815,7 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 	 * @generated
 	 */
 	public EReference getIBeXEdge_Target() {
-		return (EReference) iBeXEdgeEClass.getEStructuralFeatures().get(2);
+		return (EReference) iBeXEdgeEClass.getEStructuralFeatures().get(3);
 	}
 
 	/**
@@ -1201,6 +1228,15 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EEnum getIBeXOperationType() {
+		return iBeXOperationTypeEEnum;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public IBeXCoreModelFactory getIBeXCoreModelFactory() {
 		return (IBeXCoreModelFactory) getEFactoryInstance();
 	}
@@ -1285,11 +1321,13 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 
 		iBeXNodeEClass = createEClass(IBE_XNODE);
 		createEReference(iBeXNodeEClass, IBE_XNODE__TYPE);
+		createEAttribute(iBeXNodeEClass, IBE_XNODE__OPERATION_TYPE);
 		createEReference(iBeXNodeEClass, IBE_XNODE__INCOMING_EDGES);
 		createEReference(iBeXNodeEClass, IBE_XNODE__OUTGOING_EDGES);
 
 		iBeXEdgeEClass = createEClass(IBE_XEDGE);
 		createEReference(iBeXEdgeEClass, IBE_XEDGE__TYPE);
+		createEAttribute(iBeXEdgeEClass, IBE_XEDGE__OPERATION_TYPE);
 		createEReference(iBeXEdgeEClass, IBE_XEDGE__SOURCE);
 		createEReference(iBeXEdgeEClass, IBE_XEDGE__TARGET);
 
@@ -1349,6 +1387,9 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 		createEReference(iBeXAttributeAssignmentEClass, IBE_XATTRIBUTE_ASSIGNMENT__NODE);
 		createEReference(iBeXAttributeAssignmentEClass, IBE_XATTRIBUTE_ASSIGNMENT__ATTRIBUTE);
 		createEReference(iBeXAttributeAssignmentEClass, IBE_XATTRIBUTE_ASSIGNMENT__VALUE);
+
+		// Create enums
+		iBeXOperationTypeEEnum = createEEnum(IBE_XOPERATION_TYPE);
 	}
 
 	/**
@@ -1548,6 +1589,9 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 		initEReference(getIBeXNode_Type(), ecorePackage.getEClass(), null, "type", null, 0, 1, IBeXNode.class,
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getIBeXNode_OperationType(), this.getIBeXOperationType(), "operationType", null, 1, 1,
+				IBeXNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
 		initEReference(getIBeXNode_IncomingEdges(), this.getIBeXEdge(), this.getIBeXEdge_Target(), "incomingEdges",
 				null, 0, -1, IBeXNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
 				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -1560,6 +1604,9 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 		initEReference(getIBeXEdge_Type(), ecorePackage.getEReference(), null, "type", null, 0, 1, IBeXEdge.class,
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getIBeXEdge_OperationType(), this.getIBeXOperationType(), "operationType", null, 1, 1,
+				IBeXEdge.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
 		initEReference(getIBeXEdge_Source(), this.getIBeXNode(), this.getIBeXNode_OutgoingEdges(), "source", null, 1, 1,
 				IBeXEdge.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -1700,6 +1747,12 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 		initEReference(getIBeXAttributeAssignment_Value(), theIBeXCoreArithmeticPackage.getValueExpression(), null,
 				"value", null, 1, 1, IBeXAttributeAssignment.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
 				IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		// Initialize enums and add enum literals
+		initEEnum(iBeXOperationTypeEEnum, IBeXOperationType.class, "IBeXOperationType");
+		addEEnumLiteral(iBeXOperationTypeEEnum, IBeXOperationType.CONTEXT);
+		addEEnumLiteral(iBeXOperationTypeEEnum, IBeXOperationType.CREATION);
+		addEEnumLiteral(iBeXOperationTypeEEnum, IBeXOperationType.DELETION);
 
 		// Create resource
 		createResource(eNS_URI);

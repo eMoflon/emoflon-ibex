@@ -13,15 +13,18 @@ import org.eclipse.emf.ecore.EcorePackage;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModelMetadata;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXOperationType;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern;
 import org.emoflon.ibex.common.slimgt.util.SlimGTEMFUtil;
 import org.emoflon.ibex.common.transformation.SlimGtToIBeXCoreTransformer;
 import org.emoflon.ibex.gt.gtl.gTL.EditorFile;
+import org.emoflon.ibex.gt.gtl.gTL.GTLRuleNodeDeletion;
 import org.emoflon.ibex.gt.gtl.gTL.GTLRuleType;
 import org.emoflon.ibex.gt.gtl.gTL.Import;
 import org.emoflon.ibex.gt.gtl.gTL.SlimRule;
 import org.emoflon.ibex.gt.gtl.gTL.SlimRuleNode;
 import org.emoflon.ibex.gt.gtl.gTL.SlimRuleNodeContext;
+import org.emoflon.ibex.gt.gtl.gTL.SlimRuleNodeCreation;
 import org.emoflon.ibex.gt.gtl.util.GTLResourceManager;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTModel;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRule;
@@ -51,7 +54,7 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 
 			// Transform to gt pattern
 			if (rule.getType() == GTLRuleType.PATTERN) {
-				transformPattern(rule);
+				transformPrecondition(rule);
 			} else { // Transform to gt rule
 				transformRule(rule);
 			}
@@ -60,7 +63,28 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 		return model;
 	}
 
-	protected IBeXPattern transformPattern(SlimRule pattern) {
+	protected GTRule transformRule(SlimRule rule) {
+		if (rule.getType() != GTLRuleType.RULE)
+			return null;
+
+		GTRule gtRule = factory.createGTRule();
+		gtRule.setName(rule.getName());
+		model.getRuleSet().getRules().add(gtRule);
+
+		IBeXPattern precondition = transformPrecondition(rule);
+		gtRule.setPrecondition(precondition);
+
+		IBeXPattern postcondition = transformPostcondition(rule);
+		gtRule.setPostcondition(postcondition);
+
+		return gtRule;
+	}
+
+	protected IBeXPattern transformPrecondition(SlimRule pattern) {
+		if (pattern2pattern.containsKey(pattern)) {
+			return pattern2pattern.get(pattern);
+		}
+
 		IBeXPattern gtPattern = superFactory.createIBeXPattern();
 		gtPattern.setName(pattern.getName());
 		model.getPatternSet().getPatterns().add(gtPattern);
@@ -74,28 +98,71 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 			} else {
 				gtPattern.getSignatureNodes().add(gtNode);
 			}
+			gtNode.setOperationType(IBeXOperationType.CONTEXT);
 		}
+
+		for (GTLRuleNodeDeletion deletion : pattern.getDeletedNodes()) {
+			IBeXNode gtNode = transform(deletion.getDeletion());
+			gtPattern.getSignatureNodes().add(gtNode);
+			gtNode.setOperationType(IBeXOperationType.DELETION);
+		}
+
+		// TODO: Conditions
+
+		// TODO: Invocations
+
+		// TODO: Watch dogs
+
+		if (gtPattern.getSignatureNodes().isEmpty() && gtPattern.getLocalNodes().isEmpty()
+				&& gtPattern.getAttributeConstraints().isEmpty())
+			gtPattern.setEmpty(true);
+
+		return gtPattern;
+	}
+
+	protected IBeXPattern transformPostcondition(SlimRule pattern) {
+		IBeXPattern gtPattern = superFactory.createIBeXPattern();
+		gtPattern.setName(pattern.getName());
+
+		for (SlimRuleNodeContext context : pattern.getContextNodes().stream().map(n -> (SlimRuleNodeContext) n)
+				.collect(Collectors.toList())) {
+			IBeXNode gtNode = transform((SlimRuleNode) context.getContext());
+			if (context.isLocal()) {
+				gtPattern.getLocalNodes().add(gtNode);
+			} else {
+				gtPattern.getSignatureNodes().add(gtNode);
+			}
+			gtNode.setOperationType(IBeXOperationType.CONTEXT);
+		}
+
+		for (SlimRuleNodeCreation creation : pattern.getCreatedNodes().stream().map(n -> (SlimRuleNodeCreation) n)
+				.collect(Collectors.toList())) {
+			IBeXNode gtNode = transform((SlimRuleNode) creation.getCreation());
+			gtPattern.getSignatureNodes().add(gtNode);
+			gtNode.setOperationType(IBeXOperationType.CREATION);
+		}
+
+		// TODO: Conditions
+
+		if (gtPattern.getSignatureNodes().isEmpty() && gtPattern.getLocalNodes().isEmpty()
+				&& gtPattern.getAttributeConstraints().isEmpty())
+			gtPattern.setEmpty(true);
 
 		return gtPattern;
 	}
 
 	protected IBeXNode transform(SlimRuleNode node) {
+		if (node2node.containsKey(node)) {
+			return node2node.get(node);
+		}
+
 		IBeXNode gtNode = superFactory.createIBeXNode();
 		model.getNodeSet().getNodes().add(gtNode);
 		node2node.put(node, gtNode);
 
+		// TODO: Edges
+
 		return gtNode;
-	}
-
-	protected GTRule transformRule(SlimRule rule) {
-		if (rule.getType() != GTLRuleType.RULE)
-			return null;
-
-		GTRule gtRule = factory.createGTRule();
-		gtRule.setName(rule.getName());
-		model.getRuleSet().getRules().add(gtRule);
-
-		return gtRule;
 	}
 
 	@Override

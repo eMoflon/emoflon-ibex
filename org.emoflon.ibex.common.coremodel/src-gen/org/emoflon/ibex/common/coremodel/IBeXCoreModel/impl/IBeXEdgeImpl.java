@@ -14,6 +14,7 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXOperationType;
 
 /**
  * <!-- begin-user-doc -->
@@ -24,6 +25,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
  * </p>
  * <ul>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXEdgeImpl#getType <em>Type</em>}</li>
+ *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXEdgeImpl#getOperationType <em>Operation Type</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXEdgeImpl#getSource <em>Source</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXEdgeImpl#getTarget <em>Target</em>}</li>
  * </ul>
@@ -40,6 +42,26 @@ public class IBeXEdgeImpl extends IBeXNamedElementImpl implements IBeXEdge {
 	 * @ordered
 	 */
 	protected EReference type;
+
+	/**
+	 * The default value of the '{@link #getOperationType() <em>Operation Type</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getOperationType()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final IBeXOperationType OPERATION_TYPE_EDEFAULT = IBeXOperationType.CONTEXT;
+
+	/**
+	 * The cached value of the '{@link #getOperationType() <em>Operation Type</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getOperationType()
+	 * @generated
+	 * @ordered
+	 */
+	protected IBeXOperationType operationType = OPERATION_TYPE_EDEFAULT;
 
 	/**
 	 * The cached value of the '{@link #getSource() <em>Source</em>}' reference.
@@ -117,6 +139,28 @@ public class IBeXEdgeImpl extends IBeXNamedElementImpl implements IBeXEdge {
 		type = newType;
 		if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET, IBeXCoreModelPackage.IBE_XEDGE__TYPE, oldType, type));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public IBeXOperationType getOperationType() {
+		return operationType;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setOperationType(IBeXOperationType newOperationType) {
+		IBeXOperationType oldOperationType = operationType;
+		operationType = newOperationType == null ? OPERATION_TYPE_EDEFAULT : newOperationType;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXCoreModelPackage.IBE_XEDGE__OPERATION_TYPE,
+					oldOperationType, operationType));
 	}
 
 	/**
@@ -305,6 +349,8 @@ public class IBeXEdgeImpl extends IBeXNamedElementImpl implements IBeXEdge {
 			if (resolve)
 				return getType();
 			return basicGetType();
+		case IBeXCoreModelPackage.IBE_XEDGE__OPERATION_TYPE:
+			return getOperationType();
 		case IBeXCoreModelPackage.IBE_XEDGE__SOURCE:
 			if (resolve)
 				return getSource();
@@ -328,6 +374,9 @@ public class IBeXEdgeImpl extends IBeXNamedElementImpl implements IBeXEdge {
 		case IBeXCoreModelPackage.IBE_XEDGE__TYPE:
 			setType((EReference) newValue);
 			return;
+		case IBeXCoreModelPackage.IBE_XEDGE__OPERATION_TYPE:
+			setOperationType((IBeXOperationType) newValue);
+			return;
 		case IBeXCoreModelPackage.IBE_XEDGE__SOURCE:
 			setSource((IBeXNode) newValue);
 			return;
@@ -349,6 +398,9 @@ public class IBeXEdgeImpl extends IBeXNamedElementImpl implements IBeXEdge {
 		case IBeXCoreModelPackage.IBE_XEDGE__TYPE:
 			setType((EReference) null);
 			return;
+		case IBeXCoreModelPackage.IBE_XEDGE__OPERATION_TYPE:
+			setOperationType(OPERATION_TYPE_EDEFAULT);
+			return;
 		case IBeXCoreModelPackage.IBE_XEDGE__SOURCE:
 			setSource((IBeXNode) null);
 			return;
@@ -369,12 +421,31 @@ public class IBeXEdgeImpl extends IBeXNamedElementImpl implements IBeXEdge {
 		switch (featureID) {
 		case IBeXCoreModelPackage.IBE_XEDGE__TYPE:
 			return type != null;
+		case IBeXCoreModelPackage.IBE_XEDGE__OPERATION_TYPE:
+			return operationType != OPERATION_TYPE_EDEFAULT;
 		case IBeXCoreModelPackage.IBE_XEDGE__SOURCE:
 			return source != null;
 		case IBeXCoreModelPackage.IBE_XEDGE__TARGET:
 			return target != null;
 		}
 		return super.eIsSet(featureID);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public String toString() {
+		if (eIsProxy())
+			return super.toString();
+
+		StringBuilder result = new StringBuilder(super.toString());
+		result.append(" (operationType: ");
+		result.append(operationType);
+		result.append(')');
+		return result.toString();
 	}
 
 } //IBeXEdgeImpl

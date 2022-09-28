@@ -388,6 +388,15 @@ public interface IBeXTGGModelPackage extends EPackage {
 	int TGG_NODE__TYPE = IBeXCoreModelPackage.IBE_XNODE__TYPE;
 
 	/**
+	 * The feature id for the '<em><b>Operation Type</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_NODE__OPERATION_TYPE = IBeXCoreModelPackage.IBE_XNODE__OPERATION_TYPE;
+
+	/**
 	 * The feature id for the '<em><b>Incoming Edges</b></em>' reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -486,6 +495,15 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int TGG_RULE_CORRESPONDENCE__TYPE = TGG_NODE__TYPE;
+
+	/**
+	 * The feature id for the '<em><b>Operation Type</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_RULE_CORRESPONDENCE__OPERATION_TYPE = TGG_NODE__OPERATION_TYPE;
 
 	/**
 	 * The feature id for the '<em><b>Incoming Edges</b></em>' reference list.
@@ -604,6 +622,15 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int TGG_EDGE__TYPE = IBeXCoreModelPackage.IBE_XEDGE__TYPE;
+
+	/**
+	 * The feature id for the '<em><b>Operation Type</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_EDGE__OPERATION_TYPE = IBeXCoreModelPackage.IBE_XEDGE__OPERATION_TYPE;
 
 	/**
 	 * The feature id for the '<em><b>Source</b></em>' reference.

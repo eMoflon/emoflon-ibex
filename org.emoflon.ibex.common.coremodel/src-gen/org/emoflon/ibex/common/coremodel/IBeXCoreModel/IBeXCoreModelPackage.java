@@ -4,6 +4,7 @@ package org.emoflon.ibex.common.coremodel.IBeXCoreModel;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 
@@ -719,13 +720,22 @@ public interface IBeXCoreModelPackage extends EPackage {
 	int IBE_XNODE__TYPE = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 0;
 
 	/**
+	 * The feature id for the '<em><b>Operation Type</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XNODE__OPERATION_TYPE = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 1;
+
+	/**
 	 * The feature id for the '<em><b>Incoming Edges</b></em>' reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XNODE__INCOMING_EDGES = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 1;
+	int IBE_XNODE__INCOMING_EDGES = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 2;
 
 	/**
 	 * The feature id for the '<em><b>Outgoing Edges</b></em>' reference list.
@@ -734,7 +744,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XNODE__OUTGOING_EDGES = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 2;
+	int IBE_XNODE__OUTGOING_EDGES = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 3;
 
 	/**
 	 * The number of structural features of the '<em>IBe XNode</em>' class.
@@ -743,7 +753,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XNODE_FEATURE_COUNT = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 3;
+	int IBE_XNODE_FEATURE_COUNT = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 4;
 
 	/**
 	 * The number of operations of the '<em>IBe XNode</em>' class.
@@ -783,13 +793,22 @@ public interface IBeXCoreModelPackage extends EPackage {
 	int IBE_XEDGE__TYPE = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 0;
 
 	/**
+	 * The feature id for the '<em><b>Operation Type</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XEDGE__OPERATION_TYPE = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 1;
+
+	/**
 	 * The feature id for the '<em><b>Source</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XEDGE__SOURCE = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 1;
+	int IBE_XEDGE__SOURCE = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 2;
 
 	/**
 	 * The feature id for the '<em><b>Target</b></em>' reference.
@@ -798,7 +817,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XEDGE__TARGET = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 2;
+	int IBE_XEDGE__TARGET = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 3;
 
 	/**
 	 * The number of structural features of the '<em>IBe XEdge</em>' class.
@@ -807,7 +826,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XEDGE_FEATURE_COUNT = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 3;
+	int IBE_XEDGE_FEATURE_COUNT = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 4;
 
 	/**
 	 * The number of operations of the '<em>IBe XEdge</em>' class.
@@ -1515,6 +1534,16 @@ public interface IBeXCoreModelPackage extends EPackage {
 	int IBE_XATTRIBUTE_ASSIGNMENT_OPERATION_COUNT = 0;
 
 	/**
+	 * The meta object id for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXOperationType <em>IBe XOperation Type</em>}' enum.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXOperationType
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXOperationType()
+	 * @generated
+	 */
+	int IBE_XOPERATION_TYPE = 24;
+
+	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNamedElement <em>IBe XNamed Element</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -2058,6 +2087,17 @@ public interface IBeXCoreModelPackage extends EPackage {
 	EReference getIBeXNode_Type();
 
 	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode#getOperationType <em>Operation Type</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Operation Type</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode#getOperationType()
+	 * @see #getIBeXNode()
+	 * @generated
+	 */
+	EAttribute getIBeXNode_OperationType();
+
+	/**
 	 * Returns the meta object for the reference list '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode#getIncomingEdges <em>Incoming Edges</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -2099,6 +2139,17 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getIBeXEdge_Type();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge#getOperationType <em>Operation Type</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Operation Type</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge#getOperationType()
+	 * @see #getIBeXEdge()
+	 * @generated
+	 */
+	EAttribute getIBeXEdge_OperationType();
 
 	/**
 	 * Returns the meta object for the reference '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge#getSource <em>Source</em>}'.
@@ -2608,6 +2659,16 @@ public interface IBeXCoreModelPackage extends EPackage {
 	EReference getIBeXAttributeAssignment_Value();
 
 	/**
+	 * Returns the meta object for enum '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXOperationType <em>IBe XOperation Type</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for enum '<em>IBe XOperation Type</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXOperationType
+	 * @generated
+	 */
+	EEnum getIBeXOperationType();
+
+	/**
 	 * Returns the factory that creates the instances of the model.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -3055,6 +3116,14 @@ public interface IBeXCoreModelPackage extends EPackage {
 		EReference IBE_XNODE__TYPE = eINSTANCE.getIBeXNode_Type();
 
 		/**
+		 * The meta object literal for the '<em><b>Operation Type</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute IBE_XNODE__OPERATION_TYPE = eINSTANCE.getIBeXNode_OperationType();
+
+		/**
 		 * The meta object literal for the '<em><b>Incoming Edges</b></em>' reference list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -3087,6 +3156,14 @@ public interface IBeXCoreModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference IBE_XEDGE__TYPE = eINSTANCE.getIBeXEdge_Type();
+
+		/**
+		 * The meta object literal for the '<em><b>Operation Type</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute IBE_XEDGE__OPERATION_TYPE = eINSTANCE.getIBeXEdge_OperationType();
 
 		/**
 		 * The meta object literal for the '<em><b>Source</b></em>' reference feature.
@@ -3487,6 +3564,16 @@ public interface IBeXCoreModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference IBE_XATTRIBUTE_ASSIGNMENT__VALUE = eINSTANCE.getIBeXAttributeAssignment_Value();
+
+		/**
+		 * The meta object literal for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXOperationType <em>IBe XOperation Type</em>}' enum.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXOperationType
+		 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXOperationType()
+		 * @generated
+		 */
+		EEnum IBE_XOPERATION_TYPE = eINSTANCE.getIBeXOperationType();
 
 	}
 

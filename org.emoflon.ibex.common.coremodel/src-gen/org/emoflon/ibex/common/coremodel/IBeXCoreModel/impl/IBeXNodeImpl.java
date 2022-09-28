@@ -20,6 +20,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXOperationType;
 
 /**
  * <!-- begin-user-doc -->
@@ -30,6 +31,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
  * </p>
  * <ul>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXNodeImpl#getType <em>Type</em>}</li>
+ *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXNodeImpl#getOperationType <em>Operation Type</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXNodeImpl#getIncomingEdges <em>Incoming Edges</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXNodeImpl#getOutgoingEdges <em>Outgoing Edges</em>}</li>
  * </ul>
@@ -46,6 +48,26 @@ public class IBeXNodeImpl extends IBeXNamedElementImpl implements IBeXNode {
 	 * @ordered
 	 */
 	protected EClass type;
+
+	/**
+	 * The default value of the '{@link #getOperationType() <em>Operation Type</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getOperationType()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final IBeXOperationType OPERATION_TYPE_EDEFAULT = IBeXOperationType.CONTEXT;
+
+	/**
+	 * The cached value of the '{@link #getOperationType() <em>Operation Type</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getOperationType()
+	 * @generated
+	 * @ordered
+	 */
+	protected IBeXOperationType operationType = OPERATION_TYPE_EDEFAULT;
 
 	/**
 	 * The cached value of the '{@link #getIncomingEdges() <em>Incoming Edges</em>}' reference list.
@@ -130,6 +152,28 @@ public class IBeXNodeImpl extends IBeXNamedElementImpl implements IBeXNode {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public IBeXOperationType getOperationType() {
+		return operationType;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setOperationType(IBeXOperationType newOperationType) {
+		IBeXOperationType oldOperationType = operationType;
+		operationType = newOperationType == null ? OPERATION_TYPE_EDEFAULT : newOperationType;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXCoreModelPackage.IBE_XNODE__OPERATION_TYPE,
+					oldOperationType, operationType));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EList<IBeXEdge> getIncomingEdges() {
 		if (incomingEdges == null) {
 			incomingEdges = new EObjectWithInverseResolvingEList<IBeXEdge>(IBeXEdge.class, this,
@@ -196,6 +240,8 @@ public class IBeXNodeImpl extends IBeXNamedElementImpl implements IBeXNode {
 			if (resolve)
 				return getType();
 			return basicGetType();
+		case IBeXCoreModelPackage.IBE_XNODE__OPERATION_TYPE:
+			return getOperationType();
 		case IBeXCoreModelPackage.IBE_XNODE__INCOMING_EDGES:
 			return getIncomingEdges();
 		case IBeXCoreModelPackage.IBE_XNODE__OUTGOING_EDGES:
@@ -215,6 +261,9 @@ public class IBeXNodeImpl extends IBeXNamedElementImpl implements IBeXNode {
 		switch (featureID) {
 		case IBeXCoreModelPackage.IBE_XNODE__TYPE:
 			setType((EClass) newValue);
+			return;
+		case IBeXCoreModelPackage.IBE_XNODE__OPERATION_TYPE:
+			setOperationType((IBeXOperationType) newValue);
 			return;
 		case IBeXCoreModelPackage.IBE_XNODE__INCOMING_EDGES:
 			getIncomingEdges().clear();
@@ -239,6 +288,9 @@ public class IBeXNodeImpl extends IBeXNamedElementImpl implements IBeXNode {
 		case IBeXCoreModelPackage.IBE_XNODE__TYPE:
 			setType((EClass) null);
 			return;
+		case IBeXCoreModelPackage.IBE_XNODE__OPERATION_TYPE:
+			setOperationType(OPERATION_TYPE_EDEFAULT);
+			return;
 		case IBeXCoreModelPackage.IBE_XNODE__INCOMING_EDGES:
 			getIncomingEdges().clear();
 			return;
@@ -259,12 +311,31 @@ public class IBeXNodeImpl extends IBeXNamedElementImpl implements IBeXNode {
 		switch (featureID) {
 		case IBeXCoreModelPackage.IBE_XNODE__TYPE:
 			return type != null;
+		case IBeXCoreModelPackage.IBE_XNODE__OPERATION_TYPE:
+			return operationType != OPERATION_TYPE_EDEFAULT;
 		case IBeXCoreModelPackage.IBE_XNODE__INCOMING_EDGES:
 			return incomingEdges != null && !incomingEdges.isEmpty();
 		case IBeXCoreModelPackage.IBE_XNODE__OUTGOING_EDGES:
 			return outgoingEdges != null && !outgoingEdges.isEmpty();
 		}
 		return super.eIsSet(featureID);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public String toString() {
+		if (eIsProxy())
+			return super.toString();
+
+		StringBuilder result = new StringBuilder(super.toString());
+		result.append(" (operationType: ");
+		result.append(operationType);
+		result.append(')');
+		return result.toString();
 	}
 
 } //IBeXNodeImpl

@@ -77,6 +77,8 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBeXNode" eSuperTypes="#//IBeXNamedElement">
     <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EClass"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="operationType" lowerBound="1"
+        eType="#//IBeXOperationType"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="incomingEdges" upperBound="-1"
         eType="#//IBeXEdge" eOpposite="#//IBeXEdge/target"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="outgoingEdges" upperBound="-1"
@@ -84,6 +86,8 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBeXEdge" eSuperTypes="#//IBeXNamedElement">
     <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EReference"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="operationType" lowerBound="1"
+        eType="#//IBeXOperationType"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="source" lowerBound="1"
         eType="#//IBeXNode" eOpposite="#//IBeXNode/outgoingEdges"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="target" lowerBound="1"
@@ -167,6 +171,11 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="attribute" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EAttribute"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="value" lowerBound="1" eType="#//IBeXCoreArithmetic/ValueExpression"
         containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="IBeXOperationType">
+    <eLiterals name="CONTEXT"/>
+    <eLiterals name="CREATION" value="1"/>
+    <eLiterals name="DELETION" value="2"/>
   </eClassifiers>
   <eSubpackages name="IBeXCoreArithmetic" nsURI="platform:/resource/org.emoflon.ibex.common.coremodel/model/IBeXCoreArithmetic.ecore"
       nsPrefix="IBeXCoreArithmetic">
