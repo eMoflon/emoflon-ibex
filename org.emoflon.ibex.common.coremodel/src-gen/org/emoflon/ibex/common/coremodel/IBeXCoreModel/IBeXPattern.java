@@ -15,6 +15,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.Relati
  * The following features are supported:
  * </p>
  * <ul>
+ *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern#isEmpty <em>Empty</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern#getDependencies <em>Dependencies</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern#getSignatureNodes <em>Signature Nodes</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern#getLocalNodes <em>Local Nodes</em>}</li>
@@ -29,6 +30,28 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.Relati
  * @generated
  */
 public interface IBeXPattern extends IBeXNamedElement {
+	/**
+	 * Returns the value of the '<em><b>Empty</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Empty</em>' attribute.
+	 * @see #setEmpty(boolean)
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage#getIBeXPattern_Empty()
+	 * @model
+	 * @generated
+	 */
+	boolean isEmpty();
+
+	/**
+	 * Sets the value of the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern#isEmpty <em>Empty</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Empty</em>' attribute.
+	 * @see #isEmpty()
+	 * @generated
+	 */
+	void setEmpty(boolean value);
+
 	/**
 	 * Returns the value of the '<em><b>Dependencies</b></em>' reference list.
 	 * The list contents are of type {@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern}.

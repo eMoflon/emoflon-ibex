@@ -1,19 +1,39 @@
 package org.emoflon.ibex.gt.transformation;
 
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.emf.codegen.ecore.genmodel.GenPackage;
+import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.EcorePackage;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModelMetadata;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern;
+import org.emoflon.ibex.common.slimgt.util.SlimGTEMFUtil;
 import org.emoflon.ibex.common.transformation.SlimGtToIBeXCoreTransformer;
 import org.emoflon.ibex.gt.gtl.gTL.EditorFile;
+import org.emoflon.ibex.gt.gtl.gTL.GTLRuleType;
 import org.emoflon.ibex.gt.gtl.gTL.Import;
+import org.emoflon.ibex.gt.gtl.gTL.SlimRule;
+import org.emoflon.ibex.gt.gtl.gTL.SlimRuleNode;
+import org.emoflon.ibex.gt.gtl.gTL.SlimRuleNodeContext;
+import org.emoflon.ibex.gt.gtl.util.GTLResourceManager;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTModel;
+import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRule;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.IBeXGTModelFactory;
 
 public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorFile, GTModel, IBeXGTModelFactory> {
 
 	protected final IProject project;
+	protected final GTLResourceManager gtlManager = new GTLResourceManager(xtextResources);
+
+	protected final Map<SlimRule, IBeXPattern> pattern2pattern = Collections.synchronizedMap(new HashMap<>());
+	protected final Map<SlimRuleNode, IBeXNode> node2node = Collections.synchronizedMap(new HashMap<>());
 
 	public GTLtoGTModelTransformer(final EditorFile editorFile, final IProject project) {
 		super(editorFile);
@@ -22,8 +42,60 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 
 	@Override
 	public GTModel transform() {
+		model.setRuleSet(factory.createGTRuleSet());
+
+		for (SlimRule rule : editorFile.getRules()) {
+			// Ignore abstract patterns / rules
+			if (rule.isAbstract())
+				continue;
+
+			// Transform to gt pattern
+			if (rule.getType() == GTLRuleType.PATTERN) {
+				transformPattern(rule);
+			} else { // Transform to gt rule
+				transformRule(rule);
+			}
+		}
 
 		return model;
+	}
+
+	protected IBeXPattern transformPattern(SlimRule pattern) {
+		IBeXPattern gtPattern = superFactory.createIBeXPattern();
+		gtPattern.setName(pattern.getName());
+		model.getPatternSet().getPatterns().add(gtPattern);
+		pattern2pattern.put(pattern, gtPattern);
+
+		for (SlimRuleNodeContext context : pattern.getContextNodes().stream().map(n -> (SlimRuleNodeContext) n)
+				.collect(Collectors.toList())) {
+			IBeXNode gtNode = transform((SlimRuleNode) context.getContext());
+			if (context.isLocal()) {
+				gtPattern.getLocalNodes().add(gtNode);
+			} else {
+				gtPattern.getSignatureNodes().add(gtNode);
+			}
+		}
+
+		return gtPattern;
+	}
+
+	protected IBeXNode transform(SlimRuleNode node) {
+		IBeXNode gtNode = superFactory.createIBeXNode();
+		model.getNodeSet().getNodes().add(gtNode);
+		node2node.put(node, gtNode);
+
+		return gtNode;
+	}
+
+	protected GTRule transformRule(SlimRule rule) {
+		if (rule.getType() != GTLRuleType.RULE)
+			return null;
+
+		GTRule gtRule = factory.createGTRule();
+		gtRule.setName(rule.getName());
+		model.getRuleSet().getRules().add(gtRule);
+
+		return gtRule;
 	}
 
 	@Override
@@ -45,16 +117,59 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 		metadata.setPackagePath("/src/" + metadata.getPackage().replace(".", "/"));
 
 		for (Import imp : editorFile.getImports().stream().map(imp -> (Import) imp).collect(Collectors.toList())) {
-			EPackageDependency dependency = transform(imp);
+			EPackageDependency dependency = null;
+			try {
+				dependency = transform(imp);
+			} catch (IOException e) {
+				continue;
+			}
 			metadata.getDependencies().add(dependency);
 			metadata.getName2package().put(dependency.getSimpleName(), dependency);
 		}
-		// TODO Auto-generated method stub
-		return null;
+
+		// Add the ecore package if not present
+		if (!metadata.getName2package().containsKey("ecore")) {
+			try {
+				EPackageDependency dependency = transform(EcorePackage.eINSTANCE);
+				metadata.getDependencies().add(dependency);
+				metadata.getName2package().put(dependency.getSimpleName(), dependency);
+			} catch (IOException e) {
+			}
+		}
+
+		return metadata;
 	}
 
-	protected EPackageDependency transform(final Import imp) {
+	protected EPackageDependency transform(final Import imp) throws IOException {
+		EPackage pkg = SlimGTEMFUtil.loadMetamodel(imp.getName());
+		return transform(pkg);
+	}
+
+	protected EPackageDependency transform(final EPackage pkg) throws IOException {
 		EPackageDependency dependency = superFactory.createEPackageDependency();
+
+		dependency.setSimpleName(pkg.getName());
+		dependency.setHasAlias(false);
+
+		// Set package metadata
+		GenPackage genPack = SlimGTEMFUtil.getGenPack(pkg);
+		dependency.setFullyQualifiedName(SlimGTEMFUtil.getFQName(genPack));
+		dependency.setPackage(pkg);
+		dependency.setPackageURI(pkg.getNsURI());
+		dependency.setFactoryClassName(SlimGTEMFUtil.getFactoryClassName(genPack));
+		dependency.setPackageClassName(SlimGTEMFUtil.getPackageClassName(pkg));
+		dependency.setEcoreURI(pkg.eResource().getURI().toString());
+
+		// Set package project metadata and check if it has a project, a proper ecore
+		// and genmodel file
+		// TODO: Finish this -> for now: set to false
+		dependency.setPackageHasProject(false);
+		dependency.setEcoreHasLocation(false);
+		dependency.setGenmodelHasLocation(false);
+
+		// Add classifier name to fqn map
+		pkg.getEClassifiers().forEach(cls -> dependency.getClassifierName2FQN().put(cls.getName(),
+				dependency.getFullyQualifiedName() + "." + cls.getName()));
 
 		return dependency;
 	}

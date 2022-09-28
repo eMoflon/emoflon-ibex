@@ -461,13 +461,13 @@ public interface IBeXCoreModelPackage extends EPackage {
 	int EPACKAGE_DEPENDENCY__GENMODEL_LOCATION = 15;
 
 	/**
-	 * The feature id for the '<em><b>Name2classifier</b></em>' map.
+	 * The feature id for the '<em><b>Classifier Name2 FQN</b></em>' map.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int EPACKAGE_DEPENDENCY__NAME2CLASSIFIER = 16;
+	int EPACKAGE_DEPENDENCY__CLASSIFIER_NAME2_FQN = 16;
 
 	/**
 	 * The number of structural features of the '<em>EPackage Dependency</em>' class.
@@ -488,14 +488,14 @@ public interface IBeXCoreModelPackage extends EPackage {
 	int EPACKAGE_DEPENDENCY_OPERATION_COUNT = 0;
 
 	/**
-	 * The meta object id for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.NameToEClassifierMappingImpl <em>Name To EClassifier Mapping</em>}' class.
+	 * The meta object id for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.ClassifierNameToFQNImpl <em>Classifier Name To FQN</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.NameToEClassifierMappingImpl
-	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getNameToEClassifierMapping()
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.ClassifierNameToFQNImpl
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getClassifierNameToFQN()
 	 * @generated
 	 */
-	int NAME_TO_ECLASSIFIER_MAPPING = 5;
+	int CLASSIFIER_NAME_TO_FQN = 5;
 
 	/**
 	 * The feature id for the '<em><b>Key</b></em>' attribute.
@@ -504,34 +504,34 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int NAME_TO_ECLASSIFIER_MAPPING__KEY = 0;
+	int CLASSIFIER_NAME_TO_FQN__KEY = 0;
 
 	/**
-	 * The feature id for the '<em><b>Value</b></em>' reference.
+	 * The feature id for the '<em><b>Value</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int NAME_TO_ECLASSIFIER_MAPPING__VALUE = 1;
+	int CLASSIFIER_NAME_TO_FQN__VALUE = 1;
 
 	/**
-	 * The number of structural features of the '<em>Name To EClassifier Mapping</em>' class.
+	 * The number of structural features of the '<em>Classifier Name To FQN</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int NAME_TO_ECLASSIFIER_MAPPING_FEATURE_COUNT = 2;
+	int CLASSIFIER_NAME_TO_FQN_FEATURE_COUNT = 2;
 
 	/**
-	 * The number of operations of the '<em>Name To EClassifier Mapping</em>' class.
+	 * The number of operations of the '<em>Classifier Name To FQN</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int NAME_TO_ECLASSIFIER_MAPPING_OPERATION_COUNT = 0;
+	int CLASSIFIER_NAME_TO_FQN_OPERATION_COUNT = 0;
 
 	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXFeatureConfigImpl <em>IBe XFeature Config</em>}' class.
@@ -838,13 +838,22 @@ public interface IBeXCoreModelPackage extends EPackage {
 	int IBE_XPATTERN__NAME = IBE_XNAMED_ELEMENT__NAME;
 
 	/**
+	 * The feature id for the '<em><b>Empty</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XPATTERN__EMPTY = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 0;
+
+	/**
 	 * The feature id for the '<em><b>Dependencies</b></em>' reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XPATTERN__DEPENDENCIES = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 0;
+	int IBE_XPATTERN__DEPENDENCIES = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 1;
 
 	/**
 	 * The feature id for the '<em><b>Signature Nodes</b></em>' reference list.
@@ -853,7 +862,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XPATTERN__SIGNATURE_NODES = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 1;
+	int IBE_XPATTERN__SIGNATURE_NODES = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 2;
 
 	/**
 	 * The feature id for the '<em><b>Local Nodes</b></em>' reference list.
@@ -862,7 +871,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XPATTERN__LOCAL_NODES = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 2;
+	int IBE_XPATTERN__LOCAL_NODES = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 3;
 
 	/**
 	 * The feature id for the '<em><b>Edges</b></em>' reference list.
@@ -871,7 +880,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XPATTERN__EDGES = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 3;
+	int IBE_XPATTERN__EDGES = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 4;
 
 	/**
 	 * The feature id for the '<em><b>Attribute Constraints</b></em>' containment reference list.
@@ -880,7 +889,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XPATTERN__ATTRIBUTE_CONSTRAINTS = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 4;
+	int IBE_XPATTERN__ATTRIBUTE_CONSTRAINTS = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 5;
 
 	/**
 	 * The feature id for the '<em><b>Injectivity Constraints</b></em>' containment reference list.
@@ -889,7 +898,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XPATTERN__INJECTIVITY_CONSTRAINTS = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 5;
+	int IBE_XPATTERN__INJECTIVITY_CONSTRAINTS = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 6;
 
 	/**
 	 * The feature id for the '<em><b>Invocations</b></em>' containment reference list.
@@ -898,7 +907,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XPATTERN__INVOCATIONS = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 6;
+	int IBE_XPATTERN__INVOCATIONS = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 7;
 
 	/**
 	 * The number of structural features of the '<em>IBe XPattern</em>' class.
@@ -907,7 +916,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XPATTERN_FEATURE_COUNT = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 7;
+	int IBE_XPATTERN_FEATURE_COUNT = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 8;
 
 	/**
 	 * The number of operations of the '<em>IBe XPattern</em>' class.
@@ -1548,6 +1557,17 @@ public interface IBeXCoreModelPackage extends EPackage {
 	EReference getIBeXModel_MetaData();
 
 	/**
+	 * Returns the meta object for the reference '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel#getFeatureConfig <em>Feature Config</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Feature Config</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel#getFeatureConfig()
+	 * @see #getIBeXModel()
+	 * @generated
+	 */
+	EReference getIBeXModel_FeatureConfig();
+
+	/**
 	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel#getPatternSet <em>Pattern Set</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1877,27 +1897,27 @@ public interface IBeXCoreModelPackage extends EPackage {
 	EAttribute getEPackageDependency_GenmodelLocation();
 
 	/**
-	 * Returns the meta object for the map '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getName2classifier <em>Name2classifier</em>}'.
+	 * Returns the meta object for the map '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getClassifierName2FQN <em>Classifier Name2 FQN</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the map '<em>Name2classifier</em>'.
-	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getName2classifier()
+	 * @return the meta object for the map '<em>Classifier Name2 FQN</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getClassifierName2FQN()
 	 * @see #getEPackageDependency()
 	 * @generated
 	 */
-	EReference getEPackageDependency_Name2classifier();
+	EReference getEPackageDependency_ClassifierName2FQN();
 
 	/**
-	 * Returns the meta object for class '{@link java.util.Map.Entry <em>Name To EClassifier Mapping</em>}'.
+	 * Returns the meta object for class '{@link java.util.Map.Entry <em>Classifier Name To FQN</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for class '<em>Name To EClassifier Mapping</em>'.
+	 * @return the meta object for class '<em>Classifier Name To FQN</em>'.
 	 * @see java.util.Map.Entry
 	 * @model keyDataType="org.eclipse.emf.ecore.EString"
-	 *        valueType="org.eclipse.emf.ecore.EClassifier" valueRequired="true"
+	 *        valueDataType="org.eclipse.emf.ecore.EString"
 	 * @generated
 	 */
-	EClass getNameToEClassifierMapping();
+	EClass getClassifierNameToFQN();
 
 	/**
 	 * Returns the meta object for the attribute '{@link java.util.Map.Entry <em>Key</em>}'.
@@ -1905,32 +1925,21 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the attribute '<em>Key</em>'.
 	 * @see java.util.Map.Entry
-	 * @see #getNameToEClassifierMapping()
+	 * @see #getClassifierNameToFQN()
 	 * @generated
 	 */
-	EAttribute getNameToEClassifierMapping_Key();
+	EAttribute getClassifierNameToFQN_Key();
 
 	/**
-	 * Returns the meta object for the reference '{@link java.util.Map.Entry <em>Value</em>}'.
+	 * Returns the meta object for the attribute '{@link java.util.Map.Entry <em>Value</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the reference '<em>Value</em>'.
+	 * @return the meta object for the attribute '<em>Value</em>'.
 	 * @see java.util.Map.Entry
-	 * @see #getNameToEClassifierMapping()
+	 * @see #getClassifierNameToFQN()
 	 * @generated
 	 */
-	EReference getNameToEClassifierMapping_Value();
-
-	/**
-	 * Returns the meta object for the reference '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel#getFeatureConfig <em>Feature Config</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the reference '<em>Feature Config</em>'.
-	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel#getFeatureConfig()
-	 * @see #getIBeXModel()
-	 * @generated
-	 */
-	EReference getIBeXModel_FeatureConfig();
+	EAttribute getClassifierNameToFQN_Value();
 
 	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXFeatureConfig <em>IBe XFeature Config</em>}'.
@@ -2122,6 +2131,17 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 */
 	EClass getIBeXPattern();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern#isEmpty <em>Empty</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Empty</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern#isEmpty()
+	 * @see #getIBeXPattern()
+	 * @generated
+	 */
+	EAttribute getIBeXPattern_Empty();
 
 	/**
 	 * Returns the meta object for the reference list '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern#getDependencies <em>Dependencies</em>}'.
@@ -2647,6 +2667,14 @@ public interface IBeXCoreModelPackage extends EPackage {
 		EReference IBE_XMODEL__META_DATA = eINSTANCE.getIBeXModel_MetaData();
 
 		/**
+		 * The meta object literal for the '<em><b>Feature Config</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XMODEL__FEATURE_CONFIG = eINSTANCE.getIBeXModel_FeatureConfig();
+
+		/**
 		 * The meta object literal for the '<em><b>Pattern Set</b></em>' containment reference feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -2895,22 +2923,22 @@ public interface IBeXCoreModelPackage extends EPackage {
 		EAttribute EPACKAGE_DEPENDENCY__GENMODEL_LOCATION = eINSTANCE.getEPackageDependency_GenmodelLocation();
 
 		/**
-		 * The meta object literal for the '<em><b>Name2classifier</b></em>' map feature.
+		 * The meta object literal for the '<em><b>Classifier Name2 FQN</b></em>' map feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference EPACKAGE_DEPENDENCY__NAME2CLASSIFIER = eINSTANCE.getEPackageDependency_Name2classifier();
+		EReference EPACKAGE_DEPENDENCY__CLASSIFIER_NAME2_FQN = eINSTANCE.getEPackageDependency_ClassifierName2FQN();
 
 		/**
-		 * The meta object literal for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.NameToEClassifierMappingImpl <em>Name To EClassifier Mapping</em>}' class.
+		 * The meta object literal for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.ClassifierNameToFQNImpl <em>Classifier Name To FQN</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
-		 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.NameToEClassifierMappingImpl
-		 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getNameToEClassifierMapping()
+		 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.ClassifierNameToFQNImpl
+		 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getClassifierNameToFQN()
 		 * @generated
 		 */
-		EClass NAME_TO_ECLASSIFIER_MAPPING = eINSTANCE.getNameToEClassifierMapping();
+		EClass CLASSIFIER_NAME_TO_FQN = eINSTANCE.getClassifierNameToFQN();
 
 		/**
 		 * The meta object literal for the '<em><b>Key</b></em>' attribute feature.
@@ -2918,23 +2946,15 @@ public interface IBeXCoreModelPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute NAME_TO_ECLASSIFIER_MAPPING__KEY = eINSTANCE.getNameToEClassifierMapping_Key();
+		EAttribute CLASSIFIER_NAME_TO_FQN__KEY = eINSTANCE.getClassifierNameToFQN_Key();
 
 		/**
-		 * The meta object literal for the '<em><b>Value</b></em>' reference feature.
+		 * The meta object literal for the '<em><b>Value</b></em>' attribute feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference NAME_TO_ECLASSIFIER_MAPPING__VALUE = eINSTANCE.getNameToEClassifierMapping_Value();
-
-		/**
-		 * The meta object literal for the '<em><b>Feature Config</b></em>' reference feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference IBE_XMODEL__FEATURE_CONFIG = eINSTANCE.getIBeXModel_FeatureConfig();
+		EAttribute CLASSIFIER_NAME_TO_FQN__VALUE = eINSTANCE.getClassifierNameToFQN_Value();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXFeatureConfigImpl <em>IBe XFeature Config</em>}' class.
@@ -3093,6 +3113,14 @@ public interface IBeXCoreModelPackage extends EPackage {
 		 * @generated
 		 */
 		EClass IBE_XPATTERN = eINSTANCE.getIBeXPattern();
+
+		/**
+		 * The meta object literal for the '<em><b>Empty</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute IBE_XPATTERN__EMPTY = eINSTANCE.getIBeXPattern_Empty();
 
 		/**
 		 * The meta object literal for the '<em><b>Dependencies</b></em>' reference list feature.

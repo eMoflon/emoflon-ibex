@@ -49,11 +49,11 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//EPackageDependency/genmodelURI"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//EPackageDependency/genmodelHasLocation"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//EPackageDependency/genmodelLocation"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//EPackageDependency/name2classifier"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//EPackageDependency/classifierName2FQN"/>
     </genClasses>
-    <genClasses ecoreClass="IBeXCoreModel.ecore#//NameToEClassifierMapping">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//NameToEClassifierMapping/key"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//NameToEClassifierMapping/value"/>
+    <genClasses ecoreClass="IBeXCoreModel.ecore#//ClassifierNameToFQN">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//ClassifierNameToFQN/key"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//ClassifierNameToFQN/value"/>
     </genClasses>
     <genClasses ecoreClass="IBeXCoreModel.ecore#//IBeXFeatureConfig">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//IBeXFeatureConfig/countExpressions"/>
@@ -79,6 +79,7 @@
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXEdge/target"/>
     </genClasses>
     <genClasses ecoreClass="IBeXCoreModel.ecore#//IBeXPattern">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//IBeXPattern/empty"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXPattern/dependencies"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXPattern/signatureNodes"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXPattern/localNodes"/>

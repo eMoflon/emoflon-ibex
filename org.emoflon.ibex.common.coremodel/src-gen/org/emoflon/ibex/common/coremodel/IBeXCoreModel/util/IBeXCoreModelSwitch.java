@@ -4,7 +4,6 @@ package org.emoflon.ibex.common.coremodel.IBeXCoreModel.util;
 
 import java.util.Map;
 
-import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 
@@ -113,10 +112,10 @@ public class IBeXCoreModelSwitch<T> extends Switch<T> {
 				result = defaultCase(theEObject);
 			return result;
 		}
-		case IBeXCoreModelPackage.NAME_TO_ECLASSIFIER_MAPPING: {
+		case IBeXCoreModelPackage.CLASSIFIER_NAME_TO_FQN: {
 			@SuppressWarnings("unchecked")
-			Map.Entry<String, EClassifier> nameToEClassifierMapping = (Map.Entry<String, EClassifier>) theEObject;
-			T result = caseNameToEClassifierMapping(nameToEClassifierMapping);
+			Map.Entry<String, String> classifierNameToFQN = (Map.Entry<String, String>) theEObject;
+			T result = caseClassifierNameToFQN(classifierNameToFQN);
 			if (result == null)
 				result = defaultCase(theEObject);
 			return result;
@@ -363,17 +362,17 @@ public class IBeXCoreModelSwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '<em>Name To EClassifier Mapping</em>'.
+	 * Returns the result of interpreting the object as an instance of '<em>Classifier Name To FQN</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>Name To EClassifier Mapping</em>'.
+	 * @return the result of interpreting the object as an instance of '<em>Classifier Name To FQN</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public T caseNameToEClassifierMapping(Map.Entry<String, EClassifier> object) {
+	public T caseClassifierNameToFQN(Map.Entry<String, String> object) {
 		return null;
 	}
 

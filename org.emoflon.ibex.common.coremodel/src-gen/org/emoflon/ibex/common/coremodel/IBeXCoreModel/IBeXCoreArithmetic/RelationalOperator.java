@@ -77,19 +77,21 @@ public enum RelationalOperator implements Enumerator {
 	 * @ordered
 	 */
 	SMALLER(5, "SMALLER", "SMALLER"),
+
 	/**
 	 * The '<em><b>OBJECT EQUALS</b></em>' literal object.
 	 * <!-- begin-user-doc -->
-	* <!-- end-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @see #OBJECT_EQUALS_VALUE
 	 * @generated
 	 * @ordered
 	 */
 	OBJECT_EQUALS(6, "OBJECT_EQUALS", "OBJECT_EQUALS"),
+
 	/**
 	 * The '<em><b>OBJECT NOT EQUALS</b></em>' literal object.
 	 * <!-- begin-user-doc -->
-	* <!-- end-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @see #OBJECT_NOT_EQUALS_VALUE
 	 * @generated
 	 * @ordered

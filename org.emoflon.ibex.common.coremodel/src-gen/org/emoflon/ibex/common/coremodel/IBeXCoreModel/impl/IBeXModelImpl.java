@@ -160,6 +160,46 @@ public class IBeXModelImpl extends IBeXNamedElementImpl implements IBeXModel {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public IBeXFeatureConfig getFeatureConfig() {
+		if (featureConfig != null && featureConfig.eIsProxy()) {
+			InternalEObject oldFeatureConfig = (InternalEObject) featureConfig;
+			featureConfig = (IBeXFeatureConfig) eResolveProxy(oldFeatureConfig);
+			if (featureConfig != oldFeatureConfig) {
+				if (eNotificationRequired())
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							IBeXCoreModelPackage.IBE_XMODEL__FEATURE_CONFIG, oldFeatureConfig, featureConfig));
+			}
+		}
+		return featureConfig;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public IBeXFeatureConfig basicGetFeatureConfig() {
+		return featureConfig;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setFeatureConfig(IBeXFeatureConfig newFeatureConfig) {
+		IBeXFeatureConfig oldFeatureConfig = featureConfig;
+		featureConfig = newFeatureConfig;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXCoreModelPackage.IBE_XMODEL__FEATURE_CONFIG,
+					oldFeatureConfig, featureConfig));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public IBeXPatternSet getPatternSet() {
 		return patternSet;
 	}
@@ -303,46 +343,6 @@ public class IBeXModelImpl extends IBeXNamedElementImpl implements IBeXModel {
 		} else if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET, IBeXCoreModelPackage.IBE_XMODEL__EDGE_SET, newEdgeSet,
 					newEdgeSet));
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public IBeXFeatureConfig getFeatureConfig() {
-		if (featureConfig != null && featureConfig.eIsProxy()) {
-			InternalEObject oldFeatureConfig = (InternalEObject) featureConfig;
-			featureConfig = (IBeXFeatureConfig) eResolveProxy(oldFeatureConfig);
-			if (featureConfig != oldFeatureConfig) {
-				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
-							IBeXCoreModelPackage.IBE_XMODEL__FEATURE_CONFIG, oldFeatureConfig, featureConfig));
-			}
-		}
-		return featureConfig;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public IBeXFeatureConfig basicGetFeatureConfig() {
-		return featureConfig;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public void setFeatureConfig(IBeXFeatureConfig newFeatureConfig) {
-		IBeXFeatureConfig oldFeatureConfig = featureConfig;
-		featureConfig = newFeatureConfig;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXCoreModelPackage.IBE_XMODEL__FEATURE_CONFIG,
-					oldFeatureConfig, featureConfig));
 	}
 
 	/**

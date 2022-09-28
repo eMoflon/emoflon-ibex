@@ -3,12 +3,16 @@
 package org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl;
 
 import java.util.Collection;
+
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 
 import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
+
+import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
@@ -30,6 +34,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternInvocation;
  * The following features are implemented:
  * </p>
  * <ul>
+ *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXPatternImpl#isEmpty <em>Empty</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXPatternImpl#getDependencies <em>Dependencies</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXPatternImpl#getSignatureNodes <em>Signature Nodes</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXPatternImpl#getLocalNodes <em>Local Nodes</em>}</li>
@@ -42,6 +47,26 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternInvocation;
  * @generated
  */
 public class IBeXPatternImpl extends IBeXNamedElementImpl implements IBeXPattern {
+	/**
+	 * The default value of the '{@link #isEmpty() <em>Empty</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isEmpty()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final boolean EMPTY_EDEFAULT = false;
+
+	/**
+	 * The cached value of the '{@link #isEmpty() <em>Empty</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isEmpty()
+	 * @generated
+	 * @ordered
+	 */
+	protected boolean empty = EMPTY_EDEFAULT;
+
 	/**
 	 * The cached value of the '{@link #getDependencies() <em>Dependencies</em>}' reference list.
 	 * <!-- begin-user-doc -->
@@ -129,6 +154,28 @@ public class IBeXPatternImpl extends IBeXNamedElementImpl implements IBeXPattern
 	@Override
 	protected EClass eStaticClass() {
 		return IBeXCoreModelPackage.Literals.IBE_XPATTERN;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public boolean isEmpty() {
+		return empty;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setEmpty(boolean newEmpty) {
+		boolean oldEmpty = empty;
+		empty = newEmpty;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXCoreModelPackage.IBE_XPATTERN__EMPTY, oldEmpty,
+					empty));
 	}
 
 	/**
@@ -247,6 +294,8 @@ public class IBeXPatternImpl extends IBeXNamedElementImpl implements IBeXPattern
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
+		case IBeXCoreModelPackage.IBE_XPATTERN__EMPTY:
+			return isEmpty();
 		case IBeXCoreModelPackage.IBE_XPATTERN__DEPENDENCIES:
 			return getDependencies();
 		case IBeXCoreModelPackage.IBE_XPATTERN__SIGNATURE_NODES:
@@ -274,6 +323,9 @@ public class IBeXPatternImpl extends IBeXNamedElementImpl implements IBeXPattern
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
+		case IBeXCoreModelPackage.IBE_XPATTERN__EMPTY:
+			setEmpty((Boolean) newValue);
+			return;
 		case IBeXCoreModelPackage.IBE_XPATTERN__DEPENDENCIES:
 			getDependencies().clear();
 			getDependencies().addAll((Collection<? extends IBeXPattern>) newValue);
@@ -314,6 +366,9 @@ public class IBeXPatternImpl extends IBeXNamedElementImpl implements IBeXPattern
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
+		case IBeXCoreModelPackage.IBE_XPATTERN__EMPTY:
+			setEmpty(EMPTY_EDEFAULT);
+			return;
 		case IBeXCoreModelPackage.IBE_XPATTERN__DEPENDENCIES:
 			getDependencies().clear();
 			return;
@@ -347,6 +402,8 @@ public class IBeXPatternImpl extends IBeXNamedElementImpl implements IBeXPattern
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
+		case IBeXCoreModelPackage.IBE_XPATTERN__EMPTY:
+			return empty != EMPTY_EDEFAULT;
 		case IBeXCoreModelPackage.IBE_XPATTERN__DEPENDENCIES:
 			return dependencies != null && !dependencies.isEmpty();
 		case IBeXCoreModelPackage.IBE_XPATTERN__SIGNATURE_NODES:
@@ -363,6 +420,23 @@ public class IBeXPatternImpl extends IBeXNamedElementImpl implements IBeXPattern
 			return invocations != null && !invocations.isEmpty();
 		}
 		return super.eIsSet(featureID);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public String toString() {
+		if (eIsProxy())
+			return super.toString();
+
+		StringBuilder result = new StringBuilder(super.toString());
+		result.append(" (empty: ");
+		result.append(empty);
+		result.append(')');
+		return result.toString();
 	}
 
 } //IBeXPatternImpl

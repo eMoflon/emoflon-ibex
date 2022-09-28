@@ -8,9 +8,7 @@ import org.eclipse.emf.common.util.BasicEMap;
 import org.eclipse.emf.common.util.EMap;
 
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
@@ -19,20 +17,19 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage;
 
 /**
  * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>Name To EClassifier Mapping</b></em>'.
+ * An implementation of the model object '<em><b>Classifier Name To FQN</b></em>'.
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.NameToEClassifierMappingImpl#getTypedKey <em>Key</em>}</li>
- *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.NameToEClassifierMappingImpl#getTypedValue <em>Value</em>}</li>
+ *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.ClassifierNameToFQNImpl#getTypedKey <em>Key</em>}</li>
+ *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.ClassifierNameToFQNImpl#getTypedValue <em>Value</em>}</li>
  * </ul>
  *
  * @generated
  */
-public class NameToEClassifierMappingImpl extends MinimalEObjectImpl.Container
-		implements BasicEMap.Entry<String, EClassifier> {
+public class ClassifierNameToFQNImpl extends MinimalEObjectImpl.Container implements BasicEMap.Entry<String, String> {
 	/**
 	 * The default value of the '{@link #getTypedKey() <em>Key</em>}' attribute.
 	 * <!-- begin-user-doc -->
@@ -54,21 +51,31 @@ public class NameToEClassifierMappingImpl extends MinimalEObjectImpl.Container
 	protected String key = KEY_EDEFAULT;
 
 	/**
-	 * The cached value of the '{@link #getTypedValue() <em>Value</em>}' reference.
+	 * The default value of the '{@link #getTypedValue() <em>Value</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @see #getTypedValue()
 	 * @generated
 	 * @ordered
 	 */
-	protected EClassifier value;
+	protected static final String VALUE_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getTypedValue() <em>Value</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getTypedValue()
+	 * @generated
+	 * @ordered
+	 */
+	protected String value = VALUE_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected NameToEClassifierMappingImpl() {
+	protected ClassifierNameToFQNImpl() {
 		super();
 	}
 
@@ -79,7 +86,7 @@ public class NameToEClassifierMappingImpl extends MinimalEObjectImpl.Container
 	 */
 	@Override
 	protected EClass eStaticClass() {
-		return IBeXCoreModelPackage.Literals.NAME_TO_ECLASSIFIER_MAPPING;
+		return IBeXCoreModelPackage.Literals.CLASSIFIER_NAME_TO_FQN;
 	}
 
 	/**
@@ -100,7 +107,7 @@ public class NameToEClassifierMappingImpl extends MinimalEObjectImpl.Container
 		String oldKey = key;
 		key = newKey;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXCoreModelPackage.NAME_TO_ECLASSIFIER_MAPPING__KEY,
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXCoreModelPackage.CLASSIFIER_NAME_TO_FQN__KEY,
 					oldKey, key));
 	}
 
@@ -109,16 +116,7 @@ public class NameToEClassifierMappingImpl extends MinimalEObjectImpl.Container
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClassifier getTypedValue() {
-		if (value != null && value.eIsProxy()) {
-			InternalEObject oldValue = (InternalEObject) value;
-			value = (EClassifier) eResolveProxy(oldValue);
-			if (value != oldValue) {
-				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
-							IBeXCoreModelPackage.NAME_TO_ECLASSIFIER_MAPPING__VALUE, oldValue, value));
-			}
-		}
+	public String getTypedValue() {
 		return value;
 	}
 
@@ -127,21 +125,12 @@ public class NameToEClassifierMappingImpl extends MinimalEObjectImpl.Container
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClassifier basicGetTypedValue() {
-		return value;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public void setTypedValue(EClassifier newValue) {
-		EClassifier oldValue = value;
+	public void setTypedValue(String newValue) {
+		String oldValue = value;
 		value = newValue;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					IBeXCoreModelPackage.NAME_TO_ECLASSIFIER_MAPPING__VALUE, oldValue, value));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXCoreModelPackage.CLASSIFIER_NAME_TO_FQN__VALUE,
+					oldValue, value));
 	}
 
 	/**
@@ -152,12 +141,10 @@ public class NameToEClassifierMappingImpl extends MinimalEObjectImpl.Container
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case IBeXCoreModelPackage.NAME_TO_ECLASSIFIER_MAPPING__KEY:
+		case IBeXCoreModelPackage.CLASSIFIER_NAME_TO_FQN__KEY:
 			return getTypedKey();
-		case IBeXCoreModelPackage.NAME_TO_ECLASSIFIER_MAPPING__VALUE:
-			if (resolve)
-				return getTypedValue();
-			return basicGetTypedValue();
+		case IBeXCoreModelPackage.CLASSIFIER_NAME_TO_FQN__VALUE:
+			return getTypedValue();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -170,11 +157,11 @@ public class NameToEClassifierMappingImpl extends MinimalEObjectImpl.Container
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case IBeXCoreModelPackage.NAME_TO_ECLASSIFIER_MAPPING__KEY:
+		case IBeXCoreModelPackage.CLASSIFIER_NAME_TO_FQN__KEY:
 			setTypedKey((String) newValue);
 			return;
-		case IBeXCoreModelPackage.NAME_TO_ECLASSIFIER_MAPPING__VALUE:
-			setTypedValue((EClassifier) newValue);
+		case IBeXCoreModelPackage.CLASSIFIER_NAME_TO_FQN__VALUE:
+			setTypedValue((String) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -188,11 +175,11 @@ public class NameToEClassifierMappingImpl extends MinimalEObjectImpl.Container
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case IBeXCoreModelPackage.NAME_TO_ECLASSIFIER_MAPPING__KEY:
+		case IBeXCoreModelPackage.CLASSIFIER_NAME_TO_FQN__KEY:
 			setTypedKey(KEY_EDEFAULT);
 			return;
-		case IBeXCoreModelPackage.NAME_TO_ECLASSIFIER_MAPPING__VALUE:
-			setTypedValue((EClassifier) null);
+		case IBeXCoreModelPackage.CLASSIFIER_NAME_TO_FQN__VALUE:
+			setTypedValue(VALUE_EDEFAULT);
 			return;
 		}
 		super.eUnset(featureID);
@@ -206,10 +193,10 @@ public class NameToEClassifierMappingImpl extends MinimalEObjectImpl.Container
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case IBeXCoreModelPackage.NAME_TO_ECLASSIFIER_MAPPING__KEY:
+		case IBeXCoreModelPackage.CLASSIFIER_NAME_TO_FQN__KEY:
 			return KEY_EDEFAULT == null ? key != null : !KEY_EDEFAULT.equals(key);
-		case IBeXCoreModelPackage.NAME_TO_ECLASSIFIER_MAPPING__VALUE:
-			return value != null;
+		case IBeXCoreModelPackage.CLASSIFIER_NAME_TO_FQN__VALUE:
+			return VALUE_EDEFAULT == null ? value != null : !VALUE_EDEFAULT.equals(value);
 		}
 		return super.eIsSet(featureID);
 	}
@@ -227,6 +214,8 @@ public class NameToEClassifierMappingImpl extends MinimalEObjectImpl.Container
 		StringBuilder result = new StringBuilder(super.toString());
 		result.append(" (key: ");
 		result.append(key);
+		result.append(", value: ");
+		result.append(value);
 		result.append(')');
 		return result.toString();
 	}
@@ -283,7 +272,7 @@ public class NameToEClassifierMappingImpl extends MinimalEObjectImpl.Container
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClassifier getValue() {
+	public String getValue() {
 		return getTypedValue();
 	}
 
@@ -292,8 +281,8 @@ public class NameToEClassifierMappingImpl extends MinimalEObjectImpl.Container
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClassifier setValue(EClassifier value) {
-		EClassifier oldValue = getValue();
+	public String setValue(String value) {
+		String oldValue = getValue();
 		setTypedValue(value);
 		return oldValue;
 	}
@@ -304,9 +293,9 @@ public class NameToEClassifierMappingImpl extends MinimalEObjectImpl.Container
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
-	public EMap<String, EClassifier> getEMap() {
+	public EMap<String, String> getEMap() {
 		EObject container = eContainer();
-		return container == null ? null : (EMap<String, EClassifier>) container.eGet(eContainmentFeature());
+		return container == null ? null : (EMap<String, String>) container.eGet(eContainmentFeature());
 	}
 
-} //NameToEClassifierMappingImpl
+} //ClassifierNameToFQNImpl

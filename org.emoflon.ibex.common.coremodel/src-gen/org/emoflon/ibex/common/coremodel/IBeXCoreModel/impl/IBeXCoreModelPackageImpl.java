@@ -87,7 +87,7 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private EClass nameToEClassifierMappingEClass = null;
+	private EClass classifierNameToFQNEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -321,6 +321,15 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 	 */
 	public EReference getIBeXModel_MetaData() {
 		return (EReference) iBeXModelEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getIBeXModel_FeatureConfig() {
+		return (EReference) iBeXModelEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -598,7 +607,7 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getEPackageDependency_Name2classifier() {
+	public EReference getEPackageDependency_ClassifierName2FQN() {
 		return (EReference) ePackageDependencyEClass.getEStructuralFeatures().get(16);
 	}
 
@@ -607,8 +616,8 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClass getNameToEClassifierMapping() {
-		return nameToEClassifierMappingEClass;
+	public EClass getClassifierNameToFQN() {
+		return classifierNameToFQNEClass;
 	}
 
 	/**
@@ -616,8 +625,8 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getNameToEClassifierMapping_Key() {
-		return (EAttribute) nameToEClassifierMappingEClass.getEStructuralFeatures().get(0);
+	public EAttribute getClassifierNameToFQN_Key() {
+		return (EAttribute) classifierNameToFQNEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -625,17 +634,8 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getNameToEClassifierMapping_Value() {
-		return (EReference) nameToEClassifierMappingEClass.getEStructuralFeatures().get(1);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EReference getIBeXModel_FeatureConfig() {
-		return (EReference) iBeXModelEClass.getEStructuralFeatures().get(1);
+	public EAttribute getClassifierNameToFQN_Value() {
+		return (EAttribute) classifierNameToFQNEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -805,8 +805,8 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getIBeXPattern_Dependencies() {
-		return (EReference) iBeXPatternEClass.getEStructuralFeatures().get(0);
+	public EAttribute getIBeXPattern_Empty() {
+		return (EAttribute) iBeXPatternEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -814,7 +814,7 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getIBeXPattern_SignatureNodes() {
+	public EReference getIBeXPattern_Dependencies() {
 		return (EReference) iBeXPatternEClass.getEStructuralFeatures().get(1);
 	}
 
@@ -823,7 +823,7 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getIBeXPattern_LocalNodes() {
+	public EReference getIBeXPattern_SignatureNodes() {
 		return (EReference) iBeXPatternEClass.getEStructuralFeatures().get(2);
 	}
 
@@ -832,7 +832,7 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getIBeXPattern_Edges() {
+	public EReference getIBeXPattern_LocalNodes() {
 		return (EReference) iBeXPatternEClass.getEStructuralFeatures().get(3);
 	}
 
@@ -841,7 +841,7 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getIBeXPattern_AttributeConstraints() {
+	public EReference getIBeXPattern_Edges() {
 		return (EReference) iBeXPatternEClass.getEStructuralFeatures().get(4);
 	}
 
@@ -850,7 +850,7 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getIBeXPattern_InjectivityConstraints() {
+	public EReference getIBeXPattern_AttributeConstraints() {
 		return (EReference) iBeXPatternEClass.getEStructuralFeatures().get(5);
 	}
 
@@ -859,8 +859,17 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getIBeXPattern_Invocations() {
+	public EReference getIBeXPattern_InjectivityConstraints() {
 		return (EReference) iBeXPatternEClass.getEStructuralFeatures().get(6);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getIBeXPattern_Invocations() {
+		return (EReference) iBeXPatternEClass.getEStructuralFeatures().get(7);
 	}
 
 	/**
@@ -1255,11 +1264,11 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 		createEAttribute(ePackageDependencyEClass, EPACKAGE_DEPENDENCY__GENMODEL_URI);
 		createEAttribute(ePackageDependencyEClass, EPACKAGE_DEPENDENCY__GENMODEL_HAS_LOCATION);
 		createEAttribute(ePackageDependencyEClass, EPACKAGE_DEPENDENCY__GENMODEL_LOCATION);
-		createEReference(ePackageDependencyEClass, EPACKAGE_DEPENDENCY__NAME2CLASSIFIER);
+		createEReference(ePackageDependencyEClass, EPACKAGE_DEPENDENCY__CLASSIFIER_NAME2_FQN);
 
-		nameToEClassifierMappingEClass = createEClass(NAME_TO_ECLASSIFIER_MAPPING);
-		createEAttribute(nameToEClassifierMappingEClass, NAME_TO_ECLASSIFIER_MAPPING__KEY);
-		createEReference(nameToEClassifierMappingEClass, NAME_TO_ECLASSIFIER_MAPPING__VALUE);
+		classifierNameToFQNEClass = createEClass(CLASSIFIER_NAME_TO_FQN);
+		createEAttribute(classifierNameToFQNEClass, CLASSIFIER_NAME_TO_FQN__KEY);
+		createEAttribute(classifierNameToFQNEClass, CLASSIFIER_NAME_TO_FQN__VALUE);
 
 		iBeXFeatureConfigEClass = createEClass(IBE_XFEATURE_CONFIG);
 		createEAttribute(iBeXFeatureConfigEClass, IBE_XFEATURE_CONFIG__COUNT_EXPRESSIONS);
@@ -1285,6 +1294,7 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 		createEReference(iBeXEdgeEClass, IBE_XEDGE__TARGET);
 
 		iBeXPatternEClass = createEClass(IBE_XPATTERN);
+		createEAttribute(iBeXPatternEClass, IBE_XPATTERN__EMPTY);
 		createEReference(iBeXPatternEClass, IBE_XPATTERN__DEPENDENCIES);
 		createEReference(iBeXPatternEClass, IBE_XPATTERN__SIGNATURE_NODES);
 		createEReference(iBeXPatternEClass, IBE_XPATTERN__LOCAL_NODES);
@@ -1495,17 +1505,16 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 		initEAttribute(getEPackageDependency_GenmodelLocation(), ecorePackage.getEString(), "genmodelLocation", null, 0,
 				1, EPackageDependency.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getEPackageDependency_Name2classifier(), this.getNameToEClassifierMapping(), null,
-				"name2classifier", null, 0, -1, EPackageDependency.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+		initEReference(getEPackageDependency_ClassifierName2FQN(), this.getClassifierNameToFQN(), null,
+				"classifierName2FQN", null, 0, -1, EPackageDependency.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
 				IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(nameToEClassifierMappingEClass, Map.Entry.class, "NameToEClassifierMapping", !IS_ABSTRACT,
-				!IS_INTERFACE, !IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getNameToEClassifierMapping_Key(), ecorePackage.getEString(), "key", null, 0, 1, Map.Entry.class,
+		initEClass(classifierNameToFQNEClass, Map.Entry.class, "ClassifierNameToFQN", !IS_ABSTRACT, !IS_INTERFACE,
+				!IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getClassifierNameToFQN_Key(), ecorePackage.getEString(), "key", null, 0, 1, Map.Entry.class,
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getNameToEClassifierMapping_Value(), ecorePackage.getEClassifier(), null, "value", null, 1, 1,
-				Map.Entry.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
-				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getClassifierNameToFQN_Value(), ecorePackage.getEString(), "value", null, 0, 1, Map.Entry.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(iBeXFeatureConfigEClass, IBeXFeatureConfig.class, "IBeXFeatureConfig", !IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);
@@ -1560,6 +1569,8 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 
 		initEClass(iBeXPatternEClass, IBeXPattern.class, "IBeXPattern", !IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getIBeXPattern_Empty(), ecorePackage.getEBoolean(), "empty", null, 0, 1, IBeXPattern.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getIBeXPattern_Dependencies(), this.getIBeXPattern(), null, "dependencies", null, 0, -1,
 				IBeXPattern.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

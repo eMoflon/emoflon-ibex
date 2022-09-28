@@ -4,7 +4,6 @@ package org.emoflon.ibex.common.coremodel.IBeXCoreModel;
 
 import org.eclipse.emf.common.util.EMap;
 
-import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 
@@ -33,7 +32,7 @@ import org.eclipse.emf.ecore.EPackage;
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getGenmodelURI <em>Genmodel URI</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#isGenmodelHasLocation <em>Genmodel Has Location</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getGenmodelLocation <em>Genmodel Location</em>}</li>
- *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getName2classifier <em>Name2classifier</em>}</li>
+ *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getClassifierName2FQN <em>Classifier Name2 FQN</em>}</li>
  * </ul>
  *
  * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage#getEPackageDependency()
@@ -394,16 +393,16 @@ public interface EPackageDependency extends EObject {
 	void setGenmodelLocation(String value);
 
 	/**
-	 * Returns the value of the '<em><b>Name2classifier</b></em>' map.
+	 * Returns the value of the '<em><b>Classifier Name2 FQN</b></em>' map.
 	 * The key is of type {@link java.lang.String},
-	 * and the value is of type {@link org.eclipse.emf.ecore.EClassifier},
+	 * and the value is of type {@link java.lang.String},
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Name2classifier</em>' map.
-	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage#getEPackageDependency_Name2classifier()
-	 * @model mapType="org.emoflon.ibex.common.coremodel.IBeXCoreModel.NameToEClassifierMapping&lt;org.eclipse.emf.ecore.EString, org.eclipse.emf.ecore.EClassifier&gt;"
+	 * @return the value of the '<em>Classifier Name2 FQN</em>' map.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage#getEPackageDependency_ClassifierName2FQN()
+	 * @model mapType="org.emoflon.ibex.common.coremodel.IBeXCoreModel.ClassifierNameToFQN&lt;org.eclipse.emf.ecore.EString, org.eclipse.emf.ecore.EString&gt;"
 	 * @generated
 	 */
-	EMap<String, EClassifier> getName2classifier();
+	EMap<String, String> getClassifierName2FQN();
 
 } // EPackageDependency

@@ -8,7 +8,6 @@ import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.common.util.EMap;
 
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.InternalEObject;
@@ -46,7 +45,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage;
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.EPackageDependencyImpl#getGenmodelURI <em>Genmodel URI</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.EPackageDependencyImpl#isGenmodelHasLocation <em>Genmodel Has Location</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.EPackageDependencyImpl#getGenmodelLocation <em>Genmodel Location</em>}</li>
- *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.EPackageDependencyImpl#getName2classifier <em>Name2classifier</em>}</li>
+ *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.EPackageDependencyImpl#getClassifierName2FQN <em>Classifier Name2 FQN</em>}</li>
  * </ul>
  *
  * @generated
@@ -363,14 +362,14 @@ public class EPackageDependencyImpl extends MinimalEObjectImpl.Container impleme
 	protected String genmodelLocation = GENMODEL_LOCATION_EDEFAULT;
 
 	/**
-	 * The cached value of the '{@link #getName2classifier() <em>Name2classifier</em>}' map.
+	 * The cached value of the '{@link #getClassifierName2FQN() <em>Classifier Name2 FQN</em>}' map.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getName2classifier()
+	 * @see #getClassifierName2FQN()
 	 * @generated
 	 * @ordered
 	 */
-	protected EMap<String, EClassifier> name2classifier;
+	protected EMap<String, String> classifierName2FQN;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -773,13 +772,13 @@ public class EPackageDependencyImpl extends MinimalEObjectImpl.Container impleme
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EMap<String, EClassifier> getName2classifier() {
-		if (name2classifier == null) {
-			name2classifier = new EcoreEMap<String, EClassifier>(
-					IBeXCoreModelPackage.Literals.NAME_TO_ECLASSIFIER_MAPPING, NameToEClassifierMappingImpl.class, this,
-					IBeXCoreModelPackage.EPACKAGE_DEPENDENCY__NAME2CLASSIFIER);
+	public EMap<String, String> getClassifierName2FQN() {
+		if (classifierName2FQN == null) {
+			classifierName2FQN = new EcoreEMap<String, String>(IBeXCoreModelPackage.Literals.CLASSIFIER_NAME_TO_FQN,
+					ClassifierNameToFQNImpl.class, this,
+					IBeXCoreModelPackage.EPACKAGE_DEPENDENCY__CLASSIFIER_NAME2_FQN);
 		}
-		return name2classifier;
+		return classifierName2FQN;
 	}
 
 	/**
@@ -790,8 +789,8 @@ public class EPackageDependencyImpl extends MinimalEObjectImpl.Container impleme
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-		case IBeXCoreModelPackage.EPACKAGE_DEPENDENCY__NAME2CLASSIFIER:
-			return ((InternalEList<?>) getName2classifier()).basicRemove(otherEnd, msgs);
+		case IBeXCoreModelPackage.EPACKAGE_DEPENDENCY__CLASSIFIER_NAME2_FQN:
+			return ((InternalEList<?>) getClassifierName2FQN()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -838,11 +837,11 @@ public class EPackageDependencyImpl extends MinimalEObjectImpl.Container impleme
 			return isGenmodelHasLocation();
 		case IBeXCoreModelPackage.EPACKAGE_DEPENDENCY__GENMODEL_LOCATION:
 			return getGenmodelLocation();
-		case IBeXCoreModelPackage.EPACKAGE_DEPENDENCY__NAME2CLASSIFIER:
+		case IBeXCoreModelPackage.EPACKAGE_DEPENDENCY__CLASSIFIER_NAME2_FQN:
 			if (coreType)
-				return getName2classifier();
+				return getClassifierName2FQN();
 			else
-				return getName2classifier().map();
+				return getClassifierName2FQN().map();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -903,8 +902,8 @@ public class EPackageDependencyImpl extends MinimalEObjectImpl.Container impleme
 		case IBeXCoreModelPackage.EPACKAGE_DEPENDENCY__GENMODEL_LOCATION:
 			setGenmodelLocation((String) newValue);
 			return;
-		case IBeXCoreModelPackage.EPACKAGE_DEPENDENCY__NAME2CLASSIFIER:
-			((EStructuralFeature.Setting) getName2classifier()).set(newValue);
+		case IBeXCoreModelPackage.EPACKAGE_DEPENDENCY__CLASSIFIER_NAME2_FQN:
+			((EStructuralFeature.Setting) getClassifierName2FQN()).set(newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -966,8 +965,8 @@ public class EPackageDependencyImpl extends MinimalEObjectImpl.Container impleme
 		case IBeXCoreModelPackage.EPACKAGE_DEPENDENCY__GENMODEL_LOCATION:
 			setGenmodelLocation(GENMODEL_LOCATION_EDEFAULT);
 			return;
-		case IBeXCoreModelPackage.EPACKAGE_DEPENDENCY__NAME2CLASSIFIER:
-			getName2classifier().clear();
+		case IBeXCoreModelPackage.EPACKAGE_DEPENDENCY__CLASSIFIER_NAME2_FQN:
+			getClassifierName2FQN().clear();
 			return;
 		}
 		super.eUnset(featureID);
@@ -1019,8 +1018,8 @@ public class EPackageDependencyImpl extends MinimalEObjectImpl.Container impleme
 		case IBeXCoreModelPackage.EPACKAGE_DEPENDENCY__GENMODEL_LOCATION:
 			return GENMODEL_LOCATION_EDEFAULT == null ? genmodelLocation != null
 					: !GENMODEL_LOCATION_EDEFAULT.equals(genmodelLocation);
-		case IBeXCoreModelPackage.EPACKAGE_DEPENDENCY__NAME2CLASSIFIER:
-			return name2classifier != null && !name2classifier.isEmpty();
+		case IBeXCoreModelPackage.EPACKAGE_DEPENDENCY__CLASSIFIER_NAME2_FQN:
+			return classifierName2FQN != null && !classifierName2FQN.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

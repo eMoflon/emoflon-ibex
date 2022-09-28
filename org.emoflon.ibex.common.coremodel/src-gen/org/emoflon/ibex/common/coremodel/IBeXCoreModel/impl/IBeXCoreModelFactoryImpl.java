@@ -5,7 +5,6 @@ package org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl;
 import java.util.Map;
 
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 
@@ -67,8 +66,8 @@ public class IBeXCoreModelFactoryImpl extends EFactoryImpl implements IBeXCoreMo
 			return (EObject) createImportNameToPackageDependencyMapping();
 		case IBeXCoreModelPackage.EPACKAGE_DEPENDENCY:
 			return createEPackageDependency();
-		case IBeXCoreModelPackage.NAME_TO_ECLASSIFIER_MAPPING:
-			return (EObject) createNameToEClassifierMapping();
+		case IBeXCoreModelPackage.CLASSIFIER_NAME_TO_FQN:
+			return (EObject) createClassifierNameToFQN();
 		case IBeXCoreModelPackage.IBE_XFEATURE_CONFIG:
 			return createIBeXFeatureConfig();
 		case IBeXCoreModelPackage.IBE_XPATTERN_SET:
@@ -155,9 +154,9 @@ public class IBeXCoreModelFactoryImpl extends EFactoryImpl implements IBeXCoreMo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public Map.Entry<String, EClassifier> createNameToEClassifierMapping() {
-		NameToEClassifierMappingImpl nameToEClassifierMapping = new NameToEClassifierMappingImpl();
-		return nameToEClassifierMapping;
+	public Map.Entry<String, String> createClassifierNameToFQN() {
+		ClassifierNameToFQNImpl classifierNameToFQN = new ClassifierNameToFQNImpl();
+		return classifierNameToFQN;
 	}
 
 	/**

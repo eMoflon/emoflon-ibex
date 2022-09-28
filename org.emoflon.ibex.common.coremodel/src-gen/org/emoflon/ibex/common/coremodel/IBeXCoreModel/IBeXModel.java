@@ -46,6 +46,28 @@ public interface IBeXModel extends IBeXNamedElement {
 	void setMetaData(IBeXModelMetadata value);
 
 	/**
+	 * Returns the value of the '<em><b>Feature Config</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Feature Config</em>' reference.
+	 * @see #setFeatureConfig(IBeXFeatureConfig)
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage#getIBeXModel_FeatureConfig()
+	 * @model required="true"
+	 * @generated
+	 */
+	IBeXFeatureConfig getFeatureConfig();
+
+	/**
+	 * Sets the value of the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel#getFeatureConfig <em>Feature Config</em>}' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Feature Config</em>' reference.
+	 * @see #getFeatureConfig()
+	 * @generated
+	 */
+	void setFeatureConfig(IBeXFeatureConfig value);
+
+	/**
 	 * Returns the value of the '<em><b>Pattern Set</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -110,27 +132,5 @@ public interface IBeXModel extends IBeXNamedElement {
 	 * @generated
 	 */
 	void setEdgeSet(IBeXEdgeSet value);
-
-	/**
-	 * Returns the value of the '<em><b>Feature Config</b></em>' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Feature Config</em>' reference.
-	 * @see #setFeatureConfig(IBeXFeatureConfig)
-	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage#getIBeXModel_FeatureConfig()
-	 * @model required="true"
-	 * @generated
-	 */
-	IBeXFeatureConfig getFeatureConfig();
-
-	/**
-	 * Sets the value of the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel#getFeatureConfig <em>Feature Config</em>}' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Feature Config</em>' reference.
-	 * @see #getFeatureConfig()
-	 * @generated
-	 */
-	void setFeatureConfig(IBeXFeatureConfig value);
 
 } // IBeXModel
