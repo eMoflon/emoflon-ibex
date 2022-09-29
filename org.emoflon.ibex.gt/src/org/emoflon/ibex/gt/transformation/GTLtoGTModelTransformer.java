@@ -3,7 +3,10 @@ package org.emoflon.ibex.gt.transformation;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.resources.IProject;
@@ -11,10 +14,12 @@ import org.eclipse.emf.codegen.ecore.genmodel.GenPackage;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModelMetadata;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXOperationType;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern;
+import org.emoflon.ibex.common.slimgt.slimGT.SlimRuleEdge;
 import org.emoflon.ibex.common.slimgt.util.SlimGTEMFUtil;
 import org.emoflon.ibex.common.transformation.SlimGtToIBeXCoreTransformer;
 import org.emoflon.ibex.gt.gtl.gTL.EditorFile;
@@ -37,6 +42,9 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 
 	protected final Map<SlimRule, IBeXPattern> pattern2pattern = Collections.synchronizedMap(new HashMap<>());
 	protected final Map<SlimRuleNode, IBeXNode> node2node = Collections.synchronizedMap(new HashMap<>());
+	protected final Map<SlimRuleEdge, IBeXEdge> edge2edge = Collections.synchronizedMap(new HashMap<>());
+	protected final Map<SlimRuleNode, List<Consumer<IBeXNode>>> pendingNodeJobs = Collections
+			.synchronizedMap(new HashMap<>());
 
 	public GTLtoGTModelTransformer(final EditorFile editorFile, final IProject project) {
 		super(editorFile);
@@ -92,7 +100,7 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 
 		for (SlimRuleNodeContext context : pattern.getContextNodes().stream().map(n -> (SlimRuleNodeContext) n)
 				.collect(Collectors.toList())) {
-			IBeXNode gtNode = transform((SlimRuleNode) context.getContext());
+			IBeXNode gtNode = transformPrecondition((SlimRuleNode) context.getContext());
 			if (context.isLocal()) {
 				gtPattern.getLocalNodes().add(gtNode);
 			} else {
@@ -102,7 +110,7 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 		}
 
 		for (GTLRuleNodeDeletion deletion : pattern.getDeletedNodes()) {
-			IBeXNode gtNode = transform(deletion.getDeletion());
+			IBeXNode gtNode = transformPrecondition(deletion.getDeletion());
 			gtPattern.getSignatureNodes().add(gtNode);
 			gtNode.setOperationType(IBeXOperationType.DELETION);
 		}
@@ -126,7 +134,7 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 
 		for (SlimRuleNodeContext context : pattern.getContextNodes().stream().map(n -> (SlimRuleNodeContext) n)
 				.collect(Collectors.toList())) {
-			IBeXNode gtNode = transform((SlimRuleNode) context.getContext());
+			IBeXNode gtNode = transformPostcondition((SlimRuleNode) context.getContext());
 			if (context.isLocal()) {
 				gtPattern.getLocalNodes().add(gtNode);
 			} else {
@@ -137,7 +145,7 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 
 		for (SlimRuleNodeCreation creation : pattern.getCreatedNodes().stream().map(n -> (SlimRuleNodeCreation) n)
 				.collect(Collectors.toList())) {
-			IBeXNode gtNode = transform((SlimRuleNode) creation.getCreation());
+			IBeXNode gtNode = transformPostcondition((SlimRuleNode) creation.getCreation());
 			gtPattern.getSignatureNodes().add(gtNode);
 			gtNode.setOperationType(IBeXOperationType.CREATION);
 		}
@@ -151,18 +159,96 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 		return gtPattern;
 	}
 
-	protected IBeXNode transform(SlimRuleNode node) {
+	protected IBeXNode transformPrecondition(SlimRuleNode node) {
+		IBeXNode gtNode = null;
 		if (node2node.containsKey(node)) {
-			return node2node.get(node);
+			gtNode = node2node.get(node);
+		} else {
+			gtNode = superFactory.createIBeXNode();
+			model.getNodeSet().getNodes().add(gtNode);
+			node2node.put(node, gtNode);
 		}
 
-		IBeXNode gtNode = superFactory.createIBeXNode();
-		model.getNodeSet().getNodes().add(gtNode);
-		node2node.put(node, gtNode);
+		for (SlimRuleEdge edge : node.getContextEdges().stream().map(e -> e.getContext())
+				.collect(Collectors.toList())) {
+			IBeXEdge gtEdge = transform(gtNode, edge);
+			gtEdge.setOperationType(IBeXOperationType.CONTEXT);
+		}
 
-		// TODO: Edges
+		for (SlimRuleEdge edge : node.getDeletedEdges().stream().map(e -> e.getDeletion())
+				.collect(Collectors.toList())) {
+			IBeXEdge gtEdge = transform(gtNode, edge);
+			gtEdge.setOperationType(IBeXOperationType.DELETION);
+		}
+
+		// Skip attribute assignments and edge iterators, since these are irrelevant for
+		// pattern matching.
 
 		return gtNode;
+	}
+
+	protected IBeXNode transformPostcondition(SlimRuleNode node) {
+		IBeXNode gtNode = null;
+		if (node2node.containsKey(node)) {
+			gtNode = node2node.get(node);
+		} else {
+			gtNode = superFactory.createIBeXNode();
+			model.getNodeSet().getNodes().add(gtNode);
+			node2node.put(node, gtNode);
+		}
+
+		for (SlimRuleEdge edge : node.getContextEdges().stream().map(e -> e.getContext())
+				.collect(Collectors.toList())) {
+			IBeXEdge gtEdge = transform(gtNode, edge);
+			gtEdge.setOperationType(IBeXOperationType.CONTEXT);
+		}
+
+		for (SlimRuleEdge edge : node.getCreatedEdges().stream().map(e -> e.getCreation())
+				.collect(Collectors.toList())) {
+			IBeXEdge gtEdge = transform(gtNode, edge);
+			gtEdge.setOperationType(IBeXOperationType.CREATION);
+		}
+
+		// Skip attribute assignments, since the postconditon is more of a nice to have
+		// and mostly irrelevant for gt rule application.
+
+		return gtNode;
+	}
+
+	protected IBeXEdge transform(IBeXNode gtSourceNode, SlimRuleEdge edge) {
+		if (edge2edge.containsKey(edge)) {
+			return edge2edge.get(edge);
+		}
+
+		IBeXEdge gtEdge = superFactory.createIBeXEdge();
+		model.getEdgeSet().getEdges().add(gtEdge);
+		edge2edge.put(edge, gtEdge);
+
+		gtEdge.setSource(gtSourceNode);
+		if (node2node.containsKey(edge.getTarget())) {
+			gtEdge.setTarget(node2node.get(edge.getTarget()));
+			setEdgeName(gtEdge);
+		} else {
+			addPendingNodeConsumer((SlimRuleNode) edge.getTarget(), (node) -> {
+				gtEdge.setTarget(node);
+				setEdgeName(gtEdge);
+			});
+		}
+		gtEdge.setType(edge.getType());
+
+		return gtEdge;
+	}
+
+	protected void setEdgeName(IBeXEdge edge) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("[");
+		sb.append(edge.getSource().getName());
+		sb.append("]--");
+		sb.append(edge.getType().getName());
+		sb.append("-->[");
+		sb.append(edge.getTarget().getName());
+		sb.append("]");
+		edge.setName(sb.toString());
 	}
 
 	@Override
@@ -239,6 +325,15 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 				dependency.getFullyQualifiedName() + "." + cls.getName()));
 
 		return dependency;
+	}
+
+	protected void addPendingNodeConsumer(final SlimRuleNode node, Consumer<IBeXNode> consumer) {
+		List<Consumer<IBeXNode>> consumers = pendingNodeJobs.get(node);
+		if (consumer == null) {
+			consumers = Collections.synchronizedList(new LinkedList<>());
+			pendingNodeJobs.put(node, consumers);
+		}
+		consumers.add(consumer);
 	}
 
 }
