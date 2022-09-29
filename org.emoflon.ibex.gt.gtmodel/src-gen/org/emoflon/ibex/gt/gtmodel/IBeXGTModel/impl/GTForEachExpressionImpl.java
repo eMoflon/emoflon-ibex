@@ -6,12 +6,11 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
-
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta;
 
@@ -29,8 +28,8 @@ import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.IBeXGTModelPackage;
  *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTForEachExpressionImpl#getCreate <em>Create</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTForEachExpressionImpl#getDelete <em>Delete</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTForEachExpressionImpl#getSource <em>Source</em>}</li>
- *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTForEachExpressionImpl#getTrgIterator <em>Trg Iterator</em>}</li>
- *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTForEachExpressionImpl#getEdge <em>Edge</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTForEachExpressionImpl#getReference <em>Reference</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTForEachExpressionImpl#getIterator <em>Iterator</em>}</li>
  * </ul>
  *
  * @generated
@@ -67,24 +66,24 @@ public class GTForEachExpressionImpl extends MinimalEObjectImpl.Container implem
 	protected IBeXNode source;
 
 	/**
-	 * The cached value of the '{@link #getTrgIterator() <em>Trg Iterator</em>}' containment reference.
+	 * The cached value of the '{@link #getReference() <em>Reference</em>}' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getTrgIterator()
+	 * @see #getReference()
 	 * @generated
 	 * @ordered
 	 */
-	protected IBeXNode trgIterator;
+	protected EReference reference;
 
 	/**
-	 * The cached value of the '{@link #getEdge() <em>Edge</em>}' containment reference.
+	 * The cached value of the '{@link #getIterator() <em>Iterator</em>}' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getEdge()
+	 * @see #getIterator()
 	 * @generated
 	 * @ordered
 	 */
-	protected IBeXEdge edge;
+	protected IBeXNode iterator;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -250,8 +249,17 @@ public class GTForEachExpressionImpl extends MinimalEObjectImpl.Container implem
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public IBeXNode getTrgIterator() {
-		return trgIterator;
+	public EReference getReference() {
+		if (reference != null && reference.eIsProxy()) {
+			InternalEObject oldReference = (InternalEObject) reference;
+			reference = (EReference) eResolveProxy(oldReference);
+			if (reference != oldReference) {
+				if (eNotificationRequired())
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__REFERENCE, oldReference, reference));
+			}
+		}
+		return reference;
 	}
 
 	/**
@@ -259,12 +267,43 @@ public class GTForEachExpressionImpl extends MinimalEObjectImpl.Container implem
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public NotificationChain basicSetTrgIterator(IBeXNode newTrgIterator, NotificationChain msgs) {
-		IBeXNode oldTrgIterator = trgIterator;
-		trgIterator = newTrgIterator;
+	public EReference basicGetReference() {
+		return reference;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setReference(EReference newReference) {
+		EReference oldReference = reference;
+		reference = newReference;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__REFERENCE,
+					oldReference, reference));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public IBeXNode getIterator() {
+		return iterator;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public NotificationChain basicSetIterator(IBeXNode newIterator, NotificationChain msgs) {
+		IBeXNode oldIterator = iterator;
+		iterator = newIterator;
 		if (eNotificationRequired()) {
 			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
-					IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__TRG_ITERATOR, oldTrgIterator, newTrgIterator);
+					IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__ITERATOR, oldIterator, newIterator);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -278,71 +317,21 @@ public class GTForEachExpressionImpl extends MinimalEObjectImpl.Container implem
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setTrgIterator(IBeXNode newTrgIterator) {
-		if (newTrgIterator != trgIterator) {
+	public void setIterator(IBeXNode newIterator) {
+		if (newIterator != iterator) {
 			NotificationChain msgs = null;
-			if (trgIterator != null)
-				msgs = ((InternalEObject) trgIterator).eInverseRemove(this,
-						EOPPOSITE_FEATURE_BASE - IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__TRG_ITERATOR, null, msgs);
-			if (newTrgIterator != null)
-				msgs = ((InternalEObject) newTrgIterator).eInverseAdd(this,
-						EOPPOSITE_FEATURE_BASE - IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__TRG_ITERATOR, null, msgs);
-			msgs = basicSetTrgIterator(newTrgIterator, msgs);
+			if (iterator != null)
+				msgs = ((InternalEObject) iterator).eInverseRemove(this,
+						EOPPOSITE_FEATURE_BASE - IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__ITERATOR, null, msgs);
+			if (newIterator != null)
+				msgs = ((InternalEObject) newIterator).eInverseAdd(this,
+						EOPPOSITE_FEATURE_BASE - IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__ITERATOR, null, msgs);
+			msgs = basicSetIterator(newIterator, msgs);
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__TRG_ITERATOR, newTrgIterator, newTrgIterator));
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public IBeXEdge getEdge() {
-		return edge;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public NotificationChain basicSetEdge(IBeXEdge newEdge, NotificationChain msgs) {
-		IBeXEdge oldEdge = edge;
-		edge = newEdge;
-		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
-					IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__EDGE, oldEdge, newEdge);
-			if (msgs == null)
-				msgs = notification;
-			else
-				msgs.add(notification);
-		}
-		return msgs;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public void setEdge(IBeXEdge newEdge) {
-		if (newEdge != edge) {
-			NotificationChain msgs = null;
-			if (edge != null)
-				msgs = ((InternalEObject) edge).eInverseRemove(this,
-						EOPPOSITE_FEATURE_BASE - IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__EDGE, null, msgs);
-			if (newEdge != null)
-				msgs = ((InternalEObject) newEdge).eInverseAdd(this,
-						EOPPOSITE_FEATURE_BASE - IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__EDGE, null, msgs);
-			msgs = basicSetEdge(newEdge, msgs);
-			if (msgs != null)
-				msgs.dispatch();
-		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__EDGE,
-					newEdge, newEdge));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__ITERATOR,
+					newIterator, newIterator));
 	}
 
 	/**
@@ -357,10 +346,8 @@ public class GTForEachExpressionImpl extends MinimalEObjectImpl.Container implem
 			return basicSetCreate(null, msgs);
 		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__DELETE:
 			return basicSetDelete(null, msgs);
-		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__TRG_ITERATOR:
-			return basicSetTrgIterator(null, msgs);
-		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__EDGE:
-			return basicSetEdge(null, msgs);
+		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__ITERATOR:
+			return basicSetIterator(null, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -381,10 +368,12 @@ public class GTForEachExpressionImpl extends MinimalEObjectImpl.Container implem
 			if (resolve)
 				return getSource();
 			return basicGetSource();
-		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__TRG_ITERATOR:
-			return getTrgIterator();
-		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__EDGE:
-			return getEdge();
+		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__REFERENCE:
+			if (resolve)
+				return getReference();
+			return basicGetReference();
+		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__ITERATOR:
+			return getIterator();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -406,11 +395,11 @@ public class GTForEachExpressionImpl extends MinimalEObjectImpl.Container implem
 		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__SOURCE:
 			setSource((IBeXNode) newValue);
 			return;
-		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__TRG_ITERATOR:
-			setTrgIterator((IBeXNode) newValue);
+		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__REFERENCE:
+			setReference((EReference) newValue);
 			return;
-		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__EDGE:
-			setEdge((IBeXEdge) newValue);
+		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__ITERATOR:
+			setIterator((IBeXNode) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -433,11 +422,11 @@ public class GTForEachExpressionImpl extends MinimalEObjectImpl.Container implem
 		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__SOURCE:
 			setSource((IBeXNode) null);
 			return;
-		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__TRG_ITERATOR:
-			setTrgIterator((IBeXNode) null);
+		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__REFERENCE:
+			setReference((EReference) null);
 			return;
-		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__EDGE:
-			setEdge((IBeXEdge) null);
+		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__ITERATOR:
+			setIterator((IBeXNode) null);
 			return;
 		}
 		super.eUnset(featureID);
@@ -457,10 +446,10 @@ public class GTForEachExpressionImpl extends MinimalEObjectImpl.Container implem
 			return delete != null;
 		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__SOURCE:
 			return source != null;
-		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__TRG_ITERATOR:
-			return trgIterator != null;
-		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__EDGE:
-			return edge != null;
+		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__REFERENCE:
+			return reference != null;
+		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__ITERATOR:
+			return iterator != null;
 		}
 		return super.eIsSet(featureID);
 	}

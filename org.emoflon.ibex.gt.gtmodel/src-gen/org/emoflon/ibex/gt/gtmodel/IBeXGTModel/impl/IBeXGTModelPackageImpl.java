@@ -13,6 +13,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.IBeXCo
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage;
 
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression;
+import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTIteratorAttributeReference;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTModel;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTParameter;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTParameterValue;
@@ -78,6 +79,13 @@ public class IBeXGTModelPackageImpl extends EPackageImpl implements IBeXGTModelP
 	 * @generated
 	 */
 	private EClass gtParameterValueEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass gtIteratorAttributeReferenceEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -284,7 +292,7 @@ public class IBeXGTModelPackageImpl extends EPackageImpl implements IBeXGTModelP
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getGTForEachExpression_TrgIterator() {
+	public EReference getGTForEachExpression_Reference() {
 		return (EReference) gtForEachExpressionEClass.getEStructuralFeatures().get(3);
 	}
 
@@ -293,7 +301,7 @@ public class IBeXGTModelPackageImpl extends EPackageImpl implements IBeXGTModelP
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getGTForEachExpression_Edge() {
+	public EReference getGTForEachExpression_Iterator() {
 		return (EReference) gtForEachExpressionEClass.getEStructuralFeatures().get(4);
 	}
 
@@ -331,6 +339,33 @@ public class IBeXGTModelPackageImpl extends EPackageImpl implements IBeXGTModelP
 	 */
 	public EReference getGTParameterValue_Parameter() {
 		return (EReference) gtParameterValueEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getGTIteratorAttributeReference() {
+		return gtIteratorAttributeReferenceEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getGTIteratorAttributeReference_Iterator() {
+		return (EReference) gtIteratorAttributeReferenceEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getGTIteratorAttributeReference_Attribute() {
+		return (EReference) gtIteratorAttributeReferenceEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -407,14 +442,18 @@ public class IBeXGTModelPackageImpl extends EPackageImpl implements IBeXGTModelP
 		createEReference(gtForEachExpressionEClass, GT_FOR_EACH_EXPRESSION__CREATE);
 		createEReference(gtForEachExpressionEClass, GT_FOR_EACH_EXPRESSION__DELETE);
 		createEReference(gtForEachExpressionEClass, GT_FOR_EACH_EXPRESSION__SOURCE);
-		createEReference(gtForEachExpressionEClass, GT_FOR_EACH_EXPRESSION__TRG_ITERATOR);
-		createEReference(gtForEachExpressionEClass, GT_FOR_EACH_EXPRESSION__EDGE);
+		createEReference(gtForEachExpressionEClass, GT_FOR_EACH_EXPRESSION__REFERENCE);
+		createEReference(gtForEachExpressionEClass, GT_FOR_EACH_EXPRESSION__ITERATOR);
 
 		gtParameterEClass = createEClass(GT_PARAMETER);
 		createEReference(gtParameterEClass, GT_PARAMETER__TYPE);
 
 		gtParameterValueEClass = createEClass(GT_PARAMETER_VALUE);
 		createEReference(gtParameterValueEClass, GT_PARAMETER_VALUE__PARAMETER);
+
+		gtIteratorAttributeReferenceEClass = createEClass(GT_ITERATOR_ATTRIBUTE_REFERENCE);
+		createEReference(gtIteratorAttributeReferenceEClass, GT_ITERATOR_ATTRIBUTE_REFERENCE__ITERATOR);
+		createEReference(gtIteratorAttributeReferenceEClass, GT_ITERATOR_ATTRIBUTE_REFERENCE__ATTRIBUTE);
 
 		gtWatchDogEClass = createEClass(GT_WATCH_DOG);
 		createEReference(gtWatchDogEClass, GT_WATCH_DOG__NODE);
@@ -461,6 +500,7 @@ public class IBeXGTModelPackageImpl extends EPackageImpl implements IBeXGTModelP
 		gtRuleEClass.getESuperTypes().add(theIBeXCoreModelPackage.getIBeXRule());
 		gtParameterEClass.getESuperTypes().add(theIBeXCoreModelPackage.getIBeXNamedElement());
 		gtParameterValueEClass.getESuperTypes().add(theIBeXCoreArithmeticPackage.getArithmeticValue());
+		gtIteratorAttributeReferenceEClass.getESuperTypes().add(theIBeXCoreArithmeticPackage.getValueExpression());
 
 		// Initialize classes, features, and operations; add parameters
 		initEClass(gtModelEClass, GTModel.class, "GTModel", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -502,11 +542,11 @@ public class IBeXGTModelPackageImpl extends EPackageImpl implements IBeXGTModelP
 		initEReference(getGTForEachExpression_Source(), theIBeXCoreModelPackage.getIBeXNode(), null, "source", null, 1,
 				1, GTForEachExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
 				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getGTForEachExpression_TrgIterator(), theIBeXCoreModelPackage.getIBeXNode(), null, "trgIterator",
-				null, 1, 1, GTForEachExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
-				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getGTForEachExpression_Edge(), theIBeXCoreModelPackage.getIBeXEdge(), null, "edge", null, 1, 1,
-				GTForEachExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
+		initEReference(getGTForEachExpression_Reference(), ecorePackage.getEReference(), null, "reference", null, 1, 1,
+				GTForEachExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
+				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getGTForEachExpression_Iterator(), theIBeXCoreModelPackage.getIBeXNode(), null, "iterator", null,
+				1, 1, GTForEachExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
 				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(gtParameterEClass, GTParameter.class, "GTParameter", !IS_ABSTRACT, !IS_INTERFACE,
@@ -520,6 +560,15 @@ public class IBeXGTModelPackageImpl extends EPackageImpl implements IBeXGTModelP
 		initEReference(getGTParameterValue_Parameter(), this.getGTParameter(), null, "parameter", null, 1, 1,
 				GTParameterValue.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(gtIteratorAttributeReferenceEClass, GTIteratorAttributeReference.class,
+				"GTIteratorAttributeReference", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getGTIteratorAttributeReference_Iterator(), this.getGTForEachExpression(), null, "iterator",
+				null, 1, 1, GTIteratorAttributeReference.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				!IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getGTIteratorAttributeReference_Attribute(), ecorePackage.getEAttribute(), null, "attribute",
+				null, 1, 1, GTIteratorAttributeReference.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				!IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(gtWatchDogEClass, GTWatchDog.class, "GTWatchDog", !IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);

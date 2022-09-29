@@ -118,13 +118,13 @@ public enum BinaryOperator implements Enumerator {
 	 */
 	UNIFORM_DISTRIBUTION(9, "UNIFORM_DISTRIBUTION", "UNIFORM_DISTRIBUTION"),
 	/**
-	* The '<em><b>LOG</b></em>' literal object.
-	* <!-- begin-user-doc -->
+	 * The '<em><b>LOG</b></em>' literal object.
+	 * <!-- begin-user-doc -->
 	* <!-- end-user-doc -->
-	* @see #LOG_VALUE
-	* @generated
-	* @ordered
-	*/
+	 * @see #LOG_VALUE
+	 * @generated
+	 * @ordered
+	 */
 	LOG(10, "LOG", "LOG");
 
 	/**

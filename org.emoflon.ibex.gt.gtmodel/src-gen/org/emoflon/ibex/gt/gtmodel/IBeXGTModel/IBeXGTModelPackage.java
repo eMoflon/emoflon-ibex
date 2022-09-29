@@ -461,22 +461,22 @@ public interface IBeXGTModelPackage extends EPackage {
 	int GT_FOR_EACH_EXPRESSION__SOURCE = 2;
 
 	/**
-	 * The feature id for the '<em><b>Trg Iterator</b></em>' containment reference.
+	 * The feature id for the '<em><b>Reference</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int GT_FOR_EACH_EXPRESSION__TRG_ITERATOR = 3;
+	int GT_FOR_EACH_EXPRESSION__REFERENCE = 3;
 
 	/**
-	 * The feature id for the '<em><b>Edge</b></em>' containment reference.
+	 * The feature id for the '<em><b>Iterator</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int GT_FOR_EACH_EXPRESSION__EDGE = 4;
+	int GT_FOR_EACH_EXPRESSION__ITERATOR = 4;
 
 	/**
 	 * The number of structural features of the '<em>GT For Each Expression</em>' class.
@@ -589,6 +589,62 @@ public interface IBeXGTModelPackage extends EPackage {
 	int GT_PARAMETER_VALUE_OPERATION_COUNT = IBeXCoreArithmeticPackage.ARITHMETIC_VALUE_OPERATION_COUNT + 0;
 
 	/**
+	 * The meta object id for the '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTIteratorAttributeReferenceImpl <em>GT Iterator Attribute Reference</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTIteratorAttributeReferenceImpl
+	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.IBeXGTModelPackageImpl#getGTIteratorAttributeReference()
+	 * @generated
+	 */
+	int GT_ITERATOR_ATTRIBUTE_REFERENCE = 7;
+
+	/**
+	 * The feature id for the '<em><b>Type</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_ITERATOR_ATTRIBUTE_REFERENCE__TYPE = IBeXCoreArithmeticPackage.VALUE_EXPRESSION__TYPE;
+
+	/**
+	 * The feature id for the '<em><b>Iterator</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_ITERATOR_ATTRIBUTE_REFERENCE__ITERATOR = IBeXCoreArithmeticPackage.VALUE_EXPRESSION_FEATURE_COUNT + 0;
+
+	/**
+	 * The feature id for the '<em><b>Attribute</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_ITERATOR_ATTRIBUTE_REFERENCE__ATTRIBUTE = IBeXCoreArithmeticPackage.VALUE_EXPRESSION_FEATURE_COUNT + 1;
+
+	/**
+	 * The number of structural features of the '<em>GT Iterator Attribute Reference</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_ITERATOR_ATTRIBUTE_REFERENCE_FEATURE_COUNT = IBeXCoreArithmeticPackage.VALUE_EXPRESSION_FEATURE_COUNT + 2;
+
+	/**
+	 * The number of operations of the '<em>GT Iterator Attribute Reference</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_ITERATOR_ATTRIBUTE_REFERENCE_OPERATION_COUNT = IBeXCoreArithmeticPackage.VALUE_EXPRESSION_OPERATION_COUNT
+			+ 0;
+
+	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTWatchDogImpl <em>GT Watch Dog</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -596,7 +652,7 @@ public interface IBeXGTModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.IBeXGTModelPackageImpl#getGTWatchDog()
 	 * @generated
 	 */
-	int GT_WATCH_DOG = 7;
+	int GT_WATCH_DOG = 8;
 
 	/**
 	 * The feature id for the '<em><b>Node</b></em>' reference.
@@ -784,26 +840,26 @@ public interface IBeXGTModelPackage extends EPackage {
 	EReference getGTForEachExpression_Source();
 
 	/**
-	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getTrgIterator <em>Trg Iterator</em>}'.
+	 * Returns the meta object for the reference '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getReference <em>Reference</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference '<em>Trg Iterator</em>'.
-	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getTrgIterator()
+	 * @return the meta object for the reference '<em>Reference</em>'.
+	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getReference()
 	 * @see #getGTForEachExpression()
 	 * @generated
 	 */
-	EReference getGTForEachExpression_TrgIterator();
+	EReference getGTForEachExpression_Reference();
 
 	/**
-	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getEdge <em>Edge</em>}'.
+	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getIterator <em>Iterator</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference '<em>Edge</em>'.
-	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getEdge()
+	 * @return the meta object for the containment reference '<em>Iterator</em>'.
+	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getIterator()
 	 * @see #getGTForEachExpression()
 	 * @generated
 	 */
-	EReference getGTForEachExpression_Edge();
+	EReference getGTForEachExpression_Iterator();
 
 	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTParameter <em>GT Parameter</em>}'.
@@ -846,6 +902,38 @@ public interface IBeXGTModelPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getGTParameterValue_Parameter();
+
+	/**
+	 * Returns the meta object for class '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTIteratorAttributeReference <em>GT Iterator Attribute Reference</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>GT Iterator Attribute Reference</em>'.
+	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTIteratorAttributeReference
+	 * @generated
+	 */
+	EClass getGTIteratorAttributeReference();
+
+	/**
+	 * Returns the meta object for the reference '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTIteratorAttributeReference#getIterator <em>Iterator</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Iterator</em>'.
+	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTIteratorAttributeReference#getIterator()
+	 * @see #getGTIteratorAttributeReference()
+	 * @generated
+	 */
+	EReference getGTIteratorAttributeReference_Iterator();
+
+	/**
+	 * Returns the meta object for the reference '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTIteratorAttributeReference#getAttribute <em>Attribute</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Attribute</em>'.
+	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTIteratorAttributeReference#getAttribute()
+	 * @see #getGTIteratorAttributeReference()
+	 * @generated
+	 */
+	EReference getGTIteratorAttributeReference_Attribute();
 
 	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTWatchDog <em>GT Watch Dog</em>}'.
@@ -1025,20 +1113,20 @@ public interface IBeXGTModelPackage extends EPackage {
 		EReference GT_FOR_EACH_EXPRESSION__SOURCE = eINSTANCE.getGTForEachExpression_Source();
 
 		/**
-		 * The meta object literal for the '<em><b>Trg Iterator</b></em>' containment reference feature.
+		 * The meta object literal for the '<em><b>Reference</b></em>' reference feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference GT_FOR_EACH_EXPRESSION__TRG_ITERATOR = eINSTANCE.getGTForEachExpression_TrgIterator();
+		EReference GT_FOR_EACH_EXPRESSION__REFERENCE = eINSTANCE.getGTForEachExpression_Reference();
 
 		/**
-		 * The meta object literal for the '<em><b>Edge</b></em>' containment reference feature.
+		 * The meta object literal for the '<em><b>Iterator</b></em>' containment reference feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference GT_FOR_EACH_EXPRESSION__EDGE = eINSTANCE.getGTForEachExpression_Edge();
+		EReference GT_FOR_EACH_EXPRESSION__ITERATOR = eINSTANCE.getGTForEachExpression_Iterator();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTParameterImpl <em>GT Parameter</em>}' class.
@@ -1075,6 +1163,32 @@ public interface IBeXGTModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference GT_PARAMETER_VALUE__PARAMETER = eINSTANCE.getGTParameterValue_Parameter();
+
+		/**
+		 * The meta object literal for the '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTIteratorAttributeReferenceImpl <em>GT Iterator Attribute Reference</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTIteratorAttributeReferenceImpl
+		 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.IBeXGTModelPackageImpl#getGTIteratorAttributeReference()
+		 * @generated
+		 */
+		EClass GT_ITERATOR_ATTRIBUTE_REFERENCE = eINSTANCE.getGTIteratorAttributeReference();
+
+		/**
+		 * The meta object literal for the '<em><b>Iterator</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference GT_ITERATOR_ATTRIBUTE_REFERENCE__ITERATOR = eINSTANCE.getGTIteratorAttributeReference_Iterator();
+
+		/**
+		 * The meta object literal for the '<em><b>Attribute</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference GT_ITERATOR_ATTRIBUTE_REFERENCE__ATTRIBUTE = eINSTANCE.getGTIteratorAttributeReference_Attribute();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTWatchDogImpl <em>GT Watch Dog</em>}' class.

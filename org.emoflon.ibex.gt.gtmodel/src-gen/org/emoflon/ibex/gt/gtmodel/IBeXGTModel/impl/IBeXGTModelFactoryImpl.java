@@ -70,6 +70,8 @@ public class IBeXGTModelFactoryImpl extends EFactoryImpl implements IBeXGTModelF
 			return createGTParameter();
 		case IBeXGTModelPackage.GT_PARAMETER_VALUE:
 			return createGTParameterValue();
+		case IBeXGTModelPackage.GT_ITERATOR_ATTRIBUTE_REFERENCE:
+			return createGTIteratorAttributeReference();
 		case IBeXGTModelPackage.GT_WATCH_DOG:
 			return createGTWatchDog();
 		default:
@@ -145,6 +147,16 @@ public class IBeXGTModelFactoryImpl extends EFactoryImpl implements IBeXGTModelF
 	public GTParameterValue createGTParameterValue() {
 		GTParameterValueImpl gtParameterValue = new GTParameterValueImpl();
 		return gtParameterValue;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public GTIteratorAttributeReference createGTIteratorAttributeReference() {
+		GTIteratorAttributeReferenceImpl gtIteratorAttributeReference = new GTIteratorAttributeReferenceImpl();
+		return gtIteratorAttributeReference;
 	}
 
 	/**

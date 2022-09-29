@@ -144,6 +144,15 @@ public class IBeXGTModelSwitch<T> extends Switch<T> {
 				result = defaultCase(theEObject);
 			return result;
 		}
+		case IBeXGTModelPackage.GT_ITERATOR_ATTRIBUTE_REFERENCE: {
+			GTIteratorAttributeReference gtIteratorAttributeReference = (GTIteratorAttributeReference) theEObject;
+			T result = caseGTIteratorAttributeReference(gtIteratorAttributeReference);
+			if (result == null)
+				result = caseValueExpression(gtIteratorAttributeReference);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
 		case IBeXGTModelPackage.GT_WATCH_DOG: {
 			GTWatchDog gtWatchDog = (GTWatchDog) theEObject;
 			T result = caseGTWatchDog(gtWatchDog);
@@ -258,6 +267,21 @@ public class IBeXGTModelSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseGTParameterValue(GTParameterValue object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>GT Iterator Attribute Reference</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>GT Iterator Attribute Reference</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseGTIteratorAttributeReference(GTIteratorAttributeReference object) {
 		return null;
 	}
 

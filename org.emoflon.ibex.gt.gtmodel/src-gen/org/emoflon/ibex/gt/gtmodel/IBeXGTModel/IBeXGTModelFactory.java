@@ -85,6 +85,15 @@ public interface IBeXGTModelFactory extends EFactory {
 	GTParameterValue createGTParameterValue();
 
 	/**
+	 * Returns a new object of class '<em>GT Iterator Attribute Reference</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>GT Iterator Attribute Reference</em>'.
+	 * @generated
+	 */
+	GTIteratorAttributeReference createGTIteratorAttributeReference();
+
+	/**
 	 * Returns a new object of class '<em>GT Watch Dog</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

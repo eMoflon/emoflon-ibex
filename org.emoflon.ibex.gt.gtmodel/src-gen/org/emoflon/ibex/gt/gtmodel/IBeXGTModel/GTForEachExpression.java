@@ -4,7 +4,7 @@ package org.emoflon.ibex.gt.gtmodel.IBeXGTModel;
 
 import org.eclipse.emf.ecore.EObject;
 
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
+import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta;
 
@@ -20,8 +20,8 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta;
  *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getCreate <em>Create</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getDelete <em>Delete</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getSource <em>Source</em>}</li>
- *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getTrgIterator <em>Trg Iterator</em>}</li>
- *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getEdge <em>Edge</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getReference <em>Reference</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getIterator <em>Iterator</em>}</li>
  * </ul>
  *
  * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.IBeXGTModelPackage#getGTForEachExpression()
@@ -96,47 +96,47 @@ public interface GTForEachExpression extends EObject {
 	void setSource(IBeXNode value);
 
 	/**
-	 * Returns the value of the '<em><b>Trg Iterator</b></em>' containment reference.
+	 * Returns the value of the '<em><b>Reference</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Trg Iterator</em>' containment reference.
-	 * @see #setTrgIterator(IBeXNode)
-	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.IBeXGTModelPackage#getGTForEachExpression_TrgIterator()
+	 * @return the value of the '<em>Reference</em>' reference.
+	 * @see #setReference(EReference)
+	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.IBeXGTModelPackage#getGTForEachExpression_Reference()
+	 * @model required="true"
+	 * @generated
+	 */
+	EReference getReference();
+
+	/**
+	 * Sets the value of the '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getReference <em>Reference</em>}' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Reference</em>' reference.
+	 * @see #getReference()
+	 * @generated
+	 */
+	void setReference(EReference value);
+
+	/**
+	 * Returns the value of the '<em><b>Iterator</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Iterator</em>' containment reference.
+	 * @see #setIterator(IBeXNode)
+	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.IBeXGTModelPackage#getGTForEachExpression_Iterator()
 	 * @model containment="true" required="true"
 	 * @generated
 	 */
-	IBeXNode getTrgIterator();
+	IBeXNode getIterator();
 
 	/**
-	 * Sets the value of the '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getTrgIterator <em>Trg Iterator</em>}' containment reference.
+	 * Sets the value of the '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getIterator <em>Iterator</em>}' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Trg Iterator</em>' containment reference.
-	 * @see #getTrgIterator()
+	 * @param value the new value of the '<em>Iterator</em>' containment reference.
+	 * @see #getIterator()
 	 * @generated
 	 */
-	void setTrgIterator(IBeXNode value);
-
-	/**
-	 * Returns the value of the '<em><b>Edge</b></em>' containment reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Edge</em>' containment reference.
-	 * @see #setEdge(IBeXEdge)
-	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.IBeXGTModelPackage#getGTForEachExpression_Edge()
-	 * @model containment="true" required="true"
-	 * @generated
-	 */
-	IBeXEdge getEdge();
-
-	/**
-	 * Sets the value of the '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getEdge <em>Edge</em>}' containment reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Edge</em>' containment reference.
-	 * @see #getEdge()
-	 * @generated
-	 */
-	void setEdge(IBeXEdge value);
+	void setIterator(IBeXNode value);
 
 } // GTForEachExpression

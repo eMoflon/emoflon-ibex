@@ -22,6 +22,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXBooleanValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModelMetadata;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNodeValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXOperationType;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ArithmeticExpression;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BinaryExpression;
@@ -55,9 +56,11 @@ import org.emoflon.ibex.common.slimgt.slimGT.StochasticArithmeticExpression;
 import org.emoflon.ibex.common.slimgt.slimGT.SumArithmeticExpression;
 import org.emoflon.ibex.common.slimgt.slimGT.UnaryArithmeticExpression;
 import org.emoflon.ibex.common.slimgt.util.SlimGTEMFUtil;
+import org.emoflon.ibex.common.slimgt.util.SlimGTModelUtil;
 import org.emoflon.ibex.common.transformation.SlimGtToIBeXCoreTransformer;
 import org.emoflon.ibex.gt.gtl.gTL.EditorFile;
 import org.emoflon.ibex.gt.gtl.gTL.ExpressionOperand;
+import org.emoflon.ibex.gt.gtl.gTL.GTLEdgeIterator;
 import org.emoflon.ibex.gt.gtl.gTL.GTLIteratorAttributeExpression;
 import org.emoflon.ibex.gt.gtl.gTL.GTLParameterExpression;
 import org.emoflon.ibex.gt.gtl.gTL.GTLRuleNodeDeletion;
@@ -68,6 +71,8 @@ import org.emoflon.ibex.gt.gtl.gTL.SlimRuleNode;
 import org.emoflon.ibex.gt.gtl.gTL.SlimRuleNodeContext;
 import org.emoflon.ibex.gt.gtl.gTL.SlimRuleNodeCreation;
 import org.emoflon.ibex.gt.gtl.util.GTLResourceManager;
+import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression;
+import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTIteratorAttributeReference;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTModel;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRule;
@@ -82,7 +87,11 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 	protected final Map<SlimRule, GTPattern> pattern2pattern = Collections.synchronizedMap(new HashMap<>());
 	protected final Map<SlimRuleNode, IBeXNode> node2node = Collections.synchronizedMap(new HashMap<>());
 	protected final Map<SlimRuleEdge, IBeXEdge> edge2edge = Collections.synchronizedMap(new HashMap<>());
+	protected final Map<GTLEdgeIterator, GTForEachExpression> iterator2iterator = Collections
+			.synchronizedMap(new HashMap<>());
 	protected final Map<SlimRuleNode, List<Consumer<IBeXNode>>> pendingNodeJobs = Collections
+			.synchronizedMap(new HashMap<>());
+	protected final Map<GTLEdgeIterator, List<Consumer<GTForEachExpression>>> pendingIteratorJobs = Collections
 			.synchronizedMap(new HashMap<>());
 
 	protected boolean countFlag = false;
@@ -120,6 +129,8 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 		node2node.values().forEach(n -> model.getNodeSet().getNodes().add(n));
 		edge2edge.values().forEach(e -> model.getEdgeSet().getEdges().add(e));
 		node2node.forEach((srNode, gtNode) -> pendingNodeJobs.get(srNode).forEach(consumer -> consumer.accept(gtNode)));
+		iterator2iterator.forEach(
+				(gtlItr, gtItr) -> pendingIteratorJobs.get(gtlItr).forEach(consumer -> consumer.accept(gtItr)));
 	}
 
 	protected GTRule transformRule(SlimRule rule) {
@@ -552,14 +563,42 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 			return unary;
 		} else if (expression instanceof ExpressionOperand op) {
 			if (op.getOperand() instanceof NodeExpression ne) {
-				// TODO:
-				return null;
+				IBeXNodeValue nodeValue = superFactory.createIBeXNodeValue();
+				if (node2node.containsKey(ne.getNode())) {
+					nodeValue.setNode(node2node.get(ne.getNode()));
+					nodeValue.setType(nodeValue.getNode().getType());
+				} else {
+					addPendingNodeConsumer((SlimRuleNode) ne.getNode(), (node) -> {
+						nodeValue.setNode(node);
+						nodeValue.setType(node.getType());
+					});
+				}
+				return nodeValue;
 			} else if (op.getOperand() instanceof NodeAttributeExpression nae) {
-				// TODO:
-				return null;
-			} else if (op.getOperand() instanceof GTLIteratorAttributeExpression nae) {
-				// TODO:
-				return null;
+				IBeXAttributeValue atrValue = superFactory.createIBeXAttributeValue();
+				if (node2node.containsKey(nae.getNodeExpression().getNode())) {
+					atrValue.setNode(node2node.get(nae.getNodeExpression().getNode()));
+				} else {
+					addPendingNodeConsumer((SlimRuleNode) nae.getNodeExpression().getNode(), (node) -> {
+						atrValue.setNode(node);
+					});
+				}
+				atrValue.setType(nae.getFeature().getEType());
+				atrValue.setAttribute(nae.getFeature());
+				return atrValue;
+			} else if (op.getOperand() instanceof GTLIteratorAttributeExpression iae) {
+				GTIteratorAttributeReference itrRef = factory.createGTIteratorAttributeReference();
+				GTLEdgeIterator iterator = SlimGTModelUtil.getContainer(iae, GTLEdgeIterator.class);
+				if (iterator2iterator.containsKey(iterator)) {
+					itrRef.setIterator(iterator2iterator.get(iterator));
+				} else {
+					addPendingIteratorConsumer(iterator, (itr) -> {
+						itrRef.setIterator(itr);
+					});
+				}
+				itrRef.setAttribute(iae.getFeature());
+				itrRef.setType(iae.getFeature().getEType());
+				return (ArithmeticExpression) itrRef;
 			} else if (op.getOperand() instanceof GTLParameterExpression param) {
 				// TODO:
 				return null;
@@ -668,6 +707,15 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 		if (consumer == null) {
 			consumers = Collections.synchronizedList(new LinkedList<>());
 			pendingNodeJobs.put(node, consumers);
+		}
+		consumers.add(consumer);
+	}
+
+	protected void addPendingIteratorConsumer(final GTLEdgeIterator gtlItr, Consumer<GTForEachExpression> consumer) {
+		List<Consumer<GTForEachExpression>> consumers = pendingIteratorJobs.get(gtlItr);
+		if (consumer == null) {
+			consumers = Collections.synchronizedList(new LinkedList<>());
+			pendingIteratorJobs.put(gtlItr, consumers);
 		}
 		consumers.add(consumer);
 	}

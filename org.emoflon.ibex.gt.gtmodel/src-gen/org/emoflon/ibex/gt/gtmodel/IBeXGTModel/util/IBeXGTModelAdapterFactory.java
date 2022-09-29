@@ -111,6 +111,11 @@ public class IBeXGTModelAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
+		public Adapter caseGTIteratorAttributeReference(GTIteratorAttributeReference object) {
+			return createGTIteratorAttributeReferenceAdapter();
+		}
+
+		@Override
 		public Adapter caseGTWatchDog(GTWatchDog object) {
 			return createGTWatchDogAdapter();
 		}
@@ -264,6 +269,20 @@ public class IBeXGTModelAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createGTParameterValueAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTIteratorAttributeReference <em>GT Iterator Attribute Reference</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTIteratorAttributeReference
+	 * @generated
+	 */
+	public Adapter createGTIteratorAttributeReferenceAdapter() {
 		return null;
 	}
 
