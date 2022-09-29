@@ -2,7 +2,7 @@
  */
 package org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic;
 
-import org.eclipse.emf.ecore.EDataType;
+import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
 
 /**
@@ -27,12 +27,12 @@ public interface ValueExpression extends EObject {
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Type</em>' reference.
-	 * @see #setType(EDataType)
+	 * @see #setType(EClassifier)
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.IBeXCoreArithmeticPackage#getValueExpression_Type()
 	 * @model
 	 * @generated
 	 */
-	EDataType getType();
+	EClassifier getType();
 
 	/**
 	 * Sets the value of the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ValueExpression#getType <em>Type</em>}' reference.
@@ -42,6 +42,6 @@ public interface ValueExpression extends EObject {
 	 * @see #getType()
 	 * @generated
 	 */
-	void setType(EDataType value);
+	void setType(EClassifier value);
 
 } // ValueExpression

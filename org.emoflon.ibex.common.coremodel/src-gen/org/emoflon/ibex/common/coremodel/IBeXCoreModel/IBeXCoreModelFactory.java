@@ -167,6 +167,15 @@ public interface IBeXCoreModelFactory extends EFactory {
 	IBeXAttributeValue createIBeXAttributeValue();
 
 	/**
+	 * Returns a new object of class '<em>IBe XNode Value</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>IBe XNode Value</em>'.
+	 * @generated
+	 */
+	IBeXNodeValue createIBeXNodeValue();
+
+	/**
 	 * Returns a new object of class '<em>IBe XMatch Count Value</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

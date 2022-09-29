@@ -97,6 +97,8 @@ public class IBeXCoreModelFactoryImpl extends EFactoryImpl implements IBeXCoreMo
 			return createIBeXBooleanValue();
 		case IBeXCoreModelPackage.IBE_XATTRIBUTE_VALUE:
 			return createIBeXAttributeValue();
+		case IBeXCoreModelPackage.IBE_XNODE_VALUE:
+			return createIBeXNodeValue();
 		case IBeXCoreModelPackage.IBE_XMATCH_COUNT_VALUE:
 			return createIBeXMatchCountValue();
 		case IBeXCoreModelPackage.IBE_XRULE:
@@ -328,6 +330,16 @@ public class IBeXCoreModelFactoryImpl extends EFactoryImpl implements IBeXCoreMo
 	public IBeXAttributeValue createIBeXAttributeValue() {
 		IBeXAttributeValueImpl iBeXAttributeValue = new IBeXAttributeValueImpl();
 		return iBeXAttributeValue;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public IBeXNodeValue createIBeXNodeValue() {
+		IBeXNodeValueImpl iBeXNodeValue = new IBeXNodeValueImpl();
+		return iBeXNodeValue;
 	}
 
 	/**

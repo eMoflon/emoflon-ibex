@@ -650,7 +650,7 @@ public class IBeXCoreArithmeticPackageImpl extends EPackageImpl implements IBeXC
 		// Initialize classes, features, and operations; add parameters
 		initEClass(valueExpressionEClass, ValueExpression.class, "ValueExpression", IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getValueExpression_Type(), ecorePackage.getEDataType(), null, "type", null, 0, 1,
+		initEReference(getValueExpression_Type(), ecorePackage.getEClassifier(), null, "type", null, 0, 1,
 				ValueExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
@@ -742,6 +742,7 @@ public class IBeXCoreArithmeticPackageImpl extends EPackageImpl implements IBeXC
 		addEEnumLiteral(binaryOperatorEEnum, BinaryOperator.MAX);
 		addEEnumLiteral(binaryOperatorEEnum, BinaryOperator.NORMAL_DISTRIBUTION);
 		addEEnumLiteral(binaryOperatorEEnum, BinaryOperator.UNIFORM_DISTRIBUTION);
+		addEEnumLiteral(binaryOperatorEEnum, BinaryOperator.LOG);
 
 		initEEnum(unaryOperatorEEnum, UnaryOperator.class, "UnaryOperator");
 		addEEnumLiteral(unaryOperatorEEnum, UnaryOperator.SQRT);

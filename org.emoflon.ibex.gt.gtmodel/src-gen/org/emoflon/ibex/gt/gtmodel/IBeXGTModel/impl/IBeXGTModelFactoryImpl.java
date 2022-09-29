@@ -60,6 +60,8 @@ public class IBeXGTModelFactoryImpl extends EFactoryImpl implements IBeXGTModelF
 			return createGTModel();
 		case IBeXGTModelPackage.GT_RULE_SET:
 			return createGTRuleSet();
+		case IBeXGTModelPackage.GT_PATTERN:
+			return createGTPattern();
 		case IBeXGTModelPackage.GT_RULE:
 			return createGTRule();
 		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION:
@@ -93,6 +95,16 @@ public class IBeXGTModelFactoryImpl extends EFactoryImpl implements IBeXGTModelF
 	public GTRuleSet createGTRuleSet() {
 		GTRuleSetImpl gtRuleSet = new GTRuleSetImpl();
 		return gtRuleSet;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public GTPattern createGTPattern() {
+		GTPatternImpl gtPattern = new GTPatternImpl();
+		return gtPattern;
 	}
 
 	/**

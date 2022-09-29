@@ -40,6 +40,15 @@ public interface IBeXGTModelFactory extends EFactory {
 	GTRuleSet createGTRuleSet();
 
 	/**
+	 * Returns a new object of class '<em>GT Pattern</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>GT Pattern</em>'.
+	 * @generated
+	 */
+	GTPattern createGTPattern();
+
+	/**
 	 * Returns a new object of class '<em>GT Rule</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

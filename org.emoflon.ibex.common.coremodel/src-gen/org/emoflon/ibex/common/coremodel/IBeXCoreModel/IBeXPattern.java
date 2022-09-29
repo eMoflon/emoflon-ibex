@@ -4,7 +4,7 @@ package org.emoflon.ibex.common.coremodel.IBeXCoreModel;
 
 import org.eclipse.emf.common.util.EList;
 
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalExpression;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanExpression;
 
 /**
  * <!-- begin-user-doc -->
@@ -20,8 +20,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.Relati
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern#getSignatureNodes <em>Signature Nodes</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern#getLocalNodes <em>Local Nodes</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern#getEdges <em>Edges</em>}</li>
- *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern#getAttributeConstraints <em>Attribute Constraints</em>}</li>
- *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern#getInjectivityConstraints <em>Injectivity Constraints</em>}</li>
+ *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern#getConditions <em>Conditions</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern#getInvocations <em>Invocations</em>}</li>
  * </ul>
  *
@@ -101,28 +100,16 @@ public interface IBeXPattern extends IBeXNamedElement {
 	EList<IBeXEdge> getEdges();
 
 	/**
-	 * Returns the value of the '<em><b>Attribute Constraints</b></em>' containment reference list.
-	 * The list contents are of type {@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalExpression}.
+	 * Returns the value of the '<em><b>Conditions</b></em>' containment reference list.
+	 * The list contents are of type {@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanExpression}.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Attribute Constraints</em>' containment reference list.
-	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage#getIBeXPattern_AttributeConstraints()
+	 * @return the value of the '<em>Conditions</em>' containment reference list.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage#getIBeXPattern_Conditions()
 	 * @model containment="true"
 	 * @generated
 	 */
-	EList<RelationalExpression> getAttributeConstraints();
-
-	/**
-	 * Returns the value of the '<em><b>Injectivity Constraints</b></em>' containment reference list.
-	 * The list contents are of type {@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXInjectivityConstraint}.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Injectivity Constraints</em>' containment reference list.
-	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage#getIBeXPattern_InjectivityConstraints()
-	 * @model containment="true"
-	 * @generated
-	 */
-	EList<IBeXInjectivityConstraint> getInjectivityConstraints();
+	EList<BooleanExpression> getConditions();
 
 	/**
 	 * Returns the value of the '<em><b>Invocations</b></em>' containment reference list.

@@ -22,6 +22,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXFeatureConfig;
  * <ul>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXFeatureConfigImpl#isCountExpressions <em>Count Expressions</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXFeatureConfigImpl#isArithmeticExpressions <em>Arithmetic Expressions</em>}</li>
+ *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXFeatureConfigImpl#isBooleanExpressions <em>Boolean Expressions</em>}</li>
  * </ul>
  *
  * @generated
@@ -66,6 +67,26 @@ public class IBeXFeatureConfigImpl extends MinimalEObjectImpl.Container implemen
 	 * @ordered
 	 */
 	protected boolean arithmeticExpressions = ARITHMETIC_EXPRESSIONS_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #isBooleanExpressions() <em>Boolean Expressions</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isBooleanExpressions()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final boolean BOOLEAN_EXPRESSIONS_EDEFAULT = false;
+
+	/**
+	 * The cached value of the '{@link #isBooleanExpressions() <em>Boolean Expressions</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isBooleanExpressions()
+	 * @generated
+	 * @ordered
+	 */
+	protected boolean booleanExpressions = BOOLEAN_EXPRESSIONS_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -137,6 +158,29 @@ public class IBeXFeatureConfigImpl extends MinimalEObjectImpl.Container implemen
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public boolean isBooleanExpressions() {
+		return booleanExpressions;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setBooleanExpressions(boolean newBooleanExpressions) {
+		boolean oldBooleanExpressions = booleanExpressions;
+		booleanExpressions = newBooleanExpressions;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					IBeXCoreModelPackage.IBE_XFEATURE_CONFIG__BOOLEAN_EXPRESSIONS, oldBooleanExpressions,
+					booleanExpressions));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
@@ -144,6 +188,8 @@ public class IBeXFeatureConfigImpl extends MinimalEObjectImpl.Container implemen
 			return isCountExpressions();
 		case IBeXCoreModelPackage.IBE_XFEATURE_CONFIG__ARITHMETIC_EXPRESSIONS:
 			return isArithmeticExpressions();
+		case IBeXCoreModelPackage.IBE_XFEATURE_CONFIG__BOOLEAN_EXPRESSIONS:
+			return isBooleanExpressions();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -161,6 +207,9 @@ public class IBeXFeatureConfigImpl extends MinimalEObjectImpl.Container implemen
 			return;
 		case IBeXCoreModelPackage.IBE_XFEATURE_CONFIG__ARITHMETIC_EXPRESSIONS:
 			setArithmeticExpressions((Boolean) newValue);
+			return;
+		case IBeXCoreModelPackage.IBE_XFEATURE_CONFIG__BOOLEAN_EXPRESSIONS:
+			setBooleanExpressions((Boolean) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -180,6 +229,9 @@ public class IBeXFeatureConfigImpl extends MinimalEObjectImpl.Container implemen
 		case IBeXCoreModelPackage.IBE_XFEATURE_CONFIG__ARITHMETIC_EXPRESSIONS:
 			setArithmeticExpressions(ARITHMETIC_EXPRESSIONS_EDEFAULT);
 			return;
+		case IBeXCoreModelPackage.IBE_XFEATURE_CONFIG__BOOLEAN_EXPRESSIONS:
+			setBooleanExpressions(BOOLEAN_EXPRESSIONS_EDEFAULT);
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -196,6 +248,8 @@ public class IBeXFeatureConfigImpl extends MinimalEObjectImpl.Container implemen
 			return countExpressions != COUNT_EXPRESSIONS_EDEFAULT;
 		case IBeXCoreModelPackage.IBE_XFEATURE_CONFIG__ARITHMETIC_EXPRESSIONS:
 			return arithmeticExpressions != ARITHMETIC_EXPRESSIONS_EDEFAULT;
+		case IBeXCoreModelPackage.IBE_XFEATURE_CONFIG__BOOLEAN_EXPRESSIONS:
+			return booleanExpressions != BOOLEAN_EXPRESSIONS_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
 	}
@@ -215,6 +269,8 @@ public class IBeXFeatureConfigImpl extends MinimalEObjectImpl.Container implemen
 		result.append(countExpressions);
 		result.append(", arithmeticExpressions: ");
 		result.append(arithmeticExpressions);
+		result.append(", booleanExpressions: ");
+		result.append(booleanExpressions);
 		result.append(')');
 		return result.toString();
 	}

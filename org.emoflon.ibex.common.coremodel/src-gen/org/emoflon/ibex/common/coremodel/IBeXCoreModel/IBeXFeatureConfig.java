@@ -15,6 +15,7 @@ import org.eclipse.emf.ecore.EObject;
  * <ul>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXFeatureConfig#isCountExpressions <em>Count Expressions</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXFeatureConfig#isArithmeticExpressions <em>Arithmetic Expressions</em>}</li>
+ *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXFeatureConfig#isBooleanExpressions <em>Boolean Expressions</em>}</li>
  * </ul>
  *
  * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage#getIBeXFeatureConfig()
@@ -67,5 +68,28 @@ public interface IBeXFeatureConfig extends EObject {
 	 * @generated
 	 */
 	void setArithmeticExpressions(boolean value);
+
+	/**
+	 * Returns the value of the '<em><b>Boolean Expressions</b></em>' attribute.
+	 * The default value is <code>"false"</code>.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Boolean Expressions</em>' attribute.
+	 * @see #setBooleanExpressions(boolean)
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage#getIBeXFeatureConfig_BooleanExpressions()
+	 * @model default="false"
+	 * @generated
+	 */
+	boolean isBooleanExpressions();
+
+	/**
+	 * Sets the value of the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXFeatureConfig#isBooleanExpressions <em>Boolean Expressions</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Boolean Expressions</em>' attribute.
+	 * @see #isBooleanExpressions()
+	 * @generated
+	 */
+	void setBooleanExpressions(boolean value);
 
 } // IBeXFeatureConfig

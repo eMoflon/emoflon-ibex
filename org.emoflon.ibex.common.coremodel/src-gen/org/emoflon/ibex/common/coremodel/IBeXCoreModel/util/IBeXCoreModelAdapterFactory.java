@@ -175,6 +175,11 @@ public class IBeXCoreModelAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
+		public Adapter caseIBeXNodeValue(IBeXNodeValue object) {
+			return createIBeXNodeValueAdapter();
+		}
+
+		@Override
 		public Adapter caseIBeXMatchCountValue(IBeXMatchCountValue object) {
 			return createIBeXMatchCountValueAdapter();
 		}
@@ -515,6 +520,20 @@ public class IBeXCoreModelAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createIBeXAttributeValueAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNodeValue <em>IBe XNode Value</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNodeValue
+	 * @generated
+	 */
+	public Adapter createIBeXNodeValueAdapter() {
 		return null;
 	}
 

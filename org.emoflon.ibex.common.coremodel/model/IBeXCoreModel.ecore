@@ -62,6 +62,8 @@
         defaultValueLiteral="false"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="arithmeticExpressions"
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean" defaultValueLiteral="false"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="booleanExpressions" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
+        defaultValueLiteral="false"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBeXPatternSet">
     <eStructuralFeatures xsi:type="ecore:EReference" name="patterns" upperBound="-1"
@@ -103,10 +105,8 @@
         eType="#//IBeXNode"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="edges" upperBound="-1"
         eType="#//IBeXEdge"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="attributeConstraints" upperBound="-1"
-        eType="#//IBeXCoreArithmetic/RelationalExpression" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="injectivityConstraints"
-        upperBound="-1" eType="#//IBeXInjectivityConstraint" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="conditions" upperBound="-1"
+        eType="#//IBeXCoreArithmetic/BooleanExpression" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="invocations" upperBound="-1"
         eType="#//IBeXPatternInvocation" containment="true"/>
   </eClassifiers>
@@ -139,6 +139,9 @@
   <eClassifiers xsi:type="ecore:EClass" name="IBeXAttributeValue" eSuperTypes="#//IBeXCoreArithmetic/ArithmeticValue #//IBeXCoreArithmetic/BooleanValue">
     <eStructuralFeatures xsi:type="ecore:EReference" name="node" lowerBound="1" eType="#//IBeXNode"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="attribute" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EAttribute"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXNodeValue" eSuperTypes="#//IBeXCoreArithmetic/ArithmeticValue">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="node" lowerBound="1" eType="#//IBeXNode"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBeXMatchCountValue" eSuperTypes="#//IBeXCoreArithmetic/ArithmeticValue">
     <eStructuralFeatures xsi:type="ecore:EReference" name="invocation" lowerBound="1"
@@ -180,7 +183,7 @@
   <eSubpackages name="IBeXCoreArithmetic" nsURI="platform:/resource/org.emoflon.ibex.common.coremodel/model/IBeXCoreArithmetic.ecore"
       nsPrefix="IBeXCoreArithmetic">
     <eClassifiers xsi:type="ecore:EClass" name="ValueExpression" abstract="true">
-      <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EDataType"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EClassifier"/>
     </eClassifiers>
     <eClassifiers xsi:type="ecore:EClass" name="ArithmeticExpression" abstract="true"
         interface="true" eSuperTypes="#//IBeXCoreArithmetic/ValueExpression"/>
@@ -214,6 +217,7 @@
       <eLiterals name="MAX" value="7"/>
       <eLiterals name="NORMAL_DISTRIBUTION" value="8"/>
       <eLiterals name="UNIFORM_DISTRIBUTION" value="9"/>
+      <eLiterals name="LOG" value="10"/>
     </eClassifiers>
     <eClassifiers xsi:type="ecore:EEnum" name="UnaryOperator">
       <eLiterals name="SQRT"/>

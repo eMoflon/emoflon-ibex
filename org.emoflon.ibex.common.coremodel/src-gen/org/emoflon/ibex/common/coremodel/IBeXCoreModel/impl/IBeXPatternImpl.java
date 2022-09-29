@@ -17,11 +17,9 @@ import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalExpression;
-
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanExpression;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXInjectivityConstraint;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternInvocation;
@@ -39,8 +37,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternInvocation;
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXPatternImpl#getSignatureNodes <em>Signature Nodes</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXPatternImpl#getLocalNodes <em>Local Nodes</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXPatternImpl#getEdges <em>Edges</em>}</li>
- *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXPatternImpl#getAttributeConstraints <em>Attribute Constraints</em>}</li>
- *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXPatternImpl#getInjectivityConstraints <em>Injectivity Constraints</em>}</li>
+ *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXPatternImpl#getConditions <em>Conditions</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXPatternImpl#getInvocations <em>Invocations</em>}</li>
  * </ul>
  *
@@ -108,24 +105,14 @@ public class IBeXPatternImpl extends IBeXNamedElementImpl implements IBeXPattern
 	protected EList<IBeXEdge> edges;
 
 	/**
-	 * The cached value of the '{@link #getAttributeConstraints() <em>Attribute Constraints</em>}' containment reference list.
+	 * The cached value of the '{@link #getConditions() <em>Conditions</em>}' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getAttributeConstraints()
+	 * @see #getConditions()
 	 * @generated
 	 * @ordered
 	 */
-	protected EList<RelationalExpression> attributeConstraints;
-
-	/**
-	 * The cached value of the '{@link #getInjectivityConstraints() <em>Injectivity Constraints</em>}' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getInjectivityConstraints()
-	 * @generated
-	 * @ordered
-	 */
-	protected EList<IBeXInjectivityConstraint> injectivityConstraints;
+	protected EList<BooleanExpression> conditions;
 
 	/**
 	 * The cached value of the '{@link #getInvocations() <em>Invocations</em>}' containment reference list.
@@ -234,25 +221,12 @@ public class IBeXPatternImpl extends IBeXNamedElementImpl implements IBeXPattern
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EList<RelationalExpression> getAttributeConstraints() {
-		if (attributeConstraints == null) {
-			attributeConstraints = new EObjectContainmentEList<RelationalExpression>(RelationalExpression.class, this,
-					IBeXCoreModelPackage.IBE_XPATTERN__ATTRIBUTE_CONSTRAINTS);
+	public EList<BooleanExpression> getConditions() {
+		if (conditions == null) {
+			conditions = new EObjectContainmentEList<BooleanExpression>(BooleanExpression.class, this,
+					IBeXCoreModelPackage.IBE_XPATTERN__CONDITIONS);
 		}
-		return attributeConstraints;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EList<IBeXInjectivityConstraint> getInjectivityConstraints() {
-		if (injectivityConstraints == null) {
-			injectivityConstraints = new EObjectContainmentEList<IBeXInjectivityConstraint>(
-					IBeXInjectivityConstraint.class, this, IBeXCoreModelPackage.IBE_XPATTERN__INJECTIVITY_CONSTRAINTS);
-		}
-		return injectivityConstraints;
+		return conditions;
 	}
 
 	/**
@@ -276,10 +250,8 @@ public class IBeXPatternImpl extends IBeXNamedElementImpl implements IBeXPattern
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-		case IBeXCoreModelPackage.IBE_XPATTERN__ATTRIBUTE_CONSTRAINTS:
-			return ((InternalEList<?>) getAttributeConstraints()).basicRemove(otherEnd, msgs);
-		case IBeXCoreModelPackage.IBE_XPATTERN__INJECTIVITY_CONSTRAINTS:
-			return ((InternalEList<?>) getInjectivityConstraints()).basicRemove(otherEnd, msgs);
+		case IBeXCoreModelPackage.IBE_XPATTERN__CONDITIONS:
+			return ((InternalEList<?>) getConditions()).basicRemove(otherEnd, msgs);
 		case IBeXCoreModelPackage.IBE_XPATTERN__INVOCATIONS:
 			return ((InternalEList<?>) getInvocations()).basicRemove(otherEnd, msgs);
 		}
@@ -304,10 +276,8 @@ public class IBeXPatternImpl extends IBeXNamedElementImpl implements IBeXPattern
 			return getLocalNodes();
 		case IBeXCoreModelPackage.IBE_XPATTERN__EDGES:
 			return getEdges();
-		case IBeXCoreModelPackage.IBE_XPATTERN__ATTRIBUTE_CONSTRAINTS:
-			return getAttributeConstraints();
-		case IBeXCoreModelPackage.IBE_XPATTERN__INJECTIVITY_CONSTRAINTS:
-			return getInjectivityConstraints();
+		case IBeXCoreModelPackage.IBE_XPATTERN__CONDITIONS:
+			return getConditions();
 		case IBeXCoreModelPackage.IBE_XPATTERN__INVOCATIONS:
 			return getInvocations();
 		}
@@ -342,13 +312,9 @@ public class IBeXPatternImpl extends IBeXNamedElementImpl implements IBeXPattern
 			getEdges().clear();
 			getEdges().addAll((Collection<? extends IBeXEdge>) newValue);
 			return;
-		case IBeXCoreModelPackage.IBE_XPATTERN__ATTRIBUTE_CONSTRAINTS:
-			getAttributeConstraints().clear();
-			getAttributeConstraints().addAll((Collection<? extends RelationalExpression>) newValue);
-			return;
-		case IBeXCoreModelPackage.IBE_XPATTERN__INJECTIVITY_CONSTRAINTS:
-			getInjectivityConstraints().clear();
-			getInjectivityConstraints().addAll((Collection<? extends IBeXInjectivityConstraint>) newValue);
+		case IBeXCoreModelPackage.IBE_XPATTERN__CONDITIONS:
+			getConditions().clear();
+			getConditions().addAll((Collection<? extends BooleanExpression>) newValue);
 			return;
 		case IBeXCoreModelPackage.IBE_XPATTERN__INVOCATIONS:
 			getInvocations().clear();
@@ -381,11 +347,8 @@ public class IBeXPatternImpl extends IBeXNamedElementImpl implements IBeXPattern
 		case IBeXCoreModelPackage.IBE_XPATTERN__EDGES:
 			getEdges().clear();
 			return;
-		case IBeXCoreModelPackage.IBE_XPATTERN__ATTRIBUTE_CONSTRAINTS:
-			getAttributeConstraints().clear();
-			return;
-		case IBeXCoreModelPackage.IBE_XPATTERN__INJECTIVITY_CONSTRAINTS:
-			getInjectivityConstraints().clear();
+		case IBeXCoreModelPackage.IBE_XPATTERN__CONDITIONS:
+			getConditions().clear();
 			return;
 		case IBeXCoreModelPackage.IBE_XPATTERN__INVOCATIONS:
 			getInvocations().clear();
@@ -412,10 +375,8 @@ public class IBeXPatternImpl extends IBeXNamedElementImpl implements IBeXPattern
 			return localNodes != null && !localNodes.isEmpty();
 		case IBeXCoreModelPackage.IBE_XPATTERN__EDGES:
 			return edges != null && !edges.isEmpty();
-		case IBeXCoreModelPackage.IBE_XPATTERN__ATTRIBUTE_CONSTRAINTS:
-			return attributeConstraints != null && !attributeConstraints.isEmpty();
-		case IBeXCoreModelPackage.IBE_XPATTERN__INJECTIVITY_CONSTRAINTS:
-			return injectivityConstraints != null && !injectivityConstraints.isEmpty();
+		case IBeXCoreModelPackage.IBE_XPATTERN__CONDITIONS:
+			return conditions != null && !conditions.isEmpty();
 		case IBeXCoreModelPackage.IBE_XPATTERN__INVOCATIONS:
 			return invocations != null && !invocations.isEmpty();
 		}

@@ -16,6 +16,7 @@ import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTModel;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTParameter;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTParameterValue;
+import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRule;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRuleSet;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTWatchDog;
@@ -42,6 +43,13 @@ public class IBeXGTModelPackageImpl extends EPackageImpl implements IBeXGTModelP
 	 * @generated
 	 */
 	private EClass gtRuleSetEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass gtPatternEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -186,6 +194,33 @@ public class IBeXGTModelPackageImpl extends EPackageImpl implements IBeXGTModelP
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getGTPattern() {
+		return gtPatternEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getGTPattern_Parameters() {
+		return (EReference) gtPatternEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getGTPattern_WatchDogs() {
+		return (EReference) gtPatternEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getGTRule() {
 		return gtRuleEClass;
 	}
@@ -206,15 +241,6 @@ public class IBeXGTModelPackageImpl extends EPackageImpl implements IBeXGTModelP
 	 */
 	public EReference getGTRule_Probability() {
 		return (EReference) gtRuleEClass.getEStructuralFeatures().get(1);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EReference getGTRule_Parameters() {
-		return (EReference) gtRuleEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
@@ -369,10 +395,13 @@ public class IBeXGTModelPackageImpl extends EPackageImpl implements IBeXGTModelP
 		gtRuleSetEClass = createEClass(GT_RULE_SET);
 		createEReference(gtRuleSetEClass, GT_RULE_SET__RULES);
 
+		gtPatternEClass = createEClass(GT_PATTERN);
+		createEReference(gtPatternEClass, GT_PATTERN__PARAMETERS);
+		createEReference(gtPatternEClass, GT_PATTERN__WATCH_DOGS);
+
 		gtRuleEClass = createEClass(GT_RULE);
 		createEReference(gtRuleEClass, GT_RULE__FOR_EACH_OPERATIONS);
 		createEReference(gtRuleEClass, GT_RULE__PROBABILITY);
-		createEReference(gtRuleEClass, GT_RULE__PARAMETERS);
 
 		gtForEachExpressionEClass = createEClass(GT_FOR_EACH_EXPRESSION);
 		createEReference(gtForEachExpressionEClass, GT_FOR_EACH_EXPRESSION__CREATE);
@@ -428,6 +457,7 @@ public class IBeXGTModelPackageImpl extends EPackageImpl implements IBeXGTModelP
 
 		// Add supertypes to classes
 		gtModelEClass.getESuperTypes().add(theIBeXCoreModelPackage.getIBeXModel());
+		gtPatternEClass.getESuperTypes().add(theIBeXCoreModelPackage.getIBeXPattern());
 		gtRuleEClass.getESuperTypes().add(theIBeXCoreModelPackage.getIBeXRule());
 		gtParameterEClass.getESuperTypes().add(theIBeXCoreModelPackage.getIBeXNamedElement());
 		gtParameterValueEClass.getESuperTypes().add(theIBeXCoreArithmeticPackage.getArithmeticValue());
@@ -444,6 +474,15 @@ public class IBeXGTModelPackageImpl extends EPackageImpl implements IBeXGTModelP
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
+		initEClass(gtPatternEClass, GTPattern.class, "GTPattern", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getGTPattern_Parameters(), this.getGTParameter(), null, "parameters", null, 0, -1,
+				GTPattern.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getGTPattern_WatchDogs(), this.getGTWatchDog(), null, "watchDogs", null, 0, -1, GTPattern.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
 		initEClass(gtRuleEClass, GTRule.class, "GTRule", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getGTRule_ForEachOperations(), this.getGTForEachExpression(), null, "forEachOperations", null, 0,
 				-1, GTRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
@@ -451,9 +490,6 @@ public class IBeXGTModelPackageImpl extends EPackageImpl implements IBeXGTModelP
 		initEReference(getGTRule_Probability(), theIBeXCoreArithmeticPackage.getArithmeticExpression(), null,
 				"probability", null, 0, 1, GTRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
 				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getGTRule_Parameters(), this.getGTParameter(), null, "parameters", null, 0, -1, GTRule.class,
-				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
-				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(gtForEachExpressionEClass, GTForEachExpression.class, "GTForEachExpression", !IS_ABSTRACT,
 				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);

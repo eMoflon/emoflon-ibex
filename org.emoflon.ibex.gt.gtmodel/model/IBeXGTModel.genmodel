@@ -17,10 +17,13 @@
     <genClasses ecoreClass="IBeXGTModel.ecore#//GTRuleSet">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTRuleSet/rules"/>
     </genClasses>
+    <genClasses ecoreClass="IBeXGTModel.ecore#//GTPattern">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTPattern/parameters"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTPattern/watchDogs"/>
+    </genClasses>
     <genClasses ecoreClass="IBeXGTModel.ecore#//GTRule">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTRule/forEachOperations"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTRule/probability"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTRule/parameters"/>
     </genClasses>
     <genClasses ecoreClass="IBeXGTModel.ecore#//GTForEachExpression">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTForEachExpression/create"/>

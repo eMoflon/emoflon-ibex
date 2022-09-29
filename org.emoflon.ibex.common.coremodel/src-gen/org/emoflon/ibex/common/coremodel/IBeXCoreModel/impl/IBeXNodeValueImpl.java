@@ -1,49 +1,50 @@
 /**
  */
-package org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.impl;
+package org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl;
 
 import org.eclipse.emf.common.notify.Notification;
 
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.IBeXCoreArithmeticPackage;
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ValueExpression;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.impl.ArithmeticValueImpl;
+
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNodeValue;
 
 /**
  * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>Value Expression</b></em>'.
+ * An implementation of the model object '<em><b>IBe XNode Value</b></em>'.
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.impl.ValueExpressionImpl#getType <em>Type</em>}</li>
+ *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXNodeValueImpl#getNode <em>Node</em>}</li>
  * </ul>
  *
  * @generated
  */
-public abstract class ValueExpressionImpl extends MinimalEObjectImpl.Container implements ValueExpression {
+public class IBeXNodeValueImpl extends ArithmeticValueImpl implements IBeXNodeValue {
 	/**
-	 * The cached value of the '{@link #getType() <em>Type</em>}' reference.
+	 * The cached value of the '{@link #getNode() <em>Node</em>}' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getType()
+	 * @see #getNode()
 	 * @generated
 	 * @ordered
 	 */
-	protected EClassifier type;
+	protected IBeXNode node;
 
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected ValueExpressionImpl() {
+	protected IBeXNodeValueImpl() {
 		super();
 	}
 
@@ -54,7 +55,7 @@ public abstract class ValueExpressionImpl extends MinimalEObjectImpl.Container i
 	 */
 	@Override
 	protected EClass eStaticClass() {
-		return IBeXCoreArithmeticPackage.Literals.VALUE_EXPRESSION;
+		return IBeXCoreModelPackage.Literals.IBE_XNODE_VALUE;
 	}
 
 	/**
@@ -62,17 +63,17 @@ public abstract class ValueExpressionImpl extends MinimalEObjectImpl.Container i
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClassifier getType() {
-		if (type != null && type.eIsProxy()) {
-			InternalEObject oldType = (InternalEObject) type;
-			type = (EClassifier) eResolveProxy(oldType);
-			if (type != oldType) {
+	public IBeXNode getNode() {
+		if (node != null && node.eIsProxy()) {
+			InternalEObject oldNode = (InternalEObject) node;
+			node = (IBeXNode) eResolveProxy(oldNode);
+			if (node != oldNode) {
 				if (eNotificationRequired())
 					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
-							IBeXCoreArithmeticPackage.VALUE_EXPRESSION__TYPE, oldType, type));
+							IBeXCoreModelPackage.IBE_XNODE_VALUE__NODE, oldNode, node));
 			}
 		}
-		return type;
+		return node;
 	}
 
 	/**
@@ -80,8 +81,8 @@ public abstract class ValueExpressionImpl extends MinimalEObjectImpl.Container i
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClassifier basicGetType() {
-		return type;
+	public IBeXNode basicGetNode() {
+		return node;
 	}
 
 	/**
@@ -89,12 +90,12 @@ public abstract class ValueExpressionImpl extends MinimalEObjectImpl.Container i
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setType(EClassifier newType) {
-		EClassifier oldType = type;
-		type = newType;
+	public void setNode(IBeXNode newNode) {
+		IBeXNode oldNode = node;
+		node = newNode;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXCoreArithmeticPackage.VALUE_EXPRESSION__TYPE,
-					oldType, type));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXCoreModelPackage.IBE_XNODE_VALUE__NODE, oldNode,
+					node));
 	}
 
 	/**
@@ -105,10 +106,10 @@ public abstract class ValueExpressionImpl extends MinimalEObjectImpl.Container i
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case IBeXCoreArithmeticPackage.VALUE_EXPRESSION__TYPE:
+		case IBeXCoreModelPackage.IBE_XNODE_VALUE__NODE:
 			if (resolve)
-				return getType();
-			return basicGetType();
+				return getNode();
+			return basicGetNode();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -121,8 +122,8 @@ public abstract class ValueExpressionImpl extends MinimalEObjectImpl.Container i
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case IBeXCoreArithmeticPackage.VALUE_EXPRESSION__TYPE:
-			setType((EClassifier) newValue);
+		case IBeXCoreModelPackage.IBE_XNODE_VALUE__NODE:
+			setNode((IBeXNode) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -136,8 +137,8 @@ public abstract class ValueExpressionImpl extends MinimalEObjectImpl.Container i
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case IBeXCoreArithmeticPackage.VALUE_EXPRESSION__TYPE:
-			setType((EClassifier) null);
+		case IBeXCoreModelPackage.IBE_XNODE_VALUE__NODE:
+			setNode((IBeXNode) null);
 			return;
 		}
 		super.eUnset(featureID);
@@ -151,10 +152,10 @@ public abstract class ValueExpressionImpl extends MinimalEObjectImpl.Container i
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case IBeXCoreArithmeticPackage.VALUE_EXPRESSION__TYPE:
-			return type != null;
+		case IBeXCoreModelPackage.IBE_XNODE_VALUE__NODE:
+			return node != null;
 		}
 		return super.eIsSet(featureID);
 	}
 
-} //ValueExpressionImpl
+} //IBeXNodeValueImpl

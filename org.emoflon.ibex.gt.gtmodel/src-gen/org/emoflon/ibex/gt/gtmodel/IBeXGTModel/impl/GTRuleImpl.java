@@ -22,7 +22,6 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.Arithm
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXRuleImpl;
 
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression;
-import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTParameter;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRule;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.IBeXGTModelPackage;
 
@@ -36,7 +35,6 @@ import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.IBeXGTModelPackage;
  * <ul>
  *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTRuleImpl#getForEachOperations <em>For Each Operations</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTRuleImpl#getProbability <em>Probability</em>}</li>
- *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTRuleImpl#getParameters <em>Parameters</em>}</li>
  * </ul>
  *
  * @generated
@@ -61,16 +59,6 @@ public class GTRuleImpl extends IBeXRuleImpl implements GTRule {
 	 * @ordered
 	 */
 	protected ArithmeticExpression probability;
-
-	/**
-	 * The cached value of the '{@link #getParameters() <em>Parameters</em>}' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getParameters()
-	 * @generated
-	 * @ordered
-	 */
-	protected EList<GTParameter> parameters;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -159,19 +147,6 @@ public class GTRuleImpl extends IBeXRuleImpl implements GTRule {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EList<GTParameter> getParameters() {
-		if (parameters == null) {
-			parameters = new EObjectContainmentEList<GTParameter>(GTParameter.class, this,
-					IBeXGTModelPackage.GT_RULE__PARAMETERS);
-		}
-		return parameters;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
@@ -179,8 +154,6 @@ public class GTRuleImpl extends IBeXRuleImpl implements GTRule {
 			return ((InternalEList<?>) getForEachOperations()).basicRemove(otherEnd, msgs);
 		case IBeXGTModelPackage.GT_RULE__PROBABILITY:
 			return basicSetProbability(null, msgs);
-		case IBeXGTModelPackage.GT_RULE__PARAMETERS:
-			return ((InternalEList<?>) getParameters()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -197,8 +170,6 @@ public class GTRuleImpl extends IBeXRuleImpl implements GTRule {
 			return getForEachOperations();
 		case IBeXGTModelPackage.GT_RULE__PROBABILITY:
 			return getProbability();
-		case IBeXGTModelPackage.GT_RULE__PARAMETERS:
-			return getParameters();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -219,10 +190,6 @@ public class GTRuleImpl extends IBeXRuleImpl implements GTRule {
 		case IBeXGTModelPackage.GT_RULE__PROBABILITY:
 			setProbability((ArithmeticExpression) newValue);
 			return;
-		case IBeXGTModelPackage.GT_RULE__PARAMETERS:
-			getParameters().clear();
-			getParameters().addAll((Collection<? extends GTParameter>) newValue);
-			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -241,9 +208,6 @@ public class GTRuleImpl extends IBeXRuleImpl implements GTRule {
 		case IBeXGTModelPackage.GT_RULE__PROBABILITY:
 			setProbability((ArithmeticExpression) null);
 			return;
-		case IBeXGTModelPackage.GT_RULE__PARAMETERS:
-			getParameters().clear();
-			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -260,8 +224,6 @@ public class GTRuleImpl extends IBeXRuleImpl implements GTRule {
 			return forEachOperations != null && !forEachOperations.isEmpty();
 		case IBeXGTModelPackage.GT_RULE__PROBABILITY:
 			return probability != null;
-		case IBeXGTModelPackage.GT_RULE__PARAMETERS:
-			return parameters != null && !parameters.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

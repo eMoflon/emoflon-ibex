@@ -563,13 +563,22 @@ public interface IBeXCoreModelPackage extends EPackage {
 	int IBE_XFEATURE_CONFIG__ARITHMETIC_EXPRESSIONS = 1;
 
 	/**
+	 * The feature id for the '<em><b>Boolean Expressions</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XFEATURE_CONFIG__BOOLEAN_EXPRESSIONS = 2;
+
+	/**
 	 * The number of structural features of the '<em>IBe XFeature Config</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XFEATURE_CONFIG_FEATURE_COUNT = 2;
+	int IBE_XFEATURE_CONFIG_FEATURE_COUNT = 3;
 
 	/**
 	 * The number of operations of the '<em>IBe XFeature Config</em>' class.
@@ -902,22 +911,13 @@ public interface IBeXCoreModelPackage extends EPackage {
 	int IBE_XPATTERN__EDGES = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 4;
 
 	/**
-	 * The feature id for the '<em><b>Attribute Constraints</b></em>' containment reference list.
+	 * The feature id for the '<em><b>Conditions</b></em>' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XPATTERN__ATTRIBUTE_CONSTRAINTS = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 5;
-
-	/**
-	 * The feature id for the '<em><b>Injectivity Constraints</b></em>' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int IBE_XPATTERN__INJECTIVITY_CONSTRAINTS = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 6;
+	int IBE_XPATTERN__CONDITIONS = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 5;
 
 	/**
 	 * The feature id for the '<em><b>Invocations</b></em>' containment reference list.
@@ -926,7 +926,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XPATTERN__INVOCATIONS = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 7;
+	int IBE_XPATTERN__INVOCATIONS = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 6;
 
 	/**
 	 * The number of structural features of the '<em>IBe XPattern</em>' class.
@@ -935,7 +935,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XPATTERN_FEATURE_COUNT = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 8;
+	int IBE_XPATTERN_FEATURE_COUNT = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 7;
 
 	/**
 	 * The number of operations of the '<em>IBe XPattern</em>' class.
@@ -1287,6 +1287,52 @@ public interface IBeXCoreModelPackage extends EPackage {
 	int IBE_XATTRIBUTE_VALUE_OPERATION_COUNT = IBeXCoreArithmeticPackage.ARITHMETIC_VALUE_OPERATION_COUNT + 0;
 
 	/**
+	 * The meta object id for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXNodeValueImpl <em>IBe XNode Value</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXNodeValueImpl
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXNodeValue()
+	 * @generated
+	 */
+	int IBE_XNODE_VALUE = 20;
+
+	/**
+	 * The feature id for the '<em><b>Type</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XNODE_VALUE__TYPE = IBeXCoreArithmeticPackage.ARITHMETIC_VALUE__TYPE;
+
+	/**
+	 * The feature id for the '<em><b>Node</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XNODE_VALUE__NODE = IBeXCoreArithmeticPackage.ARITHMETIC_VALUE_FEATURE_COUNT + 0;
+
+	/**
+	 * The number of structural features of the '<em>IBe XNode Value</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XNODE_VALUE_FEATURE_COUNT = IBeXCoreArithmeticPackage.ARITHMETIC_VALUE_FEATURE_COUNT + 1;
+
+	/**
+	 * The number of operations of the '<em>IBe XNode Value</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XNODE_VALUE_OPERATION_COUNT = IBeXCoreArithmeticPackage.ARITHMETIC_VALUE_OPERATION_COUNT + 0;
+
+	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXMatchCountValueImpl <em>IBe XMatch Count Value</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1294,7 +1340,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXMatchCountValue()
 	 * @generated
 	 */
-	int IBE_XMATCH_COUNT_VALUE = 20;
+	int IBE_XMATCH_COUNT_VALUE = 21;
 
 	/**
 	 * The feature id for the '<em><b>Type</b></em>' reference.
@@ -1340,7 +1386,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXRule()
 	 * @generated
 	 */
-	int IBE_XRULE = 21;
+	int IBE_XRULE = 22;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -1440,7 +1486,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXRuleDelta()
 	 * @generated
 	 */
-	int IBE_XRULE_DELTA = 22;
+	int IBE_XRULE_DELTA = 23;
 
 	/**
 	 * The feature id for the '<em><b>Nodes</b></em>' reference list.
@@ -1486,7 +1532,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXAttributeAssignment()
 	 * @generated
 	 */
-	int IBE_XATTRIBUTE_ASSIGNMENT = 23;
+	int IBE_XATTRIBUTE_ASSIGNMENT = 24;
 
 	/**
 	 * The feature id for the '<em><b>Node</b></em>' reference.
@@ -1541,7 +1587,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXOperationType()
 	 * @generated
 	 */
-	int IBE_XOPERATION_TYPE = 24;
+	int IBE_XOPERATION_TYPE = 25;
 
 	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNamedElement <em>IBe XNamed Element</em>}'.
@@ -2003,6 +2049,17 @@ public interface IBeXCoreModelPackage extends EPackage {
 	EAttribute getIBeXFeatureConfig_ArithmeticExpressions();
 
 	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXFeatureConfig#isBooleanExpressions <em>Boolean Expressions</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Boolean Expressions</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXFeatureConfig#isBooleanExpressions()
+	 * @see #getIBeXFeatureConfig()
+	 * @generated
+	 */
+	EAttribute getIBeXFeatureConfig_BooleanExpressions();
+
+	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternSet <em>IBe XPattern Set</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -2239,26 +2296,15 @@ public interface IBeXCoreModelPackage extends EPackage {
 	EReference getIBeXPattern_Edges();
 
 	/**
-	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern#getAttributeConstraints <em>Attribute Constraints</em>}'.
+	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern#getConditions <em>Conditions</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference list '<em>Attribute Constraints</em>'.
-	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern#getAttributeConstraints()
+	 * @return the meta object for the containment reference list '<em>Conditions</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern#getConditions()
 	 * @see #getIBeXPattern()
 	 * @generated
 	 */
-	EReference getIBeXPattern_AttributeConstraints();
-
-	/**
-	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern#getInjectivityConstraints <em>Injectivity Constraints</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference list '<em>Injectivity Constraints</em>'.
-	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern#getInjectivityConstraints()
-	 * @see #getIBeXPattern()
-	 * @generated
-	 */
-	EReference getIBeXPattern_InjectivityConstraints();
+	EReference getIBeXPattern_Conditions();
 
 	/**
 	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern#getInvocations <em>Invocations</em>}'.
@@ -2474,6 +2520,27 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getIBeXAttributeValue_Attribute();
+
+	/**
+	 * Returns the meta object for class '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNodeValue <em>IBe XNode Value</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>IBe XNode Value</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNodeValue
+	 * @generated
+	 */
+	EClass getIBeXNodeValue();
+
+	/**
+	 * Returns the meta object for the reference '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNodeValue#getNode <em>Node</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Node</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNodeValue#getNode()
+	 * @see #getIBeXNodeValue()
+	 * @generated
+	 */
+	EReference getIBeXNodeValue_Node();
 
 	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXMatchCountValue <em>IBe XMatch Count Value</em>}'.
@@ -3044,6 +3111,14 @@ public interface IBeXCoreModelPackage extends EPackage {
 		EAttribute IBE_XFEATURE_CONFIG__ARITHMETIC_EXPRESSIONS = eINSTANCE.getIBeXFeatureConfig_ArithmeticExpressions();
 
 		/**
+		 * The meta object literal for the '<em><b>Boolean Expressions</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute IBE_XFEATURE_CONFIG__BOOLEAN_EXPRESSIONS = eINSTANCE.getIBeXFeatureConfig_BooleanExpressions();
+
+		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXPatternSetImpl <em>IBe XPattern Set</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -3232,20 +3307,12 @@ public interface IBeXCoreModelPackage extends EPackage {
 		EReference IBE_XPATTERN__EDGES = eINSTANCE.getIBeXPattern_Edges();
 
 		/**
-		 * The meta object literal for the '<em><b>Attribute Constraints</b></em>' containment reference list feature.
+		 * The meta object literal for the '<em><b>Conditions</b></em>' containment reference list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference IBE_XPATTERN__ATTRIBUTE_CONSTRAINTS = eINSTANCE.getIBeXPattern_AttributeConstraints();
-
-		/**
-		 * The meta object literal for the '<em><b>Injectivity Constraints</b></em>' containment reference list feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference IBE_XPATTERN__INJECTIVITY_CONSTRAINTS = eINSTANCE.getIBeXPattern_InjectivityConstraints();
+		EReference IBE_XPATTERN__CONDITIONS = eINSTANCE.getIBeXPattern_Conditions();
 
 		/**
 		 * The meta object literal for the '<em><b>Invocations</b></em>' containment reference list feature.
@@ -3420,6 +3487,24 @@ public interface IBeXCoreModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference IBE_XATTRIBUTE_VALUE__ATTRIBUTE = eINSTANCE.getIBeXAttributeValue_Attribute();
+
+		/**
+		 * The meta object literal for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXNodeValueImpl <em>IBe XNode Value</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXNodeValueImpl
+		 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXNodeValue()
+		 * @generated
+		 */
+		EClass IBE_XNODE_VALUE = eINSTANCE.getIBeXNodeValue();
+
+		/**
+		 * The meta object literal for the '<em><b>Node</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IBE_XNODE_VALUE__NODE = eINSTANCE.getIBeXNodeValue_Node();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXMatchCountValueImpl <em>IBe XMatch Count Value</em>}' class.

@@ -245,6 +245,19 @@ public class IBeXCoreModelSwitch<T> extends Switch<T> {
 				result = defaultCase(theEObject);
 			return result;
 		}
+		case IBeXCoreModelPackage.IBE_XNODE_VALUE: {
+			IBeXNodeValue iBeXNodeValue = (IBeXNodeValue) theEObject;
+			T result = caseIBeXNodeValue(iBeXNodeValue);
+			if (result == null)
+				result = caseArithmeticValue(iBeXNodeValue);
+			if (result == null)
+				result = caseArithmeticExpression(iBeXNodeValue);
+			if (result == null)
+				result = caseValueExpression(iBeXNodeValue);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
 		case IBeXCoreModelPackage.IBE_XMATCH_COUNT_VALUE: {
 			IBeXMatchCountValue iBeXMatchCountValue = (IBeXMatchCountValue) theEObject;
 			T result = caseIBeXMatchCountValue(iBeXMatchCountValue);
@@ -583,6 +596,21 @@ public class IBeXCoreModelSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseIBeXAttributeValue(IBeXAttributeValue object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>IBe XNode Value</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>IBe XNode Value</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseIBeXNodeValue(IBeXNodeValue object) {
 		return null;
 	}
 

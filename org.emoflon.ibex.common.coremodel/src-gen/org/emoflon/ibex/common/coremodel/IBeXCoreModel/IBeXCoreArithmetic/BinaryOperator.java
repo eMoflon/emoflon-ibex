@@ -116,7 +116,16 @@ public enum BinaryOperator implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	UNIFORM_DISTRIBUTION(9, "UNIFORM_DISTRIBUTION", "UNIFORM_DISTRIBUTION");
+	UNIFORM_DISTRIBUTION(9, "UNIFORM_DISTRIBUTION", "UNIFORM_DISTRIBUTION"),
+	/**
+	* The '<em><b>LOG</b></em>' literal object.
+	* <!-- begin-user-doc -->
+	* <!-- end-user-doc -->
+	* @see #LOG_VALUE
+	* @generated
+	* @ordered
+	*/
+	LOG(10, "LOG", "LOG");
 
 	/**
 	 * The '<em><b>ADD</b></em>' literal value.
@@ -229,13 +238,24 @@ public enum BinaryOperator implements Enumerator {
 	public static final int UNIFORM_DISTRIBUTION_VALUE = 9;
 
 	/**
+	 * The '<em><b>LOG</b></em>' literal value.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #LOG
+	 * @model
+	 * @generated
+	 * @ordered
+	 */
+	public static final int LOG_VALUE = 10;
+
+	/**
 	 * An array of all the '<em><b>Binary Operator</b></em>' enumerators.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	private static final BinaryOperator[] VALUES_ARRAY = new BinaryOperator[] { ADD, MULTIPLY, DIVIDE, MOD, POW,
-			SUBTRACT, MIN, MAX, NORMAL_DISTRIBUTION, UNIFORM_DISTRIBUTION, };
+			SUBTRACT, MIN, MAX, NORMAL_DISTRIBUTION, UNIFORM_DISTRIBUTION, LOG, };
 
 	/**
 	 * A public read-only list of all the '<em><b>Binary Operator</b></em>' enumerators.
@@ -311,6 +331,8 @@ public enum BinaryOperator implements Enumerator {
 			return NORMAL_DISTRIBUTION;
 		case UNIFORM_DISTRIBUTION_VALUE:
 			return UNIFORM_DISTRIBUTION;
+		case LOG_VALUE:
+			return LOG;
 		}
 		return null;
 	}
