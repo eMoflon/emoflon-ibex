@@ -9,10 +9,12 @@ import org.eclipse.emf.common.notify.impl.AdapterFactoryImpl;
 
 import org.eclipse.emf.ecore.EObject;
 
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeAssignment;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ArithmeticExpression;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ArithmeticValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ValueExpression;
 
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNamedElement;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern;
@@ -111,6 +113,16 @@ public class IBeXGTModelAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
+		public Adapter caseGTIteratorEdge(GTIteratorEdge object) {
+			return createGTIteratorEdgeAdapter();
+		}
+
+		@Override
+		public Adapter caseGTIteratorAttributeAssignment(GTIteratorAttributeAssignment object) {
+			return createGTIteratorAttributeAssignmentAdapter();
+		}
+
+		@Override
 		public Adapter caseGTIteratorAttributeReference(GTIteratorAttributeReference object) {
 			return createGTIteratorAttributeReferenceAdapter();
 		}
@@ -153,6 +165,16 @@ public class IBeXGTModelAdapterFactory extends AdapterFactoryImpl {
 		@Override
 		public Adapter caseArithmeticValue(ArithmeticValue object) {
 			return createArithmeticValueAdapter();
+		}
+
+		@Override
+		public Adapter caseIBeXEdge(IBeXEdge object) {
+			return createIBeXEdgeAdapter();
+		}
+
+		@Override
+		public Adapter caseIBeXAttributeAssignment(IBeXAttributeAssignment object) {
+			return createIBeXAttributeAssignmentAdapter();
 		}
 
 		@Override
@@ -269,6 +291,34 @@ public class IBeXGTModelAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createGTParameterValueAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTIteratorEdge <em>GT Iterator Edge</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTIteratorEdge
+	 * @generated
+	 */
+	public Adapter createGTIteratorEdgeAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTIteratorAttributeAssignment <em>GT Iterator Attribute Assignment</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTIteratorAttributeAssignment
+	 * @generated
+	 */
+	public Adapter createGTIteratorAttributeAssignmentAdapter() {
 		return null;
 	}
 
@@ -395,6 +445,34 @@ public class IBeXGTModelAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createArithmeticValueAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge <em>IBe XEdge</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge
+	 * @generated
+	 */
+	public Adapter createIBeXEdgeAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeAssignment <em>IBe XAttribute Assignment</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeAssignment
+	 * @generated
+	 */
+	public Adapter createIBeXAttributeAssignmentAdapter() {
 		return null;
 	}
 

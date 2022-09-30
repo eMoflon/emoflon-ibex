@@ -26,8 +26,9 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTRule/probability"/>
     </genClasses>
     <genClasses ecoreClass="IBeXGTModel.ecore#//GTForEachExpression">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTForEachExpression/create"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTForEachExpression/delete"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTForEachExpression/created"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTForEachExpression/deleted"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTForEachExpression/attributeAssignments"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTForEachExpression/source"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTForEachExpression/reference"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTForEachExpression/iterator"/>
@@ -37,6 +38,12 @@
     </genClasses>
     <genClasses ecoreClass="IBeXGTModel.ecore#//GTParameterValue">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTParameterValue/parameter"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXGTModel.ecore#//GTIteratorEdge">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTIteratorEdge/iterator"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXGTModel.ecore#//GTIteratorAttributeAssignment">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTIteratorAttributeAssignment/iterator"/>
     </genClasses>
     <genClasses ecoreClass="IBeXGTModel.ecore#//GTIteratorAttributeReference">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTIteratorAttributeReference/iterator"/>

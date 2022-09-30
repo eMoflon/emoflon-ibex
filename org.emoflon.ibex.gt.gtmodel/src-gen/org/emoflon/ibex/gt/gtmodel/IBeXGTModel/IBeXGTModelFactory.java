@@ -85,6 +85,24 @@ public interface IBeXGTModelFactory extends EFactory {
 	GTParameterValue createGTParameterValue();
 
 	/**
+	 * Returns a new object of class '<em>GT Iterator Edge</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>GT Iterator Edge</em>'.
+	 * @generated
+	 */
+	GTIteratorEdge createGTIteratorEdge();
+
+	/**
+	 * Returns a new object of class '<em>GT Iterator Attribute Assignment</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>GT Iterator Attribute Assignment</em>'.
+	 * @generated
+	 */
+	GTIteratorAttributeAssignment createGTIteratorAttributeAssignment();
+
+	/**
 	 * Returns a new object of class '<em>GT Iterator Attribute Reference</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

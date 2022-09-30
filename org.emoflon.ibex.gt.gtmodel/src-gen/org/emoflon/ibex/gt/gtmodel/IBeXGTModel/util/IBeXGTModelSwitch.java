@@ -7,10 +7,12 @@ import org.eclipse.emf.ecore.EPackage;
 
 import org.eclipse.emf.ecore.util.Switch;
 
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeAssignment;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ArithmeticExpression;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ArithmeticValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ValueExpression;
 
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNamedElement;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern;
@@ -144,6 +146,26 @@ public class IBeXGTModelSwitch<T> extends Switch<T> {
 				result = defaultCase(theEObject);
 			return result;
 		}
+		case IBeXGTModelPackage.GT_ITERATOR_EDGE: {
+			GTIteratorEdge gtIteratorEdge = (GTIteratorEdge) theEObject;
+			T result = caseGTIteratorEdge(gtIteratorEdge);
+			if (result == null)
+				result = caseIBeXEdge(gtIteratorEdge);
+			if (result == null)
+				result = caseIBeXNamedElement(gtIteratorEdge);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case IBeXGTModelPackage.GT_ITERATOR_ATTRIBUTE_ASSIGNMENT: {
+			GTIteratorAttributeAssignment gtIteratorAttributeAssignment = (GTIteratorAttributeAssignment) theEObject;
+			T result = caseGTIteratorAttributeAssignment(gtIteratorAttributeAssignment);
+			if (result == null)
+				result = caseIBeXAttributeAssignment(gtIteratorAttributeAssignment);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
 		case IBeXGTModelPackage.GT_ITERATOR_ATTRIBUTE_REFERENCE: {
 			GTIteratorAttributeReference gtIteratorAttributeReference = (GTIteratorAttributeReference) theEObject;
 			T result = caseGTIteratorAttributeReference(gtIteratorAttributeReference);
@@ -267,6 +289,36 @@ public class IBeXGTModelSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseGTParameterValue(GTParameterValue object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>GT Iterator Edge</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>GT Iterator Edge</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseGTIteratorEdge(GTIteratorEdge object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>GT Iterator Attribute Assignment</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>GT Iterator Attribute Assignment</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseGTIteratorAttributeAssignment(GTIteratorAttributeAssignment object) {
 		return null;
 	}
 
@@ -402,6 +454,36 @@ public class IBeXGTModelSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseArithmeticValue(ArithmeticValue object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>IBe XEdge</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>IBe XEdge</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseIBeXEdge(IBeXEdge object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>IBe XAttribute Assignment</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>IBe XAttribute Assignment</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseIBeXAttributeAssignment(IBeXAttributeAssignment object) {
 		return null;
 	}
 

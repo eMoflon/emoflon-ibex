@@ -13,7 +13,9 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.IBeXCo
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage;
 
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression;
+import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTIteratorAttributeAssignment;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTIteratorAttributeReference;
+import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTIteratorEdge;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTModel;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTParameter;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTParameterValue;
@@ -79,6 +81,20 @@ public class IBeXGTModelPackageImpl extends EPackageImpl implements IBeXGTModelP
 	 * @generated
 	 */
 	private EClass gtParameterValueEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass gtIteratorEdgeEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass gtIteratorAttributeAssignmentEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -265,7 +281,7 @@ public class IBeXGTModelPackageImpl extends EPackageImpl implements IBeXGTModelP
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getGTForEachExpression_Create() {
+	public EReference getGTForEachExpression_Created() {
 		return (EReference) gtForEachExpressionEClass.getEStructuralFeatures().get(0);
 	}
 
@@ -274,7 +290,7 @@ public class IBeXGTModelPackageImpl extends EPackageImpl implements IBeXGTModelP
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getGTForEachExpression_Delete() {
+	public EReference getGTForEachExpression_Deleted() {
 		return (EReference) gtForEachExpressionEClass.getEStructuralFeatures().get(1);
 	}
 
@@ -283,7 +299,7 @@ public class IBeXGTModelPackageImpl extends EPackageImpl implements IBeXGTModelP
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getGTForEachExpression_Source() {
+	public EReference getGTForEachExpression_AttributeAssignments() {
 		return (EReference) gtForEachExpressionEClass.getEStructuralFeatures().get(2);
 	}
 
@@ -292,7 +308,7 @@ public class IBeXGTModelPackageImpl extends EPackageImpl implements IBeXGTModelP
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getGTForEachExpression_Reference() {
+	public EReference getGTForEachExpression_Source() {
 		return (EReference) gtForEachExpressionEClass.getEStructuralFeatures().get(3);
 	}
 
@@ -301,8 +317,17 @@ public class IBeXGTModelPackageImpl extends EPackageImpl implements IBeXGTModelP
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getGTForEachExpression_Iterator() {
+	public EReference getGTForEachExpression_Reference() {
 		return (EReference) gtForEachExpressionEClass.getEStructuralFeatures().get(4);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getGTForEachExpression_Iterator() {
+		return (EReference) gtForEachExpressionEClass.getEStructuralFeatures().get(5);
 	}
 
 	/**
@@ -339,6 +364,42 @@ public class IBeXGTModelPackageImpl extends EPackageImpl implements IBeXGTModelP
 	 */
 	public EReference getGTParameterValue_Parameter() {
 		return (EReference) gtParameterValueEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getGTIteratorEdge() {
+		return gtIteratorEdgeEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getGTIteratorEdge_Iterator() {
+		return (EReference) gtIteratorEdgeEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getGTIteratorAttributeAssignment() {
+		return gtIteratorAttributeAssignmentEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getGTIteratorAttributeAssignment_Iterator() {
+		return (EReference) gtIteratorAttributeAssignmentEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -439,8 +500,9 @@ public class IBeXGTModelPackageImpl extends EPackageImpl implements IBeXGTModelP
 		createEReference(gtRuleEClass, GT_RULE__PROBABILITY);
 
 		gtForEachExpressionEClass = createEClass(GT_FOR_EACH_EXPRESSION);
-		createEReference(gtForEachExpressionEClass, GT_FOR_EACH_EXPRESSION__CREATE);
-		createEReference(gtForEachExpressionEClass, GT_FOR_EACH_EXPRESSION__DELETE);
+		createEReference(gtForEachExpressionEClass, GT_FOR_EACH_EXPRESSION__CREATED);
+		createEReference(gtForEachExpressionEClass, GT_FOR_EACH_EXPRESSION__DELETED);
+		createEReference(gtForEachExpressionEClass, GT_FOR_EACH_EXPRESSION__ATTRIBUTE_ASSIGNMENTS);
 		createEReference(gtForEachExpressionEClass, GT_FOR_EACH_EXPRESSION__SOURCE);
 		createEReference(gtForEachExpressionEClass, GT_FOR_EACH_EXPRESSION__REFERENCE);
 		createEReference(gtForEachExpressionEClass, GT_FOR_EACH_EXPRESSION__ITERATOR);
@@ -450,6 +512,12 @@ public class IBeXGTModelPackageImpl extends EPackageImpl implements IBeXGTModelP
 
 		gtParameterValueEClass = createEClass(GT_PARAMETER_VALUE);
 		createEReference(gtParameterValueEClass, GT_PARAMETER_VALUE__PARAMETER);
+
+		gtIteratorEdgeEClass = createEClass(GT_ITERATOR_EDGE);
+		createEReference(gtIteratorEdgeEClass, GT_ITERATOR_EDGE__ITERATOR);
+
+		gtIteratorAttributeAssignmentEClass = createEClass(GT_ITERATOR_ATTRIBUTE_ASSIGNMENT);
+		createEReference(gtIteratorAttributeAssignmentEClass, GT_ITERATOR_ATTRIBUTE_ASSIGNMENT__ITERATOR);
 
 		gtIteratorAttributeReferenceEClass = createEClass(GT_ITERATOR_ATTRIBUTE_REFERENCE);
 		createEReference(gtIteratorAttributeReferenceEClass, GT_ITERATOR_ATTRIBUTE_REFERENCE__ITERATOR);
@@ -500,6 +568,8 @@ public class IBeXGTModelPackageImpl extends EPackageImpl implements IBeXGTModelP
 		gtRuleEClass.getESuperTypes().add(theIBeXCoreModelPackage.getIBeXRule());
 		gtParameterEClass.getESuperTypes().add(theIBeXCoreModelPackage.getIBeXNamedElement());
 		gtParameterValueEClass.getESuperTypes().add(theIBeXCoreArithmeticPackage.getArithmeticValue());
+		gtIteratorEdgeEClass.getESuperTypes().add(theIBeXCoreModelPackage.getIBeXEdge());
+		gtIteratorAttributeAssignmentEClass.getESuperTypes().add(theIBeXCoreModelPackage.getIBeXAttributeAssignment());
 		gtIteratorAttributeReferenceEClass.getESuperTypes().add(theIBeXCoreArithmeticPackage.getValueExpression());
 
 		// Initialize classes, features, and operations; add parameters
@@ -533,11 +603,15 @@ public class IBeXGTModelPackageImpl extends EPackageImpl implements IBeXGTModelP
 
 		initEClass(gtForEachExpressionEClass, GTForEachExpression.class, "GTForEachExpression", !IS_ABSTRACT,
 				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getGTForEachExpression_Create(), theIBeXCoreModelPackage.getIBeXRuleDelta(), null, "create",
-				null, 0, 1, GTForEachExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
+		initEReference(getGTForEachExpression_Created(), this.getGTIteratorEdge(), null, "created", null, 0, -1,
+				GTForEachExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
 				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getGTForEachExpression_Delete(), theIBeXCoreModelPackage.getIBeXRuleDelta(), null, "delete",
-				null, 0, 1, GTForEachExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
+		initEReference(getGTForEachExpression_Deleted(), this.getGTIteratorEdge(), null, "deleted", null, 0, -1,
+				GTForEachExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
+				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getGTForEachExpression_AttributeAssignments(),
+				theIBeXCoreModelPackage.getIBeXAttributeAssignment(), null, "attributeAssignments", null, 0, -1,
+				GTForEachExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
 				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getGTForEachExpression_Source(), theIBeXCoreModelPackage.getIBeXNode(), null, "source", null, 1,
 				1, GTForEachExpression.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
@@ -560,6 +634,18 @@ public class IBeXGTModelPackageImpl extends EPackageImpl implements IBeXGTModelP
 		initEReference(getGTParameterValue_Parameter(), this.getGTParameter(), null, "parameter", null, 1, 1,
 				GTParameterValue.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(gtIteratorEdgeEClass, GTIteratorEdge.class, "GTIteratorEdge", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getGTIteratorEdge_Iterator(), this.getGTForEachExpression(), null, "iterator", null, 1, 1,
+				GTIteratorEdge.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(gtIteratorAttributeAssignmentEClass, GTIteratorAttributeAssignment.class,
+				"GTIteratorAttributeAssignment", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getGTIteratorAttributeAssignment_Iterator(), this.getGTForEachExpression(), null, "iterator",
+				null, 1, 1, GTIteratorAttributeAssignment.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				!IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(gtIteratorAttributeReferenceEClass, GTIteratorAttributeReference.class,
 				"GTIteratorAttributeReference", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);

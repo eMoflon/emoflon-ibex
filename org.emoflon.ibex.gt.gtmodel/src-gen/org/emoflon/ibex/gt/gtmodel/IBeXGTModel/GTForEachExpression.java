@@ -2,11 +2,12 @@
  */
 package org.emoflon.ibex.gt.gtmodel.IBeXGTModel;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 
 import org.eclipse.emf.ecore.EReference;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeAssignment;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta;
 
 /**
  * <!-- begin-user-doc -->
@@ -17,8 +18,9 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta;
  * The following features are supported:
  * </p>
  * <ul>
- *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getCreate <em>Create</em>}</li>
- *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getDelete <em>Delete</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getCreated <em>Created</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getDeleted <em>Deleted</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getAttributeAssignments <em>Attribute Assignments</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getSource <em>Source</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getReference <em>Reference</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getIterator <em>Iterator</em>}</li>
@@ -30,48 +32,40 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta;
  */
 public interface GTForEachExpression extends EObject {
 	/**
-	 * Returns the value of the '<em><b>Create</b></em>' containment reference.
+	 * Returns the value of the '<em><b>Created</b></em>' containment reference list.
+	 * The list contents are of type {@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTIteratorEdge}.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Create</em>' containment reference.
-	 * @see #setCreate(IBeXRuleDelta)
-	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.IBeXGTModelPackage#getGTForEachExpression_Create()
+	 * @return the value of the '<em>Created</em>' containment reference list.
+	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.IBeXGTModelPackage#getGTForEachExpression_Created()
 	 * @model containment="true"
 	 * @generated
 	 */
-	IBeXRuleDelta getCreate();
+	EList<GTIteratorEdge> getCreated();
 
 	/**
-	 * Sets the value of the '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getCreate <em>Create</em>}' containment reference.
+	 * Returns the value of the '<em><b>Deleted</b></em>' containment reference list.
+	 * The list contents are of type {@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTIteratorEdge}.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Create</em>' containment reference.
-	 * @see #getCreate()
-	 * @generated
-	 */
-	void setCreate(IBeXRuleDelta value);
-
-	/**
-	 * Returns the value of the '<em><b>Delete</b></em>' containment reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Delete</em>' containment reference.
-	 * @see #setDelete(IBeXRuleDelta)
-	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.IBeXGTModelPackage#getGTForEachExpression_Delete()
+	 * @return the value of the '<em>Deleted</em>' containment reference list.
+	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.IBeXGTModelPackage#getGTForEachExpression_Deleted()
 	 * @model containment="true"
 	 * @generated
 	 */
-	IBeXRuleDelta getDelete();
+	EList<GTIteratorEdge> getDeleted();
 
 	/**
-	 * Sets the value of the '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getDelete <em>Delete</em>}' containment reference.
+	 * Returns the value of the '<em><b>Attribute Assignments</b></em>' containment reference list.
+	 * The list contents are of type {@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeAssignment}.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Delete</em>' containment reference.
-	 * @see #getDelete()
+	 * @return the value of the '<em>Attribute Assignments</em>' containment reference list.
+	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.IBeXGTModelPackage#getGTForEachExpression_AttributeAssignments()
+	 * @model containment="true"
 	 * @generated
 	 */
-	void setDelete(IBeXRuleDelta value);
+	EList<IBeXAttributeAssignment> getAttributeAssignments();
 
 	/**
 	 * Returns the value of the '<em><b>Source</b></em>' reference.

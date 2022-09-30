@@ -434,22 +434,31 @@ public interface IBeXGTModelPackage extends EPackage {
 	int GT_FOR_EACH_EXPRESSION = 4;
 
 	/**
-	 * The feature id for the '<em><b>Create</b></em>' containment reference.
+	 * The feature id for the '<em><b>Created</b></em>' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int GT_FOR_EACH_EXPRESSION__CREATE = 0;
+	int GT_FOR_EACH_EXPRESSION__CREATED = 0;
 
 	/**
-	 * The feature id for the '<em><b>Delete</b></em>' containment reference.
+	 * The feature id for the '<em><b>Deleted</b></em>' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int GT_FOR_EACH_EXPRESSION__DELETE = 1;
+	int GT_FOR_EACH_EXPRESSION__DELETED = 1;
+
+	/**
+	 * The feature id for the '<em><b>Attribute Assignments</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_FOR_EACH_EXPRESSION__ATTRIBUTE_ASSIGNMENTS = 2;
 
 	/**
 	 * The feature id for the '<em><b>Source</b></em>' reference.
@@ -458,7 +467,7 @@ public interface IBeXGTModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int GT_FOR_EACH_EXPRESSION__SOURCE = 2;
+	int GT_FOR_EACH_EXPRESSION__SOURCE = 3;
 
 	/**
 	 * The feature id for the '<em><b>Reference</b></em>' reference.
@@ -467,7 +476,7 @@ public interface IBeXGTModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int GT_FOR_EACH_EXPRESSION__REFERENCE = 3;
+	int GT_FOR_EACH_EXPRESSION__REFERENCE = 4;
 
 	/**
 	 * The feature id for the '<em><b>Iterator</b></em>' containment reference.
@@ -476,7 +485,7 @@ public interface IBeXGTModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int GT_FOR_EACH_EXPRESSION__ITERATOR = 4;
+	int GT_FOR_EACH_EXPRESSION__ITERATOR = 5;
 
 	/**
 	 * The number of structural features of the '<em>GT For Each Expression</em>' class.
@@ -485,7 +494,7 @@ public interface IBeXGTModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int GT_FOR_EACH_EXPRESSION_FEATURE_COUNT = 5;
+	int GT_FOR_EACH_EXPRESSION_FEATURE_COUNT = 6;
 
 	/**
 	 * The number of operations of the '<em>GT For Each Expression</em>' class.
@@ -589,6 +598,154 @@ public interface IBeXGTModelPackage extends EPackage {
 	int GT_PARAMETER_VALUE_OPERATION_COUNT = IBeXCoreArithmeticPackage.ARITHMETIC_VALUE_OPERATION_COUNT + 0;
 
 	/**
+	 * The meta object id for the '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTIteratorEdgeImpl <em>GT Iterator Edge</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTIteratorEdgeImpl
+	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.IBeXGTModelPackageImpl#getGTIteratorEdge()
+	 * @generated
+	 */
+	int GT_ITERATOR_EDGE = 7;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_ITERATOR_EDGE__NAME = IBeXCoreModelPackage.IBE_XEDGE__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Type</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_ITERATOR_EDGE__TYPE = IBeXCoreModelPackage.IBE_XEDGE__TYPE;
+
+	/**
+	 * The feature id for the '<em><b>Operation Type</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_ITERATOR_EDGE__OPERATION_TYPE = IBeXCoreModelPackage.IBE_XEDGE__OPERATION_TYPE;
+
+	/**
+	 * The feature id for the '<em><b>Source</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_ITERATOR_EDGE__SOURCE = IBeXCoreModelPackage.IBE_XEDGE__SOURCE;
+
+	/**
+	 * The feature id for the '<em><b>Target</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_ITERATOR_EDGE__TARGET = IBeXCoreModelPackage.IBE_XEDGE__TARGET;
+
+	/**
+	 * The feature id for the '<em><b>Iterator</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_ITERATOR_EDGE__ITERATOR = IBeXCoreModelPackage.IBE_XEDGE_FEATURE_COUNT + 0;
+
+	/**
+	 * The number of structural features of the '<em>GT Iterator Edge</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_ITERATOR_EDGE_FEATURE_COUNT = IBeXCoreModelPackage.IBE_XEDGE_FEATURE_COUNT + 1;
+
+	/**
+	 * The number of operations of the '<em>GT Iterator Edge</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_ITERATOR_EDGE_OPERATION_COUNT = IBeXCoreModelPackage.IBE_XEDGE_OPERATION_COUNT + 0;
+
+	/**
+	 * The meta object id for the '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTIteratorAttributeAssignmentImpl <em>GT Iterator Attribute Assignment</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTIteratorAttributeAssignmentImpl
+	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.IBeXGTModelPackageImpl#getGTIteratorAttributeAssignment()
+	 * @generated
+	 */
+	int GT_ITERATOR_ATTRIBUTE_ASSIGNMENT = 8;
+
+	/**
+	 * The feature id for the '<em><b>Node</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_ITERATOR_ATTRIBUTE_ASSIGNMENT__NODE = IBeXCoreModelPackage.IBE_XATTRIBUTE_ASSIGNMENT__NODE;
+
+	/**
+	 * The feature id for the '<em><b>Attribute</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_ITERATOR_ATTRIBUTE_ASSIGNMENT__ATTRIBUTE = IBeXCoreModelPackage.IBE_XATTRIBUTE_ASSIGNMENT__ATTRIBUTE;
+
+	/**
+	 * The feature id for the '<em><b>Value</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_ITERATOR_ATTRIBUTE_ASSIGNMENT__VALUE = IBeXCoreModelPackage.IBE_XATTRIBUTE_ASSIGNMENT__VALUE;
+
+	/**
+	 * The feature id for the '<em><b>Iterator</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_ITERATOR_ATTRIBUTE_ASSIGNMENT__ITERATOR = IBeXCoreModelPackage.IBE_XATTRIBUTE_ASSIGNMENT_FEATURE_COUNT + 0;
+
+	/**
+	 * The number of structural features of the '<em>GT Iterator Attribute Assignment</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_ITERATOR_ATTRIBUTE_ASSIGNMENT_FEATURE_COUNT = IBeXCoreModelPackage.IBE_XATTRIBUTE_ASSIGNMENT_FEATURE_COUNT
+			+ 1;
+
+	/**
+	 * The number of operations of the '<em>GT Iterator Attribute Assignment</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_ITERATOR_ATTRIBUTE_ASSIGNMENT_OPERATION_COUNT = IBeXCoreModelPackage.IBE_XATTRIBUTE_ASSIGNMENT_OPERATION_COUNT
+			+ 0;
+
+	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTIteratorAttributeReferenceImpl <em>GT Iterator Attribute Reference</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -596,7 +753,7 @@ public interface IBeXGTModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.IBeXGTModelPackageImpl#getGTIteratorAttributeReference()
 	 * @generated
 	 */
-	int GT_ITERATOR_ATTRIBUTE_REFERENCE = 7;
+	int GT_ITERATOR_ATTRIBUTE_REFERENCE = 9;
 
 	/**
 	 * The feature id for the '<em><b>Type</b></em>' reference.
@@ -652,7 +809,7 @@ public interface IBeXGTModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.IBeXGTModelPackageImpl#getGTWatchDog()
 	 * @generated
 	 */
-	int GT_WATCH_DOG = 8;
+	int GT_WATCH_DOG = 10;
 
 	/**
 	 * The feature id for the '<em><b>Node</b></em>' reference.
@@ -807,26 +964,37 @@ public interface IBeXGTModelPackage extends EPackage {
 	EClass getGTForEachExpression();
 
 	/**
-	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getCreate <em>Create</em>}'.
+	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getCreated <em>Created</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference '<em>Create</em>'.
-	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getCreate()
+	 * @return the meta object for the containment reference list '<em>Created</em>'.
+	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getCreated()
 	 * @see #getGTForEachExpression()
 	 * @generated
 	 */
-	EReference getGTForEachExpression_Create();
+	EReference getGTForEachExpression_Created();
 
 	/**
-	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getDelete <em>Delete</em>}'.
+	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getDeleted <em>Deleted</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference '<em>Delete</em>'.
-	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getDelete()
+	 * @return the meta object for the containment reference list '<em>Deleted</em>'.
+	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getDeleted()
 	 * @see #getGTForEachExpression()
 	 * @generated
 	 */
-	EReference getGTForEachExpression_Delete();
+	EReference getGTForEachExpression_Deleted();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getAttributeAssignments <em>Attribute Assignments</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Attribute Assignments</em>'.
+	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getAttributeAssignments()
+	 * @see #getGTForEachExpression()
+	 * @generated
+	 */
+	EReference getGTForEachExpression_AttributeAssignments();
 
 	/**
 	 * Returns the meta object for the reference '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression#getSource <em>Source</em>}'.
@@ -902,6 +1070,48 @@ public interface IBeXGTModelPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getGTParameterValue_Parameter();
+
+	/**
+	 * Returns the meta object for class '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTIteratorEdge <em>GT Iterator Edge</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>GT Iterator Edge</em>'.
+	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTIteratorEdge
+	 * @generated
+	 */
+	EClass getGTIteratorEdge();
+
+	/**
+	 * Returns the meta object for the reference '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTIteratorEdge#getIterator <em>Iterator</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Iterator</em>'.
+	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTIteratorEdge#getIterator()
+	 * @see #getGTIteratorEdge()
+	 * @generated
+	 */
+	EReference getGTIteratorEdge_Iterator();
+
+	/**
+	 * Returns the meta object for class '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTIteratorAttributeAssignment <em>GT Iterator Attribute Assignment</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>GT Iterator Attribute Assignment</em>'.
+	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTIteratorAttributeAssignment
+	 * @generated
+	 */
+	EClass getGTIteratorAttributeAssignment();
+
+	/**
+	 * Returns the meta object for the reference '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTIteratorAttributeAssignment#getIterator <em>Iterator</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Iterator</em>'.
+	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTIteratorAttributeAssignment#getIterator()
+	 * @see #getGTIteratorAttributeAssignment()
+	 * @generated
+	 */
+	EReference getGTIteratorAttributeAssignment_Iterator();
 
 	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTIteratorAttributeReference <em>GT Iterator Attribute Reference</em>}'.
@@ -1089,20 +1299,29 @@ public interface IBeXGTModelPackage extends EPackage {
 		EClass GT_FOR_EACH_EXPRESSION = eINSTANCE.getGTForEachExpression();
 
 		/**
-		 * The meta object literal for the '<em><b>Create</b></em>' containment reference feature.
+		 * The meta object literal for the '<em><b>Created</b></em>' containment reference list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference GT_FOR_EACH_EXPRESSION__CREATE = eINSTANCE.getGTForEachExpression_Create();
+		EReference GT_FOR_EACH_EXPRESSION__CREATED = eINSTANCE.getGTForEachExpression_Created();
 
 		/**
-		 * The meta object literal for the '<em><b>Delete</b></em>' containment reference feature.
+		 * The meta object literal for the '<em><b>Deleted</b></em>' containment reference list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference GT_FOR_EACH_EXPRESSION__DELETE = eINSTANCE.getGTForEachExpression_Delete();
+		EReference GT_FOR_EACH_EXPRESSION__DELETED = eINSTANCE.getGTForEachExpression_Deleted();
+
+		/**
+		 * The meta object literal for the '<em><b>Attribute Assignments</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference GT_FOR_EACH_EXPRESSION__ATTRIBUTE_ASSIGNMENTS = eINSTANCE
+				.getGTForEachExpression_AttributeAssignments();
 
 		/**
 		 * The meta object literal for the '<em><b>Source</b></em>' reference feature.
@@ -1163,6 +1382,42 @@ public interface IBeXGTModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference GT_PARAMETER_VALUE__PARAMETER = eINSTANCE.getGTParameterValue_Parameter();
+
+		/**
+		 * The meta object literal for the '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTIteratorEdgeImpl <em>GT Iterator Edge</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTIteratorEdgeImpl
+		 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.IBeXGTModelPackageImpl#getGTIteratorEdge()
+		 * @generated
+		 */
+		EClass GT_ITERATOR_EDGE = eINSTANCE.getGTIteratorEdge();
+
+		/**
+		 * The meta object literal for the '<em><b>Iterator</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference GT_ITERATOR_EDGE__ITERATOR = eINSTANCE.getGTIteratorEdge_Iterator();
+
+		/**
+		 * The meta object literal for the '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTIteratorAttributeAssignmentImpl <em>GT Iterator Attribute Assignment</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTIteratorAttributeAssignmentImpl
+		 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.IBeXGTModelPackageImpl#getGTIteratorAttributeAssignment()
+		 * @generated
+		 */
+		EClass GT_ITERATOR_ATTRIBUTE_ASSIGNMENT = eINSTANCE.getGTIteratorAttributeAssignment();
+
+		/**
+		 * The meta object literal for the '<em><b>Iterator</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference GT_ITERATOR_ATTRIBUTE_ASSIGNMENT__ITERATOR = eINSTANCE.getGTIteratorAttributeAssignment_Iterator();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTIteratorAttributeReferenceImpl <em>GT Iterator Attribute Reference</em>}' class.

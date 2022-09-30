@@ -2,19 +2,23 @@
  */
 package org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl;
 
+import java.util.Collection;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
+import org.eclipse.emf.ecore.util.EObjectContainmentEList;
+import org.eclipse.emf.ecore.util.InternalEList;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeAssignment;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta;
-
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression;
+import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTIteratorEdge;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.IBeXGTModelPackage;
 
 /**
@@ -25,8 +29,9 @@ import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.IBeXGTModelPackage;
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTForEachExpressionImpl#getCreate <em>Create</em>}</li>
- *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTForEachExpressionImpl#getDelete <em>Delete</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTForEachExpressionImpl#getCreated <em>Created</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTForEachExpressionImpl#getDeleted <em>Deleted</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTForEachExpressionImpl#getAttributeAssignments <em>Attribute Assignments</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTForEachExpressionImpl#getSource <em>Source</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTForEachExpressionImpl#getReference <em>Reference</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTForEachExpressionImpl#getIterator <em>Iterator</em>}</li>
@@ -36,24 +41,34 @@ import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.IBeXGTModelPackage;
  */
 public class GTForEachExpressionImpl extends MinimalEObjectImpl.Container implements GTForEachExpression {
 	/**
-	 * The cached value of the '{@link #getCreate() <em>Create</em>}' containment reference.
+	 * The cached value of the '{@link #getCreated() <em>Created</em>}' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getCreate()
+	 * @see #getCreated()
 	 * @generated
 	 * @ordered
 	 */
-	protected IBeXRuleDelta create;
+	protected EList<GTIteratorEdge> created;
 
 	/**
-	 * The cached value of the '{@link #getDelete() <em>Delete</em>}' containment reference.
+	 * The cached value of the '{@link #getDeleted() <em>Deleted</em>}' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getDelete()
+	 * @see #getDeleted()
 	 * @generated
 	 * @ordered
 	 */
-	protected IBeXRuleDelta delete;
+	protected EList<GTIteratorEdge> deleted;
+
+	/**
+	 * The cached value of the '{@link #getAttributeAssignments() <em>Attribute Assignments</em>}' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getAttributeAssignments()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<IBeXAttributeAssignment> attributeAssignments;
 
 	/**
 	 * The cached value of the '{@link #getSource() <em>Source</em>}' reference.
@@ -109,27 +124,12 @@ public class GTForEachExpressionImpl extends MinimalEObjectImpl.Container implem
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public IBeXRuleDelta getCreate() {
-		return create;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public NotificationChain basicSetCreate(IBeXRuleDelta newCreate, NotificationChain msgs) {
-		IBeXRuleDelta oldCreate = create;
-		create = newCreate;
-		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
-					IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__CREATE, oldCreate, newCreate);
-			if (msgs == null)
-				msgs = notification;
-			else
-				msgs.add(notification);
+	public EList<GTIteratorEdge> getCreated() {
+		if (created == null) {
+			created = new EObjectContainmentEList<GTIteratorEdge>(GTIteratorEdge.class, this,
+					IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__CREATED);
 		}
-		return msgs;
+		return created;
 	}
 
 	/**
@@ -137,49 +137,12 @@ public class GTForEachExpressionImpl extends MinimalEObjectImpl.Container implem
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setCreate(IBeXRuleDelta newCreate) {
-		if (newCreate != create) {
-			NotificationChain msgs = null;
-			if (create != null)
-				msgs = ((InternalEObject) create).eInverseRemove(this,
-						EOPPOSITE_FEATURE_BASE - IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__CREATE, null, msgs);
-			if (newCreate != null)
-				msgs = ((InternalEObject) newCreate).eInverseAdd(this,
-						EOPPOSITE_FEATURE_BASE - IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__CREATE, null, msgs);
-			msgs = basicSetCreate(newCreate, msgs);
-			if (msgs != null)
-				msgs.dispatch();
-		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__CREATE,
-					newCreate, newCreate));
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public IBeXRuleDelta getDelete() {
-		return delete;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public NotificationChain basicSetDelete(IBeXRuleDelta newDelete, NotificationChain msgs) {
-		IBeXRuleDelta oldDelete = delete;
-		delete = newDelete;
-		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
-					IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__DELETE, oldDelete, newDelete);
-			if (msgs == null)
-				msgs = notification;
-			else
-				msgs.add(notification);
+	public EList<GTIteratorEdge> getDeleted() {
+		if (deleted == null) {
+			deleted = new EObjectContainmentEList<GTIteratorEdge>(GTIteratorEdge.class, this,
+					IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__DELETED);
 		}
-		return msgs;
+		return deleted;
 	}
 
 	/**
@@ -187,21 +150,12 @@ public class GTForEachExpressionImpl extends MinimalEObjectImpl.Container implem
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setDelete(IBeXRuleDelta newDelete) {
-		if (newDelete != delete) {
-			NotificationChain msgs = null;
-			if (delete != null)
-				msgs = ((InternalEObject) delete).eInverseRemove(this,
-						EOPPOSITE_FEATURE_BASE - IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__DELETE, null, msgs);
-			if (newDelete != null)
-				msgs = ((InternalEObject) newDelete).eInverseAdd(this,
-						EOPPOSITE_FEATURE_BASE - IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__DELETE, null, msgs);
-			msgs = basicSetDelete(newDelete, msgs);
-			if (msgs != null)
-				msgs.dispatch();
-		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__DELETE,
-					newDelete, newDelete));
+	public EList<IBeXAttributeAssignment> getAttributeAssignments() {
+		if (attributeAssignments == null) {
+			attributeAssignments = new EObjectContainmentEList<IBeXAttributeAssignment>(IBeXAttributeAssignment.class,
+					this, IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__ATTRIBUTE_ASSIGNMENTS);
+		}
+		return attributeAssignments;
 	}
 
 	/**
@@ -342,10 +296,12 @@ public class GTForEachExpressionImpl extends MinimalEObjectImpl.Container implem
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__CREATE:
-			return basicSetCreate(null, msgs);
-		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__DELETE:
-			return basicSetDelete(null, msgs);
+		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__CREATED:
+			return ((InternalEList<?>) getCreated()).basicRemove(otherEnd, msgs);
+		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__DELETED:
+			return ((InternalEList<?>) getDeleted()).basicRemove(otherEnd, msgs);
+		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__ATTRIBUTE_ASSIGNMENTS:
+			return ((InternalEList<?>) getAttributeAssignments()).basicRemove(otherEnd, msgs);
 		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__ITERATOR:
 			return basicSetIterator(null, msgs);
 		}
@@ -360,10 +316,12 @@ public class GTForEachExpressionImpl extends MinimalEObjectImpl.Container implem
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__CREATE:
-			return getCreate();
-		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__DELETE:
-			return getDelete();
+		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__CREATED:
+			return getCreated();
+		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__DELETED:
+			return getDeleted();
+		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__ATTRIBUTE_ASSIGNMENTS:
+			return getAttributeAssignments();
 		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__SOURCE:
 			if (resolve)
 				return getSource();
@@ -383,14 +341,21 @@ public class GTForEachExpressionImpl extends MinimalEObjectImpl.Container implem
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__CREATE:
-			setCreate((IBeXRuleDelta) newValue);
+		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__CREATED:
+			getCreated().clear();
+			getCreated().addAll((Collection<? extends GTIteratorEdge>) newValue);
 			return;
-		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__DELETE:
-			setDelete((IBeXRuleDelta) newValue);
+		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__DELETED:
+			getDeleted().clear();
+			getDeleted().addAll((Collection<? extends GTIteratorEdge>) newValue);
+			return;
+		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__ATTRIBUTE_ASSIGNMENTS:
+			getAttributeAssignments().clear();
+			getAttributeAssignments().addAll((Collection<? extends IBeXAttributeAssignment>) newValue);
 			return;
 		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__SOURCE:
 			setSource((IBeXNode) newValue);
@@ -413,11 +378,14 @@ public class GTForEachExpressionImpl extends MinimalEObjectImpl.Container implem
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__CREATE:
-			setCreate((IBeXRuleDelta) null);
+		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__CREATED:
+			getCreated().clear();
 			return;
-		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__DELETE:
-			setDelete((IBeXRuleDelta) null);
+		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__DELETED:
+			getDeleted().clear();
+			return;
+		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__ATTRIBUTE_ASSIGNMENTS:
+			getAttributeAssignments().clear();
 			return;
 		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__SOURCE:
 			setSource((IBeXNode) null);
@@ -440,10 +408,12 @@ public class GTForEachExpressionImpl extends MinimalEObjectImpl.Container implem
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__CREATE:
-			return create != null;
-		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__DELETE:
-			return delete != null;
+		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__CREATED:
+			return created != null && !created.isEmpty();
+		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__DELETED:
+			return deleted != null && !deleted.isEmpty();
+		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__ATTRIBUTE_ASSIGNMENTS:
+			return attributeAssignments != null && !attributeAssignments.isEmpty();
 		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__SOURCE:
 			return source != null;
 		case IBeXGTModelPackage.GT_FOR_EACH_EXPRESSION__REFERENCE:

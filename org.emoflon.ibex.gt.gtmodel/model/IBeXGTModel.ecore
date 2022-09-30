@@ -23,9 +23,12 @@
         containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="GTForEachExpression">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="create" eType="ecore:EClass ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXRuleDelta"
-        containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="delete" eType="ecore:EClass ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXRuleDelta"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="created" upperBound="-1"
+        eType="#//GTIteratorEdge" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="deleted" upperBound="-1"
+        eType="#//GTIteratorEdge" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="attributeAssignments" upperBound="-1"
+        eType="ecore:EClass ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXAttributeAssignment"
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="source" lowerBound="1"
         eType="ecore:EClass ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXNode"/>
@@ -41,6 +44,14 @@
   <eClassifiers xsi:type="ecore:EClass" name="GTParameterValue" eSuperTypes="../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXCoreArithmetic/ArithmeticValue">
     <eStructuralFeatures xsi:type="ecore:EReference" name="parameter" lowerBound="1"
         eType="#//GTParameter"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="GTIteratorEdge" eSuperTypes="../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXEdge">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="iterator" lowerBound="1"
+        eType="#//GTForEachExpression"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="GTIteratorAttributeAssignment" eSuperTypes="../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXAttributeAssignment">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="iterator" lowerBound="1"
+        eType="#//GTForEachExpression"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="GTIteratorAttributeReference" eSuperTypes="../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXCoreArithmetic/ValueExpression">
     <eStructuralFeatures xsi:type="ecore:EReference" name="iterator" lowerBound="1"
