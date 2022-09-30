@@ -113,15 +113,6 @@ public interface IBeXCoreModelFactory extends EFactory {
 	IBeXPattern createIBeXPattern();
 
 	/**
-	 * Returns a new object of class '<em>IBe XInjectivity Constraint</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>IBe XInjectivity Constraint</em>'.
-	 * @generated
-	 */
-	IBeXInjectivityConstraint createIBeXInjectivityConstraint();
-
-	/**
 	 * Returns a new object of class '<em>IBe XPattern Invocation</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -156,6 +147,15 @@ public interface IBeXCoreModelFactory extends EFactory {
 	 * @generated
 	 */
 	IBeXBooleanValue createIBeXBooleanValue();
+
+	/**
+	 * Returns a new object of class '<em>IBe XNull Value</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>IBe XNull Value</em>'.
+	 * @generated
+	 */
+	IBeXNullValue createIBeXNullValue();
 
 	/**
 	 * Returns a new object of class '<em>IBe XAttribute Value</em>'.

@@ -15,7 +15,6 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern;
  * The following features are supported:
  * </p>
  * <ul>
- *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern#getParameters <em>Parameters</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern#getWatchDogs <em>Watch Dogs</em>}</li>
  * </ul>
  *
@@ -24,18 +23,6 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern;
  * @generated
  */
 public interface GTPattern extends IBeXPattern {
-	/**
-	 * Returns the value of the '<em><b>Parameters</b></em>' containment reference list.
-	 * The list contents are of type {@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTParameter}.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Parameters</em>' containment reference list.
-	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.IBeXGTModelPackage#getGTPattern_Parameters()
-	 * @model containment="true"
-	 * @generated
-	 */
-	EList<GTParameter> getParameters();
-
 	/**
 	 * Returns the value of the '<em><b>Watch Dogs</b></em>' containment reference list.
 	 * The list contents are of type {@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTWatchDog}.

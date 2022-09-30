@@ -17,6 +17,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRule;
  * The following features are supported:
  * </p>
  * <ul>
+ *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRule#getParameters <em>Parameters</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRule#getForEachOperations <em>For Each Operations</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRule#getProbability <em>Probability</em>}</li>
  * </ul>
@@ -26,6 +27,18 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRule;
  * @generated
  */
 public interface GTRule extends IBeXRule {
+	/**
+	 * Returns the value of the '<em><b>Parameters</b></em>' containment reference list.
+	 * The list contents are of type {@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTParameter}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Parameters</em>' containment reference list.
+	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.IBeXGTModelPackage#getGTRule_Parameters()
+	 * @model containment="true"
+	 * @generated
+	 */
+	EList<GTParameter> getParameters();
+
 	/**
 	 * Returns the value of the '<em><b>For Each Operations</b></em>' containment reference list.
 	 * The list contents are of type {@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression}.

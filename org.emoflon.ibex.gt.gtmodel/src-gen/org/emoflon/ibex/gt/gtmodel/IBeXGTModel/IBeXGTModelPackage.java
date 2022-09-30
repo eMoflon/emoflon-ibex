@@ -270,22 +270,13 @@ public interface IBeXGTModelPackage extends EPackage {
 	int GT_PATTERN__INVOCATIONS = IBeXCoreModelPackage.IBE_XPATTERN__INVOCATIONS;
 
 	/**
-	 * The feature id for the '<em><b>Parameters</b></em>' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int GT_PATTERN__PARAMETERS = IBeXCoreModelPackage.IBE_XPATTERN_FEATURE_COUNT + 0;
-
-	/**
 	 * The feature id for the '<em><b>Watch Dogs</b></em>' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int GT_PATTERN__WATCH_DOGS = IBeXCoreModelPackage.IBE_XPATTERN_FEATURE_COUNT + 1;
+	int GT_PATTERN__WATCH_DOGS = IBeXCoreModelPackage.IBE_XPATTERN_FEATURE_COUNT + 0;
 
 	/**
 	 * The number of structural features of the '<em>GT Pattern</em>' class.
@@ -294,7 +285,7 @@ public interface IBeXGTModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int GT_PATTERN_FEATURE_COUNT = IBeXCoreModelPackage.IBE_XPATTERN_FEATURE_COUNT + 2;
+	int GT_PATTERN_FEATURE_COUNT = IBeXCoreModelPackage.IBE_XPATTERN_FEATURE_COUNT + 1;
 
 	/**
 	 * The number of operations of the '<em>GT Pattern</em>' class.
@@ -388,13 +379,22 @@ public interface IBeXGTModelPackage extends EPackage {
 	int GT_RULE__ALL_EDGES = IBeXCoreModelPackage.IBE_XRULE__ALL_EDGES;
 
 	/**
+	 * The feature id for the '<em><b>Parameters</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_RULE__PARAMETERS = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 0;
+
+	/**
 	 * The feature id for the '<em><b>For Each Operations</b></em>' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int GT_RULE__FOR_EACH_OPERATIONS = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 0;
+	int GT_RULE__FOR_EACH_OPERATIONS = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 1;
 
 	/**
 	 * The feature id for the '<em><b>Probability</b></em>' containment reference.
@@ -403,7 +403,7 @@ public interface IBeXGTModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int GT_RULE__PROBABILITY = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 1;
+	int GT_RULE__PROBABILITY = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 2;
 
 	/**
 	 * The number of structural features of the '<em>GT Rule</em>' class.
@@ -412,7 +412,7 @@ public interface IBeXGTModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int GT_RULE_FEATURE_COUNT = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 2;
+	int GT_RULE_FEATURE_COUNT = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 3;
 
 	/**
 	 * The number of operations of the '<em>GT Rule</em>' class.
@@ -743,17 +743,6 @@ public interface IBeXGTModelPackage extends EPackage {
 	EClass getGTPattern();
 
 	/**
-	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern#getParameters <em>Parameters</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference list '<em>Parameters</em>'.
-	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern#getParameters()
-	 * @see #getGTPattern()
-	 * @generated
-	 */
-	EReference getGTPattern_Parameters();
-
-	/**
 	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern#getWatchDogs <em>Watch Dogs</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -773,6 +762,17 @@ public interface IBeXGTModelPackage extends EPackage {
 	 * @generated
 	 */
 	EClass getGTRule();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRule#getParameters <em>Parameters</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Parameters</em>'.
+	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRule#getParameters()
+	 * @see #getGTRule()
+	 * @generated
+	 */
+	EReference getGTRule_Parameters();
 
 	/**
 	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRule#getForEachOperations <em>For Each Operations</em>}'.
@@ -1037,14 +1037,6 @@ public interface IBeXGTModelPackage extends EPackage {
 		EClass GT_PATTERN = eINSTANCE.getGTPattern();
 
 		/**
-		 * The meta object literal for the '<em><b>Parameters</b></em>' containment reference list feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference GT_PATTERN__PARAMETERS = eINSTANCE.getGTPattern_Parameters();
-
-		/**
 		 * The meta object literal for the '<em><b>Watch Dogs</b></em>' containment reference list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -1061,6 +1053,14 @@ public interface IBeXGTModelPackage extends EPackage {
 		 * @generated
 		 */
 		EClass GT_RULE = eINSTANCE.getGTRule();
+
+		/**
+		 * The meta object literal for the '<em><b>Parameters</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference GT_RULE__PARAMETERS = eINSTANCE.getGTRule_Parameters();
 
 		/**
 		 * The meta object literal for the '<em><b>For Each Operations</b></em>' containment reference list feature.

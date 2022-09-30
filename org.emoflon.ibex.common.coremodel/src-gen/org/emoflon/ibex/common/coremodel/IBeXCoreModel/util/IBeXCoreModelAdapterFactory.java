@@ -140,11 +140,6 @@ public class IBeXCoreModelAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
-		public Adapter caseIBeXInjectivityConstraint(IBeXInjectivityConstraint object) {
-			return createIBeXInjectivityConstraintAdapter();
-		}
-
-		@Override
 		public Adapter caseIBeXPatternInvocation(IBeXPatternInvocation object) {
 			return createIBeXPatternInvocationAdapter();
 		}
@@ -167,6 +162,11 @@ public class IBeXCoreModelAdapterFactory extends AdapterFactoryImpl {
 		@Override
 		public Adapter caseIBeXBooleanValue(IBeXBooleanValue object) {
 			return createIBeXBooleanValueAdapter();
+		}
+
+		@Override
+		public Adapter caseIBeXNullValue(IBeXNullValue object) {
+			return createIBeXNullValueAdapter();
 		}
 
 		@Override
@@ -426,20 +426,6 @@ public class IBeXCoreModelAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXInjectivityConstraint <em>IBe XInjectivity Constraint</em>}'.
-	 * <!-- begin-user-doc -->
-	 * This default implementation returns null so that we can easily ignore cases;
-	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
-	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXInjectivityConstraint
-	 * @generated
-	 */
-	public Adapter createIBeXInjectivityConstraintAdapter() {
-		return null;
-	}
-
-	/**
 	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternInvocation <em>IBe XPattern Invocation</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
@@ -506,6 +492,20 @@ public class IBeXCoreModelAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createIBeXBooleanValueAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNullValue <em>IBe XNull Value</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNullValue
+	 * @generated
+	 */
+	public Adapter createIBeXNullValueAdapter() {
 		return null;
 	}
 

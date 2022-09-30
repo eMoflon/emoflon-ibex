@@ -22,6 +22,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.Arithm
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXRuleImpl;
 
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression;
+import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTParameter;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRule;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.IBeXGTModelPackage;
 
@@ -33,6 +34,7 @@ import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.IBeXGTModelPackage;
  * The following features are implemented:
  * </p>
  * <ul>
+ *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTRuleImpl#getParameters <em>Parameters</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTRuleImpl#getForEachOperations <em>For Each Operations</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTRuleImpl#getProbability <em>Probability</em>}</li>
  * </ul>
@@ -40,6 +42,16 @@ import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.IBeXGTModelPackage;
  * @generated
  */
 public class GTRuleImpl extends IBeXRuleImpl implements GTRule {
+	/**
+	 * The cached value of the '{@link #getParameters() <em>Parameters</em>}' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getParameters()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<GTParameter> parameters;
+
 	/**
 	 * The cached value of the '{@link #getForEachOperations() <em>For Each Operations</em>}' containment reference list.
 	 * <!-- begin-user-doc -->
@@ -77,6 +89,19 @@ public class GTRuleImpl extends IBeXRuleImpl implements GTRule {
 	@Override
 	protected EClass eStaticClass() {
 		return IBeXGTModelPackage.Literals.GT_RULE;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EList<GTParameter> getParameters() {
+		if (parameters == null) {
+			parameters = new EObjectContainmentEList<GTParameter>(GTParameter.class, this,
+					IBeXGTModelPackage.GT_RULE__PARAMETERS);
+		}
+		return parameters;
 	}
 
 	/**
@@ -150,6 +175,8 @@ public class GTRuleImpl extends IBeXRuleImpl implements GTRule {
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
+		case IBeXGTModelPackage.GT_RULE__PARAMETERS:
+			return ((InternalEList<?>) getParameters()).basicRemove(otherEnd, msgs);
 		case IBeXGTModelPackage.GT_RULE__FOR_EACH_OPERATIONS:
 			return ((InternalEList<?>) getForEachOperations()).basicRemove(otherEnd, msgs);
 		case IBeXGTModelPackage.GT_RULE__PROBABILITY:
@@ -166,6 +193,8 @@ public class GTRuleImpl extends IBeXRuleImpl implements GTRule {
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
+		case IBeXGTModelPackage.GT_RULE__PARAMETERS:
+			return getParameters();
 		case IBeXGTModelPackage.GT_RULE__FOR_EACH_OPERATIONS:
 			return getForEachOperations();
 		case IBeXGTModelPackage.GT_RULE__PROBABILITY:
@@ -183,6 +212,10 @@ public class GTRuleImpl extends IBeXRuleImpl implements GTRule {
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
+		case IBeXGTModelPackage.GT_RULE__PARAMETERS:
+			getParameters().clear();
+			getParameters().addAll((Collection<? extends GTParameter>) newValue);
+			return;
 		case IBeXGTModelPackage.GT_RULE__FOR_EACH_OPERATIONS:
 			getForEachOperations().clear();
 			getForEachOperations().addAll((Collection<? extends GTForEachExpression>) newValue);
@@ -202,6 +235,9 @@ public class GTRuleImpl extends IBeXRuleImpl implements GTRule {
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
+		case IBeXGTModelPackage.GT_RULE__PARAMETERS:
+			getParameters().clear();
+			return;
 		case IBeXGTModelPackage.GT_RULE__FOR_EACH_OPERATIONS:
 			getForEachOperations().clear();
 			return;
@@ -220,6 +256,8 @@ public class GTRuleImpl extends IBeXRuleImpl implements GTRule {
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
+		case IBeXGTModelPackage.GT_RULE__PARAMETERS:
+			return parameters != null && !parameters.isEmpty();
 		case IBeXGTModelPackage.GT_RULE__FOR_EACH_OPERATIONS:
 			return forEachOperations != null && !forEachOperations.isEmpty();
 		case IBeXGTModelPackage.GT_RULE__PROBABILITY:

@@ -27,7 +27,6 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdgeSet;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEnumValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXFeatureConfig;
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXInjectivityConstraint;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXMatchCountValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModelMetadata;
@@ -35,6 +34,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNamedElement;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNodeSet;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNodeValue;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNullValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXOperationType;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternInvocation;
@@ -146,13 +146,6 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private EClass iBeXInjectivityConstraintEClass = null;
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	private EClass iBeXPatternInvocationEClass = null;
 
 	/**
@@ -182,6 +175,13 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 	 * @generated
 	 */
 	private EClass iBeXBooleanValueEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass iBeXNullValueEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -912,24 +912,6 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClass getIBeXInjectivityConstraint() {
-		return iBeXInjectivityConstraintEClass;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EReference getIBeXInjectivityConstraint_Nodes() {
-		return (EReference) iBeXInjectivityConstraintEClass.getEStructuralFeatures().get(0);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	public EClass getIBeXPatternInvocation() {
 		return iBeXPatternInvocationEClass;
 	}
@@ -1049,6 +1031,15 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 	 */
 	public EAttribute getIBeXBooleanValue_Value() {
 		return (EAttribute) iBeXBooleanValueEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getIBeXNullValue() {
+		return iBeXNullValueEClass;
 	}
 
 	/**
@@ -1367,9 +1358,6 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 		createEReference(iBeXPatternEClass, IBE_XPATTERN__CONDITIONS);
 		createEReference(iBeXPatternEClass, IBE_XPATTERN__INVOCATIONS);
 
-		iBeXInjectivityConstraintEClass = createEClass(IBE_XINJECTIVITY_CONSTRAINT);
-		createEReference(iBeXInjectivityConstraintEClass, IBE_XINJECTIVITY_CONSTRAINT__NODES);
-
 		iBeXPatternInvocationEClass = createEClass(IBE_XPATTERN_INVOCATION);
 		createEAttribute(iBeXPatternInvocationEClass, IBE_XPATTERN_INVOCATION__POSITIVE);
 		createEReference(iBeXPatternInvocationEClass, IBE_XPATTERN_INVOCATION__INVOKED_BY);
@@ -1388,6 +1376,8 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 
 		iBeXBooleanValueEClass = createEClass(IBE_XBOOLEAN_VALUE);
 		createEAttribute(iBeXBooleanValueEClass, IBE_XBOOLEAN_VALUE__VALUE);
+
+		iBeXNullValueEClass = createEClass(IBE_XNULL_VALUE);
 
 		iBeXAttributeValueEClass = createEClass(IBE_XATTRIBUTE_VALUE);
 		createEReference(iBeXAttributeValueEClass, IBE_XATTRIBUTE_VALUE__NODE);
@@ -1465,6 +1455,8 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 		iBeXStringValueEClass.getESuperTypes().add(theIBeXCoreArithmeticPackage.getValueExpression());
 		iBeXBooleanValueEClass.getESuperTypes().add(theIBeXCoreArithmeticPackage.getValueExpression());
 		iBeXBooleanValueEClass.getESuperTypes().add(theIBeXCoreArithmeticPackage.getBooleanValue());
+		iBeXNullValueEClass.getESuperTypes().add(theIBeXCoreArithmeticPackage.getValueExpression());
+		iBeXNullValueEClass.getESuperTypes().add(theIBeXCoreArithmeticPackage.getBooleanExpression());
 		iBeXAttributeValueEClass.getESuperTypes().add(theIBeXCoreArithmeticPackage.getArithmeticValue());
 		iBeXAttributeValueEClass.getESuperTypes().add(theIBeXCoreArithmeticPackage.getBooleanValue());
 		iBeXNodeValueEClass.getESuperTypes().add(theIBeXCoreArithmeticPackage.getArithmeticValue());
@@ -1670,12 +1662,6 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 				IBeXPattern.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(iBeXInjectivityConstraintEClass, IBeXInjectivityConstraint.class, "IBeXInjectivityConstraint",
-				!IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getIBeXInjectivityConstraint_Nodes(), this.getIBeXNode(), null, "nodes", null, 2, 2,
-				IBeXInjectivityConstraint.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
-				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-
 		initEClass(iBeXPatternInvocationEClass, IBeXPatternInvocation.class, "IBeXPatternInvocation", !IS_ABSTRACT,
 				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getIBeXPatternInvocation_Positive(), ecorePackage.getEBoolean(), "positive", null, 0, 1,
@@ -1717,6 +1703,9 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 		initEAttribute(getIBeXBooleanValue_Value(), ecorePackage.getEBoolean(), "value", null, 0, 1,
 				IBeXBooleanValue.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
 				!IS_DERIVED, IS_ORDERED);
+
+		initEClass(iBeXNullValueEClass, IBeXNullValue.class, "IBeXNullValue", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
 
 		initEClass(iBeXAttributeValueEClass, IBeXAttributeValue.class, "IBeXAttributeValue", !IS_ABSTRACT,
 				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);

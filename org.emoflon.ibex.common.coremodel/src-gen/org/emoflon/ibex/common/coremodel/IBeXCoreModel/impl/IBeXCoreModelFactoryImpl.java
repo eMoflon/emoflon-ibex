@@ -83,8 +83,6 @@ public class IBeXCoreModelFactoryImpl extends EFactoryImpl implements IBeXCoreMo
 			return createIBeXEdge();
 		case IBeXCoreModelPackage.IBE_XPATTERN:
 			return createIBeXPattern();
-		case IBeXCoreModelPackage.IBE_XINJECTIVITY_CONSTRAINT:
-			return createIBeXInjectivityConstraint();
 		case IBeXCoreModelPackage.IBE_XPATTERN_INVOCATION:
 			return createIBeXPatternInvocation();
 		case IBeXCoreModelPackage.IBE_XNODE_MAPPING:
@@ -95,6 +93,8 @@ public class IBeXCoreModelFactoryImpl extends EFactoryImpl implements IBeXCoreMo
 			return createIBeXStringValue();
 		case IBeXCoreModelPackage.IBE_XBOOLEAN_VALUE:
 			return createIBeXBooleanValue();
+		case IBeXCoreModelPackage.IBE_XNULL_VALUE:
+			return createIBeXNullValue();
 		case IBeXCoreModelPackage.IBE_XATTRIBUTE_VALUE:
 			return createIBeXAttributeValue();
 		case IBeXCoreModelPackage.IBE_XNODE_VALUE:
@@ -267,16 +267,6 @@ public class IBeXCoreModelFactoryImpl extends EFactoryImpl implements IBeXCoreMo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public IBeXInjectivityConstraint createIBeXInjectivityConstraint() {
-		IBeXInjectivityConstraintImpl iBeXInjectivityConstraint = new IBeXInjectivityConstraintImpl();
-		return iBeXInjectivityConstraint;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	public IBeXPatternInvocation createIBeXPatternInvocation() {
 		IBeXPatternInvocationImpl iBeXPatternInvocation = new IBeXPatternInvocationImpl();
 		return iBeXPatternInvocation;
@@ -320,6 +310,16 @@ public class IBeXCoreModelFactoryImpl extends EFactoryImpl implements IBeXCoreMo
 	public IBeXBooleanValue createIBeXBooleanValue() {
 		IBeXBooleanValueImpl iBeXBooleanValue = new IBeXBooleanValueImpl();
 		return iBeXBooleanValue;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public IBeXNullValue createIBeXNullValue() {
+		IBeXNullValueImpl iBeXNullValue = new IBeXNullValueImpl();
+		return iBeXNullValue;
 	}
 
 	/**

@@ -175,13 +175,6 @@ public class IBeXCoreModelSwitch<T> extends Switch<T> {
 				result = defaultCase(theEObject);
 			return result;
 		}
-		case IBeXCoreModelPackage.IBE_XINJECTIVITY_CONSTRAINT: {
-			IBeXInjectivityConstraint iBeXInjectivityConstraint = (IBeXInjectivityConstraint) theEObject;
-			T result = caseIBeXInjectivityConstraint(iBeXInjectivityConstraint);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
 		case IBeXCoreModelPackage.IBE_XPATTERN_INVOCATION: {
 			IBeXPatternInvocation iBeXPatternInvocation = (IBeXPatternInvocation) theEObject;
 			T result = caseIBeXPatternInvocation(iBeXPatternInvocation);
@@ -224,6 +217,17 @@ public class IBeXCoreModelSwitch<T> extends Switch<T> {
 				result = caseBooleanValue(iBeXBooleanValue);
 			if (result == null)
 				result = caseBooleanExpression(iBeXBooleanValue);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case IBeXCoreModelPackage.IBE_XNULL_VALUE: {
+			IBeXNullValue iBeXNullValue = (IBeXNullValue) theEObject;
+			T result = caseIBeXNullValue(iBeXNullValue);
+			if (result == null)
+				result = caseValueExpression(iBeXNullValue);
+			if (result == null)
+				result = caseBooleanExpression(iBeXNullValue);
 			if (result == null)
 				result = defaultCase(theEObject);
 			return result;
@@ -495,21 +499,6 @@ public class IBeXCoreModelSwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '<em>IBe XInjectivity Constraint</em>'.
-	 * <!-- begin-user-doc -->
-	 * This implementation returns null;
-	 * returning a non-null result will terminate the switch.
-	 * <!-- end-user-doc -->
-	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>IBe XInjectivity Constraint</em>'.
-	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-	 * @generated
-	 */
-	public T caseIBeXInjectivityConstraint(IBeXInjectivityConstraint object) {
-		return null;
-	}
-
-	/**
 	 * Returns the result of interpreting the object as an instance of '<em>IBe XPattern Invocation</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
@@ -581,6 +570,21 @@ public class IBeXCoreModelSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseIBeXBooleanValue(IBeXBooleanValue object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>IBe XNull Value</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>IBe XNull Value</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseIBeXNullValue(IBeXNullValue object) {
 		return null;
 	}
 

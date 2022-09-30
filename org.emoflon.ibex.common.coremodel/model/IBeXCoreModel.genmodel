@@ -95,9 +95,6 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXPattern/conditions"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXPattern/invocations"/>
     </genClasses>
-    <genClasses ecoreClass="IBeXCoreModel.ecore#//IBeXInjectivityConstraint">
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXInjectivityConstraint/nodes"/>
-    </genClasses>
     <genClasses ecoreClass="IBeXCoreModel.ecore#//IBeXPatternInvocation">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//IBeXPatternInvocation/positive"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXPatternInvocation/invokedBy"/>
@@ -117,6 +114,7 @@
     <genClasses ecoreClass="IBeXCoreModel.ecore#//IBeXBooleanValue">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//IBeXBooleanValue/value"/>
     </genClasses>
+    <genClasses ecoreClass="IBeXCoreModel.ecore#//IBeXNullValue"/>
     <genClasses ecoreClass="IBeXCoreModel.ecore#//IBeXAttributeValue">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXAttributeValue/node"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXAttributeValue/attribute"/>

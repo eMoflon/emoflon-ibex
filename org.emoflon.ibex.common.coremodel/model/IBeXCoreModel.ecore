@@ -110,10 +110,6 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="invocations" upperBound="-1"
         eType="#//IBeXPatternInvocation" containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="IBeXInjectivityConstraint">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="nodes" lowerBound="2" upperBound="2"
-        eType="#//IBeXNode"/>
-  </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBeXPatternInvocation">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="positive" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="invokedBy" lowerBound="1"
@@ -136,6 +132,7 @@
   <eClassifiers xsi:type="ecore:EClass" name="IBeXBooleanValue" eSuperTypes="#//IBeXCoreArithmetic/ValueExpression #//IBeXCoreArithmetic/BooleanValue">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXNullValue" eSuperTypes="#//IBeXCoreArithmetic/ValueExpression #//IBeXCoreArithmetic/BooleanExpression"/>
   <eClassifiers xsi:type="ecore:EClass" name="IBeXAttributeValue" eSuperTypes="#//IBeXCoreArithmetic/ArithmeticValue #//IBeXCoreArithmetic/BooleanValue">
     <eStructuralFeatures xsi:type="ecore:EReference" name="node" lowerBound="1" eType="#//IBeXNode"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="attribute" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EAttribute"/>

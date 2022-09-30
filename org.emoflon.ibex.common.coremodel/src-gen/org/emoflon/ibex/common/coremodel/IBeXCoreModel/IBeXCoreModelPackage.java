@@ -947,43 +947,6 @@ public interface IBeXCoreModelPackage extends EPackage {
 	int IBE_XPATTERN_OPERATION_COUNT = IBE_XNAMED_ELEMENT_OPERATION_COUNT + 0;
 
 	/**
-	 * The meta object id for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXInjectivityConstraintImpl <em>IBe XInjectivity Constraint</em>}' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXInjectivityConstraintImpl
-	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXInjectivityConstraint()
-	 * @generated
-	 */
-	int IBE_XINJECTIVITY_CONSTRAINT = 13;
-
-	/**
-	 * The feature id for the '<em><b>Nodes</b></em>' reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int IBE_XINJECTIVITY_CONSTRAINT__NODES = 0;
-
-	/**
-	 * The number of structural features of the '<em>IBe XInjectivity Constraint</em>' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int IBE_XINJECTIVITY_CONSTRAINT_FEATURE_COUNT = 1;
-
-	/**
-	 * The number of operations of the '<em>IBe XInjectivity Constraint</em>' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int IBE_XINJECTIVITY_CONSTRAINT_OPERATION_COUNT = 0;
-
-	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXPatternInvocationImpl <em>IBe XPattern Invocation</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -991,7 +954,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXPatternInvocation()
 	 * @generated
 	 */
-	int IBE_XPATTERN_INVOCATION = 14;
+	int IBE_XPATTERN_INVOCATION = 13;
 
 	/**
 	 * The feature id for the '<em><b>Positive</b></em>' attribute.
@@ -1055,7 +1018,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXNodeMapping()
 	 * @generated
 	 */
-	int IBE_XNODE_MAPPING = 15;
+	int IBE_XNODE_MAPPING = 14;
 
 	/**
 	 * The feature id for the '<em><b>Key</b></em>' reference.
@@ -1101,7 +1064,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXEnumValue()
 	 * @generated
 	 */
-	int IBE_XENUM_VALUE = 16;
+	int IBE_XENUM_VALUE = 15;
 
 	/**
 	 * The feature id for the '<em><b>Type</b></em>' reference.
@@ -1147,7 +1110,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXStringValue()
 	 * @generated
 	 */
-	int IBE_XSTRING_VALUE = 17;
+	int IBE_XSTRING_VALUE = 16;
 
 	/**
 	 * The feature id for the '<em><b>Type</b></em>' reference.
@@ -1193,7 +1156,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXBooleanValue()
 	 * @generated
 	 */
-	int IBE_XBOOLEAN_VALUE = 18;
+	int IBE_XBOOLEAN_VALUE = 17;
 
 	/**
 	 * The feature id for the '<em><b>Type</b></em>' reference.
@@ -1230,6 +1193,43 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int IBE_XBOOLEAN_VALUE_OPERATION_COUNT = IBeXCoreArithmeticPackage.VALUE_EXPRESSION_OPERATION_COUNT + 0;
+
+	/**
+	 * The meta object id for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXNullValueImpl <em>IBe XNull Value</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXNullValueImpl
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXNullValue()
+	 * @generated
+	 */
+	int IBE_XNULL_VALUE = 18;
+
+	/**
+	 * The feature id for the '<em><b>Type</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XNULL_VALUE__TYPE = IBeXCoreArithmeticPackage.VALUE_EXPRESSION__TYPE;
+
+	/**
+	 * The number of structural features of the '<em>IBe XNull Value</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XNULL_VALUE_FEATURE_COUNT = IBeXCoreArithmeticPackage.VALUE_EXPRESSION_FEATURE_COUNT + 0;
+
+	/**
+	 * The number of operations of the '<em>IBe XNull Value</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XNULL_VALUE_OPERATION_COUNT = IBeXCoreArithmeticPackage.VALUE_EXPRESSION_OPERATION_COUNT + 0;
 
 	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXAttributeValueImpl <em>IBe XAttribute Value</em>}' class.
@@ -2318,27 +2318,6 @@ public interface IBeXCoreModelPackage extends EPackage {
 	EReference getIBeXPattern_Invocations();
 
 	/**
-	 * Returns the meta object for class '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXInjectivityConstraint <em>IBe XInjectivity Constraint</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for class '<em>IBe XInjectivity Constraint</em>'.
-	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXInjectivityConstraint
-	 * @generated
-	 */
-	EClass getIBeXInjectivityConstraint();
-
-	/**
-	 * Returns the meta object for the reference list '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXInjectivityConstraint#getNodes <em>Nodes</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the reference list '<em>Nodes</em>'.
-	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXInjectivityConstraint#getNodes()
-	 * @see #getIBeXInjectivityConstraint()
-	 * @generated
-	 */
-	EReference getIBeXInjectivityConstraint_Nodes();
-
-	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternInvocation <em>IBe XPattern Invocation</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -2488,6 +2467,16 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getIBeXBooleanValue_Value();
+
+	/**
+	 * Returns the meta object for class '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNullValue <em>IBe XNull Value</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>IBe XNull Value</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNullValue
+	 * @generated
+	 */
+	EClass getIBeXNullValue();
 
 	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeValue <em>IBe XAttribute Value</em>}'.
@@ -3323,24 +3312,6 @@ public interface IBeXCoreModelPackage extends EPackage {
 		EReference IBE_XPATTERN__INVOCATIONS = eINSTANCE.getIBeXPattern_Invocations();
 
 		/**
-		 * The meta object literal for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXInjectivityConstraintImpl <em>IBe XInjectivity Constraint</em>}' class.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXInjectivityConstraintImpl
-		 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXInjectivityConstraint()
-		 * @generated
-		 */
-		EClass IBE_XINJECTIVITY_CONSTRAINT = eINSTANCE.getIBeXInjectivityConstraint();
-
-		/**
-		 * The meta object literal for the '<em><b>Nodes</b></em>' reference list feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference IBE_XINJECTIVITY_CONSTRAINT__NODES = eINSTANCE.getIBeXInjectivityConstraint_Nodes();
-
-		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXPatternInvocationImpl <em>IBe XPattern Invocation</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -3461,6 +3432,16 @@ public interface IBeXCoreModelPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute IBE_XBOOLEAN_VALUE__VALUE = eINSTANCE.getIBeXBooleanValue_Value();
+
+		/**
+		 * The meta object literal for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXNullValueImpl <em>IBe XNull Value</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXNullValueImpl
+		 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXCoreModelPackageImpl#getIBeXNullValue()
+		 * @generated
+		 */
+		EClass IBE_XNULL_VALUE = eINSTANCE.getIBeXNullValue();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXAttributeValueImpl <em>IBe XAttribute Value</em>}' class.

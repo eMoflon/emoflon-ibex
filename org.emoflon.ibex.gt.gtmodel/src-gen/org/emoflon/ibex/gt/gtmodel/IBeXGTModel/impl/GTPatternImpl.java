@@ -15,8 +15,6 @@ import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXPatternImpl;
-
-import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTParameter;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTWatchDog;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.IBeXGTModelPackage;
@@ -29,23 +27,12 @@ import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.IBeXGTModelPackage;
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTPatternImpl#getParameters <em>Parameters</em>}</li>
  *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTPatternImpl#getWatchDogs <em>Watch Dogs</em>}</li>
  * </ul>
  *
  * @generated
  */
 public class GTPatternImpl extends IBeXPatternImpl implements GTPattern {
-	/**
-	 * The cached value of the '{@link #getParameters() <em>Parameters</em>}' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getParameters()
-	 * @generated
-	 * @ordered
-	 */
-	protected EList<GTParameter> parameters;
-
 	/**
 	 * The cached value of the '{@link #getWatchDogs() <em>Watch Dogs</em>}' containment reference list.
 	 * <!-- begin-user-doc -->
@@ -80,19 +67,6 @@ public class GTPatternImpl extends IBeXPatternImpl implements GTPattern {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EList<GTParameter> getParameters() {
-		if (parameters == null) {
-			parameters = new EObjectContainmentEList<GTParameter>(GTParameter.class, this,
-					IBeXGTModelPackage.GT_PATTERN__PARAMETERS);
-		}
-		return parameters;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	public EList<GTWatchDog> getWatchDogs() {
 		if (watchDogs == null) {
 			watchDogs = new EObjectContainmentEList<GTWatchDog>(GTWatchDog.class, this,
@@ -109,8 +83,6 @@ public class GTPatternImpl extends IBeXPatternImpl implements GTPattern {
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-		case IBeXGTModelPackage.GT_PATTERN__PARAMETERS:
-			return ((InternalEList<?>) getParameters()).basicRemove(otherEnd, msgs);
 		case IBeXGTModelPackage.GT_PATTERN__WATCH_DOGS:
 			return ((InternalEList<?>) getWatchDogs()).basicRemove(otherEnd, msgs);
 		}
@@ -125,8 +97,6 @@ public class GTPatternImpl extends IBeXPatternImpl implements GTPattern {
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case IBeXGTModelPackage.GT_PATTERN__PARAMETERS:
-			return getParameters();
 		case IBeXGTModelPackage.GT_PATTERN__WATCH_DOGS:
 			return getWatchDogs();
 		}
@@ -142,10 +112,6 @@ public class GTPatternImpl extends IBeXPatternImpl implements GTPattern {
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case IBeXGTModelPackage.GT_PATTERN__PARAMETERS:
-			getParameters().clear();
-			getParameters().addAll((Collection<? extends GTParameter>) newValue);
-			return;
 		case IBeXGTModelPackage.GT_PATTERN__WATCH_DOGS:
 			getWatchDogs().clear();
 			getWatchDogs().addAll((Collection<? extends GTWatchDog>) newValue);
@@ -162,9 +128,6 @@ public class GTPatternImpl extends IBeXPatternImpl implements GTPattern {
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case IBeXGTModelPackage.GT_PATTERN__PARAMETERS:
-			getParameters().clear();
-			return;
 		case IBeXGTModelPackage.GT_PATTERN__WATCH_DOGS:
 			getWatchDogs().clear();
 			return;
@@ -180,8 +143,6 @@ public class GTPatternImpl extends IBeXPatternImpl implements GTPattern {
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case IBeXGTModelPackage.GT_PATTERN__PARAMETERS:
-			return parameters != null && !parameters.isEmpty();
 		case IBeXGTModelPackage.GT_PATTERN__WATCH_DOGS:
 			return watchDogs != null && !watchDogs.isEmpty();
 		}

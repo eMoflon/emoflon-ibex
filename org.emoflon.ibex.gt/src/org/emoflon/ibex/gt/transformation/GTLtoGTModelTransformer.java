@@ -3,15 +3,17 @@ package org.emoflon.ibex.gt.transformation;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.codegen.ecore.genmodel.GenPackage;
-import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EEnumLiteral;
 import org.eclipse.emf.ecore.EPackage;
@@ -20,10 +22,15 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXBooleanValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEnumValue;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXMatchCountValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModelMetadata;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNodeValue;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNullValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXOperationType;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternInvocation;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXStringValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ArithmeticExpression;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BinaryExpression;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BinaryOperator;
@@ -33,6 +40,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.Boolea
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanUnaryExpression;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanUnaryOperator;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalExpression;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.UnaryExpression;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ValueExpression;
 import org.emoflon.ibex.common.slimgt.slimGT.ArithmeticLiteral;
@@ -40,23 +48,32 @@ import org.emoflon.ibex.common.slimgt.slimGT.BooleanBracket;
 import org.emoflon.ibex.common.slimgt.slimGT.BooleanConjunction;
 import org.emoflon.ibex.common.slimgt.slimGT.BooleanDisjunction;
 import org.emoflon.ibex.common.slimgt.slimGT.BooleanImplication;
+import org.emoflon.ibex.common.slimgt.slimGT.BooleanLiteral;
 import org.emoflon.ibex.common.slimgt.slimGT.BooleanNegation;
 import org.emoflon.ibex.common.slimgt.slimGT.BracketExpression;
 import org.emoflon.ibex.common.slimgt.slimGT.Constant;
 import org.emoflon.ibex.common.slimgt.slimGT.CountExpression;
+import org.emoflon.ibex.common.slimgt.slimGT.DoubleLiteral;
 import org.emoflon.ibex.common.slimgt.slimGT.EnumExpression;
 import org.emoflon.ibex.common.slimgt.slimGT.ExpArithmeticExpression;
+import org.emoflon.ibex.common.slimgt.slimGT.IntegerLiteral;
 import org.emoflon.ibex.common.slimgt.slimGT.MinMaxArithmeticExpression;
 import org.emoflon.ibex.common.slimgt.slimGT.NodeAttributeExpression;
 import org.emoflon.ibex.common.slimgt.slimGT.NodeExpression;
 import org.emoflon.ibex.common.slimgt.slimGT.ProductArithmeticExpression;
 import org.emoflon.ibex.common.slimgt.slimGT.SlimRuleCondition;
+import org.emoflon.ibex.common.slimgt.slimGT.SlimRuleConfiguration;
 import org.emoflon.ibex.common.slimgt.slimGT.SlimRuleEdge;
+import org.emoflon.ibex.common.slimgt.slimGT.SlimRuleInvocation;
+import org.emoflon.ibex.common.slimgt.slimGT.SlimRuleNodeMapping;
+import org.emoflon.ibex.common.slimgt.slimGT.SlimRuleNodeMappings;
 import org.emoflon.ibex.common.slimgt.slimGT.StochasticArithmeticExpression;
+import org.emoflon.ibex.common.slimgt.slimGT.StringLiteral;
 import org.emoflon.ibex.common.slimgt.slimGT.SumArithmeticExpression;
 import org.emoflon.ibex.common.slimgt.slimGT.UnaryArithmeticExpression;
 import org.emoflon.ibex.common.slimgt.util.SlimGTEMFUtil;
 import org.emoflon.ibex.common.slimgt.util.SlimGTModelUtil;
+import org.emoflon.ibex.common.transformation.DataTypeUtil;
 import org.emoflon.ibex.common.transformation.SlimGtToIBeXCoreTransformer;
 import org.emoflon.ibex.gt.gtl.gTL.EditorFile;
 import org.emoflon.ibex.gt.gtl.gTL.ExpressionOperand;
@@ -65,7 +82,9 @@ import org.emoflon.ibex.gt.gtl.gTL.GTLIteratorAttributeExpression;
 import org.emoflon.ibex.gt.gtl.gTL.GTLParameterExpression;
 import org.emoflon.ibex.gt.gtl.gTL.GTLRuleNodeDeletion;
 import org.emoflon.ibex.gt.gtl.gTL.GTLRuleType;
+import org.emoflon.ibex.gt.gtl.gTL.GTLRuleWatchDog;
 import org.emoflon.ibex.gt.gtl.gTL.Import;
+import org.emoflon.ibex.gt.gtl.gTL.SlimParameter;
 import org.emoflon.ibex.gt.gtl.gTL.SlimRule;
 import org.emoflon.ibex.gt.gtl.gTL.SlimRuleNode;
 import org.emoflon.ibex.gt.gtl.gTL.SlimRuleNodeContext;
@@ -74,8 +93,11 @@ import org.emoflon.ibex.gt.gtl.util.GTLResourceManager;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTIteratorAttributeReference;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTModel;
+import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTParameter;
+import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTParameterValue;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRule;
+import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTWatchDog;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.IBeXGTModelFactory;
 
 public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorFile, GTModel, IBeXGTModelFactory> {
@@ -87,12 +109,15 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 	protected final Map<SlimRule, GTPattern> pattern2pattern = Collections.synchronizedMap(new HashMap<>());
 	protected final Map<SlimRuleNode, IBeXNode> node2node = Collections.synchronizedMap(new HashMap<>());
 	protected final Map<SlimRuleEdge, IBeXEdge> edge2edge = Collections.synchronizedMap(new HashMap<>());
+	protected final Map<SlimParameter, GTParameter> param2param = Collections.synchronizedMap(new HashMap<>());
+
 	protected final Map<GTLEdgeIterator, GTForEachExpression> iterator2iterator = Collections
 			.synchronizedMap(new HashMap<>());
 	protected final Map<SlimRuleNode, List<Consumer<IBeXNode>>> pendingNodeJobs = Collections
 			.synchronizedMap(new HashMap<>());
 	protected final Map<GTLEdgeIterator, List<Consumer<GTForEachExpression>>> pendingIteratorJobs = Collections
 			.synchronizedMap(new HashMap<>());
+	protected final List<Runnable> pendingInvocationJobs = Collections.synchronizedList(new LinkedList<>());
 
 	protected boolean countFlag = false;
 	protected boolean arithmeticFlag = false;
@@ -104,26 +129,101 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 	}
 
 	@Override
+	protected IBeXGTModelFactory initFactory() {
+		return IBeXGTModelFactory.eINSTANCE;
+	}
+
+	@Override
+	protected GTModel createNewModel() {
+		return factory.createGTModel();
+	}
+
+	@Override
+	protected IBeXModelMetadata createModelMetadata() {
+		IBeXModelMetadata metadata = superFactory.createIBeXModelMetadata();
+		metadata.setProject(project.getName());
+		metadata.setProjectPath(project.getLocation().toPortableString());
+		metadata.setPackage(editorFile.getPackage().getName());
+		metadata.setPackagePath("/src/" + metadata.getPackage().replace(".", "/"));
+
+		for (Import imp : editorFile.getImports().stream().map(imp -> (Import) imp).collect(Collectors.toList())) {
+			EPackageDependency dependency = null;
+			try {
+				dependency = transform(imp);
+			} catch (IOException e) {
+				continue;
+			}
+			metadata.getDependencies().add(dependency);
+			metadata.getName2package().put(dependency.getSimpleName(), dependency);
+		}
+
+		// Add the ecore package if not present
+		if (!metadata.getName2package().containsKey("ecore")) {
+			try {
+				EPackageDependency dependency = transform(EcorePackage.eINSTANCE);
+				metadata.getDependencies().add(dependency);
+				metadata.getName2package().put(dependency.getSimpleName(), dependency);
+			} catch (IOException e) {
+			}
+		}
+
+		return metadata;
+	}
+
+	protected EPackageDependency transform(final Import imp) throws IOException {
+		EPackage pkg = SlimGTEMFUtil.loadMetamodel(imp.getName());
+		return transform(pkg);
+	}
+
+	protected EPackageDependency transform(final EPackage pkg) throws IOException {
+		EPackageDependency dependency = superFactory.createEPackageDependency();
+
+		dependency.setSimpleName(pkg.getName());
+		dependency.setHasAlias(false);
+
+		// Set package metadata
+		GenPackage genPack = SlimGTEMFUtil.getGenPack(pkg);
+		dependency.setFullyQualifiedName(SlimGTEMFUtil.getFQName(genPack));
+		dependency.setPackage(pkg);
+		dependency.setPackageURI(pkg.getNsURI());
+		dependency.setFactoryClassName(SlimGTEMFUtil.getFactoryClassName(genPack));
+		dependency.setPackageClassName(SlimGTEMFUtil.getPackageClassName(pkg));
+		dependency.setEcoreURI(pkg.eResource().getURI().toString());
+
+		// Set package project metadata and check if it has a project, a proper ecore
+		// and genmodel file
+		// TODO: Finish this -> for now: set to false
+		dependency.setPackageHasProject(false);
+		dependency.setEcoreHasLocation(false);
+		dependency.setGenmodelHasLocation(false);
+
+		// Add classifier name to fqn map
+		pkg.getEClassifiers().forEach(cls -> dependency.getClassifierName2FQN().put(cls.getName(),
+				dependency.getFullyQualifiedName() + "." + cls.getName()));
+
+		return dependency;
+	}
+
+	@Override
 	public GTModel transform() {
 		model.setRuleSet(factory.createGTRuleSet());
 
-		for (SlimRule rule : editorFile.getRules()) {
-			// Ignore abstract patterns / rules
-			if (rule.isAbstract())
-				continue;
-
+		editorFile.getRules().parallelStream().filter(rule -> !rule.isAbstract()).forEach(rule -> {
 			// Transform to gt pattern
 			if (rule.getType() == GTLRuleType.PATTERN) {
 				transformPrecondition(rule);
 			} else { // Transform to gt rule
 				transformRule(rule);
 			}
-		}
+		});
+
+		postProcessing();
 
 		return model;
 	}
 
 	protected void postProcessing() {
+		// TODO: Sort elements by name and then add to model!
 		rule2rule.values().forEach(r -> model.getRuleSet().getRules().add(r));
 		pattern2pattern.values().forEach(p -> model.getPatternSet().getPatterns().add(p));
 		node2node.values().forEach(n -> model.getNodeSet().getNodes().add(n));
@@ -131,6 +231,7 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 		node2node.forEach((srNode, gtNode) -> pendingNodeJobs.get(srNode).forEach(consumer -> consumer.accept(gtNode)));
 		iterator2iterator.forEach(
 				(gtlItr, gtItr) -> pendingIteratorJobs.get(gtlItr).forEach(consumer -> consumer.accept(gtItr)));
+		pendingInvocationJobs.forEach(i -> i.run());
 	}
 
 	protected GTRule transformRule(SlimRule rule) {
@@ -145,13 +246,33 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 		gtRule.setName(rule.getName());
 		rule2rule.put(rule, gtRule);
 
+		// Parameters
+		for (SlimParameter param : rule.getParameters()) {
+			gtRule.getParameters().add(transform(param));
+		}
+
+		// Precondition pattern
 		GTPattern precondition = transformPrecondition(rule);
 		gtRule.setPrecondition(precondition);
 
+		// Postcondition pattern
 		GTPattern postcondition = transformPostcondition(rule);
 		gtRule.setPostcondition(postcondition);
 
 		return gtRule;
+	}
+
+	protected GTParameter transform(SlimParameter param) {
+		if (param2param.containsKey(param)) {
+			return param2param.get(param);
+		}
+
+		GTParameter gtParam = factory.createGTParameter();
+		gtParam.setName(param.getName());
+		gtParam.setType(param.getType());
+		param2param.put(param, gtParam);
+
+		return gtParam;
 	}
 
 	protected GTPattern transformPrecondition(SlimRule pattern) {
@@ -163,6 +284,7 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 		gtPattern.setName(pattern.getName());
 		pattern2pattern.put(pattern, gtPattern);
 
+		// Context nodes
 		for (SlimRuleNodeContext context : pattern.getContextNodes().stream().map(n -> (SlimRuleNodeContext) n)
 				.collect(Collectors.toList())) {
 			IBeXNode gtNode = transformPrecondition((SlimRuleNode) context.getContext());
@@ -174,20 +296,62 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 			gtNode.setOperationType(IBeXOperationType.CONTEXT);
 		}
 
+		// Deleted nodes that must be present as context
 		for (GTLRuleNodeDeletion deletion : pattern.getDeletedNodes()) {
 			IBeXNode gtNode = transformPrecondition(deletion.getDeletion());
 			gtPattern.getSignatureNodes().add(gtNode);
 			gtNode.setOperationType(IBeXOperationType.DELETION);
 		}
 
+		// Attribute and node conditions
 		for (SlimRuleCondition condition : pattern.getConditions()) {
 			BooleanExpression expression = transform(condition.getExpression());
 			gtPattern.getConditions().add(expression);
 		}
 
-		// TODO: Invocations
+		// Invocations
+		for (SlimRuleInvocation invocation : pattern.getInvocations()) {
+			IBeXPatternInvocation gtInvocation = transform(pattern, (SlimRule) invocation.getSupportPattern(),
+					invocation.getMappings());
+			gtPattern.getInvocations().add(gtInvocation);
+		}
 
-		// TODO: Watch dogs
+		// Watch dogs
+		for (GTLRuleWatchDog watchDog : pattern.getWatchDogs()) {
+			GTWatchDog gtWatch = transform(watchDog);
+			gtPattern.getWatchDogs().add(gtWatch);
+		}
+
+		// Automatic injectivity constraints, if necessary
+		if (pattern.isConfigured() && pattern.getConfiguration().getConfigurations()
+				.contains(SlimRuleConfiguration.DISABLE_INJECTIVITY_CONSTRAINTS)) {
+
+			Set<IBeXNodePair> pairs = new HashSet<>();
+			for (IBeXNode n1 : gtPattern.getSignatureNodes()) {
+				for (IBeXNode n2 : gtPattern.getSignatureNodes()) {
+					if (n2.equals(n1))
+						continue;
+
+					IBeXNodePair pair = new IBeXNodePair(n1, n2);
+					if (!pairs.contains(pair))
+						pairs.add(pair);
+				}
+			}
+
+			for (IBeXNodePair pair : pairs) {
+				RelationalExpression relation = arithmeticFactory.createRelationalExpression();
+				relation.setOperator(RelationalOperator.OBJECT_NOT_EQUALS);
+				IBeXNodeValue v1 = superFactory.createIBeXNodeValue();
+				v1.setNode(pair.n1());
+				v1.setType(EcorePackage.Literals.EOBJECT);
+				IBeXNodeValue v2 = superFactory.createIBeXNodeValue();
+				v2.setNode(pair.n2());
+				v2.setType(EcorePackage.Literals.EOBJECT);
+				relation.setLhs(v1);
+				relation.setRhs(v2);
+				gtPattern.getConditions().add(relation);
+			}
+		}
 
 		if (gtPattern.getSignatureNodes().isEmpty() && gtPattern.getLocalNodes().isEmpty()
 				&& gtPattern.getConditions().isEmpty())
@@ -200,6 +364,7 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 		GTPattern gtPattern = factory.createGTPattern();
 		gtPattern.setName(pattern.getName());
 
+		// Context nodes
 		for (SlimRuleNodeContext context : pattern.getContextNodes().stream().map(n -> (SlimRuleNodeContext) n)
 				.collect(Collectors.toList())) {
 			IBeXNode gtNode = transformPostcondition((SlimRuleNode) context.getContext());
@@ -211,6 +376,7 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 			gtNode.setOperationType(IBeXOperationType.CONTEXT);
 		}
 
+		// Created nodes that must be present after the rule has been applied
 		for (SlimRuleNodeCreation creation : pattern.getCreatedNodes().stream().map(n -> (SlimRuleNodeCreation) n)
 				.collect(Collectors.toList())) {
 			IBeXNode gtNode = transformPostcondition((SlimRuleNode) creation.getCreation());
@@ -218,10 +384,14 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 			gtNode.setOperationType(IBeXOperationType.CREATION);
 		}
 
+		// Attribute and node conditions that must hold after the rule has been applied
 		for (SlimRuleCondition condition : pattern.getConditions()) {
 			BooleanExpression expression = transform(condition.getExpression());
 			gtPattern.getConditions().add(expression);
 		}
+
+		// Invocations are irrelevant for the postcondition, so are watch dogs and
+		// injectivity constraints
 
 		if (gtPattern.getSignatureNodes().isEmpty() && gtPattern.getLocalNodes().isEmpty()
 				&& gtPattern.getConditions().isEmpty())
@@ -429,7 +599,7 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 			BinaryExpression binary = arithmeticFactory.createBinaryExpression();
 			binary.setLhs(transform((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) sum.getLhs()));
 			binary.setRhs(transform((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) sum.getRhs()));
-			binary.setType(mergeDataTypes(binary.getLhs(), binary.getRhs()));
+			binary.setType(DataTypeUtil.mergeDataTypes(binary.getLhs(), binary.getRhs()));
 			binary.setOperator(switch (sum.getOperator()) {
 			case MINUS -> {
 				yield BinaryOperator.SUBTRACT;
@@ -445,7 +615,7 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 			BinaryExpression binary = arithmeticFactory.createBinaryExpression();
 			binary.setLhs(transform((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) prod.getLhs()));
 			binary.setRhs(transform((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) prod.getRhs()));
-			binary.setType(mergeDataTypes(binary.getLhs(), binary.getRhs()));
+			binary.setType(DataTypeUtil.mergeDataTypes(binary.getLhs(), binary.getRhs()));
 			binary.setOperator(switch (prod.getOperator()) {
 			case MULT -> {
 				yield BinaryOperator.MULTIPLY;
@@ -509,7 +679,7 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 			BinaryExpression binary = arithmeticFactory.createBinaryExpression();
 			binary.setLhs(transform((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) minMax.getLhs()));
 			binary.setRhs(transform((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) minMax.getRhs()));
-			binary.setType(mergeDataTypes(binary.getLhs(), binary.getRhs()));
+			binary.setType(DataTypeUtil.mergeDataTypes(binary.getLhs(), binary.getRhs()));
 			binary.setOperator(switch (minMax.getMinMaxOperator()) {
 			case MIN -> {
 				yield BinaryOperator.MIN;
@@ -600,20 +770,70 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 				itrRef.setType(iae.getFeature().getEType());
 				return (ArithmeticExpression) itrRef;
 			} else if (op.getOperand() instanceof GTLParameterExpression param) {
-				// TODO:
-				return null;
+				GTParameterValue paramValue = factory.createGTParameterValue();
+				paramValue.setParameter(param2param.get(param.getParameter()));
+				paramValue.setType(paramValue.getParameter().getType());
+				return paramValue;
 			} else if (op.getOperand() instanceof CountExpression count) {
-				// TODO:
-				return null;
+				IBeXMatchCountValue gtCount = superFactory.createIBeXMatchCountValue();
+				gtCount.setType(EcorePackage.Literals.EINT);
+				SlimRule invoker = SlimGTModelUtil.getContainer(count, SlimRule.class);
+				gtCount.setInvocation(transform(invoker, (SlimRule) count.getSupportPattern(), count.getMappings()));
+				return gtCount;
 			} else if (op.getOperand() instanceof ArithmeticLiteral lit) {
-				// TODO:
-				return null;
+				if (lit instanceof DoubleLiteral d) {
+					org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.DoubleLiteral gtD = arithmeticFactory
+							.createDoubleLiteral();
+					gtD.setValue(d.getValue());
+					gtD.setType(EcorePackage.Literals.EDOUBLE);
+					return gtD;
+				} else if (lit instanceof IntegerLiteral i) {
+					org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.IntegerLiteral gtI = arithmeticFactory
+							.createIntegerLiteral();
+					gtI.setValue(i.getValue());
+					gtI.setType(EcorePackage.Literals.EINT);
+					return gtI;
+				} else if (lit instanceof StringLiteral s) {
+					IBeXStringValue gtS = superFactory.createIBeXStringValue();
+					gtS.setValue(s.getValue());
+					gtS.setType(EcorePackage.Literals.ESTRING);
+					return (ArithmeticExpression) gtS;
+				} else if (lit instanceof BooleanLiteral b) {
+					IBeXBooleanValue gtB = superFactory.createIBeXBooleanValue();
+					gtB.setValue(b.isValue());
+					gtB.setType(EcorePackage.Literals.EBOOLEAN);
+					return (ArithmeticExpression) gtB;
+				} else {
+					throw new UnsupportedOperationException("Unkown arithmetic literal type: " + lit);
+				}
 			} else if (op.getOperand() instanceof EnumExpression en) {
-				// TODO:
-				return null;
+				IBeXEnumValue enumVal = superFactory.createIBeXEnumValue();
+				enumVal.setLiteral(en.getLiteral());
+				enumVal.setType(en.getLiteral().getEEnum());
+				return (ArithmeticExpression) enumVal;
 			} else if (op.getOperand() instanceof Constant con) {
-				// TODO:
-				return null;
+				return switch (con.getValue()) {
+				case E -> {
+					org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.DoubleLiteral gtD = arithmeticFactory
+							.createDoubleLiteral();
+					gtD.setValue(Math.E);
+					gtD.setType(EcorePackage.Literals.EDOUBLE);
+					yield gtD;
+				}
+				case NULL -> {
+					IBeXNullValue nullVal = superFactory.createIBeXNullValue();
+					nullVal.setType(EcorePackage.Literals.EOBJECT);
+					yield (ArithmeticExpression) nullVal;
+				}
+				case PI -> {
+					org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.DoubleLiteral gtD = arithmeticFactory
+							.createDoubleLiteral();
+					gtD.setValue(Math.PI);
+					gtD.setType(EcorePackage.Literals.EDOUBLE);
+					yield gtD;
+				}
+				default -> throw new UnsupportedOperationException("Unkown constant: " + con);
+				};
 			} else {
 				throw new UnsupportedOperationException("Unkown arithmetic operand type: " + op.getOperand());
 			}
@@ -622,84 +842,35 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 		}
 	}
 
-	protected EClassifier mergeDataTypes(final ValueExpression lhs, final ValueExpression rhs) {
-		return null;
-	}
+	protected IBeXPatternInvocation transform(final SlimRule invoker, final SlimRule invokee,
+			final SlimRuleNodeMappings mappings) {
+		IBeXPatternInvocation gtInvocation = superFactory.createIBeXPatternInvocation();
 
-	@Override
-	protected IBeXGTModelFactory initFactory() {
-		return IBeXGTModelFactory.eINSTANCE;
-	}
+		pendingInvocationJobs.add(new Runnable() {
 
-	@Override
-	protected GTModel createNewModel() {
-		return factory.createGTModel();
-	}
+			@Override
+			public void run() {
+				GTPattern gtInvoker = pattern2pattern.get(invoker);
+				GTPattern gtInvokee = pattern2pattern.get(invokee);
+				gtInvocation.setInvokedBy(gtInvoker);
+				gtInvocation.setInvocation(gtInvokee);
 
-	@Override
-	protected IBeXModelMetadata createModelMetadata() {
-		IBeXModelMetadata metadata = superFactory.createIBeXModelMetadata();
-		metadata.setProject(project.getName());
-		metadata.setProjectPath(project.getLocation().toPortableString());
-		metadata.setPackage(editorFile.getPackage().getName());
-		metadata.setPackagePath("/src/" + metadata.getPackage().replace(".", "/"));
-
-		for (Import imp : editorFile.getImports().stream().map(imp -> (Import) imp).collect(Collectors.toList())) {
-			EPackageDependency dependency = null;
-			try {
-				dependency = transform(imp);
-			} catch (IOException e) {
-				continue;
+				for (SlimRuleNodeMapping mapping : mappings.getMappings()) {
+					IBeXNode src = node2node.get(mapping.getSource());
+					IBeXNode trg = node2node.get(mapping.getTarget());
+					gtInvocation.getMapping().put(src, trg);
+				}
 			}
-			metadata.getDependencies().add(dependency);
-			metadata.getName2package().put(dependency.getSimpleName(), dependency);
-		}
+		});
 
-		// Add the ecore package if not present
-		if (!metadata.getName2package().containsKey("ecore")) {
-			try {
-				EPackageDependency dependency = transform(EcorePackage.eINSTANCE);
-				metadata.getDependencies().add(dependency);
-				metadata.getName2package().put(dependency.getSimpleName(), dependency);
-			} catch (IOException e) {
-			}
-		}
-
-		return metadata;
+		return gtInvocation;
 	}
 
-	protected EPackageDependency transform(final Import imp) throws IOException {
-		EPackage pkg = SlimGTEMFUtil.loadMetamodel(imp.getName());
-		return transform(pkg);
-	}
-
-	protected EPackageDependency transform(final EPackage pkg) throws IOException {
-		EPackageDependency dependency = superFactory.createEPackageDependency();
-
-		dependency.setSimpleName(pkg.getName());
-		dependency.setHasAlias(false);
-
-		// Set package metadata
-		GenPackage genPack = SlimGTEMFUtil.getGenPack(pkg);
-		dependency.setFullyQualifiedName(SlimGTEMFUtil.getFQName(genPack));
-		dependency.setPackage(pkg);
-		dependency.setPackageURI(pkg.getNsURI());
-		dependency.setFactoryClassName(SlimGTEMFUtil.getFactoryClassName(genPack));
-		dependency.setPackageClassName(SlimGTEMFUtil.getPackageClassName(pkg));
-		dependency.setEcoreURI(pkg.eResource().getURI().toString());
-
-		// Set package project metadata and check if it has a project, a proper ecore
-		// and genmodel file
-		// TODO: Finish this -> for now: set to false
-		dependency.setPackageHasProject(false);
-		dependency.setEcoreHasLocation(false);
-		dependency.setGenmodelHasLocation(false);
-
-		// Add classifier name to fqn map
-		pkg.getEClassifiers().forEach(cls -> dependency.getClassifierName2FQN().put(cls.getName(),
-				dependency.getFullyQualifiedName() + "." + cls.getName()));
-
-		return dependency;
+	protected GTWatchDog transform(GTLRuleWatchDog watchDog) {
+		GTWatchDog gtWatch = factory.createGTWatchDog();
+		gtWatch.setNode(node2node.get(watchDog.getNodeAttribute().getNodeExpression().getNode()));
+		gtWatch.setAttribute(watchDog.getNodeAttribute().getFeature());
+		return gtWatch;
 	}
 
 	protected void addPendingNodeConsumer(final SlimRuleNode node, Consumer<IBeXNode> consumer) {
@@ -732,4 +903,29 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 		booleanFlag = true;
 	}
 
+}
+
+record IBeXNodePair(IBeXNode n1, IBeXNode n2) {
+	@Override
+	public int hashCode() {
+		return Objects.hash(n1, n2) + Objects.hash(n2, n1);
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (other instanceof IBeXNodePair otherPair) {
+			if (hashCode() != other.hashCode())
+				return false;
+
+			if ((n1.equals(otherPair.n1) && n2.equals(otherPair.n2))
+					|| (n1.equals(otherPair.n2) && n2.equals(otherPair.n1))) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
+
+	}
 }
