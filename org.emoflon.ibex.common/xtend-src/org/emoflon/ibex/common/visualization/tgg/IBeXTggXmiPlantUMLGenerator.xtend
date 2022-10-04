@@ -312,82 +312,82 @@ class IBeXTggXmiPlantUMLGenerator {
 
 	def static String visualizeSCRuleMerged(ExternalShortcutRule scrule) {
 		var namespace = scrule.name
-		var namespaceSrc = "[S] " + scrule.sourceRule.name
-		var namespaceTrg = "[T] " + scrule.targetRule.name
+		var namespaceSrc = "[O] " + scrule.sourceRule.name
+		var namespaceTrg = "[R] " + scrule.targetRule.name
 		
 		var Set<TGGRuleEdge> processedOpposites = new HashSet();
 
 		'''
 			«plantUMLPreamble»
 			
-			together {
-				«FOR mapping : scrule.mapping.filter[m|m.sourceRuleElement.domainType == DomainType.TRG]»
-					«visualizeNodeMapping(namespace, mapping, "TRG")»
-				«ENDFOR»
-				«FOR element : scrule.unboundSrcContext.filter(DomainType.TRG)»
-					«visualizeNode(namespace, element, "TRG", "BLACK", "S")»
-				«ENDFOR»
-				«FOR element : scrule.unboundTrgContext.filter(DomainType.TRG)»
-					«visualizeNode(namespace, element, "TRG", "BLACK", "T")»
-				«ENDFOR»
-				«FOR element : scrule.creations.filter(DomainType.TRG)»
-					«visualizeNode(namespace, element, "TRG", "GREEN", "T")»
-				«ENDFOR»
-				«FOR element : scrule.deletions.filter(DomainType.TRG)»
-					«visualizeNode(namespace, element, "TRG", "RED", "S")»
-				«ENDFOR»
-			}
-			
-			together {
+«««			together {
 				«FOR mapping : scrule.mapping.filter[m|m.sourceRuleElement.domainType == DomainType.SRC]»
 					«visualizeNodeMapping(namespace, mapping, "SRC")»
 				«ENDFOR»
 				«FOR element : scrule.unboundSrcContext.filter(DomainType.SRC)»
-					«visualizeNode(namespace, element, "SRC", "BLACK", "S")»
+					«visualizeNode(namespace, element, "SRC", "BLACK", "O")»
 				«ENDFOR»
 				«FOR element : scrule.unboundTrgContext.filter(DomainType.SRC)»
-					«visualizeNode(namespace, element, "SRC", "BLACK", "T")»
+					«visualizeNode(namespace, element, "SRC", "BLACK", "R")»
 				«ENDFOR»
 				«FOR element : scrule.creations.filter(DomainType.SRC)»
-					«visualizeNode(namespace, element, "SRC", "GREEN", "T")»
+					«visualizeNode(namespace, element, "SRC", "GREEN", "R")»
 				«ENDFOR»
 				«FOR element : scrule.deletions.filter(DomainType.SRC)»
-					«visualizeNode(namespace, element, "SRC", "RED", "S")»
+					«visualizeNode(namespace, element, "SRC", "RED", "O")»
 				«ENDFOR»
-			}
+«««			}
 			
-			together {
+«««			together {
+				«FOR mapping : scrule.mapping.filter[m|m.sourceRuleElement.domainType == DomainType.TRG]»
+					«visualizeNodeMapping(namespace, mapping, "TRG")»
+				«ENDFOR»
+				«FOR element : scrule.unboundSrcContext.filter(DomainType.TRG)»
+					«visualizeNode(namespace, element, "TRG", "BLACK", "O")»
+				«ENDFOR»
+				«FOR element : scrule.unboundTrgContext.filter(DomainType.TRG)»
+					«visualizeNode(namespace, element, "TRG", "BLACK", "R")»
+				«ENDFOR»
+				«FOR element : scrule.creations.filter(DomainType.TRG)»
+					«visualizeNode(namespace, element, "TRG", "GREEN", "R")»
+				«ENDFOR»
+				«FOR element : scrule.deletions.filter(DomainType.TRG)»
+					«visualizeNode(namespace, element, "TRG", "RED", "O")»
+				«ENDFOR»
+«««			}
+			
+«««			together {
 				«FOR mapping : scrule.mapping.filter[m|m.sourceRuleElement.domainType == DomainType.CORR]»
 					«visualizeCorrMapping(namespace, mapping)»
 				«ENDFOR»
-				«FOR element : scrule.unboundSrcContext.filter(DomainType.CORR)»
-					«visualizeCorr(namespace, element, "BLACK", "S")»
+				«FOR corr : scrule.unboundSrcContext.filterCorrNodes»
+					«visualizeCorr(namespace, corr, "BLACK", "O", scrule.mapping)»
 				«ENDFOR»
-				«FOR element : scrule.unboundTrgContext.filter(DomainType.CORR)»
-					«visualizeCorr(namespace, element, "BLACK", "T")»
+				«FOR corr : scrule.unboundTrgContext.filterCorrNodes»
+					«visualizeCorr(namespace, corr, "BLACK", "R", scrule.mapping)»
 				«ENDFOR»
-				«FOR element : scrule.creations.filter(DomainType.CORR)»
-					«visualizeCorr(namespace, element, "GREEN", "T")»
+				«FOR corr : scrule.creations.filterCorrNodes»
+					«visualizeCorr(namespace, corr, "GREEN", "R", scrule.mapping)»
 				«ENDFOR»
-				«FOR element : scrule.deletions.filter(DomainType.CORR)»
-					«visualizeCorr(namespace, element, "RED", "S")»
+				«FOR corr : scrule.deletions.filterCorrNodes»
+					«visualizeCorr(namespace, corr, "RED", "O", scrule.mapping)»
 				«ENDFOR»
-			}
+«««			}
 			
 			«FOR mapping : scrule.mapping.filter[m|m.sourceRuleElement.domainType != DomainType.CORR]»
 				«visualizeEdgeMapping(namespace, mapping, processedOpposites)»
 			«ENDFOR»
 			«FOR element : scrule.unboundSrcContext.filterInverse(DomainType.CORR)»
-				«visualizeEdge(namespace, element, "BLACK", "S", scrule.mapping, processedOpposites)»
+				«visualizeEdge(namespace, element, "BLACK", "O", scrule.mapping, processedOpposites)»
 			«ENDFOR»
 			«FOR element : scrule.unboundTrgContext.filterInverse(DomainType.CORR)»
-				«visualizeEdge(namespace, element, "BLACK", "T", scrule.mapping, processedOpposites)»
+				«visualizeEdge(namespace, element, "BLACK", "R", scrule.mapping, processedOpposites)»
 			«ENDFOR»
 			«FOR element : scrule.creations.filterInverse(DomainType.CORR)»
-				«visualizeEdge(namespace, element, "GREEN", "T", scrule.mapping, processedOpposites)»
+				«visualizeEdge(namespace, element, "GREEN", "R", scrule.mapping, processedOpposites)»
 			«ENDFOR»
 			«FOR element : scrule.deletions.filterInverse(DomainType.CORR)»
-				«visualizeEdge(namespace, element, "RED", "S", scrule.mapping, processedOpposites)»
+				«visualizeEdge(namespace, element, "RED", "O", scrule.mapping, processedOpposites)»
 			«ENDFOR»
 			
 			«visualizeTGGRule(namespaceSrc, scrule.sourceRule)»
@@ -435,13 +435,14 @@ class IBeXTggXmiPlantUMLGenerator {
 		}
 	}
 
-	private def static visualizeCorr(String namespace, TGGRuleElement elt, String binding, String origin) {
-		if (elt instanceof TGGRuleCorr) {
-			var corr = elt as TGGRuleCorr
-			'''
-				«idOf(namespace, corr.source, origin)» .«binding.color» «idOf(namespace, corr.target, origin)» : «corr.name»
-			'''
-		}
+	private def static visualizeCorr(String namespace, TGGRuleCorr corr, String binding, String origin, List<TGGRuleElementMapping> mappings) {
+		var srcMapping = corr.source.isMapped(mappings)
+		var trgMapping = corr.target.isMapped(mappings)
+		var srcId = srcMapping !== null ? idOfMapped(namespace, srcMapping.sourceRuleElement as TGGRuleNode) : idOf(namespace, corr.source, origin)
+		var trgId = trgMapping !== null ? idOfMapped(namespace, trgMapping.sourceRuleElement as TGGRuleNode) : idOf(namespace, corr.target, origin)
+		'''
+			«srcId» .«binding.color» «trgId» : «corr.name»
+		'''
 	}
 
 	private def static visualizeEdgeMapping(String namespace, TGGRuleElementMapping mapping, Set<TGGRuleEdge> processedOpposites) {
@@ -497,7 +498,7 @@ class IBeXTggXmiPlantUMLGenerator {
 	}
 
 	private def static idOfMapped(String namespace, TGGRuleNode srcNode) {
-		'''"«namespace».[ST] «srcNode.name» : «srcNode.type.name»"'''
+		'''"«namespace».[M] «srcNode.name» : «srcNode.type.name»"'''
 	}
 
 	private def static idOf(String namespace, TGGRuleNode node, String origin) {
@@ -511,12 +512,16 @@ class IBeXTggXmiPlantUMLGenerator {
 	private def static filterInverse(List<TGGRuleElement> list, DomainType domainType) {
 		list.filter[e|e.domainType != domainType]
 	}
+	
+	private def static filterCorrNodes(List<TGGRuleElement> list) {
+		list.filter(TGGRuleCorr)
+	}
 
 	def static String visualizeMapping(TGGRuleElementMapping mapping) {
 		var srcRule = mapping.sourceRuleElement.eContainer as TGGRule
 		var trgRule = mapping.targetRuleElement.eContainer as TGGRule
-		var namespaceSrc = "[S] " + srcRule.name
-		var namespaceTrg = "[T] " + trgRule.name
+		var namespaceSrc = "[O] " + srcRule.name
+		var namespaceTrg = "[R] " + trgRule.name
 
 		'''
 			«plantUMLPreamble»
@@ -532,8 +537,8 @@ class IBeXTggXmiPlantUMLGenerator {
 	def static String visualizeMappings(List<TGGRuleElementMapping> mappings) {
 		var srcRule = mappings.get(0).sourceRuleElement.eContainer as TGGRule
 		var trgRule = mappings.get(0).targetRuleElement.eContainer as TGGRule
-		var namespaceSrc = "[S] " + srcRule.name
-		var namespaceTrg = "[T] " + trgRule.name
+		var namespaceSrc = "[O] " + srcRule.name
+		var namespaceTrg = "[R] " + trgRule.name
 
 		'''
 			«plantUMLPreamble»

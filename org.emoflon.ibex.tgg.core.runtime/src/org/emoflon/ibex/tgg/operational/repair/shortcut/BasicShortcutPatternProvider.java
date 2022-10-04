@@ -79,8 +79,11 @@ public class BasicShortcutPatternProvider implements ShortcutPatternProvider {
 		PatternType repairType = applPoint.getRepairType();
 		ITGGMatch applMatch = applPoint.getApplicationMatch();
 
-		if (basicShortcutPatterns.containsKey(repairType))
-			return basicShortcutPatterns.get(repairType).get(applMatch.getRuleName());
+		if (basicShortcutPatterns.containsKey(repairType)) {
+			Map<String, Collection<OperationalShortcutRule>> tmp = basicShortcutPatterns.get(repairType);
+			if (tmp.containsKey(applMatch.getRuleName()))
+				return tmp.get(applMatch.getRuleName());
+		}
 		return Collections.emptyList();
 	}
 
