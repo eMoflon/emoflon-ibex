@@ -48,6 +48,7 @@ public class IBeXGtPackageBuilder implements SlimGTBuilderExtension<EditorFile> 
 		try {
 			cleanAndSetup();
 			transformToGTModel();
+			generateAPI();
 		} catch (Exception e) {
 			// TODO: Log!
 			return;
