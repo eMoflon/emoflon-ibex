@@ -8,8 +8,11 @@ import java.util.jar.Manifest;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.emoflon.ibex.common.slimgt.build.SlimGTBuilderExtension;
+import org.emoflon.ibex.common.slimgt.util.BuildPropertiesManager;
 import org.emoflon.ibex.gt.gtl.gTL.EditorFile;
 import org.emoflon.ibex.gt.gtl.ui.builder.GTLNature;
+import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTModel;
+import org.emoflon.ibex.gt.transformation.GTLtoGTModelTransformer;
 import org.moflon.core.plugins.manifest.ManifestFileUpdater;
 
 public class IBeXGtPackageBuilder implements SlimGTBuilderExtension<EditorFile> {
@@ -22,6 +25,8 @@ public class IBeXGtPackageBuilder implements SlimGTBuilderExtension<EditorFile> 
 
 	protected IProject project;
 	protected EditorFile editorFile;
+	protected GTModel gtModel;
+	protected BuildPropertiesManager bpManager;
 	protected String pkg;
 	protected File pkgPath;
 	protected File apiPath;
@@ -39,9 +44,17 @@ public class IBeXGtPackageBuilder implements SlimGTBuilderExtension<EditorFile> 
 		matchPath = new File(apiPath.getPath() + "/" + MATCH_FOLDER);
 		patternPath = new File(apiPath.getPath() + "/" + PATTERN_FOLDER);
 		rulePath = new File(apiPath.getPath() + "/" + RULE_FOLDER);
+
+		try {
+			cleanAndSetup();
+			transformToGTModel();
+		} catch (Exception e) {
+			// TODO: Log!
+			return;
+		}
 	}
 
-	protected void cleanAndSetup() {
+	protected void cleanAndSetup() throws Exception {
 		// Clean old code and create folder if necessary
 		if (pkgPath.exists()) {
 			pkgPath.delete();
@@ -55,8 +68,22 @@ public class IBeXGtPackageBuilder implements SlimGTBuilderExtension<EditorFile> 
 		patternPath.mkdir();
 		rulePath.mkdir();
 
-		// Ensure src-gen is a proper source folder
+		// Create build properties file if it does not exists, update otherwise
+		bpManager = new BuildPropertiesManager(project);
+		bpManager.addAttributeValue("source..", "src-gen/");
+		bpManager.writeBack();
 
+		// Create manifest file if it does not exists, update otherwise
+		new ManifestFileUpdater().processManifest(project, this::processManifestForPackage);
+	}
+
+	protected void transformToGTModel() {
+		GTLtoGTModelTransformer transformer = new GTLtoGTModelTransformer(editorFile, project);
+		gtModel = transformer.transform();
+	}
+
+	protected void generateAPI() {
+		// TODO:
 	}
 
 	/**

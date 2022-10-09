@@ -98,7 +98,6 @@ import org.emoflon.ibex.gt.gtl.gTL.SlimRule;
 import org.emoflon.ibex.gt.gtl.gTL.SlimRuleNode;
 import org.emoflon.ibex.gt.gtl.gTL.SlimRuleNodeContext;
 import org.emoflon.ibex.gt.gtl.gTL.SlimRuleNodeCreation;
-import org.emoflon.ibex.gt.gtl.util.GTLResourceManager;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTIteratorAttributeAssignment;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTIteratorAttributeReference;
@@ -114,7 +113,6 @@ import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.IBeXGTModelFactory;
 public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorFile, GTModel, IBeXGTModelFactory> {
 
 	protected final IProject project;
-	protected final GTLResourceManager gtlManager = new GTLResourceManager(xtextResources);
 
 	protected final Map<SlimRule, GTRule> rule2rule = Collections.synchronizedMap(new HashMap<>());
 	protected final Map<SlimRule, GTPattern> pattern2pattern = Collections.synchronizedMap(new HashMap<>());
