@@ -32,7 +32,8 @@ Require-Bundle: org.apache.log4j,
  org.emoflon.smartemf;bundle-version="1.0.0",
  org.emoflon.ibex.gt.gtmodel,
  org.emoflon.ibex.common.slimgt,
- org.emoflon.ibex.gt.gtl
+ org.emoflon.ibex.gt.gtl,
+ org.emoflon.ibex.gt.gtl.ui
 Bundle-ClassPath: .
 Automatic-Module-Name: org.emoflon.ibex.gt
 Bundle-RequiredExecutionEnvironment: JavaSE-17

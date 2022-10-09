@@ -6,5 +6,11 @@
   <extension point="org.emoflon.ibex.gt.editor.ui.GTBuilderExtension">
     <builder_extension class="org.emoflon.ibex.gt.codegen.GTPackageBuilder"/>
   </extension>
+  <extension
+        point="org.emoflon.ibex.common.slimgt.SlimGTBuilderExtension">
+     <builder_extension
+           builder="org.emoflon.ibex.gt.build.IBeXGtPackageBuilder">
+     </builder_extension>
+  </extension>
 
 </plugin>
