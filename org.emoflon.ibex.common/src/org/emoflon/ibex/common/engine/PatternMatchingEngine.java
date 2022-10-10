@@ -24,12 +24,12 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternInvocation;
 import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.common.operational.SimpleMatch;
 
-public abstract class IBeXPatternMatchingEngine<IBEX_MODEL extends IBeXModel> {
+public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel> {
 
 	final protected IBEX_MODEL ibexModel;
 	final protected ResourceSet model;
 	protected Map<String, IBeXPattern> name2pattern;
-	protected IMatchFilter<IBEX_MODEL> matchFilter;
+	protected MatchFilter<IBEX_MODEL> matchFilter;
 
 	/**
 	 * The matches (key: pattern name, value: list of matches).
@@ -62,7 +62,7 @@ public abstract class IBeXPatternMatchingEngine<IBEX_MODEL extends IBeXModel> {
 	private Map<IMatch, Queue<Consumer<IMatch>>> disappearingSubscriptionJobs = Collections
 			.synchronizedMap(new LinkedHashMap<>());
 
-	public IBeXPatternMatchingEngine(final IBEX_MODEL ibexModel, final ResourceSet model) {
+	public PatternMatchingEngine(final IBEX_MODEL ibexModel, final ResourceSet model) {
 		this.ibexModel = ibexModel;
 		this.model = model;
 		for (IBeXPattern pattern : ibexModel.getPatternSet().getPatterns()) {
@@ -92,7 +92,7 @@ public abstract class IBeXPatternMatchingEngine<IBEX_MODEL extends IBeXModel> {
 	 * 
 	 * @return IMatchFilter
 	 */
-	protected abstract IMatchFilter<IBEX_MODEL> createMatchFilter();
+	protected abstract MatchFilter<IBEX_MODEL> createMatchFilter();
 
 	/**
 	 * Returns all currently available matches for the pattern, but without

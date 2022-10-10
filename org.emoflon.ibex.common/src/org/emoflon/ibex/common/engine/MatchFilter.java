@@ -7,11 +7,11 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern;
 import org.emoflon.ibex.common.operational.IMatch;
 
-public abstract class IMatchFilter<IBEX_MODEL extends IBeXModel> {
+public abstract class MatchFilter<IBEX_MODEL extends IBeXModel> {
 
-	final protected IBeXPatternMatchingEngine<IBEX_MODEL> patternMatcher;
+	final protected PatternMatchingEngine<IBEX_MODEL> patternMatcher;
 
-	public IMatchFilter(final IBeXPatternMatchingEngine<IBEX_MODEL> patternMatcher) {
+	public MatchFilter(final PatternMatchingEngine<IBEX_MODEL> patternMatcher) {
 		this.patternMatcher = patternMatcher;
 	}
 
