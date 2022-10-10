@@ -29,6 +29,7 @@ public abstract class IBeXPatternMatchingEngine<IBEX_MODEL extends IBeXModel> {
 	final protected IBEX_MODEL ibexModel;
 	final protected ResourceSet model;
 	protected Map<String, IBeXPattern> name2pattern;
+	protected IMatchFilter<IBEX_MODEL> matchFilter;
 
 	/**
 	 * The matches (key: pattern name, value: list of matches).
@@ -70,6 +71,7 @@ public abstract class IBeXPatternMatchingEngine<IBEX_MODEL extends IBeXModel> {
 		}
 
 		initialize();
+		matchFilter = createMatchFilter();
 	}
 
 	/**
@@ -81,7 +83,81 @@ public abstract class IBeXPatternMatchingEngine<IBEX_MODEL extends IBeXModel> {
 	/**
 	 * Update the index structures of the actual underlying pattern matching engine.
 	 */
-	protected abstract void updateMatchesInternal();
+	protected abstract void fetchMatchesFromEngine();
+
+	/**
+	 * Creates a match filter object that can be used to filter matches with
+	 * additional parameters and arithmetic expressions not supported by the
+	 * underlying pattern matcher.
+	 * 
+	 * @return IMatchFilter
+	 */
+	protected abstract IMatchFilter<IBEX_MODEL> createMatchFilter();
+
+	/**
+	 * Returns all currently available matches for the pattern, but without
+	 * filtering any additional conditions (e.g., binding, parameterized constrains
+	 * etc.).
+	 * 
+	 * @param patternName the name of the pattern
+	 * @param doUpdate    triggers the incremental recalculation of all matches
+	 *                    before filtering matches
+	 * @return a {@link Collection} of matches
+	 */
+	public synchronized Collection<IMatch> getMatches(final String patternName, boolean doUpdate) {
+		if (doUpdate)
+			updateMatches();
+
+		return matches.get(patternName);
+	}
+
+	/**
+	 * Returns all currently available matches for the pattern, filtered using
+	 * additional conditions (e.g., binding, parameterized constrains etc.).
+	 * 
+	 * @param patternName the name of the pattern
+	 * @param doUpdate    triggers the incremental recalculation of all matches
+	 *                    before filtering matches
+	 * @return a {@link Collection} of matches
+	 */
+	public synchronized Collection<IMatch> getFilteredMatches(final String patternName, boolean doUpdate) {
+		if (doUpdate)
+			updateMatches();
+
+		return filteredMatches.get(patternName);
+	}
+
+	/**
+	 * Finds all matches for the pattern.
+	 * 
+	 * @param patternName the name of the pattern
+	 * @param doUpdate    triggers the incremental recalculation of all matches
+	 *                    before filtering matches
+	 * @return a {@link Stream} of matches
+	 */
+	public Stream<IMatch> getMatchStream(final String patternName, boolean doUpdate) {
+		// Hiding update calls from the user seems dangerous to me. In my experience
+		// this practice more often than not leads to a huge amount of nested update
+		// calls, leading to stack overflows.
+		if (doUpdate)
+			updateMatches();
+
+		if (filteredMatches.containsKey(patternName)) {
+			return filteredMatches.get(patternName).stream();
+		} else {
+			IBeXPattern pattern = name2pattern.get(patternName);
+			if (pattern.getDependencies().isEmpty()) {
+				updateFilteredMatches(patternName);
+			} else {
+				// Check dependencies to prevent deadlocks
+				pattern.getDependencies().forEach(depPattern -> {
+					updateMatchesInternal(depPattern.getName());
+				});
+				updateFilteredMatches(patternName);
+			}
+			return filteredMatches.get(patternName).stream();
+		}
+	}
 
 	/**
 	 * Clean up any allocated memory for match indexing purposes (aka. shut down
@@ -240,57 +316,25 @@ public abstract class IBeXPatternMatchingEngine<IBEX_MODEL extends IBeXModel> {
 		return match;
 	}
 
-	/**
-	 * Finds all matches for the pattern.
-	 * 
-	 * @param patternName the name of the pattern
-	 * @param parameters  the parameters
-	 * @param doUpdate    triggers the incremental recalculation of all matches
-	 *                    before filtering matches
-	 * @return a {@link Stream} of matches
-	 */
-	public Stream<IMatch> matchStream(final String patternName, final Map<String, Object> parameters,
-			boolean doUpdate) {
-//		Hiding update calls from the user seems dangerous to me. In my experience this practice more often than not leads to a huge amount of nested update calls, leading to stack overflows.
-		if (doUpdate)
-			updateMatches();
-
-		if (filteredMatches.containsKey(patternName)) {
-			return filteredMatches.get(patternName).stream();
-		} else {
-			IBeXPattern pattern = name2pattern.get(patternName);
-			if (pattern.getDependencies().isEmpty()) {
-				updateFilteredMatches(patternName, parameters);
-			} else {
-				// Check dependencies to prevent deadlocks
-				pattern.getDependencies().forEach(depPattern -> {
-					updateMatchStream(depPattern.getName(), new HashMap<>());
-				});
-				updateFilteredMatches(patternName, parameters);
-			}
-			return filteredMatches.get(patternName).stream();
-		}
-	}
-
-	protected synchronized void updateMatchStream(final String patternName, final Map<String, Object> parameters) {
+	protected synchronized void updateMatchesInternal(final String patternName) {
 		if (filteredMatches.containsKey(patternName)) {
 			return;
 		} else {
 			IBeXPattern pattern = name2pattern.get(patternName);
 			if (pattern.getDependencies().isEmpty()) {
-				updateFilteredMatches(patternName, parameters);
+				updateFilteredMatches(patternName);
 			} else {
 				// Check dependencies to prevent deadlocks
 				pattern.getDependencies().forEach(depPattern -> {
-					updateMatchStream(depPattern.getName(), new HashMap<>());
+					updateMatchesInternal(depPattern.getName());
 				});
-				updateFilteredMatches(patternName, parameters);
+				updateFilteredMatches(patternName);
 			}
 			return;
 		}
 	}
 
-	protected void updateFilteredMatches(final String patternName, final Map<String, Object> parameters) {
+	protected void updateFilteredMatches(final String patternName) {
 		Collection<IMatch> patternMatches = Collections.synchronizedSet(new HashSet<IMatch>());
 		filteredMatches.put(patternName, patternMatches);
 
@@ -306,7 +350,7 @@ public abstract class IBeXPatternMatchingEngine<IBEX_MODEL extends IBeXModel> {
 			} else {
 				boolean invocationsViolated = false;
 				for (IBeXPatternInvocation invocation : invocations) {
-					updateMatchStream(invocation.getInvocation().getName(), new HashMap<>());
+					updateMatchesInternal(invocation.getInvocation().getName());
 					Collection<IMatch> matches = filteredMatches.get(invocation.getInvocation().getName());
 					if (invocation.isPositive() && (matches == null || matches.size() <= 0)) {
 						invocationsViolated = true;
@@ -322,50 +366,9 @@ public abstract class IBeXPatternMatchingEngine<IBEX_MODEL extends IBeXModel> {
 					patternMatches.clear();
 				}
 			}
-
 		} else {
-			// TODO: Create new API super classes for rules and patterns
-//			GraphTransformationPattern<?, ?> gtPattern = name2GTPattern.get(patternName);
-//
-//			// If pattern is a non disjoint sub-pattern it will not have a rule api class
-//			if (gtPattern != null) {
-//				// Check for PM capabilities
-//				if (!gtPattern.containsArithmeticExpressions() && !gtPattern.containsCountExpressions()) {
-//					patternMatches.addAll(MatchFilter.getFilteredMatchStream(pattern, parameters, matches)
-//							.collect(Collectors.toSet()));
-//				} else if (gtPattern.containsArithmeticExpressions() && !gtPattern.containsCountExpressions()) {
-//					if (contextPatternInterpreter.getProperties().supports_arithmetic_attr_constraints()) {
-//						patternMatches.addAll(MatchFilter.getFilteredMatchStream(pattern, parameters, matches)
-//								.collect(Collectors.toSet()));
-//					} else {
-//						patternMatches.addAll(MatchFilter.getFilteredMatchStream(pattern, parameters, matches)
-//								.filter(match -> gtPattern.isMatchValid(match)).collect(Collectors.toSet()));
-//					}
-//				} else if (!gtPattern.containsArithmeticExpressions() && gtPattern.containsCountExpressions()) {
-//					if (contextPatternInterpreter.getProperties().supports_count_matches()) {
-//						patternMatches.addAll(MatchFilter.getFilteredMatchStream(pattern, parameters, matches)
-//								.collect(Collectors.toSet()));
-//					} else {
-//						patternMatches.addAll(MatchFilter.getFilteredMatchStream(pattern, parameters, matches)
-//								.filter(match -> gtPattern.isMatchValid(match)).collect(Collectors.toSet()));
-//					}
-//				} else {
-//					if (contextPatternInterpreter.getProperties().supports_arithmetic_attr_constraints()
-//							&& contextPatternInterpreter.getProperties().supports_count_matches()) {
-//						patternMatches.addAll(MatchFilter.getFilteredMatchStream(pattern, parameters, matches)
-//								.collect(Collectors.toSet()));
-//					} else {
-//						patternMatches.addAll(MatchFilter.getFilteredMatchStream(pattern, parameters, matches)
-//								.filter(match -> gtPattern.isMatchValid(match)).collect(Collectors.toSet()));
-//					}
-//				}
-//			} else {
-//				patternMatches.addAll(
-//						MatchFilter.getFilteredMatchStream(pattern, parameters, matches).collect(Collectors.toSet()));
-//			}
-
+			patternMatches.addAll(matchFilter.filterMatches(pattern));
 		}
-
 	}
 
 	/**
@@ -378,16 +381,13 @@ public abstract class IBeXPatternMatchingEngine<IBEX_MODEL extends IBeXModel> {
 		removedMatches.clear();
 
 		// Fetch matches from pm
-		updateMatchesInternal();
+		fetchMatchesFromEngine();
 
 		// (1) ADDED: Check for appearing match subscribers and filter matches
 		subscriptionsForAppearingMatchesOfPattern.keySet().stream().forEach(patternName -> {
 			// Check if pending matches became valid again due to attribute changes
 			// Fill filtered matches Map by calling the match stream
-
-			// TODO: Finish this, once rule and pattern api classes are finished
-			// matchStream(patternName, name2GTPattern.get(patternName).getParameters(),
-			// false);
+			getMatchStream(patternName, false);
 
 			// Check if existing matches recently became valid (pending) and add removal
 			// jobs
@@ -449,10 +449,7 @@ public abstract class IBeXPatternMatchingEngine<IBEX_MODEL extends IBeXModel> {
 		subscriptionsForDisappearingMatchesOfPattern.keySet().stream().forEach(patternName -> {
 			// Check if existing matches became invalid due to attribute changes
 			// Fill filtered matches Map by calling the match stream
-
-			// TODO: Finish this, once rule and pattern api classes are finished
-			// matchStream(patternName, name2GTPattern.get(patternName).getParameters(),
-			// false);
+			getMatchStream(patternName, false);
 
 			// Check if existing matches recently became invalid (not pending) and add
 			// removal jobs
