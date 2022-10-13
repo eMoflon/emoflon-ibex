@@ -1,12 +1,16 @@
 package org.emoflon.ibex.gt.engine;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternSet;
 import org.emoflon.ibex.common.operational.PushoutApproach;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTModel;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRuleSet;
 
-public class IBeXGTEngine<PM extends IBeXGTPatternMatcher> {
+public class IBeXGTEngine<PM extends IBeXGTPatternMatcher<PM, ?>> {
 
 	final protected PM patternMatcher;
 	final protected GTModel ibexModel;
@@ -97,6 +101,8 @@ public class IBeXGTEngine<PM extends IBeXGTPatternMatcher> {
 //		return interpreter.getCurrentModelState();
 //	}
 
+	protected Map<String, IBeXGTRule<?, ?>> name2typedRule = Collections.synchronizedMap(new LinkedHashMap<>());
+
 	/**
 	 * Creates a new IBeXGTEngine for given engine and resource set.
 	 * 
@@ -107,6 +113,10 @@ public class IBeXGTEngine<PM extends IBeXGTPatternMatcher> {
 		this.patternMatcher = patternMatcher;
 		this.ibexModel = ibexModel;
 		this.model = model;
+	}
+
+	protected void registerTypedRule(IBeXGTRule<?, ?> typedRule) {
+		name2typedRule.put(typedRule.ruleName, typedRule);
 	}
 
 	/**

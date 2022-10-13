@@ -1,39 +1,25 @@
 package org.emoflon.ibex.gt.engine;
 
-import java.util.Collection;
+import java.util.Map;
 
 import org.emoflon.ibex.common.operational.IMatch;
 
-public class IBeXGTMatch implements IMatch {
+public abstract class IBeXGTMatch<M extends IBeXGTMatch<M, P>, P extends IBeXGTPattern<P, M>> implements IMatch {
+
+	protected P typedPattern;
+
+	public IBeXGTMatch(final P typedPattern, final Map<String, Object> nodes) {
+		this.typedPattern = typedPattern;
+		initialize(nodes);
+	}
+
+	protected abstract void initialize(final Map<String, Object> nodes);
 
 	@Override
 	public String getPatternName() {
-		// TODO Auto-generated method stub
-		return null;
+		return typedPattern.patternName;
 	}
 
-	@Override
-	public Object get(String name) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Collection<String> getParameterNames() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Collection<Object> getObjects() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public long getHashCode() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+	public abstract boolean checkConditions();
 
 }
