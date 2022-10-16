@@ -3,16 +3,13 @@ package org.emoflon.ibex.gt.engine;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.emf.ecore.EObject;
-import org.emoflon.ibex.common.operational.IMatch;
 import org.emoflon.ibex.gt.api.IBeXGtAPI;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern;
 
@@ -42,6 +39,12 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 	 */
 	protected final GTPattern pattern;
 
+	protected Collection<M> matches = Collections.synchronizedSet(new LinkedHashSet<>());
+	protected Collection<M> pendingMatches = Collections.synchronizedSet(new LinkedHashSet<>());
+	protected Collection<M> filteredMatches = Collections.synchronizedSet(new LinkedHashSet<>());
+	protected Collection<M> addedMatches = Collections.synchronizedSet(new LinkedHashSet<>());
+	protected Collection<M> removedMatches = Collections.synchronizedSet(new LinkedHashSet<>());
+
 	/**
 	 * The map containing potential node bindings.
 	 */
@@ -50,7 +53,7 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 	/**
 	 * 
 	 */
-	protected Map<Consumer<M>, Consumer<IMatch>> typed2genericConsumers = Collections
+	protected Map<Consumer<M>, Consumer<IBeXGTMatch<?, ?>>> typed2genericConsumers = Collections
 			.synchronizedMap(new LinkedHashMap<>());
 
 	/**
@@ -82,6 +85,8 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 
 	public abstract boolean hasCountExpressions();
 
+	public abstract M createMatch(final Map<String, Object> nodes);
+
 	public boolean isEmptyPattern() {
 		return pattern.isEmpty();
 	}
@@ -99,16 +104,10 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 	 * @return an {@link Optional} for the match
 	 */
 	public Optional<M> findAnyMatch(boolean doUpdate) {
-		return patternMatcher.<M>getMatchStream(patternName, doUpdate).findAny();
-	}
+		if (doUpdate)
+			patternMatcher.updateMatches();
 
-	/**
-	 * Finds and returns a list of all matches for the pattern.
-	 * 
-	 * @return the list of matches (can be empty if no matches exist)
-	 */
-	public List<M> getMatches(boolean doUpdate) {
-		return patternMatcher.<M>getMatchStream(patternName, doUpdate).collect(Collectors.toList());
+		return filteredMatches.stream().findAny();
 	}
 
 	/**
@@ -116,8 +115,11 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 	 * 
 	 * @return the list of matches (can be empty if no matches exist)
 	 */
-	public Set<M> getMatchSet(boolean doUpdate) {
-		return patternMatcher.<M>getMatchStream(patternName, doUpdate).collect(Collectors.toSet());
+	public Collection<M> getMatches(boolean doUpdate) {
+		if (doUpdate)
+			patternMatcher.updateMatches();
+
+		return filteredMatches;
 	}
 
 	/**
@@ -126,7 +128,10 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 	 * @return the Stream of matches
 	 */
 	public Stream<M> matchStream(boolean doUpdate) {
-		return patternMatcher.<M>getMatchStream(patternName, doUpdate);
+		if (doUpdate)
+			patternMatcher.updateMatches();
+
+		return filteredMatches.stream();
 	}
 
 	/**
@@ -135,11 +140,10 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 	 * @return <code>true</code> if and only if there is at least one match
 	 */
 	public boolean hasMatches(boolean doUpdate) {
-		if (doUpdate) {
-			return patternMatcher.getMatchStream(patternName, doUpdate).findAny().isPresent();
-		} else {
-			return !patternMatcher.getFilteredMatches(patternName, doUpdate).isEmpty();
-		}
+		if (doUpdate)
+			patternMatcher.updateMatches();
+
+		return !filteredMatches.isEmpty();
 	}
 
 	/**
@@ -148,11 +152,10 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 	 * @return the number of matches
 	 */
 	public long countMatches(boolean doUpdate) {
-		if (doUpdate) {
-			return patternMatcher.getMatchStream(patternName, doUpdate).count();
-		} else {
-			return patternMatcher.getFilteredMatches(patternName, doUpdate).size();
-		}
+		if (doUpdate)
+			patternMatcher.updateMatches();
+
+		return filteredMatches.size();
 	}
 
 	/**
@@ -164,11 +167,11 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 	 */
 	public void subscribeAppearing(final Consumer<M> action) {
 		if (typed2genericConsumers.containsKey(action)) {
-			Consumer<IMatch> consumer = typed2genericConsumers.remove(action);
+			Consumer<IBeXGTMatch<?, ?>> consumer = typed2genericConsumers.remove(action);
 			patternMatcher.unsubscibeAppearing(patternName, consumer);
 		}
 
-		Consumer<IMatch> consumer = toIMatchConsumer(action);
+		Consumer<IBeXGTMatch<?, ?>> consumer = toIMatchConsumer(action);
 		typed2genericConsumers.put(action, consumer);
 		patternMatcher.subscribeAppearing(patternName, consumer);
 	}
@@ -183,7 +186,7 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 		if (!typed2genericConsumers.containsKey(action))
 			return;
 
-		Consumer<IMatch> consumer = typed2genericConsumers.remove(action);
+		Consumer<IBeXGTMatch<?, ?>> consumer = typed2genericConsumers.remove(action);
 		patternMatcher.unsubscibeAppearing(patternName, consumer);
 	}
 
@@ -196,11 +199,11 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 	 */
 	public void subscribeDisappearing(final Consumer<M> action) {
 		if (typed2genericConsumers.containsKey(action)) {
-			Consumer<IMatch> consumer = typed2genericConsumers.remove(action);
+			Consumer<IBeXGTMatch<?, ?>> consumer = typed2genericConsumers.remove(action);
 			patternMatcher.unsubscibeDisappearing(patternName, consumer);
 		}
 
-		Consumer<IMatch> consumer = toIMatchConsumer(action);
+		Consumer<IBeXGTMatch<?, ?>> consumer = toIMatchConsumer(action);
 		typed2genericConsumers.put(action, consumer);
 		patternMatcher.subscribeDisappearing(patternName, consumer);
 	}
@@ -215,7 +218,7 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 		if (!typed2genericConsumers.containsKey(action))
 			return;
 
-		Consumer<IMatch> consumer = typed2genericConsumers.remove(action);
+		Consumer<IBeXGTMatch<?, ?>> consumer = typed2genericConsumers.remove(action);
 		patternMatcher.unsubscibeDisappearing(patternName, consumer);
 
 	}
@@ -228,11 +231,11 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 	 */
 	public void subscribeMatchDisappears(final M match, final Consumer<M> action) {
 		if (typed2genericConsumers.containsKey(action)) {
-			Consumer<IMatch> consumer = typed2genericConsumers.remove(action);
+			Consumer<IBeXGTMatch<?, ?>> consumer = typed2genericConsumers.remove(action);
 			patternMatcher.unsubscribeMatchDisappears(match, consumer);
 		}
 
-		Consumer<IMatch> consumer = toIMatchConsumer(action);
+		Consumer<IBeXGTMatch<?, ?>> consumer = toIMatchConsumer(action);
 		typed2genericConsumers.put(action, consumer);
 		patternMatcher.subscribeMatchDisappears(match, consumer);
 	}
@@ -247,12 +250,32 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 		if (!typed2genericConsumers.containsKey(action))
 			return;
 
-		Consumer<IMatch> consumer = typed2genericConsumers.remove(action);
+		Consumer<IBeXGTMatch<?, ?>> consumer = typed2genericConsumers.remove(action);
 		patternMatcher.unsubscribeMatchDisappears(match, consumer);
 	}
 
+	protected Collection<M> getMatches() {
+		return matches;
+	}
+
+	protected Collection<M> getPendingMatches() {
+		return pendingMatches;
+	}
+
+	protected Collection<M> getFilteredMatches() {
+		return filteredMatches;
+	}
+
+	protected Collection<M> getAddedMatches() {
+		return addedMatches;
+	}
+
+	protected Collection<M> getRemovedMatches() {
+		return removedMatches;
+	}
+
 	@SuppressWarnings("unchecked")
-	public Consumer<IMatch> toIMatchConsumer(final Consumer<M> consumer) {
+	public Consumer<IBeXGTMatch<?, ?>> toIMatchConsumer(final Consumer<M> consumer) {
 		return (m) -> consumer.accept((M) m);
 	}
 

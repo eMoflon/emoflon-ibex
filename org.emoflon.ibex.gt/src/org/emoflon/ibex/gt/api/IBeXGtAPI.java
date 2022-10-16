@@ -10,7 +10,9 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.emoflon.ibex.gt.engine.IBeXGTEngine;
+import org.emoflon.ibex.gt.engine.IBeXGTPatternFactory;
 import org.emoflon.ibex.gt.engine.IBeXGTPatternMatcher;
+import org.emoflon.ibex.gt.engine.IBeXGTRuleFactory;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTModel;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.IBeXGTModelPackage;
 import org.emoflon.smartemf.persistence.SmartEMFResourceFactoryImpl;
@@ -44,27 +46,8 @@ public abstract class IBeXGtAPI<PM extends IBeXGTPatternMatcher<PM, ?>> {
 	 */
 	protected IBeXGTEngine<PM> gtEngine;
 
-	/**
-	 * TODO: Reimplement this once the new patter base-types are complete... Map
-	 * with all the rules and patterns of the model
-	 * 
-	 * @throws Exception
-	 */
-//	protected Map<String, Supplier<? extends GraphTransformationPattern<?,?>>> patternMap;
-//	TODO: Same..
-//	protected abstract Map<String, Supplier<? extends GraphTransformationPattern<?,?>>> initiatePatternMap();
-//	TODO: Same..
-//	/**
-//	 * returns all the patterns and rules of the model that do not need an input
-//	 * parameter
-//	 */
-//	public Map<String, Supplier<? extends GraphTransformationPattern<?, ?>>> getAllPatterns() {
-//		return patternMap;
-//	}
-//
-//	public GraphTransformationPattern<?, ?> getPattern(String patternName) {
-//		return patternMap.get(patternName).get();
-//	}
+	protected IBeXGTPatternFactory patternFactory;
+	protected IBeXGTRuleFactory ruleFactory;
 
 	public IBeXGtAPI() throws Exception {
 		workspacePath = getWorkspacePath();
@@ -116,7 +99,15 @@ public abstract class IBeXGtAPI<PM extends IBeXGTPatternMatcher<PM, ?>> {
 
 	public void initializeEngine() {
 		gtEngine = new IBeXGTEngine<PM>(createPatternMatcher(), ibexModel, model);
+		patternFactory = createPatternFactory();
+		ruleFactory = createRuleFactory();
+		initializeRules();
+		initializePatterns();
 	}
+
+	public abstract void initializeRules();
+
+	public abstract void initializePatterns();
 
 	/**
 	 * Initializes the package registry of the resource set.
@@ -134,6 +125,10 @@ public abstract class IBeXGtAPI<PM extends IBeXGTPatternMatcher<PM, ?>> {
 	protected abstract void registerModelMetamodels();
 
 	protected abstract PM createPatternMatcher();
+
+	protected abstract IBeXGTPatternFactory createPatternFactory();
+
+	protected abstract IBeXGTRuleFactory createRuleFactory();
 
 	/**
 	 * Returns the resource set opened for transformations with the API.

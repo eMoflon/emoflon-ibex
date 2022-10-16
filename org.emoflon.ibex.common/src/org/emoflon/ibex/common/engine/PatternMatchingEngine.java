@@ -6,10 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -20,47 +17,45 @@ import java.util.stream.Stream;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern;
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternInvocation;
 import org.emoflon.ibex.common.operational.IMatch;
-import org.emoflon.ibex.common.operational.SimpleMatch;
 
-public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, ENGINE_MATCH extends Object> {
+public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, EM extends Object, IM extends IMatch> {
 
 	final protected IBEX_MODEL ibexModel;
 	final protected ResourceSet model;
 	protected Map<String, IBeXPattern> name2pattern;
-	protected MatchFilter<IBEX_MODEL> matchFilter;
+	protected MatchFilter<IBEX_MODEL, IM> matchFilter;
 
 	/**
 	 * The matches (key: pattern name, value: list of matches).
 	 */
-	protected Map<String, Collection<IMatch>> matches = Collections.synchronizedMap(new LinkedHashMap<>());
-	protected Map<String, Collection<IMatch>> pendingMatches = Collections.synchronizedMap(new LinkedHashMap<>());
-	protected Map<String, Collection<IMatch>> filteredMatches = Collections.synchronizedMap(new LinkedHashMap<>());
-	protected Map<String, Collection<IMatch>> addedMatches = Collections.synchronizedMap(new LinkedHashMap<>());
-	protected Map<String, Collection<IMatch>> removedMatches = Collections.synchronizedMap(new LinkedHashMap<>());
+	protected Map<String, Collection<IM>> matches = Collections.synchronizedMap(new LinkedHashMap<>());
+	protected Map<String, Collection<IM>> pendingMatches = Collections.synchronizedMap(new LinkedHashMap<>());
+	protected Map<String, Collection<IM>> filteredMatches = Collections.synchronizedMap(new LinkedHashMap<>());
+	protected Map<String, Collection<IM>> addedMatches = Collections.synchronizedMap(new LinkedHashMap<>());
+	protected Map<String, Collection<IM>> removedMatches = Collections.synchronizedMap(new LinkedHashMap<>());
 
 	/**
 	 * Subscriptions for notification of new matches (key: pattern name, value: list
 	 * of consumers).
 	 */
-	protected Map<String, Set<Consumer<IMatch>>> subscriptionsForAppearingMatchesOfPattern = new HashMap<>();
+	protected Map<String, Set<Consumer<IM>>> subscriptionsForAppearingMatchesOfPattern = new HashMap<>();
 
 	/**
 	 * Subscriptions for notification of disappearing matches (key: pattern name,
 	 * value: list of consumers).
 	 */
-	protected Map<String, Set<Consumer<IMatch>>> subscriptionsForDisappearingMatchesOfPattern = new HashMap<>();
+	protected Map<String, Set<Consumer<IM>>> subscriptionsForDisappearingMatchesOfPattern = new HashMap<>();
 
 	/**
 	 * Subscriptions for notification of disappearing matches (key: match, value:
 	 * list of consumers).
 	 */
-	protected Map<IMatch, Set<Consumer<IMatch>>> subscriptionsForDisappearingMatches = new HashMap<>();
+	protected Map<IM, Set<Consumer<IM>>> subscriptionsForDisappearingMatches = new HashMap<>();
 
-	protected Map<IMatch, Queue<Consumer<IMatch>>> appearingSubscriptionJobs = Collections
+	protected Map<IM, Queue<Consumer<IM>>> appearingSubscriptionJobs = Collections
 			.synchronizedMap(new LinkedHashMap<>());
-	protected Map<IMatch, Queue<Consumer<IMatch>>> disappearingSubscriptionJobs = Collections
+	protected Map<IM, Queue<Consumer<IM>>> disappearingSubscriptionJobs = Collections
 			.synchronizedMap(new LinkedHashMap<>());
 
 	public PatternMatchingEngine(final IBEX_MODEL ibexModel, final ResourceSet model) {
@@ -68,12 +63,24 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, ENGINE
 		this.model = model;
 		for (IBeXPattern pattern : ibexModel.getPatternSet().getPatterns()) {
 			name2pattern.put(pattern.getName(), pattern);
-			matches.put(pattern.getName(), Collections.synchronizedCollection(new LinkedHashSet<>()));
+			insertNewMatchCollection(pattern.getName());
 		}
 
 		initialize();
 		matchFilter = createMatchFilter();
 	}
+
+	protected abstract Collection<IM> insertNewMatchCollection(final String patternName);
+
+	protected abstract Collection<IM> insertNewPendingMatchCollection(final String patternName);
+
+	protected abstract Collection<IM> insertNewFilteredMatchCollection(final String patternName);
+
+	protected abstract Collection<IM> insertNewAddedMatchCollection(final String patternName);
+
+	protected abstract Collection<IM> insertNewRemovedMatchCollection(final String patternName);
+
+	protected abstract void insertMatch(final IM match, final Collection<? extends IMatch> collection);
 
 	/**
 	 * Initialize the actual underlying PM engine and inject resource listeners into
@@ -84,7 +91,9 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, ENGINE
 	/**
 	 * Update the index structures of the actual underlying pattern matching engine.
 	 */
-	protected abstract void fetchMatchesFromEngine();
+	protected abstract void fetchMatches();
+
+	public abstract IM transformToIMatch(EM match);
 
 	/**
 	 * Creates a match filter object that can be used to filter matches with
@@ -93,7 +102,13 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, ENGINE
 	 * 
 	 * @return IMatchFilter
 	 */
-	protected abstract MatchFilter<IBEX_MODEL> createMatchFilter();
+	protected abstract MatchFilter<IBEX_MODEL, IM> createMatchFilter();
+
+	/**
+	 * Clean up any allocated memory for match indexing purposes (aka. shut down
+	 * engine).
+	 */
+	public abstract void terminate();
 
 	/**
 	 * Returns all currently available matches for the pattern, but without
@@ -105,7 +120,7 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, ENGINE
 	 *                    before filtering matches
 	 * @return a {@link Collection} of matches
 	 */
-	public synchronized Collection<IMatch> getMatches(final String patternName, boolean doUpdate) {
+	public synchronized Collection<IM> getMatches(final String patternName, boolean doUpdate) {
 		if (doUpdate)
 			updateMatches();
 
@@ -121,7 +136,7 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, ENGINE
 	 *                    before filtering matches
 	 * @return a {@link Collection} of matches
 	 */
-	public synchronized Collection<IMatch> getFilteredMatches(final String patternName, boolean doUpdate) {
+	public synchronized Collection<IM> getFilteredMatches(final String patternName, boolean doUpdate) {
 		if (doUpdate)
 			updateMatches();
 
@@ -136,8 +151,7 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, ENGINE
 	 *                    before filtering matches
 	 * @return a {@link Stream} of matches
 	 */
-	@SuppressWarnings("unchecked")
-	public <M extends IMatch> Stream<M> getMatchStream(final String patternName, boolean doUpdate) {
+	public Stream<IM> getMatchStream(final String patternName, boolean doUpdate) {
 		// Hiding update calls from the user seems dangerous to me. In my experience
 		// this practice more often than not leads to a huge amount of nested update
 		// calls, leading to stack overflows.
@@ -145,7 +159,7 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, ENGINE
 			updateMatches();
 
 		if (filteredMatches.containsKey(patternName)) {
-			return filteredMatches.get(patternName).stream().map(m -> (M) m);
+			return filteredMatches.get(patternName).stream();
 		} else {
 			IBeXPattern pattern = name2pattern.get(patternName);
 			if (pattern.getDependencies().isEmpty()) {
@@ -157,31 +171,24 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, ENGINE
 				});
 				updateFilteredMatches(patternName);
 			}
-			return filteredMatches.get(patternName).stream().map(m -> (M) m);
+			return filteredMatches.get(patternName).stream();
 		}
 	}
-
-	/**
-	 * Clean up any allocated memory for match indexing purposes (aka. shut down
-	 * engine).
-	 */
-	public abstract void terminate();
-
-	public abstract IMatch transformToIMatch(ENGINE_MATCH match);
 
 	/**
 	 * Adds a match to the set of valid matches.
 	 * 
 	 * @param match the match
 	 */
-	protected void addMatch(ENGINE_MATCH eMatch) {
-		IMatch match = transformToIMatch(eMatch);
+	protected void addMatch(EM eMatch) {
+		IM match = transformToIMatch(eMatch);
 
 		String patternName = match.getPatternName();
-		if (!matches.containsKey(patternName)) {
-			matches.put(patternName, Collections.synchronizedSet(new HashSet<IMatch>()));
+		Collection<IM> matches = this.matches.get(patternName);
+		if (matches == null) {
+			matches = insertNewMatchCollection(patternName);
 		}
-		matches.get(patternName).add(match);
+		matches.add(match);
 
 //		Check whether there are any subscribers, if not return. -> No need to track deltas.
 		if (subscriptionsForAppearingMatchesOfPattern.isEmpty() && subscriptionsForDisappearingMatches.isEmpty()
@@ -193,10 +200,11 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, ENGINE
 			return;
 		}
 
-		if (!addedMatches.containsKey(patternName)) {
-			addedMatches.put(patternName, Collections.synchronizedSet(new HashSet<IMatch>()));
+		Collection<IM> addedMatches = this.addedMatches.get(patternName);
+		if (addedMatches == null) {
+			addedMatches = insertNewAddedMatchCollection(patternName);
 		}
-		addedMatches.get(patternName).add(match);
+		addedMatches.add(match);
 	}
 
 	/**
@@ -204,12 +212,13 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, ENGINE
 	 * 
 	 * @param match the match
 	 */
-	protected void removeMatch(ENGINE_MATCH eMatch) {
-		IMatch match = transformToIMatch(eMatch);
+	protected void removeMatch(EM eMatch) {
+		IM match = transformToIMatch(eMatch);
 
 		String patternName = match.getPatternName();
-		if (matches.containsKey(patternName)) {
-			matches.get(patternName).remove(match);
+		Collection<IM> matches = this.matches.get(patternName);
+		if (matches != null) {
+			matches.remove(match);
 
 //			Check whether there are any subscribers, if not return. -> No need to track deltas.
 			if (subscriptionsForAppearingMatchesOfPattern.isEmpty() && subscriptionsForDisappearingMatches.isEmpty()
@@ -221,10 +230,11 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, ENGINE
 				return;
 			}
 
-			if (!removedMatches.containsKey(patternName)) {
-				removedMatches.put(patternName, Collections.synchronizedSet(new HashSet<IMatch>()));
+			Collection<IM> removedMatches = this.removedMatches.get(patternName);
+			if (removedMatches == null) {
+				removedMatches = insertNewRemovedMatchCollection(patternName);
 			}
-			removedMatches.get(patternName).add(match);
+			removedMatches.add(match);
 
 		} else {
 			throw new IllegalArgumentException("Cannot remove a match which was never added!");
@@ -237,10 +247,10 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, ENGINE
 	 * @param patternName the name of the pattern
 	 * @param consumer    the consumer to add
 	 */
-	public void subscribeAppearing(final String patternName, final Consumer<IMatch> consumer) {
-		Set<Consumer<IMatch>> subs = subscriptionsForAppearingMatchesOfPattern.get(patternName);
+	public void subscribeAppearing(final String patternName, final Consumer<IM> consumer) {
+		Set<Consumer<IM>> subs = subscriptionsForAppearingMatchesOfPattern.get(patternName);
 		if (subs == null) {
-			subs = Collections.synchronizedSet(new LinkedHashSet<Consumer<IMatch>>());
+			subs = Collections.synchronizedSet(new LinkedHashSet<Consumer<IM>>());
 			subscriptionsForAppearingMatchesOfPattern.put(patternName, subs);
 		}
 		subs.add(consumer);
@@ -253,7 +263,7 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, ENGINE
 	 * @param patternName the name of the pattern
 	 * @param consumer    the consumer to remove
 	 */
-	public void unsubscibeAppearing(final String patternName, final Consumer<IMatch> consumer) {
+	public void unsubscibeAppearing(final String patternName, final Consumer<IM> consumer) {
 		if (subscriptionsForAppearingMatchesOfPattern.containsKey(patternName)) {
 			subscriptionsForAppearingMatchesOfPattern.get(patternName).remove(consumer);
 		}
@@ -265,10 +275,10 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, ENGINE
 	 * @param patternName the name of the pattern
 	 * @param consumer    the consumer to add
 	 */
-	public void subscribeDisappearing(final String patternName, final Consumer<IMatch> consumer) {
-		Set<Consumer<IMatch>> subs = subscriptionsForDisappearingMatchesOfPattern.get(patternName);
+	public void subscribeDisappearing(final String patternName, final Consumer<IM> consumer) {
+		Set<Consumer<IM>> subs = subscriptionsForDisappearingMatchesOfPattern.get(patternName);
 		if (subs == null) {
-			subs = Collections.synchronizedSet(new LinkedHashSet<Consumer<IMatch>>());
+			subs = Collections.synchronizedSet(new LinkedHashSet<Consumer<IM>>());
 			subscriptionsForDisappearingMatchesOfPattern.put(patternName, subs);
 		}
 		subs.add(consumer);
@@ -281,7 +291,7 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, ENGINE
 	 * @param patternName the name of the pattern
 	 * @param consumer    the consumer to remove
 	 */
-	public void unsubscibeDisappearing(final String patternName, final Consumer<IMatch> consumer) {
+	public void unsubscibeDisappearing(final String patternName, final Consumer<IM> consumer) {
 		if (subscriptionsForDisappearingMatchesOfPattern.containsKey(patternName)) {
 			subscriptionsForDisappearingMatchesOfPattern.get(patternName).remove(consumer);
 		}
@@ -293,10 +303,10 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, ENGINE
 	 * @param match    the match
 	 * @param consumer the consumer to add
 	 */
-	public void subscribeMatchDisappears(final IMatch match, final Consumer<IMatch> consumer) {
-		Set<Consumer<IMatch>> subs = subscriptionsForDisappearingMatches.get(match);
+	public void subscribeMatchDisappears(final IM match, final Consumer<IM> consumer) {
+		Set<Consumer<IM>> subs = subscriptionsForDisappearingMatches.get(match);
 		if (subs == null) {
-			subs = Collections.synchronizedSet(new LinkedHashSet<Consumer<IMatch>>());
+			subs = Collections.synchronizedSet(new LinkedHashSet<Consumer<IM>>());
 			subscriptionsForDisappearingMatches.put(match, subs);
 		}
 		subs.add(consumer);
@@ -308,24 +318,10 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, ENGINE
 	 * @param match    the match
 	 * @param consumer the consumer to add
 	 */
-	public void unsubscribeMatchDisappears(final IMatch match, final Consumer<IMatch> consumer) {
+	public void unsubscribeMatchDisappears(final IM match, final Consumer<IM> consumer) {
 		if (subscriptionsForDisappearingMatches.containsKey(match)) {
 			subscriptionsForDisappearingMatches.get(match).remove(consumer);
 		}
-	}
-
-	public IMatch createEmptyMatchForPattern(final IBeXPattern pattern) {
-		// TODO: Use the pattern to create proper typed match!
-		SimpleMatch match = new SimpleMatch(pattern.getName());
-		if (pattern.isEmpty()) {
-			return match;
-		} else {
-			pattern.getSignatureNodes().forEach(node -> match.put(node.getName(), null));
-		}
-
-		match.setHashCode(Objects.hash(match.getParameterNames()));
-
-		return match;
 	}
 
 	protected synchronized void updateMatchesInternal(final String patternName) {
@@ -347,40 +343,9 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, ENGINE
 	}
 
 	protected void updateFilteredMatches(final String patternName) {
-		Collection<IMatch> patternMatches = Collections.synchronizedSet(new HashSet<IMatch>());
-		filteredMatches.put(patternName, patternMatches);
-
+		Collection<IM> patternMatches = insertNewFilteredMatchCollection(patternName);
 		IBeXPattern pattern = name2pattern.get(patternName);
-		if (pattern.isEmpty()) {
-			// Check for any NACs or PACs that are attached to the empty-create pattern
-			List<IBeXPatternInvocation> invocations = Collections.synchronizedList(new LinkedList<>());
-			invocations.addAll(pattern.getInvocations());
-
-			if (invocations.isEmpty()) {
-				IMatch match = createEmptyMatchForPattern(name2pattern.get(patternName));
-				patternMatches.add(match);
-			} else {
-				boolean invocationsViolated = false;
-				for (IBeXPatternInvocation invocation : invocations) {
-					updateMatchesInternal(invocation.getInvocation().getName());
-					Collection<IMatch> matches = filteredMatches.get(invocation.getInvocation().getName());
-					if (invocation.isPositive() && (matches == null || matches.size() <= 0)) {
-						invocationsViolated = true;
-					}
-					if (!invocation.isPositive() && matches.size() > 0) {
-						invocationsViolated = true;
-					}
-				}
-				if (!invocationsViolated) {
-					IMatch match = createEmptyMatchForPattern(name2pattern.get(patternName));
-					patternMatches.add(match);
-				} else {
-					patternMatches.clear();
-				}
-			}
-		} else {
-			patternMatches.addAll(matchFilter.filterMatches(pattern));
-		}
+		patternMatches.addAll(matchFilter.filterMatches(pattern));
 	}
 
 	/**
@@ -388,12 +353,12 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, ENGINE
 	 */
 	public synchronized void updateMatches() {
 		// Clear old state
-		filteredMatches.clear();
-		addedMatches.clear();
-		removedMatches.clear();
+		filteredMatches.forEach((patternName, collection) -> collection.clear());
+		addedMatches.forEach((patternName, collection) -> collection.clear());
+		removedMatches.forEach((patternName, collection) -> collection.clear());
 
 		// Fetch matches from pm
-		fetchMatchesFromEngine();
+		fetchMatches();
 
 		// (1) ADDED: Check for appearing match subscribers and filter matches
 		subscriptionsForAppearingMatchesOfPattern.keySet().stream().forEach(patternName -> {
@@ -404,7 +369,7 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, ENGINE
 			// Check if existing matches recently became valid (pending) and add removal
 			// jobs
 
-			Collection<IMatch> matchCollection;
+			Collection<IM> matchCollection;
 			matchCollection = matches.get(patternName);
 			matchCollection.parallelStream()
 					.filter(match -> filteredMatches.containsKey(patternName)
@@ -412,17 +377,16 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, ENGINE
 					.filter(match -> pendingMatches.containsKey(patternName)
 							&& pendingMatches.get(patternName).contains(match))
 					.forEach(match -> {
-						Collection<IMatch> pending = pendingMatches.get(patternName);
+						Collection<IM> pending = pendingMatches.get(patternName);
 						pending.remove(match);
 
-						Collection<IMatch> added = addedMatches.get(patternName);
+						Collection<IM> added = addedMatches.get(patternName);
 						if (added == null) {
-							added = Collections.synchronizedSet(new HashSet<>());
-							addedMatches.put(patternName, added);
+							added = insertNewAddedMatchCollection(patternName);
 						}
 						added.add(match);
 
-						Queue<Consumer<IMatch>> subs = appearingSubscriptionJobs.get(match);
+						Queue<Consumer<IM>> subs = appearingSubscriptionJobs.get(match);
 						if (subs == null) {
 							subs = new LinkedBlockingQueue<>();
 							appearingSubscriptionJobs.put(match, subs);
@@ -432,21 +396,20 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, ENGINE
 
 			if (addedMatches.containsKey(patternName)) {
 				// Remove structurally valid matches that do not satisfy additional constraints
-				Set<IMatch> pendingAdded = new HashSet<>();
+				Set<IM> pendingAdded = new HashSet<>();
 				addedMatches.get(patternName).stream().filter(match -> !filteredMatches.containsKey(patternName)
 						|| !filteredMatches.get(patternName).contains(match)).forEach(match -> {
 							pendingAdded.add(match);
-							Collection<IMatch> pending = pendingMatches.get(patternName);
+							Collection<IM> pending = pendingMatches.get(patternName);
 							if (pending == null) {
-								pending = Collections.synchronizedSet(new HashSet<>());
-								pendingMatches.put(patternName, pending);
+								pending = insertNewPendingMatchCollection(patternName);
 							}
 							pending.add(match);
 						});
 				addedMatches.get(patternName).removeAll(pendingAdded);
 
 				addedMatches.get(patternName).stream().forEach(match -> {
-					Queue<Consumer<IMatch>> subs = appearingSubscriptionJobs.get(match);
+					Queue<Consumer<IM>> subs = appearingSubscriptionJobs.get(match);
 					if (subs == null) {
 						subs = new LinkedBlockingQueue<>();
 						appearingSubscriptionJobs.put(match, subs);
@@ -465,7 +428,7 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, ENGINE
 
 			// Check if existing matches recently became invalid (not pending) and add
 			// removal jobs
-			Collection<IMatch> matchCollection;
+			Collection<IM> matchCollection;
 			matchCollection = matches.get(patternName);
 			matchCollection.parallelStream()
 					.filter(match -> !filteredMatches.containsKey(patternName)
@@ -473,21 +436,19 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, ENGINE
 					.filter(match -> !pendingMatches.containsKey(patternName)
 							|| !pendingMatches.get(patternName).contains(match))
 					.forEach(match -> {
-						Collection<IMatch> pending = pendingMatches.get(patternName);
+						Collection<IM> pending = pendingMatches.get(patternName);
 						if (pending == null) {
-							pending = Collections.synchronizedSet(new HashSet<>());
-							pendingMatches.put(patternName, pending);
+							pending = insertNewPendingMatchCollection(patternName);
 						}
 						pending.add(match);
 
-						Collection<IMatch> removed = removedMatches.get(patternName);
+						Collection<IM> removed = removedMatches.get(patternName);
 						if (removed == null) {
-							removed = Collections.synchronizedSet(new HashSet<>());
-							removedMatches.put(patternName, removed);
+							removed = insertNewRemovedMatchCollection(patternName);
 						}
 						removed.add(match);
 
-						Queue<Consumer<IMatch>> subs = disappearingSubscriptionJobs.get(match);
+						Queue<Consumer<IM>> subs = disappearingSubscriptionJobs.get(match);
 						if (subs == null) {
 							subs = new LinkedBlockingQueue<>();
 							disappearingSubscriptionJobs.put(match, subs);
@@ -498,7 +459,7 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, ENGINE
 			if (removedMatches.containsKey(patternName)) {
 				// Ignore previously invalidated matches due to violation of additional
 				// constraints
-				Set<IMatch> pendingRemoved = new HashSet<>();
+				Set<IM> pendingRemoved = new HashSet<>();
 				removedMatches.get(patternName).stream().filter(match -> pendingMatches.containsKey(patternName)
 						&& pendingMatches.get(patternName).contains(match)).forEach(match -> {
 							pendingRemoved.add(match);
@@ -507,7 +468,7 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, ENGINE
 				removedMatches.get(patternName).removeAll(pendingRemoved);
 
 				removedMatches.get(patternName).forEach(match -> {
-					Queue<Consumer<IMatch>> subs = disappearingSubscriptionJobs.get(match);
+					Queue<Consumer<IM>> subs = disappearingSubscriptionJobs.get(match);
 					if (subs == null) {
 						subs = new LinkedBlockingQueue<>();
 						disappearingSubscriptionJobs.put(match, subs);
@@ -518,13 +479,13 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, ENGINE
 		});
 
 		// Check if any match removed subscriptions are triggered by removals
-		Set<IMatch> removals = subscriptionsForDisappearingMatches.keySet().parallelStream()
+		Set<IM> removals = subscriptionsForDisappearingMatches.keySet().parallelStream()
 				.filter(match -> removedMatches.containsKey(match.getPatternName()))
 				.filter(match -> removedMatches.get(match.getPatternName()).contains(match))
 				.collect(Collectors.toSet());
 
-		for (IMatch removal : removals) {
-			Queue<Consumer<IMatch>> subs = disappearingSubscriptionJobs.get(removal);
+		for (IM removal : removals) {
+			Queue<Consumer<IM>> subs = disappearingSubscriptionJobs.get(removal);
 			if (subs == null) {
 				subs = new LinkedBlockingQueue<>();
 				disappearingSubscriptionJobs.put(removal, subs);
@@ -533,7 +494,7 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, ENGINE
 		}
 
 		// Remove jobs for appearing matches for each disappeared match
-		for (IMatch removal : removals) {
+		for (IM removal : removals) {
 			appearingSubscriptionJobs.remove(removal);
 		}
 
@@ -542,17 +503,17 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, ENGINE
 
 	public void notifySubscriptions() {
 		while (!disappearingSubscriptionJobs.isEmpty()) {
-			IMatch nextMatch = disappearingSubscriptionJobs.keySet().iterator().next();
-			Queue<Consumer<IMatch>> subs = disappearingSubscriptionJobs.get(nextMatch);
+			IM nextMatch = disappearingSubscriptionJobs.keySet().iterator().next();
+			Queue<Consumer<IM>> subs = disappearingSubscriptionJobs.get(nextMatch);
 			disappearingSubscriptionJobs.remove(nextMatch);
 			while (!subs.isEmpty()) {
 				subs.poll().accept(nextMatch);
 			}
 		}
 
-		Set<IMatch> jobs = new LinkedHashSet<>(appearingSubscriptionJobs.keySet());
-		for (IMatch nextMatch : jobs) {
-			Queue<Consumer<IMatch>> subs = appearingSubscriptionJobs.get(nextMatch);
+		Set<IM> jobs = new LinkedHashSet<>(appearingSubscriptionJobs.keySet());
+		for (IM nextMatch : jobs) {
+			Queue<Consumer<IM>> subs = appearingSubscriptionJobs.get(nextMatch);
 			if (subs == null || subs.isEmpty()) {
 				appearingSubscriptionJobs.remove(nextMatch);
 				continue;
