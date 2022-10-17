@@ -106,7 +106,8 @@ public class IBeXGTEngine<PM extends IBeXGTPatternMatcher<PM, ?>> {
 //		return interpreter.getCurrentModelState();
 //	}
 
-	protected Map<String, IBeXGTRule<?, ?>> name2typedRule = Collections.synchronizedMap(new LinkedHashMap<>());
+	protected Map<String, IBeXGTRule<?, ?, ?, ?, ?>> name2typedRule = Collections
+			.synchronizedMap(new LinkedHashMap<>());
 
 	/**
 	 * Creates a new IBeXGTEngine for given engine and resource set.
@@ -128,7 +129,7 @@ public class IBeXGTEngine<PM extends IBeXGTPatternMatcher<PM, ?>> {
 		}
 	}
 
-	protected void registerTypedRule(IBeXGTRule<?, ?> typedRule) {
+	protected void registerTypedRule(IBeXGTRule<?, ?, ?, ?, ?> typedRule) {
 		name2typedRule.put(typedRule.ruleName, typedRule);
 	}
 

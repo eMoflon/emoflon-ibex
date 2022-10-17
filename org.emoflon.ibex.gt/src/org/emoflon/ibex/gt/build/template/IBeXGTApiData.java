@@ -33,6 +33,8 @@ public class IBeXGTApiData {
 	final public Map<GTPattern, String> pattern2matchClassName = new LinkedHashMap<>();
 	final public Map<GTPattern, String> pattern2patternClassName = new LinkedHashMap<>();
 	final public Map<GTRule, String> rule2ruleClassName = new LinkedHashMap<>();
+	final public Map<GTRule, String> rule2CoPatternClassName = new LinkedHashMap<>();
+	final public Map<GTRule, String> rule2CoMatchClassName = new LinkedHashMap<>();
 	final public Map<GTPattern, GTRule> pattern2rule = new LinkedHashMap<>();
 
 	public IBeXGTApiData(final GTModel model) {
@@ -65,6 +67,8 @@ public class IBeXGTApiData {
 			rulePatterns.add((GTPattern) rule.getPrecondition());
 			rule2ruleClassName.put(rule, firstToUpper(rule.getName()) + "Rule");
 			pattern2matchClassName.put((GTPattern) rule.getPrecondition(), firstToUpper(rule.getName()) + "Match");
+			rule2CoPatternClassName.put(rule, firstToUpper(rule.getPostcondition().getName()));
+			rule2CoMatchClassName.put(rule, firstToUpper(rule.getName()) + "CoMatch");
 			pattern2rule.put((GTPattern) rule.getPrecondition(), rule);
 		});
 		model.getPatternSet().getPatterns().stream().map(pattern -> (GTPattern) pattern)

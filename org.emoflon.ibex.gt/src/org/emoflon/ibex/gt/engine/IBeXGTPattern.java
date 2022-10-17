@@ -63,7 +63,7 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 	 * @param interpreter the interpreter
 	 * @param patternName the name of the pattern
 	 */
-	public IBeXGTPattern(final IBeXGtAPI<? extends IBeXGTPatternMatcher<?, ?>, ?, ?> api, final GTPattern pattern) {
+	public IBeXGTPattern(final IBeXGtAPI<?, ?, ?> api, final GTPattern pattern) {
 		this.api = api;
 		this.gtEngine = api.getGTEngine();
 		this.patternMatcher = api.getGTEngine().getPatternMatcher();
@@ -73,30 +73,32 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 	}
 
 	/**
+	 * Returns the parameters.
+	 * 
+	 * @return the parameters
+	 */
+	public abstract Map<String, Object> getParameters();
+
+	public abstract void setParameters(final Map<String, Object> parameters);
+
+	/**
 	 * Returns the names of the parameters which can be bound for this pattern.
 	 * 
 	 * @return the parameter names
 	 */
 	protected abstract Collection<String> getParameterNames();
 
-	protected abstract boolean checkConditions(M match);
+	protected abstract boolean checkConditions(final M match);
 
 	public abstract boolean hasArithmeticExpressions();
 
 	public abstract boolean hasCountExpressions();
 
-	public abstract M createMatch(final Map<String, Object> nodes);
+	protected abstract M createMatch(final Map<String, Object> nodes);
 
 	public boolean isEmptyPattern() {
 		return pattern.isEmpty();
 	}
-
-	/**
-	 * Returns the parameters.
-	 * 
-	 * @return the parameters
-	 */
-	public abstract Map<String, Object> getParameters();
 
 	/**
 	 * Finds and returns an arbitrary match for the pattern if a match exists.

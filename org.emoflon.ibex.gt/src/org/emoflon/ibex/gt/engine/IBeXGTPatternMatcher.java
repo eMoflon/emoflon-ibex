@@ -28,6 +28,10 @@ public abstract class IBeXGTPatternMatcher<E extends IBeXGTPatternMatcher<E, ENG
 		name2typedPattern.put(typedPattern.patternName, typedPattern);
 	}
 
+	protected void unRegisterTypedPattern(IBeXGTPattern<?, ?> typedPattern) {
+		name2typedPattern.remove(typedPattern.patternName, typedPattern);
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	protected Collection<IBeXGTMatch<?, ?>> insertNewMatchCollection(final String patternName) {

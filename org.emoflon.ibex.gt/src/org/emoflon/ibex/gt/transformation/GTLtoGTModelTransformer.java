@@ -448,7 +448,7 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 
 	protected GTPattern transformPostcondition(SlimRule pattern) {
 		GTPattern gtPattern = factory.createGTPattern();
-		gtPattern.setName(pattern.getName());
+		gtPattern.setName(pattern.getName() + "CoPattern");
 
 		// Context nodes
 		for (SlimRuleNodeContext context : pattern.getContextNodes().stream().map(n -> (SlimRuleNodeContext) n)

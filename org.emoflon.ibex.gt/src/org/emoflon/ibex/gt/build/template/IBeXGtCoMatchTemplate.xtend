@@ -1,35 +1,39 @@
 package org.emoflon.ibex.gt.build.template
 
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern
+import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRule
 
-class IBeXGtMatchTemplate extends GeneratorTemplate<GTPattern>{
+class IBeXGtCoMatchTemplate extends GeneratorTemplate<GTRule>{
 	
-	protected String patternClassName;
+	protected String ruleClassName;
+	protected String matchClassName;
+	protected String coPatternClassName;
+	protected GTPattern coPattern;
 	
-	new(IBeXGTApiData data, GTPattern context) {
+	new(IBeXGTApiData data, GTRule context) {
 		super(data, context)
 	}
 	
 	override init() {
 		packageName = data.matchPackage
-		className = data.pattern2matchClassName.get(context)
+		className = data.rule2CoMatchClassName.get(context)
 		fqn = packageName + "." + className;
 		filePath = data.matchPackagePath + "/" + className
 		
 		imports.add("java.util.List")
 		imports.add("java.util.Map")
 		imports.add("org.emoflon.ibex.common.operational.HashUtil")
-		imports.add("org.emoflon.ibex.gt.engine.IBeXGTMatch")
-		if(data.pattern2rule.containsKey(context)) {
-			val rule = data.pattern2rule.get(context)
-			patternClassName = data.rule2ruleClassName.get(rule);
-			imports.add(data.rulePackage + "." + patternClassName)
-		} else {
-			patternClassName = data.pattern2patternClassName.get(context)
-			imports.add(data.patternPackage + "." + data.pattern2patternClassName.get(context))
-		}
+		imports.add("org.emoflon.ibex.gt.engine.IBeXGTCoMatch")
+		ruleClassName = data.rule2ruleClassName.get(context);
+		matchClassName = data.pattern2matchClassName.get(context.precondition)
+		coPatternClassName = data.rule2CoPatternClassName.get(context)
 		
-		context.signatureNodes
+		imports.add(data.rulePackage + "." + ruleClassName)
+		imports.add(data.patternPackage + "." + coPatternClassName)
+		imports.add(data.matchPackage + "." + matchClassName)
+		
+		coPattern = context.postcondition as GTPattern
+		coPattern.signatureNodes
 			.map[node | data.model.metaData.name2package.get(node.eClass.EPackage.name).classifierName2FQN.get(node.type)]
 			.forEach[fqn | imports.add(fqn)]
 	}
@@ -41,14 +45,14 @@ class IBeXGtMatchTemplate extends GeneratorTemplate<GTPattern>{
 import «imp»;
 «ENDFOR»
 
-public class «className» extends IBeXGTMatch<«className», «patternClassName»> {
+public class «className» extends IBeXGTCoMatch<«className», «coPatternClassName», «ruleClassName», «ruleClassName», «matchClassName»> {
 	
-	«FOR node : context.signatureNodes»
+	«FOR node : coPattern.signatureNodes»
 	protected «node.type.name» «node.name.toFirstLower»;
 	«ENDFOR»
 	
-	public «className»(final «patternClassName» typedPattern, final Map<String, Object> nodes) {
-		super(typedPattern, nodes);
+	public «className»(final «ruleClassName» typedRule, final «coPatternClassName» typedCoPattern, final Map<String, Object> nodes) {
+		super(typedRule, typedCoPattern, nodes);
 	}
 	
 	public «className»(final «className» other) {
@@ -63,7 +67,7 @@ public class «className» extends IBeXGTMatch<«className», «patternClassName
 	@Override
 	public Object get(String name) {
 		return switch(name) -> {
-			«FOR node : context.signatureNodes»
+			«FOR node : coPattern.signatureNodes»
 			case "«node.name»" -> yield «node.name.toFirstLower»
 			«ENDFOR»
 		};
@@ -72,7 +76,7 @@ public class «className» extends IBeXGTMatch<«className», «patternClassName
 	@Override
 	public Collection<String> getParameterNames() {
 		return List.of(
-			«FOR node : context.signatureNodes SEPARATOR ', '» 
+			«FOR node : coPattern.signatureNodes SEPARATOR ', '» 
 			"«node.name»"
 			«ENDFOR»
 		);
@@ -81,7 +85,7 @@ public class «className» extends IBeXGTMatch<«className», «patternClassName
 	@Override
 	public Collection<Object> getObjects() {
 		return List.of(
-			«FOR node : context.signatureNodes SEPARATOR ', '» 
+			«FOR node : coPattern.signatureNodes SEPARATOR ', '» 
 			«node.name.toFirstLower»
 			«ENDFOR»
 		);
@@ -89,14 +93,14 @@ public class «className» extends IBeXGTMatch<«className», «patternClassName
 
 	@Override
 	protected void initialize(final Map<String, Object> nodes) {
-		«FOR node : context.signatureNodes»
+		«FOR node : coPattern.signatureNodes»
 		«node.name.toFirstLower» = («node.type.name») nodes.get("«node.name»");
 		«ENDFOR»
 	}
 	
 	@Override
 	protected void initialize(final «className» other) {
-		«FOR node : context.signatureNodes»
+		«FOR node : coPattern.signatureNodes»
 		«node.name.toFirstLower» = other.«node.name.toFirstLower»;
 		«ENDFOR»
 	}
@@ -111,7 +115,7 @@ public class «className» extends IBeXGTMatch<«className», «patternClassName
 		return new «className»(this);
 	}
 	
-	«FOR node : context.signatureNodes»
+	«FOR node : coPattern.signatureNodes»
 	public «node.type.name» «node.name.toFirstLower»() {
 		return «node.name.toFirstLower»;
 	}
