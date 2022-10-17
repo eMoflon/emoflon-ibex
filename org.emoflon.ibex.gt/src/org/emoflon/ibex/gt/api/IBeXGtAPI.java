@@ -31,7 +31,7 @@ import org.emoflon.smartemf.persistence.SmartEMFResourceFactoryImpl;
  * Per default, all rule applications use the single pushout approach. This
  * behavior can be changed for the whole API or for single rules.
  */
-public abstract class IBeXGtAPI<PM extends IBeXGTPatternMatcher<PM, ?>> {
+public abstract class IBeXGtAPI<PM extends IBeXGTPatternMatcher<PM, ?>, PF extends IBeXGTPatternFactory, RF extends IBeXGTRuleFactory> {
 
 	protected String workspacePath;
 	protected String projectPath;
@@ -46,8 +46,8 @@ public abstract class IBeXGtAPI<PM extends IBeXGTPatternMatcher<PM, ?>> {
 	 */
 	protected IBeXGTEngine<PM> gtEngine;
 
-	protected IBeXGTPatternFactory patternFactory;
-	protected IBeXGTRuleFactory ruleFactory;
+	protected PF patternFactory;
+	protected RF ruleFactory;
 
 	public IBeXGtAPI() throws Exception {
 		workspacePath = getWorkspacePath();
@@ -64,6 +64,21 @@ public abstract class IBeXGtAPI<PM extends IBeXGTPatternMatcher<PM, ?>> {
 	public abstract String getIBeXModelPath();
 
 	public abstract String getProjectName();
+
+	protected abstract PM createPatternMatcher();
+
+	protected abstract PF createPatternFactory();
+
+	protected abstract RF createRuleFactory();
+
+	protected abstract void initializeRules();
+
+	protected abstract void initializePatterns();
+
+	/**
+	 * Add the meta-models to the package registry.
+	 */
+	protected abstract void registerModelMetamodels();
 
 	protected GTModel loadGTModel() throws Exception {
 		ResourceSet rs = new ResourceSetImpl();
@@ -105,10 +120,6 @@ public abstract class IBeXGtAPI<PM extends IBeXGTPatternMatcher<PM, ?>> {
 		initializePatterns();
 	}
 
-	public abstract void initializeRules();
-
-	public abstract void initializePatterns();
-
 	/**
 	 * Initializes the package registry of the resource set.
 	 */
@@ -118,17 +129,6 @@ public abstract class IBeXGtAPI<PM extends IBeXGTPatternMatcher<PM, ?>> {
 				new SmartEMFResourceFactoryImpl(workspacePath));
 		registerModelMetamodels();
 	}
-
-	/**
-	 * Add the meta-models to the package registry.
-	 */
-	protected abstract void registerModelMetamodels();
-
-	protected abstract PM createPatternMatcher();
-
-	protected abstract IBeXGTPatternFactory createPatternFactory();
-
-	protected abstract IBeXGTRuleFactory createRuleFactory();
 
 	/**
 	 * Returns the resource set opened for transformations with the API.

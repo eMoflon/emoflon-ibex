@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?eclipse version="3.0"?><!--
 --><plugin>
+      <extension-point id="IBeXPMEngineInformation" name="IBeXPMEngineInformation" schema="schema/IBeXPMEngineInformation.exsd"/>
   <extension point="org.moflon.emf.codegen.URIPreferenceExtension">
     <uri_preference_extension class="org.emoflon.ibex.common.ide.URIPreferenceExtension"/>
   </extension>

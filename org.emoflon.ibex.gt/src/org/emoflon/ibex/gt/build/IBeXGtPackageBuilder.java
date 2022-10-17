@@ -7,6 +7,7 @@ import java.util.jar.Manifest;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.emoflon.ibex.common.engine.IBeXPMEngineInformation;
 import org.emoflon.ibex.common.slimgt.build.SlimGTBuilderExtension;
 import org.emoflon.ibex.common.slimgt.util.BuildPropertiesManager;
 import org.emoflon.ibex.gt.gtl.gTL.EditorFile;
@@ -14,6 +15,7 @@ import org.emoflon.ibex.gt.gtl.ui.builder.GTLNature;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTModel;
 import org.emoflon.ibex.gt.transformation.GTLtoGTModelTransformer;
 import org.moflon.core.plugins.manifest.ManifestFileUpdater;
+import org.moflon.core.utilities.ExtensionsUtil;
 
 public class IBeXGtPackageBuilder implements SlimGTBuilderExtension<EditorFile> {
 
@@ -46,9 +48,11 @@ public class IBeXGtPackageBuilder implements SlimGTBuilderExtension<EditorFile> 
 		rulePath = new File(apiPath.getPath() + "/" + RULE_FOLDER);
 
 		try {
-			cleanAndSetup();
 			transformToGTModel();
+			cleanAndSetup();
 			generateAPI();
+			generateEnginePackage();
+			generateDependingPackages();
 		} catch (Exception e) {
 			// TODO: Log!
 			return;
@@ -84,6 +88,15 @@ public class IBeXGtPackageBuilder implements SlimGTBuilderExtension<EditorFile> 
 	}
 
 	protected void generateAPI() {
+		IBeXGTApiGenerator generator = new IBeXGTApiGenerator(gtModel);
+		generator.generate();
+	}
+
+	protected void generateEnginePackage() {
+		// TODO:
+	}
+
+	protected void generateDependingPackages() {
 		// TODO:
 	}
 
@@ -98,8 +111,17 @@ public class IBeXGtPackageBuilder implements SlimGTBuilderExtension<EditorFile> 
 
 		List<String> dependencies = new LinkedList<String>();
 		dependencies.addAll(List.of("org.emoflon.ibex.common", "org.emoflon.ibex.gt", "org.emoflon.ibex.gt.gtmodel"));
-		// TODO: collectEngineExtensions().forEach(engine ->
-		// dependencies.addAll(engine.getDependencies()));
+
+		// Add engine dependencies
+		ExtensionsUtil
+				.collectExtensions(IBeXPMEngineInformation.PLUGIN_EXTENSON_ID, "class", IBeXPMEngineInformation.class)
+				.forEach(ext -> dependencies.addAll(ext.getDependencies()));
+
+		// Add metamodel dependencies
+		gtModel.getMetaData().getDependencies().forEach(dep -> {
+			dependencies.add(dep.getFullyQualifiedName());
+		});
+
 		boolean updatedDependencies = ManifestFileUpdater.updateDependencies(manifest, dependencies);
 
 		String apiPackageName = pkg + "." + API_FOLDER;

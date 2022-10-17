@@ -1,13 +1,11 @@
 package org.emoflon.ibex.gt.engine;
 
+import org.emoflon.ibex.gt.api.IBeXGtAPI;
+
 public abstract class IBeXGTPatternFactory {
-	protected final IBeXGTPatternMatcher<?, ?> patternMatcher;
+	protected final IBeXGtAPI<?, ?, ?> api;
 
-	public IBeXGTPatternFactory(final IBeXGTPatternMatcher<?, ?> patternMatcher) {
-		this.patternMatcher = patternMatcher;
-	}
-
-	protected void registerTypedPattern(IBeXGTPattern<?, ?> pattern) {
-		patternMatcher.registerTypedPattern(pattern);
+	public IBeXGTPatternFactory(final IBeXGtAPI<?, ?, ?> api) {
+		this.api = api;
 	}
 }

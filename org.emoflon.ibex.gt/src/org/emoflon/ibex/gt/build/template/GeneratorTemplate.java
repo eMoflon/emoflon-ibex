@@ -5,10 +5,8 @@ import java.nio.file.Files;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.eclipse.emf.ecore.EObject;
-
-public abstract class GeneratorTemplate<CONTEXT extends EObject> {
-	final protected TemplateData data;
+public abstract class GeneratorTemplate<CONTEXT> {
+	final protected IBeXGTApiData data;
 	final protected CONTEXT context;
 
 	protected String packageName;
@@ -19,7 +17,7 @@ public abstract class GeneratorTemplate<CONTEXT extends EObject> {
 	protected String code;
 	protected Set<String> imports = new HashSet<>();
 
-	public GeneratorTemplate(final TemplateData data, final CONTEXT context) {
+	public GeneratorTemplate(final IBeXGTApiData data, final CONTEXT context) {
 		this.data = data;
 		this.context = context;
 	}
@@ -29,8 +27,7 @@ public abstract class GeneratorTemplate<CONTEXT extends EObject> {
 	public abstract void generate();
 
 	public void writeToFile() throws Exception {
-		String path = data.apiData.project.getLocation().toPortableString() + "/" + filePath;
-		File file = new File(path);
+		File file = new File(filePath);
 		Files.write(file.toPath(), code.getBytes());
 	}
 }

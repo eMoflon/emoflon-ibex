@@ -17,7 +17,7 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 	/**
 	 * The API.
 	 */
-	protected final IBeXGtAPI<? extends IBeXGTPatternMatcher<?, ?>> api;
+	protected final IBeXGtAPI<? extends IBeXGTPatternMatcher<?, ?>, ?, ?> api;
 
 	/**
 	 * The pattern matcher.
@@ -63,13 +63,13 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 	 * @param interpreter the interpreter
 	 * @param patternName the name of the pattern
 	 */
-	public IBeXGTPattern(final IBeXGtAPI<? extends IBeXGTPatternMatcher<?, ?>> api, final GTPattern pattern) {
+	public IBeXGTPattern(final IBeXGtAPI<? extends IBeXGTPatternMatcher<?, ?>, ?, ?> api, final GTPattern pattern) {
 		this.api = api;
 		this.gtEngine = api.getGTEngine();
 		this.patternMatcher = api.getGTEngine().getPatternMatcher();
 		this.pattern = pattern;
 		this.patternName = pattern.getName();
-		api.getGTEngine().getPatternMatcher().registerTypedPattern(this);
+		patternMatcher.registerTypedPattern(this);
 	}
 
 	/**

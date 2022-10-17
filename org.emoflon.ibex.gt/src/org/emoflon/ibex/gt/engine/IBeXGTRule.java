@@ -10,10 +10,11 @@ public abstract class IBeXGTRule<P extends IBeXGTPattern<P, M>, M extends IBeXGT
 	public final String ruleName;
 	protected final GTRule rule;
 
-	public IBeXGTRule(IBeXGtAPI<? extends IBeXGTPatternMatcher<?, ?>> api, GTRule rule) {
+	public IBeXGTRule(IBeXGtAPI<? extends IBeXGTPatternMatcher<?, ?>, ?, ?> api, GTRule rule) {
 		super(api, (GTPattern) rule.getPrecondition());
 		this.ruleName = rule.getName();
 		this.rule = rule;
+		gtEngine.registerTypedRule(this);
 	}
 
 }

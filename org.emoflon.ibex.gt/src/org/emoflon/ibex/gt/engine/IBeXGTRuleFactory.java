@@ -1,13 +1,11 @@
 package org.emoflon.ibex.gt.engine;
 
+import org.emoflon.ibex.gt.api.IBeXGtAPI;
+
 public abstract class IBeXGTRuleFactory {
-	final IBeXGTEngine<?> gtEngine;
+	protected final IBeXGtAPI<?, ?, ?> api;
 
-	public IBeXGTRuleFactory(final IBeXGTEngine<?> gtEngine) {
-		this.gtEngine = gtEngine;
-	}
-
-	protected void registerTypedRule(IBeXGTRule<?, ?> rule) {
-		gtEngine.registerTypedRule(rule);
+	public IBeXGTRuleFactory(IBeXGtAPI<?, ?, ?> api) {
+		this.api = api;
 	}
 }

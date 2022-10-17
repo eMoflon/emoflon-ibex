@@ -3,11 +3,14 @@ package org.emoflon.ibex.gt.engine;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternSet;
 import org.emoflon.ibex.common.operational.PushoutApproach;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTModel;
+import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern;
+import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRule;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRuleSet;
 
 public class IBeXGTEngine<PM extends IBeXGTPatternMatcher<PM, ?>> {
@@ -15,6 +18,8 @@ public class IBeXGTEngine<PM extends IBeXGTPatternMatcher<PM, ?>> {
 	final protected PM patternMatcher;
 	final protected GTModel ibexModel;
 	final protected ResourceSet model;
+	protected Map<String, GTRule> name2rule;
+	protected Map<String, GTPattern> name2pattern;
 
 	/**
 	 * The pushout approach to use if no approach is specified.
@@ -113,6 +118,14 @@ public class IBeXGTEngine<PM extends IBeXGTPatternMatcher<PM, ?>> {
 		this.patternMatcher = patternMatcher;
 		this.ibexModel = ibexModel;
 		this.model = model;
+
+		for (GTRule rule : ibexModel.getRuleSet().getRules()) {
+			name2rule.put(rule.getName(), rule);
+		}
+		for (GTPattern pattern : ibexModel.getPatternSet().getPatterns().stream().map(pattern -> (GTPattern) pattern)
+				.collect(Collectors.toList())) {
+			name2pattern.put(pattern.getName(), pattern);
+		}
 	}
 
 	protected void registerTypedRule(IBeXGTRule<?, ?> typedRule) {
