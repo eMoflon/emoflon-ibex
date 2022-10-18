@@ -1,6 +1,8 @@
 package org.emoflon.ibex.common.transformation;
 
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
+import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ValueExpression;
 
@@ -13,14 +15,11 @@ public final class DataTypeUtil {
 			return mergeDouble(rhs);
 		} else if (lhs.getType() == EcorePackage.Literals.ESTRING) {
 			return mergeString(rhs);
-		} else if (lhs.getType() == EcorePackage.Literals.EENUM || lhs.getType() == EcorePackage.Literals.EENUM_LITERAL
-				|| lhs.getType() == EcorePackage.Literals.EENUMERATOR) {
-			return mergeEnum(rhs);
 		} else if (lhs.getType() == EcorePackage.Literals.EBOOLEAN) {
 			return mergeBoolean(rhs);
 		} else if (lhs.getType() == EcorePackage.Literals.EDATE) {
 			return mergeDate(rhs);
-		} else if (lhs.getType() == EcorePackage.Literals.EOBJECT) {
+		} else if (lhs.getType() instanceof EClass || lhs.getType() instanceof EEnum) {
 			return mergeObject(rhs);
 		} else {
 			throw new UnsupportedOperationException("Unkown or unsupported data type: " + lhs.getType());
@@ -30,7 +29,7 @@ public final class DataTypeUtil {
 	public static EClassifier mergeInt(final ValueExpression expr) {
 		if (expr.getType() == EcorePackage.Literals.EBYTE || expr.getType() == EcorePackage.Literals.ESHORT
 				|| expr.getType() == EcorePackage.Literals.EINT || expr.getType() == EcorePackage.Literals.ELONG) {
-			return EcorePackage.Literals.EINT;
+			return EcorePackage.Literals.ELONG;
 		} else if (expr.getType() == EcorePackage.Literals.EFLOAT || expr.getType() == EcorePackage.Literals.EDOUBLE) {
 			return EcorePackage.Literals.EDOUBLE;
 		} else if (expr.getType() == EcorePackage.Literals.ESTRING) {
@@ -59,19 +58,6 @@ public final class DataTypeUtil {
 		return EcorePackage.Literals.ESTRING;
 	}
 
-	public static EClassifier mergeEnum(final ValueExpression expr) {
-		if (expr.getType() == EcorePackage.Literals.ESTRING) {
-			return EcorePackage.Literals.ESTRING;
-		} else if (expr.getType() == EcorePackage.Literals.EENUM
-				|| expr.getType() == EcorePackage.Literals.EENUM_LITERAL
-				|| expr.getType() == EcorePackage.Literals.EENUMERATOR) {
-			return EcorePackage.Literals.EENUM;
-		} else {
-			throw new UnsupportedOperationException(
-					"Data type is incompatible with Enum data type or unsupported: " + expr.getType());
-		}
-	}
-
 	public static EClassifier mergeBoolean(final ValueExpression expr) {
 		if (expr.getType() == EcorePackage.Literals.ESTRING) {
 			return EcorePackage.Literals.ESTRING;
@@ -97,11 +83,32 @@ public final class DataTypeUtil {
 	public static EClassifier mergeObject(final ValueExpression expr) {
 		if (expr.getType() == EcorePackage.Literals.ESTRING) {
 			return EcorePackage.Literals.ESTRING;
-		} else if (expr.getType() == EcorePackage.Literals.EOBJECT) {
-			return EcorePackage.Literals.EOBJECT;
+		} else if (expr.getType() instanceof EClass) {
+			return expr.getType();
+		} else if (expr.getType() instanceof EEnum) {
+			return expr.getType();
 		} else {
 			throw new UnsupportedOperationException(
 					"Data type is incompatible with EObjects or unsupported: " + expr.getType());
+		}
+	}
+
+	public static EClassifier simplifiyType(final EClassifier type) {
+		if (type == EcorePackage.Literals.EBYTE || type == EcorePackage.Literals.ESHORT
+				|| type == EcorePackage.Literals.EINT || type == EcorePackage.Literals.ELONG) {
+			return EcorePackage.Literals.ELONG;
+		} else if (type == EcorePackage.Literals.EFLOAT || type == EcorePackage.Literals.EDOUBLE) {
+			return EcorePackage.Literals.EDOUBLE;
+		} else if (type == EcorePackage.Literals.ESTRING) {
+			return EcorePackage.Literals.ESTRING;
+		} else if (type == EcorePackage.Literals.EBOOLEAN) {
+			return EcorePackage.Literals.EBOOLEAN;
+		} else if (type == EcorePackage.Literals.EDATE) {
+			return EcorePackage.Literals.EDATE;
+		} else if (type instanceof EClass) {
+			return type;
+		} else {
+			throw new UnsupportedOperationException("Unkown or unsupported data type: " + type);
 		}
 	}
 }

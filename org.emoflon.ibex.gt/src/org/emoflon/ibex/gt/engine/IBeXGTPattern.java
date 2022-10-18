@@ -88,7 +88,9 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 	 */
 	protected abstract Collection<String> getParameterNames();
 
-	protected abstract boolean checkConditions(final M match);
+	public abstract boolean checkBindings(final M match);
+
+	public abstract boolean checkConditions(final M match);
 
 	public abstract boolean hasArithmeticExpressions();
 

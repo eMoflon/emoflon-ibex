@@ -31,6 +31,8 @@ public abstract class IBeXGTMatch<M extends IBeXGTMatch<M, P>, P extends IBeXGTP
 		return typedPattern.patternName;
 	}
 
+	public abstract boolean checkBindings();
+
 	public abstract boolean checkConditions();
 
 	@Override

@@ -95,5 +95,5 @@ public abstract class IBeXGTRule<R extends IBeXGTRule<R, P, M, CP, CM>, P extend
 	public abstract Optional<CM> apply(final M match);
 
 	// TODO: This might be interesting in the future!
-	public abstract Optional<M> applyReverse(final CM coMatch);
+//	public abstract Optional<M> applyReverse(final CM coMatch);
 }

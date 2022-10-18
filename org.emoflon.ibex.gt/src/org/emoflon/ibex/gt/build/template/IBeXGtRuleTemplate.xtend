@@ -10,6 +10,8 @@ class IBeXGtRuleTemplate extends GeneratorTemplate<GTRule>{
 	protected String coPatternClassName;
 	protected String patternClassName;
 	
+	protected ExpressionHelper exprHelper;
+	
 	new(IBeXGTApiData data, GTRule context) {
 		super(data, context)
 	}
@@ -37,6 +39,7 @@ class IBeXGtRuleTemplate extends GeneratorTemplate<GTRule>{
 			.map[param | data.model.metaData.name2package.get(param.type.EPackage).classifierName2FQN.get(param.type.name)]
 			.forEach[fqn | imports.add(fqn)]
 		
+		exprHelper = new ExpressionHelper(data, imports)
 	}
 	
 	override generate() {
@@ -93,12 +96,18 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 		this.«param.name.toFirstLower» = «param.name.toFirstLower»;
 		«ENDFOR»
 	}
-
+	
 	@Override
-	protected boolean checkConditions(final «matchClassName» match) {
+	public boolean checkBindings(final «matchClassName» match) {
 		//TODO: !
 		return false;
 	}
+		
+	@Override
+	public boolean checkConditions(final «matchClassName» match) {
+		return «FOR condition : context.precondition.conditions SEPARATOR ' && \n'»(«exprHelper.unparse("match", condition)»)«ENDFOR»;
+	}
+
 	
 	@Override
 	public boolean hasArithmeticExpressions() {
@@ -129,21 +138,19 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 	}
 	
 	public double getProbability(final «matchClassName» match) {
-		// TODO: !
-		return 0.0;
+		return «exprHelper.unparse("match", context.probability)»;
 	}
 	
 	public Optional<«coMatchClassName»> apply(final «matchClassName» match) {
 		// TODO: !
 		return Optional.empty();
 	}
-	
-	public Optional<«matchClassName»> applyReverse(final «coMatchClassName» coMatch) {
-		throw new UnsupportedOperationException("Reverse application is currently not implemented!");
-	}
+«««	TODO: Future works!
+«««	public Optional<«matchClassName»> applyReverse(final «coMatchClassName» coMatch) {
+«««		throw new UnsupportedOperationException("Reverse application is currently not implemented!");
+«««	}
 	
 }'''
 	}
 
-	
 }

@@ -48,7 +48,13 @@ public class «className» extends IBeXGTPattern<«className», «matchClassName
 	protected Map<String, Object> getParameters() {
 		throw new UnsupportedOperationException("Patterns do not have any parameters.");
 	}
-
+	
+	@Override
+	public boolean checkBindings(final «matchClassName» match) {
+		//TODO: !
+		return false;
+	}
+	
 	@Override
 	protected boolean checkConditions(final «matchClassName» match) {
 		//TODO: !

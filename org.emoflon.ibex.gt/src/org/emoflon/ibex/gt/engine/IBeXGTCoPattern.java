@@ -19,7 +19,12 @@ public abstract class IBeXGTCoPattern<CP extends IBeXGTCoPattern<CP, CM, R, P, M
 	}
 
 	@Override
-	protected boolean checkConditions(final CM match) {
+	public boolean checkBindings(final CM match) {
+		return true;
+	}
+
+	@Override
+	public boolean checkConditions(final CM match) {
 		return true;
 	}
 
