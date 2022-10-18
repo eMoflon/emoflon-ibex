@@ -3,6 +3,7 @@ package org.emoflon.ibex.gt.engine;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -20,6 +21,7 @@ public class IBeXGTEngine<PM extends IBeXGTPatternMatcher<PM, ?>> {
 	final protected ResourceSet model;
 	protected Map<String, GTRule> name2rule;
 	protected Map<String, GTPattern> name2pattern;
+	protected Random rndGenerator;
 
 	/**
 	 * The pushout approach to use if no approach is specified.
@@ -127,6 +129,8 @@ public class IBeXGTEngine<PM extends IBeXGTPatternMatcher<PM, ?>> {
 				.collect(Collectors.toList())) {
 			name2pattern.put(pattern.getName(), pattern);
 		}
+
+		rndGenerator = new Random();
 	}
 
 	protected void registerTypedRule(IBeXGTRule<?, ?, ?, ?, ?> typedRule) {
