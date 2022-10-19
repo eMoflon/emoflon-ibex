@@ -26,6 +26,10 @@ class IBeXGtPatternTemplate extends GeneratorTemplate<GTPattern>{
 		imports.add("org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern")
 		
 		exprHelper = new ExpressionHelper(data, imports)
+		
+		context.signatureNodes
+			.map[node | data.model.metaData.name2package.get(node.eClass.EPackage.name).classifierName2FQN.get(node.type)]
+			.forEach[fqn | imports.add(fqn)]
 	}
 	
 	override generate() {

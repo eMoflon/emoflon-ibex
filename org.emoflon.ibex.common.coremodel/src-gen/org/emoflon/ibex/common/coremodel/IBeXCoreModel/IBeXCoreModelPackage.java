@@ -1516,13 +1516,22 @@ public interface IBeXCoreModelPackage extends EPackage {
 	int IBE_XRULE_DELTA__EDGES = 1;
 
 	/**
+	 * The feature id for the '<em><b>Empty</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XRULE_DELTA__EMPTY = 2;
+
+	/**
 	 * The number of structural features of the '<em>IBe XRule Delta</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XRULE_DELTA_FEATURE_COUNT = 2;
+	int IBE_XRULE_DELTA_FEATURE_COUNT = 3;
 
 	/**
 	 * The number of operations of the '<em>IBe XRule Delta</em>' class.
@@ -2692,6 +2701,17 @@ public interface IBeXCoreModelPackage extends EPackage {
 	EReference getIBeXRuleDelta_Edges();
 
 	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta#isEmpty <em>Empty</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Empty</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta#isEmpty()
+	 * @see #getIBeXRuleDelta()
+	 * @generated
+	 */
+	EAttribute getIBeXRuleDelta_Empty();
+
+	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeAssignment <em>IBe XAttribute Assignment</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -3624,6 +3644,14 @@ public interface IBeXCoreModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference IBE_XRULE_DELTA__EDGES = eINSTANCE.getIBeXRuleDelta_Edges();
+
+		/**
+		 * The meta object literal for the '<em><b>Empty</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute IBE_XRULE_DELTA__EMPTY = eINSTANCE.getIBeXRuleDelta_Empty();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXAttributeAssignmentImpl <em>IBe XAttribute Assignment</em>}' class.

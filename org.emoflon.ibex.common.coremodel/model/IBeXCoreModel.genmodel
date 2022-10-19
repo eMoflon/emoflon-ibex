@@ -138,6 +138,7 @@
     <genClasses ecoreClass="IBeXCoreModel.ecore#//IBeXRuleDelta">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXRuleDelta/nodes"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXRuleDelta/edges"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//IBeXRuleDelta/empty"/>
     </genClasses>
     <genClasses ecoreClass="IBeXCoreModel.ecore#//IBeXAttributeAssignment">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXAttributeAssignment/node"/>

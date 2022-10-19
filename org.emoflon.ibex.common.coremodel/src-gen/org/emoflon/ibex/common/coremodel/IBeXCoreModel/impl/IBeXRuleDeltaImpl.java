@@ -4,10 +4,12 @@ package org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl;
 
 import java.util.Collection;
 
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EClass;
 
+import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 
 import org.eclipse.emf.ecore.util.EObjectResolvingEList;
@@ -27,6 +29,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta;
  * <ul>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXRuleDeltaImpl#getNodes <em>Nodes</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXRuleDeltaImpl#getEdges <em>Edges</em>}</li>
+ *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXRuleDeltaImpl#isEmpty <em>Empty</em>}</li>
  * </ul>
  *
  * @generated
@@ -51,6 +54,26 @@ public class IBeXRuleDeltaImpl extends MinimalEObjectImpl.Container implements I
 	 * @ordered
 	 */
 	protected EList<IBeXEdge> edges;
+
+	/**
+	 * The default value of the '{@link #isEmpty() <em>Empty</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isEmpty()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final boolean EMPTY_EDEFAULT = false;
+
+	/**
+	 * The cached value of the '{@link #isEmpty() <em>Empty</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isEmpty()
+	 * @generated
+	 * @ordered
+	 */
+	protected boolean empty = EMPTY_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -102,6 +125,28 @@ public class IBeXRuleDeltaImpl extends MinimalEObjectImpl.Container implements I
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public boolean isEmpty() {
+		return empty;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setEmpty(boolean newEmpty) {
+		boolean oldEmpty = empty;
+		empty = newEmpty;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXCoreModelPackage.IBE_XRULE_DELTA__EMPTY, oldEmpty,
+					empty));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
@@ -109,6 +154,8 @@ public class IBeXRuleDeltaImpl extends MinimalEObjectImpl.Container implements I
 			return getNodes();
 		case IBeXCoreModelPackage.IBE_XRULE_DELTA__EDGES:
 			return getEdges();
+		case IBeXCoreModelPackage.IBE_XRULE_DELTA__EMPTY:
+			return isEmpty();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -130,6 +177,9 @@ public class IBeXRuleDeltaImpl extends MinimalEObjectImpl.Container implements I
 			getEdges().clear();
 			getEdges().addAll((Collection<? extends IBeXEdge>) newValue);
 			return;
+		case IBeXCoreModelPackage.IBE_XRULE_DELTA__EMPTY:
+			setEmpty((Boolean) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -148,6 +198,9 @@ public class IBeXRuleDeltaImpl extends MinimalEObjectImpl.Container implements I
 		case IBeXCoreModelPackage.IBE_XRULE_DELTA__EDGES:
 			getEdges().clear();
 			return;
+		case IBeXCoreModelPackage.IBE_XRULE_DELTA__EMPTY:
+			setEmpty(EMPTY_EDEFAULT);
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -164,8 +217,27 @@ public class IBeXRuleDeltaImpl extends MinimalEObjectImpl.Container implements I
 			return nodes != null && !nodes.isEmpty();
 		case IBeXCoreModelPackage.IBE_XRULE_DELTA__EDGES:
 			return edges != null && !edges.isEmpty();
+		case IBeXCoreModelPackage.IBE_XRULE_DELTA__EMPTY:
+			return empty != EMPTY_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public String toString() {
+		if (eIsProxy())
+			return super.toString();
+
+		StringBuilder result = new StringBuilder(super.toString());
+		result.append(" (empty: ");
+		result.append(empty);
+		result.append(')');
+		return result.toString();
 	}
 
 } //IBeXRuleDeltaImpl

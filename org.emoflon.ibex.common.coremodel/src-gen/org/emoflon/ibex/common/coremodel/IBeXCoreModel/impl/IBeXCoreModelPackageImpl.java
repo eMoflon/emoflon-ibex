@@ -1218,6 +1218,15 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EAttribute getIBeXRuleDelta_Empty() {
+		return (EAttribute) iBeXRuleDeltaEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getIBeXAttributeAssignment() {
 		return iBeXAttributeAssignmentEClass;
 	}
@@ -1411,6 +1420,7 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 		iBeXRuleDeltaEClass = createEClass(IBE_XRULE_DELTA);
 		createEReference(iBeXRuleDeltaEClass, IBE_XRULE_DELTA__NODES);
 		createEReference(iBeXRuleDeltaEClass, IBE_XRULE_DELTA__EDGES);
+		createEAttribute(iBeXRuleDeltaEClass, IBE_XRULE_DELTA__EMPTY);
 
 		iBeXAttributeAssignmentEClass = createEClass(IBE_XATTRIBUTE_ASSIGNMENT);
 		createEReference(iBeXAttributeAssignmentEClass, IBE_XATTRIBUTE_ASSIGNMENT__NODE);
@@ -1773,6 +1783,8 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 		initEReference(getIBeXRuleDelta_Edges(), this.getIBeXEdge(), null, "edges", null, 0, -1, IBeXRuleDelta.class,
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getIBeXRuleDelta_Empty(), ecorePackage.getEBoolean(), "empty", null, 0, 1, IBeXRuleDelta.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(iBeXAttributeAssignmentEClass, IBeXAttributeAssignment.class, "IBeXAttributeAssignment",
 				!IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);

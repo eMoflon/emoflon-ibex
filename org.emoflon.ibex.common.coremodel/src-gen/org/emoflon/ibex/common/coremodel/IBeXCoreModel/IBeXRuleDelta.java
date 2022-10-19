@@ -17,6 +17,7 @@ import org.eclipse.emf.ecore.EObject;
  * <ul>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta#getNodes <em>Nodes</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta#getEdges <em>Edges</em>}</li>
+ *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta#isEmpty <em>Empty</em>}</li>
  * </ul>
  *
  * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage#getIBeXRuleDelta()
@@ -47,5 +48,27 @@ public interface IBeXRuleDelta extends EObject {
 	 * @generated
 	 */
 	EList<IBeXEdge> getEdges();
+
+	/**
+	 * Returns the value of the '<em><b>Empty</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Empty</em>' attribute.
+	 * @see #setEmpty(boolean)
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage#getIBeXRuleDelta_Empty()
+	 * @model
+	 * @generated
+	 */
+	boolean isEmpty();
+
+	/**
+	 * Sets the value of the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta#isEmpty <em>Empty</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Empty</em>' attribute.
+	 * @see #isEmpty()
+	 * @generated
+	 */
+	void setEmpty(boolean value);
 
 } // IBeXRuleDelta

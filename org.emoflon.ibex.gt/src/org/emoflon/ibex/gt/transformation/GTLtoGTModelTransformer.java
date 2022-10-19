@@ -590,6 +590,11 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 			}
 		}
 
+		if (delta.getNodes().isEmpty() && delta.getEdges().isEmpty())
+			delta.setEmpty(true);
+		else
+			delta.setEmpty(false);
+
 		return delta;
 	}
 
@@ -606,6 +611,12 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 				delta.getEdges().add(edge);
 			}
 		}
+
+		if (delta.getNodes().isEmpty() && delta.getEdges().isEmpty())
+			delta.setEmpty(true);
+		else
+			delta.setEmpty(false);
+
 		return delta;
 	}
 

@@ -6,8 +6,13 @@ import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternSet;
+import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 import org.emoflon.ibex.common.operational.PushoutApproach;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTModel;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern;
@@ -19,6 +24,7 @@ public class IBeXGTEngine<PM extends IBeXGTPatternMatcher<?>> {
 	final protected PM patternMatcher;
 	final protected GTModel ibexModel;
 	final protected ResourceSet model;
+	private Resource trashResource;
 	protected Map<String, GTRule> name2rule;
 	protected Map<String, GTPattern> name2pattern;
 	protected Random rndGenerator;
@@ -217,6 +223,24 @@ public class IBeXGTEngine<PM extends IBeXGTPatternMatcher<?>> {
 	 */
 	public PM getPatternMatcher() {
 		return patternMatcher;
+	}
+
+	public void delete(final EObject object) {
+		if (patternMatcher.getEngineProperties().needs_trash_resource()) {
+			EMFManipulationUtils.deleteNode(object,
+					node -> trashResource.getContents().add(EcoreUtil.getRootContainer(node)), false, false);
+		} else {
+			EMFManipulationUtils.deleteNode(object, false, false);
+		}
+	}
+
+	public void deleteEdge(final EObject src, final EObject trg, final IBeXEdge edge) {
+		if (patternMatcher.getEngineProperties().needs_trash_resource()) {
+			EMFManipulationUtils.deleteEdge(src, trg, edge.getType(),
+					node -> trashResource.getContents().add(EcoreUtil.getRootContainer(node)));
+		} else {
+			EMFManipulationUtils.deleteEdge(src, trg, edge.getType());
+		}
 	}
 
 }

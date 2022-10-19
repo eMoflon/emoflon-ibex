@@ -2,6 +2,11 @@ package org.emoflon.ibex.gt.build.template
 
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRule
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern
+import java.util.Map
+import java.util.HashMap
+import java.util.Set
+import java.util.HashSet
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode
 
 class IBeXGtRuleTemplate extends GeneratorTemplate<GTRule>{
 	
@@ -12,6 +17,9 @@ class IBeXGtRuleTemplate extends GeneratorTemplate<GTRule>{
 	protected String patternClassName;
 	
 	protected ExpressionHelper exprHelper;
+	
+	protected Set<String> factoryClasses = new HashSet
+	protected Map<String, String> nodeName2FactoryClass = new HashMap
 	
 	new(IBeXGTApiData data, GTRule context) {
 		super(data, context)
@@ -31,13 +39,29 @@ class IBeXGtRuleTemplate extends GeneratorTemplate<GTRule>{
 		imports.add("java.util.Collection")
 		imports.add("java.util.List")
 		imports.add("java.util.Map")
+		imports.add("java.util.HashMap")
 		imports.add("java.util.Optional")
+		imports.add("org.emoflon.ibex.common.emf.EMFManipulationUtils")
 		imports.add("org.emoflon.ibex.gt.engine.IBeXGTRule")
 		imports.add("org.emoflon.ibex.gt.api.IBeXGtAPI")
 		imports.add("org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRule")
 		
 		context.parameters
 			.map[param | data.model.metaData.name2package.get(param.type.EPackage).classifierName2FQN.get(param.type.name)]
+			.forEach[fqn | imports.add(fqn)]
+			
+		imports.addAll(context.allNodes.map[node | data.model.metaData.name2package.get(node.type.EPackage).fullyQualifiedName + "." 
+			+ data.model.metaData.name2package.get(node.type.EPackage).packageClassName
+		])
+		
+		imports.addAll(context.allNodes.map[node | data.model.metaData.name2package.get(node.type.EPackage).fullyQualifiedName + "." 
+			+ data.model.metaData.name2package.get(node.type.EPackage).factoryClassName
+		])
+		
+		context.allNodes.forEach[node | factoryClasses.add(data.model.metaData.name2package.get(node.type.EPackage).factoryClassName)]
+		context.allNodes.forEach[node | nodeName2FactoryClass.put(node.name, data.model.metaData.name2package.get(node.type.EPackage).factoryClassName)]
+			
+		context.allNodes.map[node | data.model.metaData.name2package.get(node.type.EPackage).classifierName2FQN.get(node.type.name)]
 			.forEach[fqn | imports.add(fqn)]
 		
 		exprHelper = new ExpressionHelper(data, imports)
@@ -51,6 +75,10 @@ import «imp»;
 «ENDFOR»
 
 public class «className» extends IBeXGTRule<«className», «patternClassName», «matchClassName», «coPatternClassName», «coMatchClassName»> {
+	
+	«FOR fac : factoryClasses»
+	protected «fac» «fac.toLowerCase» = «fac».eINSTANCE;
+	«ENDFOR»
 	
 	«FOR param : context.parameters»
 	protected «param.type.name» «param.name.toFirstLower»;
@@ -181,8 +209,51 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 	}
 	
 	public Optional<«coMatchClassName»> apply(final «matchClassName» match) {
-		// TODO: !
-		return Optional.empty();
+		Map<String, Object> coMatchNodes = new HashMap<>();
+		«FOR node : context.allNodes.filter[node | context.precondition.signatureNodes.contains(node) && context.postcondition.signatureNodes.contains(node)]»
+		coMatchNodes.put("«node.name»", match.«node.name.toFirstLower»());
+		«ENDFOR»
+		«IF !context.deletion.empty»
+		
+		// Delete elements
+		«FOR edge : context.deletion.edges.filter[edge | !(edge.type.isContainment || edge.type.isContainer)]»
+		gtEngine.deleteEdge(«getNode("match", edge.source)», «getNode("match", edge.target)», rule.getDeletion().getEdges().get(«context.deletion.edges.indexOf(edge)»));
+		«ENDFOR»
+		«FOR edge : context.deletion.edges.filter[edge | edge.type.isContainment || edge.type.isContainer]»
+		gtEngine.deleteEdge(«getNode("match", edge.source)», «getNode("match", edge.target)», rule.getDeletion().getEdges().get(«context.deletion.edges.indexOf(edge)»));
+		«ENDFOR»
+		«FOR node : context.deletion.nodes»
+		gtEngine.delete(«getNode("match", node)»);
+		«ENDFOR»
+		«ENDIF»
+		«IF !context.creation.empty»
+		
+		// Create new elements
+		«FOR node : context.creation.nodes»
+		«node.type.name» «node.name.toFirstLower» = factory.create«node.type.name»();
+		coMatchNodes.put("«node.name»", «node.name.toFirstLower»);
+		«ENDFOR»
+		«FOR edge : context.creation.edges»
+		«IF edge.type.isMany»
+		«getNode("match", edge.source)».get«edge.type.name.toFirstUpper»().add(«getNode("match", edge.target)»);
+		«ELSE»
+		«getNode("match", edge.source)».set«edge.type.name.toFirstUpper»(«getNode("match", edge.target)»);
+		«ENDIF»
+		«ENDFOR»
+		«ENDIF»
+		«IF context.attributeAssignments !== null && !context.attributeAssignments.empty»
+		
+		// Assign attribute values
+		«FOR asgn : context.attributeAssignments»
+		«getNode("match", asgn.node)».set«asgn.attribute.name.toFirstUpper»(«exprHelper.unparse("match", asgn.value)»);
+		«ENDFOR»
+		«ENDIF»
+		«IF context.forEachOperations !== null && !context.forEachOperations.isEmpty»
+		
+		// Execute forEach-Operations
+		//TODO::
+		«ENDIF»
+		return coPattern.createMatch(coMatchNodes);
 	}
 «««	TODO: Future works!
 «««	public Optional<«matchClassName»> applyReverse(final «coMatchClassName» coMatch) {
@@ -190,6 +261,14 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 «««	}
 	
 }'''
+	}
+	
+	def String getNode(String methodContext, IBeXNode node) {
+		if(context.postcondition.signatureNodes.contains(node)) {
+			return '''«methodContext».'''
+		} else {
+			return node.name.toFirstLower
+		}
 	}
 
 }
