@@ -24,7 +24,7 @@ public abstract class IBeXGTRule<R extends IBeXGTRule<R, P, M, CP, CM>, P extend
 	 */
 	protected int ruleApplicationCount = 0;
 
-	public IBeXGTRule(IBeXGtAPI<?, ?, ?> api, GTRule rule) {
+	public IBeXGTRule(final IBeXGtAPI<? extends IBeXGTPatternMatcher<?>, ?, ?> api, GTRule rule) {
 		super(api, (GTPattern) rule.getPrecondition());
 		this.ruleName = rule.getName();
 		this.rule = rule;

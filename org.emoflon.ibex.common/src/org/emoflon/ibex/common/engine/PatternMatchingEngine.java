@@ -18,13 +18,15 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern;
 import org.emoflon.ibex.common.operational.IMatch;
+import org.emoflon.ibex.common.operational.IPatternInterpreterProperties;
 
 public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, EM, IM extends IMatch> {
 
 	final protected IBEX_MODEL ibexModel;
 	final protected ResourceSet model;
 	protected Map<String, IBeXPattern> name2pattern;
-	protected MatchFilter<IBEX_MODEL, IM> matchFilter;
+	protected MatchFilter<?, IBEX_MODEL, IM> matchFilter;
+	protected IPatternInterpreterProperties engineProperties;
 
 	/**
 	 * The matches (key: pattern name, value: list of matches).
@@ -59,13 +61,13 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, EM, IM
 			.synchronizedMap(new LinkedHashMap<>());
 
 	public PatternMatchingEngine(final IBEX_MODEL ibexModel, final ResourceSet model) {
+		engineProperties = createEngineProperties();
 		this.ibexModel = ibexModel;
 		this.model = model;
 		for (IBeXPattern pattern : ibexModel.getPatternSet().getPatterns()) {
 			name2pattern.put(pattern.getName(), pattern);
 			insertNewMatchCollection(pattern.getName());
 		}
-
 		initialize();
 		matchFilter = createMatchFilter();
 	}
@@ -102,7 +104,13 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, EM, IM
 	 * 
 	 * @return IMatchFilter
 	 */
-	protected abstract MatchFilter<IBEX_MODEL, IM> createMatchFilter();
+	protected abstract MatchFilter<?, IBEX_MODEL, IM> createMatchFilter();
+
+	protected abstract IPatternInterpreterProperties createEngineProperties();
+
+	public IPatternInterpreterProperties getEngineProperties() {
+		return engineProperties;
+	}
 
 	/**
 	 * Clean up any allocated memory for match indexing purposes (aka. shut down
@@ -158,21 +166,7 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, EM, IM
 		if (doUpdate)
 			updateMatches();
 
-		if (filteredMatches.containsKey(patternName)) {
-			return filteredMatches.get(patternName).stream();
-		} else {
-			IBeXPattern pattern = name2pattern.get(patternName);
-			if (pattern.getDependencies().isEmpty()) {
-				updateFilteredMatches(patternName);
-			} else {
-				// Check dependencies to prevent deadlocks
-				pattern.getDependencies().forEach(depPattern -> {
-					updateMatchesInternal(depPattern.getName());
-				});
-				updateFilteredMatches(patternName);
-			}
-			return filteredMatches.get(patternName).stream();
-		}
+		return filteredMatches.get(patternName).stream();
 	}
 
 	/**
@@ -364,7 +358,7 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, EM, IM
 		subscriptionsForAppearingMatchesOfPattern.keySet().stream().forEach(patternName -> {
 			// Check if pending matches became valid again due to attribute changes
 			// Fill filtered matches Map by calling the match stream
-			getMatchStream(patternName, false);
+			updateMatchesInternal(patternName);
 
 			// Check if existing matches recently became valid (pending) and add removal
 			// jobs
@@ -424,7 +418,7 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, EM, IM
 		subscriptionsForDisappearingMatchesOfPattern.keySet().stream().forEach(patternName -> {
 			// Check if existing matches became invalid due to attribute changes
 			// Fill filtered matches Map by calling the match stream
-			getMatchStream(patternName, false);
+			updateMatchesInternal(patternName);
 
 			// Check if existing matches recently became invalid (not pending) and add
 			// removal jobs

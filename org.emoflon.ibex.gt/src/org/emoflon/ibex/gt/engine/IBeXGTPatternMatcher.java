@@ -11,12 +11,10 @@ import java.util.Map;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternInvocation;
-import org.emoflon.ibex.common.engine.MatchFilter;
 import org.emoflon.ibex.common.engine.PatternMatchingEngine;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTModel;
 
-public abstract class IBeXGTPatternMatcher<E extends IBeXGTPatternMatcher<E, EM>, EM>
-		extends PatternMatchingEngine<GTModel, EM, IBeXGTMatch<?, ?>> {
+public abstract class IBeXGTPatternMatcher<EM> extends PatternMatchingEngine<GTModel, EM, IBeXGTMatch<?, ?>> {
 
 	protected Map<String, IBeXGTPattern<?, ?>> name2typedPattern = Collections.synchronizedMap(new LinkedHashMap<>());
 
@@ -72,9 +70,8 @@ public abstract class IBeXGTPatternMatcher<E extends IBeXGTPatternMatcher<E, EM>
 	}
 
 	@Override
-	protected MatchFilter<GTModel, IBeXGTMatch<?, ?>> createMatchFilter() {
-		// TODO Auto-generated method stub
-		return null;
+	protected IBeXGTMatchFilter createMatchFilter() {
+		return new IBeXGTMatchFilter(this);
 	}
 
 	@Override

@@ -31,7 +31,7 @@ import org.emoflon.smartemf.persistence.SmartEMFResourceFactoryImpl;
  * Per default, all rule applications use the single pushout approach. This
  * behavior can be changed for the whole API or for single rules.
  */
-public abstract class IBeXGtAPI<PM extends IBeXGTPatternMatcher<PM, ?>, PF extends IBeXGTPatternFactory, RF extends IBeXGTRuleFactory> {
+public abstract class IBeXGtAPI<PM extends IBeXGTPatternMatcher<?>, PF extends IBeXGTPatternFactory, RF extends IBeXGTRuleFactory> {
 
 	protected String workspacePath;
 	protected String projectPath;

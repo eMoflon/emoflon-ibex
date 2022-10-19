@@ -14,7 +14,7 @@ import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRule;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRuleSet;
 
-public class IBeXGTEngine<PM extends IBeXGTPatternMatcher<PM, ?>> {
+public class IBeXGTEngine<PM extends IBeXGTPatternMatcher<?>> {
 
 	final protected PM patternMatcher;
 	final protected GTModel ibexModel;

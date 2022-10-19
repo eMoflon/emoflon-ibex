@@ -12,7 +12,8 @@ public abstract class IBeXGTCoPattern<CP extends IBeXGTCoPattern<CP, CM, R, P, M
 
 	final protected R typedRule;
 
-	public IBeXGTCoPattern(final IBeXGtAPI<?, ?, ?> api, final R typedRule, final GTPattern pattern) {
+	public IBeXGTCoPattern(final IBeXGtAPI<? extends IBeXGTPatternMatcher<?>, ?, ?> api, final R typedRule,
+			final GTPattern pattern) {
 		super(api, pattern);
 		this.typedRule = typedRule;
 		patternMatcher.unRegisterTypedPattern(this);
