@@ -4,6 +4,7 @@ package org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl;
 
 import java.util.Collection;
 
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 
 import org.eclipse.emf.common.util.EList;
@@ -11,9 +12,11 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 
+import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXFeatureConfig;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXPatternImpl;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTWatchDog;
@@ -28,6 +31,7 @@ import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.IBeXGTModelPackage;
  * </p>
  * <ul>
  *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTPatternImpl#getWatchDogs <em>Watch Dogs</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTPatternImpl#getUsedFeatures <em>Used Features</em>}</li>
  * </ul>
  *
  * @generated
@@ -42,6 +46,16 @@ public class GTPatternImpl extends IBeXPatternImpl implements GTPattern {
 	 * @ordered
 	 */
 	protected EList<GTWatchDog> watchDogs;
+
+	/**
+	 * The cached value of the '{@link #getUsedFeatures() <em>Used Features</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getUsedFeatures()
+	 * @generated
+	 * @ordered
+	 */
+	protected IBeXFeatureConfig usedFeatures;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -80,11 +94,63 @@ public class GTPatternImpl extends IBeXPatternImpl implements GTPattern {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public IBeXFeatureConfig getUsedFeatures() {
+		return usedFeatures;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public NotificationChain basicSetUsedFeatures(IBeXFeatureConfig newUsedFeatures, NotificationChain msgs) {
+		IBeXFeatureConfig oldUsedFeatures = usedFeatures;
+		usedFeatures = newUsedFeatures;
+		if (eNotificationRequired()) {
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
+					IBeXGTModelPackage.GT_PATTERN__USED_FEATURES, oldUsedFeatures, newUsedFeatures);
+			if (msgs == null)
+				msgs = notification;
+			else
+				msgs.add(notification);
+		}
+		return msgs;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setUsedFeatures(IBeXFeatureConfig newUsedFeatures) {
+		if (newUsedFeatures != usedFeatures) {
+			NotificationChain msgs = null;
+			if (usedFeatures != null)
+				msgs = ((InternalEObject) usedFeatures).eInverseRemove(this,
+						EOPPOSITE_FEATURE_BASE - IBeXGTModelPackage.GT_PATTERN__USED_FEATURES, null, msgs);
+			if (newUsedFeatures != null)
+				msgs = ((InternalEObject) newUsedFeatures).eInverseAdd(this,
+						EOPPOSITE_FEATURE_BASE - IBeXGTModelPackage.GT_PATTERN__USED_FEATURES, null, msgs);
+			msgs = basicSetUsedFeatures(newUsedFeatures, msgs);
+			if (msgs != null)
+				msgs.dispatch();
+		} else if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXGTModelPackage.GT_PATTERN__USED_FEATURES,
+					newUsedFeatures, newUsedFeatures));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 		case IBeXGTModelPackage.GT_PATTERN__WATCH_DOGS:
 			return ((InternalEList<?>) getWatchDogs()).basicRemove(otherEnd, msgs);
+		case IBeXGTModelPackage.GT_PATTERN__USED_FEATURES:
+			return basicSetUsedFeatures(null, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -99,6 +165,8 @@ public class GTPatternImpl extends IBeXPatternImpl implements GTPattern {
 		switch (featureID) {
 		case IBeXGTModelPackage.GT_PATTERN__WATCH_DOGS:
 			return getWatchDogs();
+		case IBeXGTModelPackage.GT_PATTERN__USED_FEATURES:
+			return getUsedFeatures();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -116,6 +184,9 @@ public class GTPatternImpl extends IBeXPatternImpl implements GTPattern {
 			getWatchDogs().clear();
 			getWatchDogs().addAll((Collection<? extends GTWatchDog>) newValue);
 			return;
+		case IBeXGTModelPackage.GT_PATTERN__USED_FEATURES:
+			setUsedFeatures((IBeXFeatureConfig) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -131,6 +202,9 @@ public class GTPatternImpl extends IBeXPatternImpl implements GTPattern {
 		case IBeXGTModelPackage.GT_PATTERN__WATCH_DOGS:
 			getWatchDogs().clear();
 			return;
+		case IBeXGTModelPackage.GT_PATTERN__USED_FEATURES:
+			setUsedFeatures((IBeXFeatureConfig) null);
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -145,6 +219,8 @@ public class GTPatternImpl extends IBeXPatternImpl implements GTPattern {
 		switch (featureID) {
 		case IBeXGTModelPackage.GT_PATTERN__WATCH_DOGS:
 			return watchDogs != null && !watchDogs.isEmpty();
+		case IBeXGTModelPackage.GT_PATTERN__USED_FEATURES:
+			return usedFeatures != null;
 		}
 		return super.eIsSet(featureID);
 	}

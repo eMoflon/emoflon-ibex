@@ -4,6 +4,7 @@ package org.emoflon.ibex.gt.gtmodel.IBeXGTModel;
 
 import org.eclipse.emf.common.util.EList;
 
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXFeatureConfig;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern;
 
 /**
@@ -16,6 +17,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern;
  * </p>
  * <ul>
  *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern#getWatchDogs <em>Watch Dogs</em>}</li>
+ *   <li>{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern#getUsedFeatures <em>Used Features</em>}</li>
  * </ul>
  *
  * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.IBeXGTModelPackage#getGTPattern()
@@ -34,5 +36,27 @@ public interface GTPattern extends IBeXPattern {
 	 * @generated
 	 */
 	EList<GTWatchDog> getWatchDogs();
+
+	/**
+	 * Returns the value of the '<em><b>Used Features</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Used Features</em>' containment reference.
+	 * @see #setUsedFeatures(IBeXFeatureConfig)
+	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.IBeXGTModelPackage#getGTPattern_UsedFeatures()
+	 * @model containment="true" required="true"
+	 * @generated
+	 */
+	IBeXFeatureConfig getUsedFeatures();
+
+	/**
+	 * Sets the value of the '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern#getUsedFeatures <em>Used Features</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Used Features</em>' containment reference.
+	 * @see #getUsedFeatures()
+	 * @generated
+	 */
+	void setUsedFeatures(IBeXFeatureConfig value);
 
 } // GTPattern

@@ -572,13 +572,22 @@ public interface IBeXCoreModelPackage extends EPackage {
 	int IBE_XFEATURE_CONFIG__BOOLEAN_EXPRESSIONS = 2;
 
 	/**
+	 * The feature id for the '<em><b>Parameter Expressions</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IBE_XFEATURE_CONFIG__PARAMETER_EXPRESSIONS = 3;
+
+	/**
 	 * The number of structural features of the '<em>IBe XFeature Config</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XFEATURE_CONFIG_FEATURE_COUNT = 3;
+	int IBE_XFEATURE_CONFIG_FEATURE_COUNT = 4;
 
 	/**
 	 * The number of operations of the '<em>IBe XFeature Config</em>' class.
@@ -2060,6 +2069,17 @@ public interface IBeXCoreModelPackage extends EPackage {
 	EAttribute getIBeXFeatureConfig_BooleanExpressions();
 
 	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXFeatureConfig#isParameterExpressions <em>Parameter Expressions</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Parameter Expressions</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXFeatureConfig#isParameterExpressions()
+	 * @see #getIBeXFeatureConfig()
+	 * @generated
+	 */
+	EAttribute getIBeXFeatureConfig_ParameterExpressions();
+
+	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternSet <em>IBe XPattern Set</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -3106,6 +3126,14 @@ public interface IBeXCoreModelPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute IBE_XFEATURE_CONFIG__BOOLEAN_EXPRESSIONS = eINSTANCE.getIBeXFeatureConfig_BooleanExpressions();
+
+		/**
+		 * The meta object literal for the '<em><b>Parameter Expressions</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute IBE_XFEATURE_CONFIG__PARAMETER_EXPRESSIONS = eINSTANCE.getIBeXFeatureConfig_ParameterExpressions();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXPatternSetImpl <em>IBe XPattern Set</em>}' class.

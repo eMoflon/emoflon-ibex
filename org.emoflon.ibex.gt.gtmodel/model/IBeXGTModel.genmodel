@@ -19,6 +19,7 @@
     </genClasses>
     <genClasses ecoreClass="IBeXGTModel.ecore#//GTPattern">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTPattern/watchDogs"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTPattern/usedFeatures"/>
     </genClasses>
     <genClasses ecoreClass="IBeXGTModel.ecore#//GTRule">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTRule/parameters"/>

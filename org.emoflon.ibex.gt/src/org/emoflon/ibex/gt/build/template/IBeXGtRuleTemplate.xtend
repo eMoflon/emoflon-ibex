@@ -1,6 +1,7 @@
 package org.emoflon.ibex.gt.build.template
 
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRule
+import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern
 
 class IBeXGtRuleTemplate extends GeneratorTemplate<GTRule>{
 	
@@ -55,6 +56,10 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 	protected «param.type.name» «param.name.toFirstLower»;
 	«ENDFOR»
 	
+	«FOR node : context.precondition.signatureNodes»
+	protected «node.type.name» «node.name.toFirstLower»Binding = null;
+	«ENDFOR»
+	
 	public «className»(final IBeXGtAPI<?, ?, ?> api, final GTRule rule) {
 		super(api, rule);
 	}
@@ -97,28 +102,58 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 		«ENDFOR»
 	}
 	
+	«FOR node : context.precondition.signatureNodes»
+	public void bind«node.name.toFirstUpper»(final «node.type.name» «node.name.toFirstLower») {
+		this.«node.name.toFirstLower» = «node.name.toFirstLower»;
+		setBinding("«node.name»", «node.name.toFirstLower»);
+	}
+	
+	public void unbind«node.name.toFirstUpper»() {
+		this.«node.name.toFirstLower» = null;
+		unsetBinding("«node.name»");
+	}
+	
+	«ENDFOR»
+	
 	@Override
 	public boolean checkBindings(final «matchClassName» match) {
-		//TODO: !
-		return false;
+		if(bindings.isEmpty())
+			return true;
+			
+		boolean bound = true;
+		«FOR node : context.precondition.signatureNodes»
+		bound &= «node.name.toFirstLower»Binding == null || match.«node.name.toFirstLower»().equals(«node.name.toFirstLower»Binding);
+		«ENDFOR»
 	}
 		
 	@Override
 	public boolean checkConditions(final «matchClassName» match) {
+		«IF context.precondition.conditions === null || context.precondition.conditions.isEmpty»
+		return true;
+		«ELSE»
 		return «FOR condition : context.precondition.conditions SEPARATOR ' && \n'»(«exprHelper.unparse("match", condition)»)«ENDFOR»;
+		«ENDIF»
 	}
 
 	
 	@Override
 	public boolean hasArithmeticExpressions() {
-		//TODO: !
-		return false;
+		return «(context.precondition as GTPattern).usedFeatures.arithmeticExpressions.toString»;
 	}
 	
 	@Override
-	public abstract boolean hasCountExpressions() {
-		//TODO: !
-		return false;
+	public boolean hasBooleanExpressions() {
+		return «(context.precondition as GTPattern).usedFeatures.booleanExpressions.toString»;
+	}
+	
+	@Override
+	public boolean hasCountExpressions() {
+		return «(context.precondition as GTPattern).usedFeatures.countExpressions.toString»;
+	}
+	
+	@Override
+	public boolean hasParameterExpressions() {
+		return «(context.precondition as GTPattern).usedFeatures.parameterExpressions.toString»;
 	}
 	
 	protected «matchClassName» createMatch(final Map<String, Object> nodes) {
@@ -138,7 +173,11 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 	}
 	
 	public double getProbability(final «matchClassName» match) {
+		«IF context.probability === null»
+		return 0.0;
+		«ELSE»
 		return «exprHelper.unparse("match", context.probability)»;
+		«ENDIF»
 	}
 	
 	public Optional<«coMatchClassName»> apply(final «matchClassName» match) {

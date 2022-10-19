@@ -19,7 +19,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern;
 import org.emoflon.ibex.common.operational.IMatch;
 
-public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, EM extends Object, IM extends IMatch> {
+public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, EM, IM extends IMatch> {
 
 	final protected IBEX_MODEL ibexModel;
 	final protected ResourceSet model;
@@ -93,7 +93,7 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, EM ext
 	 */
 	protected abstract void fetchMatches();
 
-	public abstract IM transformToIMatch(EM match);
+	public abstract IM transformToIMatch(final EM match);
 
 	/**
 	 * Creates a match filter object that can be used to filter matches with

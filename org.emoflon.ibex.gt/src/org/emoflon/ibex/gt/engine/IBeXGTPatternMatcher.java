@@ -15,13 +15,22 @@ import org.emoflon.ibex.common.engine.MatchFilter;
 import org.emoflon.ibex.common.engine.PatternMatchingEngine;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTModel;
 
-public abstract class IBeXGTPatternMatcher<E extends IBeXGTPatternMatcher<E, ENGINE_MATCH>, ENGINE_MATCH extends Object>
-		extends PatternMatchingEngine<GTModel, ENGINE_MATCH, IBeXGTMatch<?, ?>> {
+public abstract class IBeXGTPatternMatcher<E extends IBeXGTPatternMatcher<E, EM>, EM>
+		extends PatternMatchingEngine<GTModel, EM, IBeXGTMatch<?, ?>> {
 
 	protected Map<String, IBeXGTPattern<?, ?>> name2typedPattern = Collections.synchronizedMap(new LinkedHashMap<>());
 
 	public IBeXGTPatternMatcher(GTModel ibexModel, ResourceSet model) {
 		super(ibexModel, model);
+	}
+
+	protected abstract Map<String, Object> extractNodes(final EM match);
+
+	protected abstract String extractPatternName(final EM match);
+
+	@Override
+	public IBeXGTMatch<?, ?> transformToIMatch(final EM match) {
+		return name2typedPattern.get(extractPatternName(match)).createMatch(extractNodes(match));
 	}
 
 	protected void registerTypedPattern(IBeXGTPattern<?, ?> typedPattern) {

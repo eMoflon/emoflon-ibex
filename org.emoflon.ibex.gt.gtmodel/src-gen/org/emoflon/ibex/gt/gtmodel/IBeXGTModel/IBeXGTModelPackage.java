@@ -279,13 +279,22 @@ public interface IBeXGTModelPackage extends EPackage {
 	int GT_PATTERN__WATCH_DOGS = IBeXCoreModelPackage.IBE_XPATTERN_FEATURE_COUNT + 0;
 
 	/**
+	 * The feature id for the '<em><b>Used Features</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int GT_PATTERN__USED_FEATURES = IBeXCoreModelPackage.IBE_XPATTERN_FEATURE_COUNT + 1;
+
+	/**
 	 * The number of structural features of the '<em>GT Pattern</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int GT_PATTERN_FEATURE_COUNT = IBeXCoreModelPackage.IBE_XPATTERN_FEATURE_COUNT + 1;
+	int GT_PATTERN_FEATURE_COUNT = IBeXCoreModelPackage.IBE_XPATTERN_FEATURE_COUNT + 2;
 
 	/**
 	 * The number of operations of the '<em>GT Pattern</em>' class.
@@ -911,6 +920,17 @@ public interface IBeXGTModelPackage extends EPackage {
 	EReference getGTPattern_WatchDogs();
 
 	/**
+	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern#getUsedFeatures <em>Used Features</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Used Features</em>'.
+	 * @see org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern#getUsedFeatures()
+	 * @see #getGTPattern()
+	 * @generated
+	 */
+	EReference getGTPattern_UsedFeatures();
+
+	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRule <em>GT Rule</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1253,6 +1273,14 @@ public interface IBeXGTModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference GT_PATTERN__WATCH_DOGS = eINSTANCE.getGTPattern_WatchDogs();
+
+		/**
+		 * The meta object literal for the '<em><b>Used Features</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference GT_PATTERN__USED_FEATURES = eINSTANCE.getGTPattern_UsedFeatures();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl.GTRuleImpl <em>GT Rule</em>}' class.

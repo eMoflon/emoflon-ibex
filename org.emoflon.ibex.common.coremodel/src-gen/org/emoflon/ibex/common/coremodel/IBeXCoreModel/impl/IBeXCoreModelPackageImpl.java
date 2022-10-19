@@ -696,6 +696,15 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EAttribute getIBeXFeatureConfig_ParameterExpressions() {
+		return (EAttribute) iBeXFeatureConfigEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getIBeXPatternSet() {
 		return iBeXPatternSetEClass;
 	}
@@ -1327,6 +1336,7 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 		createEAttribute(iBeXFeatureConfigEClass, IBE_XFEATURE_CONFIG__COUNT_EXPRESSIONS);
 		createEAttribute(iBeXFeatureConfigEClass, IBE_XFEATURE_CONFIG__ARITHMETIC_EXPRESSIONS);
 		createEAttribute(iBeXFeatureConfigEClass, IBE_XFEATURE_CONFIG__BOOLEAN_EXPRESSIONS);
+		createEAttribute(iBeXFeatureConfigEClass, IBE_XFEATURE_CONFIG__PARAMETER_EXPRESSIONS);
 
 		iBeXPatternSetEClass = createEClass(IBE_XPATTERN_SET);
 		createEReference(iBeXPatternSetEClass, IBE_XPATTERN_SET__PATTERNS);
@@ -1588,6 +1598,9 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 				"arithmeticExpressions", "false", 0, 1, IBeXFeatureConfig.class, !IS_TRANSIENT, !IS_VOLATILE,
 				IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getIBeXFeatureConfig_BooleanExpressions(), ecorePackage.getEBoolean(), "booleanExpressions",
+				"false", 0, 1, IBeXFeatureConfig.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE,
+				!IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getIBeXFeatureConfig_ParameterExpressions(), ecorePackage.getEBoolean(), "parameterExpressions",
 				"false", 0, 1, IBeXFeatureConfig.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE,
 				!IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 

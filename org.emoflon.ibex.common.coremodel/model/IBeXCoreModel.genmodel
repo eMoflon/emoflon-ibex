@@ -64,6 +64,7 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//IBeXFeatureConfig/countExpressions"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//IBeXFeatureConfig/arithmeticExpressions"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//IBeXFeatureConfig/booleanExpressions"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//IBeXFeatureConfig/parameterExpressions"/>
     </genClasses>
     <genClasses ecoreClass="IBeXCoreModel.ecore#//IBeXPatternSet">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//IBeXPatternSet/patterns"/>

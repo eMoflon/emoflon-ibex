@@ -5,6 +5,7 @@ import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern
 class IBeXGtPatternTemplate extends GeneratorTemplate<GTPattern>{
 	
 	protected String matchClassName;
+	protected ExpressionHelper exprHelper;
 	
 	new(IBeXGTApiData data, GTPattern context) {
 		super(data, context)
@@ -24,6 +25,7 @@ class IBeXGtPatternTemplate extends GeneratorTemplate<GTPattern>{
 		imports.add("org.emoflon.ibex.gt.api.IBeXGtAPI")
 		imports.add("org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern")
 		
+		exprHelper = new ExpressionHelper(data, imports)
 	}
 	
 	override generate() {
@@ -34,6 +36,10 @@ import «imp»;
 «ENDFOR»
 
 public class «className» extends IBeXGTPattern<«className», «matchClassName»> {
+	
+	«FOR node : context.signatureNodes»
+	protected «node.type.name» «node.name.toFirstLower»Binding = null;
+	«ENDFOR»
 	
 	public «className»(final IBeXGtAPI<?, ?, ?> api, final GTPattern pattern) {
 		super(api, pattern);
@@ -50,27 +56,61 @@ public class «className» extends IBeXGTPattern<«className», «matchClassName
 	}
 	
 	@Override
+	public void setParameters(final Map<String, Object> parameters) {
+		throw new UnsupportedOperationException("Patterns do not have any parameters.");
+	}
+	
+	«FOR node : context.signatureNodes»
+	public void bind«node.name.toFirstUpper»(final «node.type.name» «node.name.toFirstLower») {
+		this.«node.name.toFirstLower» = «node.name.toFirstLower»;
+		setBinding("«node.name»", «node.name.toFirstLower»);
+	}
+	
+	public void unbind«node.name.toFirstUpper»() {
+		this.«node.name.toFirstLower» = null;
+		unsetBinding("«node.name»");
+	}
+	
+	«ENDFOR»
+	
+	@Override
 	public boolean checkBindings(final «matchClassName» match) {
-		//TODO: !
-		return false;
+		if(bindings.isEmpty())
+			return true;
+			
+		boolean bound = true;
+		«FOR node : context.signatureNodes»
+		bound &= «node.name.toFirstLower»Binding == null || match.«node.name.toFirstLower»().equals(«node.name.toFirstLower»Binding);
+		«ENDFOR»
 	}
 	
 	@Override
 	protected boolean checkConditions(final «matchClassName» match) {
-		//TODO: !
-		return false;
+		«IF context.conditions === null || context.conditions.isEmpty»
+		return true;
+		«ELSE»
+		return «FOR condition : context.conditions SEPARATOR ' && \n'»(«exprHelper.unparse("match", condition)»)«ENDFOR»;
+		«ENDIF»
 	}
 	
 	@Override
 	public boolean hasArithmeticExpressions() {
-		//TODO: !
-		return false;
+		return «context.usedFeatures.arithmeticExpressions.toString»;
 	}
 	
 	@Override
-	public abstract boolean hasCountExpressions() {
-		//TODO: !
-		return false;
+	public boolean hasBooleanExpressions() {
+		return «context.usedFeatures.booleanExpressions.toString»;
+	}
+	
+	@Override
+	public boolean hasCountExpressions() {
+		return «context.usedFeatures.countExpressions.toString»;
+	}
+	
+	@Override
+	public boolean hasParameterExpressions() {
+		return «context.usedFeatures.parameterExpressions.toString»;
 	}
 	
 	protected «matchClassName» createMatch(final Map<String, Object> nodes) {

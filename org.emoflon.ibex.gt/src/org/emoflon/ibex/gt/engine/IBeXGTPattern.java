@@ -2,6 +2,7 @@ package org.emoflon.ibex.gt.engine;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -9,7 +10,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import org.eclipse.emf.ecore.EObject;
+import org.emoflon.ibex.common.operational.IPatternInterpreterProperties;
 import org.emoflon.ibex.gt.api.IBeXGtAPI;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern;
 
@@ -46,15 +47,12 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 	protected Collection<M> removedMatches = Collections.synchronizedSet(new LinkedHashSet<>());
 
 	/**
-	 * The map containing potential node bindings.
-	 */
-	protected Map<String, EObject> bindings = Collections.synchronizedMap(new LinkedHashMap<>());
-
-	/**
 	 * 
 	 */
 	protected Map<Consumer<M>, Consumer<IBeXGTMatch<?, ?>>> typed2genericConsumers = Collections
 			.synchronizedMap(new LinkedHashMap<>());
+
+	protected Map<String, Object> bindings = Collections.synchronizedMap(new LinkedHashMap<>());
 
 	/**
 	 * Creates a new pattern.
@@ -72,14 +70,26 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 		patternMatcher.registerTypedPattern(this);
 	}
 
+	public abstract boolean checkBindings(final M match);
+
+	public abstract boolean checkConditions(final M match);
+
+	public abstract boolean hasArithmeticExpressions();
+
+	public abstract boolean hasBooleanExpressions();
+
+	public abstract boolean hasCountExpressions();
+
+	public abstract boolean hasParameterExpressions();
+
+	protected abstract M createMatch(final Map<String, Object> nodes);
+
 	/**
 	 * Returns the parameters.
 	 * 
 	 * @return the parameters
 	 */
 	public abstract Map<String, Object> getParameters();
-
-	public abstract void setParameters(final Map<String, Object> parameters);
 
 	/**
 	 * Returns the names of the parameters which can be bound for this pattern.
@@ -88,15 +98,32 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 	 */
 	protected abstract Collection<String> getParameterNames();
 
-	public abstract boolean checkBindings(final M match);
+	public abstract void setParameters(final Map<String, Object> parameters);
 
-	public abstract boolean checkConditions(final M match);
+	public Map<String, Object> getBindings() {
+		return new HashMap<>(bindings);
+	}
 
-	public abstract boolean hasArithmeticExpressions();
+	protected void setBinding(final String name, final Object binding) {
+		bindings.put(name, binding);
+	}
 
-	public abstract boolean hasCountExpressions();
+	protected void unsetBinding(final String name) {
+		bindings.remove(name);
+	}
 
-	protected abstract M createMatch(final Map<String, Object> nodes);
+	public boolean requiresChecks(final IPatternInterpreterProperties properties) {
+		if (hasArithmeticExpressions() && !properties.supports_arithmetic_attr_constraints())
+			return true;
+		if (hasBooleanExpressions() && !properties.supports_boolean_attr_constraints())
+			return true;
+		if (hasCountExpressions() && !properties.supports_count_matches())
+			return true;
+		if (hasParameterExpressions() && !properties.supports_parameter_attr_constraints())
+			return true;
+
+		return false;
+	}
 
 	public boolean isEmptyPattern() {
 		return pattern.isEmpty();

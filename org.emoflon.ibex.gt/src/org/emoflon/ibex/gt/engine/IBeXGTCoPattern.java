@@ -34,7 +34,17 @@ public abstract class IBeXGTCoPattern<CP extends IBeXGTCoPattern<CP, CM, R, P, M
 	}
 
 	@Override
+	public boolean hasBooleanExpressions() {
+		return false;
+	}
+
+	@Override
 	public boolean hasCountExpressions() {
+		return false;
+	}
+
+	@Override
+	public boolean hasParameterExpressions() {
 		return false;
 	}
 

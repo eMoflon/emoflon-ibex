@@ -26,6 +26,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXBooleanValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEnumValue;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXFeatureConfig;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXMatchCountValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModelMetadata;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNamedElement;
@@ -127,10 +128,6 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 	protected final Map<GTLEdgeIterator, List<Consumer<GTForEachExpression>>> pendingIteratorJobs = Collections
 			.synchronizedMap(new HashMap<>());
 	protected final List<Runnable> pendingInvocationJobs = Collections.synchronizedList(new LinkedList<>());
-
-	protected boolean countFlag = false;
-	protected boolean arithmeticFlag = false;
-	protected boolean booleanFlag = false;
 
 	public GTLtoGTModelTransformer(final EditorFile editorFile, final IProject project) {
 		super(editorFile);
@@ -247,6 +244,18 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 		Collections.sort(patterns, comparator);
 		model.getPatternSet().getPatterns().addAll(patterns);
 
+		model.setFeatureConfig(superFactory.createIBeXFeatureConfig());
+		patterns.forEach(p -> {
+			if (p.getUsedFeatures().isArithmeticExpressions())
+				model.getFeatureConfig().setArithmeticExpressions(true);
+			if (p.getUsedFeatures().isBooleanExpressions())
+				model.getFeatureConfig().setBooleanExpressions(true);
+			if (p.getUsedFeatures().isCountExpressions())
+				model.getFeatureConfig().setCountExpressions(true);
+			if (p.getUsedFeatures().isParameterExpressions())
+				model.getFeatureConfig().setParameterExpressions(true);
+		});
+
 		List<IBeXNode> nodes = new LinkedList<>(node2node.values());
 		Collections.sort(nodes, comparator);
 		model.getNodeSet().getNodes().addAll(nodes);
@@ -341,7 +350,8 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 
 		// Probabilities
 		if (rule.isStochastic()) {
-			ArithmeticExpression probability = (ArithmeticExpression) transform(rule.getProbability());
+			IBeXFeatureConfig features = superFactory.createIBeXFeatureConfig();
+			ArithmeticExpression probability = (ArithmeticExpression) transform(rule.getProbability(), features);
 			gtRule.setProbability(probability);
 		}
 
@@ -390,8 +400,10 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 		}
 
 		// Attribute and node conditions
+		IBeXFeatureConfig features = superFactory.createIBeXFeatureConfig();
+		gtPattern.setUsedFeatures(features);
 		for (SlimRuleCondition condition : pattern.getConditions()) {
-			BooleanExpression expression = transform(condition.getExpression());
+			BooleanExpression expression = transform(condition.getExpression(), features);
 			gtPattern.getConditions().add(expression);
 		}
 
@@ -409,9 +421,8 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 		}
 
 		// Automatic injectivity constraints, if necessary
-		if (pattern.isConfigured() && pattern.getConfiguration().getConfigurations()
+		if (!pattern.isConfigured() || !pattern.getConfiguration().getConfigurations()
 				.contains(SlimRuleConfiguration.DISABLE_INJECTIVITY_CONSTRAINTS)) {
-
 			Set<IBeXNodePair> pairs = new HashSet<>();
 			for (IBeXNode n1 : gtPattern.getSignatureNodes()) {
 				for (IBeXNode n2 : gtPattern.getSignatureNodes()) {
@@ -471,8 +482,9 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 		}
 
 		// Attribute and node conditions that must hold after the rule has been applied
+		IBeXFeatureConfig features = superFactory.createIBeXFeatureConfig();
 		for (SlimRuleCondition condition : pattern.getConditions()) {
-			BooleanExpression expression = transform(condition.getExpression());
+			BooleanExpression expression = transform(condition.getExpression(), features);
 			gtPattern.getConditions().add(expression);
 		}
 
@@ -602,24 +614,26 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 		IBeXAttributeAssignment gtAssign = superFactory.createIBeXAttributeAssignment();
 		gtAssign.setNode(node2node.get(assignee));
 		gtAssign.setAttribute(assignment.getType());
-		ValueExpression value = transform(assignment.getValue());
+		IBeXFeatureConfig features = superFactory.createIBeXFeatureConfig();
+		ValueExpression value = transform(assignment.getValue(), features);
 		gtAssign.setValue(value);
 		return gtAssign;
 	}
 
-	protected BooleanExpression transform(org.emoflon.ibex.common.slimgt.slimGT.BooleanExpression expression) {
+	protected BooleanExpression transform(org.emoflon.ibex.common.slimgt.slimGT.BooleanExpression expression,
+			IBeXFeatureConfig features) {
 		if (expression instanceof BooleanImplication impl) {
-			setBooleanFeatureFlag();
+			features.setBooleanExpressions(true);
 			BooleanBinaryExpression binary = arithmeticFactory.createBooleanBinaryExpression();
-			binary.setLhs(transform(impl.getLeft()));
-			binary.setRhs(transform(impl.getRight()));
+			binary.setLhs(transform(impl.getLeft(), features));
+			binary.setRhs(transform(impl.getRight(), features));
 			binary.setOperator(BooleanBinaryOperator.IMPLICATION);
 			return binary;
 		} else if (expression instanceof BooleanDisjunction disj) {
-			setBooleanFeatureFlag();
+			features.setBooleanExpressions(true);
 			BooleanBinaryExpression binary = arithmeticFactory.createBooleanBinaryExpression();
-			binary.setLhs(transform(disj.getLeft()));
-			binary.setRhs(transform(disj.getRight()));
+			binary.setLhs(transform(disj.getLeft(), features));
+			binary.setRhs(transform(disj.getRight(), features));
 			binary.setOperator(switch (disj.getOperator()) {
 			case OR -> {
 				yield BooleanBinaryOperator.OR;
@@ -631,10 +645,10 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 			});
 			return binary;
 		} else if (expression instanceof BooleanConjunction conj) {
-			setBooleanFeatureFlag();
+			features.setBooleanExpressions(true);
 			BooleanBinaryExpression binary = arithmeticFactory.createBooleanBinaryExpression();
-			binary.setLhs(transform(conj.getLeft()));
-			binary.setRhs(transform(conj.getRight()));
+			binary.setLhs(transform(conj.getLeft(), features));
+			binary.setRhs(transform(conj.getRight(), features));
 			binary.setOperator(switch (conj.getOperator()) {
 			case AND -> {
 				yield BooleanBinaryOperator.AND;
@@ -643,20 +657,20 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 			});
 			return binary;
 		} else if (expression instanceof BooleanNegation neg) {
-			setBooleanFeatureFlag();
+			features.setBooleanExpressions(true);
 			BooleanUnaryExpression unary = arithmeticFactory.createBooleanUnaryExpression();
-			unary.setOperand(transform(neg.getOperand()));
+			unary.setOperand(transform(neg.getOperand(), features));
 			unary.setOperator(BooleanUnaryOperator.NEGATION);
 			return unary;
 		} else if (expression instanceof BooleanBracket brack) {
-			setBooleanFeatureFlag();
+			features.setBooleanExpressions(true);
 			BooleanUnaryExpression unary = arithmeticFactory.createBooleanUnaryExpression();
-			unary.setOperand(transform(brack.getOperand()));
+			unary.setOperand(transform(brack.getOperand(), features));
 			unary.setOperator(BooleanUnaryOperator.BRACKET);
 			return unary;
 		} else if (expression instanceof org.emoflon.ibex.common.slimgt.slimGT.ValueExpression val) {
-			setBooleanFeatureFlag();
-			ValueExpression gtValue = transform(val);
+			features.setBooleanExpressions(true);
+			ValueExpression gtValue = transform(val, features);
 			if (gtValue instanceof IBeXBooleanValue boolValue) {
 				return boolValue;
 			} else if (gtValue instanceof IBeXAttributeValue atrValue
@@ -668,8 +682,8 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 			}
 		} else if (expression instanceof org.emoflon.ibex.common.slimgt.slimGT.RelationalExpression rel) {
 			RelationalExpression gtRelation = arithmeticFactory.createRelationalExpression();
-			gtRelation.setLhs(transform(rel.getLhs()));
-			gtRelation.setRhs(transform(rel.getRhs()));
+			gtRelation.setLhs(transform(rel.getLhs(), features));
+			gtRelation.setRhs(transform(rel.getRhs(), features));
 			gtRelation.setOperator(switch (rel.getRelation()) {
 			case EQUAL -> {
 				if (gtRelation.getLhs().getType() instanceof EDataType
@@ -707,15 +721,20 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 		}
 	}
 
-	protected ValueExpression transform(org.emoflon.ibex.common.slimgt.slimGT.ValueExpression value) {
-		return transform((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) value);
+	protected ValueExpression transform(org.emoflon.ibex.common.slimgt.slimGT.ValueExpression value,
+			IBeXFeatureConfig features) {
+		return transform((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) value, features);
 	}
 
-	protected ArithmeticExpression transform(org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression expression) {
+	protected ArithmeticExpression transform(org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression expression,
+			IBeXFeatureConfig features) {
 		if (expression instanceof SumArithmeticExpression sum) {
+			features.setArithmeticExpressions(true);
 			BinaryExpression binary = arithmeticFactory.createBinaryExpression();
-			binary.setLhs(transform((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) sum.getLhs()));
-			binary.setRhs(transform((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) sum.getRhs()));
+			binary.setLhs(
+					transform((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) sum.getLhs(), features));
+			binary.setRhs(
+					transform((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) sum.getRhs(), features));
 			binary.setType(DataTypeUtil.mergeDataTypes(binary.getLhs(), binary.getRhs()));
 			binary.setOperator(switch (sum.getOperator()) {
 			case MINUS -> {
@@ -729,9 +748,12 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 
 			return binary;
 		} else if (expression instanceof ProductArithmeticExpression prod) {
+			features.setArithmeticExpressions(true);
 			BinaryExpression binary = arithmeticFactory.createBinaryExpression();
-			binary.setLhs(transform((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) prod.getLhs()));
-			binary.setRhs(transform((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) prod.getRhs()));
+			binary.setLhs(
+					transform((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) prod.getLhs(), features));
+			binary.setRhs(
+					transform((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) prod.getRhs(), features));
 			binary.setType(DataTypeUtil.mergeDataTypes(binary.getLhs(), binary.getRhs()));
 			binary.setOperator(switch (prod.getOperator()) {
 			case MULT -> {
@@ -748,9 +770,12 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 
 			return binary;
 		} else if (expression instanceof ExpArithmeticExpression exp) {
+			features.setArithmeticExpressions(true);
 			BinaryExpression binary = arithmeticFactory.createBinaryExpression();
-			binary.setLhs(transform((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) exp.getLhs()));
-			binary.setRhs(transform((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) exp.getRhs()));
+			binary.setLhs(
+					transform((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) exp.getLhs(), features));
+			binary.setRhs(
+					transform((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) exp.getRhs(), features));
 			binary.setType(EcorePackage.Literals.EDOUBLE);
 			binary.setOperator(switch (exp.getOperator()) {
 			case POW -> {
@@ -764,26 +789,27 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 
 			return binary;
 		} else if (expression instanceof StochasticArithmeticExpression stoc) {
+			features.setArithmeticExpressions(true);
 			return switch (stoc.getDistribution()) {
 			case NORMAL -> {
 				BinaryExpression binary = arithmeticFactory.createBinaryExpression();
-				binary.setLhs(transform(stoc.getMean()));
-				binary.setRhs(transform(stoc.getSd()));
+				binary.setLhs(transform(stoc.getMean(), features));
+				binary.setRhs(transform(stoc.getSd(), features));
 				binary.setType(EcorePackage.Literals.EDOUBLE);
 				binary.setOperator(BinaryOperator.NORMAL_DISTRIBUTION);
 				yield binary;
 			}
 			case UNIFORM -> {
 				BinaryExpression binary = arithmeticFactory.createBinaryExpression();
-				binary.setLhs(transform(stoc.getMean()));
-				binary.setRhs(transform(stoc.getSd()));
+				binary.setLhs(transform(stoc.getMean(), features));
+				binary.setRhs(transform(stoc.getSd(), features));
 				binary.setType(EcorePackage.Literals.EDOUBLE);
 				binary.setOperator(BinaryOperator.UNIFORM_DISTRIBUTION);
 				yield binary;
 			}
 			case EXPONENTIAL -> {
 				UnaryExpression unary = arithmeticFactory.createUnaryExpression();
-				unary.setOperand(transform(stoc.getMean()));
+				unary.setOperand(transform(stoc.getMean(), features));
 				unary.setType(EcorePackage.Literals.EDOUBLE);
 				unary.setOperator(
 						org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.UnaryOperator.EXPONENTIAL_DISTRIBUTION);
@@ -793,9 +819,12 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 				throw new UnsupportedOperationException("Unknown arithmetic operator: " + stoc.getDistribution());
 			};
 		} else if (expression instanceof MinMaxArithmeticExpression minMax) {
+			features.setArithmeticExpressions(true);
 			BinaryExpression binary = arithmeticFactory.createBinaryExpression();
-			binary.setLhs(transform((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) minMax.getLhs()));
-			binary.setRhs(transform((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) minMax.getRhs()));
+			binary.setLhs(
+					transform((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) minMax.getLhs(), features));
+			binary.setRhs(
+					transform((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) minMax.getRhs(), features));
 			binary.setType(DataTypeUtil.mergeDataTypes(binary.getLhs(), binary.getRhs()));
 			binary.setOperator(switch (minMax.getMinMaxOperator()) {
 			case MIN -> {
@@ -810,9 +839,10 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 
 			return binary;
 		} else if (expression instanceof UnaryArithmeticExpression un) {
+			features.setArithmeticExpressions(true);
 			UnaryExpression unary = arithmeticFactory.createUnaryExpression();
-			unary.setOperand(
-					transform((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) expression.getLhs()));
+			unary.setOperand(transform((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) expression.getLhs(),
+					features));
 			unary.setOperator(switch (un.getOperator()) {
 			case NEG -> {
 				unary.setType(unary.getOperand().getType());
@@ -842,9 +872,10 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 			});
 			return unary;
 		} else if (expression instanceof BracketExpression brack) {
+			features.setArithmeticExpressions(true);
 			UnaryExpression unary = arithmeticFactory.createUnaryExpression();
-			unary.setOperand(
-					transform((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) expression.getLhs()));
+			unary.setOperand(transform((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) expression.getLhs(),
+					features));
 			unary.setType(unary.getOperand().getType());
 			unary.setOperator(org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.UnaryOperator.BRACKET);
 			return unary;
@@ -887,11 +918,16 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 				itrRef.setType(iae.getFeature().getEType());
 				return (ArithmeticExpression) itrRef;
 			} else if (op.getOperand() instanceof GTLParameterExpression param) {
+				SlimRuleCondition condition = SlimGTModelUtil.getContainer(param, SlimRuleCondition.class);
+				if (condition != null)
+					features.setParameterExpressions(true);
+
 				GTParameterValue paramValue = factory.createGTParameterValue();
 				paramValue.setParameter(param2param.get(param.getParameter()));
 				paramValue.setType(paramValue.getParameter().getType());
 				return paramValue;
 			} else if (op.getOperand() instanceof CountExpression count) {
+				features.setCountExpressions(true);
 				IBeXMatchCountValue gtCount = superFactory.createIBeXMatchCountValue();
 				gtCount.setType(EcorePackage.Literals.EINT);
 				SlimRule invoker = SlimGTModelUtil.getContainer(count, SlimRule.class);
@@ -971,6 +1007,7 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 				GTPattern gtInvokee = pattern2pattern.get(invokee);
 				gtInvocation.setInvokedBy(gtInvoker);
 				gtInvocation.setInvocation(gtInvokee);
+				gtInvoker.getDependencies().add(gtInvokee);
 
 				for (SlimRuleNodeMapping mapping : mappings.getMappings()) {
 					IBeXNode src = node2node.get(mapping.getSource());
@@ -1015,7 +1052,8 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 				IBeXAttributeAssignment gtAssign = superFactory.createIBeXAttributeAssignment();
 				gtAssign.setNode(node2node.get(nae.getNodeExpression().getNode()));
 				gtAssign.setAttribute(nae.getNodeExpression().getFeature());
-				ValueExpression value = transform(iteratorAssignment.getValue());
+				IBeXFeatureConfig features = superFactory.createIBeXFeatureConfig();
+				ValueExpression value = transform(iteratorAssignment.getValue(), features);
 				gtAssign.setValue(value);
 				forEach.getAttributeAssignments().add(gtAssign);
 			} else if (iteratorAssignment.getAttribute() instanceof GTLIteratorAttributeExpression iae) {
@@ -1023,7 +1061,8 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 				gtAssign.setIterator(forEach);
 				gtAssign.setNode(forEach.getIterator());
 				gtAssign.setAttribute(iae.getFeature());
-				ValueExpression value = transform(iteratorAssignment.getValue());
+				IBeXFeatureConfig features = superFactory.createIBeXFeatureConfig();
+				ValueExpression value = transform(iteratorAssignment.getValue(), features);
 				gtAssign.setValue(value);
 				forEach.getAttributeAssignments().add(gtAssign);
 			}
@@ -1078,18 +1117,6 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 		sb.append(edge.getTarget().getName());
 		sb.append("]");
 		edge.setName(sb.toString());
-	}
-
-	protected synchronized void setCountFeatureFlag() {
-		countFlag = true;
-	}
-
-	protected synchronized void setArithmeticFeatureFlag() {
-		arithmeticFlag = true;
-	}
-
-	protected synchronized void setBooleanFeatureFlag() {
-		booleanFlag = true;
 	}
 
 }
