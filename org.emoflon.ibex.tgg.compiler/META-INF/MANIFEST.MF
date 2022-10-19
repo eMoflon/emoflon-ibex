@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Compiler
+Bundle-SymbolicName: org.emoflon.ibex.tgg.compiler
+Bundle-Version: 1.0.0.qualifier
+Require-Bundle: org.emoflon.ibex.tgg.tggmodel;bundle-version="0.1.0",
+ org.emoflon.ibex.tgg.tggl;bundle-version="1.0.0",
+ org.emoflon.ibex.common,
+ org.emoflon.ibex.common.slimgt;bundle-version="1.0.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-17
+Automatic-Module-Name: org.emoflon.ibex.tgg.compiler

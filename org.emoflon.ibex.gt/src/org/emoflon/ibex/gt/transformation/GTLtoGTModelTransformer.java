@@ -113,8 +113,6 @@ import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.IBeXGTModelFactory;
 
 public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorFile, GTModel, IBeXGTModelFactory> {
 
-	protected final IProject project;
-
 	protected final Map<SlimRule, GTRule> rule2rule = Collections.synchronizedMap(new HashMap<>());
 	protected final Map<SlimRule, GTPattern> pattern2pattern = Collections.synchronizedMap(new HashMap<>());
 	protected final Map<SlimRuleNode, IBeXNode> node2node = Collections.synchronizedMap(new HashMap<>());
@@ -130,8 +128,7 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 	protected final List<Runnable> pendingInvocationJobs = Collections.synchronizedList(new LinkedList<>());
 
 	public GTLtoGTModelTransformer(final EditorFile editorFile, final IProject project) {
-		super(editorFile);
-		this.project = project;
+		super(editorFile, project);
 	}
 
 	@Override
