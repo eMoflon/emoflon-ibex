@@ -7,6 +7,7 @@ import java.util.HashMap
 import java.util.Set
 import java.util.HashSet
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode
+import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression
 
 class IBeXGtRuleTemplate extends GeneratorTemplate<GTRule>{
 	
@@ -37,11 +38,12 @@ class IBeXGtRuleTemplate extends GeneratorTemplate<GTRule>{
 		filePath = data.rulePackagePath + "/" + className
 		
 		imports.add("java.util.Collection")
+		imports.add("java.util.Collectors")
 		imports.add("java.util.List")
+		imports.add("java.util.LinkedList")
 		imports.add("java.util.Map")
 		imports.add("java.util.HashMap")
 		imports.add("java.util.Optional")
-		imports.add("org.emoflon.ibex.common.emf.EMFManipulationUtils")
 		imports.add("org.emoflon.ibex.gt.engine.IBeXGTRule")
 		imports.add("org.emoflon.ibex.gt.api.IBeXGtAPI")
 		imports.add("org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRule")
@@ -251,8 +253,38 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 		«IF context.forEachOperations !== null && !context.forEachOperations.isEmpty»
 		
 		// Execute forEach-Operations
-		//TODO::
+		«FOR iterator : context.forEachOperations»
+		Collection<«getIteratorType(iterator)»> elements = «getIteratorSet("match", iterator)»;
+		for(«getIteratorType(iterator)» «iterator.iterator.name» : elements) {
+			«IF iterator.deleted !== null && !iterator.deleted.isEmpty»
+			// Delete elements
+			«FOR edge : iterator.deleted.filter[edge | !(edge.type.isContainment || edge.type.isContainer)]»
+			gtEngine.deleteEdge(«getNode("match", iterator, edge.source)», «getNode("match", iterator, edge.target)», rule.getForEachOperations().get(«context.forEachOperations.indexOf(iterator)»).getDeleted().get(«iterator.deleted.indexOf(edge)»));
+			«ENDFOR»
+			«FOR edge : context.deletion.edges.filter[edge | edge.type.isContainment || edge.type.isContainer]»
+			gtEngine.deleteEdge(«getNode("match", iterator, edge.source)», «getNode("match", iterator, edge.target)», rule.getForEachOperations().get(«context.forEachOperations.indexOf(iterator)»).getDeleted().get(«iterator.deleted.indexOf(edge)»));
+			«ENDFOR»
+			«ENDIF»
+			«IF iterator.created !== null && !iterator.created.isEmpty»
+			// Create elements
+			«FOR edge : iterator.created»
+			«IF edge.type.isMany»
+			«getNode("match", iterator, edge.source)».get«edge.type.name.toFirstUpper»().add(«getNode("match", iterator, edge.target)»);
+			«ELSE»
+			«getNode("match", iterator, edge.source)».set«edge.type.name.toFirstUpper»(«getNode("match", iterator, edge.target)»);
+			«ENDIF»
+			«ENDFOR»
+			«ENDIF»
+			«IF iterator.attributeAssignments !== null && !iterator.attributeAssignments.isEmpty»
+			// Assign attribute values
+			«FOR asgn : iterator.attributeAssignments»
+			«getNode("match", iterator, asgn.node)».set«asgn.attribute.name.toFirstUpper»(«exprHelper.unparse("match", asgn.value)»);
+			«ENDFOR»
+			«ENDIF»
+		}
+		«ENDFOR»
 		«ENDIF»
+		
 		return coPattern.createMatch(coMatchNodes);
 	}
 «««	TODO: Future works!
@@ -268,6 +300,34 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 			return '''«methodContext».'''
 		} else {
 			return node.name.toFirstLower
+		}
+	}
+	
+	def String getNode(String methodContext, GTForEachExpression itrContext, IBeXNode node) {
+		if(context.postcondition.signatureNodes.contains(node)) {
+			return '''«methodContext».«node.name.toFirstLower»()'''
+		} else if(itrContext.iterator.equals(node)) {
+			return '''«itrContext.iterator.name»'''
+		} else {
+			return node.name.toFirstLower
+		}
+	}
+	
+	def String getIteratorType(GTForEachExpression itr) {
+		if(itr.iterator.type.equals(itr.reference.EType)) {
+			imports.add(data.model.metaData.name2package.get(itr.reference.EType.EPackage.name).classifierName2FQN.get(itr.reference.EType.name))
+			return itr.reference.EType.name
+		} else {
+			imports.add(data.model.metaData.name2package.get(itr.iterator.type.EPackage.name).classifierName2FQN.get(itr.iterator.type.name))
+			return itr.iterator.type.name
+		}
+	}
+	
+	def String getIteratorSet(String methodContext, GTForEachExpression itr) {
+		if(itr.iterator.type.equals(itr.reference.EType)) {
+			return '''new LinkedList<>(«getNode(methodContext, itr.source)».get«itr.reference.name.toFirstUpper»())'''
+		} else {
+			return '''«getNode(methodContext, itr.source)».get«itr.reference.name.toFirstUpper»().stream().map(n -> («itr.iterator.type.name») n).collect(Collectors.toList())'''
 		}
 	}
 
