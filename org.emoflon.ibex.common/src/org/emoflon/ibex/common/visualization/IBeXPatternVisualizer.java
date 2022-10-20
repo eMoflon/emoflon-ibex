@@ -9,10 +9,9 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.ui.IEditorPart;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternSet;
+import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern;
+import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRule;
 import org.moflon.core.ui.VisualiserUtilities;
 import org.moflon.core.ui.visualisation.common.EMoflonDiagramTextProvider;
 
@@ -34,8 +33,7 @@ public class IBeXPatternVisualizer implements EMoflonDiagramTextProvider {
 	/**
 	 * Visualizes the first selected element
 	 * 
-	 * @param selection
-	 *            the selection
+	 * @param selection the selection
 	 * @return the PlantUMl code for the visualization
 	 */
 	private static String visualizeSelection(final IStructuredSelection selection) {
@@ -45,16 +43,12 @@ public class IBeXPatternVisualizer implements EMoflonDiagramTextProvider {
 			return IBeXPatternPlantUMLGenerator.visualizePatternInvocations((IBeXPatternSet) element);
 		}
 
-		if (isContextPattern(element)) {
-			return IBeXPatternPlantUMLGenerator.visualizeContextPattern((IBeXContextPattern) element);
+		if (isPattern(element)) {
+			return IBeXPatternPlantUMLGenerator.visualizeContextPattern((GTPattern) element);
 		}
 
-		if (isCreatePattern(element)) {
-			return IBeXPatternPlantUMLGenerator.visualizeCreatePattern((IBeXCreatePattern) element);
-		}
-
-		if (isDeletePattern(element)) {
-			return IBeXPatternPlantUMLGenerator.visualizeDeletePattern((IBeXDeletePattern) element);
+		if (isRule(element)) {
+			return IBeXPatternPlantUMLGenerator.visualizeRule((GTRule) element);
 		}
 
 		throw new IllegalArgumentException("Invalid selection: " + element);
@@ -67,33 +61,31 @@ public class IBeXPatternVisualizer implements EMoflonDiagramTextProvider {
 				.map(EcoreEditor::getSelection) //
 				.flatMap(maybeCast(TreeSelection.class)) //
 				.map(TreeSelection::getFirstElement) //
-				.filter(o -> isPatternSet(o) || isContextPattern(o) || isCreatePattern(o) || isDeletePattern(o)) //
+				.filter(o -> isPatternSet(o) || isPattern(o) || isRule(o)) //
 				.isPresent();
 	}
-	
+
 	@Override
 	public boolean supportsSelection(ISelection selection) {
 		Collection<EObject> elements = VisualiserUtilities.extractEcoreSelection(selection);
-		if(elements == null)
+		if (elements == null)
 			return false;
 
-		return elements.stream().filter(elt -> elt.eClass().getEPackage().getName().contains("org.emoflon.ibex.patternmodel")).findAny().isPresent();
+		return elements.stream()
+				.filter(elt -> elt.eClass().getEPackage().getName().contains("org.emoflon.ibex.patternmodel")).findAny()
+				.isPresent();
 	}
 
 	private static boolean isPatternSet(final Object object) {
 		return object instanceof IBeXPatternSet;
 	}
 
-	private static boolean isContextPattern(final Object object) {
-		return object instanceof IBeXContextPattern;
+	private static boolean isPattern(final Object object) {
+		return object instanceof GTPattern;
 	}
 
-	private static boolean isCreatePattern(final Object object) {
-		return object instanceof IBeXCreatePattern;
-	}
-
-	private static boolean isDeletePattern(final Object object) {
-		return object instanceof IBeXDeletePattern;
+	private static boolean isRule(final Object object) {
+		return object instanceof GTRule;
 	}
 
 }

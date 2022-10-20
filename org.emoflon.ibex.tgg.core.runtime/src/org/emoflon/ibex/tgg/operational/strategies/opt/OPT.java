@@ -13,7 +13,7 @@ import org.emoflon.ibex.common.collections.IntSet;
 import org.emoflon.ibex.common.collections.IntToDoubleMap;
 import org.emoflon.ibex.common.collections.IntToObjectMap;
 import org.emoflon.ibex.common.emf.EMFEdge;
-import org.emoflon.ibex.common.operational.IMatch;
+import org.emoflon.ibex.common.engine.IMatch;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.defaults.IbexGreenInterpreter;

@@ -14,7 +14,6 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternSet;
 import org.emoflon.ibex.common.emf.EMFManipulationUtils;
-import org.emoflon.ibex.common.operational.PushoutApproach;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTModel;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRule;

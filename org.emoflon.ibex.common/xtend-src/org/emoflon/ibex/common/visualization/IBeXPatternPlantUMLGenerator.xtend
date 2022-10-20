@@ -1,13 +1,11 @@
 package org.emoflon.ibex.common.visualization
 
-
-import org.eclipse.emf.common.util.EList
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXCreatePattern
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXDeletePattern
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternSet
+import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern
+import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRule
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode
+import java.util.List
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge
 
 /**
  * Utility methods to generate PlantUML code.
@@ -25,16 +23,14 @@ class IBeXPatternPlantUMLGenerator {
 		'''
 			«commonLayoutSettings»
 			
-			«FOR pattern : patternSet.contextPatterns»
+			«FOR pattern : patternSet.patterns»
 				class "«pattern.name»"
 			«ENDFOR»
 			
-			«FOR pattern : patternSet.contextPatterns»
-				«IF pattern instanceof IBeXContextPattern»
-					«FOR invocation: (pattern as IBeXContextPattern).invocations»
-						"«pattern.name»" --> "«invocation.invokedPattern.name»"
-					«ENDFOR»
-				«ENDIF»
+			«FOR pattern : patternSet.patterns»
+				«FOR invocation: pattern.invocations»
+					"«pattern.name»" --> "«invocation.invocation.name»"
+				«ENDFOR»
 			«ENDFOR»
 			
 			center footer
@@ -46,7 +42,7 @@ class IBeXPatternPlantUMLGenerator {
 	/**
 	 * Visualizes the context pattern.
 	 */
-	static def String visualizeContextPattern(IBeXContextPattern pattern) {
+	static def String visualizeContextPattern(GTPattern pattern) {
 		'''
 			«commonLayoutSettings»
 			
@@ -68,20 +64,20 @@ class IBeXPatternPlantUMLGenerator {
 	/**
 	 * Outputs the context pattern.
 	 */
-	private static def String printPattern(IBeXContextPattern pattern, String prefix, boolean positive) {
+	private static def String printPattern(GTPattern pattern, String prefix, boolean positive) {
 		val packageName = prefix + pattern.name
 		'''
 			package "«packageName»" «IF !positive»#FFCCCC«ENDIF» {}
 			«visualizeNodes(pattern.signatureNodes, 'SIGNATURE', packageName)»
 			«visualizeNodes(pattern.localNodes, 'LOCAL', packageName)»
-			«visualizeEdges(pattern.localEdges, ContextColor, packageName)»
+			«visualizeEdges(pattern.edges, ContextColor, packageName)»
 			«var j = 0»
 			«FOR invocation : pattern.invocations»
 				«val newPrefix = j++ + "\\"»
-				«printPattern(invocation.invokedPattern, newPrefix, invocation.positive)»
+				«printPattern(invocation.invocation as GTPattern, newPrefix, invocation.positive)»
 				
 				«FOR mapEntry : invocation.mapping.entrySet»
-					"«node(mapEntry.key, packageName)»" #--# "«node(mapEntry.value, newPrefix + invocation.invokedPattern.name)»"
+					"«node(mapEntry.key, packageName)»" #--# "«node(mapEntry.value, newPrefix + invocation.invocation.name)»"
 				«ENDFOR»
 			«ENDFOR»
 		'''
@@ -90,7 +86,7 @@ class IBeXPatternPlantUMLGenerator {
 	/**
 	 * Visualizes the create pattern.
 	 */
-	static def String visualizeCreatePattern(IBeXCreatePattern pattern) {
+	static def String visualizeRule(GTRule rule) {
 		'''
 			«commonLayoutSettings»
 			
@@ -99,38 +95,18 @@ class IBeXPatternPlantUMLGenerator {
 				BorderColor<<CREATE>> «CreateColor»
 				FontColor<<CONTEXT>> «ContextColor»
 				FontColor<<CREATE>> «CreateColor»
-			}
-			
-			«visualizeNodes(pattern.contextNodes, 'CONTEXT', '')»
-			«visualizeNodes(pattern.createdNodes, 'CREATE', '')»
-			«visualizeEdges(pattern.createdEdges, CreateColor, '')»
-			
-			center footer
-				= Create Pattern «pattern.name»
-			end footer
-		'''
-	}
-
-	/**
-	 * Visualizes the delete pattern.
-	 */
-	static def String visualizeDeletePattern(IBeXDeletePattern pattern) {
-		'''
-			«commonLayoutSettings»
-			
-			skinparam class {
-				BorderColor<<CONTEXT>> «ContextColor»
 				BorderColor<<DELETE>> «DeleteColor»
-				FontColor<<CONTEXT>> «ContextColor»
 				FontColor<<DELETE>> «DeleteColor»
 			}
 			
-			«visualizeNodes(pattern.contextNodes, 'CONTEXT', '')»
-			«visualizeNodes(pattern.deletedNodes, 'DELETE', '')»
-			«visualizeEdges(pattern.deletedEdges, DeleteColor, '')»
+			«visualizeNodes(rule.allNodes.filter[n | rule.precondition.signatureNodes.contains(n) && rule.postcondition.signatureNodes.contains(n)].toList, 'CONTEXT', '')»
+			«visualizeNodes(rule.creation.nodes, 'CREATE', '')»
+			«visualizeEdges(rule.creation.edges, CreateColor, '')»
+			«visualizeNodes(rule.deletion.nodes, 'DELETE', '')»
+			«visualizeEdges(rule.deletion.edges, DeleteColor, '')»
 			
 			center footer
-				= Delete Pattern «pattern.name»
+				= Create Pattern «rule.name»
 			end footer
 		'''
 	}
@@ -138,7 +114,7 @@ class IBeXPatternPlantUMLGenerator {
 	/**
 	 * Outputs the nodes.
 	 */
-	private static def String visualizeNodes(EList<IBeXNode> nodes, String type, String nodePrefix) {
+	private static def String visualizeNodes(List<IBeXNode> nodes, String type, String nodePrefix) {
 		'''
 			«FOR node : nodes»
 				class "«node(node, nodePrefix)»" <<«type»>>
@@ -156,10 +132,10 @@ class IBeXPatternPlantUMLGenerator {
 	/**
 	 * Outputs the edges.
 	 */
-	private static def String visualizeEdges(EList<IBeXEdge> edges, String color, String nodePrefix) {
+	private static def String visualizeEdges(List<IBeXEdge> edges, String color, String nodePrefix) {
 		'''
 			«FOR edge : edges»
-				"«node(edge.sourceNode, nodePrefix)»" -[#«color»]-> "«node(edge.targetNode, nodePrefix)»": «» <color:«color»>«edge.type.name»
+				"«node(edge.source, nodePrefix)»" -[#«color»]-> "«node(edge.target, nodePrefix)»": «» <color:«color»>«edge.type.name»
 			«ENDFOR»
 		'''
 	}

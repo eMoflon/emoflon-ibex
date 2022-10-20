@@ -1,4 +1,4 @@
-package org.emoflon.ibex.common.operational;
+package org.emoflon.ibex.common.engine;
 
 import java.util.Collection;
 

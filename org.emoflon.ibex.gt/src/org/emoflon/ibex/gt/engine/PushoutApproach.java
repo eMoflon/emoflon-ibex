@@ -1,4 +1,4 @@
-package org.emoflon.ibex.common.operational;
+package org.emoflon.ibex.gt.engine;
 
 /**
  * Defines constants for the different pushout approaches.

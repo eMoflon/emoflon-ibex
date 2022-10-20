@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.emoflon.ibex.common.operational.HashUtil;
+import org.emoflon.ibex.common.engine.HashUtil;
 import org.emoflon.ibex.gt.StateModel.Parameter;
 import org.emoflon.ibex.gt.StateModel.RuleState;
 import org.emoflon.ibex.gt.StateModel.State;

@@ -52,6 +52,9 @@ import org.eclipse.swt.widgets.Slider;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternSet;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRule;
 //IBeX imports
 import org.emoflon.ibex.gt.StateModel.AttributeDelta;
 import org.emoflon.ibex.gt.StateModel.ComplexParameter;
@@ -61,11 +64,12 @@ import org.emoflon.ibex.gt.StateModel.MatchDelta;
 import org.emoflon.ibex.gt.StateModel.RuleState;
 import org.emoflon.ibex.gt.StateModel.State;
 import org.emoflon.ibex.gt.StateModel.StateModelFactory;
+import org.emoflon.ibex.gt.engine.IBeXGTEngine;
+import org.emoflon.ibex.gt.engine.IBeXGTPatternMatcher;
+import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern;
+import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRule;
+import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRuleSet;
 import org.emoflon.ibex.gt.state.ModelStateManager;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContext;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternSet;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRuleSet;
 //Graphstream imports
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Node;
@@ -89,8 +93,7 @@ public class VaDoGT {
 	// IBeX variables
 	private StateModelFactory factory = StateModelFactory.eINSTANCE;
 	protected ModelStateManager localStateManager;
-	// TODO:
-//	private GraphTransformationInterpreter localGraphTransformationInterpreter;
+	private IBeXGTEngine<? extends IBeXGTPatternMatcher<?>> localGraphTransformationInterpreter;
 
 	// Intern variables
 	private int nodeID = 0;
@@ -104,8 +107,8 @@ public class VaDoGT {
 
 	private Map<EObject, Node> nodeMap;
 	private Map<Link, Edge> edgeMap;
-	protected Set<IBeXRule> ruleSet;
-	protected Set<IBeXContext> patternSet;
+	protected Set<GTRule> ruleSet;
+	protected Set<GTPattern> patternSet;
 	private List<EObject> initialResourceContents;
 	private Map<Integer, IBeXMatch> listedMatches;
 	private Map<EObject, Node> infoNodes;
@@ -181,16 +184,15 @@ public class VaDoGT {
 	 * @param iBeXPatternSet
 	 * @param edgeTypes
 	 */
-	// TODO:
 	public VaDoGT(Resource resource, ModelStateManager stateManager,
-//			GraphTransformationInterpreter graphTransformationInterpreter, 
-			IBeXRuleSet iBeXRuleSet, IBeXPatternSet iBeXPatternSet) {
+			IBeXGTEngine<? extends IBeXGTPatternMatcher<?>> graphTransformationInterpreter, GTRuleSet iBeXRuleSet,
+			IBeXPatternSet iBeXPatternSet) {
 		localStateManager = stateManager;
-//		localGraphTransformationInterpreter = graphTransformationInterpreter;
+		localGraphTransformationInterpreter = graphTransformationInterpreter;
 		localStateManager.moveToState(localStateManager.getModelStates().getInitialState(), false);
 		initialResourceContents = new LinkedList<EObject>(resource.getContents());
 		ruleSet = new HashSet<>(iBeXRuleSet.getRules());
-		patternSet = new HashSet<>(iBeXPatternSet.getContextPatterns());
+		patternSet = iBeXPatternSet.getPatterns().stream().map(p -> (GTPattern) p).collect(Collectors.toSet());
 
 		allStates = new LinkedList<State>();
 		allStates.add(localStateManager.getModelStates().getInitialState());
@@ -230,16 +232,15 @@ public class VaDoGT {
 	 * @param iBeXPatternSet
 	 * @param edgeTypes
 	 */
-	// TODO:
 	public VaDoGT(Resource resource, ModelStateManager stateManager,
-			// GraphTransformationInterpreter graphTransformationInterpreter,
-			IBeXRuleSet iBeXRuleSet, IBeXPatternSet iBeXPatternSet, String modelName) {
+			IBeXGTEngine<? extends IBeXGTPatternMatcher<?>> graphTransformationInterpreter, GTRuleSet iBeXRuleSet,
+			IBeXPatternSet iBeXPatternSet, String modelName) {
 		localStateManager = stateManager;
-		// localGraphTransformationInterpreter = graphTransformationInterpreter;
+		localGraphTransformationInterpreter = graphTransformationInterpreter;
 		localStateManager.moveToState(localStateManager.getModelStates().getInitialState(), false);
 		initialResourceContents = new LinkedList<EObject>(resource.getContents());
 		ruleSet = new HashSet<>(iBeXRuleSet.getRules());
-		patternSet = new HashSet<>(iBeXPatternSet.getContextPatterns());
+		patternSet = iBeXPatternSet.getPatterns().stream().map(p -> (GTPattern) p).collect(Collectors.toSet());
 		initialMatches = new HashMap<String, Collection<IBeXMatch>>();
 
 		allStates = new LinkedList<State>();
@@ -271,16 +272,15 @@ public class VaDoGT {
 	}
 
 	private void initMatchesForContainer() {
-		// TODO:
-//		for (IBeXContext pat : localGraphTransformationInterpreter.getPatternSet().getContextPatterns()) {
-//			Collection<IBeXMatch> matchesToPat = new LinkedList<IBeXMatch>();
-//			for (IBeXMatch match : localStateManager.getModelStates().getInitialMatches()) {
-//				if (pat.getName().equals(match.getPatternName())) {
-//					matchesToPat.add(match);
-//				}
-//			}
-//			initialMatches.put(pat.getName(), matchesToPat);
-//		}
+		for (IBeXPattern pat : localGraphTransformationInterpreter.getPatternSet().getPatterns()) {
+			Collection<IBeXMatch> matchesToPat = new LinkedList<IBeXMatch>();
+			for (IBeXMatch match : localStateManager.getModelStates().getInitialMatches()) {
+				if (pat.getName().equals(match.getPatternName())) {
+					matchesToPat.add(match);
+				}
+			}
+			initialMatches.put(pat.getName(), matchesToPat);
+		}
 	}
 
 	/**
@@ -323,7 +323,7 @@ public class VaDoGT {
 		ruleList.setLayoutData(gd);
 
 		// Add pattern and rules to gui list
-		for (IBeXContext pattern : patternSet) {
+		for (GTPattern pattern : patternSet) {
 			boolean isRule = false;
 			for (IBeXRule rule : ruleSet) {
 				if (pattern.getName().equals(rule.getName())) {

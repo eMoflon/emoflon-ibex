@@ -17,8 +17,6 @@ import java.util.stream.Stream;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern;
-import org.emoflon.ibex.common.operational.IMatch;
-import org.emoflon.ibex.common.operational.IPatternInterpreterProperties;
 
 public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, EM, IM extends IMatch> {
 
@@ -26,7 +24,7 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, EM, IM
 	final protected ResourceSet model;
 	protected Map<String, IBeXPattern> name2pattern;
 	protected MatchFilter<?, IBEX_MODEL, IM> matchFilter;
-	protected IPatternInterpreterProperties engineProperties;
+	protected IBeXPMEngineInformation engineProperties;
 
 	/**
 	 * The matches (key: pattern name, value: list of matches).
@@ -82,8 +80,6 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, EM, IM
 
 	protected abstract Collection<IM> insertNewRemovedMatchCollection(final String patternName);
 
-	protected abstract void insertMatch(final IM match, final Collection<? extends IMatch> collection);
-
 	/**
 	 * Initialize the actual underlying PM engine and inject resource listeners into
 	 * the model.
@@ -106,9 +102,9 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, EM, IM
 	 */
 	protected abstract MatchFilter<?, IBEX_MODEL, IM> createMatchFilter();
 
-	protected abstract IPatternInterpreterProperties createEngineProperties();
+	protected abstract IBeXPMEngineInformation createEngineProperties();
 
-	public IPatternInterpreterProperties getEngineProperties() {
+	public IBeXPMEngineInformation getEngineProperties() {
 		return engineProperties;
 	}
 

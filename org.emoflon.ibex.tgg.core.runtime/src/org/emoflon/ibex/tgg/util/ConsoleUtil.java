@@ -6,7 +6,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.emoflon.ibex.common.operational.IMatch;
+import org.emoflon.ibex.common.engine.IMatch;
 
 /**
  * @author AdrianM

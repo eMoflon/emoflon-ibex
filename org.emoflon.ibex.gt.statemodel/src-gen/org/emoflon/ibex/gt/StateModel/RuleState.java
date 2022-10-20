@@ -4,7 +4,7 @@ package org.emoflon.ibex.gt.StateModel;
 
 import org.eclipse.emf.common.util.EList;
 
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule;
+import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRule;
 
 /**
  * <!-- begin-user-doc -->
@@ -59,12 +59,12 @@ public interface RuleState extends State {
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Rule</em>' reference.
-	 * @see #setRule(IBeXRule)
+	 * @see #setRule(GTRule)
 	 * @see org.emoflon.ibex.gt.StateModel.StateModelPackage#getRuleState_Rule()
 	 * @model
 	 * @generated
 	 */
-	IBeXRule getRule();
+	GTRule getRule();
 
 	/**
 	 * Sets the value of the '{@link org.emoflon.ibex.gt.StateModel.RuleState#getRule <em>Rule</em>}' reference.
@@ -74,7 +74,7 @@ public interface RuleState extends State {
 	 * @see #getRule()
 	 * @generated
 	 */
-	void setRule(IBeXRule value);
+	void setRule(GTRule value);
 
 	/**
 	 * Returns the value of the '<em><b>Structural Delta</b></em>' containment reference.

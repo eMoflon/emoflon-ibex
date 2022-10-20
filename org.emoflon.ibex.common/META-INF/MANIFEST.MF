@@ -6,8 +6,7 @@ Bundle-Vendor: eMoflon::IBeX Developers
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: plugin
-Require-Bundle: org.emoflon.ibex.patternmodel;bundle-version="0.1.0";visibility:=reexport,
- net.sourceforge.plantuml.eclipse,
+Require-Bundle: net.sourceforge.plantuml.eclipse,
  org.eclipse.jface,
  org.eclipse.emf.ecore,
  org.eclipse.emf.ecore.editor,
@@ -23,7 +22,8 @@ Require-Bundle: org.emoflon.ibex.patternmodel;bundle-version="0.1.0";visibility:
  org.eclipse.equinox.registry,
  org.emoflon.smartemf;visibility:=reexport,
  org.emoflon.ibex.common.slimgt,
- org.emoflon.ibex.common.coremodel
+ org.emoflon.ibex.common.coremodel,
+ org.emoflon.ibex.gt.gtmodel
 Bundle-ClassPath: .
 Automatic-Module-Name: org.emoflon.ibex.common
 Bundle-RequiredExecutionEnvironment: JavaSE-17
@@ -33,8 +33,6 @@ Export-Package: org.emoflon.ibex.common,
  org.emoflon.ibex.common.emf,
  org.emoflon.ibex.common.engine,
  org.emoflon.ibex.common.ide,
- org.emoflon.ibex.common.operational,
- org.emoflon.ibex.common.patterns,
  org.emoflon.ibex.common.project,
  org.emoflon.ibex.common.transformation,
  org.emoflon.ibex.common.visualization,

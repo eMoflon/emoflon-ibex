@@ -3,7 +3,7 @@ package org.emoflon.ibex.tgg.operational.matches;
 import java.util.Collection;
 
 import org.emoflon.ibex.common.emf.EMFEdge;
-import org.emoflon.ibex.common.operational.IMatch;
+import org.emoflon.ibex.common.engine.IMatch;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternUtil;

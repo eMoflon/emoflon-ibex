@@ -25,7 +25,7 @@ import org.emoflon.ibex.gt.StateModel.State;
 import org.emoflon.ibex.gt.StateModel.StateModelPackage;
 import org.emoflon.ibex.gt.StateModel.StructuralDelta;
 
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXRule;
+import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRule;
 
 /**
  * <!-- begin-user-doc -->
@@ -68,7 +68,7 @@ public class RuleStateImpl extends StateImpl implements RuleState {
 	 * @generated
 	 * @ordered
 	 */
-	protected IBeXRule rule;
+	protected GTRule rule;
 
 	/**
 	 * The cached value of the '{@link #getStructuralDelta() <em>Structural Delta</em>}' containment reference.
@@ -227,10 +227,10 @@ public class RuleStateImpl extends StateImpl implements RuleState {
 	 * @generated
 	 */
 	@Override
-	public IBeXRule getRule() {
+	public GTRule getRule() {
 		if (rule != null && rule.eIsProxy()) {
 			InternalEObject oldRule = (InternalEObject) rule;
-			rule = (IBeXRule) eResolveProxy(oldRule);
+			rule = (GTRule) eResolveProxy(oldRule);
 			if (rule != oldRule) {
 				if (eNotificationRequired())
 					eNotify(new ENotificationImpl(this, Notification.RESOLVE, StateModelPackage.RULE_STATE__RULE,
@@ -245,7 +245,7 @@ public class RuleStateImpl extends StateImpl implements RuleState {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public IBeXRule basicGetRule() {
+	public GTRule basicGetRule() {
 		return rule;
 	}
 
@@ -255,8 +255,8 @@ public class RuleStateImpl extends StateImpl implements RuleState {
 	 * @generated
 	 */
 	@Override
-	public void setRule(IBeXRule newRule) {
-		IBeXRule oldRule = rule;
+	public void setRule(GTRule newRule) {
+		GTRule oldRule = rule;
 		rule = newRule;
 		if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET, StateModelPackage.RULE_STATE__RULE, oldRule, rule));
@@ -573,7 +573,7 @@ public class RuleStateImpl extends StateImpl implements RuleState {
 			setParent((State) newValue);
 			return;
 		case StateModelPackage.RULE_STATE__RULE:
-			setRule((IBeXRule) newValue);
+			setRule((GTRule) newValue);
 			return;
 		case StateModelPackage.RULE_STATE__STRUCTURAL_DELTA:
 			setStructuralDelta((StructuralDelta) newValue);
@@ -619,7 +619,7 @@ public class RuleStateImpl extends StateImpl implements RuleState {
 			setParent((State) null);
 			return;
 		case StateModelPackage.RULE_STATE__RULE:
-			setRule((IBeXRule) null);
+			setRule((GTRule) null);
 			return;
 		case StateModelPackage.RULE_STATE__STRUCTURAL_DELTA:
 			setStructuralDelta((StructuralDelta) null);

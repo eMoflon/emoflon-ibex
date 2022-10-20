@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import org.emoflon.ibex.common.operational.IPatternInterpreterProperties;
+import org.emoflon.ibex.common.engine.IBeXPMEngineInformation;
 import org.emoflon.ibex.gt.api.IBeXGtAPI;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern;
 
@@ -112,7 +112,7 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 		bindings.remove(name);
 	}
 
-	public boolean requiresChecks(final IPatternInterpreterProperties properties) {
+	public boolean requiresChecks(final IBeXPMEngineInformation properties) {
 		if (hasArithmeticExpressions() && !properties.supports_arithmetic_attr_constraints())
 			return true;
 		if (hasBooleanExpressions() && !properties.supports_boolean_attr_constraints())

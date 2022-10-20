@@ -2,7 +2,6 @@ package org.emoflon.ibex.gt.engine;
 
 import java.util.Optional;
 
-import org.emoflon.ibex.common.operational.PushoutApproach;
 import org.emoflon.ibex.gt.api.IBeXGtAPI;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRule;

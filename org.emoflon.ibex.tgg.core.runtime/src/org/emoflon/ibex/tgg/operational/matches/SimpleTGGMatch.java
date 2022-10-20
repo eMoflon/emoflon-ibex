@@ -7,7 +7,7 @@ import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternUtil;
 
-public class SimpleTGGMatch extends org.emoflon.ibex.common.operational.SimpleMatch implements ITGGMatch {
+public class SimpleTGGMatch extends org.emoflon.ibex.common.engine.SimpleMatch implements ITGGMatch {
 	private final Collection<EMFEdge> edges;
 	private PatternType type;
 

@@ -2,8 +2,8 @@ package org.emoflon.ibex.gt.engine;
 
 import java.util.Map;
 
-import org.emoflon.ibex.common.operational.HashUtil;
-import org.emoflon.ibex.common.operational.IMatch;
+import org.emoflon.ibex.common.engine.HashUtil;
+import org.emoflon.ibex.common.engine.IMatch;
 
 public abstract class IBeXGTMatch<M extends IBeXGTMatch<M, P>, P extends IBeXGTPattern<P, M>> implements IMatch {
 

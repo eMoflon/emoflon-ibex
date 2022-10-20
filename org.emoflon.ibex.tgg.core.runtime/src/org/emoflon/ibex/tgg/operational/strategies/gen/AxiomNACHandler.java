@@ -38,7 +38,7 @@ public class AxiomNACHandler extends MatchConsumer {
 	 * 
 	 * @param match the match of a NAC for an Axiom
 	 */
-	private void deleteAxiomMatchesForFoundNACs(org.emoflon.ibex.common.operational.IMatch match) {
+	private void deleteAxiomMatchesForFoundNACs(org.emoflon.ibex.common.engine.IMatch match) {
 		Set<ITGGMatch> matchesToRemove = new HashSet<>();
 
 		String axiomName = TGGPatternUtil.generateGENBlackPatternName( //

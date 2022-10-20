@@ -19,7 +19,7 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="RuleState" eSuperTypes="#//State">
     <eStructuralFeatures xsi:type="ecore:EReference" name="parent" eType="#//State"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="rule" eType="ecore:EClass ../../org.emoflon.ibex.patternmodel/model/IBeXPatternModel.ecore#//IBeXRule"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="rule" eType="ecore:EClass ../../org.emoflon.ibex.gt.gtmodel/model/IBeXGTModel.ecore#//GTRule"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="structuralDelta" eType="#//StructuralDelta"
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="attributeDeltas" upperBound="-1"

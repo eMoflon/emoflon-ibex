@@ -1,6 +1,6 @@
 package org.emoflon.ibex.tgg.operational.strategies;
 
-import org.emoflon.ibex.common.operational.IMatch;
+import org.emoflon.ibex.common.engine.IMatch;
 
 /**
  * Interface for WeightCalculation strategies. A strategy can be used to assign

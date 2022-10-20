@@ -8,6 +8,7 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 
 import org.eclipse.emf.ecore.impl.EPackageImpl;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage;
 import org.emoflon.ibex.gt.StateModel.AttributeDelta;
 import org.emoflon.ibex.gt.StateModel.ComplexParameter;
 import org.emoflon.ibex.gt.StateModel.IBeXMatch;
@@ -23,7 +24,7 @@ import org.emoflon.ibex.gt.StateModel.StateModelPackage;
 import org.emoflon.ibex.gt.StateModel.StructuralDelta;
 import org.emoflon.ibex.gt.StateModel.Value;
 
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelPackage;
+import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.IBeXGTModelPackage;
 
 /**
  * <!-- begin-user-doc -->
@@ -167,7 +168,8 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 		isInited = true;
 
 		// Initialize simple dependencies
-		IBeXPatternModelPackage.eINSTANCE.eClass();
+		IBeXGTModelPackage.eINSTANCE.eClass();
+		IBeXCoreModelPackage.eINSTANCE.eClass();
 
 		// Create package meta-data objects
 		theStateModelPackage.createPackageContents();
@@ -823,8 +825,8 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 		setNsURI(eNS_URI);
 
 		// Obtain other dependent packages
-		IBeXPatternModelPackage theIBeXPatternModelPackage = (IBeXPatternModelPackage) EPackage.Registry.INSTANCE
-				.getEPackage(IBeXPatternModelPackage.eNS_URI);
+		IBeXGTModelPackage theIBeXGTModelPackage = (IBeXGTModelPackage) EPackage.Registry.INSTANCE
+				.getEPackage(IBeXGTModelPackage.eNS_URI);
 
 		// Create type parameters
 
@@ -864,7 +866,7 @@ public class StateModelPackageImpl extends EPackageImpl implements StateModelPac
 		initEReference(getRuleState_Parent(), this.getState(), null, "parent", null, 0, 1, RuleState.class,
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getRuleState_Rule(), theIBeXPatternModelPackage.getIBeXRule(), null, "rule", null, 0, 1,
+		initEReference(getRuleState_Rule(), theIBeXGTModelPackage.getGTRule(), null, "rule", null, 0, 1,
 				RuleState.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getRuleState_StructuralDelta(), this.getStructuralDelta(), null, "structuralDelta", null, 0, 1,
