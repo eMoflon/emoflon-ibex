@@ -11,10 +11,17 @@
   <testsDirectory xsi:nil="true"/>
   <genPackages prefix="IBeXTGGModel" basePackage="org.emoflon.ibex.tgg.tggmodel" disposableProviderFactory="true"
       ecorePackage="IBeXTGGModel.ecore#/">
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="IBeXTGGModel.ecore#//OperationalisationMode">
+      <genEnumLiterals ecoreEnumLiteral="IBeXTGGModel.ecore#//OperationalisationMode/GENERATE"/>
+      <genEnumLiterals ecoreEnumLiteral="IBeXTGGModel.ecore#//OperationalisationMode/FORWARD"/>
+      <genEnumLiterals ecoreEnumLiteral="IBeXTGGModel.ecore#//OperationalisationMode/BACKWARD"/>
+      <genEnumLiterals ecoreEnumLiteral="IBeXTGGModel.ecore#//OperationalisationMode/CONSISTENCY_CHECK"/>
+      <genEnumLiterals ecoreEnumLiteral="IBeXTGGModel.ecore#//OperationalisationMode/CHECK_ONLY"/>
+    </genEnums>
     <genEnums typeSafeEnumCompatible="false" ecoreEnum="IBeXTGGModel.ecore#//DomainType">
-      <genEnumLiterals ecoreEnumLiteral="IBeXTGGModel.ecore#//DomainType/SRC"/>
-      <genEnumLiterals ecoreEnumLiteral="IBeXTGGModel.ecore#//DomainType/TRG"/>
-      <genEnumLiterals ecoreEnumLiteral="IBeXTGGModel.ecore#//DomainType/CORR"/>
+      <genEnumLiterals ecoreEnumLiteral="IBeXTGGModel.ecore#//DomainType/SOURCE"/>
+      <genEnumLiterals ecoreEnumLiteral="IBeXTGGModel.ecore#//DomainType/TARGET"/>
+      <genEnumLiterals ecoreEnumLiteral="IBeXTGGModel.ecore#//DomainType/CORRESPONDENCE"/>
     </genEnums>
     <genEnums typeSafeEnumCompatible="false" ecoreEnum="IBeXTGGModel.ecore#//BindingType">
       <genEnumLiterals ecoreEnumLiteral="IBeXTGGModel.ecore#//BindingType/CONTEXT"/>
@@ -33,19 +40,21 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGRuleSet/rules"/>
     </genClasses>
     <genClasses ecoreClass="IBeXTGGModel.ecore#//TGGRule">
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGRule/refines"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXTGGModel.ecore#//TGGRule/abstract"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGRule/nodes"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGRule/edges"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGRule/correspondenceNodes"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGRule/operationalisations"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXTGGModel.ecore#//OperationalTGGRule">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXTGGModel.ecore#//OperationalTGGRule/operationalisationMode"/>
     </genClasses>
     <genClasses ecoreClass="IBeXTGGModel.ecore#//TGGNode">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGNode/incomingCorrespondence"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGNode/outgoingCorrespondence"/>
     </genClasses>
-    <genClasses ecoreClass="IBeXTGGModel.ecore#//TGGRuleCorrespondence">
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGRuleCorrespondence/source"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGRuleCorrespondence/target"/>
+    <genClasses ecoreClass="IBeXTGGModel.ecore#//TGGCorrespondence">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGCorrespondence/source"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGCorrespondence/target"/>
     </genClasses>
     <genClasses ecoreClass="IBeXTGGModel.ecore#//TGGEdge"/>
     <genClasses image="false" ecoreClass="IBeXTGGModel.ecore#//TGGRuleElement">
