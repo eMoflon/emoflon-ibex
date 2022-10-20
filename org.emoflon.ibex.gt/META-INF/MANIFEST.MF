@@ -6,11 +6,11 @@ Bundle-Vendor: eMoflon::IBeX Developers
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
 Export-Package: org.emoflon.ibex.gt.api,
- org.emoflon.ibex.gt.arithmetic,
- org.emoflon.ibex.gt.codegen,
+ org.emoflon.ibex.gt.build,
+ org.emoflon.ibex.gt.build.template,
  org.emoflon.ibex.gt.engine,
  org.emoflon.ibex.gt.state,
- org.emoflon.ibex.gt.transformations,
+ org.emoflon.ibex.gt.transformation,
  org.emoflon.ibex.gt.ui
 Bundle-Localization: plugin
 Require-Bundle: org.apache.log4j,
@@ -21,8 +21,6 @@ Require-Bundle: org.apache.log4j,
  org.eclipse.xtext,
  org.eclipse.xtext.xbase.lib,
  org.emoflon.ibex.common;visibility:=reexport,
- org.emoflon.ibex.gt.editor;visibility:=reexport,
- org.emoflon.ibex.gt.editor.ui,
  org.moflon.core.plugins,
  org.moflon.core.propertycontainer,
  org.moflon.core.utilities,

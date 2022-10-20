@@ -1,10 +1,10 @@
-package org.emoflon.ibex.gt.codegen;
+package org.emoflon.ibex.gt.build;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXModel;
 
-public interface GTDependingBuilderExtension {
+public interface IBeXGTDependingBuilderExtension {
 	static final String BUILDER_EXTENSON_ID = "org.emoflon.ibex.gt.GTDependingBuilderExtension";
 
 	/**

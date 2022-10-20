@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?eclipse version="3.0"?><plugin>
-  <extension-point id="GTEngineExtension" name="GTEngineExtension" schema="schema/GTEngineExtension.exsd"/>
-  <extension-point id="GTEngineBuilderExtension" name="GTEngineBuilderExtension" schema="schema/GTEngineBuilderExtension.exsd"/>
-  <extension-point id="GTDependingBuilderExtension" name="GTDependingBuilderExtension" schema="schema/GTDependingBuilderExtension.exsd"/>
-  <extension point="org.emoflon.ibex.gt.editor.ui.GTBuilderExtension">
-    <builder_extension class="org.emoflon.ibex.gt.codegen.GTPackageBuilder"/>
-  </extension>
+  <extension-point id="IBeXGTEngineBuilderExtension" name="IBeXGTEngineBuilderExtension" schema="schema/IBeXGTEngineBuilderExtension.exsd"/>
+  <extension-point id="IBeXGTDependingBuilderExtension" name="IBeXGTDependingBuilderExtension" schema="schema/IBeXGTDependingBuilderExtension.exsd"/>
   <extension
         point="org.emoflon.ibex.common.slimgt.SlimGTBuilderExtension">
      <builder_extension
            builder="org.emoflon.ibex.gt.build.IBeXGtPackageBuilder">
      </builder_extension>
   </extension>
-
 </plugin>

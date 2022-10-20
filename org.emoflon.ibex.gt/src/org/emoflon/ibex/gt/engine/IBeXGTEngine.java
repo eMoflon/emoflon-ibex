@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -137,6 +138,12 @@ public class IBeXGTEngine<PM extends IBeXGTPatternMatcher<?>> {
 		}
 
 		rndGenerator = new Random();
+
+		// Create the trash resource for pattern matchers that cannot handle dangling
+		// edges/nodes
+		URI trashURI = model.getResources().get(0).getURI().trimFileExtension();
+		trashURI = trashURI.trimSegments(1).appendSegment(trashURI.lastSegment() + "-trash").appendFileExtension("xmi");
+		trashResource = model.createResource(trashURI);
 	}
 
 	protected void registerTypedRule(IBeXGTRule<?, ?, ?, ?, ?> typedRule) {

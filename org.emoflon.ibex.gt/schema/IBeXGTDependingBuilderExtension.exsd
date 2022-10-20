@@ -3,7 +3,7 @@
 <schema targetNamespace="org.emoflon.ibex.gt" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appInfo>
-         <meta.schema plugin="org.emoflon.ibex.gt" id="GTEngineBuilderExtension" name="GTEngineBuilderExtension"/>
+         <meta.schema plugin="org.emoflon.ibex.gt" id="GTDependingBuilderExtension" name="GTDependingBuilderExtension"/>
       </appInfo>
       <documentation>
          [Enter description of this extension point.]
@@ -55,7 +55,7 @@
                   
                </documentation>
                <appInfo>
-                  <meta.attribute kind="java" basedOn=":org.emoflon.ibex.gt.codegen.GTEngineBuilderExtension"/>
+                  <meta.attribute kind="java" basedOn=":org.emoflon.ibex.gt.build.IBeXGTDependingBuilderExtension"/>
                </appInfo>
             </annotation>
          </attribute>
