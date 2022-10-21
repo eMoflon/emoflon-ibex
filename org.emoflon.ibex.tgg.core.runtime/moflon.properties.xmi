@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="ASCII"?>
-<org.moflon.core.propertycontainer:MoflonPropertiesContainer
-    xmi:version="2.0"
-    xmlns:xmi="http://www.omg.org/XMI"
-    xmlns:org.moflon.core.propertycontainer="platform:/plugin/org.moflon.core.propertycontainer/model/Propertycontainer.ecore"
-    projectName="org.emoflon.ibex.tgg.runtime">
-  <replaceGenModel
-      bool="false"/>
-</org.moflon.core.propertycontainer:MoflonPropertiesContainer>

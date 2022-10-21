@@ -88,13 +88,18 @@ public class IBeXTGGModelAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
+		public Adapter caseOperationalTGGRule(OperationalTGGRule object) {
+			return createOperationalTGGRuleAdapter();
+		}
+
+		@Override
 		public Adapter caseTGGNode(TGGNode object) {
 			return createTGGNodeAdapter();
 		}
 
 		@Override
-		public Adapter caseTGGRuleCorrespondence(TGGRuleCorrespondence object) {
-			return createTGGRuleCorrespondenceAdapter();
+		public Adapter caseTGGCorrespondence(TGGCorrespondence object) {
+			return createTGGCorrespondenceAdapter();
 		}
 
 		@Override
@@ -108,8 +113,8 @@ public class IBeXTGGModelAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
-		public Adapter caseTGGAttributeConstraintLibrary(TGGAttributeConstraintLibrary object) {
-			return createTGGAttributeConstraintLibraryAdapter();
+		public Adapter caseTGGAttributeConstraintSet(TGGAttributeConstraintSet object) {
+			return createTGGAttributeConstraintSetAdapter();
 		}
 
 		@Override
@@ -234,6 +239,20 @@ public class IBeXTGGModelAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalTGGRule <em>Operational TGG Rule</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalTGGRule
+	 * @generated
+	 */
+	public Adapter createOperationalTGGRuleAdapter() {
+		return null;
+	}
+
+	/**
 	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode <em>TGG Node</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
@@ -248,16 +267,16 @@ public class IBeXTGGModelAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleCorrespondence <em>TGG Rule Correspondence</em>}'.
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence <em>TGG Correspondence</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleCorrespondence
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence
 	 * @generated
 	 */
-	public Adapter createTGGRuleCorrespondenceAdapter() {
+	public Adapter createTGGCorrespondenceAdapter() {
 		return null;
 	}
 
@@ -290,16 +309,16 @@ public class IBeXTGGModelAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintLibrary <em>TGG Attribute Constraint Library</em>}'.
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintSet <em>TGG Attribute Constraint Set</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintLibrary
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintSet
 	 * @generated
 	 */
-	public Adapter createTGGAttributeConstraintLibraryAdapter() {
+	public Adapter createTGGAttributeConstraintSetAdapter() {
 		return null;
 	}
 

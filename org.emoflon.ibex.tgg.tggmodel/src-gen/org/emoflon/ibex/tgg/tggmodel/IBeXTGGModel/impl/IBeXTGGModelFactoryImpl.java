@@ -63,14 +63,16 @@ public class IBeXTGGModelFactoryImpl extends EFactoryImpl implements IBeXTGGMode
 			return createTGGRuleSet();
 		case IBeXTGGModelPackage.TGG_RULE:
 			return createTGGRule();
+		case IBeXTGGModelPackage.OPERATIONAL_TGG_RULE:
+			return createOperationalTGGRule();
 		case IBeXTGGModelPackage.TGG_NODE:
 			return createTGGNode();
-		case IBeXTGGModelPackage.TGG_RULE_CORRESPONDENCE:
-			return createTGGRuleCorrespondence();
+		case IBeXTGGModelPackage.TGG_CORRESPONDENCE:
+			return createTGGCorrespondence();
 		case IBeXTGGModelPackage.TGG_EDGE:
 			return createTGGEdge();
-		case IBeXTGGModelPackage.TGG_ATTRIBUTE_CONSTRAINT_LIBRARY:
-			return createTGGAttributeConstraintLibrary();
+		case IBeXTGGModelPackage.TGG_ATTRIBUTE_CONSTRAINT_SET:
+			return createTGGAttributeConstraintSet();
 		case IBeXTGGModelPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY:
 			return createTGGAttributeConstraintDefinitionLibrary();
 		case IBeXTGGModelPackage.TGG_ATTRIBUTE_CONSTRAINT:
@@ -98,6 +100,8 @@ public class IBeXTGGModelFactoryImpl extends EFactoryImpl implements IBeXTGGMode
 	@Override
 	public Object createFromString(EDataType eDataType, String initialValue) {
 		switch (eDataType.getClassifierID()) {
+		case IBeXTGGModelPackage.OPERATIONALISATION_MODE:
+			return createOperationalisationModeFromString(eDataType, initialValue);
 		case IBeXTGGModelPackage.DOMAIN_TYPE:
 			return createDomainTypeFromString(eDataType, initialValue);
 		case IBeXTGGModelPackage.BINDING_TYPE:
@@ -115,6 +119,8 @@ public class IBeXTGGModelFactoryImpl extends EFactoryImpl implements IBeXTGGMode
 	@Override
 	public String convertToString(EDataType eDataType, Object instanceValue) {
 		switch (eDataType.getClassifierID()) {
+		case IBeXTGGModelPackage.OPERATIONALISATION_MODE:
+			return convertOperationalisationModeToString(eDataType, instanceValue);
 		case IBeXTGGModelPackage.DOMAIN_TYPE:
 			return convertDomainTypeToString(eDataType, instanceValue);
 		case IBeXTGGModelPackage.BINDING_TYPE:
@@ -159,6 +165,16 @@ public class IBeXTGGModelFactoryImpl extends EFactoryImpl implements IBeXTGGMode
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public OperationalTGGRule createOperationalTGGRule() {
+		OperationalTGGRuleImpl operationalTGGRule = new OperationalTGGRuleImpl();
+		return operationalTGGRule;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public TGGNode createTGGNode() {
 		TGGNodeImpl tggNode = new TGGNodeImpl();
 		return tggNode;
@@ -169,9 +185,9 @@ public class IBeXTGGModelFactoryImpl extends EFactoryImpl implements IBeXTGGMode
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public TGGRuleCorrespondence createTGGRuleCorrespondence() {
-		TGGRuleCorrespondenceImpl tggRuleCorrespondence = new TGGRuleCorrespondenceImpl();
-		return tggRuleCorrespondence;
+	public TGGCorrespondence createTGGCorrespondence() {
+		TGGCorrespondenceImpl tggCorrespondence = new TGGCorrespondenceImpl();
+		return tggCorrespondence;
 	}
 
 	/**
@@ -189,9 +205,9 @@ public class IBeXTGGModelFactoryImpl extends EFactoryImpl implements IBeXTGGMode
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public TGGAttributeConstraintLibrary createTGGAttributeConstraintLibrary() {
-		TGGAttributeConstraintLibraryImpl tggAttributeConstraintLibrary = new TGGAttributeConstraintLibraryImpl();
-		return tggAttributeConstraintLibrary;
+	public TGGAttributeConstraintSet createTGGAttributeConstraintSet() {
+		TGGAttributeConstraintSetImpl tggAttributeConstraintSet = new TGGAttributeConstraintSetImpl();
+		return tggAttributeConstraintSet;
 	}
 
 	/**
@@ -262,6 +278,28 @@ public class IBeXTGGModelFactoryImpl extends EFactoryImpl implements IBeXTGGMode
 	public TGGCSP createTGGCSP() {
 		TGGCSPImpl tggcsp = new TGGCSPImpl();
 		return tggcsp;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public OperationalisationMode createOperationalisationModeFromString(EDataType eDataType, String initialValue) {
+		OperationalisationMode result = OperationalisationMode.get(initialValue);
+		if (result == null)
+			throw new IllegalArgumentException(
+					"The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
+		return result;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public String convertOperationalisationModeToString(EDataType eDataType, Object instanceValue) {
+		return instanceValue == null ? null : instanceValue.toString();
 	}
 
 	/**

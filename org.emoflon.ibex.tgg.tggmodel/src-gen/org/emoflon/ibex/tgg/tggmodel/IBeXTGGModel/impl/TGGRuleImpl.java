@@ -3,24 +3,27 @@
 package org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl;
 
 import java.util.Collection;
-
 import org.eclipse.emf.common.notify.Notification;
-
+import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EClass;
 
+import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-
+import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 
+import org.eclipse.emf.ecore.util.InternalEList;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXRuleImpl;
 
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalTGGRule;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintSet;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleCorrespondence;
 
 /**
  * <!-- begin-user-doc -->
@@ -30,46 +33,16 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleCorrespondence;
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getRefines <em>Refines</em>}</li>
- *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#isAbstract <em>Abstract</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getNodes <em>Nodes</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getEdges <em>Edges</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getCorrespondenceNodes <em>Correspondence Nodes</em>}</li>
+ *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getOperationalisations <em>Operationalisations</em>}</li>
+ *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getAttributeConstraints <em>Attribute Constraints</em>}</li>
  * </ul>
  *
  * @generated
  */
 public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
-	/**
-	 * The cached value of the '{@link #getRefines() <em>Refines</em>}' reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getRefines()
-	 * @generated
-	 * @ordered
-	 */
-	protected EList<TGGRule> refines;
-
-	/**
-	 * The default value of the '{@link #isAbstract() <em>Abstract</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #isAbstract()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final boolean ABSTRACT_EDEFAULT = false;
-
-	/**
-	 * The cached value of the '{@link #isAbstract() <em>Abstract</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #isAbstract()
-	 * @generated
-	 * @ordered
-	 */
-	protected boolean abstract_ = ABSTRACT_EDEFAULT;
-
 	/**
 	 * The cached value of the '{@link #getNodes() <em>Nodes</em>}' reference list.
 	 * <!-- begin-user-doc -->
@@ -98,7 +71,27 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 	 * @generated
 	 * @ordered
 	 */
-	protected EList<TGGRuleCorrespondence> correspondenceNodes;
+	protected EList<TGGCorrespondence> correspondenceNodes;
+
+	/**
+	 * The cached value of the '{@link #getOperationalisations() <em>Operationalisations</em>}' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getOperationalisations()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<OperationalTGGRule> operationalisations;
+
+	/**
+	 * The cached value of the '{@link #getAttributeConstraints() <em>Attribute Constraints</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getAttributeConstraints()
+	 * @generated
+	 * @ordered
+	 */
+	protected TGGAttributeConstraintSet attributeConstraints;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -117,40 +110,6 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 	@Override
 	protected EClass eStaticClass() {
 		return IBeXTGGModelPackage.Literals.TGG_RULE;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EList<TGGRule> getRefines() {
-		if (refines == null) {
-			refines = new EObjectResolvingEList<TGGRule>(TGGRule.class, this, IBeXTGGModelPackage.TGG_RULE__REFINES);
-		}
-		return refines;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public boolean isAbstract() {
-		return abstract_;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public void setAbstract(boolean newAbstract) {
-		boolean oldAbstract = abstract_;
-		abstract_ = newAbstract;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__ABSTRACT, oldAbstract,
-					abstract_));
 	}
 
 	/**
@@ -182,9 +141,9 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EList<TGGRuleCorrespondence> getCorrespondenceNodes() {
+	public EList<TGGCorrespondence> getCorrespondenceNodes() {
 		if (correspondenceNodes == null) {
-			correspondenceNodes = new EObjectResolvingEList<TGGRuleCorrespondence>(TGGRuleCorrespondence.class, this,
+			correspondenceNodes = new EObjectResolvingEList<TGGCorrespondence>(TGGCorrespondence.class, this,
 					IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE_NODES);
 		}
 		return correspondenceNodes;
@@ -195,19 +154,100 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EList<OperationalTGGRule> getOperationalisations() {
+		if (operationalisations == null) {
+			operationalisations = new EObjectContainmentEList<OperationalTGGRule>(OperationalTGGRule.class, this,
+					IBeXTGGModelPackage.TGG_RULE__OPERATIONALISATIONS);
+		}
+		return operationalisations;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public TGGAttributeConstraintSet getAttributeConstraints() {
+		return attributeConstraints;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public NotificationChain basicSetAttributeConstraints(TGGAttributeConstraintSet newAttributeConstraints,
+			NotificationChain msgs) {
+		TGGAttributeConstraintSet oldAttributeConstraints = attributeConstraints;
+		attributeConstraints = newAttributeConstraints;
+		if (eNotificationRequired()) {
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
+					IBeXTGGModelPackage.TGG_RULE__ATTRIBUTE_CONSTRAINTS, oldAttributeConstraints,
+					newAttributeConstraints);
+			if (msgs == null)
+				msgs = notification;
+			else
+				msgs.add(notification);
+		}
+		return msgs;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setAttributeConstraints(TGGAttributeConstraintSet newAttributeConstraints) {
+		if (newAttributeConstraints != attributeConstraints) {
+			NotificationChain msgs = null;
+			if (attributeConstraints != null)
+				msgs = ((InternalEObject) attributeConstraints).eInverseRemove(this,
+						EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__ATTRIBUTE_CONSTRAINTS, null, msgs);
+			if (newAttributeConstraints != null)
+				msgs = ((InternalEObject) newAttributeConstraints).eInverseAdd(this,
+						EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__ATTRIBUTE_CONSTRAINTS, null, msgs);
+			msgs = basicSetAttributeConstraints(newAttributeConstraints, msgs);
+			if (msgs != null)
+				msgs.dispatch();
+		} else if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__ATTRIBUTE_CONSTRAINTS,
+					newAttributeConstraints, newAttributeConstraints));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
+		switch (featureID) {
+		case IBeXTGGModelPackage.TGG_RULE__OPERATIONALISATIONS:
+			return ((InternalEList<?>) getOperationalisations()).basicRemove(otherEnd, msgs);
+		case IBeXTGGModelPackage.TGG_RULE__ATTRIBUTE_CONSTRAINTS:
+			return basicSetAttributeConstraints(null, msgs);
+		}
+		return super.eInverseRemove(otherEnd, featureID, msgs);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case IBeXTGGModelPackage.TGG_RULE__REFINES:
-			return getRefines();
-		case IBeXTGGModelPackage.TGG_RULE__ABSTRACT:
-			return isAbstract();
 		case IBeXTGGModelPackage.TGG_RULE__NODES:
 			return getNodes();
 		case IBeXTGGModelPackage.TGG_RULE__EDGES:
 			return getEdges();
 		case IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE_NODES:
 			return getCorrespondenceNodes();
+		case IBeXTGGModelPackage.TGG_RULE__OPERATIONALISATIONS:
+			return getOperationalisations();
+		case IBeXTGGModelPackage.TGG_RULE__ATTRIBUTE_CONSTRAINTS:
+			return getAttributeConstraints();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -221,13 +261,6 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case IBeXTGGModelPackage.TGG_RULE__REFINES:
-			getRefines().clear();
-			getRefines().addAll((Collection<? extends TGGRule>) newValue);
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__ABSTRACT:
-			setAbstract((Boolean) newValue);
-			return;
 		case IBeXTGGModelPackage.TGG_RULE__NODES:
 			getNodes().clear();
 			getNodes().addAll((Collection<? extends TGGNode>) newValue);
@@ -238,7 +271,14 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 			return;
 		case IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE_NODES:
 			getCorrespondenceNodes().clear();
-			getCorrespondenceNodes().addAll((Collection<? extends TGGRuleCorrespondence>) newValue);
+			getCorrespondenceNodes().addAll((Collection<? extends TGGCorrespondence>) newValue);
+			return;
+		case IBeXTGGModelPackage.TGG_RULE__OPERATIONALISATIONS:
+			getOperationalisations().clear();
+			getOperationalisations().addAll((Collection<? extends OperationalTGGRule>) newValue);
+			return;
+		case IBeXTGGModelPackage.TGG_RULE__ATTRIBUTE_CONSTRAINTS:
+			setAttributeConstraints((TGGAttributeConstraintSet) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -252,12 +292,6 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case IBeXTGGModelPackage.TGG_RULE__REFINES:
-			getRefines().clear();
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__ABSTRACT:
-			setAbstract(ABSTRACT_EDEFAULT);
-			return;
 		case IBeXTGGModelPackage.TGG_RULE__NODES:
 			getNodes().clear();
 			return;
@@ -266,6 +300,12 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 			return;
 		case IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE_NODES:
 			getCorrespondenceNodes().clear();
+			return;
+		case IBeXTGGModelPackage.TGG_RULE__OPERATIONALISATIONS:
+			getOperationalisations().clear();
+			return;
+		case IBeXTGGModelPackage.TGG_RULE__ATTRIBUTE_CONSTRAINTS:
+			setAttributeConstraints((TGGAttributeConstraintSet) null);
 			return;
 		}
 		super.eUnset(featureID);
@@ -279,35 +319,18 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case IBeXTGGModelPackage.TGG_RULE__REFINES:
-			return refines != null && !refines.isEmpty();
-		case IBeXTGGModelPackage.TGG_RULE__ABSTRACT:
-			return abstract_ != ABSTRACT_EDEFAULT;
 		case IBeXTGGModelPackage.TGG_RULE__NODES:
 			return nodes != null && !nodes.isEmpty();
 		case IBeXTGGModelPackage.TGG_RULE__EDGES:
 			return edges != null && !edges.isEmpty();
 		case IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE_NODES:
 			return correspondenceNodes != null && !correspondenceNodes.isEmpty();
+		case IBeXTGGModelPackage.TGG_RULE__OPERATIONALISATIONS:
+			return operationalisations != null && !operationalisations.isEmpty();
+		case IBeXTGGModelPackage.TGG_RULE__ATTRIBUTE_CONSTRAINTS:
+			return attributeConstraints != null;
 		}
 		return super.eIsSet(featureID);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public String toString() {
-		if (eIsProxy())
-			return super.toString();
-
-		StringBuilder result = new StringBuilder(super.toString());
-		result.append(" (abstract: ");
-		result.append(abstract_);
-		result.append(')');
-		return result.toString();
 	}
 
 } //TGGRuleImpl

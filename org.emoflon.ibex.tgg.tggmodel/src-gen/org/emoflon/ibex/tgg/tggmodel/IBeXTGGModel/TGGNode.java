@@ -26,30 +26,30 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
 public interface TGGNode extends IBeXNode, TGGRuleElement {
 	/**
 	 * Returns the value of the '<em><b>Incoming Correspondence</b></em>' reference list.
-	 * The list contents are of type {@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleCorrespondence}.
-	 * It is bidirectional and its opposite is '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleCorrespondence#getTarget <em>Target</em>}'.
+	 * The list contents are of type {@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence}.
+	 * It is bidirectional and its opposite is '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence#getTarget <em>Target</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Incoming Correspondence</em>' reference list.
 	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage#getTGGNode_IncomingCorrespondence()
-	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleCorrespondence#getTarget
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence#getTarget
 	 * @model opposite="target"
 	 * @generated
 	 */
-	EList<TGGRuleCorrespondence> getIncomingCorrespondence();
+	EList<TGGCorrespondence> getIncomingCorrespondence();
 
 	/**
 	 * Returns the value of the '<em><b>Outgoing Correspondence</b></em>' reference list.
-	 * The list contents are of type {@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleCorrespondence}.
-	 * It is bidirectional and its opposite is '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleCorrespondence#getSource <em>Source</em>}'.
+	 * The list contents are of type {@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence}.
+	 * It is bidirectional and its opposite is '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence#getSource <em>Source</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Outgoing Correspondence</em>' reference list.
 	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage#getTGGNode_OutgoingCorrespondence()
-	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleCorrespondence#getSource
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence#getSource
 	 * @model opposite="source"
 	 * @generated
 	 */
-	EList<TGGRuleCorrespondence> getOutgoingCorrespondence();
+	EList<TGGCorrespondence> getOutgoingCorrespondence();
 
 } // TGGNode

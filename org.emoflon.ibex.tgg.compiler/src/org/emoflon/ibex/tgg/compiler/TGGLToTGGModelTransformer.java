@@ -11,10 +11,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.codegen.ecore.genmodel.GenPackage;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.EcoreFactory;
 import org.eclipse.emf.ecore.EcorePackage;
+import org.eclipse.emf.ecore.impl.EcoreFactoryImpl;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModelMetadata;
@@ -28,7 +31,10 @@ import org.emoflon.ibex.common.slimgt.slimGT.SlimRuleNodeContext;
 import org.emoflon.ibex.common.slimgt.slimGT.SlimRuleNodeCreation;
 import org.emoflon.ibex.common.slimgt.util.SlimGTEMFUtil;
 import org.emoflon.ibex.common.transformation.SlimGtToIBeXCoreTransformer;
+import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuntimeModelFactory;
+import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuntimeModelPackage;
 import org.emoflon.ibex.tgg.tggl.scoping.TGGLScopeProvider;
+import org.emoflon.ibex.tgg.tggl.tGGL.CorrespondenceType;
 import org.emoflon.ibex.tgg.tggl.tGGL.EditorFile;
 import org.emoflon.ibex.tgg.tggl.tGGL.SlimRule;
 import org.emoflon.ibex.tgg.tggl.tGGL.SlimRuleNode;
@@ -52,8 +58,13 @@ record EdgeSignature(EObject source, EObject target, EReference type) {
 
 public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<EditorFile, TGGModel, IBeXTGGModelFactory> {
 	
+	private EcoreFactory ecoreFactory = EcoreFactoryImpl.eINSTANCE;
+	private TGGRuntimeModelPackage runtimePackage = TGGRuntimeModelPackage.eINSTANCE;
+	
+	
 	private Map<Object, EObject> tggl2tggModel = new ConcurrentHashMap<>();
 	private Map<SlimRule, Collection<IBeXPattern>> pattern2ibexPatterns = new ConcurrentHashMap<>();
+	private EPackage correspondenceModel;
 	
 	public TGGLToTGGModelTransformer(EditorFile editorFile, final IProject project) {
 		super(editorFile, project);
@@ -111,6 +122,9 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 
 	@Override
 	public TGGModel transform() {
+		createCorrespondenceModel();
+		createAttributeConstraintLibraries();
+		
 		model.setRuleSet(factory.createTGGRuleSet());
 		
 		// Pattern are only transformed if actually called by a tgg rule
@@ -119,6 +133,73 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		postProcessing();
 		
 		return model;
+	}
+	
+	private void createAttributeConstraintLibraries() {
+		for(var xtextConditionLibrary : editorFile.getLibraries()) {
+			var constraintDefinitionLibrary = factory.createTGGAttributeConstraintDefinitionLibrary();
+			model.getAttributeConstraintDefinitionLibraries().add(constraintDefinitionLibrary);
+			
+			for(var xtextConditionDefinition : xtextConditionLibrary.getAttributeCondDefs()) {
+				var attributeConstraintDefinition = factory.createTGGAttributeConstraintDefinition();
+				attributeConstraintDefinition.setName(xtextConditionDefinition.getName());
+				constraintDefinitionLibrary.getTggAttributeConstraintDefinitions().add(attributeConstraintDefinition);
+				
+				for(var xtextParameterBinding : xtextConditionDefinition.getParams()) {
+					var parameterDefinition = factory.createTGGAttributeConstraintParameterDefinition();
+					parameterDefinition.setName(xtextParameterBinding.getName());
+					parameterDefinition.setType(xtextParameterBinding.getType());
+					attributeConstraintDefinition.getParameterDefinitions().add(parameterDefinition);
+				}
+				
+				for(var xtextGenBindings : xtextConditionDefinition.getAllowedGenBindings()) {
+					var binding = factory.createTGGAttributeConstraintBinding();
+					binding.getValue().addAll(xtextGenBindings.getValue());
+					attributeConstraintDefinition.getGenBindings().add(binding);
+				}
+				
+				for(var xtextGenBindings : xtextConditionDefinition.getAllowedSyncBindings()) {
+					var binding = factory.createTGGAttributeConstraintBinding();
+					binding.getValue().addAll(xtextGenBindings.getValue());
+					attributeConstraintDefinition.getSyncBindings().add(binding);
+				}
+			}
+		}
+	}
+
+	private EPackage createCorrespondenceModel() {
+		correspondenceModel = ecoreFactory.createEPackage();
+		correspondenceModel.setName(project.getName());
+		correspondenceModel.setNsPrefix(project.getName());
+		correspondenceModel.setNsURI("platform:/resource/" + project.getName() + "/model/" + project.getName() + ".ecore");
+		
+		var xtextCorrTypes = editorFile.getSchema().getCorrespondenceTypes();
+		for(var xtextCorrType : xtextCorrTypes) {
+			correspondenceModel.getEClassifiers().add(transformCorrespondenceType(xtextCorrType));
+		}
+		
+		model.setCorrespondence(correspondenceModel);
+		
+		return correspondenceModel;
+	}
+
+	protected EClass transformCorrespondenceType(CorrespondenceType xtextCorrType) {
+		if(tggl2tggModel.containsKey(xtextCorrType))
+			return (EClass) tggl2tggModel.get(xtextCorrType);
+		
+		var runtimeCorrType = runtimePackage.getCorrespondence();
+
+		var corrType = ecoreFactory.createEClass();
+		tggl2tggModel.put(xtextCorrType, corrType);
+		
+		corrType.setName(xtextCorrType.getName());
+		corrType.setAbstract(false);
+		if(xtextCorrType.getSuper() == null)
+			corrType.getESuperTypes().add(runtimeCorrType);
+		else
+			corrType.getESuperTypes().add(transformCorrespondenceType(xtextCorrType.getSuper()));
+		
+		return corrType;
 	}
 	
 	protected TGGRule transformRule(org.emoflon.ibex.tgg.tggl.tGGL.TGGRule rule) {
@@ -150,8 +231,6 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 			internalRule.getNodes().add(transformTGGNode((SlimRuleNode) node.getCreation(), BindingType.CREATE, DomainType.TARGET));
 		}
 		
-		
-		
 		return internalRule;
 	}
 	
@@ -171,6 +250,7 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 				default -> IBeXOperationType.CONTEXT;
 				}
 		);
+		corrNode.setType(transformCorrespondenceType(node.getType()));
 		
 		var source = transformTGGNode(node.getSource(), getBindingType(node.getSource()), DomainType.SOURCE);
 		var target = transformTGGNode(node.getTarget(), getBindingType(node.getTarget()), DomainType.TARGET);
@@ -178,8 +258,8 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		corrNode.setSource(source);
 		corrNode.setTarget(target);
 		
-		transformTGGEdge(new EdgeSignature(corrNode, source, null), binding, domain);
-		transformTGGEdge(new EdgeSignature(corrNode, target, null), binding, domain);
+		transformTGGEdge(new EdgeSignature(node, node.getSource(), runtimePackage.getCorrespondence_Source()), binding, domain);
+		transformTGGEdge(new EdgeSignature(node, node.getTarget(), runtimePackage.getCorrespondence_Target()), binding, domain);
 		
 		return corrNode;
 	}
@@ -202,6 +282,8 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		var source = transformNode(edgeSignature.source(), getBindingType(edgeSignature.source()), getDomainType(edgeSignature.source()));
 		var target = transformNode(edgeSignature.target(), getBindingType(edgeSignature.target()), getDomainType(edgeSignature.target()));
 		edge.setName(source.getName() + " -" + edgeSignature.type().getName()+"-> " + target.getName());
+		edge.setSource(source);
+		edge.setTarget(target);
 		
 		return edge;
 	}
@@ -269,7 +351,25 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		var tggNode = factory.createTGGNode();
 		tggl2tggModel.put(node, tggNode);
 		
+		tggNode.setBindingType(binding);
+		tggNode.setDomainType(domain);
+		tggNode.setName(node.getName());
+		tggNode.setType(node.getType());
+		tggNode.setOperationType(switch(binding) {
+				case CREATE -> IBeXOperationType.CREATION;
+				case DELETE -> IBeXOperationType.DELETION;
+				default -> IBeXOperationType.CONTEXT;
+				}
+		);
 		
+		for(var contextEdge : node.getContextEdges()) {
+			var context = contextEdge.getContext();
+			transformTGGEdge(new EdgeSignature(node, context.getTarget(), context.getType()), BindingType.CONTEXT, domain);
+		}
+		for(var createdEdge : node.getCreatedEdges()) {
+			var creation = createdEdge.getCreation();
+			transformTGGEdge(new EdgeSignature(node, creation.getTarget(), creation.getType()), BindingType.CREATE, domain);
+		}
 		
 		return tggNode;
 	}

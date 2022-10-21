@@ -18,18 +18,20 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelFactory;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalTGGRule;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalisationMode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraint;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintBinding;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintDefinition;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintDefinitionLibrary;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintLibrary;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintParameterDefinition;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintSet;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGParameterValue;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleCorrespondence;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleSet;
 
@@ -66,6 +68,13 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	private EClass operationalTGGRuleEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	private EClass tggNodeEClass = null;
 
 	/**
@@ -73,7 +82,7 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private EClass tggRuleCorrespondenceEClass = null;
+	private EClass tggCorrespondenceEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -94,7 +103,7 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private EClass tggAttributeConstraintLibraryEClass = null;
+	private EClass tggAttributeConstraintSetEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -144,6 +153,13 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 	 * @generated
 	 */
 	private EClass tggcspEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EEnum operationalisationModeEEnum = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -276,6 +292,15 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EReference getTGGModel_AttributeConstraintDefinitionLibraries() {
+		return (EReference) tggModelEClass.getEStructuralFeatures().get(4);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getTGGRuleSet() {
 		return tggRuleSetEClass;
 	}
@@ -303,7 +328,7 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getTGGRule_Refines() {
+	public EReference getTGGRule_Nodes() {
 		return (EReference) tggRuleEClass.getEStructuralFeatures().get(0);
 	}
 
@@ -312,26 +337,8 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getTGGRule_Abstract() {
-		return (EAttribute) tggRuleEClass.getEStructuralFeatures().get(1);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EReference getTGGRule_Nodes() {
-		return (EReference) tggRuleEClass.getEStructuralFeatures().get(2);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	public EReference getTGGRule_Edges() {
-		return (EReference) tggRuleEClass.getEStructuralFeatures().get(3);
+		return (EReference) tggRuleEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -340,7 +347,43 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 	 * @generated
 	 */
 	public EReference getTGGRule_CorrespondenceNodes() {
+		return (EReference) tggRuleEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getTGGRule_Operationalisations() {
+		return (EReference) tggRuleEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getTGGRule_AttributeConstraints() {
 		return (EReference) tggRuleEClass.getEStructuralFeatures().get(4);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getOperationalTGGRule() {
+		return operationalTGGRuleEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getOperationalTGGRule_OperationalisationMode() {
+		return (EAttribute) operationalTGGRuleEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -375,8 +418,8 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClass getTGGRuleCorrespondence() {
-		return tggRuleCorrespondenceEClass;
+	public EClass getTGGCorrespondence() {
+		return tggCorrespondenceEClass;
 	}
 
 	/**
@@ -384,8 +427,8 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getTGGRuleCorrespondence_Source() {
-		return (EReference) tggRuleCorrespondenceEClass.getEStructuralFeatures().get(0);
+	public EReference getTGGCorrespondence_Source() {
+		return (EReference) tggCorrespondenceEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -393,8 +436,8 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getTGGRuleCorrespondence_Target() {
-		return (EReference) tggRuleCorrespondenceEClass.getEStructuralFeatures().get(1);
+	public EReference getTGGCorrespondence_Target() {
+		return (EReference) tggCorrespondenceEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -438,8 +481,8 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClass getTGGAttributeConstraintLibrary() {
-		return tggAttributeConstraintLibraryEClass;
+	public EClass getTGGAttributeConstraintSet() {
+		return tggAttributeConstraintSetEClass;
 	}
 
 	/**
@@ -447,8 +490,8 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getTGGAttributeConstraintLibrary_TggAttributeConstraints() {
-		return (EReference) tggAttributeConstraintLibraryEClass.getEStructuralFeatures().get(0);
+	public EReference getTGGAttributeConstraintSet_TggAttributeConstraints() {
+		return (EReference) tggAttributeConstraintSetEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -582,17 +625,8 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getTGGAttributeConstraintDefinition_UserDefined() {
-		return (EAttribute) tggAttributeConstraintDefinitionEClass.getEStructuralFeatures().get(0);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	public EReference getTGGAttributeConstraintDefinition_ParameterDefinitions() {
-		return (EReference) tggAttributeConstraintDefinitionEClass.getEStructuralFeatures().get(1);
+		return (EReference) tggAttributeConstraintDefinitionEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -601,7 +635,7 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 	 * @generated
 	 */
 	public EReference getTGGAttributeConstraintDefinition_SyncBindings() {
-		return (EReference) tggAttributeConstraintDefinitionEClass.getEStructuralFeatures().get(2);
+		return (EReference) tggAttributeConstraintDefinitionEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -610,7 +644,7 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 	 * @generated
 	 */
 	public EReference getTGGAttributeConstraintDefinition_GenBindings() {
-		return (EReference) tggAttributeConstraintDefinitionEClass.getEStructuralFeatures().get(3);
+		return (EReference) tggAttributeConstraintDefinitionEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
@@ -638,6 +672,15 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 	 */
 	public EReference getTGGCSP_Values() {
 		return (EReference) tggcspEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EEnum getOperationalisationMode() {
+		return operationalisationModeEEnum;
 	}
 
 	/**
@@ -692,24 +735,28 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 		createEReference(tggModelEClass, TGG_MODEL__TARGET);
 		createEReference(tggModelEClass, TGG_MODEL__CORRESPONDENCE);
 		createEReference(tggModelEClass, TGG_MODEL__RULE_SET);
+		createEReference(tggModelEClass, TGG_MODEL__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARIES);
 
 		tggRuleSetEClass = createEClass(TGG_RULE_SET);
 		createEReference(tggRuleSetEClass, TGG_RULE_SET__RULES);
 
 		tggRuleEClass = createEClass(TGG_RULE);
-		createEReference(tggRuleEClass, TGG_RULE__REFINES);
-		createEAttribute(tggRuleEClass, TGG_RULE__ABSTRACT);
 		createEReference(tggRuleEClass, TGG_RULE__NODES);
 		createEReference(tggRuleEClass, TGG_RULE__EDGES);
 		createEReference(tggRuleEClass, TGG_RULE__CORRESPONDENCE_NODES);
+		createEReference(tggRuleEClass, TGG_RULE__OPERATIONALISATIONS);
+		createEReference(tggRuleEClass, TGG_RULE__ATTRIBUTE_CONSTRAINTS);
+
+		operationalTGGRuleEClass = createEClass(OPERATIONAL_TGG_RULE);
+		createEAttribute(operationalTGGRuleEClass, OPERATIONAL_TGG_RULE__OPERATIONALISATION_MODE);
 
 		tggNodeEClass = createEClass(TGG_NODE);
 		createEReference(tggNodeEClass, TGG_NODE__INCOMING_CORRESPONDENCE);
 		createEReference(tggNodeEClass, TGG_NODE__OUTGOING_CORRESPONDENCE);
 
-		tggRuleCorrespondenceEClass = createEClass(TGG_RULE_CORRESPONDENCE);
-		createEReference(tggRuleCorrespondenceEClass, TGG_RULE_CORRESPONDENCE__SOURCE);
-		createEReference(tggRuleCorrespondenceEClass, TGG_RULE_CORRESPONDENCE__TARGET);
+		tggCorrespondenceEClass = createEClass(TGG_CORRESPONDENCE);
+		createEReference(tggCorrespondenceEClass, TGG_CORRESPONDENCE__SOURCE);
+		createEReference(tggCorrespondenceEClass, TGG_CORRESPONDENCE__TARGET);
 
 		tggEdgeEClass = createEClass(TGG_EDGE);
 
@@ -717,9 +764,8 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 		createEAttribute(tggRuleElementEClass, TGG_RULE_ELEMENT__DOMAIN_TYPE);
 		createEAttribute(tggRuleElementEClass, TGG_RULE_ELEMENT__BINDING_TYPE);
 
-		tggAttributeConstraintLibraryEClass = createEClass(TGG_ATTRIBUTE_CONSTRAINT_LIBRARY);
-		createEReference(tggAttributeConstraintLibraryEClass,
-				TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__TGG_ATTRIBUTE_CONSTRAINTS);
+		tggAttributeConstraintSetEClass = createEClass(TGG_ATTRIBUTE_CONSTRAINT_SET);
+		createEReference(tggAttributeConstraintSetEClass, TGG_ATTRIBUTE_CONSTRAINT_SET__TGG_ATTRIBUTE_CONSTRAINTS);
 
 		tggAttributeConstraintDefinitionLibraryEClass = createEClass(TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY);
 		createEReference(tggAttributeConstraintDefinitionLibraryEClass,
@@ -743,7 +789,6 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 		createEAttribute(tggAttributeConstraintBindingEClass, TGG_ATTRIBUTE_CONSTRAINT_BINDING__VALUE);
 
 		tggAttributeConstraintDefinitionEClass = createEClass(TGG_ATTRIBUTE_CONSTRAINT_DEFINITION);
-		createEAttribute(tggAttributeConstraintDefinitionEClass, TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__USER_DEFINED);
 		createEReference(tggAttributeConstraintDefinitionEClass,
 				TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__PARAMETER_DEFINITIONS);
 		createEReference(tggAttributeConstraintDefinitionEClass, TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__SYNC_BINDINGS);
@@ -754,6 +799,7 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 		createEReference(tggcspEClass, TGGCSP__VALUES);
 
 		// Create enums
+		operationalisationModeEEnum = createEEnum(OPERATIONALISATION_MODE);
 		domainTypeEEnum = createEEnum(DOMAIN_TYPE);
 		bindingTypeEEnum = createEEnum(BINDING_TYPE);
 	}
@@ -795,9 +841,10 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 		// Add supertypes to classes
 		tggModelEClass.getESuperTypes().add(theIBeXCoreModelPackage.getIBeXModel());
 		tggRuleEClass.getESuperTypes().add(theIBeXCoreModelPackage.getIBeXRule());
+		operationalTGGRuleEClass.getESuperTypes().add(this.getTGGRule());
 		tggNodeEClass.getESuperTypes().add(theIBeXCoreModelPackage.getIBeXNode());
 		tggNodeEClass.getESuperTypes().add(this.getTGGRuleElement());
-		tggRuleCorrespondenceEClass.getESuperTypes().add(this.getTGGNode());
+		tggCorrespondenceEClass.getESuperTypes().add(this.getTGGNode());
 		tggEdgeEClass.getESuperTypes().add(theIBeXCoreModelPackage.getIBeXEdge());
 		tggEdgeEClass.getESuperTypes().add(this.getTGGRuleElement());
 		tggAttributeConstraintDefinitionEClass.getESuperTypes().add(theIBeXCoreModelPackage.getIBeXNamedElement());
@@ -818,6 +865,10 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 		initEReference(getTGGModel_RuleSet(), this.getTGGRuleSet(), null, "ruleSet", null, 1, 1, TGGModel.class,
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGGModel_AttributeConstraintDefinitionLibraries(),
+				this.getTGGAttributeConstraintDefinitionLibrary(), null, "attributeConstraintDefinitionLibraries", null,
+				0, -1, TGGModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(tggRuleSetEClass, TGGRuleSet.class, "TGGRuleSet", !IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);
@@ -826,38 +877,45 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(tggRuleEClass, TGGRule.class, "TGGRule", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getTGGRule_Refines(), this.getTGGRule(), null, "refines", null, 0, -1, TGGRule.class,
-				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
-				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getTGGRule_Abstract(), ecorePackage.getEBoolean(), "abstract", null, 0, 1, TGGRule.class,
-				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getTGGRule_Nodes(), this.getTGGNode(), null, "nodes", null, 0, -1, TGGRule.class, !IS_TRANSIENT,
 				!IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
 				IS_ORDERED);
 		initEReference(getTGGRule_Edges(), this.getTGGEdge(), null, "edges", null, 0, -1, TGGRule.class, !IS_TRANSIENT,
 				!IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
 				IS_ORDERED);
-		initEReference(getTGGRule_CorrespondenceNodes(), this.getTGGRuleCorrespondence(), null, "correspondenceNodes",
-				null, 0, -1, TGGRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
-				IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGGRule_CorrespondenceNodes(), this.getTGGCorrespondence(), null, "correspondenceNodes", null,
+				0, -1, TGGRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGGRule_Operationalisations(), this.getOperationalTGGRule(), null, "operationalisations",
+				null, 0, -1, TGGRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
+				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGGRule_AttributeConstraints(), this.getTGGAttributeConstraintSet(), null,
+				"attributeConstraints", null, 0, 1, TGGRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(operationalTGGRuleEClass, OperationalTGGRule.class, "OperationalTGGRule", !IS_ABSTRACT,
+				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getOperationalTGGRule_OperationalisationMode(), this.getOperationalisationMode(),
+				"operationalisationMode", null, 0, 1, OperationalTGGRule.class, !IS_TRANSIENT, !IS_VOLATILE,
+				IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(tggNodeEClass, TGGNode.class, "TGGNode", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getTGGNode_IncomingCorrespondence(), this.getTGGRuleCorrespondence(),
-				this.getTGGRuleCorrespondence_Target(), "incomingCorrespondence", null, 0, -1, TGGNode.class,
-				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
-				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getTGGNode_OutgoingCorrespondence(), this.getTGGRuleCorrespondence(),
-				this.getTGGRuleCorrespondence_Source(), "outgoingCorrespondence", null, 0, -1, TGGNode.class,
-				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
-				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGGNode_IncomingCorrespondence(), this.getTGGCorrespondence(),
+				this.getTGGCorrespondence_Target(), "incomingCorrespondence", null, 0, -1, TGGNode.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
+				IS_ORDERED);
+		initEReference(getTGGNode_OutgoingCorrespondence(), this.getTGGCorrespondence(),
+				this.getTGGCorrespondence_Source(), "outgoingCorrespondence", null, 0, -1, TGGNode.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
+				IS_ORDERED);
 
-		initEClass(tggRuleCorrespondenceEClass, TGGRuleCorrespondence.class, "TGGRuleCorrespondence", !IS_ABSTRACT,
-				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getTGGRuleCorrespondence_Source(), this.getTGGNode(), this.getTGGNode_OutgoingCorrespondence(),
-				"source", null, 1, 1, TGGRuleCorrespondence.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+		initEClass(tggCorrespondenceEClass, TGGCorrespondence.class, "TGGCorrespondence", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getTGGCorrespondence_Source(), this.getTGGNode(), this.getTGGNode_OutgoingCorrespondence(),
+				"source", null, 1, 1, TGGCorrespondence.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
 				!IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getTGGRuleCorrespondence_Target(), this.getTGGNode(), this.getTGGNode_IncomingCorrespondence(),
-				"target", null, 1, 1, TGGRuleCorrespondence.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+		initEReference(getTGGCorrespondence_Target(), this.getTGGNode(), this.getTGGNode_IncomingCorrespondence(),
+				"target", null, 1, 1, TGGCorrespondence.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
 				!IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(tggEdgeEClass, TGGEdge.class, "TGGEdge", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -871,12 +929,11 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 				TGGRuleElement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
 				!IS_DERIVED, IS_ORDERED);
 
-		initEClass(tggAttributeConstraintLibraryEClass, TGGAttributeConstraintLibrary.class,
-				"TGGAttributeConstraintLibrary", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getTGGAttributeConstraintLibrary_TggAttributeConstraints(), this.getTGGAttributeConstraint(),
-				null, "tggAttributeConstraints", null, 0, -1, TGGAttributeConstraintLibrary.class, !IS_TRANSIENT,
-				!IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
-				IS_ORDERED);
+		initEClass(tggAttributeConstraintSetEClass, TGGAttributeConstraintSet.class, "TGGAttributeConstraintSet",
+				!IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getTGGAttributeConstraintSet_TggAttributeConstraints(), this.getTGGAttributeConstraint(), null,
+				"tggAttributeConstraints", null, 0, -1, TGGAttributeConstraintSet.class, !IS_TRANSIENT, !IS_VOLATILE,
+				IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(tggAttributeConstraintDefinitionLibraryEClass, TGGAttributeConstraintDefinitionLibrary.class,
 				"TGGAttributeConstraintDefinitionLibrary", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -920,9 +977,6 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 
 		initEClass(tggAttributeConstraintDefinitionEClass, TGGAttributeConstraintDefinition.class,
 				"TGGAttributeConstraintDefinition", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getTGGAttributeConstraintDefinition_UserDefined(), ecorePackage.getEBoolean(), "userDefined",
-				"true", 0, 1, TGGAttributeConstraintDefinition.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
-				!IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getTGGAttributeConstraintDefinition_ParameterDefinitions(),
 				this.getTGGAttributeConstraintParameterDefinition(), null, "parameterDefinitions", null, 0, -1,
 				TGGAttributeConstraintDefinition.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
@@ -944,10 +998,17 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 				IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Initialize enums and add enum literals
+		initEEnum(operationalisationModeEEnum, OperationalisationMode.class, "OperationalisationMode");
+		addEEnumLiteral(operationalisationModeEEnum, OperationalisationMode.GENERATE);
+		addEEnumLiteral(operationalisationModeEEnum, OperationalisationMode.FORWARD);
+		addEEnumLiteral(operationalisationModeEEnum, OperationalisationMode.BACKWARD);
+		addEEnumLiteral(operationalisationModeEEnum, OperationalisationMode.CONSISTENCY_CHECK);
+		addEEnumLiteral(operationalisationModeEEnum, OperationalisationMode.CHECK_ONLY);
+
 		initEEnum(domainTypeEEnum, DomainType.class, "DomainType");
-		addEEnumLiteral(domainTypeEEnum, DomainType.SRC);
-		addEEnumLiteral(domainTypeEEnum, DomainType.TRG);
-		addEEnumLiteral(domainTypeEEnum, DomainType.CORR);
+		addEEnumLiteral(domainTypeEEnum, DomainType.SOURCE);
+		addEEnumLiteral(domainTypeEEnum, DomainType.TARGET);
+		addEEnumLiteral(domainTypeEEnum, DomainType.CORRESPONDENCE);
 
 		initEEnum(bindingTypeEEnum, BindingType.class, "BindingType");
 		addEEnumLiteral(bindingTypeEEnum, BindingType.CONTEXT);

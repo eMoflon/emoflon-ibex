@@ -49,6 +49,15 @@ public interface IBeXTGGModelFactory extends EFactory {
 	TGGRule createTGGRule();
 
 	/**
+	 * Returns a new object of class '<em>Operational TGG Rule</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Operational TGG Rule</em>'.
+	 * @generated
+	 */
+	OperationalTGGRule createOperationalTGGRule();
+
+	/**
 	 * Returns a new object of class '<em>TGG Node</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -58,13 +67,13 @@ public interface IBeXTGGModelFactory extends EFactory {
 	TGGNode createTGGNode();
 
 	/**
-	 * Returns a new object of class '<em>TGG Rule Correspondence</em>'.
+	 * Returns a new object of class '<em>TGG Correspondence</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>TGG Rule Correspondence</em>'.
+	 * @return a new object of class '<em>TGG Correspondence</em>'.
 	 * @generated
 	 */
-	TGGRuleCorrespondence createTGGRuleCorrespondence();
+	TGGCorrespondence createTGGCorrespondence();
 
 	/**
 	 * Returns a new object of class '<em>TGG Edge</em>'.
@@ -76,13 +85,13 @@ public interface IBeXTGGModelFactory extends EFactory {
 	TGGEdge createTGGEdge();
 
 	/**
-	 * Returns a new object of class '<em>TGG Attribute Constraint Library</em>'.
+	 * Returns a new object of class '<em>TGG Attribute Constraint Set</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>TGG Attribute Constraint Library</em>'.
+	 * @return a new object of class '<em>TGG Attribute Constraint Set</em>'.
 	 * @generated
 	 */
-	TGGAttributeConstraintLibrary createTGGAttributeConstraintLibrary();
+	TGGAttributeConstraintSet createTGGAttributeConstraintSet();
 
 	/**
 	 * Returns a new object of class '<em>TGG Attribute Constraint Definition Library</em>'.

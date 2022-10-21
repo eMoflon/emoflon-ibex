@@ -160,13 +160,22 @@ public interface IBeXTGGModelPackage extends EPackage {
 	int TGG_MODEL__RULE_SET = IBeXCoreModelPackage.IBE_XMODEL_FEATURE_COUNT + 3;
 
 	/**
+	 * The feature id for the '<em><b>Attribute Constraint Definition Libraries</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_MODEL__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARIES = IBeXCoreModelPackage.IBE_XMODEL_FEATURE_COUNT + 4;
+
+	/**
 	 * The number of structural features of the '<em>TGG Model</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_MODEL_FEATURE_COUNT = IBeXCoreModelPackage.IBE_XMODEL_FEATURE_COUNT + 4;
+	int TGG_MODEL_FEATURE_COUNT = IBeXCoreModelPackage.IBE_XMODEL_FEATURE_COUNT + 5;
 
 	/**
 	 * The number of operations of the '<em>TGG Model</em>' class.
@@ -297,31 +306,13 @@ public interface IBeXTGGModelPackage extends EPackage {
 	int TGG_RULE__ALL_EDGES = IBeXCoreModelPackage.IBE_XRULE__ALL_EDGES;
 
 	/**
-	 * The feature id for the '<em><b>Refines</b></em>' reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int TGG_RULE__REFINES = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 0;
-
-	/**
-	 * The feature id for the '<em><b>Abstract</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int TGG_RULE__ABSTRACT = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 1;
-
-	/**
 	 * The feature id for the '<em><b>Nodes</b></em>' reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE__NODES = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 2;
+	int TGG_RULE__NODES = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 0;
 
 	/**
 	 * The feature id for the '<em><b>Edges</b></em>' reference list.
@@ -330,7 +321,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE__EDGES = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 3;
+	int TGG_RULE__EDGES = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 1;
 
 	/**
 	 * The feature id for the '<em><b>Correspondence Nodes</b></em>' reference list.
@@ -339,7 +330,25 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE__CORRESPONDENCE_NODES = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 4;
+	int TGG_RULE__CORRESPONDENCE_NODES = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 2;
+
+	/**
+	 * The feature id for the '<em><b>Operationalisations</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_RULE__OPERATIONALISATIONS = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 3;
+
+	/**
+	 * The feature id for the '<em><b>Attribute Constraints</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_RULE__ATTRIBUTE_CONSTRAINTS = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 4;
 
 	/**
 	 * The number of structural features of the '<em>TGG Rule</em>' class.
@@ -360,6 +369,160 @@ public interface IBeXTGGModelPackage extends EPackage {
 	int TGG_RULE_OPERATION_COUNT = IBeXCoreModelPackage.IBE_XRULE_OPERATION_COUNT + 0;
 
 	/**
+	 * The meta object id for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.OperationalTGGRuleImpl <em>Operational TGG Rule</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.OperationalTGGRuleImpl
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.IBeXTGGModelPackageImpl#getOperationalTGGRule()
+	 * @generated
+	 */
+	int OPERATIONAL_TGG_RULE = 3;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int OPERATIONAL_TGG_RULE__NAME = TGG_RULE__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Precondition</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int OPERATIONAL_TGG_RULE__PRECONDITION = TGG_RULE__PRECONDITION;
+
+	/**
+	 * The feature id for the '<em><b>Postcondition</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int OPERATIONAL_TGG_RULE__POSTCONDITION = TGG_RULE__POSTCONDITION;
+
+	/**
+	 * The feature id for the '<em><b>Creation</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int OPERATIONAL_TGG_RULE__CREATION = TGG_RULE__CREATION;
+
+	/**
+	 * The feature id for the '<em><b>Deletion</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int OPERATIONAL_TGG_RULE__DELETION = TGG_RULE__DELETION;
+
+	/**
+	 * The feature id for the '<em><b>Attribute Assignments</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int OPERATIONAL_TGG_RULE__ATTRIBUTE_ASSIGNMENTS = TGG_RULE__ATTRIBUTE_ASSIGNMENTS;
+
+	/**
+	 * The feature id for the '<em><b>All Nodes</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int OPERATIONAL_TGG_RULE__ALL_NODES = TGG_RULE__ALL_NODES;
+
+	/**
+	 * The feature id for the '<em><b>All Edges</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int OPERATIONAL_TGG_RULE__ALL_EDGES = TGG_RULE__ALL_EDGES;
+
+	/**
+	 * The feature id for the '<em><b>Nodes</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int OPERATIONAL_TGG_RULE__NODES = TGG_RULE__NODES;
+
+	/**
+	 * The feature id for the '<em><b>Edges</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int OPERATIONAL_TGG_RULE__EDGES = TGG_RULE__EDGES;
+
+	/**
+	 * The feature id for the '<em><b>Correspondence Nodes</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int OPERATIONAL_TGG_RULE__CORRESPONDENCE_NODES = TGG_RULE__CORRESPONDENCE_NODES;
+
+	/**
+	 * The feature id for the '<em><b>Operationalisations</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int OPERATIONAL_TGG_RULE__OPERATIONALISATIONS = TGG_RULE__OPERATIONALISATIONS;
+
+	/**
+	 * The feature id for the '<em><b>Attribute Constraints</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int OPERATIONAL_TGG_RULE__ATTRIBUTE_CONSTRAINTS = TGG_RULE__ATTRIBUTE_CONSTRAINTS;
+
+	/**
+	 * The feature id for the '<em><b>Operationalisation Mode</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int OPERATIONAL_TGG_RULE__OPERATIONALISATION_MODE = TGG_RULE_FEATURE_COUNT + 0;
+
+	/**
+	 * The number of structural features of the '<em>Operational TGG Rule</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int OPERATIONAL_TGG_RULE_FEATURE_COUNT = TGG_RULE_FEATURE_COUNT + 1;
+
+	/**
+	 * The number of operations of the '<em>Operational TGG Rule</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int OPERATIONAL_TGG_RULE_OPERATION_COUNT = TGG_RULE_OPERATION_COUNT + 0;
+
+	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGNodeImpl <em>TGG Node</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -367,7 +530,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.IBeXTGGModelPackageImpl#getTGGNode()
 	 * @generated
 	 */
-	int TGG_NODE = 3;
+	int TGG_NODE = 4;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -469,14 +632,14 @@ public interface IBeXTGGModelPackage extends EPackage {
 	int TGG_NODE_OPERATION_COUNT = IBeXCoreModelPackage.IBE_XNODE_OPERATION_COUNT + 0;
 
 	/**
-	 * The meta object id for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleCorrespondenceImpl <em>TGG Rule Correspondence</em>}' class.
+	 * The meta object id for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGCorrespondenceImpl <em>TGG Correspondence</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleCorrespondenceImpl
-	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.IBeXTGGModelPackageImpl#getTGGRuleCorrespondence()
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGCorrespondenceImpl
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.IBeXTGGModelPackageImpl#getTGGCorrespondence()
 	 * @generated
 	 */
-	int TGG_RULE_CORRESPONDENCE = 4;
+	int TGG_CORRESPONDENCE = 5;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -485,7 +648,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE_CORRESPONDENCE__NAME = TGG_NODE__NAME;
+	int TGG_CORRESPONDENCE__NAME = TGG_NODE__NAME;
 
 	/**
 	 * The feature id for the '<em><b>Type</b></em>' reference.
@@ -494,7 +657,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE_CORRESPONDENCE__TYPE = TGG_NODE__TYPE;
+	int TGG_CORRESPONDENCE__TYPE = TGG_NODE__TYPE;
 
 	/**
 	 * The feature id for the '<em><b>Operation Type</b></em>' attribute.
@@ -503,7 +666,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE_CORRESPONDENCE__OPERATION_TYPE = TGG_NODE__OPERATION_TYPE;
+	int TGG_CORRESPONDENCE__OPERATION_TYPE = TGG_NODE__OPERATION_TYPE;
 
 	/**
 	 * The feature id for the '<em><b>Incoming Edges</b></em>' reference list.
@@ -512,7 +675,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE_CORRESPONDENCE__INCOMING_EDGES = TGG_NODE__INCOMING_EDGES;
+	int TGG_CORRESPONDENCE__INCOMING_EDGES = TGG_NODE__INCOMING_EDGES;
 
 	/**
 	 * The feature id for the '<em><b>Outgoing Edges</b></em>' reference list.
@@ -521,7 +684,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE_CORRESPONDENCE__OUTGOING_EDGES = TGG_NODE__OUTGOING_EDGES;
+	int TGG_CORRESPONDENCE__OUTGOING_EDGES = TGG_NODE__OUTGOING_EDGES;
 
 	/**
 	 * The feature id for the '<em><b>Domain Type</b></em>' attribute.
@@ -530,7 +693,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE_CORRESPONDENCE__DOMAIN_TYPE = TGG_NODE__DOMAIN_TYPE;
+	int TGG_CORRESPONDENCE__DOMAIN_TYPE = TGG_NODE__DOMAIN_TYPE;
 
 	/**
 	 * The feature id for the '<em><b>Binding Type</b></em>' attribute.
@@ -539,7 +702,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE_CORRESPONDENCE__BINDING_TYPE = TGG_NODE__BINDING_TYPE;
+	int TGG_CORRESPONDENCE__BINDING_TYPE = TGG_NODE__BINDING_TYPE;
 
 	/**
 	 * The feature id for the '<em><b>Incoming Correspondence</b></em>' reference list.
@@ -548,7 +711,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE_CORRESPONDENCE__INCOMING_CORRESPONDENCE = TGG_NODE__INCOMING_CORRESPONDENCE;
+	int TGG_CORRESPONDENCE__INCOMING_CORRESPONDENCE = TGG_NODE__INCOMING_CORRESPONDENCE;
 
 	/**
 	 * The feature id for the '<em><b>Outgoing Correspondence</b></em>' reference list.
@@ -557,7 +720,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE_CORRESPONDENCE__OUTGOING_CORRESPONDENCE = TGG_NODE__OUTGOING_CORRESPONDENCE;
+	int TGG_CORRESPONDENCE__OUTGOING_CORRESPONDENCE = TGG_NODE__OUTGOING_CORRESPONDENCE;
 
 	/**
 	 * The feature id for the '<em><b>Source</b></em>' reference.
@@ -566,7 +729,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE_CORRESPONDENCE__SOURCE = TGG_NODE_FEATURE_COUNT + 0;
+	int TGG_CORRESPONDENCE__SOURCE = TGG_NODE_FEATURE_COUNT + 0;
 
 	/**
 	 * The feature id for the '<em><b>Target</b></em>' reference.
@@ -575,25 +738,25 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE_CORRESPONDENCE__TARGET = TGG_NODE_FEATURE_COUNT + 1;
+	int TGG_CORRESPONDENCE__TARGET = TGG_NODE_FEATURE_COUNT + 1;
 
 	/**
-	 * The number of structural features of the '<em>TGG Rule Correspondence</em>' class.
+	 * The number of structural features of the '<em>TGG Correspondence</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE_CORRESPONDENCE_FEATURE_COUNT = TGG_NODE_FEATURE_COUNT + 2;
+	int TGG_CORRESPONDENCE_FEATURE_COUNT = TGG_NODE_FEATURE_COUNT + 2;
 
 	/**
-	 * The number of operations of the '<em>TGG Rule Correspondence</em>' class.
+	 * The number of operations of the '<em>TGG Correspondence</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE_CORRESPONDENCE_OPERATION_COUNT = TGG_NODE_OPERATION_COUNT + 0;
+	int TGG_CORRESPONDENCE_OPERATION_COUNT = TGG_NODE_OPERATION_COUNT + 0;
 
 	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGEdgeImpl <em>TGG Edge</em>}' class.
@@ -603,7 +766,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.IBeXTGGModelPackageImpl#getTGGEdge()
 	 * @generated
 	 */
-	int TGG_EDGE = 5;
+	int TGG_EDGE = 6;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -694,7 +857,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.IBeXTGGModelPackageImpl#getTGGRuleElement()
 	 * @generated
 	 */
-	int TGG_RULE_ELEMENT = 6;
+	int TGG_RULE_ELEMENT = 7;
 
 	/**
 	 * The feature id for the '<em><b>Domain Type</b></em>' attribute.
@@ -733,14 +896,14 @@ public interface IBeXTGGModelPackage extends EPackage {
 	int TGG_RULE_ELEMENT_OPERATION_COUNT = 0;
 
 	/**
-	 * The meta object id for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGAttributeConstraintLibraryImpl <em>TGG Attribute Constraint Library</em>}' class.
+	 * The meta object id for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGAttributeConstraintSetImpl <em>TGG Attribute Constraint Set</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGAttributeConstraintLibraryImpl
-	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.IBeXTGGModelPackageImpl#getTGGAttributeConstraintLibrary()
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGAttributeConstraintSetImpl
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.IBeXTGGModelPackageImpl#getTGGAttributeConstraintSet()
 	 * @generated
 	 */
-	int TGG_ATTRIBUTE_CONSTRAINT_LIBRARY = 7;
+	int TGG_ATTRIBUTE_CONSTRAINT_SET = 8;
 
 	/**
 	 * The feature id for the '<em><b>Tgg Attribute Constraints</b></em>' containment reference list.
@@ -749,25 +912,25 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__TGG_ATTRIBUTE_CONSTRAINTS = 0;
+	int TGG_ATTRIBUTE_CONSTRAINT_SET__TGG_ATTRIBUTE_CONSTRAINTS = 0;
 
 	/**
-	 * The number of structural features of the '<em>TGG Attribute Constraint Library</em>' class.
+	 * The number of structural features of the '<em>TGG Attribute Constraint Set</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_ATTRIBUTE_CONSTRAINT_LIBRARY_FEATURE_COUNT = 1;
+	int TGG_ATTRIBUTE_CONSTRAINT_SET_FEATURE_COUNT = 1;
 
 	/**
-	 * The number of operations of the '<em>TGG Attribute Constraint Library</em>' class.
+	 * The number of operations of the '<em>TGG Attribute Constraint Set</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_ATTRIBUTE_CONSTRAINT_LIBRARY_OPERATION_COUNT = 0;
+	int TGG_ATTRIBUTE_CONSTRAINT_SET_OPERATION_COUNT = 0;
 
 	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGAttributeConstraintDefinitionLibraryImpl <em>TGG Attribute Constraint Definition Library</em>}' class.
@@ -777,7 +940,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.IBeXTGGModelPackageImpl#getTGGAttributeConstraintDefinitionLibrary()
 	 * @generated
 	 */
-	int TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY = 8;
+	int TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY = 9;
 
 	/**
 	 * The feature id for the '<em><b>Tgg Attribute Constraint Definitions</b></em>' containment reference list.
@@ -814,7 +977,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.IBeXTGGModelPackageImpl#getTGGAttributeConstraint()
 	 * @generated
 	 */
-	int TGG_ATTRIBUTE_CONSTRAINT = 9;
+	int TGG_ATTRIBUTE_CONSTRAINT = 10;
 
 	/**
 	 * The feature id for the '<em><b>Definition</b></em>' reference.
@@ -860,7 +1023,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.IBeXTGGModelPackageImpl#getTGGParameterValue()
 	 * @generated
 	 */
-	int TGG_PARAMETER_VALUE = 10;
+	int TGG_PARAMETER_VALUE = 11;
 
 	/**
 	 * The feature id for the '<em><b>Parameter Definition</b></em>' reference.
@@ -906,7 +1069,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.IBeXTGGModelPackageImpl#getTGGAttributeConstraintParameterDefinition()
 	 * @generated
 	 */
-	int TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION = 11;
+	int TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION = 12;
 
 	/**
 	 * The feature id for the '<em><b>Type</b></em>' reference.
@@ -952,7 +1115,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.IBeXTGGModelPackageImpl#getTGGAttributeConstraintBinding()
 	 * @generated
 	 */
-	int TGG_ATTRIBUTE_CONSTRAINT_BINDING = 12;
+	int TGG_ATTRIBUTE_CONSTRAINT_BINDING = 13;
 
 	/**
 	 * The feature id for the '<em><b>Value</b></em>' attribute list.
@@ -989,7 +1152,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.IBeXTGGModelPackageImpl#getTGGAttributeConstraintDefinition()
 	 * @generated
 	 */
-	int TGG_ATTRIBUTE_CONSTRAINT_DEFINITION = 13;
+	int TGG_ATTRIBUTE_CONSTRAINT_DEFINITION = 14;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -1001,15 +1164,6 @@ public interface IBeXTGGModelPackage extends EPackage {
 	int TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__NAME = IBeXCoreModelPackage.IBE_XNAMED_ELEMENT__NAME;
 
 	/**
-	 * The feature id for the '<em><b>User Defined</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__USER_DEFINED = IBeXCoreModelPackage.IBE_XNAMED_ELEMENT_FEATURE_COUNT + 0;
-
-	/**
 	 * The feature id for the '<em><b>Parameter Definitions</b></em>' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1017,7 +1171,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__PARAMETER_DEFINITIONS = IBeXCoreModelPackage.IBE_XNAMED_ELEMENT_FEATURE_COUNT
-			+ 1;
+			+ 0;
 
 	/**
 	 * The feature id for the '<em><b>Sync Bindings</b></em>' containment reference list.
@@ -1026,7 +1180,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__SYNC_BINDINGS = IBeXCoreModelPackage.IBE_XNAMED_ELEMENT_FEATURE_COUNT + 2;
+	int TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__SYNC_BINDINGS = IBeXCoreModelPackage.IBE_XNAMED_ELEMENT_FEATURE_COUNT + 1;
 
 	/**
 	 * The feature id for the '<em><b>Gen Bindings</b></em>' containment reference list.
@@ -1035,7 +1189,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__GEN_BINDINGS = IBeXCoreModelPackage.IBE_XNAMED_ELEMENT_FEATURE_COUNT + 3;
+	int TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__GEN_BINDINGS = IBeXCoreModelPackage.IBE_XNAMED_ELEMENT_FEATURE_COUNT + 2;
 
 	/**
 	 * The number of structural features of the '<em>TGG Attribute Constraint Definition</em>' class.
@@ -1044,7 +1198,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_FEATURE_COUNT = IBeXCoreModelPackage.IBE_XNAMED_ELEMENT_FEATURE_COUNT + 4;
+	int TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_FEATURE_COUNT = IBeXCoreModelPackage.IBE_XNAMED_ELEMENT_FEATURE_COUNT + 3;
 
 	/**
 	 * The number of operations of the '<em>TGG Attribute Constraint Definition</em>' class.
@@ -1064,7 +1218,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.IBeXTGGModelPackageImpl#getTGGCSP()
 	 * @generated
 	 */
-	int TGGCSP = 14;
+	int TGGCSP = 15;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -1112,6 +1266,16 @@ public interface IBeXTGGModelPackage extends EPackage {
 	int TGGCSP_OPERATION_COUNT = IBeXCoreModelPackage.IBE_XNAMED_ELEMENT_OPERATION_COUNT + 0;
 
 	/**
+	 * The meta object id for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalisationMode <em>Operationalisation Mode</em>}' enum.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalisationMode
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.IBeXTGGModelPackageImpl#getOperationalisationMode()
+	 * @generated
+	 */
+	int OPERATIONALISATION_MODE = 16;
+
+	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType <em>Domain Type</em>}' enum.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1119,7 +1283,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.IBeXTGGModelPackageImpl#getDomainType()
 	 * @generated
 	 */
-	int DOMAIN_TYPE = 15;
+	int DOMAIN_TYPE = 17;
 
 	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType <em>Binding Type</em>}' enum.
@@ -1129,7 +1293,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.IBeXTGGModelPackageImpl#getBindingType()
 	 * @generated
 	 */
-	int BINDING_TYPE = 16;
+	int BINDING_TYPE = 18;
 
 	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel <em>TGG Model</em>}'.
@@ -1186,6 +1350,17 @@ public interface IBeXTGGModelPackage extends EPackage {
 	EReference getTGGModel_RuleSet();
 
 	/**
+	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel#getAttributeConstraintDefinitionLibraries <em>Attribute Constraint Definition Libraries</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Attribute Constraint Definition Libraries</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel#getAttributeConstraintDefinitionLibraries()
+	 * @see #getTGGModel()
+	 * @generated
+	 */
+	EReference getTGGModel_AttributeConstraintDefinitionLibraries();
+
+	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleSet <em>TGG Rule Set</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1215,28 +1390,6 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @generated
 	 */
 	EClass getTGGRule();
-
-	/**
-	 * Returns the meta object for the reference list '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getRefines <em>Refines</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the reference list '<em>Refines</em>'.
-	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getRefines()
-	 * @see #getTGGRule()
-	 * @generated
-	 */
-	EReference getTGGRule_Refines();
-
-	/**
-	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#isAbstract <em>Abstract</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Abstract</em>'.
-	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#isAbstract()
-	 * @see #getTGGRule()
-	 * @generated
-	 */
-	EAttribute getTGGRule_Abstract();
 
 	/**
 	 * Returns the meta object for the reference list '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getNodes <em>Nodes</em>}'.
@@ -1272,6 +1425,49 @@ public interface IBeXTGGModelPackage extends EPackage {
 	EReference getTGGRule_CorrespondenceNodes();
 
 	/**
+	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getOperationalisations <em>Operationalisations</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Operationalisations</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getOperationalisations()
+	 * @see #getTGGRule()
+	 * @generated
+	 */
+	EReference getTGGRule_Operationalisations();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getAttributeConstraints <em>Attribute Constraints</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Attribute Constraints</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getAttributeConstraints()
+	 * @see #getTGGRule()
+	 * @generated
+	 */
+	EReference getTGGRule_AttributeConstraints();
+
+	/**
+	 * Returns the meta object for class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalTGGRule <em>Operational TGG Rule</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Operational TGG Rule</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalTGGRule
+	 * @generated
+	 */
+	EClass getOperationalTGGRule();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalTGGRule#getOperationalisationMode <em>Operationalisation Mode</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Operationalisation Mode</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalTGGRule#getOperationalisationMode()
+	 * @see #getOperationalTGGRule()
+	 * @generated
+	 */
+	EAttribute getOperationalTGGRule_OperationalisationMode();
+
+	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode <em>TGG Node</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1304,36 +1500,36 @@ public interface IBeXTGGModelPackage extends EPackage {
 	EReference getTGGNode_OutgoingCorrespondence();
 
 	/**
-	 * Returns the meta object for class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleCorrespondence <em>TGG Rule Correspondence</em>}'.
+	 * Returns the meta object for class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence <em>TGG Correspondence</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for class '<em>TGG Rule Correspondence</em>'.
-	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleCorrespondence
+	 * @return the meta object for class '<em>TGG Correspondence</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence
 	 * @generated
 	 */
-	EClass getTGGRuleCorrespondence();
+	EClass getTGGCorrespondence();
 
 	/**
-	 * Returns the meta object for the reference '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleCorrespondence#getSource <em>Source</em>}'.
+	 * Returns the meta object for the reference '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence#getSource <em>Source</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the reference '<em>Source</em>'.
-	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleCorrespondence#getSource()
-	 * @see #getTGGRuleCorrespondence()
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence#getSource()
+	 * @see #getTGGCorrespondence()
 	 * @generated
 	 */
-	EReference getTGGRuleCorrespondence_Source();
+	EReference getTGGCorrespondence_Source();
 
 	/**
-	 * Returns the meta object for the reference '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleCorrespondence#getTarget <em>Target</em>}'.
+	 * Returns the meta object for the reference '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence#getTarget <em>Target</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the reference '<em>Target</em>'.
-	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleCorrespondence#getTarget()
-	 * @see #getTGGRuleCorrespondence()
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence#getTarget()
+	 * @see #getTGGCorrespondence()
 	 * @generated
 	 */
-	EReference getTGGRuleCorrespondence_Target();
+	EReference getTGGCorrespondence_Target();
 
 	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge <em>TGG Edge</em>}'.
@@ -1378,25 +1574,25 @@ public interface IBeXTGGModelPackage extends EPackage {
 	EAttribute getTGGRuleElement_BindingType();
 
 	/**
-	 * Returns the meta object for class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintLibrary <em>TGG Attribute Constraint Library</em>}'.
+	 * Returns the meta object for class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintSet <em>TGG Attribute Constraint Set</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for class '<em>TGG Attribute Constraint Library</em>'.
-	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintLibrary
+	 * @return the meta object for class '<em>TGG Attribute Constraint Set</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintSet
 	 * @generated
 	 */
-	EClass getTGGAttributeConstraintLibrary();
+	EClass getTGGAttributeConstraintSet();
 
 	/**
-	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintLibrary#getTggAttributeConstraints <em>Tgg Attribute Constraints</em>}'.
+	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintSet#getTggAttributeConstraints <em>Tgg Attribute Constraints</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the containment reference list '<em>Tgg Attribute Constraints</em>'.
-	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintLibrary#getTggAttributeConstraints()
-	 * @see #getTGGAttributeConstraintLibrary()
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintSet#getTggAttributeConstraints()
+	 * @see #getTGGAttributeConstraintSet()
 	 * @generated
 	 */
-	EReference getTGGAttributeConstraintLibrary_TggAttributeConstraints();
+	EReference getTGGAttributeConstraintSet_TggAttributeConstraints();
 
 	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintDefinitionLibrary <em>TGG Attribute Constraint Definition Library</em>}'.
@@ -1547,17 +1743,6 @@ public interface IBeXTGGModelPackage extends EPackage {
 	EClass getTGGAttributeConstraintDefinition();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintDefinition#isUserDefined <em>User Defined</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>User Defined</em>'.
-	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintDefinition#isUserDefined()
-	 * @see #getTGGAttributeConstraintDefinition()
-	 * @generated
-	 */
-	EAttribute getTGGAttributeConstraintDefinition_UserDefined();
-
-	/**
 	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintDefinition#getParameterDefinitions <em>Parameter Definitions</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1621,6 +1806,16 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getTGGCSP_Values();
+
+	/**
+	 * Returns the meta object for enum '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalisationMode <em>Operationalisation Mode</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for enum '<em>Operationalisation Mode</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalisationMode
+	 * @generated
+	 */
+	EEnum getOperationalisationMode();
 
 	/**
 	 * Returns the meta object for enum '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType <em>Domain Type</em>}'.
@@ -1708,6 +1903,15 @@ public interface IBeXTGGModelPackage extends EPackage {
 		EReference TGG_MODEL__RULE_SET = eINSTANCE.getTGGModel_RuleSet();
 
 		/**
+		 * The meta object literal for the '<em><b>Attribute Constraint Definition Libraries</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference TGG_MODEL__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARIES = eINSTANCE
+				.getTGGModel_AttributeConstraintDefinitionLibraries();
+
+		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleSetImpl <em>TGG Rule Set</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -1736,22 +1940,6 @@ public interface IBeXTGGModelPackage extends EPackage {
 		EClass TGG_RULE = eINSTANCE.getTGGRule();
 
 		/**
-		 * The meta object literal for the '<em><b>Refines</b></em>' reference list feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference TGG_RULE__REFINES = eINSTANCE.getTGGRule_Refines();
-
-		/**
-		 * The meta object literal for the '<em><b>Abstract</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute TGG_RULE__ABSTRACT = eINSTANCE.getTGGRule_Abstract();
-
-		/**
 		 * The meta object literal for the '<em><b>Nodes</b></em>' reference list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -1774,6 +1962,41 @@ public interface IBeXTGGModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference TGG_RULE__CORRESPONDENCE_NODES = eINSTANCE.getTGGRule_CorrespondenceNodes();
+
+		/**
+		 * The meta object literal for the '<em><b>Operationalisations</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference TGG_RULE__OPERATIONALISATIONS = eINSTANCE.getTGGRule_Operationalisations();
+
+		/**
+		 * The meta object literal for the '<em><b>Attribute Constraints</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference TGG_RULE__ATTRIBUTE_CONSTRAINTS = eINSTANCE.getTGGRule_AttributeConstraints();
+
+		/**
+		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.OperationalTGGRuleImpl <em>Operational TGG Rule</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.OperationalTGGRuleImpl
+		 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.IBeXTGGModelPackageImpl#getOperationalTGGRule()
+		 * @generated
+		 */
+		EClass OPERATIONAL_TGG_RULE = eINSTANCE.getOperationalTGGRule();
+
+		/**
+		 * The meta object literal for the '<em><b>Operationalisation Mode</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute OPERATIONAL_TGG_RULE__OPERATIONALISATION_MODE = eINSTANCE
+				.getOperationalTGGRule_OperationalisationMode();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGNodeImpl <em>TGG Node</em>}' class.
@@ -1802,14 +2025,14 @@ public interface IBeXTGGModelPackage extends EPackage {
 		EReference TGG_NODE__OUTGOING_CORRESPONDENCE = eINSTANCE.getTGGNode_OutgoingCorrespondence();
 
 		/**
-		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleCorrespondenceImpl <em>TGG Rule Correspondence</em>}' class.
+		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGCorrespondenceImpl <em>TGG Correspondence</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
-		 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleCorrespondenceImpl
-		 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.IBeXTGGModelPackageImpl#getTGGRuleCorrespondence()
+		 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGCorrespondenceImpl
+		 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.IBeXTGGModelPackageImpl#getTGGCorrespondence()
 		 * @generated
 		 */
-		EClass TGG_RULE_CORRESPONDENCE = eINSTANCE.getTGGRuleCorrespondence();
+		EClass TGG_CORRESPONDENCE = eINSTANCE.getTGGCorrespondence();
 
 		/**
 		 * The meta object literal for the '<em><b>Source</b></em>' reference feature.
@@ -1817,7 +2040,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_RULE_CORRESPONDENCE__SOURCE = eINSTANCE.getTGGRuleCorrespondence_Source();
+		EReference TGG_CORRESPONDENCE__SOURCE = eINSTANCE.getTGGCorrespondence_Source();
 
 		/**
 		 * The meta object literal for the '<em><b>Target</b></em>' reference feature.
@@ -1825,7 +2048,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_RULE_CORRESPONDENCE__TARGET = eINSTANCE.getTGGRuleCorrespondence_Target();
+		EReference TGG_CORRESPONDENCE__TARGET = eINSTANCE.getTGGCorrespondence_Target();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGEdgeImpl <em>TGG Edge</em>}' class.
@@ -1864,14 +2087,14 @@ public interface IBeXTGGModelPackage extends EPackage {
 		EAttribute TGG_RULE_ELEMENT__BINDING_TYPE = eINSTANCE.getTGGRuleElement_BindingType();
 
 		/**
-		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGAttributeConstraintLibraryImpl <em>TGG Attribute Constraint Library</em>}' class.
+		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGAttributeConstraintSetImpl <em>TGG Attribute Constraint Set</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
-		 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGAttributeConstraintLibraryImpl
-		 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.IBeXTGGModelPackageImpl#getTGGAttributeConstraintLibrary()
+		 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGAttributeConstraintSetImpl
+		 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.IBeXTGGModelPackageImpl#getTGGAttributeConstraintSet()
 		 * @generated
 		 */
-		EClass TGG_ATTRIBUTE_CONSTRAINT_LIBRARY = eINSTANCE.getTGGAttributeConstraintLibrary();
+		EClass TGG_ATTRIBUTE_CONSTRAINT_SET = eINSTANCE.getTGGAttributeConstraintSet();
 
 		/**
 		 * The meta object literal for the '<em><b>Tgg Attribute Constraints</b></em>' containment reference list feature.
@@ -1879,8 +2102,8 @@ public interface IBeXTGGModelPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_ATTRIBUTE_CONSTRAINT_LIBRARY__TGG_ATTRIBUTE_CONSTRAINTS = eINSTANCE
-				.getTGGAttributeConstraintLibrary_TggAttributeConstraints();
+		EReference TGG_ATTRIBUTE_CONSTRAINT_SET__TGG_ATTRIBUTE_CONSTRAINTS = eINSTANCE
+				.getTGGAttributeConstraintSet_TggAttributeConstraints();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGAttributeConstraintDefinitionLibraryImpl <em>TGG Attribute Constraint Definition Library</em>}' class.
@@ -2010,15 +2233,6 @@ public interface IBeXTGGModelPackage extends EPackage {
 		EClass TGG_ATTRIBUTE_CONSTRAINT_DEFINITION = eINSTANCE.getTGGAttributeConstraintDefinition();
 
 		/**
-		 * The meta object literal for the '<em><b>User Defined</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__USER_DEFINED = eINSTANCE
-				.getTGGAttributeConstraintDefinition_UserDefined();
-
-		/**
 		 * The meta object literal for the '<em><b>Parameter Definitions</b></em>' containment reference list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -2070,6 +2284,16 @@ public interface IBeXTGGModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference TGGCSP__VALUES = eINSTANCE.getTGGCSP_Values();
+
+		/**
+		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalisationMode <em>Operationalisation Mode</em>}' enum.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalisationMode
+		 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.IBeXTGGModelPackageImpl#getOperationalisationMode()
+		 * @generated
+		 */
+		EEnum OPERATIONALISATION_MODE = eINSTANCE.getOperationalisationMode();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType <em>Domain Type</em>}' enum.

@@ -101,6 +101,19 @@ public class IBeXTGGModelSwitch<T> extends Switch<T> {
 				result = defaultCase(theEObject);
 			return result;
 		}
+		case IBeXTGGModelPackage.OPERATIONAL_TGG_RULE: {
+			OperationalTGGRule operationalTGGRule = (OperationalTGGRule) theEObject;
+			T result = caseOperationalTGGRule(operationalTGGRule);
+			if (result == null)
+				result = caseTGGRule(operationalTGGRule);
+			if (result == null)
+				result = caseIBeXRule(operationalTGGRule);
+			if (result == null)
+				result = caseIBeXNamedElement(operationalTGGRule);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
 		case IBeXTGGModelPackage.TGG_NODE: {
 			TGGNode tggNode = (TGGNode) theEObject;
 			T result = caseTGGNode(tggNode);
@@ -114,17 +127,17 @@ public class IBeXTGGModelSwitch<T> extends Switch<T> {
 				result = defaultCase(theEObject);
 			return result;
 		}
-		case IBeXTGGModelPackage.TGG_RULE_CORRESPONDENCE: {
-			TGGRuleCorrespondence tggRuleCorrespondence = (TGGRuleCorrespondence) theEObject;
-			T result = caseTGGRuleCorrespondence(tggRuleCorrespondence);
+		case IBeXTGGModelPackage.TGG_CORRESPONDENCE: {
+			TGGCorrespondence tggCorrespondence = (TGGCorrespondence) theEObject;
+			T result = caseTGGCorrespondence(tggCorrespondence);
 			if (result == null)
-				result = caseTGGNode(tggRuleCorrespondence);
+				result = caseTGGNode(tggCorrespondence);
 			if (result == null)
-				result = caseIBeXNode(tggRuleCorrespondence);
+				result = caseIBeXNode(tggCorrespondence);
 			if (result == null)
-				result = caseTGGRuleElement(tggRuleCorrespondence);
+				result = caseTGGRuleElement(tggCorrespondence);
 			if (result == null)
-				result = caseIBeXNamedElement(tggRuleCorrespondence);
+				result = caseIBeXNamedElement(tggCorrespondence);
 			if (result == null)
 				result = defaultCase(theEObject);
 			return result;
@@ -149,9 +162,9 @@ public class IBeXTGGModelSwitch<T> extends Switch<T> {
 				result = defaultCase(theEObject);
 			return result;
 		}
-		case IBeXTGGModelPackage.TGG_ATTRIBUTE_CONSTRAINT_LIBRARY: {
-			TGGAttributeConstraintLibrary tggAttributeConstraintLibrary = (TGGAttributeConstraintLibrary) theEObject;
-			T result = caseTGGAttributeConstraintLibrary(tggAttributeConstraintLibrary);
+		case IBeXTGGModelPackage.TGG_ATTRIBUTE_CONSTRAINT_SET: {
+			TGGAttributeConstraintSet tggAttributeConstraintSet = (TGGAttributeConstraintSet) theEObject;
+			T result = caseTGGAttributeConstraintSet(tggAttributeConstraintSet);
 			if (result == null)
 				result = defaultCase(theEObject);
 			return result;
@@ -260,6 +273,21 @@ public class IBeXTGGModelSwitch<T> extends Switch<T> {
 	}
 
 	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Operational TGG Rule</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Operational TGG Rule</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseOperationalTGGRule(OperationalTGGRule object) {
+		return null;
+	}
+
+	/**
 	 * Returns the result of interpreting the object as an instance of '<em>TGG Node</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
@@ -275,17 +303,17 @@ public class IBeXTGGModelSwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '<em>TGG Rule Correspondence</em>'.
+	 * Returns the result of interpreting the object as an instance of '<em>TGG Correspondence</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>TGG Rule Correspondence</em>'.
+	 * @return the result of interpreting the object as an instance of '<em>TGG Correspondence</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public T caseTGGRuleCorrespondence(TGGRuleCorrespondence object) {
+	public T caseTGGCorrespondence(TGGCorrespondence object) {
 		return null;
 	}
 
@@ -320,17 +348,17 @@ public class IBeXTGGModelSwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '<em>TGG Attribute Constraint Library</em>'.
+	 * Returns the result of interpreting the object as an instance of '<em>TGG Attribute Constraint Set</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>TGG Attribute Constraint Library</em>'.
+	 * @return the result of interpreting the object as an instance of '<em>TGG Attribute Constraint Set</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public T caseTGGAttributeConstraintLibrary(TGGAttributeConstraintLibrary object) {
+	public T caseTGGAttributeConstraintSet(TGGAttributeConstraintSet object) {
 		return null;
 	}
 

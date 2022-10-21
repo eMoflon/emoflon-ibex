@@ -15,7 +15,6 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNamedElement;
  * The following features are supported:
  * </p>
  * <ul>
- *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintDefinition#isUserDefined <em>User Defined</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintDefinition#getParameterDefinitions <em>Parameter Definitions</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintDefinition#getSyncBindings <em>Sync Bindings</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintDefinition#getGenBindings <em>Gen Bindings</em>}</li>
@@ -26,29 +25,6 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNamedElement;
  * @generated
  */
 public interface TGGAttributeConstraintDefinition extends IBeXNamedElement {
-	/**
-	 * Returns the value of the '<em><b>User Defined</b></em>' attribute.
-	 * The default value is <code>"true"</code>.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>User Defined</em>' attribute.
-	 * @see #setUserDefined(boolean)
-	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage#getTGGAttributeConstraintDefinition_UserDefined()
-	 * @model default="true"
-	 * @generated
-	 */
-	boolean isUserDefined();
-
-	/**
-	 * Sets the value of the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintDefinition#isUserDefined <em>User Defined</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>User Defined</em>' attribute.
-	 * @see #isUserDefined()
-	 * @generated
-	 */
-	void setUserDefined(boolean value);
-
 	/**
 	 * Returns the value of the '<em><b>Parameter Definitions</b></em>' containment reference list.
 	 * The list contents are of type {@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintParameterDefinition}.

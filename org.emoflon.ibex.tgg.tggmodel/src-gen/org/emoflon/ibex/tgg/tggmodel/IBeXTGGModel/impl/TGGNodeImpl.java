@@ -22,8 +22,8 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXNodeImpl;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleCorrespondence;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
 
 /**
@@ -51,7 +51,7 @@ public class TGGNodeImpl extends IBeXNodeImpl implements TGGNode {
 	 * @generated
 	 * @ordered
 	 */
-	protected static final DomainType DOMAIN_TYPE_EDEFAULT = DomainType.SRC;
+	protected static final DomainType DOMAIN_TYPE_EDEFAULT = DomainType.SOURCE;
 
 	/**
 	 * The cached value of the '{@link #getDomainType() <em>Domain Type</em>}' attribute.
@@ -91,7 +91,7 @@ public class TGGNodeImpl extends IBeXNodeImpl implements TGGNode {
 	 * @generated
 	 * @ordered
 	 */
-	protected EList<TGGRuleCorrespondence> incomingCorrespondence;
+	protected EList<TGGCorrespondence> incomingCorrespondence;
 
 	/**
 	 * The cached value of the '{@link #getOutgoingCorrespondence() <em>Outgoing Correspondence</em>}' reference list.
@@ -101,7 +101,7 @@ public class TGGNodeImpl extends IBeXNodeImpl implements TGGNode {
 	 * @generated
 	 * @ordered
 	 */
-	protected EList<TGGRuleCorrespondence> outgoingCorrespondence;
+	protected EList<TGGCorrespondence> outgoingCorrespondence;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -171,11 +171,11 @@ public class TGGNodeImpl extends IBeXNodeImpl implements TGGNode {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EList<TGGRuleCorrespondence> getIncomingCorrespondence() {
+	public EList<TGGCorrespondence> getIncomingCorrespondence() {
 		if (incomingCorrespondence == null) {
-			incomingCorrespondence = new EObjectWithInverseResolvingEList<TGGRuleCorrespondence>(
-					TGGRuleCorrespondence.class, this, IBeXTGGModelPackage.TGG_NODE__INCOMING_CORRESPONDENCE,
-					IBeXTGGModelPackage.TGG_RULE_CORRESPONDENCE__TARGET);
+			incomingCorrespondence = new EObjectWithInverseResolvingEList<TGGCorrespondence>(TGGCorrespondence.class,
+					this, IBeXTGGModelPackage.TGG_NODE__INCOMING_CORRESPONDENCE,
+					IBeXTGGModelPackage.TGG_CORRESPONDENCE__TARGET);
 		}
 		return incomingCorrespondence;
 	}
@@ -185,11 +185,11 @@ public class TGGNodeImpl extends IBeXNodeImpl implements TGGNode {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EList<TGGRuleCorrespondence> getOutgoingCorrespondence() {
+	public EList<TGGCorrespondence> getOutgoingCorrespondence() {
 		if (outgoingCorrespondence == null) {
-			outgoingCorrespondence = new EObjectWithInverseResolvingEList<TGGRuleCorrespondence>(
-					TGGRuleCorrespondence.class, this, IBeXTGGModelPackage.TGG_NODE__OUTGOING_CORRESPONDENCE,
-					IBeXTGGModelPackage.TGG_RULE_CORRESPONDENCE__SOURCE);
+			outgoingCorrespondence = new EObjectWithInverseResolvingEList<TGGCorrespondence>(TGGCorrespondence.class,
+					this, IBeXTGGModelPackage.TGG_NODE__OUTGOING_CORRESPONDENCE,
+					IBeXTGGModelPackage.TGG_CORRESPONDENCE__SOURCE);
 		}
 		return outgoingCorrespondence;
 	}
@@ -266,11 +266,11 @@ public class TGGNodeImpl extends IBeXNodeImpl implements TGGNode {
 			return;
 		case IBeXTGGModelPackage.TGG_NODE__INCOMING_CORRESPONDENCE:
 			getIncomingCorrespondence().clear();
-			getIncomingCorrespondence().addAll((Collection<? extends TGGRuleCorrespondence>) newValue);
+			getIncomingCorrespondence().addAll((Collection<? extends TGGCorrespondence>) newValue);
 			return;
 		case IBeXTGGModelPackage.TGG_NODE__OUTGOING_CORRESPONDENCE:
 			getOutgoingCorrespondence().clear();
-			getOutgoingCorrespondence().addAll((Collection<? extends TGGRuleCorrespondence>) newValue);
+			getOutgoingCorrespondence().addAll((Collection<? extends TGGCorrespondence>) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);

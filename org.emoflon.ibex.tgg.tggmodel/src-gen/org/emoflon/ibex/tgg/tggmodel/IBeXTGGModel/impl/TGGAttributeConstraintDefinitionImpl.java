@@ -3,17 +3,12 @@
 package org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl;
 
 import java.util.Collection;
-
-import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 
 import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
-
-import org.eclipse.emf.ecore.impl.ENotificationImpl;
-
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 
@@ -32,7 +27,6 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintParamete
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGAttributeConstraintDefinitionImpl#isUserDefined <em>User Defined</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGAttributeConstraintDefinitionImpl#getParameterDefinitions <em>Parameter Definitions</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGAttributeConstraintDefinitionImpl#getSyncBindings <em>Sync Bindings</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGAttributeConstraintDefinitionImpl#getGenBindings <em>Gen Bindings</em>}</li>
@@ -42,26 +36,6 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintParamete
  */
 public class TGGAttributeConstraintDefinitionImpl extends IBeXNamedElementImpl
 		implements TGGAttributeConstraintDefinition {
-	/**
-	 * The default value of the '{@link #isUserDefined() <em>User Defined</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #isUserDefined()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final boolean USER_DEFINED_EDEFAULT = true;
-
-	/**
-	 * The cached value of the '{@link #isUserDefined() <em>User Defined</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #isUserDefined()
-	 * @generated
-	 * @ordered
-	 */
-	protected boolean userDefined = USER_DEFINED_EDEFAULT;
-
 	/**
 	 * The cached value of the '{@link #getParameterDefinitions() <em>Parameter Definitions</em>}' containment reference list.
 	 * <!-- begin-user-doc -->
@@ -109,29 +83,6 @@ public class TGGAttributeConstraintDefinitionImpl extends IBeXNamedElementImpl
 	@Override
 	protected EClass eStaticClass() {
 		return IBeXTGGModelPackage.Literals.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public boolean isUserDefined() {
-		return userDefined;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public void setUserDefined(boolean newUserDefined) {
-		boolean oldUserDefined = userDefined;
-		userDefined = newUserDefined;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					IBeXTGGModelPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__USER_DEFINED, oldUserDefined,
-					userDefined));
 	}
 
 	/**
@@ -202,8 +153,6 @@ public class TGGAttributeConstraintDefinitionImpl extends IBeXNamedElementImpl
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case IBeXTGGModelPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__USER_DEFINED:
-			return isUserDefined();
 		case IBeXTGGModelPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__PARAMETER_DEFINITIONS:
 			return getParameterDefinitions();
 		case IBeXTGGModelPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__SYNC_BINDINGS:
@@ -223,9 +172,6 @@ public class TGGAttributeConstraintDefinitionImpl extends IBeXNamedElementImpl
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case IBeXTGGModelPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__USER_DEFINED:
-			setUserDefined((Boolean) newValue);
-			return;
 		case IBeXTGGModelPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__PARAMETER_DEFINITIONS:
 			getParameterDefinitions().clear();
 			getParameterDefinitions()
@@ -251,9 +197,6 @@ public class TGGAttributeConstraintDefinitionImpl extends IBeXNamedElementImpl
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case IBeXTGGModelPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__USER_DEFINED:
-			setUserDefined(USER_DEFINED_EDEFAULT);
-			return;
 		case IBeXTGGModelPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__PARAMETER_DEFINITIONS:
 			getParameterDefinitions().clear();
 			return;
@@ -275,8 +218,6 @@ public class TGGAttributeConstraintDefinitionImpl extends IBeXNamedElementImpl
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case IBeXTGGModelPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__USER_DEFINED:
-			return userDefined != USER_DEFINED_EDEFAULT;
 		case IBeXTGGModelPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__PARAMETER_DEFINITIONS:
 			return parameterDefinitions != null && !parameterDefinitions.isEmpty();
 		case IBeXTGGModelPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__SYNC_BINDINGS:
@@ -285,23 +226,6 @@ public class TGGAttributeConstraintDefinitionImpl extends IBeXNamedElementImpl
 			return genBindings != null && !genBindings.isEmpty();
 		}
 		return super.eIsSet(featureID);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public String toString() {
-		if (eIsProxy())
-			return super.toString();
-
-		StringBuilder result = new StringBuilder(super.toString());
-		result.append(" (userDefined: ");
-		result.append(userDefined);
-		result.append(')');
-		return result.toString();
 	}
 
 } //TGGAttributeConstraintDefinitionImpl

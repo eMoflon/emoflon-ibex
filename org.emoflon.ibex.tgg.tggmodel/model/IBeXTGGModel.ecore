@@ -10,6 +10,8 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="correspondence" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EPackage"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="ruleSet" lowerBound="1"
         eType="#//TGGRuleSet" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="attributeConstraintDefinitionLibraries"
+        upperBound="-1" eType="#//TGGAttributeConstraintDefinitionLibrary" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="TGGRuleSet">
     <eStructuralFeatures xsi:type="ecore:EReference" name="rules" upperBound="-1"
@@ -24,6 +26,8 @@
         eType="#//TGGCorrespondence"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="operationalisations" upperBound="-1"
         eType="#//OperationalTGGRule" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="attributeConstraints" eType="#//TGGAttributeConstraintSet"
+        containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="OperationalTGGRule" eSuperTypes="#//TGGRule">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="operationalisationMode"
@@ -65,7 +69,7 @@
     <eLiterals name="NEGATIVE" value="3"/>
     <eLiterals name="RELAXED" value="4"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraintLibrary">
+  <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraintSet">
     <eStructuralFeatures xsi:type="ecore:EReference" name="tggAttributeConstraints"
         upperBound="-1" eType="#//TGGAttributeConstraint" containment="true"/>
   </eClassifiers>
@@ -93,8 +97,6 @@
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraintDefinition" eSuperTypes="../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXNamedElement">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="userDefined" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
-        defaultValueLiteral="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="parameterDefinitions" upperBound="-1"
         eType="#//TGGAttributeConstraintParameterDefinition" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="syncBindings" upperBound="-1"

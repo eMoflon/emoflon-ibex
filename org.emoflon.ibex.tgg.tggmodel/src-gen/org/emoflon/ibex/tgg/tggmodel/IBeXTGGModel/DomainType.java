@@ -19,67 +19,65 @@ import org.eclipse.emf.common.util.Enumerator;
  */
 public enum DomainType implements Enumerator {
 	/**
-	 * The '<em><b>SRC</b></em>' literal object.
+	 * The '<em><b>SOURCE</b></em>' literal object.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #SRC_VALUE
+	 * @see #SOURCE_VALUE
 	 * @generated
 	 * @ordered
 	 */
-	SRC(0, "SRC", "SRC"),
-
+	SOURCE(0, "SOURCE", "SOURCE"),
 	/**
-	 * The '<em><b>TRG</b></em>' literal object.
+	 * The '<em><b>TARGET</b></em>' literal object.
 	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #TRG_VALUE
+	* <!-- end-user-doc -->
+	 * @see #TARGET_VALUE
 	 * @generated
 	 * @ordered
 	 */
-	TRG(1, "TRG", "TRG"),
-
+	TARGET(1, "TARGET", "TARGET"),
 	/**
-	 * The '<em><b>CORR</b></em>' literal object.
+	 * The '<em><b>CORRESPONDENCE</b></em>' literal object.
 	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #CORR_VALUE
+	* <!-- end-user-doc -->
+	 * @see #CORRESPONDENCE_VALUE
 	 * @generated
 	 * @ordered
 	 */
-	CORR(2, "CORR", "CORR");
+	CORRESPONDENCE(2, "CORRESPONDENCE", "CORRESPONDENCE");
 
 	/**
-	 * The '<em><b>SRC</b></em>' literal value.
+	 * The '<em><b>SOURCE</b></em>' literal value.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #SRC
+	 * @see #SOURCE
 	 * @model
 	 * @generated
 	 * @ordered
 	 */
-	public static final int SRC_VALUE = 0;
+	public static final int SOURCE_VALUE = 0;
 
 	/**
-	 * The '<em><b>TRG</b></em>' literal value.
+	 * The '<em><b>TARGET</b></em>' literal value.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #TRG
+	 * @see #TARGET
 	 * @model
 	 * @generated
 	 * @ordered
 	 */
-	public static final int TRG_VALUE = 1;
+	public static final int TARGET_VALUE = 1;
 
 	/**
-	 * The '<em><b>CORR</b></em>' literal value.
+	 * The '<em><b>CORRESPONDENCE</b></em>' literal value.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #CORR
+	 * @see #CORRESPONDENCE
 	 * @model
 	 * @generated
 	 * @ordered
 	 */
-	public static final int CORR_VALUE = 2;
+	public static final int CORRESPONDENCE_VALUE = 2;
 
 	/**
 	 * An array of all the '<em><b>Domain Type</b></em>' enumerators.
@@ -87,7 +85,7 @@ public enum DomainType implements Enumerator {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private static final DomainType[] VALUES_ARRAY = new DomainType[] { SRC, TRG, CORR, };
+	private static final DomainType[] VALUES_ARRAY = new DomainType[] { SOURCE, TARGET, CORRESPONDENCE, };
 
 	/**
 	 * A public read-only list of all the '<em><b>Domain Type</b></em>' enumerators.
@@ -143,12 +141,12 @@ public enum DomainType implements Enumerator {
 	 */
 	public static DomainType get(int value) {
 		switch (value) {
-		case SRC_VALUE:
-			return SRC;
-		case TRG_VALUE:
-			return TRG;
-		case CORR_VALUE:
-			return CORR;
+		case SOURCE_VALUE:
+			return SOURCE;
+		case TARGET_VALUE:
+			return TARGET;
+		case CORRESPONDENCE_VALUE:
+			return CORRESPONDENCE;
 		}
 		return null;
 	}

@@ -15,11 +15,11 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRule;
  * The following features are supported:
  * </p>
  * <ul>
- *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getRefines <em>Refines</em>}</li>
- *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#isAbstract <em>Abstract</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getNodes <em>Nodes</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getEdges <em>Edges</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getCorrespondenceNodes <em>Correspondence Nodes</em>}</li>
+ *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getOperationalisations <em>Operationalisations</em>}</li>
+ *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getAttributeConstraints <em>Attribute Constraints</em>}</li>
  * </ul>
  *
  * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage#getTGGRule()
@@ -27,40 +27,6 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRule;
  * @generated
  */
 public interface TGGRule extends IBeXRule {
-	/**
-	 * Returns the value of the '<em><b>Refines</b></em>' reference list.
-	 * The list contents are of type {@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule}.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Refines</em>' reference list.
-	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage#getTGGRule_Refines()
-	 * @model
-	 * @generated
-	 */
-	EList<TGGRule> getRefines();
-
-	/**
-	 * Returns the value of the '<em><b>Abstract</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Abstract</em>' attribute.
-	 * @see #setAbstract(boolean)
-	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage#getTGGRule_Abstract()
-	 * @model
-	 * @generated
-	 */
-	boolean isAbstract();
-
-	/**
-	 * Sets the value of the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#isAbstract <em>Abstract</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Abstract</em>' attribute.
-	 * @see #isAbstract()
-	 * @generated
-	 */
-	void setAbstract(boolean value);
-
 	/**
 	 * Returns the value of the '<em><b>Nodes</b></em>' reference list.
 	 * The list contents are of type {@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode}.
@@ -87,7 +53,7 @@ public interface TGGRule extends IBeXRule {
 
 	/**
 	 * Returns the value of the '<em><b>Correspondence Nodes</b></em>' reference list.
-	 * The list contents are of type {@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleCorrespondence}.
+	 * The list contents are of type {@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence}.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Correspondence Nodes</em>' reference list.
@@ -95,6 +61,40 @@ public interface TGGRule extends IBeXRule {
 	 * @model
 	 * @generated
 	 */
-	EList<TGGRuleCorrespondence> getCorrespondenceNodes();
+	EList<TGGCorrespondence> getCorrespondenceNodes();
+
+	/**
+	 * Returns the value of the '<em><b>Operationalisations</b></em>' containment reference list.
+	 * The list contents are of type {@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalTGGRule}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Operationalisations</em>' containment reference list.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage#getTGGRule_Operationalisations()
+	 * @model containment="true"
+	 * @generated
+	 */
+	EList<OperationalTGGRule> getOperationalisations();
+
+	/**
+	 * Returns the value of the '<em><b>Attribute Constraints</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Attribute Constraints</em>' containment reference.
+	 * @see #setAttributeConstraints(TGGAttributeConstraintSet)
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage#getTGGRule_AttributeConstraints()
+	 * @model containment="true"
+	 * @generated
+	 */
+	TGGAttributeConstraintSet getAttributeConstraints();
+
+	/**
+	 * Sets the value of the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getAttributeConstraints <em>Attribute Constraints</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Attribute Constraints</em>' containment reference.
+	 * @see #getAttributeConstraints()
+	 * @generated
+	 */
+	void setAttributeConstraints(TGGAttributeConstraintSet value);
 
 } // TGGRule

@@ -37,7 +37,7 @@ public abstract class TGGRuleElementImpl extends MinimalEObjectImpl.Container im
 	 * @generated
 	 * @ordered
 	 */
-	protected static final DomainType DOMAIN_TYPE_EDEFAULT = DomainType.SRC;
+	protected static final DomainType DOMAIN_TYPE_EDEFAULT = DomainType.SOURCE;
 
 	/**
 	 * The cached value of the '{@link #getDomainType() <em>Domain Type</em>}' attribute.

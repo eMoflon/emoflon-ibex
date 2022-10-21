@@ -21,6 +21,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel;
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel#getTarget <em>Target</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel#getCorrespondence <em>Correspondence</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel#getRuleSet <em>Rule Set</em>}</li>
+ *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel#getAttributeConstraintDefinitionLibraries <em>Attribute Constraint Definition Libraries</em>}</li>
  * </ul>
  *
  * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage#getTGGModel()
@@ -95,5 +96,17 @@ public interface TGGModel extends IBeXModel {
 	 * @generated
 	 */
 	void setRuleSet(TGGRuleSet value);
+
+	/**
+	 * Returns the value of the '<em><b>Attribute Constraint Definition Libraries</b></em>' containment reference list.
+	 * The list contents are of type {@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintDefinitionLibrary}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Attribute Constraint Definition Libraries</em>' containment reference list.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage#getTGGModel_AttributeConstraintDefinitionLibraries()
+	 * @model containment="true"
+	 * @generated
+	 */
+	EList<TGGAttributeConstraintDefinitionLibrary> getAttributeConstraintDefinitionLibraries();
 
 } // TGGModel

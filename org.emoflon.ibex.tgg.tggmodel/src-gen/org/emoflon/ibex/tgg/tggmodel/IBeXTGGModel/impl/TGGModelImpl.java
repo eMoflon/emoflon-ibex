@@ -14,10 +14,13 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EObjectResolvingEList;
+import org.eclipse.emf.ecore.util.InternalEList;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXModelImpl;
 
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintDefinitionLibrary;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleSet;
 
@@ -33,6 +36,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleSet;
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGModelImpl#getTarget <em>Target</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGModelImpl#getCorrespondence <em>Correspondence</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGModelImpl#getRuleSet <em>Rule Set</em>}</li>
+ *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGModelImpl#getAttributeConstraintDefinitionLibraries <em>Attribute Constraint Definition Libraries</em>}</li>
  * </ul>
  *
  * @generated
@@ -77,6 +81,16 @@ public class TGGModelImpl extends IBeXModelImpl implements TGGModel {
 	 * @ordered
 	 */
 	protected TGGRuleSet ruleSet;
+
+	/**
+	 * The cached value of the '{@link #getAttributeConstraintDefinitionLibraries() <em>Attribute Constraint Definition Libraries</em>}' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getAttributeConstraintDefinitionLibraries()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<TGGAttributeConstraintDefinitionLibrary> attributeConstraintDefinitionLibraries;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -216,11 +230,27 @@ public class TGGModelImpl extends IBeXModelImpl implements TGGModel {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EList<TGGAttributeConstraintDefinitionLibrary> getAttributeConstraintDefinitionLibraries() {
+		if (attributeConstraintDefinitionLibraries == null) {
+			attributeConstraintDefinitionLibraries = new EObjectContainmentEList<TGGAttributeConstraintDefinitionLibrary>(
+					TGGAttributeConstraintDefinitionLibrary.class, this,
+					IBeXTGGModelPackage.TGG_MODEL__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARIES);
+		}
+		return attributeConstraintDefinitionLibraries;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 		case IBeXTGGModelPackage.TGG_MODEL__RULE_SET:
 			return basicSetRuleSet(null, msgs);
+		case IBeXTGGModelPackage.TGG_MODEL__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARIES:
+			return ((InternalEList<?>) getAttributeConstraintDefinitionLibraries()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -243,6 +273,8 @@ public class TGGModelImpl extends IBeXModelImpl implements TGGModel {
 			return basicGetCorrespondence();
 		case IBeXTGGModelPackage.TGG_MODEL__RULE_SET:
 			return getRuleSet();
+		case IBeXTGGModelPackage.TGG_MODEL__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARIES:
+			return getAttributeConstraintDefinitionLibraries();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -270,6 +302,11 @@ public class TGGModelImpl extends IBeXModelImpl implements TGGModel {
 		case IBeXTGGModelPackage.TGG_MODEL__RULE_SET:
 			setRuleSet((TGGRuleSet) newValue);
 			return;
+		case IBeXTGGModelPackage.TGG_MODEL__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARIES:
+			getAttributeConstraintDefinitionLibraries().clear();
+			getAttributeConstraintDefinitionLibraries()
+					.addAll((Collection<? extends TGGAttributeConstraintDefinitionLibrary>) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -294,6 +331,9 @@ public class TGGModelImpl extends IBeXModelImpl implements TGGModel {
 		case IBeXTGGModelPackage.TGG_MODEL__RULE_SET:
 			setRuleSet((TGGRuleSet) null);
 			return;
+		case IBeXTGGModelPackage.TGG_MODEL__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARIES:
+			getAttributeConstraintDefinitionLibraries().clear();
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -314,6 +354,8 @@ public class TGGModelImpl extends IBeXModelImpl implements TGGModel {
 			return correspondence != null;
 		case IBeXTGGModelPackage.TGG_MODEL__RULE_SET:
 			return ruleSet != null;
+		case IBeXTGGModelPackage.TGG_MODEL__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARIES:
+			return attributeConstraintDefinitionLibraries != null && !attributeConstraintDefinitionLibraries.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}
