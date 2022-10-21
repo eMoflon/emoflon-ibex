@@ -118,11 +118,15 @@ public class IBeXGtPackageBuilder implements SlimGTBuilderExtension<EditorFile> 
 	}
 
 	protected void generateEnginePackage() {
-		// TODO:
+		// Collection engine builders and run
+		ExtensionsUtil.collectExtensions(IBeXGTEngineBuilderExtension.BUILDER_EXTENSON_ID, "class",
+				IBeXGTEngineBuilderExtension.class).forEach(ext -> ext.run(project, gtModel));
 	}
 
 	protected void generateDependingPackages() {
-		// TODO:
+		// Collection engine builders and run
+		ExtensionsUtil.collectExtensions(IBeXGTDependingBuilderExtension.BUILDER_EXTENSON_ID, "class",
+				IBeXGTDependingBuilderExtension.class).forEach(ext -> ext.run(project, gtModel));
 	}
 
 	/**

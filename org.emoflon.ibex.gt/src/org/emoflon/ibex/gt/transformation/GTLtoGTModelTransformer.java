@@ -404,6 +404,12 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 		gtPattern.setName(pattern.getName());
 		pattern2pattern.put(pattern, gtPattern);
 
+		// Transform parameters if pattern ist not a rule
+		if (pattern.getType() == GTLRuleType.PATTERN) {
+			for (SlimParameter param : pattern.getParameters()) {
+				gtPattern.getParameters().add(transform(param));
+			}
+		}
 		// Context nodes
 		for (SlimRuleNodeContext context : pattern.getContextNodes().stream().map(n -> (SlimRuleNodeContext) n)
 				.collect(Collectors.toList())) {
@@ -725,8 +731,9 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 			gtRelation.setRhs(transform(rel.getRhs(), features));
 			gtRelation.setOperator(switch (rel.getRelation()) {
 			case EQUAL -> {
-				if (gtRelation.getLhs().getType() instanceof EDataType
-						|| gtRelation.getLhs().getType() instanceof EEnumLiteral) {
+				if (gtRelation.getLhs().getType() != EcorePackage.Literals.ESTRING
+						&& (gtRelation.getLhs().getType() instanceof EDataType
+								|| gtRelation.getLhs().getType() instanceof EEnumLiteral)) {
 					yield org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator.EQUAL;
 				} else {
 					yield org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator.OBJECT_EQUALS;
@@ -745,8 +752,9 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 				yield org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator.SMALLER_OR_EQUAL;
 			}
 			case UNEQUAL -> {
-				if (gtRelation.getLhs().getType() instanceof EDataType
-						|| gtRelation.getLhs().getType() instanceof EEnumLiteral) {
+				if (gtRelation.getLhs().getType() != EcorePackage.Literals.ESTRING
+						&& (gtRelation.getLhs().getType() instanceof EDataType
+								|| gtRelation.getLhs().getType() instanceof EEnumLiteral)) {
 					yield org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator.UNEQUAL;
 				} else {
 					yield org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator.OBJECT_NOT_EQUALS;

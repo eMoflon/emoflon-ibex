@@ -18,6 +18,7 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTRuleSet/rules"/>
     </genClasses>
     <genClasses ecoreClass="IBeXGTModel.ecore#//GTPattern">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTPattern/parameters"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTPattern/watchDogs"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTPattern/usedFeatures"/>
     </genClasses>

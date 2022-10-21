@@ -25,6 +25,7 @@ import org.emoflon.ibex.common.transformation.DataTypeUtil
 import org.eclipse.emf.ecore.EcorePackage
 import java.util.Set
 import org.eclipse.emf.ecore.EClass
+import java.util.Collection
 
 class ExpressionHelper {
 	
@@ -224,26 +225,47 @@ class ExpressionHelper {
 		if(parent.type == leaf.type) {
 			return "";
 		} else {
-			return EDataType2Java(parent.type)
+			return '''(«EDataType2Java(parent.type)»)'''
 		}
 	}
 	
 	def String EDataType2Java(EClassifier type) {
 		val simplifiedType = DataTypeUtil.simplifiyType(type)
 		if(simplifiedType == EcorePackage.Literals.ELONG) {
-			return '''(long)'''
+			return '''long'''
 		} else if(simplifiedType == EcorePackage.Literals.EDOUBLE) {
-			return '''(double)'''
+			return '''double'''
 		} else if(simplifiedType == EcorePackage.Literals.ESTRING) {
-			return '''(String)'''
+			return '''String'''
 		} else if(simplifiedType == EcorePackage.Literals.EBOOLEAN) {
-			return '''(boolean)'''
+			return '''boolean'''
 		} else if(simplifiedType == EcorePackage.Literals.EDATE) {
 			imports.add("java.util.Date")
-			return '''(Date)'''
+			return '''Date'''
 		} else if(type instanceof EClass) {
 			imports.add(data.getFQN(type))
-			return '''(«type.name»)'''
+			return '''«type.name»'''
+		} else {
+			throw new IllegalArgumentException("Unknown or unsupported data type: " + type)
+		}
+	}
+	
+	def static String EDataType2Java(IBeXGTApiData data, EClassifier type, Collection<String> imports) {
+		val simplifiedType = DataTypeUtil.simplifiyType(type)
+		if(simplifiedType == EcorePackage.Literals.ELONG) {
+			return '''long'''
+		} else if(simplifiedType == EcorePackage.Literals.EDOUBLE) {
+			return '''double'''
+		} else if(simplifiedType == EcorePackage.Literals.ESTRING) {
+			return '''String'''
+		} else if(simplifiedType == EcorePackage.Literals.EBOOLEAN) {
+			return '''boolean'''
+		} else if(simplifiedType == EcorePackage.Literals.EDATE) {
+			imports.add("java.util.Date")
+			return '''Date'''
+		} else if(type instanceof EClass) {
+			imports.add(data.getFQN(type))
+			return '''«type.name»'''
 		} else {
 			throw new IllegalArgumentException("Unknown or unsupported data type: " + type)
 		}

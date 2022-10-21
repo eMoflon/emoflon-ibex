@@ -50,8 +50,6 @@ class IBeXGtRuleTemplate extends GeneratorTemplate<GTRule>{
 		imports.add(data.matchPackage + "." + coMatchClassName);
 		imports.add(data.matchPackage + "." + matchClassName);
 		imports.add(data.patternPackage + "." + coPatternClassName);
-		
-		context.parameters.forEach[param | imports.add(data.getFQN(param.type))]
 			
 		imports.addAll(context.allNodes.map[node | data.getPackageFQN(node.type) + "." 
 			+ data.getPackageClass(node.type)
@@ -81,8 +79,12 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 	protected «fac» «fac.toFirstLower» = «fac».eINSTANCE;
 	«ENDFOR»
 	
+	«IF !context.parameters.nullOrEmpty»
+	protected boolean parametersInitialized = false;
+	«ENDIF»
+	
 	«FOR param : context.parameters»
-	protected «param.type.name» «param.name.toFirstLower»;
+	protected «exprHelper.EDataType2Java(param.type)» «param.name.toFirstLower»;
 	«ENDFOR»
 	
 	«FOR node : context.precondition.signatureNodes»
@@ -120,20 +122,22 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 			switch(name) {
 				«FOR param : context.parameters»
 				case "«param.name»" : {
-					«param.name.toFirstLower» = parameters.get("«param.name»");
+					«param.name.toFirstLower» = («exprHelper.EDataType2Java(param.type)») parameters.get("«param.name»");
 					break;
 				}
 				«ENDFOR»
 			}
 		}
+		parametersInitialized = true;
 		«ENDIF»
 	}
 	
 	«IF !context.parameters.isNullOrEmpty»
-	public void setParameters(«FOR param : context.parameters SEPARATOR ', '»final «param.type.name» «param.name.toFirstLower»«ENDFOR») {
+	public void setParameters(«FOR param : context.parameters SEPARATOR ', '»final «exprHelper.EDataType2Java(param.type)» «param.name.toFirstLower»«ENDFOR») {
 		«FOR param : context.parameters»
 		this.«param.name.toFirstLower» = «param.name.toFirstLower»;
 		«ENDFOR»
+		parametersInitialized = true;
 	}
 	«ENDIF»
 	
@@ -167,6 +171,10 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 		«IF context.precondition.conditions === null || context.precondition.conditions.isEmpty»
 		return true;
 		«ELSE»
+		«IF !context.parameters.nullOrEmpty»
+		if(!parametersInitialized)
+			throw new NullPointerException("One or more required parameters have not been initialized.");
+		«ENDIF»
 		return «FOR condition : context.precondition.conditions SEPARATOR ' && \n'»(«exprHelper.unparse("match", condition)»)«ENDFOR»;
 		«ENDIF»
 	}
