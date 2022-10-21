@@ -82,7 +82,7 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 
 	public abstract boolean hasParameterExpressions();
 
-	protected abstract M createMatch(final Map<String, Object> nodes);
+	public abstract M createMatch(final Map<String, Object> nodes);
 
 	/**
 	 * Returns the parameters.

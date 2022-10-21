@@ -103,7 +103,7 @@ class ExpressionHelper {
 		if(expression instanceof IBeXBooleanValue) {
 			return '''«expression.value.toString»'''
 		} else if(expression instanceof IBeXEnumValue) {
-			imports.add(data.model.metaData.name2package.get(expression.type.EPackage.name).classifierName2FQN.get(expression.type.name))
+			imports.add(data.getFQN(expression.type))
 			return '''«expression.type.name».«expression.literal.name»'''
 		} else if(expression instanceof IBeXStringValue) {
 			return expression.value
@@ -242,7 +242,7 @@ class ExpressionHelper {
 			imports.add("java.util.Date")
 			return '''(Date)'''
 		} else if(type instanceof EClass) {
-			imports.add(data.model.metaData.name2package.get(type.EPackage.name).classifierName2FQN.get(type.name))
+			imports.add(data.getFQN(type))
 			return '''(«type.name»)'''
 		} else {
 			throw new IllegalArgumentException("Unknown or unsupported data type: " + type)

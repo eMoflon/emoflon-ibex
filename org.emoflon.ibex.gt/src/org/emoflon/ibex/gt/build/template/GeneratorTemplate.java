@@ -27,7 +27,7 @@ public abstract class GeneratorTemplate<CONTEXT> {
 	public abstract void generate();
 
 	public void writeToFile() throws Exception {
-		File file = new File(filePath);
+		File file = new File(data.model.getMetaData().getProjectPath() + filePath + ".java");
 		Files.write(file.toPath(), code.getBytes());
 	}
 }

@@ -5,6 +5,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.emf.ecore.EClassifier;
+import org.eclipse.emf.ecore.EPackage;
 import org.emoflon.ibex.common.engine.IBeXPMEngineInformation;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTModel;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern;
@@ -42,8 +44,8 @@ public class IBeXGTApiData {
 
 		apiPrefix = apiPrefixFromPackage(model.getMetaData().getPackage());
 		apiPackage = model.getMetaData().getPackage() + ".api";
-		apiPackagePath = model.getMetaData().getPackagePath() + "/api";
-		gtModelPath = model.getMetaData().getPackagePath() + "/api/ibex_gt_model.xmi";
+		apiPackagePath = model.getMetaData().getPackagePath().replace("src", "src-gen") + "/api";
+		gtModelPath = model.getMetaData().getPackagePath().replace("src", "src-gen") + "/api/ibex_gt_model.xmi";
 		matchPackage = apiPackage + ".match";
 		matchPackagePath = apiPackagePath + "/match";
 		patternPackage = apiPackage + ".pattern";
@@ -51,9 +53,8 @@ public class IBeXGTApiData {
 		rulePackage = apiPackage + ".rule";
 		rulePackagePath = apiPackagePath + "/rule";
 
-		ExtensionsUtil
-				.collectExtensions(IBeXPMEngineInformation.PLUGIN_EXTENSON_ID, "class", IBeXPMEngineInformation.class)
-				.forEach(ext -> engines.put(ext.getEngineName(), ext));
+		ExtensionsUtil.collectExtensions(IBeXPMEngineInformation.PLUGIN_EXTENSON_ID, "engine_information",
+				IBeXPMEngineInformation.class).forEach(ext -> engines.put(ext.getEngineName(), ext));
 		engines.forEach((extName, ext) -> apiClassNames.put(ext, apiPrefix + firstToUpper(extName) + "GtAPI"));
 		patternFactoryClassName = apiPrefix + "GtPatternFactory";
 		ruleFactoryClassName = apiPrefix + "GtRuleFactory";
@@ -80,12 +81,58 @@ public class IBeXGTApiData {
 	}
 
 	public static String apiPrefixFromPackage(final String pkg) {
-		String[] segments = pkg.split(".");
+		String[] segments = pkg.split("\\.");
 		String finalSegment = segments[segments.length - 1];
 		return firstToUpper(finalSegment);
 	}
 
 	public static String firstToUpper(final String str) {
 		return str.substring(0, 1).toUpperCase() + str.substring(1, str.length());
+	}
+
+	public String getFQN(EClassifier cls) {
+		if (cls.eContainer() != null && cls.eContainer() instanceof EPackage epk) {
+			return model.getMetaData().getName2package().get(epk.getName()).getClassifierName2FQN().get(cls.getName());
+		}
+		throw new NullPointerException("EPackage of classifier " + cls + " is null.");
+	}
+
+	public String getPackageFQN(EClassifier cls) {
+		if (cls.eContainer() != null && cls.eContainer() instanceof EPackage epk) {
+			return model.getMetaData().getName2package().get(epk.getName()).getFullyQualifiedName();
+		}
+		throw new NullPointerException("EPackage of classifier " + cls + " is null.");
+	}
+
+	public String getPackageClass(EClassifier cls) {
+		if (cls.eContainer() != null && cls.eContainer() instanceof EPackage epk) {
+			return model.getMetaData().getName2package().get(epk.getName()).getPackageClassName();
+		}
+		throw new NullPointerException("EPackage of classifier " + cls + " is null.");
+	}
+
+	public String getSimplePackageClass(EClassifier cls) {
+		if (cls.eContainer() != null && cls.eContainer() instanceof EPackage epk) {
+			String fqn = model.getMetaData().getName2package().get(epk.getName()).getPackageClassName();
+			String[] segments = fqn.split("\\.");
+			return segments[segments.length - 1];
+		}
+		throw new NullPointerException("EPackage of classifier " + cls + " is null.");
+	}
+
+	public String getPackageFactoryClass(EClassifier cls) {
+		if (cls.eContainer() != null && cls.eContainer() instanceof EPackage epk) {
+			return model.getMetaData().getName2package().get(epk.getName()).getFactoryClassName();
+		}
+		throw new NullPointerException("EPackage of classifier " + cls + " is null.");
+	}
+
+	public String getSimplePackageFactoryClass(EClassifier cls) {
+		if (cls.eContainer() != null && cls.eContainer() instanceof EPackage epk) {
+			String fqn = model.getMetaData().getName2package().get(epk.getName()).getFactoryClassName();
+			String[] segments = fqn.split("\\.");
+			return segments[segments.length - 1];
+		}
+		throw new NullPointerException("EPackage of classifier " + cls + " is null.");
 	}
 }

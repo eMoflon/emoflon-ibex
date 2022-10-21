@@ -91,7 +91,7 @@ public abstract class IBeXGTRule<R extends IBeXGTRule<R, P, M, CP, CM>, P extend
 
 	public abstract double getProbability(final M match);
 
-	public abstract Optional<CM> apply(final M match);
+	public abstract CM apply(final M match);
 
 	// TODO: This might be interesting in the future!
 //	public abstract Optional<M> applyReverse(final CM coMatch);

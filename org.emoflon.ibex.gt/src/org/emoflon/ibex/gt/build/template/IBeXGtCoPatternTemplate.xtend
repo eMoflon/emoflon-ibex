@@ -24,26 +24,27 @@ class IBeXGtCoPatternTemplate extends GeneratorTemplate<GTRule>{
 		ruleClassName = data.rule2ruleClassName.get(context)
 		coMatchClassName = data.rule2CoMatchClassName.get(context)
 		matchClassName = data.pattern2matchClassName.get(context.precondition)
-		patternClassName = data.pattern2patternClassName.get(context.precondition)
+		patternClassName = ruleClassName
 		
 		fqn = packageName + "." + className;
 		filePath = data.patternPackagePath + "/" + className
 		
 		imports.add("java.util.Collection")
-		imports.add("java.util.List")
 		imports.add("java.util.Map")
-		imports.add("java.util.Optional")
 		imports.add("org.emoflon.ibex.gt.engine.IBeXGTCoPattern")
 		imports.add("org.emoflon.ibex.gt.api.IBeXGtAPI")
 		imports.add("org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern")
+		imports.add(data.matchPackage + "." + coMatchClassName);
+		imports.add(data.matchPackage + "." + matchClassName);
+		imports.add(data.rulePackage + "." + ruleClassName);
 		
 		exprHelper = new ExpressionHelper(data, imports)
 	}
 	
 	override generate() {
-		code = '''package «data.patternPackage»
+		code = '''package «data.patternPackage»;
 		
-«FOR imp : imports»
+«FOR imp : imports.filter[imp | imp !== null]»
 import «imp»;
 «ENDFOR»
 
@@ -54,12 +55,12 @@ public class «className» extends IBeXGTCoPattern<«className», «coMatchClass
 	}
 	
 	@Override
-	protected Collection<String> getParameterNames() {
+	public Collection<String> getParameterNames() {
 		throw new UnsupportedOperationException("Patterns do not have any parameters.");
 	}
 	
 	@Override
-	protected Map<String, Object> getParameters() {
+	public Map<String, Object> getParameters() {
 		throw new UnsupportedOperationException("Patterns do not have any parameters.");
 	}
 	
@@ -69,12 +70,12 @@ public class «className» extends IBeXGTCoPattern<«className», «coMatchClass
 	}
 	
 	@Override
-	public boolean checkBindings(final «matchClassName» match) {
+	public boolean checkBindings(final «coMatchClassName» match) {
 		return true;
 	}
 		
 	@Override
-	public boolean checkConditions(final «matchClassName» match) {
+	public boolean checkConditions(final «coMatchClassName» match) {
 		return true;
 	}
 
@@ -99,7 +100,7 @@ public class «className» extends IBeXGTCoPattern<«className», «coMatchClass
 		return «(context.precondition as GTPattern).usedFeatures.parameterExpressions.toString»;
 	}
 	
-	protected «coMatchClassName» createMatch(final Map<String, Object> nodes) {
+	public «coMatchClassName» createMatch(final Map<String, Object> nodes) {
 		return new «coMatchClassName»(typedRule, this, nodes);
 	}
 }'''

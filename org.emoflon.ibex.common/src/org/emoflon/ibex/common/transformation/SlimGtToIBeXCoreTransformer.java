@@ -1,5 +1,6 @@
 package org.emoflon.ibex.common.transformation;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.ecore.EFactory;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelFactory;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel;
@@ -10,14 +11,16 @@ import org.emoflon.ibex.common.slimgt.util.XtextResourceManager;
 
 public abstract class SlimGtToIBeXCoreTransformer<EF extends EditorFile, MODEL extends IBeXModel, FACTORY extends EFactory> {
 	final protected EF editorFile;
+	final protected IProject project;
 	final protected MODEL model;
 	final protected IBeXCoreModelFactory superFactory = IBeXCoreModelFactory.eINSTANCE;
 	final protected IBeXCoreArithmeticFactory arithmeticFactory = IBeXCoreArithmeticFactory.eINSTANCE;
 	final protected FACTORY factory;
 	final protected XtextResourceManager xtextResources = new XtextResourceManager();
 
-	public SlimGtToIBeXCoreTransformer(final EF editorFile) {
+	public SlimGtToIBeXCoreTransformer(final EF editorFile, final IProject project) {
 		this.editorFile = editorFile;
+		this.project = project;
 		factory = initFactory();
 		model = createNewModel();
 		model.setMetaData(createModelMetadata());

@@ -9,7 +9,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="metaData" lowerBound="1"
         eType="#//IBeXModelMetadata" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="featureConfig" lowerBound="1"
-        eType="#//IBeXFeatureConfig"/>
+        eType="#//IBeXFeatureConfig" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="patternSet" lowerBound="1"
         eType="#//IBeXPatternSet" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="nodeSet" lowerBound="1"
@@ -41,6 +41,7 @@
         eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EPackage"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="packageURI" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="packageHasProject" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="projectName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="projectLocation" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="factoryClassName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="packageClassName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>

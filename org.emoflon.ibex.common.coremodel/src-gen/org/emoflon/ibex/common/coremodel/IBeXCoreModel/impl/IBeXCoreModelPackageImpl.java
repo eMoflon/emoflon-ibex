@@ -543,7 +543,7 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getEPackageDependency_ProjectLocation() {
+	public EAttribute getEPackageDependency_ProjectName() {
 		return (EAttribute) ePackageDependencyEClass.getEStructuralFeatures().get(7);
 	}
 
@@ -552,7 +552,7 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getEPackageDependency_FactoryClassName() {
+	public EAttribute getEPackageDependency_ProjectLocation() {
 		return (EAttribute) ePackageDependencyEClass.getEStructuralFeatures().get(8);
 	}
 
@@ -561,7 +561,7 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getEPackageDependency_PackageClassName() {
+	public EAttribute getEPackageDependency_FactoryClassName() {
 		return (EAttribute) ePackageDependencyEClass.getEStructuralFeatures().get(9);
 	}
 
@@ -570,7 +570,7 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getEPackageDependency_EcoreURI() {
+	public EAttribute getEPackageDependency_PackageClassName() {
 		return (EAttribute) ePackageDependencyEClass.getEStructuralFeatures().get(10);
 	}
 
@@ -579,7 +579,7 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getEPackageDependency_EcoreHasLocation() {
+	public EAttribute getEPackageDependency_EcoreURI() {
 		return (EAttribute) ePackageDependencyEClass.getEStructuralFeatures().get(11);
 	}
 
@@ -588,7 +588,7 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getEPackageDependency_EcoreLocation() {
+	public EAttribute getEPackageDependency_EcoreHasLocation() {
 		return (EAttribute) ePackageDependencyEClass.getEStructuralFeatures().get(12);
 	}
 
@@ -597,7 +597,7 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getEPackageDependency_GenmodelURI() {
+	public EAttribute getEPackageDependency_EcoreLocation() {
 		return (EAttribute) ePackageDependencyEClass.getEStructuralFeatures().get(13);
 	}
 
@@ -606,7 +606,7 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getEPackageDependency_GenmodelHasLocation() {
+	public EAttribute getEPackageDependency_GenmodelURI() {
 		return (EAttribute) ePackageDependencyEClass.getEStructuralFeatures().get(14);
 	}
 
@@ -615,7 +615,7 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getEPackageDependency_GenmodelLocation() {
+	public EAttribute getEPackageDependency_GenmodelHasLocation() {
 		return (EAttribute) ePackageDependencyEClass.getEStructuralFeatures().get(15);
 	}
 
@@ -624,8 +624,17 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EAttribute getEPackageDependency_GenmodelLocation() {
+		return (EAttribute) ePackageDependencyEClass.getEStructuralFeatures().get(16);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EReference getEPackageDependency_ClassifierName2FQN() {
-		return (EReference) ePackageDependencyEClass.getEStructuralFeatures().get(16);
+		return (EReference) ePackageDependencyEClass.getEStructuralFeatures().get(17);
 	}
 
 	/**
@@ -1326,6 +1335,7 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 		createEReference(ePackageDependencyEClass, EPACKAGE_DEPENDENCY__PACKAGE);
 		createEAttribute(ePackageDependencyEClass, EPACKAGE_DEPENDENCY__PACKAGE_URI);
 		createEAttribute(ePackageDependencyEClass, EPACKAGE_DEPENDENCY__PACKAGE_HAS_PROJECT);
+		createEAttribute(ePackageDependencyEClass, EPACKAGE_DEPENDENCY__PROJECT_NAME);
 		createEAttribute(ePackageDependencyEClass, EPACKAGE_DEPENDENCY__PROJECT_LOCATION);
 		createEAttribute(ePackageDependencyEClass, EPACKAGE_DEPENDENCY__FACTORY_CLASS_NAME);
 		createEAttribute(ePackageDependencyEClass, EPACKAGE_DEPENDENCY__PACKAGE_CLASS_NAME);
@@ -1496,7 +1506,7 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 				IBeXModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getIBeXModel_FeatureConfig(), this.getIBeXFeatureConfig(), null, "featureConfig", null, 1, 1,
-				IBeXModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
+				IBeXModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getIBeXModel_PatternSet(), this.getIBeXPatternSet(), null, "patternSet", null, 1, 1,
 				IBeXModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
@@ -1561,6 +1571,9 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 		initEAttribute(getEPackageDependency_PackageHasProject(), ecorePackage.getEBoolean(), "packageHasProject", null,
 				0, 1, EPackageDependency.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getEPackageDependency_ProjectName(), ecorePackage.getEString(), "projectName", null, 0, 1,
+				EPackageDependency.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+				!IS_DERIVED, IS_ORDERED);
 		initEAttribute(getEPackageDependency_ProjectLocation(), ecorePackage.getEString(), "projectLocation", null, 0,
 				1, EPackageDependency.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID,
 				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

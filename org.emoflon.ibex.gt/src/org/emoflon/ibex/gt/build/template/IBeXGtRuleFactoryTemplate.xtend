@@ -22,7 +22,7 @@ class IBeXGtRuleFactoryTemplate extends GeneratorTemplate<GTModel> {
 	}
 	
 	override generate() {
-		code = '''package «packageName»
+		code = '''package «packageName»;
 		
 «FOR imp : imports»
 import «imp»;
@@ -31,12 +31,12 @@ import «imp»;
 public class «className» extends IBeXGTRuleFactory {	
 	
 	public «className»(IBeXGtAPI<?, ?, ?> api) {
-			this.api = api;
+			super(api);
 	}
 	
 	«FOR rule : data.rule2ruleClassName.keySet»
 	protected «data.rule2ruleClassName.get(rule)» create«data.rule2ruleClassName.get(rule)»() {
-		«data.rule2ruleClassName.get(rule)» rule = new «data.rule2ruleClassName.get(rule)»(api, api.getGTEngine().name2rule.get("«rule.name»"));
+		«data.rule2ruleClassName.get(rule)» rule = new «data.rule2ruleClassName.get(rule)»(api, api.getGTEngine().getRule("«rule.name»"));
 		return rule;
 	}
 	
