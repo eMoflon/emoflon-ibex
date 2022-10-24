@@ -13,6 +13,7 @@ public abstract class SlimGtToIBeXCoreTransformer<EF extends EditorFile, MODEL e
 	final protected IProject project;
 	
 	final protected EF editorFile;
+	final protected IProject project;
 	final protected MODEL model;
 	final protected IBeXCoreModelFactory superFactory = IBeXCoreModelFactory.eINSTANCE;
 	final protected IBeXCoreArithmeticFactory arithmeticFactory = IBeXCoreArithmeticFactory.eINSTANCE;

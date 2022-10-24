@@ -111,4 +111,5 @@ public final class DataTypeUtil {
 			throw new UnsupportedOperationException("Unkown or unsupported data type: " + type);
 		}
 	}
+
 }

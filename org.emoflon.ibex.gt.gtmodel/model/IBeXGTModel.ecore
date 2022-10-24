@@ -11,6 +11,8 @@
         eType="#//GTRule" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="GTPattern" eSuperTypes="../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXPattern">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="parameters" upperBound="-1"
+        eType="#//GTParameter" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="watchDogs" upperBound="-1"
         eType="#//GTWatchDog" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="usedFeatures" lowerBound="1"

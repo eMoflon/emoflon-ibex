@@ -1,7 +1,6 @@
 package org.emoflon.ibex.gt.build;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.IPath;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTModel;
 
 public interface IBeXGTDependingBuilderExtension {
@@ -14,5 +13,5 @@ public interface IBeXGTDependingBuilderExtension {
 	 * @param project     the project to build
 	 * @param packagePath the path to the package
 	 */
-	public void run(IProject project, IPath packagePath, final GTModel ibexModel);
+	public void run(IProject project, final GTModel ibexModel);
 }

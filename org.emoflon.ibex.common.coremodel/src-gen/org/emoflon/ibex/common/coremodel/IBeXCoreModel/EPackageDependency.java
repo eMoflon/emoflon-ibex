@@ -23,6 +23,7 @@ import org.eclipse.emf.ecore.EPackage;
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getPackage <em>Package</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getPackageURI <em>Package URI</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#isPackageHasProject <em>Package Has Project</em>}</li>
+ *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getProjectName <em>Project Name</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getProjectLocation <em>Project Location</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getFactoryClassName <em>Factory Class Name</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getPackageClassName <em>Package Class Name</em>}</li>
@@ -193,6 +194,28 @@ public interface EPackageDependency extends EObject {
 	 * @generated
 	 */
 	void setPackageHasProject(boolean value);
+
+	/**
+	 * Returns the value of the '<em><b>Project Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Project Name</em>' attribute.
+	 * @see #setProjectName(String)
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage#getEPackageDependency_ProjectName()
+	 * @model
+	 * @generated
+	 */
+	String getProjectName();
+
+	/**
+	 * Sets the value of the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getProjectName <em>Project Name</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Project Name</em>' attribute.
+	 * @see #getProjectName()
+	 * @generated
+	 */
+	void setProjectName(String value);
 
 	/**
 	 * Returns the value of the '<em><b>Project Location</b></em>' attribute.

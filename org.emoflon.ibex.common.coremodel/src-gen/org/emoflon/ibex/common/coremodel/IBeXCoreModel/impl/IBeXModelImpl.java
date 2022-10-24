@@ -47,7 +47,7 @@ public class IBeXModelImpl extends IBeXNamedElementImpl implements IBeXModel {
 	protected IBeXModelMetadata metaData;
 
 	/**
-	 * The cached value of the '{@link #getFeatureConfig() <em>Feature Config</em>}' reference.
+	 * The cached value of the '{@link #getFeatureConfig() <em>Feature Config</em>}' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @see #getFeatureConfig()
@@ -161,15 +161,6 @@ public class IBeXModelImpl extends IBeXNamedElementImpl implements IBeXModel {
 	 * @generated
 	 */
 	public IBeXFeatureConfig getFeatureConfig() {
-		if (featureConfig != null && featureConfig.eIsProxy()) {
-			InternalEObject oldFeatureConfig = (InternalEObject) featureConfig;
-			featureConfig = (IBeXFeatureConfig) eResolveProxy(oldFeatureConfig);
-			if (featureConfig != oldFeatureConfig) {
-				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
-							IBeXCoreModelPackage.IBE_XMODEL__FEATURE_CONFIG, oldFeatureConfig, featureConfig));
-			}
-		}
 		return featureConfig;
 	}
 
@@ -178,8 +169,18 @@ public class IBeXModelImpl extends IBeXNamedElementImpl implements IBeXModel {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public IBeXFeatureConfig basicGetFeatureConfig() {
-		return featureConfig;
+	public NotificationChain basicSetFeatureConfig(IBeXFeatureConfig newFeatureConfig, NotificationChain msgs) {
+		IBeXFeatureConfig oldFeatureConfig = featureConfig;
+		featureConfig = newFeatureConfig;
+		if (eNotificationRequired()) {
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
+					IBeXCoreModelPackage.IBE_XMODEL__FEATURE_CONFIG, oldFeatureConfig, newFeatureConfig);
+			if (msgs == null)
+				msgs = notification;
+			else
+				msgs.add(notification);
+		}
+		return msgs;
 	}
 
 	/**
@@ -188,11 +189,20 @@ public class IBeXModelImpl extends IBeXNamedElementImpl implements IBeXModel {
 	 * @generated
 	 */
 	public void setFeatureConfig(IBeXFeatureConfig newFeatureConfig) {
-		IBeXFeatureConfig oldFeatureConfig = featureConfig;
-		featureConfig = newFeatureConfig;
-		if (eNotificationRequired())
+		if (newFeatureConfig != featureConfig) {
+			NotificationChain msgs = null;
+			if (featureConfig != null)
+				msgs = ((InternalEObject) featureConfig).eInverseRemove(this,
+						EOPPOSITE_FEATURE_BASE - IBeXCoreModelPackage.IBE_XMODEL__FEATURE_CONFIG, null, msgs);
+			if (newFeatureConfig != null)
+				msgs = ((InternalEObject) newFeatureConfig).eInverseAdd(this,
+						EOPPOSITE_FEATURE_BASE - IBeXCoreModelPackage.IBE_XMODEL__FEATURE_CONFIG, null, msgs);
+			msgs = basicSetFeatureConfig(newFeatureConfig, msgs);
+			if (msgs != null)
+				msgs.dispatch();
+		} else if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET, IBeXCoreModelPackage.IBE_XMODEL__FEATURE_CONFIG,
-					oldFeatureConfig, featureConfig));
+					newFeatureConfig, newFeatureConfig));
 	}
 
 	/**
@@ -355,6 +365,8 @@ public class IBeXModelImpl extends IBeXNamedElementImpl implements IBeXModel {
 		switch (featureID) {
 		case IBeXCoreModelPackage.IBE_XMODEL__META_DATA:
 			return basicSetMetaData(null, msgs);
+		case IBeXCoreModelPackage.IBE_XMODEL__FEATURE_CONFIG:
+			return basicSetFeatureConfig(null, msgs);
 		case IBeXCoreModelPackage.IBE_XMODEL__PATTERN_SET:
 			return basicSetPatternSet(null, msgs);
 		case IBeXCoreModelPackage.IBE_XMODEL__NODE_SET:
@@ -376,9 +388,7 @@ public class IBeXModelImpl extends IBeXNamedElementImpl implements IBeXModel {
 		case IBeXCoreModelPackage.IBE_XMODEL__META_DATA:
 			return getMetaData();
 		case IBeXCoreModelPackage.IBE_XMODEL__FEATURE_CONFIG:
-			if (resolve)
-				return getFeatureConfig();
-			return basicGetFeatureConfig();
+			return getFeatureConfig();
 		case IBeXCoreModelPackage.IBE_XMODEL__PATTERN_SET:
 			return getPatternSet();
 		case IBeXCoreModelPackage.IBE_XMODEL__NODE_SET:

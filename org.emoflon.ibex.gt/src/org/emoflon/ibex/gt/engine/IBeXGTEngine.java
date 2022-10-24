@@ -213,6 +213,10 @@ public class IBeXGTEngine<PM extends IBeXGTPatternMatcher<?>> {
 		return ibexModel.getPatternSet();
 	}
 
+	public GTPattern getPattern(final String patternName) {
+		return name2pattern.get(patternName);
+	}
+
 	/**
 	 * Returns the currently used set of rules
 	 * 
@@ -220,6 +224,10 @@ public class IBeXGTEngine<PM extends IBeXGTPatternMatcher<?>> {
 	 */
 	public GTRuleSet getRuleSet() {
 		return ibexModel.getRuleSet();
+	}
+
+	public GTRule getRule(final String ruleName) {
+		return name2rule.get(ruleName);
 	}
 
 	/**

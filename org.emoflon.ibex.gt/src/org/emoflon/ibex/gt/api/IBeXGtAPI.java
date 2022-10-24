@@ -49,12 +49,16 @@ public abstract class IBeXGtAPI<PM extends IBeXGTPatternMatcher<?>, PF extends I
 	protected PF patternFactory;
 	protected RF ruleFactory;
 
-	public IBeXGtAPI() throws Exception {
+	public IBeXGtAPI() {
 		workspacePath = getWorkspacePath();
 		projectPath = getProjectPath();
 		ibexModelPath = getIBeXModelPath();
 		projectName = getProjectName();
-		ibexModel = loadGTModel();
+		try {
+			ibexModel = loadGTModel();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public abstract String getWorkspacePath();

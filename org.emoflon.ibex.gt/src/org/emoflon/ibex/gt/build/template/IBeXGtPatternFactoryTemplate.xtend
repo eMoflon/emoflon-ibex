@@ -22,7 +22,7 @@ class IBeXGtPatternFactoryTemplate extends GeneratorTemplate<GTModel> {
 	}
 	
 	override generate() {
-		code = '''package «packageName»
+		code = '''package «packageName»;
 		
 «FOR imp : imports»
 import «imp»;
@@ -31,13 +31,13 @@ import «imp»;
 public class «className» extends IBeXGTPatternFactory {	
 	
 	public «className»(IBeXGtAPI<?, ?, ?> api) {
-			this.api = api;
+			super(api);
 	}
 	
 	«FOR pattern : data.pattern2patternClassName.keySet»
 	protected «data.pattern2patternClassName.get(pattern)» create«data.pattern2patternClassName.get(pattern)»() {
-		«data.pattern2patternClassName.get(pattern)» pattern = new «data.pattern2patternClassName.get(pattern)»(api, api.getGTEngine().name2pattern.get("«pattern.name»"));
-		return rule;
+		«data.pattern2patternClassName.get(pattern)» pattern = new «data.pattern2patternClassName.get(pattern)»(api, api.getGTEngine().getPattern("«pattern.name»"));
+		return pattern;
 	}
 	
 	«ENDFOR»

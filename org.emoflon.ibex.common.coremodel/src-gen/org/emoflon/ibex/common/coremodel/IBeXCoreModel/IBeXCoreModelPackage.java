@@ -126,7 +126,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	int IBE_XMODEL__META_DATA = IBE_XNAMED_ELEMENT_FEATURE_COUNT + 0;
 
 	/**
-	 * The feature id for the '<em><b>Feature Config</b></em>' reference.
+	 * The feature id for the '<em><b>Feature Config</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -381,13 +381,22 @@ public interface IBeXCoreModelPackage extends EPackage {
 	int EPACKAGE_DEPENDENCY__PACKAGE_HAS_PROJECT = 6;
 
 	/**
+	 * The feature id for the '<em><b>Project Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EPACKAGE_DEPENDENCY__PROJECT_NAME = 7;
+
+	/**
 	 * The feature id for the '<em><b>Project Location</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int EPACKAGE_DEPENDENCY__PROJECT_LOCATION = 7;
+	int EPACKAGE_DEPENDENCY__PROJECT_LOCATION = 8;
 
 	/**
 	 * The feature id for the '<em><b>Factory Class Name</b></em>' attribute.
@@ -396,7 +405,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int EPACKAGE_DEPENDENCY__FACTORY_CLASS_NAME = 8;
+	int EPACKAGE_DEPENDENCY__FACTORY_CLASS_NAME = 9;
 
 	/**
 	 * The feature id for the '<em><b>Package Class Name</b></em>' attribute.
@@ -405,7 +414,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int EPACKAGE_DEPENDENCY__PACKAGE_CLASS_NAME = 9;
+	int EPACKAGE_DEPENDENCY__PACKAGE_CLASS_NAME = 10;
 
 	/**
 	 * The feature id for the '<em><b>Ecore URI</b></em>' attribute.
@@ -414,7 +423,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int EPACKAGE_DEPENDENCY__ECORE_URI = 10;
+	int EPACKAGE_DEPENDENCY__ECORE_URI = 11;
 
 	/**
 	 * The feature id for the '<em><b>Ecore Has Location</b></em>' attribute.
@@ -423,7 +432,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int EPACKAGE_DEPENDENCY__ECORE_HAS_LOCATION = 11;
+	int EPACKAGE_DEPENDENCY__ECORE_HAS_LOCATION = 12;
 
 	/**
 	 * The feature id for the '<em><b>Ecore Location</b></em>' attribute.
@@ -432,7 +441,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int EPACKAGE_DEPENDENCY__ECORE_LOCATION = 12;
+	int EPACKAGE_DEPENDENCY__ECORE_LOCATION = 13;
 
 	/**
 	 * The feature id for the '<em><b>Genmodel URI</b></em>' attribute.
@@ -441,7 +450,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int EPACKAGE_DEPENDENCY__GENMODEL_URI = 13;
+	int EPACKAGE_DEPENDENCY__GENMODEL_URI = 14;
 
 	/**
 	 * The feature id for the '<em><b>Genmodel Has Location</b></em>' attribute.
@@ -450,7 +459,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int EPACKAGE_DEPENDENCY__GENMODEL_HAS_LOCATION = 14;
+	int EPACKAGE_DEPENDENCY__GENMODEL_HAS_LOCATION = 15;
 
 	/**
 	 * The feature id for the '<em><b>Genmodel Location</b></em>' attribute.
@@ -459,7 +468,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int EPACKAGE_DEPENDENCY__GENMODEL_LOCATION = 15;
+	int EPACKAGE_DEPENDENCY__GENMODEL_LOCATION = 16;
 
 	/**
 	 * The feature id for the '<em><b>Classifier Name2 FQN</b></em>' map.
@@ -468,7 +477,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int EPACKAGE_DEPENDENCY__CLASSIFIER_NAME2_FQN = 16;
+	int EPACKAGE_DEPENDENCY__CLASSIFIER_NAME2_FQN = 17;
 
 	/**
 	 * The number of structural features of the '<em>EPackage Dependency</em>' class.
@@ -477,7 +486,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int EPACKAGE_DEPENDENCY_FEATURE_COUNT = 17;
+	int EPACKAGE_DEPENDENCY_FEATURE_COUNT = 18;
 
 	/**
 	 * The number of operations of the '<em>EPackage Dependency</em>' class.
@@ -1650,10 +1659,10 @@ public interface IBeXCoreModelPackage extends EPackage {
 	EReference getIBeXModel_MetaData();
 
 	/**
-	 * Returns the meta object for the reference '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel#getFeatureConfig <em>Feature Config</em>}'.
+	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel#getFeatureConfig <em>Feature Config</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the reference '<em>Feature Config</em>'.
+	 * @return the meta object for the containment reference '<em>Feature Config</em>'.
 	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel#getFeatureConfig()
 	 * @see #getIBeXModel()
 	 * @generated
@@ -1889,6 +1898,17 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getEPackageDependency_PackageHasProject();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getProjectName <em>Project Name</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Project Name</em>'.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getProjectName()
+	 * @see #getEPackageDependency()
+	 * @generated
+	 */
+	EAttribute getEPackageDependency_ProjectName();
 
 	/**
 	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency#getProjectLocation <em>Project Location</em>}'.
@@ -2824,7 +2844,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 		EReference IBE_XMODEL__META_DATA = eINSTANCE.getIBeXModel_MetaData();
 
 		/**
-		 * The meta object literal for the '<em><b>Feature Config</b></em>' reference feature.
+		 * The meta object literal for the '<em><b>Feature Config</b></em>' containment reference feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
@@ -3006,6 +3026,14 @@ public interface IBeXCoreModelPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute EPACKAGE_DEPENDENCY__PACKAGE_HAS_PROJECT = eINSTANCE.getEPackageDependency_PackageHasProject();
+
+		/**
+		 * The meta object literal for the '<em><b>Project Name</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute EPACKAGE_DEPENDENCY__PROJECT_NAME = eINSTANCE.getEPackageDependency_ProjectName();
 
 		/**
 		 * The meta object literal for the '<em><b>Project Location</b></em>' attribute feature.

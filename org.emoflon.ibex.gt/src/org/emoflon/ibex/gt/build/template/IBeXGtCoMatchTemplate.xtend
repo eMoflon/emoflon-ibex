@@ -20,9 +20,9 @@ class IBeXGtCoMatchTemplate extends GeneratorTemplate<GTRule>{
 		fqn = packageName + "." + className;
 		filePath = data.matchPackagePath + "/" + className
 		
+		imports.add("java.util.Collection")
 		imports.add("java.util.List")
 		imports.add("java.util.Map")
-		imports.add("org.emoflon.ibex.common.operational.HashUtil")
 		imports.add("org.emoflon.ibex.gt.engine.IBeXGTCoMatch")
 		ruleClassName = data.rule2ruleClassName.get(context);
 		matchClassName = data.pattern2matchClassName.get(context.precondition)
@@ -30,18 +30,15 @@ class IBeXGtCoMatchTemplate extends GeneratorTemplate<GTRule>{
 		
 		imports.add(data.rulePackage + "." + ruleClassName)
 		imports.add(data.patternPackage + "." + coPatternClassName)
-		imports.add(data.matchPackage + "." + matchClassName)
 		
 		coPattern = context.postcondition as GTPattern
-		coPattern.signatureNodes
-			.map[node | data.model.metaData.name2package.get(node.eClass.EPackage.name).classifierName2FQN.get(node.type)]
-			.forEach[fqn | imports.add(fqn)]
+		coPattern.signatureNodes.forEach[n | imports.add(data.getFQN(n.type))]
 	}
 	
 	override generate() {
-		code = '''package «data.matchPackage»
+		code = '''package «data.matchPackage»;
 		
-«FOR imp : imports»
+«FOR imp : imports.filter[imp | imp !== null]»
 import «imp»;
 «ENDFOR»
 
@@ -61,34 +58,31 @@ public class «className» extends IBeXGTCoMatch<«className», «coPatternClass
 	
 	@Override
 	public String getPatternName() {
-		return "«context.name»"	
+		return "«context.name»";
 	}
 	
 	@Override
 	public Object get(String name) {
-		return switch(name) -> {
+		«IF coPattern.signatureNodes.isNullOrEmpty»
+		throw new UnsupportedOperationException("This rule does not have any parameters.");
+		«ELSE»
+		return switch(name) {
 			«FOR node : coPattern.signatureNodes»
-			case "«node.name»" -> yield «node.name.toFirstLower»
+			case "«node.name»" -> {yield «node.name.toFirstLower»;}
 			«ENDFOR»
+			default -> throw new NullPointerException("Unknown parameter name: " + name);
 		};
+		«ENDIF»
 	}
 	
 	@Override
 	public Collection<String> getParameterNames() {
-		return List.of(
-			«FOR node : coPattern.signatureNodes SEPARATOR ', '» 
-			"«node.name»"
-			«ENDFOR»
-		);
+		return List.of(«FOR node : coPattern.signatureNodes SEPARATOR ', \n'»"«node.name»"«ENDFOR»);
 	}
 	
 	@Override
 	public Collection<Object> getObjects() {
-		return List.of(
-			«FOR node : coPattern.signatureNodes SEPARATOR ', '» 
-			«node.name.toFirstLower»
-			«ENDFOR»
-		);
+		return List.of(«FOR node : coPattern.signatureNodes SEPARATOR ', \n'»«node.name.toFirstLower»«ENDFOR»);
 	}
 
 	@Override
@@ -108,6 +102,11 @@ public class «className» extends IBeXGTCoMatch<«className», «coPatternClass
 	@Override
 	public boolean checkConditions() {
 		return typedPattern.checkConditions(this);
+	}
+	
+	@Override
+	public boolean checkBindings() {
+		return typedPattern.checkBindings(this);
 	}
 	
 	@Override

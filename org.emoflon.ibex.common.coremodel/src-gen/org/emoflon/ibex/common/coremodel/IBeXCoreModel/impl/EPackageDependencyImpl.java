@@ -36,6 +36,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage;
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.EPackageDependencyImpl#getPackage <em>Package</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.EPackageDependencyImpl#getPackageURI <em>Package URI</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.EPackageDependencyImpl#isPackageHasProject <em>Package Has Project</em>}</li>
+ *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.EPackageDependencyImpl#getProjectName <em>Project Name</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.EPackageDependencyImpl#getProjectLocation <em>Project Location</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.EPackageDependencyImpl#getFactoryClassName <em>Factory Class Name</em>}</li>
  *   <li>{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.EPackageDependencyImpl#getPackageClassName <em>Package Class Name</em>}</li>
@@ -180,6 +181,26 @@ public class EPackageDependencyImpl extends MinimalEObjectImpl.Container impleme
 	 * @ordered
 	 */
 	protected boolean packageHasProject = PACKAGE_HAS_PROJECT_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #getProjectName() <em>Project Name</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getProjectName()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String PROJECT_NAME_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getProjectName() <em>Project Name</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getProjectName()
+	 * @generated
+	 * @ordered
+	 */
+	protected String projectName = PROJECT_NAME_EDEFAULT;
 
 	/**
 	 * The default value of the '{@link #getProjectLocation() <em>Project Location</em>}' attribute.
@@ -569,6 +590,28 @@ public class EPackageDependencyImpl extends MinimalEObjectImpl.Container impleme
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public String getProjectName() {
+		return projectName;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setProjectName(String newProjectName) {
+		String oldProjectName = projectName;
+		projectName = newProjectName;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					IBeXCoreModelPackage.EPACKAGE_DEPENDENCY__PROJECT_NAME, oldProjectName, projectName));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public String getProjectLocation() {
 		return projectLocation;
 	}
@@ -819,6 +862,8 @@ public class EPackageDependencyImpl extends MinimalEObjectImpl.Container impleme
 			return getPackageURI();
 		case IBeXCoreModelPackage.EPACKAGE_DEPENDENCY__PACKAGE_HAS_PROJECT:
 			return isPackageHasProject();
+		case IBeXCoreModelPackage.EPACKAGE_DEPENDENCY__PROJECT_NAME:
+			return getProjectName();
 		case IBeXCoreModelPackage.EPACKAGE_DEPENDENCY__PROJECT_LOCATION:
 			return getProjectLocation();
 		case IBeXCoreModelPackage.EPACKAGE_DEPENDENCY__FACTORY_CLASS_NAME:
@@ -874,6 +919,9 @@ public class EPackageDependencyImpl extends MinimalEObjectImpl.Container impleme
 			return;
 		case IBeXCoreModelPackage.EPACKAGE_DEPENDENCY__PACKAGE_HAS_PROJECT:
 			setPackageHasProject((Boolean) newValue);
+			return;
+		case IBeXCoreModelPackage.EPACKAGE_DEPENDENCY__PROJECT_NAME:
+			setProjectName((String) newValue);
 			return;
 		case IBeXCoreModelPackage.EPACKAGE_DEPENDENCY__PROJECT_LOCATION:
 			setProjectLocation((String) newValue);
@@ -938,6 +986,9 @@ public class EPackageDependencyImpl extends MinimalEObjectImpl.Container impleme
 		case IBeXCoreModelPackage.EPACKAGE_DEPENDENCY__PACKAGE_HAS_PROJECT:
 			setPackageHasProject(PACKAGE_HAS_PROJECT_EDEFAULT);
 			return;
+		case IBeXCoreModelPackage.EPACKAGE_DEPENDENCY__PROJECT_NAME:
+			setProjectName(PROJECT_NAME_EDEFAULT);
+			return;
 		case IBeXCoreModelPackage.EPACKAGE_DEPENDENCY__PROJECT_LOCATION:
 			setProjectLocation(PROJECT_LOCATION_EDEFAULT);
 			return;
@@ -995,6 +1046,8 @@ public class EPackageDependencyImpl extends MinimalEObjectImpl.Container impleme
 			return PACKAGE_URI_EDEFAULT == null ? packageURI != null : !PACKAGE_URI_EDEFAULT.equals(packageURI);
 		case IBeXCoreModelPackage.EPACKAGE_DEPENDENCY__PACKAGE_HAS_PROJECT:
 			return packageHasProject != PACKAGE_HAS_PROJECT_EDEFAULT;
+		case IBeXCoreModelPackage.EPACKAGE_DEPENDENCY__PROJECT_NAME:
+			return PROJECT_NAME_EDEFAULT == null ? projectName != null : !PROJECT_NAME_EDEFAULT.equals(projectName);
 		case IBeXCoreModelPackage.EPACKAGE_DEPENDENCY__PROJECT_LOCATION:
 			return PROJECT_LOCATION_EDEFAULT == null ? projectLocation != null
 					: !PROJECT_LOCATION_EDEFAULT.equals(projectLocation);
@@ -1047,6 +1100,8 @@ public class EPackageDependencyImpl extends MinimalEObjectImpl.Container impleme
 		result.append(packageURI);
 		result.append(", packageHasProject: ");
 		result.append(packageHasProject);
+		result.append(", projectName: ");
+		result.append(projectName);
 		result.append(", projectLocation: ");
 		result.append(projectLocation);
 		result.append(", factoryClassName: ");

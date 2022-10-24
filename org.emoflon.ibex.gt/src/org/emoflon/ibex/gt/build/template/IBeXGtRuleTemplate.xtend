@@ -32,58 +32,59 @@ class IBeXGtRuleTemplate extends GeneratorTemplate<GTRule>{
 		coMatchClassName = data.rule2CoMatchClassName.get(context)
 		matchClassName = data.pattern2matchClassName.get(context.precondition)
 		coPatternClassName = data.rule2CoPatternClassName.get(context)
-		patternClassName = data.pattern2patternClassName.get(context.precondition)
+		patternClassName = className
 		
 		fqn = packageName + "." + className;
 		filePath = data.rulePackagePath + "/" + className
 		
 		imports.add("java.util.Collection")
-		imports.add("java.util.Collectors")
+		imports.add("java.util.stream.Collectors")
 		imports.add("java.util.List")
 		imports.add("java.util.LinkedList")
 		imports.add("java.util.Map")
 		imports.add("java.util.HashMap")
-		imports.add("java.util.Optional")
 		imports.add("org.emoflon.ibex.gt.engine.IBeXGTRule")
 		imports.add("org.emoflon.ibex.gt.api.IBeXGtAPI")
 		imports.add("org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRule")
-		
-		context.parameters
-			.map[param | data.model.metaData.name2package.get(param.type.EPackage).classifierName2FQN.get(param.type.name)]
-			.forEach[fqn | imports.add(fqn)]
+		imports.add("org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern")
+		imports.add(data.matchPackage + "." + coMatchClassName);
+		imports.add(data.matchPackage + "." + matchClassName);
+		imports.add(data.patternPackage + "." + coPatternClassName);
 			
-		imports.addAll(context.allNodes.map[node | data.model.metaData.name2package.get(node.type.EPackage).fullyQualifiedName + "." 
-			+ data.model.metaData.name2package.get(node.type.EPackage).packageClassName
+		imports.addAll(context.allNodes.map[node | data.getPackageFQN(node.type) + "." 
+			+ data.getPackageClass(node.type)
 		])
 		
-		imports.addAll(context.allNodes.map[node | data.model.metaData.name2package.get(node.type.EPackage).fullyQualifiedName + "." 
-			+ data.model.metaData.name2package.get(node.type.EPackage).factoryClassName
-		])
+		imports.addAll(context.allNodes.map[node |data.getPackageFactoryClass(node.type)])
 		
-		context.allNodes.forEach[node | factoryClasses.add(data.model.metaData.name2package.get(node.type.EPackage).factoryClassName)]
-		context.allNodes.forEach[node | nodeName2FactoryClass.put(node.name, data.model.metaData.name2package.get(node.type.EPackage).factoryClassName)]
+		context.allNodes.forEach[node | factoryClasses.add(data.getSimplePackageFactoryClass(node.type))]
+		context.allNodes.forEach[node | nodeName2FactoryClass.put(node.name, data.getSimplePackageFactoryClass(node.type))]
 			
-		context.allNodes.map[node | data.model.metaData.name2package.get(node.type.EPackage).classifierName2FQN.get(node.type.name)]
-			.forEach[fqn | imports.add(fqn)]
+		context.allNodes.forEach[node | imports.add(data.getFQN(node.type))]
 		
 		exprHelper = new ExpressionHelper(data, imports)
 	}
 	
 	override generate() {
-		code = '''package «data.rulePackage»
+		code = '''package «data.rulePackage»;
 		
-«FOR imp : imports»
+«FOR imp : imports.filter[imp | imp !== null]»
 import «imp»;
 «ENDFOR»
 
+@SuppressWarnings("unused")
 public class «className» extends IBeXGTRule<«className», «patternClassName», «matchClassName», «coPatternClassName», «coMatchClassName»> {
 	
 	«FOR fac : factoryClasses»
-	protected «fac» «fac.toLowerCase» = «fac».eINSTANCE;
+	protected «fac» «fac.toFirstLower» = «fac».eINSTANCE;
 	«ENDFOR»
 	
+	«IF !context.parameters.nullOrEmpty»
+	protected boolean parametersInitialized = false;
+	«ENDIF»
+	
 	«FOR param : context.parameters»
-	protected «param.type.name» «param.name.toFirstLower»;
+	protected «exprHelper.EDataType2Java(param.type)» «param.name.toFirstLower»;
 	«ENDFOR»
 	
 	«FOR node : context.precondition.signatureNodes»
@@ -95,42 +96,50 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 	}
 	
 	@Override
-	protected Collection<String> getParameterNames() {
-		return List.of(
-			«FOR param : context.parameters SEPARATOR ', '»
-			"«param.name»"
-			«ENDFOR»
-		);
+	public Collection<String> getParameterNames() {
+		return List.of(«FOR param : context.parameters SEPARATOR ', \n'»"«param.name»"«ENDFOR»);
 	}
 	
 	@Override
-	protected Map<String, Object> getParameters() {
+	public Map<String, Object> getParameters() {
+		«IF context.parameters.isNullOrEmpty»
+		throw new UnsupportedOperationException("This rule does not have any parameters.");
+		«ELSE»
 		return Map.of(
 			«FOR param : context.parameters SEPARATOR ', '»
 			"«param.name»", «param.name.toFirstLower»
 			«ENDFOR»
 		);
+		«ENDIF»
 	}
 	
 	@Override
 	public void setParameters(final Map<String, Object> parameters) {
+		«IF context.parameters.isNullOrEmpty»
+		throw new UnsupportedOperationException("This rule does not have any parameters.");
+		«ELSE»
 		for(String name : parameters.keySet()) {
 			switch(name) {
 				«FOR param : context.parameters»
 				case "«param.name»" : {
-					«param.name.toFirstLower» = parameters.get("«param.name»");
+					«param.name.toFirstLower» = («exprHelper.EDataType2Java(param.type)») parameters.get("«param.name»");
 					break;
 				}
 				«ENDFOR»
 			}
 		}
+		parametersInitialized = true;
+		«ENDIF»
 	}
 	
-	public void setParameters(«FOR param : context.parameters SEPARATOR ', '»final «param.type.name» «param.name.toFirstLower»«ENDFOR») {
+	«IF !context.parameters.isNullOrEmpty»
+	public void setParameters(«FOR param : context.parameters SEPARATOR ', '»final «exprHelper.EDataType2Java(param.type)» «param.name.toFirstLower»«ENDFOR») {
 		«FOR param : context.parameters»
 		this.«param.name.toFirstLower» = «param.name.toFirstLower»;
 		«ENDFOR»
+		parametersInitialized = true;
 	}
+	«ENDIF»
 	
 	«FOR node : context.precondition.signatureNodes»
 	public void bind«node.name.toFirstUpper»(final «node.type.name» «node.name.toFirstLower») {
@@ -154,6 +163,7 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 		«FOR node : context.precondition.signatureNodes»
 		bound &= «node.name.toFirstLower»Binding == null || match.«node.name.toFirstLower»().equals(«node.name.toFirstLower»Binding);
 		«ENDFOR»
+		return bound;
 	}
 		
 	@Override
@@ -161,6 +171,10 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 		«IF context.precondition.conditions === null || context.precondition.conditions.isEmpty»
 		return true;
 		«ELSE»
+		«IF !context.parameters.nullOrEmpty»
+		if(!parametersInitialized)
+			throw new NullPointerException("One or more required parameters have not been initialized.");
+		«ENDIF»
 		return «FOR condition : context.precondition.conditions SEPARATOR ' && \n'»(«exprHelper.unparse("match", condition)»)«ENDFOR»;
 		«ENDIF»
 	}
@@ -186,12 +200,12 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 		return «(context.precondition as GTPattern).usedFeatures.parameterExpressions.toString»;
 	}
 	
-	protected «matchClassName» createMatch(final Map<String, Object> nodes) {
+	public «matchClassName» createMatch(final Map<String, Object> nodes) {
 		return new «matchClassName»(this, nodes);
 	}
 	
 	protected «coPatternClassName» createCoPattern() {
-		return new «coPatternClassName»(api, this, rule);
+		return new «coPatternClassName»(api, this, (GTPattern) rule.getPostcondition());
 	}
 	
 	public boolean hasProbability() {
@@ -210,7 +224,7 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 		«ENDIF»
 	}
 	
-	public Optional<«coMatchClassName»> apply(final «matchClassName» match) {
+	public «coMatchClassName» apply(final «matchClassName» match) {
 		Map<String, Object> coMatchNodes = new HashMap<>();
 		«FOR node : context.allNodes.filter[node | context.precondition.signatureNodes.contains(node) && context.postcondition.signatureNodes.contains(node)]»
 		coMatchNodes.put("«node.name»", match.«node.name.toFirstLower»());
@@ -232,7 +246,7 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 		
 		// Create new elements
 		«FOR node : context.creation.nodes»
-		«node.type.name» «node.name.toFirstLower» = factory.create«node.type.name»();
+		«node.type.name» «node.name.toFirstLower» = «nodeName2FactoryClass.get(node.name).toFirstLower».create«node.type.name»();
 		coMatchNodes.put("«node.name»", «node.name.toFirstLower»);
 		«ENDFOR»
 		«FOR edge : context.creation.edges»

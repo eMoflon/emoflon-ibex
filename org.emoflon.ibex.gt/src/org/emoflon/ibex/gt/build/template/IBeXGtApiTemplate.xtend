@@ -25,9 +25,9 @@ class IBeXGtApiTemplate extends GeneratorTemplate<IBeXPMEngineInformation> {
 	}
 	
 	override generate() {
-		code = '''package «packageName»
+		code = '''package «packageName»;
 		
-«FOR imp : imports»
+«FOR imp : imports.filter[imp | imp !== null]»
 import «imp»;
 «ENDFOR»
 		
@@ -79,14 +79,14 @@ public class «className» extends IBeXGtAPI<«context.engineClassName», «data
 	@Override
 	protected void initializeRules() {
 		«FOR rule : data.rule2ruleClassName.keySet»
-		«rule.name.toFirstLower» = ruleFactory.create«data.rule2ruleClassName.get(rule)»;
+		«rule.name.toFirstLower» = ruleFactory.create«data.rule2ruleClassName.get(rule)»();
 		«ENDFOR»
 	}
 	
 	@Override
 	protected void initializePatterns() {
 		«FOR pattern : data.pattern2patternClassName.keySet»
-		«pattern.name.toFirstLower» = patternFactory.create«data.pattern2patternClassName.get(pattern)»;
+		«pattern.name.toFirstLower» = patternFactory.create«data.pattern2patternClassName.get(pattern)»();
 		«ENDFOR»
 	}
 	

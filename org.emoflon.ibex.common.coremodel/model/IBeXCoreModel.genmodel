@@ -45,6 +45,7 @@
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXCoreModel.ecore#//EPackageDependency/package"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//EPackageDependency/packageURI"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//EPackageDependency/packageHasProject"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//EPackageDependency/projectName"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//EPackageDependency/projectLocation"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//EPackageDependency/factoryClassName"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXCoreModel.ecore#//EPackageDependency/packageClassName"/>
