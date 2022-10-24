@@ -17,9 +17,7 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EcoreFactory;
 import org.eclipse.emf.ecore.EcorePackage;
-import org.eclipse.emf.ecore.impl.EcoreFactoryImpl;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency;
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModelMetadata;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNamedElement;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
@@ -31,9 +29,10 @@ import org.emoflon.ibex.common.slimgt.slimGT.SlimRuleNodeContext;
 import org.emoflon.ibex.common.slimgt.slimGT.SlimRuleNodeCreation;
 import org.emoflon.ibex.common.slimgt.util.SlimGTEMFUtil;
 import org.emoflon.ibex.common.transformation.SlimGtToIBeXCoreTransformer;
-import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuntimeModelFactory;
 import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuntimeModelPackage;
 import org.emoflon.ibex.tgg.tggl.scoping.TGGLScopeProvider;
+import org.emoflon.ibex.tgg.tggl.tGGL.AttributeCondition;
+import org.emoflon.ibex.tgg.tggl.tGGL.AttributeConditionDefinition;
 import org.emoflon.ibex.tgg.tggl.tGGL.CorrespondenceType;
 import org.emoflon.ibex.tgg.tggl.tGGL.EditorFile;
 import org.emoflon.ibex.tgg.tggl.tGGL.SlimRule;
@@ -51,6 +50,9 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.CSPFactory;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinition;
 
 record EdgeSignature(EObject source, EObject target, EReference type) {
 	
@@ -58,7 +60,8 @@ record EdgeSignature(EObject source, EObject target, EReference type) {
 
 public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<EditorFile, TGGModel, IBeXTGGModelFactory> {
 	
-	private EcoreFactory ecoreFactory = EcoreFactoryImpl.eINSTANCE;
+	private EcoreFactory ecoreFactory = EcoreFactory.eINSTANCE;
+	private CSPFactory cspFactory = CSPFactory.eINSTANCE;
 	private TGGRuntimeModelPackage runtimePackage = TGGRuntimeModelPackage.eINSTANCE;
 	
 	
@@ -137,34 +140,43 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 	
 	private void createAttributeConstraintLibraries() {
 		for(var xtextConditionLibrary : editorFile.getLibraries()) {
-			var constraintDefinitionLibrary = factory.createTGGAttributeConstraintDefinitionLibrary();
+			var constraintDefinitionLibrary = cspFactory.createTGGAttributeConstraintDefinitionLibrary();
 			model.getAttributeConstraintDefinitionLibraries().add(constraintDefinitionLibrary);
 			
 			for(var xtextConditionDefinition : xtextConditionLibrary.getAttributeCondDefs()) {
-				var attributeConstraintDefinition = factory.createTGGAttributeConstraintDefinition();
-				attributeConstraintDefinition.setName(xtextConditionDefinition.getName());
+				var attributeConstraintDefinition = transformAttributeConstraintDefinition(xtextConditionDefinition);
 				constraintDefinitionLibrary.getTggAttributeConstraintDefinitions().add(attributeConstraintDefinition);
-				
-				for(var xtextParameterBinding : xtextConditionDefinition.getParams()) {
-					var parameterDefinition = factory.createTGGAttributeConstraintParameterDefinition();
-					parameterDefinition.setName(xtextParameterBinding.getName());
-					parameterDefinition.setType(xtextParameterBinding.getType());
-					attributeConstraintDefinition.getParameterDefinitions().add(parameterDefinition);
-				}
-				
-				for(var xtextGenBindings : xtextConditionDefinition.getAllowedGenBindings()) {
-					var binding = factory.createTGGAttributeConstraintBinding();
-					binding.getValue().addAll(xtextGenBindings.getValue());
-					attributeConstraintDefinition.getGenBindings().add(binding);
-				}
-				
-				for(var xtextGenBindings : xtextConditionDefinition.getAllowedSyncBindings()) {
-					var binding = factory.createTGGAttributeConstraintBinding();
-					binding.getValue().addAll(xtextGenBindings.getValue());
-					attributeConstraintDefinition.getSyncBindings().add(binding);
-				}
 			}
 		}
+	}
+
+	private TGGAttributeConstraintDefinition transformAttributeConstraintDefinition(AttributeConditionDefinition xtextConditionDefinition) {
+		if(tggl2tggModel.containsKey(xtextConditionDefinition))
+			return (TGGAttributeConstraintDefinition) tggl2tggModel.get(xtextConditionDefinition);
+		
+		var attributeConstraintDefinition = cspFactory.createTGGAttributeConstraintDefinition();
+		tggl2tggModel.put(xtextConditionDefinition, attributeConstraintDefinition);
+		attributeConstraintDefinition.setName(xtextConditionDefinition.getName());
+		
+		for(var xtextParameterBinding : xtextConditionDefinition.getParams()) {
+			var parameterDefinition = cspFactory.createTGGAttributeConstraintParameterDefinition();
+			parameterDefinition.setName(xtextParameterBinding.getName());
+			parameterDefinition.setType(xtextParameterBinding.getType());
+			attributeConstraintDefinition.getParameterDefinitions().add(parameterDefinition);
+		}
+		
+		for(var xtextGenBindings : xtextConditionDefinition.getAllowedGenBindings()) {
+			var binding = cspFactory.createTGGAttributeConstraintBinding();
+			binding.getValue().addAll(xtextGenBindings.getValue());
+			attributeConstraintDefinition.getGenBindings().add(binding);
+		}
+		
+		for(var xtextGenBindings : xtextConditionDefinition.getAllowedSyncBindings()) {
+			var binding = cspFactory.createTGGAttributeConstraintBinding();
+			binding.getValue().addAll(xtextGenBindings.getValue());
+			attributeConstraintDefinition.getSyncBindings().add(binding);
+		}
+		return attributeConstraintDefinition;
 	}
 
 	private EPackage createCorrespondenceModel() {
@@ -231,9 +243,29 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 			internalRule.getNodes().add(transformTGGNode((SlimRuleNode) node.getCreation(), BindingType.CREATE, DomainType.TARGET));
 		}
 		
+		for(var attributeCondition : rule.getAttrConditions()) {
+			internalRule.getAttributeConstraints().getTggAttributeConstraints().add(transformAttributeConstraint(attributeCondition));
+		}
+		
 		return internalRule;
 	}
 	
+	private TGGAttributeConstraint transformAttributeConstraint(AttributeCondition attributeCondition) {
+		if(tggl2tggModel.containsKey(attributeCondition))
+			return (TGGAttributeConstraint) tggl2tggModel.get(attributeCondition);
+		
+		var attributeConstraint = cspFactory.createTGGAttributeConstraint();
+		tggl2tggModel.put(attributeCondition, attributeConstraint);
+		
+		attributeConstraint.setDefinition(transformAttributeConstraintDefinition(attributeCondition.getName()));
+		
+		for(var value : attributeCondition.getValues()) {
+			
+		}
+		
+		return null;
+	}
+
 	protected TGGCorrespondence transformTGGCorrespondenceNode(TGGCorrespondenceNode node, BindingType binding, DomainType domain) {
 		if(tggl2tggModel.containsKey(node))
 			return (TGGCorrespondence) tggl2tggModel.get(node);

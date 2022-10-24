@@ -8,6 +8,8 @@ import org.eclipse.emf.ecore.EPackage;
 
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel;
 
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinitionLibrary;
+
 /**
  * <!-- begin-user-doc -->
  * A representation of the model object '<em><b>TGG Model</b></em>'.
@@ -99,7 +101,7 @@ public interface TGGModel extends IBeXModel {
 
 	/**
 	 * Returns the value of the '<em><b>Attribute Constraint Definition Libraries</b></em>' containment reference list.
-	 * The list contents are of type {@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintDefinitionLibrary}.
+	 * The list contents are of type {@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinitionLibrary}.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Attribute Constraint Definition Libraries</em>' containment reference list.

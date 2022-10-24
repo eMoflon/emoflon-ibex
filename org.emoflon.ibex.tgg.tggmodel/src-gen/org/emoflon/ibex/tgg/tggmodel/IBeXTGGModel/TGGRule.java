@@ -6,6 +6,8 @@ import org.eclipse.emf.common.util.EList;
 
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRule;
 
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintSet;
+
 /**
  * <!-- begin-user-doc -->
  * A representation of the model object '<em><b>TGG Rule</b></em>'.
@@ -65,7 +67,7 @@ public interface TGGRule extends IBeXRule {
 
 	/**
 	 * Returns the value of the '<em><b>Operationalisations</b></em>' containment reference list.
-	 * The list contents are of type {@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalTGGRule}.
+	 * The list contents are of type {@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule}.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Operationalisations</em>' containment reference list.
@@ -73,7 +75,7 @@ public interface TGGRule extends IBeXRule {
 	 * @model containment="true"
 	 * @generated
 	 */
-	EList<OperationalTGGRule> getOperationalisations();
+	EList<TGGOperationalRule> getOperationalisations();
 
 	/**
 	 * Returns the value of the '<em><b>Attribute Constraints</b></em>' containment reference.

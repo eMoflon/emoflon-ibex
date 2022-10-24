@@ -3,26 +3,30 @@
 package org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl;
 
 import java.util.Collection;
+
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
+
 import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EClass;
-
 import org.eclipse.emf.ecore.InternalEObject;
+
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EObjectResolvingEList;
-
 import org.eclipse.emf.ecore.util.InternalEList;
+
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXRuleImpl;
 
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintSet;
+
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalTGGRule;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintSet;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 
 /**
@@ -81,7 +85,7 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 	 * @generated
 	 * @ordered
 	 */
-	protected EList<OperationalTGGRule> operationalisations;
+	protected EList<TGGOperationalRule> operationalisations;
 
 	/**
 	 * The cached value of the '{@link #getAttributeConstraints() <em>Attribute Constraints</em>}' containment reference.
@@ -154,9 +158,9 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EList<OperationalTGGRule> getOperationalisations() {
+	public EList<TGGOperationalRule> getOperationalisations() {
 		if (operationalisations == null) {
-			operationalisations = new EObjectContainmentEList<OperationalTGGRule>(OperationalTGGRule.class, this,
+			operationalisations = new EObjectContainmentEList<TGGOperationalRule>(TGGOperationalRule.class, this,
 					IBeXTGGModelPackage.TGG_RULE__OPERATIONALISATIONS);
 		}
 		return operationalisations;
@@ -275,7 +279,7 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 			return;
 		case IBeXTGGModelPackage.TGG_RULE__OPERATIONALISATIONS:
 			getOperationalisations().clear();
-			getOperationalisations().addAll((Collection<? extends OperationalTGGRule>) newValue);
+			getOperationalisations().addAll((Collection<? extends TGGOperationalRule>) newValue);
 			return;
 		case IBeXTGGModelPackage.TGG_RULE__ATTRIBUTE_CONSTRAINTS:
 			setAttributeConstraints((TGGAttributeConstraintSet) newValue);

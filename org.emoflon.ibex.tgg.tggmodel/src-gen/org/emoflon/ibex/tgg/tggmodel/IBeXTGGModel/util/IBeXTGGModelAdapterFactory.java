@@ -88,8 +88,13 @@ public class IBeXTGGModelAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
-		public Adapter caseOperationalTGGRule(OperationalTGGRule object) {
-			return createOperationalTGGRuleAdapter();
+		public Adapter caseTGGOperationalRule(TGGOperationalRule object) {
+			return createTGGOperationalRuleAdapter();
+		}
+
+		@Override
+		public Adapter caseTGGRuleElement(TGGRuleElement object) {
+			return createTGGRuleElementAdapter();
 		}
 
 		@Override
@@ -105,51 +110,6 @@ public class IBeXTGGModelAdapterFactory extends AdapterFactoryImpl {
 		@Override
 		public Adapter caseTGGEdge(TGGEdge object) {
 			return createTGGEdgeAdapter();
-		}
-
-		@Override
-		public Adapter caseTGGRuleElement(TGGRuleElement object) {
-			return createTGGRuleElementAdapter();
-		}
-
-		@Override
-		public Adapter caseTGGAttributeConstraintSet(TGGAttributeConstraintSet object) {
-			return createTGGAttributeConstraintSetAdapter();
-		}
-
-		@Override
-		public Adapter caseTGGAttributeConstraintDefinitionLibrary(TGGAttributeConstraintDefinitionLibrary object) {
-			return createTGGAttributeConstraintDefinitionLibraryAdapter();
-		}
-
-		@Override
-		public Adapter caseTGGAttributeConstraint(TGGAttributeConstraint object) {
-			return createTGGAttributeConstraintAdapter();
-		}
-
-		@Override
-		public Adapter caseTGGParameterValue(TGGParameterValue object) {
-			return createTGGParameterValueAdapter();
-		}
-
-		@Override
-		public Adapter caseTGGAttributeConstraintParameterDefinition(TGGAttributeConstraintParameterDefinition object) {
-			return createTGGAttributeConstraintParameterDefinitionAdapter();
-		}
-
-		@Override
-		public Adapter caseTGGAttributeConstraintBinding(TGGAttributeConstraintBinding object) {
-			return createTGGAttributeConstraintBindingAdapter();
-		}
-
-		@Override
-		public Adapter caseTGGAttributeConstraintDefinition(TGGAttributeConstraintDefinition object) {
-			return createTGGAttributeConstraintDefinitionAdapter();
-		}
-
-		@Override
-		public Adapter caseTGGCSP(TGGCSP object) {
-			return createTGGCSPAdapter();
 		}
 
 		@Override
@@ -239,16 +199,30 @@ public class IBeXTGGModelAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalTGGRule <em>Operational TGG Rule</em>}'.
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule <em>TGG Operational Rule</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalTGGRule
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule
 	 * @generated
 	 */
-	public Adapter createOperationalTGGRuleAdapter() {
+	public Adapter createTGGOperationalRuleAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement <em>TGG Rule Element</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement
+	 * @generated
+	 */
+	public Adapter createTGGRuleElementAdapter() {
 		return null;
 	}
 
@@ -291,132 +265,6 @@ public class IBeXTGGModelAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createTGGEdgeAdapter() {
-		return null;
-	}
-
-	/**
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement <em>TGG Rule Element</em>}'.
-	 * <!-- begin-user-doc -->
-	 * This default implementation returns null so that we can easily ignore cases;
-	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
-	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement
-	 * @generated
-	 */
-	public Adapter createTGGRuleElementAdapter() {
-		return null;
-	}
-
-	/**
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintSet <em>TGG Attribute Constraint Set</em>}'.
-	 * <!-- begin-user-doc -->
-	 * This default implementation returns null so that we can easily ignore cases;
-	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
-	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintSet
-	 * @generated
-	 */
-	public Adapter createTGGAttributeConstraintSetAdapter() {
-		return null;
-	}
-
-	/**
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintDefinitionLibrary <em>TGG Attribute Constraint Definition Library</em>}'.
-	 * <!-- begin-user-doc -->
-	 * This default implementation returns null so that we can easily ignore cases;
-	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
-	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintDefinitionLibrary
-	 * @generated
-	 */
-	public Adapter createTGGAttributeConstraintDefinitionLibraryAdapter() {
-		return null;
-	}
-
-	/**
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraint <em>TGG Attribute Constraint</em>}'.
-	 * <!-- begin-user-doc -->
-	 * This default implementation returns null so that we can easily ignore cases;
-	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
-	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraint
-	 * @generated
-	 */
-	public Adapter createTGGAttributeConstraintAdapter() {
-		return null;
-	}
-
-	/**
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGParameterValue <em>TGG Parameter Value</em>}'.
-	 * <!-- begin-user-doc -->
-	 * This default implementation returns null so that we can easily ignore cases;
-	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
-	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGParameterValue
-	 * @generated
-	 */
-	public Adapter createTGGParameterValueAdapter() {
-		return null;
-	}
-
-	/**
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintParameterDefinition <em>TGG Attribute Constraint Parameter Definition</em>}'.
-	 * <!-- begin-user-doc -->
-	 * This default implementation returns null so that we can easily ignore cases;
-	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
-	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintParameterDefinition
-	 * @generated
-	 */
-	public Adapter createTGGAttributeConstraintParameterDefinitionAdapter() {
-		return null;
-	}
-
-	/**
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintBinding <em>TGG Attribute Constraint Binding</em>}'.
-	 * <!-- begin-user-doc -->
-	 * This default implementation returns null so that we can easily ignore cases;
-	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
-	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintBinding
-	 * @generated
-	 */
-	public Adapter createTGGAttributeConstraintBindingAdapter() {
-		return null;
-	}
-
-	/**
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintDefinition <em>TGG Attribute Constraint Definition</em>}'.
-	 * <!-- begin-user-doc -->
-	 * This default implementation returns null so that we can easily ignore cases;
-	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
-	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGAttributeConstraintDefinition
-	 * @generated
-	 */
-	public Adapter createTGGAttributeConstraintDefinitionAdapter() {
-		return null;
-	}
-
-	/**
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCSP <em>TGGCSP</em>}'.
-	 * <!-- begin-user-doc -->
-	 * This default implementation returns null so that we can easily ignore cases;
-	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
-	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCSP
-	 * @generated
-	 */
-	public Adapter createTGGCSPAdapter() {
 		return null;
 	}
 

@@ -49,13 +49,13 @@ public interface IBeXTGGModelFactory extends EFactory {
 	TGGRule createTGGRule();
 
 	/**
-	 * Returns a new object of class '<em>Operational TGG Rule</em>'.
+	 * Returns a new object of class '<em>TGG Operational Rule</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>Operational TGG Rule</em>'.
+	 * @return a new object of class '<em>TGG Operational Rule</em>'.
 	 * @generated
 	 */
-	OperationalTGGRule createOperationalTGGRule();
+	TGGOperationalRule createTGGOperationalRule();
 
 	/**
 	 * Returns a new object of class '<em>TGG Node</em>'.
@@ -83,78 +83,6 @@ public interface IBeXTGGModelFactory extends EFactory {
 	 * @generated
 	 */
 	TGGEdge createTGGEdge();
-
-	/**
-	 * Returns a new object of class '<em>TGG Attribute Constraint Set</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>TGG Attribute Constraint Set</em>'.
-	 * @generated
-	 */
-	TGGAttributeConstraintSet createTGGAttributeConstraintSet();
-
-	/**
-	 * Returns a new object of class '<em>TGG Attribute Constraint Definition Library</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>TGG Attribute Constraint Definition Library</em>'.
-	 * @generated
-	 */
-	TGGAttributeConstraintDefinitionLibrary createTGGAttributeConstraintDefinitionLibrary();
-
-	/**
-	 * Returns a new object of class '<em>TGG Attribute Constraint</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>TGG Attribute Constraint</em>'.
-	 * @generated
-	 */
-	TGGAttributeConstraint createTGGAttributeConstraint();
-
-	/**
-	 * Returns a new object of class '<em>TGG Parameter Value</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>TGG Parameter Value</em>'.
-	 * @generated
-	 */
-	TGGParameterValue createTGGParameterValue();
-
-	/**
-	 * Returns a new object of class '<em>TGG Attribute Constraint Parameter Definition</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>TGG Attribute Constraint Parameter Definition</em>'.
-	 * @generated
-	 */
-	TGGAttributeConstraintParameterDefinition createTGGAttributeConstraintParameterDefinition();
-
-	/**
-	 * Returns a new object of class '<em>TGG Attribute Constraint Binding</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>TGG Attribute Constraint Binding</em>'.
-	 * @generated
-	 */
-	TGGAttributeConstraintBinding createTGGAttributeConstraintBinding();
-
-	/**
-	 * Returns a new object of class '<em>TGG Attribute Constraint Definition</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>TGG Attribute Constraint Definition</em>'.
-	 * @generated
-	 */
-	TGGAttributeConstraintDefinition createTGGAttributeConstraintDefinition();
-
-	/**
-	 * Returns a new object of class '<em>TGGCSP</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>TGGCSP</em>'.
-	 * @generated
-	 */
-	TGGCSP createTGGCSP();
 
 	/**
 	 * Returns the package supported by this factory.

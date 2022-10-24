@@ -27,19 +27,21 @@ public enum DomainType implements Enumerator {
 	 * @ordered
 	 */
 	SOURCE(0, "SOURCE", "SOURCE"),
+
 	/**
 	 * The '<em><b>TARGET</b></em>' literal object.
 	 * <!-- begin-user-doc -->
-	* <!-- end-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @see #TARGET_VALUE
 	 * @generated
 	 * @ordered
 	 */
 	TARGET(1, "TARGET", "TARGET"),
+
 	/**
 	 * The '<em><b>CORRESPONDENCE</b></em>' literal object.
 	 * <!-- begin-user-doc -->
-	* <!-- end-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @see #CORRESPONDENCE_VALUE
 	 * @generated
 	 * @ordered

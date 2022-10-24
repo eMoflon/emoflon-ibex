@@ -101,15 +101,22 @@ public class IBeXTGGModelSwitch<T> extends Switch<T> {
 				result = defaultCase(theEObject);
 			return result;
 		}
-		case IBeXTGGModelPackage.OPERATIONAL_TGG_RULE: {
-			OperationalTGGRule operationalTGGRule = (OperationalTGGRule) theEObject;
-			T result = caseOperationalTGGRule(operationalTGGRule);
+		case IBeXTGGModelPackage.TGG_OPERATIONAL_RULE: {
+			TGGOperationalRule tggOperationalRule = (TGGOperationalRule) theEObject;
+			T result = caseTGGOperationalRule(tggOperationalRule);
 			if (result == null)
-				result = caseTGGRule(operationalTGGRule);
+				result = caseTGGRule(tggOperationalRule);
 			if (result == null)
-				result = caseIBeXRule(operationalTGGRule);
+				result = caseIBeXRule(tggOperationalRule);
 			if (result == null)
-				result = caseIBeXNamedElement(operationalTGGRule);
+				result = caseIBeXNamedElement(tggOperationalRule);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case IBeXTGGModelPackage.TGG_RULE_ELEMENT: {
+			TGGRuleElement tggRuleElement = (TGGRuleElement) theEObject;
+			T result = caseTGGRuleElement(tggRuleElement);
 			if (result == null)
 				result = defaultCase(theEObject);
 			return result;
@@ -151,73 +158,6 @@ public class IBeXTGGModelSwitch<T> extends Switch<T> {
 				result = caseTGGRuleElement(tggEdge);
 			if (result == null)
 				result = caseIBeXNamedElement(tggEdge);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
-		case IBeXTGGModelPackage.TGG_RULE_ELEMENT: {
-			TGGRuleElement tggRuleElement = (TGGRuleElement) theEObject;
-			T result = caseTGGRuleElement(tggRuleElement);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
-		case IBeXTGGModelPackage.TGG_ATTRIBUTE_CONSTRAINT_SET: {
-			TGGAttributeConstraintSet tggAttributeConstraintSet = (TGGAttributeConstraintSet) theEObject;
-			T result = caseTGGAttributeConstraintSet(tggAttributeConstraintSet);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
-		case IBeXTGGModelPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY: {
-			TGGAttributeConstraintDefinitionLibrary tggAttributeConstraintDefinitionLibrary = (TGGAttributeConstraintDefinitionLibrary) theEObject;
-			T result = caseTGGAttributeConstraintDefinitionLibrary(tggAttributeConstraintDefinitionLibrary);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
-		case IBeXTGGModelPackage.TGG_ATTRIBUTE_CONSTRAINT: {
-			TGGAttributeConstraint tggAttributeConstraint = (TGGAttributeConstraint) theEObject;
-			T result = caseTGGAttributeConstraint(tggAttributeConstraint);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
-		case IBeXTGGModelPackage.TGG_PARAMETER_VALUE: {
-			TGGParameterValue tggParameterValue = (TGGParameterValue) theEObject;
-			T result = caseTGGParameterValue(tggParameterValue);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
-		case IBeXTGGModelPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION: {
-			TGGAttributeConstraintParameterDefinition tggAttributeConstraintParameterDefinition = (TGGAttributeConstraintParameterDefinition) theEObject;
-			T result = caseTGGAttributeConstraintParameterDefinition(tggAttributeConstraintParameterDefinition);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
-		case IBeXTGGModelPackage.TGG_ATTRIBUTE_CONSTRAINT_BINDING: {
-			TGGAttributeConstraintBinding tggAttributeConstraintBinding = (TGGAttributeConstraintBinding) theEObject;
-			T result = caseTGGAttributeConstraintBinding(tggAttributeConstraintBinding);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
-		case IBeXTGGModelPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION: {
-			TGGAttributeConstraintDefinition tggAttributeConstraintDefinition = (TGGAttributeConstraintDefinition) theEObject;
-			T result = caseTGGAttributeConstraintDefinition(tggAttributeConstraintDefinition);
-			if (result == null)
-				result = caseIBeXNamedElement(tggAttributeConstraintDefinition);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
-		case IBeXTGGModelPackage.TGGCSP: {
-			TGGCSP tggcsp = (TGGCSP) theEObject;
-			T result = caseTGGCSP(tggcsp);
-			if (result == null)
-				result = caseIBeXNamedElement(tggcsp);
 			if (result == null)
 				result = defaultCase(theEObject);
 			return result;
@@ -273,17 +213,32 @@ public class IBeXTGGModelSwitch<T> extends Switch<T> {
 	}
 
 	/**
-	 * Returns the result of interpreting the object as an instance of '<em>Operational TGG Rule</em>'.
+	 * Returns the result of interpreting the object as an instance of '<em>TGG Operational Rule</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>Operational TGG Rule</em>'.
+	 * @return the result of interpreting the object as an instance of '<em>TGG Operational Rule</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public T caseOperationalTGGRule(OperationalTGGRule object) {
+	public T caseTGGOperationalRule(TGGOperationalRule object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>TGG Rule Element</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>TGG Rule Element</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseTGGRuleElement(TGGRuleElement object) {
 		return null;
 	}
 
@@ -329,141 +284,6 @@ public class IBeXTGGModelSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseTGGEdge(TGGEdge object) {
-		return null;
-	}
-
-	/**
-	 * Returns the result of interpreting the object as an instance of '<em>TGG Rule Element</em>'.
-	 * <!-- begin-user-doc -->
-	 * This implementation returns null;
-	 * returning a non-null result will terminate the switch.
-	 * <!-- end-user-doc -->
-	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>TGG Rule Element</em>'.
-	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-	 * @generated
-	 */
-	public T caseTGGRuleElement(TGGRuleElement object) {
-		return null;
-	}
-
-	/**
-	 * Returns the result of interpreting the object as an instance of '<em>TGG Attribute Constraint Set</em>'.
-	 * <!-- begin-user-doc -->
-	 * This implementation returns null;
-	 * returning a non-null result will terminate the switch.
-	 * <!-- end-user-doc -->
-	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>TGG Attribute Constraint Set</em>'.
-	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-	 * @generated
-	 */
-	public T caseTGGAttributeConstraintSet(TGGAttributeConstraintSet object) {
-		return null;
-	}
-
-	/**
-	 * Returns the result of interpreting the object as an instance of '<em>TGG Attribute Constraint Definition Library</em>'.
-	 * <!-- begin-user-doc -->
-	 * This implementation returns null;
-	 * returning a non-null result will terminate the switch.
-	 * <!-- end-user-doc -->
-	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>TGG Attribute Constraint Definition Library</em>'.
-	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-	 * @generated
-	 */
-	public T caseTGGAttributeConstraintDefinitionLibrary(TGGAttributeConstraintDefinitionLibrary object) {
-		return null;
-	}
-
-	/**
-	 * Returns the result of interpreting the object as an instance of '<em>TGG Attribute Constraint</em>'.
-	 * <!-- begin-user-doc -->
-	 * This implementation returns null;
-	 * returning a non-null result will terminate the switch.
-	 * <!-- end-user-doc -->
-	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>TGG Attribute Constraint</em>'.
-	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-	 * @generated
-	 */
-	public T caseTGGAttributeConstraint(TGGAttributeConstraint object) {
-		return null;
-	}
-
-	/**
-	 * Returns the result of interpreting the object as an instance of '<em>TGG Parameter Value</em>'.
-	 * <!-- begin-user-doc -->
-	 * This implementation returns null;
-	 * returning a non-null result will terminate the switch.
-	 * <!-- end-user-doc -->
-	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>TGG Parameter Value</em>'.
-	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-	 * @generated
-	 */
-	public T caseTGGParameterValue(TGGParameterValue object) {
-		return null;
-	}
-
-	/**
-	 * Returns the result of interpreting the object as an instance of '<em>TGG Attribute Constraint Parameter Definition</em>'.
-	 * <!-- begin-user-doc -->
-	 * This implementation returns null;
-	 * returning a non-null result will terminate the switch.
-	 * <!-- end-user-doc -->
-	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>TGG Attribute Constraint Parameter Definition</em>'.
-	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-	 * @generated
-	 */
-	public T caseTGGAttributeConstraintParameterDefinition(TGGAttributeConstraintParameterDefinition object) {
-		return null;
-	}
-
-	/**
-	 * Returns the result of interpreting the object as an instance of '<em>TGG Attribute Constraint Binding</em>'.
-	 * <!-- begin-user-doc -->
-	 * This implementation returns null;
-	 * returning a non-null result will terminate the switch.
-	 * <!-- end-user-doc -->
-	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>TGG Attribute Constraint Binding</em>'.
-	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-	 * @generated
-	 */
-	public T caseTGGAttributeConstraintBinding(TGGAttributeConstraintBinding object) {
-		return null;
-	}
-
-	/**
-	 * Returns the result of interpreting the object as an instance of '<em>TGG Attribute Constraint Definition</em>'.
-	 * <!-- begin-user-doc -->
-	 * This implementation returns null;
-	 * returning a non-null result will terminate the switch.
-	 * <!-- end-user-doc -->
-	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>TGG Attribute Constraint Definition</em>'.
-	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-	 * @generated
-	 */
-	public T caseTGGAttributeConstraintDefinition(TGGAttributeConstraintDefinition object) {
-		return null;
-	}
-
-	/**
-	 * Returns the result of interpreting the object as an instance of '<em>TGGCSP</em>'.
-	 * <!-- begin-user-doc -->
-	 * This implementation returns null;
-	 * returning a non-null result will terminate the switch.
-	 * <!-- end-user-doc -->
-	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>TGGCSP</em>'.
-	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-	 * @generated
-	 */
-	public T caseTGGCSP(TGGCSP object) {
 		return null;
 	}
 

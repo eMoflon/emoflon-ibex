@@ -11,7 +11,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="ruleSet" lowerBound="1"
         eType="#//TGGRuleSet" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="attributeConstraintDefinitionLibraries"
-        upperBound="-1" eType="#//TGGAttributeConstraintDefinitionLibrary" containment="true"/>
+        upperBound="-1" eType="#//CSP/TGGAttributeConstraintDefinitionLibrary" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="TGGRuleSet">
     <eStructuralFeatures xsi:type="ecore:EReference" name="rules" upperBound="-1"
@@ -25,20 +25,17 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="correspondenceNodes" upperBound="-1"
         eType="#//TGGCorrespondence"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="operationalisations" upperBound="-1"
-        eType="#//OperationalTGGRule" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="attributeConstraints" eType="#//TGGAttributeConstraintSet"
+        eType="#//TGGOperationalRule" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="attributeConstraints" eType="#//CSP/TGGAttributeConstraintSet"
         containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="OperationalTGGRule" eSuperTypes="#//TGGRule">
+  <eClassifiers xsi:type="ecore:EClass" name="TGGOperationalRule" eSuperTypes="#//TGGRule">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="operationalisationMode"
         eType="#//OperationalisationMode"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EEnum" name="OperationalisationMode">
-    <eLiterals name="GENERATE"/>
-    <eLiterals name="FORWARD" value="1"/>
-    <eLiterals name="BACKWARD" value="2"/>
-    <eLiterals name="CONSISTENCY_CHECK" value="3"/>
-    <eLiterals name="CHECK_ONLY" value="4"/>
+  <eClassifiers xsi:type="ecore:EClass" name="TGGRuleElement" abstract="true">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="domainType" eType="#//DomainType"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="bindingType" eType="#//BindingType"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="TGGNode" eSuperTypes="../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXNode #//TGGRuleElement">
     <eStructuralFeatures xsi:type="ecore:EReference" name="incomingCorrespondence"
@@ -53,9 +50,12 @@
         eType="#//TGGNode" eOpposite="#//TGGNode/incomingCorrespondence"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="TGGEdge" eSuperTypes="../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXEdge #//TGGRuleElement"/>
-  <eClassifiers xsi:type="ecore:EClass" name="TGGRuleElement" abstract="true">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="domainType" eType="#//DomainType"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="bindingType" eType="#//BindingType"/>
+  <eClassifiers xsi:type="ecore:EEnum" name="OperationalisationMode">
+    <eLiterals name="GENERATE"/>
+    <eLiterals name="FORWARD" value="1"/>
+    <eLiterals name="BACKWARD" value="2"/>
+    <eLiterals name="CONSISTENCY_CHECK" value="3"/>
+    <eLiterals name="CHECK_ONLY" value="4"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="DomainType">
     <eLiterals name="SOURCE" literal="SOURCE"/>
@@ -69,45 +69,54 @@
     <eLiterals name="NEGATIVE" value="3"/>
     <eLiterals name="RELAXED" value="4"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraintSet">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="tggAttributeConstraints"
-        upperBound="-1" eType="#//TGGAttributeConstraint" containment="true"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraintDefinitionLibrary">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="tggAttributeConstraintDefinitions"
-        upperBound="-1" eType="#//TGGAttributeConstraintDefinition" containment="true"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraint">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="definition" eType="#//TGGAttributeConstraintDefinition"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="parameters" upperBound="-1"
-        eType="#//TGGParameterValue"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="TGGParameterValue">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="parameterDefinition" eType="#//TGGAttributeConstraintParameterDefinition"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="expression" lowerBound="1"
-        eType="ecore:EClass ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXCoreArithmetic/ValueExpression"
-        containment="true"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraintParameterDefinition">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EDataType"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraintBinding">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" unique="false" upperBound="-1"
-        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraintDefinition" eSuperTypes="../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXNamedElement">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="parameterDefinitions" upperBound="-1"
-        eType="#//TGGAttributeConstraintParameterDefinition" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="syncBindings" upperBound="-1"
-        eType="#//TGGAttributeConstraintBinding" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="genBindings" upperBound="-1"
-        eType="#//TGGAttributeConstraintBinding" containment="true"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="TGGCSP" eSuperTypes="../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXNamedElement">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="package" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="values" upperBound="-1"
-        eType="ecore:EClass ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXCoreArithmetic/ValueExpression"
-        containment="true"/>
-  </eClassifiers>
+  <eSubpackages name="CSP" nsURI="platform:/resource/org.emoflon.ibex.tgg.tggmodel/model/IBeXTGGModel.ecore/CSP"
+      nsPrefix="CSP">
+    <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraintDefinition"
+        eSuperTypes="../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXNamedElement">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="parameterDefinitions"
+          upperBound="-1" eType="#//CSP/TGGAttributeConstraintParameterDefinition"
+          containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="syncBindings" upperBound="-1"
+          eType="#//CSP/TGGAttributeConstraintBinding" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="genBindings" upperBound="-1"
+          eType="#//CSP/TGGAttributeConstraintBinding" containment="true"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraintDefinitionLibrary">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="tggAttributeConstraintDefinitions"
+          upperBound="-1" eType="#//CSP/TGGAttributeConstraintDefinition" containment="true"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraintParameterDefinition">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EDataType"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraintBinding">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" unique="false"
+          upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraintSet">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="tggAttributeConstraints"
+          upperBound="-1" eType="#//CSP/TGGAttributeConstraint" containment="true"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraint">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="definition" eType="#//CSP/TGGAttributeConstraintDefinition"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="parameters" upperBound="-1"
+          eType="#//CSP/TGGAttributeConstraintParameterValue"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraintVariable" eSuperTypes="../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXCoreArithmetic/ValueExpression">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraintParameterValue">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="parameterDefinition"
+          eType="#//CSP/TGGAttributeConstraintParameterDefinition"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="expression" lowerBound="1"
+          eType="ecore:EClass ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXCoreArithmetic/ValueExpression"
+          containment="true"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="TGGCSP" eSuperTypes="../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXNamedElement">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="package" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="values" upperBound="-1"
+          eType="ecore:EClass ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXCoreArithmetic/ValueExpression"
+          containment="true"/>
+    </eClassifiers>
+  </eSubpackages>
 </ecore:EPackage>

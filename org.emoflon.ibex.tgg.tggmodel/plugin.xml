@@ -14,4 +14,12 @@
             genModel="model/IBeXTGGModel.genmodel"/>
    </extension>
 
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated IBeXTGGModel -->
+      <package
+            uri="platform:/resource/org.emoflon.ibex.tgg.tggmodel/model/IBeXTGGModel.ecore/CSP"
+            class="org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.CSPPackage"
+            genModel="model/IBeXTGGModel.genmodel"/>
+   </extension>
+
 </plugin>
