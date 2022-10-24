@@ -598,10 +598,12 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 		gtEdge.setSource(gtSourceNode);
 		if (node2node.containsKey(edge.getTarget())) {
 			gtEdge.setTarget(node2node.get(edge.getTarget()));
+			gtEdge.setType(edge.getType());
 			setEdgeName(gtEdge);
 		} else {
 			addPendingNodeConsumer((SlimRuleNode) edge.getTarget(), (node) -> {
 				gtEdge.setTarget(node);
+				gtEdge.setType(edge.getType());
 				setEdgeName(gtEdge);
 			});
 		}

@@ -3,6 +3,7 @@ package org.emoflon.ibex.gt.api;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -92,7 +93,7 @@ public abstract class IBeXGtAPI<PM extends IBeXGTPatternMatcher<?>, PF extends I
 		return (GTModel) r.getContents().get(0);
 	}
 
-	public void setModel(final String modelPath) throws Exception {
+	public Resource addModel(final String modelPath) throws Exception {
 		prepareModelResourceSet();
 		File modelFile = new File(modelPath);
 		URI modelUri = null;
@@ -106,14 +107,40 @@ public abstract class IBeXGtAPI<PM extends IBeXGTPatternMatcher<?>, PF extends I
 		Resource r = model.getResource(modelUri, false);
 		if (r == null)
 			throw new IOException("Model path could not be resolved: " + modelPath);
+
+		return r;
 	}
 
-	public void setModel(final URI modelUri) throws Exception {
-		setModel(modelUri.toFileString());
+	public Resource addModel(final URI modelUri) throws Exception {
+		return addModel(modelUri.toFileString());
 	}
 
 	public void setModel(final ResourceSet model) {
 		this.model = model;
+	}
+
+	public Resource createModel(final String modelPath) throws Exception {
+		prepareModelResourceSet();
+		URI modelUri = null;
+		String path = Paths.get(projectPath).resolve(Paths.get(modelPath)).toFile().getCanonicalPath();
+		modelUri = URI.createFileURI(path);
+
+		Resource r = model.createResource(modelUri);
+		if (r == null)
+			throw new IOException("Model path could not be resolved: " + modelPath);
+
+		return r;
+	}
+
+	public Resource createModel(final URI modelUri) throws Exception {
+		return createModel(modelUri.toFileString());
+	}
+
+	public void saveModel() throws Exception {
+		for (Resource r : model.getResources().stream().filter(r -> !r.getURI().toFileString().contains("-trash"))
+				.collect(Collectors.toSet())) {
+			r.save(null);
+		}
 	}
 
 	public void initializeEngine() {

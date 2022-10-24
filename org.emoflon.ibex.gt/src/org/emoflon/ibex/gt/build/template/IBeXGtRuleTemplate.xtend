@@ -143,12 +143,12 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 	
 	«FOR node : context.precondition.signatureNodes»
 	public void bind«node.name.toFirstUpper»(final «node.type.name» «node.name.toFirstLower») {
-		this.«node.name.toFirstLower» = «node.name.toFirstLower»;
+		this.«node.name.toFirstLower»Binding = «node.name.toFirstLower»;
 		setBinding("«node.name»", «node.name.toFirstLower»);
 	}
 	
 	public void unbind«node.name.toFirstUpper»() {
-		this.«node.name.toFirstLower» = null;
+		this.«node.name.toFirstLower»Binding = null;
 		unsetBinding("«node.name»");
 	}
 	
@@ -310,15 +310,15 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 	}
 	
 	def String getNode(String methodContext, IBeXNode node) {
-		if(context.postcondition.signatureNodes.contains(node)) {
-			return '''«methodContext».'''
+		if(context.precondition.signatureNodes.contains(node)) {
+			return '''«methodContext».«node.name.toFirstLower»()'''
 		} else {
 			return node.name.toFirstLower
 		}
 	}
 	
 	def String getNode(String methodContext, GTForEachExpression itrContext, IBeXNode node) {
-		if(context.postcondition.signatureNodes.contains(node)) {
+		if(context.precondition.signatureNodes.contains(node)) {
 			return '''«methodContext».«node.name.toFirstLower»()'''
 		} else if(itrContext.iterator.equals(node)) {
 			return '''«itrContext.iterator.name»'''

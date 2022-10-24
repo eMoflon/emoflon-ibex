@@ -26,14 +26,16 @@ public abstract class IBeXGTMatch<M extends IBeXGTMatch<M, P>, P extends IBeXGTP
 
 	protected abstract void initialize(final M other);
 
+	public abstract boolean checkBindings();
+
+	public abstract boolean checkConditions();
+
+	public abstract M copy();
+
 	@Override
 	public String getPatternName() {
 		return typedPattern.patternName;
 	}
-
-	public abstract boolean checkBindings();
-
-	public abstract boolean checkConditions();
 
 	@Override
 	public long getHashCode() {
@@ -74,5 +76,7 @@ public abstract class IBeXGTMatch<M extends IBeXGTMatch<M, P>, P extends IBeXGTP
 		return s.toString();
 	}
 
-	public abstract M copy();
+	public P getPattern() {
+		return typedPattern;
+	}
 }
