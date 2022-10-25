@@ -278,14 +278,6 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 				model.getFeatureConfig().setParameterExpressions(true);
 		});
 
-		List<IBeXNode> nodes = new LinkedList<>(node2node.values());
-		Collections.sort(nodes, comparator);
-		model.getNodeSet().getNodes().addAll(nodes);
-
-		List<IBeXEdge> edges = new LinkedList<>(edge2edge.values());
-		Collections.sort(edges, comparator);
-		model.getEdgeSet().getEdges().addAll(edges);
-
 		node2node.entrySet().stream().filter(entry -> pendingNodeJobs.containsKey(entry.getKey())).forEach(
 				entry -> pendingNodeJobs.get(entry.getKey()).forEach(consumer -> consumer.accept(entry.getValue())));
 
@@ -293,6 +285,14 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 				.forEach(entry -> pendingIteratorJobs.get(entry.getKey())
 						.forEach(consumer -> consumer.accept(entry.getValue())));
 		pendingInvocationJobs.forEach(i -> i.run());
+
+		List<IBeXNode> nodes = new LinkedList<>(node2node.values());
+		Collections.sort(nodes, comparator);
+		model.getNodeSet().getNodes().addAll(nodes);
+
+		List<IBeXEdge> edges = new LinkedList<>(edge2edge.values());
+		Collections.sort(edges, comparator);
+		model.getEdgeSet().getEdges().addAll(edges);
 	}
 
 	protected GTRule transformRule(SlimRule rule) {
@@ -1140,7 +1140,7 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 
 	protected void addPendingNodeConsumer(final SlimRuleNode node, Consumer<IBeXNode> consumer) {
 		List<Consumer<IBeXNode>> consumers = pendingNodeJobs.get(node);
-		if (consumer == null) {
+		if (consumers == null) {
 			consumers = Collections.synchronizedList(new LinkedList<>());
 			pendingNodeJobs.put(node, consumers);
 		}
@@ -1149,7 +1149,7 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 
 	protected void addPendingIteratorConsumer(final GTLEdgeIterator gtlItr, Consumer<GTForEachExpression> consumer) {
 		List<Consumer<GTForEachExpression>> consumers = pendingIteratorJobs.get(gtlItr);
-		if (consumer == null) {
+		if (consumers == null) {
 			consumers = Collections.synchronizedList(new LinkedList<>());
 			pendingIteratorJobs.put(gtlItr, consumers);
 		}
