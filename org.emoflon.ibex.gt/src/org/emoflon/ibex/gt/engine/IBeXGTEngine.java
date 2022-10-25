@@ -25,8 +25,8 @@ public class IBeXGTEngine<PM extends IBeXGTPatternMatcher<?>> {
 	final protected GTModel ibexModel;
 	final protected ResourceSet model;
 	private Resource trashResource;
-	protected Map<String, GTRule> name2rule;
-	protected Map<String, GTPattern> name2pattern;
+	protected Map<String, GTRule> name2rule = Collections.synchronizedMap(new LinkedHashMap<>());
+	protected Map<String, GTPattern> name2pattern = Collections.synchronizedMap(new LinkedHashMap<>());
 	protected Random rndGenerator;
 
 	/**

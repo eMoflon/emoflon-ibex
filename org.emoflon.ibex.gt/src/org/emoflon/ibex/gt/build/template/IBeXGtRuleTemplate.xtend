@@ -171,9 +171,9 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 		«IF context.precondition.conditions === null || context.precondition.conditions.isEmpty»
 		return true;
 		«ELSE»
-		«IF !context.parameters.nullOrEmpty»
+		«IF !context.parameters.nullOrEmpty && (context.precondition as GTPattern).usedFeatures.parameterExpressions»
 		if(!parametersInitialized)
-			throw new NullPointerException("One or more required parameters have not been initialized.");
+			return false;
 		«ENDIF»
 		return «FOR condition : context.precondition.conditions SEPARATOR ' && \n'»(«exprHelper.unparse("match", condition)»)«ENDFOR»;
 		«ENDIF»

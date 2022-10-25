@@ -135,7 +135,7 @@ public class «className» extends IBeXGTPattern<«className», «matchClassName
 		«ELSE»
 		«IF !context.parameters.nullOrEmpty»
 		if(!parametersInitialized)
-			throw new NullPointerException("One or more required parameters have not been initialized.");
+			return false;
 		«ENDIF»
 		return «FOR condition : context.conditions SEPARATOR ' && \n'»(«exprHelper.unparse("match", condition)»)«ENDFOR»;
 		«ENDIF»

@@ -15,6 +15,7 @@ class IBeXGtApiTemplate extends GeneratorTemplate<IBeXPMEngineInformation> {
 		fqn = packageName + "." + className;
 		filePath = data.apiPackagePath + "/" + className
 		
+		imports.add("org.eclipse.emf.ecore.resource.ResourceSet");
 		imports.add("org.emoflon.ibex.gt.api.IBeXGtAPI")
 		imports.addAll(context.imports)
 		
@@ -53,7 +54,7 @@ public class «className» extends IBeXGtAPI<«context.engineClassName», «data
 	
 	@Override
 	public String getIBeXModelPath() {
-		return "«data.gtModelPath»";
+		return "«data.model.metaData.projectPath»«data.gtModelPath»";
 	}
 	
 	@Override
@@ -91,9 +92,9 @@ public class «className» extends IBeXGtAPI<«context.engineClassName», «data
 	}
 	
 	@Override
-	protected void registerModelMetamodels() {
+	protected void registerMetamodels(final ResourceSet rs) {
 		«FOR dep : data.model.metaData.dependencies»
-		model.getPackageRegistry().put(«dep.packageClassName».eINSTANCE.getNsURI(), «dep.packageClassName».eINSTANCE);
+		rs.getPackageRegistry().put(«dep.packageClassName».eINSTANCE.getNsURI(), «dep.packageClassName».eINSTANCE);
 		«ENDFOR»
 	}
 	

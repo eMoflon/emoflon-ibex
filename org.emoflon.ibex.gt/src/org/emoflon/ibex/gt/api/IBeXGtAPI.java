@@ -10,6 +10,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage;
 import org.emoflon.ibex.gt.engine.IBeXGTEngine;
 import org.emoflon.ibex.gt.engine.IBeXGTPatternFactory;
 import org.emoflon.ibex.gt.engine.IBeXGTPatternMatcher;
@@ -83,14 +84,20 @@ public abstract class IBeXGtAPI<PM extends IBeXGTPatternMatcher<?>, PF extends I
 	/**
 	 * Add the meta-models to the package registry.
 	 */
-	protected abstract void registerModelMetamodels();
+	protected abstract void registerMetamodels(final ResourceSet rs);
 
 	protected GTModel loadGTModel() throws Exception {
 		ResourceSet rs = new ResourceSetImpl();
 		rs.getResourceFactoryRegistry().getExtensionToFactoryMap().put("xmi", new XMIResourceFactoryImpl());
+		rs.getPackageRegistry().put(IBeXCoreModelPackage.eINSTANCE.getNsURI(), IBeXCoreModelPackage.eINSTANCE);
 		rs.getPackageRegistry().put(IBeXGTModelPackage.eINSTANCE.getNsURI(), IBeXGTModelPackage.eINSTANCE);
-		Resource r = rs.getResource(URI.createFileURI(ibexModelPath), false);
-		return (GTModel) r.getContents().get(0);
+		registerMetamodels(rs);
+		File f = new File(ibexModelPath);
+		if (f.exists()) {
+			Resource r = rs.getResource(URI.createFileURI(f.getCanonicalPath()), true);
+			return (GTModel) r.getContents().get(0);
+		}
+		throw new IOException("IBeX-GT model path could not be resolved: " + ibexModelPath);
 	}
 
 	public Resource addModel(final String modelPath) throws Exception {
@@ -98,13 +105,13 @@ public abstract class IBeXGtAPI<PM extends IBeXGTPatternMatcher<?>, PF extends I
 		File modelFile = new File(modelPath);
 		URI modelUri = null;
 		if (modelFile.exists() && modelFile.isFile() && modelFile.isAbsolute()) {
-			modelUri = URI.createFileURI(modelPath);
+			modelUri = URI.createFileURI(modelFile.getCanonicalPath());
 		} else {
 			String path = Paths.get(projectPath).resolve(Paths.get(modelPath)).toFile().getCanonicalPath();
 			modelUri = URI.createFileURI(path);
 		}
 
-		Resource r = model.getResource(modelUri, false);
+		Resource r = model.getResource(modelUri, true);
 		if (r == null)
 			throw new IOException("Model path could not be resolved: " + modelPath);
 
@@ -143,6 +150,23 @@ public abstract class IBeXGtAPI<PM extends IBeXGTPatternMatcher<?>, PF extends I
 		}
 	}
 
+	public void saveModel(final URI modelUri) throws Exception {
+		model.getResources().stream().filter(r -> r.getURI().toFileString().equals(modelUri.toFileString())).findAny()
+				.ifPresent(r -> {
+					try {
+						r.save(null);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				});
+	}
+
+	public void saveModel(final Resource r) throws Exception {
+		if (model.getResources().contains(r)) {
+			r.save(null);
+		}
+	}
+
 	public void initializeEngine() {
 		gtEngine = new IBeXGTEngine<PM>(createPatternMatcher(), ibexModel, model);
 		patternFactory = createPatternFactory();
@@ -155,10 +179,13 @@ public abstract class IBeXGtAPI<PM extends IBeXGTPatternMatcher<?>, PF extends I
 	 * Initializes the package registry of the resource set.
 	 */
 	protected void prepareModelResourceSet() {
+		if (model != null)
+			return;
+
 		model = new ResourceSetImpl();
 		model.getResourceFactoryRegistry().getExtensionToFactoryMap().put("xmi",
 				new SmartEMFResourceFactoryImpl(workspacePath));
-		registerModelMetamodels();
+		registerMetamodels(model);
 	}
 
 	/**
