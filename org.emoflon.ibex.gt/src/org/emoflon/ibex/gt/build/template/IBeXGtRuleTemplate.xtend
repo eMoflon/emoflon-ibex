@@ -247,8 +247,19 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 		// Create new elements
 		«FOR node : context.creation.nodes»
 		«node.type.name» «node.name.toFirstLower» = «nodeName2FactoryClass.get(node.name).toFirstLower».create«node.type.name»();
+		«IF !placedIntoContainment(node)»
+		«IF !context.precondition.signatureNodes.isEmpty»
+		«getNode("match",context.precondition.signatureNodes.get(0))».eResource().getContents().add(«node.name.toFirstLower»);
+		«ELSE»
+		gtEngine.getModel().getResources().get(0).getContents().add(«node.name.toFirstLower»);
+		«ENDIF»
+		«ENDIF»
 		coMatchNodes.put("«node.name»", «node.name.toFirstLower»);
 		«ENDFOR»
+		«IF !context.creation.edges.isNullOrEmpty»
+		
+		// Create new edges
+		«ENDIF»
 		«FOR edge : context.creation.edges»
 		«IF edge.type.isMany»
 		«getNode("match", edge.source)».get«edge.type.name.toFirstUpper»().add(«getNode("match", edge.target)»);
@@ -343,6 +354,11 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 		} else {
 			return '''«getNode(methodContext, itr.source)».get«itr.reference.name.toFirstUpper»().stream().map(n -> («itr.iterator.type.name») n).collect(Collectors.toList())'''
 		}
+	}
+	
+	def boolean placedIntoContainment(IBeXNode node) {
+		val containmentEdge = context.deletion.edges.filter[e | e.type.isContainment || e.type.isContainer].findFirst[e | e.target.equals(node)]
+		return containmentEdge !== null;
 	}
 
 }
