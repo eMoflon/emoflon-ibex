@@ -314,6 +314,11 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, EM, IM
 	}
 
 	protected synchronized void updateMatchesInternal(final String patternName) {
+		if (!matches.containsKey(patternName)) {
+			insertNewMatchCollection(patternName);
+			return;
+		}
+
 		if (matches.get(patternName).isEmpty()) {
 			return;
 		} else {
@@ -352,7 +357,7 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, EM, IM
 		// Fetch matches from pm
 		fetchMatches();
 		// Update filtered matches
-		matches.keySet().forEach(patternName -> updateMatchesInternal(patternName));
+		name2pattern.keySet().forEach(patternName -> updateMatchesInternal(patternName));
 
 		// (1) ADDED: Check for appearing match subscribers and filter matches
 		subscriptionsForAppearingMatchesOfPattern.keySet().stream().forEach(patternName -> {

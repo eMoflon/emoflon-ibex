@@ -461,13 +461,8 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 					if (n2.equals(n1))
 						continue;
 
-					if (n2.eClass().equals(n1.eClass()))
-						continue;
-
-					if (n2.eClass().getESuperTypes().contains(n1.eClass()))
-						continue;
-
-					if (n1.eClass().getESuperTypes().contains(n2.eClass()))
+					if (!n2.getType().equals(n1.getType()) && !n2.getType().getESuperTypes().contains(n1.getType())
+							&& !n1.getType().getESuperTypes().contains(n2.getType()))
 						continue;
 
 					IBeXNodePair pair = new IBeXNodePair(n1, n2);

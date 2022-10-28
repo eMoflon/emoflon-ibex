@@ -95,6 +95,31 @@ public abstract class IBeXGTPatternMatcher<EM> extends PatternMatchingEngine<GTM
 	}
 
 	@Override
+	protected synchronized void updateMatchesInternal(final String patternName) {
+		if (!matches.containsKey(patternName)) {
+			insertNewMatchCollection(patternName);
+			return;
+		}
+
+		IBeXPattern pattern = name2pattern.get(patternName);
+		if (!pattern.isEmpty() && matches.get(patternName).isEmpty()) {
+			return;
+		} else {
+
+			if (pattern.getDependencies().isEmpty()) {
+				updateFilteredMatches(patternName);
+			} else {
+				// Check dependencies to prevent deadlocks
+				pattern.getDependencies().forEach(depPattern -> {
+					updateMatchesInternal(depPattern.getName());
+				});
+				updateFilteredMatches(patternName);
+			}
+			return;
+		}
+	}
+
+	@Override
 	protected void updateFilteredMatches(final String patternName) {
 		IBeXPattern pattern = name2pattern.get(patternName);
 		if (!pattern.isEmpty()) {
@@ -113,12 +138,13 @@ public abstract class IBeXGTPatternMatcher<EM> extends PatternMatchingEngine<GTM
 
 		if (invocations.isEmpty()) {
 			// Create a new empty match -> The pattern will know what to do
-			IBeXGTMatch<?, ?> match = name2typedPattern.get(patternName).createMatch(new HashMap<>());
-			patternMatches.add(match);
+			if (patternMatches.isEmpty()) {
+				IBeXGTMatch<?, ?> match = name2typedPattern.get(patternName).createMatch(new HashMap<>());
+				patternMatches.add(match);
+			}
 		} else {
 			boolean invocationsViolated = false;
 			for (IBeXPatternInvocation invocation : invocations) {
-				updateMatchesInternal(invocation.getInvocation().getName());
 				Collection<IBeXGTMatch<?, ?>> matches = filteredMatches.get(invocation.getInvocation().getName());
 				if (invocation.isPositive() && (matches == null || matches.size() <= 0)) {
 					invocationsViolated = true;
