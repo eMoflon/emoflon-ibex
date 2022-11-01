@@ -114,7 +114,7 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 	}
 	
 	@Override
-	public void setParameters(final Map<String, Object> parameters) {
+	public «className» setParameters(final Map<String, Object> parameters) {
 		«IF context.parameters.isNullOrEmpty»
 		throw new UnsupportedOperationException("This rule does not have any parameters.");
 		«ELSE»
@@ -129,27 +129,31 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 			}
 		}
 		parametersInitialized = true;
+		return this;
 		«ENDIF»
 	}
 	
 	«IF !context.parameters.isNullOrEmpty»
-	public void setParameters(«FOR param : context.parameters SEPARATOR ', '»final «exprHelper.EDataType2Java(param.type)» «param.name.toFirstLower»«ENDFOR») {
+	public «className» setParameters(«FOR param : context.parameters SEPARATOR ', '»final «exprHelper.EDataType2Java(param.type)» «param.name.toFirstLower»«ENDFOR») {
 		«FOR param : context.parameters»
 		this.«param.name.toFirstLower» = «param.name.toFirstLower»;
 		«ENDFOR»
 		parametersInitialized = true;
+		return this;
 	}
 	«ENDIF»
 	
 	«FOR node : context.precondition.signatureNodes»
-	public void bind«node.name.toFirstUpper»(final «node.type.name» «node.name.toFirstLower») {
+	public «className» bind«node.name.toFirstUpper»(final «node.type.name» «node.name.toFirstLower») {
 		this.«node.name.toFirstLower»Binding = «node.name.toFirstLower»;
 		setBinding("«node.name»", «node.name.toFirstLower»);
+		return this;
 	}
 	
-	public void unbind«node.name.toFirstUpper»() {
+	public «className» unbind«node.name.toFirstUpper»() {
 		this.«node.name.toFirstLower»Binding = null;
 		unsetBinding("«node.name»");
+		return this;
 	}
 	
 	«ENDFOR»
@@ -200,7 +204,7 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 		return «(context.precondition as GTPattern).usedFeatures.parameterExpressions.toString»;
 	}
 	
-	public «matchClassName» createMatch(final Map<String, Object> nodes) {
+	public «matchClassName» createMatch(final Map<String, Object> nodes, Object... args) {
 		return new «matchClassName»(this, nodes);
 	}
 	
@@ -310,7 +314,8 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 		«ENDFOR»
 		«ENDIF»
 		
-		return coPattern.createMatch(coMatchNodes);
+		ruleApplicationCount++;
+		return coPattern.createMatch(coMatchNodes, match);
 	}
 «««	TODO: Future works!
 «««	public Optional<«matchClassName»> applyReverse(final «coMatchClassName» coMatch) {

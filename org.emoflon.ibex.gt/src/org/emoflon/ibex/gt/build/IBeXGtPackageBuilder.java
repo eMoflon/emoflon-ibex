@@ -156,10 +156,18 @@ public class IBeXGtPackageBuilder implements SlimGTBuilderExtension<EditorFile> 
 		String matchPackageName = apiPackageName + "." + MATCH_FOLDER;
 		String patternPackageName = apiPackageName + "." + PATTERN_FOLDER;
 		String rulePackageName = apiPackageName + "." + RULE_FOLDER;
-		boolean updateExports = ManifestFileUpdater.updateExports(manifest,
-				List.of(apiPackageName, matchPackageName, patternPackageName, rulePackageName));
+		boolean updateExports = false;
+
+		if (gtModel.getRuleSet() == null || gtModel.getRuleSet().getRules().isEmpty()) {
+			updateExports = ManifestFileUpdater.updateExports(manifest,
+					List.of(apiPackageName, matchPackageName, patternPackageName));
+		} else {
+			updateExports = ManifestFileUpdater.updateExports(manifest,
+					List.of(apiPackageName, matchPackageName, patternPackageName, rulePackageName));
+		}
+
 		if (updateExports) {
-			// TODO: log("Updated exports");
+			LogUtils.info(logger, "Updated manifest file!");
 		}
 
 		return updateExports || updatedDependencies || changedBasics;

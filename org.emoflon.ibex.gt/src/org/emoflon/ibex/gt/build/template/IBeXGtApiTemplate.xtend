@@ -5,6 +5,8 @@ import org.emoflon.ibex.common.engine.IBeXPMEngineInformation
 
 class IBeXGtApiTemplate extends GeneratorTemplate<IBeXPMEngineInformation> {
 	
+	protected ExpressionHelper exprHelper;
+	
 	new(IBeXGTApiData data, IBeXPMEngineInformation context) {
 		super(data, context)
 	}
@@ -23,6 +25,7 @@ class IBeXGtApiTemplate extends GeneratorTemplate<IBeXPMEngineInformation> {
 		data.rule2ruleClassName.forEach[rule, name | imports.add(data.rulePackage + "." + name)]
 		
 		data.model.metaData.dependencies.forEach[dep | imports.add(dep.fullyQualifiedName + "." + dep.packageClassName)]
+		exprHelper = new ExpressionHelper(data, imports)
 	}
 	
 	override generate() {
@@ -102,13 +105,22 @@ public class «className» extends IBeXGtAPI<«context.engineClassName», «data
 	public «data.pattern2patternClassName.get(pattern)» «pattern.name.toFirstLower»() {
 		return 	«pattern.name.toFirstLower»;
 	}
+	«IF !pattern.parameters.isNullOrEmpty»
+	public «data.pattern2patternClassName.get(pattern)» «pattern.name.toFirstLower»(«FOR param : pattern.parameters SEPARATOR ', '»final «exprHelper.EDataType2Java(param.type)» «param.name.toFirstLower»«ENDFOR») {
+		return 	«pattern.name.toFirstLower»;
+	}
+	«ENDIF»
 	
 	«ENDFOR»
 	«FOR rule : data.rule2ruleClassName.keySet»
 	public «data.rule2ruleClassName.get(rule)» «rule.name.toFirstLower»() {
 		return 	«rule.name.toFirstLower»;
 	}
-	
+	«IF !rule.parameters.isNullOrEmpty»
+	public «data.rule2ruleClassName.get(rule)» «rule.name.toFirstLower»(«FOR param : rule.parameters SEPARATOR ', '»final «exprHelper.EDataType2Java(param.type)» «param.name.toFirstLower»«ENDFOR») {
+		return 	«rule.name.toFirstLower»;
+	}
+	«ENDIF»
 	«ENDFOR»
 	
 }'''

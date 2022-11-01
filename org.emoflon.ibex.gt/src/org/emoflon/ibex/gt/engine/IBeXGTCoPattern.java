@@ -10,7 +10,7 @@ import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern;
 public abstract class IBeXGTCoPattern<CP extends IBeXGTCoPattern<CP, CM, R, P, M>, CM extends IBeXGTCoMatch<CM, CP, R, P, M>, R extends IBeXGTRule<R, P, M, CP, CM>, P extends IBeXGTPattern<P, M>, M extends IBeXGTMatch<M, P>>
 		extends IBeXGTPattern<CP, CM> {
 
-	final protected R typedRule;
+	final public R typedRule;
 
 	public IBeXGTCoPattern(final IBeXGtAPI<? extends IBeXGTPatternMatcher<?>, ?, ?> api, final R typedRule,
 			final GTPattern pattern) {
@@ -70,32 +70,32 @@ public abstract class IBeXGTCoPattern<CP extends IBeXGTCoPattern<CP, CM, R, P, M
 	}
 
 	@Override
-	public void subscribeAppearing(final Consumer<CM> action) {
+	public IBeXGTPattern<CP, CM> subscribeAppearing(final Consumer<CM> action) {
 		throw new UnsupportedOperationException("Co patterns do not support the use of callbacks.");
 	}
 
 	@Override
-	public void unsubscribeAppearing(final Consumer<CM> action) {
+	public IBeXGTPattern<CP, CM> unsubscribeAppearing(final Consumer<CM> action) {
 		throw new UnsupportedOperationException("Co patterns do not support the use of callbacks.");
 	}
 
 	@Override
-	public void subscribeDisappearing(final Consumer<CM> action) {
+	public IBeXGTPattern<CP, CM> subscribeDisappearing(final Consumer<CM> action) {
 		throw new UnsupportedOperationException("Co patterns do not support the use of callbacks.");
 	}
 
 	@Override
-	public void unsubscribeDisappearing(final Consumer<CM> action) {
+	public IBeXGTPattern<CP, CM> unsubscribeDisappearing(final Consumer<CM> action) {
 		throw new UnsupportedOperationException("Co patterns do not support the use of callbacks.");
 	}
 
 	@Override
-	public void subscribeMatchDisappears(final CM match, final Consumer<CM> action) {
+	public IBeXGTPattern<CP, CM> subscribeMatchDisappears(final CM match, final Consumer<CM> action) {
 		throw new UnsupportedOperationException("Co patterns do not support the use of callbacks.");
 	}
 
 	@Override
-	public void unsubscribeMatchDisappears(final CM match, final Consumer<CM> action) {
+	public IBeXGTPattern<CP, CM> unsubscribeMatchDisappears(final CM match, final Consumer<CM> action) {
 		throw new UnsupportedOperationException("Co patterns do not support the use of callbacks.");
 	}
 

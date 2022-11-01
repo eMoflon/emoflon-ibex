@@ -38,7 +38,7 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 	/**
 	 * The actual pattern.
 	 */
-	protected final GTPattern pattern;
+	public final GTPattern pattern;
 
 	protected Collection<M> matches = Collections.synchronizedSet(new LinkedHashSet<>());
 	protected Collection<M> pendingMatches = Collections.synchronizedSet(new LinkedHashSet<>());
@@ -82,7 +82,7 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 
 	public abstract boolean hasParameterExpressions();
 
-	public abstract M createMatch(final Map<String, Object> nodes);
+	public abstract M createMatch(final Map<String, Object> nodes, Object... args);
 
 	/**
 	 * Returns the parameters.
@@ -96,20 +96,22 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 	 * 
 	 * @return the parameter names
 	 */
-	protected abstract Collection<String> getParameterNames();
+	public abstract Collection<String> getParameterNames();
 
-	public abstract void setParameters(final Map<String, Object> parameters);
+	public abstract P setParameters(final Map<String, Object> parameters);
 
 	public Map<String, Object> getBindings() {
 		return new HashMap<>(bindings);
 	}
 
-	protected void setBinding(final String name, final Object binding) {
+	protected IBeXGTPattern<P, M> setBinding(final String name, final Object binding) {
 		bindings.put(name, binding);
+		return this;
 	}
 
-	protected void unsetBinding(final String name) {
+	protected IBeXGTPattern<P, M> unsetBinding(final String name) {
 		bindings.remove(name);
+		return this;
 	}
 
 	public boolean requiresChecks(final IBeXPMEngineInformation properties) {
@@ -196,7 +198,7 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 	 * 
 	 * @param action the {@link Consumer} to notify
 	 */
-	public void subscribeAppearing(final Consumer<M> action) {
+	public IBeXGTPattern<P, M> subscribeAppearing(final Consumer<M> action) {
 		if (typed2genericConsumers.containsKey(action)) {
 			Consumer<IBeXGTMatch<?, ?>> consumer = typed2genericConsumers.remove(action);
 			patternMatcher.unsubscibeAppearing(patternName, consumer);
@@ -205,6 +207,7 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 		Consumer<IBeXGTMatch<?, ?>> consumer = toIMatchConsumer(action);
 		typed2genericConsumers.put(action, consumer);
 		patternMatcher.subscribeAppearing(patternName, consumer);
+		return this;
 	}
 
 	/**
@@ -213,12 +216,13 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 	 * 
 	 * @param action the {@link Consumer} to remove
 	 */
-	public void unsubscribeAppearing(final Consumer<M> action) {
+	public IBeXGTPattern<P, M> unsubscribeAppearing(final Consumer<M> action) {
 		if (!typed2genericConsumers.containsKey(action))
-			return;
+			return this;
 
 		Consumer<IBeXGTMatch<?, ?>> consumer = typed2genericConsumers.remove(action);
 		patternMatcher.unsubscibeAppearing(patternName, consumer);
+		return this;
 	}
 
 	/**
@@ -228,7 +232,7 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 	 * 
 	 * @param action the {@link Consumer} to notify
 	 */
-	public void subscribeDisappearing(final Consumer<M> action) {
+	public IBeXGTPattern<P, M> subscribeDisappearing(final Consumer<M> action) {
 		if (typed2genericConsumers.containsKey(action)) {
 			Consumer<IBeXGTMatch<?, ?>> consumer = typed2genericConsumers.remove(action);
 			patternMatcher.unsubscibeDisappearing(patternName, consumer);
@@ -237,6 +241,8 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 		Consumer<IBeXGTMatch<?, ?>> consumer = toIMatchConsumer(action);
 		typed2genericConsumers.put(action, consumer);
 		patternMatcher.subscribeDisappearing(patternName, consumer);
+
+		return this;
 	}
 
 	/**
@@ -245,13 +251,14 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 	 * 
 	 * @param action the {@link Consumer} to remove
 	 */
-	public void unsubscribeDisappearing(final Consumer<M> action) {
+	public IBeXGTPattern<P, M> unsubscribeDisappearing(final Consumer<M> action) {
 		if (!typed2genericConsumers.containsKey(action))
-			return;
+			return this;
 
 		Consumer<IBeXGTMatch<?, ?>> consumer = typed2genericConsumers.remove(action);
 		patternMatcher.unsubscibeDisappearing(patternName, consumer);
 
+		return this;
 	}
 
 	/**
@@ -260,7 +267,7 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 	 * @param match  the match to observe
 	 * @param action the {@link Consumer} to notify
 	 */
-	public void subscribeMatchDisappears(final M match, final Consumer<M> action) {
+	public IBeXGTPattern<P, M> subscribeMatchDisappears(final M match, final Consumer<M> action) {
 		if (typed2genericConsumers.containsKey(action)) {
 			Consumer<IBeXGTMatch<?, ?>> consumer = typed2genericConsumers.remove(action);
 			patternMatcher.unsubscribeMatchDisappears(match, consumer);
@@ -269,6 +276,8 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 		Consumer<IBeXGTMatch<?, ?>> consumer = toIMatchConsumer(action);
 		typed2genericConsumers.put(action, consumer);
 		patternMatcher.subscribeMatchDisappears(match, consumer);
+
+		return this;
 	}
 
 	/**
@@ -277,12 +286,14 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 	 * @param match  the match to observe
 	 * @param action the {@link Consumer} to remove
 	 */
-	public void unsubscribeMatchDisappears(final M match, final Consumer<M> action) {
+	public IBeXGTPattern<P, M> unsubscribeMatchDisappears(final M match, final Consumer<M> action) {
 		if (!typed2genericConsumers.containsKey(action))
-			return;
+			return this;
 
 		Consumer<IBeXGTMatch<?, ?>> consumer = typed2genericConsumers.remove(action);
 		patternMatcher.unsubscribeMatchDisappears(match, consumer);
+
+		return this;
 	}
 
 	protected Collection<M> getMatches() {

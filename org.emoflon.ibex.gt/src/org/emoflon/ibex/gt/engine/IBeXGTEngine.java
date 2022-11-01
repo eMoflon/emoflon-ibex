@@ -30,11 +30,6 @@ public class IBeXGTEngine<PM extends IBeXGTPatternMatcher<?>> {
 	protected Random rndGenerator;
 
 	/**
-	 * The pushout approach to use if no approach is specified.
-	 */
-	protected PushoutApproach defaultPushoutApproach = PushoutApproach.SPO;
-
-	/**
 	 * TODO: Reimplement this once the rest is complete. Returns the model state
 	 * manager
 	 * 
@@ -170,38 +165,6 @@ public class IBeXGTEngine<PM extends IBeXGTPatternMatcher<?>> {
 	 */
 	public void terminate() {
 		patternMatcher.terminate();
-	}
-
-	/**
-	 * Sets the default pushout approach.
-	 * 
-	 * @param defaultPushoutApproach the pushout approach to set
-	 */
-	public void setDefaultPushoutApproach(final PushoutApproach defaultPushoutApproach) {
-		this.defaultPushoutApproach = defaultPushoutApproach;
-	}
-
-	/**
-	 * Sets the pushout approach to double pushout (see {@link PushoutApproach}).
-	 */
-	public void setDPO() {
-		setDefaultPushoutApproach(PushoutApproach.DPO);
-	}
-
-	/**
-	 * Sets the pushout approach to single pushout (see {@link PushoutApproach}).
-	 */
-	public void setSPO() {
-		setDefaultPushoutApproach(PushoutApproach.SPO);
-	}
-
-	/**
-	 * Returns the default pushout approach
-	 * 
-	 * @return the default pushout approach
-	 */
-	public PushoutApproach getDefaultPushoutApproach() {
-		return defaultPushoutApproach;
 	}
 
 	/**

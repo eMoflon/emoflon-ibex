@@ -1,6 +1,6 @@
 package org.emoflon.ibex.gt.engine;
 
-import java.util.Optional;
+import java.util.Iterator;
 
 import org.emoflon.ibex.gt.api.IBeXGtAPI;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern;
@@ -10,13 +10,8 @@ public abstract class IBeXGTRule<R extends IBeXGTRule<R, P, M, CP, CM>, P extend
 		extends IBeXGTPattern<P, M> {
 
 	public final String ruleName;
-	protected final GTRule rule;
+	public final GTRule rule;
 	protected CP coPattern;
-
-	/**
-	 * The pushout approach for the rule.
-	 */
-	protected Optional<PushoutApproach> pushoutApproach = Optional.empty();
 
 	/**
 	 * The number of rule applications until now.
@@ -29,41 +24,6 @@ public abstract class IBeXGTRule<R extends IBeXGTRule<R, P, M, CP, CM>, P extend
 		this.rule = rule;
 		gtEngine.registerTypedRule(this);
 		coPattern = createCoPattern();
-	}
-
-	/**
-	 * Returns the pushout approach. If the pushout approach has not been set for
-	 * the rule, the pushout approach defaults to the one set for the API.
-	 * 
-	 * @return the pushout approach
-	 */
-	public PushoutApproach getPushoutApproach() {
-		return pushoutApproach.orElse(gtEngine.getDefaultPushoutApproach());
-	}
-
-	/**
-	 * Sets the pushout approach for the rule.
-	 * 
-	 * @param pushoutApproach the pushout approach
-	 */
-	public void setPushoutApproach(final PushoutApproach pushoutApproach) {
-		this.pushoutApproach = Optional.of(pushoutApproach);
-	}
-
-	/**
-	 * Sets the pushout approach for the rule to double pushout (see
-	 * {@link PushoutApproach}).
-	 */
-	public void setDPO() {
-		setPushoutApproach(PushoutApproach.DPO);
-	}
-
-	/**
-	 * Sets the pushout approach for the rule to single pushout (see
-	 * {@link PushoutApproach}).
-	 */
-	public void setSPO() {
-		setPushoutApproach(PushoutApproach.SPO);
 	}
 
 	/**
@@ -101,7 +61,11 @@ public abstract class IBeXGTRule<R extends IBeXGTRule<R, P, M, CP, CM>, P extend
 	}
 
 	public CM applyAny() {
-		return apply(getMatches(false).iterator().next());
+		Iterator<M> it = getMatches(false).iterator();
+		if (it.hasNext())
+			return apply(it.next());
+		else
+			return null;
 	}
 
 	public CM applyAny(boolean doUpdate) {

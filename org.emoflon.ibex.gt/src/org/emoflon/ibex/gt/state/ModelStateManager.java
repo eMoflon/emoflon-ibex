@@ -43,7 +43,6 @@ import org.emoflon.ibex.gt.StateModel.StateModelFactory;
 import org.emoflon.ibex.gt.StateModel.StructuralDelta;
 import org.emoflon.ibex.gt.StateModel.Value;
 import org.emoflon.ibex.gt.engine.IBeXGTPatternMatcher;
-import org.emoflon.ibex.gt.engine.PushoutApproach;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRule;
 import org.graphstream.util.parser.ParseException;
 
@@ -210,7 +209,7 @@ public class ModelStateManager {
 	}
 
 	public Optional<IMatch> addNewState(final GTRule rule, final IMatch match, final Map<String, Object> parameter,
-			final Map<String, Collection<IMatch>> matches, boolean doUpdate, PushoutApproach po,
+			final Map<String, Collection<IMatch>> matches, boolean doUpdate,
 			Map<String, Collection<IMatch>> addedMatches, Map<String, Collection<IMatch>> removedMatches,
 			BiFunction<Map<String, Object>, Boolean, Optional<IMatch>> applyRule) {
 		RuleState newState = factory.createRuleState();
@@ -222,7 +221,6 @@ public class ModelStateManager {
 		newState.setInitial(false);
 		newState.setMatch(IMatchToIBeXMatch(match));
 		newState.setRule(rule);
-		newState.setPushoutApproach(po.ordinal());
 		addParameterToState(newState, parameter);
 		newState.setParent(currentState);
 		currentState.getChildren().add(newState);

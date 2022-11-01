@@ -65,7 +65,7 @@ public class «className» extends IBeXGTCoPattern<«className», «coMatchClass
 	}
 	
 	@Override
-	public void setParameters(final Map<String, Object> parameters) {
+	public «className» setParameters(final Map<String, Object> parameters) {
 		throw new UnsupportedOperationException("Patterns do not have any parameters.");
 	}
 	
@@ -100,8 +100,8 @@ public class «className» extends IBeXGTCoPattern<«className», «coMatchClass
 		return «(context.precondition as GTPattern).usedFeatures.parameterExpressions.toString»;
 	}
 	
-	public «coMatchClassName» createMatch(final Map<String, Object> nodes) {
-		return new «coMatchClassName»(typedRule, this, nodes);
+	public «coMatchClassName» createMatch(final Map<String, Object> nodes, Object... args) {
+		return new «coMatchClassName»(typedRule, this, («matchClassName») args[0], nodes);
 	}
 }'''
 	}
