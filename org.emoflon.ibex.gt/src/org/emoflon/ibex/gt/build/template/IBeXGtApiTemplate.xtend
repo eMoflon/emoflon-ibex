@@ -28,14 +28,9 @@ class IBeXGtApiTemplate extends GeneratorTemplate<IBeXPMEngineInformation> {
 		exprHelper = new ExpressionHelper(data, imports)
 	}
 	
-	override generate() {
-		code = '''package «packageName»;
-		
-«FOR imp : imports.filter[imp | imp !== null]»
-import «imp»;
-«ENDFOR»
-		
-public class «className» extends IBeXGtAPI<«context.engineClassName», «data.patternFactoryClassName», «data.ruleFactoryClassName»> {
+	def String generateClass() {
+		return
+'''public class «className» extends IBeXGtAPI<«context.engineClassName», «data.patternFactoryClassName», «data.ruleFactoryClassName»> {
 	
 	«FOR pattern : data.pattern2patternClassName.keySet»
 	protected «data.pattern2patternClassName.get(pattern)» «pattern.name.toFirstLower»;
@@ -123,7 +118,20 @@ public class «className» extends IBeXGtAPI<«context.engineClassName», «data
 	«ENDIF»
 	«ENDFOR»
 	
-}'''
+}
+'''
+	}
+	
+	override generate() {
+		val clazz = generateClass
+		code = '''package «packageName»;
+		
+«FOR imp : imports.filter[imp | imp !== null]»
+import «imp»;
+«ENDFOR»
+
+«clazz»
+'''
 }
 	
 }

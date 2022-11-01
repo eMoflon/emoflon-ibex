@@ -22,11 +22,6 @@ public abstract class IBeXGTPatternMatcher<EM> extends PatternMatchingEngine<GTM
 		super(ibexModel, model);
 	}
 
-	@Override
-	protected void initialize() {
-		name2typedPattern = Collections.synchronizedMap(new LinkedHashMap<>());
-	}
-
 	protected abstract Map<String, Object> extractNodes(final EM match);
 
 	protected abstract String extractPatternName(final EM match);
@@ -34,6 +29,15 @@ public abstract class IBeXGTPatternMatcher<EM> extends PatternMatchingEngine<GTM
 	@Override
 	public IBeXGTMatch<?, ?> transformToIMatch(final EM match) {
 		return name2typedPattern.get(extractPatternName(match)).createMatch(extractNodes(match));
+	}
+
+	public IBeXGTPattern<?, ?> getTypedPattern(final String patternName) {
+		return name2typedPattern.get(patternName);
+	}
+
+	@Override
+	protected void initialize() {
+		name2typedPattern = Collections.synchronizedMap(new LinkedHashMap<>());
 	}
 
 	protected void registerTypedPattern(IBeXGTPattern<?, ?> typedPattern) {

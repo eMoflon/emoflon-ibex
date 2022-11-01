@@ -26,6 +26,7 @@ import org.eclipse.emf.ecore.EcorePackage
 import java.util.Set
 import org.eclipse.emf.ecore.EClass
 import java.util.Collection
+import org.eclipse.emf.ecore.EEnum
 
 class ExpressionHelper {
 	
@@ -126,10 +127,10 @@ class ExpressionHelper {
 			return unparse(methodContext, expression)
 		} else if(expression instanceof IBeXMatchCountValue) {
 			if(!expression.invocation.mapping.isEmpty) {
-				imports.add(data.matchPackage+"."+data.pattern2matchClassName.get(expression.invocation.invocation.name))
+				imports.add(data.matchPackage+"."+data.pattern2matchClassName.get(expression.invocation.invocation))
 			}
-			return '''(int) patternMatcher.name2typedPattern("«expression.invocation.invocation.name»")«IF expression.invocation.mapping.isEmpty».size()
-			«ELSE».stream().map(m -> («data.pattern2matchClassName.get(expression.invocation.invocation.name)»)m).filter(m -> «FOR mapping : expression.invocation.mapping SEPARATOR ' && \n'»«methodContext».«mapping.key.name.toLowerCase»().equals(m.«mapping.value.name.toLowerCase»())«ENDFOR»).count()«ENDIF»'''
+			return '''(int) patternMatcher.getTypedPattern("«expression.invocation.invocation.name»").getMatches(false)«IF expression.invocation.mapping.isEmpty».size()
+			«ELSE».stream().map(m -> («data.pattern2matchClassName.get(expression.invocation.invocation)»)m).filter(m -> «FOR mapping : expression.invocation.mapping SEPARATOR ' && \n'»«methodContext».«mapping.key.name.toLowerCase»().equals(m.«mapping.value.name.toLowerCase»())«ENDFOR»).count()«ENDIF»'''
 		} else if(expression instanceof GTParameterValue) {
 			return '''«expression.parameter.name»'''
 		} else if(expression instanceof BinaryExpression) {
@@ -229,6 +230,36 @@ class ExpressionHelper {
 		}
 	}
 	
+	def String EDataType2ExactJava(EClassifier type) {
+		if(type == EcorePackage.Literals.ELONG) {
+			return '''long'''
+		} else if(type == EcorePackage.Literals.EINT) {
+			return '''int'''
+		} else if(type == EcorePackage.Literals.ESHORT) {
+			return '''short'''
+		} else if(type == EcorePackage.Literals.EBYTE) {
+			return '''byte'''
+		} else if(type == EcorePackage.Literals.ECHAR) {
+			return '''char'''
+		} else if(type == EcorePackage.Literals.EDOUBLE) {
+			return '''double'''
+		} else if(type == EcorePackage.Literals.EFLOAT) {
+			return '''float'''
+		} else if(type == EcorePackage.Literals.ESTRING) {
+			return '''String'''
+		} else if(type == EcorePackage.Literals.EBOOLEAN) {
+			return '''boolean'''
+		} else if(type == EcorePackage.Literals.EDATE) {
+			imports.add("java.util.Date")
+			return '''Date'''
+		} else if(type instanceof EClass || type instanceof EEnum) {
+			imports.add(data.getFQN(type))
+			return '''«type.name»'''
+		} else {
+			throw new IllegalArgumentException("Unknown or unsupported data type: " + type)
+		}
+	}
+	
 	def String EDataType2Java(EClassifier type) {
 		val simplifiedType = DataTypeUtil.simplifiyType(type)
 		if(simplifiedType == EcorePackage.Literals.ELONG) {
@@ -242,7 +273,7 @@ class ExpressionHelper {
 		} else if(simplifiedType == EcorePackage.Literals.EDATE) {
 			imports.add("java.util.Date")
 			return '''Date'''
-		} else if(type instanceof EClass) {
+		} else if(type instanceof EClass || type instanceof EEnum) {
 			imports.add(data.getFQN(type))
 			return '''«type.name»'''
 		} else {
@@ -263,7 +294,7 @@ class ExpressionHelper {
 		} else if(simplifiedType == EcorePackage.Literals.EDATE) {
 			imports.add("java.util.Date")
 			return '''Date'''
-		} else if(type instanceof EClass) {
+		} else if(type instanceof EClass || type instanceof EEnum) {
 			imports.add(data.getFQN(type))
 			return '''«type.name»'''
 		} else {

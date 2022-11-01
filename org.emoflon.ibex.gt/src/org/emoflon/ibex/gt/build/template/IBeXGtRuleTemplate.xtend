@@ -65,13 +65,9 @@ class IBeXGtRuleTemplate extends GeneratorTemplate<GTRule>{
 		exprHelper = new ExpressionHelper(data, imports)
 	}
 	
-	override generate() {
-		code = '''package «data.rulePackage»;
-		
-«FOR imp : imports.filter[imp | imp !== null]»
-import «imp»;
-«ENDFOR»
-
+	def String generateClass() {
+		return 
+'''
 @SuppressWarnings("unused")
 public class «className» extends IBeXGTRule<«className», «patternClassName», «matchClassName», «coPatternClassName», «coMatchClassName»> {
 	
@@ -276,7 +272,7 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 		
 		// Assign attribute values
 		«FOR asgn : context.attributeAssignments»
-		«getNode("match", asgn.node)».set«asgn.attribute.name.toFirstUpper»(«exprHelper.unparse("match", asgn.value)»);
+		«getNode("match", asgn.node)».set«asgn.attribute.name.toFirstUpper»((«exprHelper.EDataType2ExactJava(asgn.attribute.EType)»)«exprHelper.unparse("match", asgn.value)»);
 		«ENDFOR»
 		«ENDIF»
 		«IF context.forEachOperations !== null && !context.forEachOperations.isEmpty»
@@ -307,7 +303,7 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 			«IF iterator.attributeAssignments !== null && !iterator.attributeAssignments.isEmpty»
 			// Assign attribute values
 			«FOR asgn : iterator.attributeAssignments»
-			«getNode("match", iterator, asgn.node)».set«asgn.attribute.name.toFirstUpper»(«exprHelper.unparse("match", asgn.value)»);
+			«getNode("match", iterator, asgn.node)».set«asgn.attribute.name.toFirstUpper»((«exprHelper.EDataType2ExactJava(asgn.attribute.EType)»)«exprHelper.unparse("match", asgn.value)»);
 			«ENDFOR»
 			«ENDIF»
 		}
@@ -323,6 +319,19 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 «««	}
 	
 }'''
+	}
+	
+	override generate() {
+		val clazz = generateClass
+		code = 
+'''package «data.rulePackage»;
+		
+«FOR imp : imports.filter[imp | imp !== null]»
+import «imp»;
+«ENDFOR»
+
+«clazz»
+'''
 	}
 	
 	def String getNode(String methodContext, IBeXNode node) {

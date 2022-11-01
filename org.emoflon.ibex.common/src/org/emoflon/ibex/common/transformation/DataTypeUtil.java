@@ -105,6 +105,8 @@ public final class DataTypeUtil {
 			return EcorePackage.Literals.EBOOLEAN;
 		} else if (type == EcorePackage.Literals.EDATE) {
 			return EcorePackage.Literals.EDATE;
+		} else if (type instanceof EEnum) {
+			return type;
 		} else if (type instanceof EClass) {
 			return type;
 		} else {
