@@ -102,7 +102,7 @@ public abstract class IBeXGTPatternMatcher<EM> extends PatternMatchingEngine<GTM
 	protected synchronized void updateMatchesInternal(final String patternName) {
 		if (!matches.containsKey(patternName)) {
 			insertNewMatchCollection(patternName);
-			return;
+			insertNewFilteredMatchCollection(patternName);
 		}
 
 		IBeXPattern pattern = name2pattern.get(patternName);
@@ -119,7 +119,6 @@ public abstract class IBeXGTPatternMatcher<EM> extends PatternMatchingEngine<GTM
 				});
 				updateFilteredMatches(patternName);
 			}
-			return;
 		}
 	}
 

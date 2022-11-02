@@ -316,6 +316,7 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, EM, IM
 	protected synchronized void updateMatchesInternal(final String patternName) {
 		if (!matches.containsKey(patternName)) {
 			insertNewMatchCollection(patternName);
+			insertNewFilteredMatchCollection(patternName);
 			return;
 		}
 
@@ -332,7 +333,6 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, EM, IM
 				});
 				updateFilteredMatches(patternName);
 			}
-			return;
 		}
 	}
 

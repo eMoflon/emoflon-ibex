@@ -102,7 +102,7 @@ class IBeXGtApiTemplate extends GeneratorTemplate<IBeXPMEngineInformation> {
 	}
 	«IF !pattern.parameters.isNullOrEmpty»
 	public «data.pattern2patternClassName.get(pattern)» «pattern.name.toFirstLower»(«FOR param : pattern.parameters SEPARATOR ', '»final «exprHelper.EDataType2Java(param.type)» «param.name.toFirstLower»«ENDFOR») {
-		return 	«pattern.name.toFirstLower»;
+		return «pattern.name.toFirstLower».setParameters(«FOR param : pattern.parameters SEPARATOR ', '»«param.name.toFirstLower»«ENDFOR»);
 	}
 	«ENDIF»
 	
@@ -113,7 +113,7 @@ class IBeXGtApiTemplate extends GeneratorTemplate<IBeXPMEngineInformation> {
 	}
 	«IF !rule.parameters.isNullOrEmpty»
 	public «data.rule2ruleClassName.get(rule)» «rule.name.toFirstLower»(«FOR param : rule.parameters SEPARATOR ', '»final «exprHelper.EDataType2Java(param.type)» «param.name.toFirstLower»«ENDFOR») {
-		return 	«rule.name.toFirstLower»;
+		return «rule.name.toFirstLower».setParameters(«FOR param : rule.parameters SEPARATOR ', '»«param.name.toFirstLower»«ENDFOR»);
 	}
 	«ENDIF»
 	«ENDFOR»
