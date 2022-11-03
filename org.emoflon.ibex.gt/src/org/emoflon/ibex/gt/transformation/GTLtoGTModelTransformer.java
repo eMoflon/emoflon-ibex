@@ -75,6 +75,7 @@ import org.emoflon.ibex.common.slimgt.slimGT.SlimRuleCondition;
 import org.emoflon.ibex.common.slimgt.slimGT.SlimRuleConfiguration;
 import org.emoflon.ibex.common.slimgt.slimGT.SlimRuleEdge;
 import org.emoflon.ibex.common.slimgt.slimGT.SlimRuleInvocation;
+import org.emoflon.ibex.common.slimgt.slimGT.SlimRuleInvocationType;
 import org.emoflon.ibex.common.slimgt.slimGT.SlimRuleNodeMapping;
 import org.emoflon.ibex.common.slimgt.slimGT.SlimRuleNodeMappings;
 import org.emoflon.ibex.common.slimgt.slimGT.StochasticArithmeticExpression;
@@ -442,7 +443,7 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 		// Invocations
 		for (SlimRuleInvocation invocation : pattern.getInvocations()) {
 			IBeXPatternInvocation gtInvocation = transform(pattern, (SlimRule) invocation.getSupportPattern(),
-					invocation.getMappings());
+					invocation.getMappings(), invocation.getType() == SlimRuleInvocationType.POSITIVE);
 			gtPattern.getInvocations().add(gtInvocation);
 		}
 
@@ -1017,7 +1018,8 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 				IBeXMatchCountValue gtCount = superFactory.createIBeXMatchCountValue();
 				gtCount.setType(EcorePackage.Literals.EINT);
 				SlimRule invoker = SlimGTModelUtil.getContainer(count, SlimRule.class);
-				gtCount.setInvocation(transform(invoker, (SlimRule) count.getSupportPattern(), count.getMappings()));
+				gtCount.setInvocation(
+						transform(invoker, (SlimRule) count.getSupportPattern(), count.getMappings(), true));
 				return gtCount;
 			} else if (op.getOperand() instanceof ArithmeticLiteral lit) {
 				if (lit instanceof DoubleLiteral d) {
@@ -1082,8 +1084,9 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 	}
 
 	protected IBeXPatternInvocation transform(final SlimRule invoker, final SlimRule invokee,
-			final SlimRuleNodeMappings mappings) {
+			final SlimRuleNodeMappings mappings, boolean isPositive) {
 		IBeXPatternInvocation gtInvocation = superFactory.createIBeXPatternInvocation();
+		gtInvocation.setPositive(isPositive);
 
 		pendingInvocationJobs.add(new Runnable() {
 
