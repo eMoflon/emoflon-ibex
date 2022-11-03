@@ -32,14 +32,9 @@ class IBeXGtPatternTemplate extends GeneratorTemplate<GTPattern>{
 		context.signatureNodes.forEach[n | imports.add(data.getFQN(n.type))]
 	}
 	
-	override generate() {
-		code = '''package «data.patternPackage»;
-		
-«FOR imp : imports.filter[imp | imp !== null]»
-import «imp»;
-«ENDFOR»
-
-public class «className» extends IBeXGTPattern<«className», «matchClassName»> {
+	def String generateClass() {
+		return 
+'''public class «className» extends IBeXGTPattern<«className», «matchClassName»> {
 	
 	«IF !context.parameters.nullOrEmpty»
 	protected boolean parametersInitialized = false;
@@ -141,7 +136,12 @@ public class «className» extends IBeXGTPattern<«className», «matchClassName
 		if(!parametersInitialized)
 			return false;
 		«ENDIF»
+«««		How to check local nodes for injectivity violations externally? If pattern contains local nodes -> deactivate this
+		«IF context.localNodes.nullOrEmpty»
 		return «FOR condition : context.conditions SEPARATOR ' && \n'»(«exprHelper.unparse("match", condition)»)«ENDFOR»;
+		«ELSE»
+		return true;
+		«ENDIF»
 		«ENDIF»
 	}
 	
@@ -171,6 +171,17 @@ public class «className» extends IBeXGTPattern<«className», «matchClassName
 	
 }'''
 	}
-
 	
+	override generate() {
+		val clazz = generateClass
+		code = '''package «data.patternPackage»;
+		
+«FOR imp : imports.filter[imp | imp !== null]»
+import «imp»;
+«ENDFOR»
+
+«clazz»
+'''
+	}
+
 }

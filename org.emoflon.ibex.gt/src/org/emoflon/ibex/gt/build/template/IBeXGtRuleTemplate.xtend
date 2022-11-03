@@ -175,7 +175,12 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 		if(!parametersInitialized)
 			return false;
 		«ENDIF»
+«««		How to check local nodes for injectivity violations externally? If pattern contains local nodes -> deactivate this
+		«IF context.precondition.localNodes.nullOrEmpty»
 		return «FOR condition : context.precondition.conditions SEPARATOR ' && \n'»(«exprHelper.unparse("match", condition)»)«ENDFOR»;
+		«ELSE»
+		return true;
+		«ENDIF»
 		«ENDIF»
 	}
 
