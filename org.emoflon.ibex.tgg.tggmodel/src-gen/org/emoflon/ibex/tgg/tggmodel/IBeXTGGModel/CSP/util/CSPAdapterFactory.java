@@ -116,6 +116,11 @@ public class CSPAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
+		public Adapter caseTGGLocalVariable(TGGLocalVariable object) {
+			return createTGGLocalVariableAdapter();
+		}
+
+		@Override
 		public Adapter caseIBeXNamedElement(IBeXNamedElement object) {
 			return createIBeXNamedElementAdapter();
 		}
@@ -267,6 +272,20 @@ public class CSPAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createTGGCSPAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGLocalVariable <em>TGG Local Variable</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGLocalVariable
+	 * @generated
+	 */
+	public Adapter createTGGLocalVariableAdapter() {
 		return null;
 	}
 

@@ -99,8 +99,8 @@ public class TGGAttributeExpressionImpl extends TGGExpressionImpl implements TGG
 			objectVar = (TGGRuleNode) eResolveProxy(oldObjectVar);
 			if (objectVar != oldObjectVar) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, LanguagePackage.TGG_ATTRIBUTE_EXPRESSION__OBJECT_VAR, oldObjectVar,
-							objectVar));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							LanguagePackage.TGG_ATTRIBUTE_EXPRESSION__OBJECT_VAR, oldObjectVar, objectVar));
 			}
 		}
 		return objectVar;
@@ -125,7 +125,8 @@ public class TGGAttributeExpressionImpl extends TGGExpressionImpl implements TGG
 		TGGRuleNode oldObjectVar = objectVar;
 		objectVar = newObjectVar;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_ATTRIBUTE_EXPRESSION__OBJECT_VAR, oldObjectVar, objectVar));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_ATTRIBUTE_EXPRESSION__OBJECT_VAR,
+					oldObjectVar, objectVar));
 	}
 
 	/**
@@ -140,8 +141,8 @@ public class TGGAttributeExpressionImpl extends TGGExpressionImpl implements TGG
 			attribute = (EAttribute) eResolveProxy(oldAttribute);
 			if (attribute != oldAttribute) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, LanguagePackage.TGG_ATTRIBUTE_EXPRESSION__ATTRIBUTE, oldAttribute,
-							attribute));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							LanguagePackage.TGG_ATTRIBUTE_EXPRESSION__ATTRIBUTE, oldAttribute, attribute));
 			}
 		}
 		return attribute;
@@ -166,7 +167,8 @@ public class TGGAttributeExpressionImpl extends TGGExpressionImpl implements TGG
 		EAttribute oldAttribute = attribute;
 		attribute = newAttribute;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_ATTRIBUTE_EXPRESSION__ATTRIBUTE, oldAttribute, attribute));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_ATTRIBUTE_EXPRESSION__ATTRIBUTE,
+					oldAttribute, attribute));
 	}
 
 	/**
@@ -189,7 +191,8 @@ public class TGGAttributeExpressionImpl extends TGGExpressionImpl implements TGG
 		boolean oldDerived = derived;
 		derived = newDerived;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_ATTRIBUTE_EXPRESSION__DERIVED, oldDerived, derived));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_ATTRIBUTE_EXPRESSION__DERIVED,
+					oldDerived, derived));
 	}
 
 	/**

@@ -163,8 +163,8 @@ public class ExternalShortcutRuleImpl extends EObjectImpl implements ExternalSho
 			sourceRule = (TGGRule) eResolveProxy(oldSourceRule);
 			if (sourceRule != oldSourceRule) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, RepairPackage.EXTERNAL_SHORTCUT_RULE__SOURCE_RULE, oldSourceRule,
-							sourceRule));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							RepairPackage.EXTERNAL_SHORTCUT_RULE__SOURCE_RULE, oldSourceRule, sourceRule));
 			}
 		}
 		return sourceRule;
@@ -189,7 +189,8 @@ public class ExternalShortcutRuleImpl extends EObjectImpl implements ExternalSho
 		TGGRule oldSourceRule = sourceRule;
 		sourceRule = newSourceRule;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, RepairPackage.EXTERNAL_SHORTCUT_RULE__SOURCE_RULE, oldSourceRule, sourceRule));
+			eNotify(new ENotificationImpl(this, Notification.SET, RepairPackage.EXTERNAL_SHORTCUT_RULE__SOURCE_RULE,
+					oldSourceRule, sourceRule));
 	}
 
 	/**
@@ -204,8 +205,8 @@ public class ExternalShortcutRuleImpl extends EObjectImpl implements ExternalSho
 			targetRule = (TGGRule) eResolveProxy(oldTargetRule);
 			if (targetRule != oldTargetRule) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, RepairPackage.EXTERNAL_SHORTCUT_RULE__TARGET_RULE, oldTargetRule,
-							targetRule));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							RepairPackage.EXTERNAL_SHORTCUT_RULE__TARGET_RULE, oldTargetRule, targetRule));
 			}
 		}
 		return targetRule;
@@ -230,7 +231,8 @@ public class ExternalShortcutRuleImpl extends EObjectImpl implements ExternalSho
 		TGGRule oldTargetRule = targetRule;
 		targetRule = newTargetRule;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, RepairPackage.EXTERNAL_SHORTCUT_RULE__TARGET_RULE, oldTargetRule, targetRule));
+			eNotify(new ENotificationImpl(this, Notification.SET, RepairPackage.EXTERNAL_SHORTCUT_RULE__TARGET_RULE,
+					oldTargetRule, targetRule));
 	}
 
 	/**
@@ -241,7 +243,8 @@ public class ExternalShortcutRuleImpl extends EObjectImpl implements ExternalSho
 	@Override
 	public EList<TGGRuleElement> getDeletions() {
 		if (deletions == null) {
-			deletions = new EObjectResolvingEList<TGGRuleElement>(TGGRuleElement.class, this, RepairPackage.EXTERNAL_SHORTCUT_RULE__DELETIONS);
+			deletions = new EObjectResolvingEList<TGGRuleElement>(TGGRuleElement.class, this,
+					RepairPackage.EXTERNAL_SHORTCUT_RULE__DELETIONS);
 		}
 		return deletions;
 	}
@@ -254,7 +257,8 @@ public class ExternalShortcutRuleImpl extends EObjectImpl implements ExternalSho
 	@Override
 	public EList<TGGRuleElement> getCreations() {
 		if (creations == null) {
-			creations = new EObjectResolvingEList<TGGRuleElement>(TGGRuleElement.class, this, RepairPackage.EXTERNAL_SHORTCUT_RULE__CREATIONS);
+			creations = new EObjectResolvingEList<TGGRuleElement>(TGGRuleElement.class, this,
+					RepairPackage.EXTERNAL_SHORTCUT_RULE__CREATIONS);
 		}
 		return creations;
 	}
@@ -295,7 +299,8 @@ public class ExternalShortcutRuleImpl extends EObjectImpl implements ExternalSho
 	@Override
 	public EList<TGGRuleElementMapping> getMapping() {
 		if (mapping == null) {
-			mapping = new EObjectContainmentEList<TGGRuleElementMapping>(TGGRuleElementMapping.class, this, RepairPackage.EXTERNAL_SHORTCUT_RULE__MAPPING);
+			mapping = new EObjectContainmentEList<TGGRuleElementMapping>(TGGRuleElementMapping.class, this,
+					RepairPackage.EXTERNAL_SHORTCUT_RULE__MAPPING);
 		}
 		return mapping;
 	}
@@ -320,7 +325,8 @@ public class ExternalShortcutRuleImpl extends EObjectImpl implements ExternalSho
 		String oldName = name;
 		name = newName;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, RepairPackage.EXTERNAL_SHORTCUT_RULE__NAME, oldName, name));
+			eNotify(new ENotificationImpl(this, Notification.SET, RepairPackage.EXTERNAL_SHORTCUT_RULE__NAME, oldName,
+					name));
 	}
 
 	/**

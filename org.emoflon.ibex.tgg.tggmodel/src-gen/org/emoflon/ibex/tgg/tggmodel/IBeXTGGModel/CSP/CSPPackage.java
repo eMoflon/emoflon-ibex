@@ -478,6 +478,52 @@ public interface CSPPackage extends EPackage {
 	int TGGCSP_OPERATION_COUNT = IBeXCoreModelPackage.IBE_XNAMED_ELEMENT_OPERATION_COUNT + 0;
 
 	/**
+	 * The meta object id for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.impl.TGGLocalVariableImpl <em>TGG Local Variable</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.impl.TGGLocalVariableImpl
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.impl.CSPPackageImpl#getTGGLocalVariable()
+	 * @generated
+	 */
+	int TGG_LOCAL_VARIABLE = 9;
+
+	/**
+	 * The feature id for the '<em><b>Type</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_LOCAL_VARIABLE__TYPE = IBeXCoreArithmeticPackage.VALUE_EXPRESSION__TYPE;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_LOCAL_VARIABLE__NAME = IBeXCoreArithmeticPackage.VALUE_EXPRESSION_FEATURE_COUNT + 0;
+
+	/**
+	 * The number of structural features of the '<em>TGG Local Variable</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_LOCAL_VARIABLE_FEATURE_COUNT = IBeXCoreArithmeticPackage.VALUE_EXPRESSION_FEATURE_COUNT + 1;
+
+	/**
+	 * The number of operations of the '<em>TGG Local Variable</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_LOCAL_VARIABLE_OPERATION_COUNT = IBeXCoreArithmeticPackage.VALUE_EXPRESSION_OPERATION_COUNT + 0;
+
+	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinition <em>TGG Attribute Constraint Definition</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -733,6 +779,16 @@ public interface CSPPackage extends EPackage {
 	EReference getTGGCSP_Values();
 
 	/**
+	 * Returns the meta object for class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGLocalVariable <em>TGG Local Variable</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>TGG Local Variable</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGLocalVariable
+	 * @generated
+	 */
+	EClass getTGGLocalVariable();
+
+	/**
 	 * Returns the factory that creates the instances of the model.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -973,6 +1029,16 @@ public interface CSPPackage extends EPackage {
 		 * @generated
 		 */
 		EReference TGGCSP__VALUES = eINSTANCE.getTGGCSP_Values();
+
+		/**
+		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.impl.TGGLocalVariableImpl <em>TGG Local Variable</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.impl.TGGLocalVariableImpl
+		 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.impl.CSPPackageImpl#getTGGLocalVariable()
+		 * @generated
+		 */
+		EClass TGG_LOCAL_VARIABLE = eINSTANCE.getTGGLocalVariable();
 
 	}
 

@@ -34,7 +34,8 @@ import language.TGGAttributeConstraintParameterDefinition;
  *
  * @generated
  */
-public class TGGAttributeConstraintDefinitionImpl extends TGGNamedElementImpl implements TGGAttributeConstraintDefinition {
+public class TGGAttributeConstraintDefinitionImpl extends TGGNamedElementImpl
+		implements TGGAttributeConstraintDefinition {
 	/**
 	 * The default value of the '{@link #isUserDefined() <em>User Defined</em>}' attribute.
 	 * <!-- begin-user-doc -->
@@ -124,8 +125,8 @@ public class TGGAttributeConstraintDefinitionImpl extends TGGNamedElementImpl im
 		boolean oldUserDefined = userDefined;
 		userDefined = newUserDefined;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__USER_DEFINED, oldUserDefined,
-					userDefined));
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__USER_DEFINED, oldUserDefined, userDefined));
 	}
 
 	/**
@@ -136,8 +137,9 @@ public class TGGAttributeConstraintDefinitionImpl extends TGGNamedElementImpl im
 	@Override
 	public EList<TGGAttributeConstraintParameterDefinition> getParameterDefinitions() {
 		if (parameterDefinitions == null) {
-			parameterDefinitions = new EObjectContainmentEList<TGGAttributeConstraintParameterDefinition>(TGGAttributeConstraintParameterDefinition.class,
-					this, LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__PARAMETER_DEFINITIONS);
+			parameterDefinitions = new EObjectContainmentEList<TGGAttributeConstraintParameterDefinition>(
+					TGGAttributeConstraintParameterDefinition.class, this,
+					LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__PARAMETER_DEFINITIONS);
 		}
 		return parameterDefinitions;
 	}
@@ -150,7 +152,8 @@ public class TGGAttributeConstraintDefinitionImpl extends TGGNamedElementImpl im
 	@Override
 	public EList<TGGAttributeConstraintAdornment> getSyncAdornments() {
 		if (syncAdornments == null) {
-			syncAdornments = new EObjectContainmentEList<TGGAttributeConstraintAdornment>(TGGAttributeConstraintAdornment.class, this,
+			syncAdornments = new EObjectContainmentEList<TGGAttributeConstraintAdornment>(
+					TGGAttributeConstraintAdornment.class, this,
 					LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__SYNC_ADORNMENTS);
 		}
 		return syncAdornments;
@@ -164,7 +167,8 @@ public class TGGAttributeConstraintDefinitionImpl extends TGGNamedElementImpl im
 	@Override
 	public EList<TGGAttributeConstraintAdornment> getGenAdornments() {
 		if (genAdornments == null) {
-			genAdornments = new EObjectContainmentEList<TGGAttributeConstraintAdornment>(TGGAttributeConstraintAdornment.class, this,
+			genAdornments = new EObjectContainmentEList<TGGAttributeConstraintAdornment>(
+					TGGAttributeConstraintAdornment.class, this,
 					LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__GEN_ADORNMENTS);
 		}
 		return genAdornments;
@@ -222,7 +226,8 @@ public class TGGAttributeConstraintDefinitionImpl extends TGGNamedElementImpl im
 			return;
 		case LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__PARAMETER_DEFINITIONS:
 			getParameterDefinitions().clear();
-			getParameterDefinitions().addAll((Collection<? extends TGGAttributeConstraintParameterDefinition>) newValue);
+			getParameterDefinitions()
+					.addAll((Collection<? extends TGGAttributeConstraintParameterDefinition>) newValue);
 			return;
 		case LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__SYNC_ADORNMENTS:
 			getSyncAdornments().clear();

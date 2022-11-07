@@ -24,6 +24,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintPara
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintSet;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintVariable;
 
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGLocalVariable;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage;
 
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.IBeXTGGModelPackageImpl;
@@ -97,6 +98,13 @@ public class CSPPackageImpl extends EPackageImpl implements CSPPackage {
 	 * @generated
 	 */
 	private EClass tggcspEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass tggLocalVariableEClass = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -394,6 +402,15 @@ public class CSPPackageImpl extends EPackageImpl implements CSPPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getTGGLocalVariable() {
+		return tggLocalVariableEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public CSPFactory getCSPFactory() {
 		return (CSPFactory) getEFactoryInstance();
 	}
@@ -456,6 +473,8 @@ public class CSPPackageImpl extends EPackageImpl implements CSPPackage {
 		tggcspEClass = createEClass(TGGCSP);
 		createEAttribute(tggcspEClass, TGGCSP__PACKAGE);
 		createEReference(tggcspEClass, TGGCSP__VALUES);
+
+		tggLocalVariableEClass = createEClass(TGG_LOCAL_VARIABLE);
 	}
 
 	/**
@@ -496,6 +515,8 @@ public class CSPPackageImpl extends EPackageImpl implements CSPPackage {
 		tggAttributeConstraintDefinitionEClass.getESuperTypes().add(theIBeXCoreModelPackage.getIBeXNamedElement());
 		tggAttributeConstraintVariableEClass.getESuperTypes().add(theIBeXCoreArithmeticPackage.getValueExpression());
 		tggcspEClass.getESuperTypes().add(theIBeXCoreModelPackage.getIBeXNamedElement());
+		tggLocalVariableEClass.getESuperTypes().add(theIBeXCoreArithmeticPackage.getValueExpression());
+		tggLocalVariableEClass.getESuperTypes().add(theIBeXCoreModelPackage.getIBeXNamedElement());
 
 		// Initialize classes, features, and operations; add parameters
 		initEClass(tggAttributeConstraintDefinitionEClass, TGGAttributeConstraintDefinition.class,
@@ -573,6 +594,9 @@ public class CSPPackageImpl extends EPackageImpl implements CSPPackage {
 		initEReference(getTGGCSP_Values(), theIBeXCoreArithmeticPackage.getValueExpression(), null, "values", null, 0,
 				-1, org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGCSP.class, !IS_TRANSIENT, !IS_VOLATILE,
 				IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(tggLocalVariableEClass, TGGLocalVariable.class, "TGGLocalVariable", !IS_ABSTRACT, !IS_INTERFACE,
+				IS_GENERATED_INSTANCE_CLASS);
 	}
 
 } //CSPPackageImpl

@@ -11,6 +11,7 @@
       <genEnumLiterals ecoreEnumLiteral="Language.ecore#//DomainType/SRC"/>
       <genEnumLiterals ecoreEnumLiteral="Language.ecore#//DomainType/TRG"/>
       <genEnumLiterals ecoreEnumLiteral="Language.ecore#//DomainType/CORR"/>
+      <genEnumLiterals ecoreEnumLiteral="Language.ecore#//DomainType/PATTERN"/>
     </genEnums>
     <genEnums typeSafeEnumCompatible="false" ecoreEnum="Language.ecore#//BindingType">
       <genEnumLiterals ecoreEnumLiteral="Language.ecore#//BindingType/CONTEXT"/>

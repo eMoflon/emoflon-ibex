@@ -16,9 +16,11 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.emoflon.ibex.common.engine.IBeXPMEngineInformation;
 import org.emoflon.ibex.common.slimgt.build.SlimGTBuilderExtension;
 import org.emoflon.ibex.common.slimgt.util.BuildPropertiesManager;
+import org.emoflon.ibex.common.transformation.SlimGtToIBeXCoreTransformer;
 import org.emoflon.ibex.gt.gtl.gTL.EditorFile;
 import org.emoflon.ibex.gt.gtl.ui.builder.GTLNature;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTModel;
+import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.IBeXGTModelFactory;
 import org.emoflon.ibex.gt.transformation.GTLtoGTModelTransformer;
 import org.moflon.core.plugins.manifest.ManifestFileUpdater;
 import org.moflon.core.utilities.ExtensionsUtil;
@@ -107,7 +109,7 @@ public class IBeXGtPackageBuilder implements SlimGTBuilderExtension<EditorFile> 
 	}
 
 	protected void transformToGTModel() {
-		GTLtoGTModelTransformer transformer = new GTLtoGTModelTransformer(editorFile, project);
+		SlimGtToIBeXCoreTransformer<EditorFile, GTModel, IBeXGTModelFactory> transformer = new GTLtoGTModelTransformer(editorFile, project);
 		gtModel = transformer.transform();
 	}
 

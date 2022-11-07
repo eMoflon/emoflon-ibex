@@ -103,6 +103,15 @@ public interface CSPFactory extends EFactory {
 	TGGCSP createTGGCSP();
 
 	/**
+	 * Returns a new object of class '<em>TGG Local Variable</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>TGG Local Variable</em>'.
+	 * @generated
+	 */
+	TGGLocalVariable createTGGLocalVariable();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

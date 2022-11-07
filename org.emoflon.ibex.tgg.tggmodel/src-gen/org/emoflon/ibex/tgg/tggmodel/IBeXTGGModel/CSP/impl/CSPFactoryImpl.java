@@ -73,6 +73,8 @@ public class CSPFactoryImpl extends EFactoryImpl implements CSPFactory {
 			return createTGGAttributeConstraintParameterValue();
 		case CSPPackage.TGGCSP:
 			return createTGGCSP();
+		case CSPPackage.TGG_LOCAL_VARIABLE:
+			return createTGGLocalVariable();
 		default:
 			throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -166,6 +168,16 @@ public class CSPFactoryImpl extends EFactoryImpl implements CSPFactory {
 	public TGGCSP createTGGCSP() {
 		TGGCSPImpl tggcsp = new TGGCSPImpl();
 		return tggcsp;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public TGGLocalVariable createTGGLocalVariable() {
+		TGGLocalVariableImpl tggLocalVariable = new TGGLocalVariableImpl();
+		return tggLocalVariable;
 	}
 
 	/**

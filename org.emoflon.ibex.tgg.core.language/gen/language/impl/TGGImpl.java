@@ -145,7 +145,8 @@ public class TGGImpl extends TGGNamedElementImpl implements TGG {
 			corr = (EPackage) eResolveProxy(oldCorr);
 			if (corr != oldCorr) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, LanguagePackage.TGG__CORR, oldCorr, corr));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, LanguagePackage.TGG__CORR, oldCorr,
+							corr));
 			}
 		}
 		return corr;
@@ -201,12 +202,13 @@ public class TGGImpl extends TGGNamedElementImpl implements TGG {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public NotificationChain basicSetAttributeConstraintDefinitionLibrary(TGGAttributeConstraintDefinitionLibrary newAttributeConstraintDefinitionLibrary,
-			NotificationChain msgs) {
+	public NotificationChain basicSetAttributeConstraintDefinitionLibrary(
+			TGGAttributeConstraintDefinitionLibrary newAttributeConstraintDefinitionLibrary, NotificationChain msgs) {
 		TGGAttributeConstraintDefinitionLibrary oldAttributeConstraintDefinitionLibrary = attributeConstraintDefinitionLibrary;
 		attributeConstraintDefinitionLibrary = newAttributeConstraintDefinitionLibrary;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY,
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
+					LanguagePackage.TGG__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY,
 					oldAttributeConstraintDefinitionLibrary, newAttributeConstraintDefinitionLibrary);
 			if (msgs == null)
 				msgs = notification;
@@ -222,20 +224,24 @@ public class TGGImpl extends TGGNamedElementImpl implements TGG {
 	 * @generated
 	 */
 	@Override
-	public void setAttributeConstraintDefinitionLibrary(TGGAttributeConstraintDefinitionLibrary newAttributeConstraintDefinitionLibrary) {
+	public void setAttributeConstraintDefinitionLibrary(
+			TGGAttributeConstraintDefinitionLibrary newAttributeConstraintDefinitionLibrary) {
 		if (newAttributeConstraintDefinitionLibrary != attributeConstraintDefinitionLibrary) {
 			NotificationChain msgs = null;
 			if (attributeConstraintDefinitionLibrary != null)
 				msgs = ((InternalEObject) attributeConstraintDefinitionLibrary).eInverseRemove(this,
-						EOPPOSITE_FEATURE_BASE - LanguagePackage.TGG__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY, null, msgs);
+						EOPPOSITE_FEATURE_BASE - LanguagePackage.TGG__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY, null,
+						msgs);
 			if (newAttributeConstraintDefinitionLibrary != null)
 				msgs = ((InternalEObject) newAttributeConstraintDefinitionLibrary).eInverseAdd(this,
-						EOPPOSITE_FEATURE_BASE - LanguagePackage.TGG__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY, null, msgs);
+						EOPPOSITE_FEATURE_BASE - LanguagePackage.TGG__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY, null,
+						msgs);
 			msgs = basicSetAttributeConstraintDefinitionLibrary(newAttributeConstraintDefinitionLibrary, msgs);
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY,
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					LanguagePackage.TGG__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY,
 					newAttributeConstraintDefinitionLibrary, newAttributeConstraintDefinitionLibrary));
 	}
 

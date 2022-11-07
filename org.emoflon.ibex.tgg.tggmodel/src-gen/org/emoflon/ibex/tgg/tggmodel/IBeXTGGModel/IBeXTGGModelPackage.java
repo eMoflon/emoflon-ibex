@@ -88,7 +88,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	int TGG_MODEL__META_DATA = IBeXCoreModelPackage.IBE_XMODEL__META_DATA;
 
 	/**
-	 * The feature id for the '<em><b>Feature Config</b></em>' reference.
+	 * The feature id for the '<em><b>Feature Config</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated

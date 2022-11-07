@@ -78,8 +78,9 @@ public class TGGRuleElementMappingImpl extends EObjectImpl implements TGGRuleEle
 			sourceRuleElement = (TGGRuleElement) eResolveProxy(oldSourceRuleElement);
 			if (sourceRuleElement != oldSourceRuleElement) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, RepairPackage.TGG_RULE_ELEMENT_MAPPING__SOURCE_RULE_ELEMENT,
-							oldSourceRuleElement, sourceRuleElement));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							RepairPackage.TGG_RULE_ELEMENT_MAPPING__SOURCE_RULE_ELEMENT, oldSourceRuleElement,
+							sourceRuleElement));
 			}
 		}
 		return sourceRuleElement;
@@ -104,7 +105,8 @@ public class TGGRuleElementMappingImpl extends EObjectImpl implements TGGRuleEle
 		TGGRuleElement oldSourceRuleElement = sourceRuleElement;
 		sourceRuleElement = newSourceRuleElement;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, RepairPackage.TGG_RULE_ELEMENT_MAPPING__SOURCE_RULE_ELEMENT, oldSourceRuleElement,
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					RepairPackage.TGG_RULE_ELEMENT_MAPPING__SOURCE_RULE_ELEMENT, oldSourceRuleElement,
 					sourceRuleElement));
 	}
 
@@ -120,8 +122,9 @@ public class TGGRuleElementMappingImpl extends EObjectImpl implements TGGRuleEle
 			targetRuleElement = (TGGRuleElement) eResolveProxy(oldTargetRuleElement);
 			if (targetRuleElement != oldTargetRuleElement) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, RepairPackage.TGG_RULE_ELEMENT_MAPPING__TARGET_RULE_ELEMENT,
-							oldTargetRuleElement, targetRuleElement));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							RepairPackage.TGG_RULE_ELEMENT_MAPPING__TARGET_RULE_ELEMENT, oldTargetRuleElement,
+							targetRuleElement));
 			}
 		}
 		return targetRuleElement;
@@ -146,7 +149,8 @@ public class TGGRuleElementMappingImpl extends EObjectImpl implements TGGRuleEle
 		TGGRuleElement oldTargetRuleElement = targetRuleElement;
 		targetRuleElement = newTargetRuleElement;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, RepairPackage.TGG_RULE_ELEMENT_MAPPING__TARGET_RULE_ELEMENT, oldTargetRuleElement,
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					RepairPackage.TGG_RULE_ELEMENT_MAPPING__TARGET_RULE_ELEMENT, oldTargetRuleElement,
 					targetRuleElement));
 	}
 

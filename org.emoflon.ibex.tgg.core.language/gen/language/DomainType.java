@@ -46,7 +46,16 @@ public enum DomainType implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	CORR(2, "CORR", "CORR");
+	CORR(2, "CORR", "CORR"),
+	/**
+	* The '<em><b>PATTERN</b></em>' literal object.
+	* <!-- begin-user-doc -->
+	* <!-- end-user-doc -->
+	* @see #PATTERN_VALUE
+	* @generated
+	* @ordered
+	*/
+	PATTERN(3, "PATTERN", "PATTERN");
 
 	/**
 	 * The '<em><b>SRC</b></em>' literal value.
@@ -82,12 +91,23 @@ public enum DomainType implements Enumerator {
 	public static final int CORR_VALUE = 2;
 
 	/**
+	 * The '<em><b>PATTERN</b></em>' literal value.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #PATTERN
+	 * @model
+	 * @generated
+	 * @ordered
+	 */
+	public static final int PATTERN_VALUE = 3;
+
+	/**
 	 * An array of all the '<em><b>Domain Type</b></em>' enumerators.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private static final DomainType[] VALUES_ARRAY = new DomainType[] { SRC, TRG, CORR, };
+	private static final DomainType[] VALUES_ARRAY = new DomainType[] { SRC, TRG, CORR, PATTERN, };
 
 	/**
 	 * A public read-only list of all the '<em><b>Domain Type</b></em>' enumerators.
@@ -149,6 +169,8 @@ public enum DomainType implements Enumerator {
 			return TRG;
 		case CORR_VALUE:
 			return CORR;
+		case PATTERN_VALUE:
+			return PATTERN;
 		}
 		return null;
 	}

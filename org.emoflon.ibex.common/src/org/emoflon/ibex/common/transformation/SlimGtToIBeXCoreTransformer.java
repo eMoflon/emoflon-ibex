@@ -10,8 +10,6 @@ import org.emoflon.ibex.common.slimgt.slimGT.EditorFile;
 import org.emoflon.ibex.common.slimgt.util.XtextResourceManager;
 
 public abstract class SlimGtToIBeXCoreTransformer<EF extends EditorFile, MODEL extends IBeXModel, FACTORY extends EFactory> {
-	final protected IProject project;
-	
 	final protected EF editorFile;
 	final protected IProject project;
 	final protected MODEL model;

@@ -125,12 +125,14 @@ public class NACImpl extends TGGNamedElementImpl implements NAC {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public NotificationChain basicSetAttributeConditionLibrary(TGGAttributeConstraintLibrary newAttributeConditionLibrary, NotificationChain msgs) {
+	public NotificationChain basicSetAttributeConditionLibrary(
+			TGGAttributeConstraintLibrary newAttributeConditionLibrary, NotificationChain msgs) {
 		TGGAttributeConstraintLibrary oldAttributeConditionLibrary = attributeConditionLibrary;
 		attributeConditionLibrary = newAttributeConditionLibrary;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, LanguagePackage.NAC__ATTRIBUTE_CONDITION_LIBRARY,
-					oldAttributeConditionLibrary, newAttributeConditionLibrary);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
+					LanguagePackage.NAC__ATTRIBUTE_CONDITION_LIBRARY, oldAttributeConditionLibrary,
+					newAttributeConditionLibrary);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -158,8 +160,8 @@ public class NACImpl extends TGGNamedElementImpl implements NAC {
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.NAC__ATTRIBUTE_CONDITION_LIBRARY, newAttributeConditionLibrary,
-					newAttributeConditionLibrary));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.NAC__ATTRIBUTE_CONDITION_LIBRARY,
+					newAttributeConditionLibrary, newAttributeConditionLibrary));
 	}
 
 	/**

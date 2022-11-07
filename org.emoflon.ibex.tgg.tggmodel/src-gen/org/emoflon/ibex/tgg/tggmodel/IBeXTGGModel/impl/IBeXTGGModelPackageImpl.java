@@ -656,6 +656,7 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 		addEEnumLiteral(domainTypeEEnum, DomainType.SOURCE);
 		addEEnumLiteral(domainTypeEEnum, DomainType.TARGET);
 		addEEnumLiteral(domainTypeEEnum, DomainType.CORRESPONDENCE);
+		addEEnumLiteral(domainTypeEEnum, DomainType.PATTERN);
 
 		initEEnum(bindingTypeEEnum, BindingType.class, "BindingType");
 		addEEnumLiteral(bindingTypeEEnum, BindingType.CONTEXT);

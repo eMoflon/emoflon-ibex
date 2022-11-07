@@ -61,6 +61,7 @@
     <eLiterals name="SOURCE" literal="SOURCE"/>
     <eLiterals name="TARGET" value="1" literal="TARGET"/>
     <eLiterals name="CORRESPONDENCE" value="2" literal="CORRESPONDENCE"/>
+    <eLiterals name="PATTERN" value="3" literal="PATTERN"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="BindingType">
     <eLiterals name="CONTEXT" literal="CONTEXT"/>
@@ -118,5 +119,6 @@
           eType="ecore:EClass ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXCoreArithmetic/ValueExpression"
           containment="true"/>
     </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="TGGLocalVariable" eSuperTypes="../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXNamedElement ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXCoreArithmetic/ArithmeticExpression"/>
   </eSubpackages>
 </ecore:EPackage>

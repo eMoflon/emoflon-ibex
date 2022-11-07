@@ -61,6 +61,7 @@
     <eLiterals name="SRC" literal="SRC"/>
     <eLiterals name="TRG" value="1" literal="TRG"/>
     <eLiterals name="CORR" value="2" literal="CORR"/>
+    <eLiterals name="PATTERN" value="3" literal="PATTERN"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="BindingType">
     <eLiterals name="CONTEXT" literal="CONTEXT"/>

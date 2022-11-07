@@ -12,22 +12,74 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.codegen.ecore.genmodel.GenPackage;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EDataType;
+import org.eclipse.emf.ecore.EEnumLiteral;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EcoreFactory;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeAssignment;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeValue;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXBooleanValue;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEnumValue;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXFeatureConfig;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXMatchCountValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModelMetadata;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNamedElement;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNodeValue;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNullValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXOperationType;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternInvocation;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXStringValue;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ArithmeticExpression;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ArithmeticValue;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BinaryExpression;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BinaryOperator;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanBinaryExpression;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanBinaryOperator;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanExpression;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanUnaryExpression;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanUnaryOperator;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalExpression;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.UnaryExpression;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ValueExpression;
+import org.emoflon.ibex.common.slimgt.slimGT.ArithmeticLiteral;
+import org.emoflon.ibex.common.slimgt.slimGT.BooleanBracket;
+import org.emoflon.ibex.common.slimgt.slimGT.BooleanConjunction;
+import org.emoflon.ibex.common.slimgt.slimGT.BooleanDisjunction;
+import org.emoflon.ibex.common.slimgt.slimGT.BooleanImplication;
+import org.emoflon.ibex.common.slimgt.slimGT.BooleanLiteral;
+import org.emoflon.ibex.common.slimgt.slimGT.BooleanNegation;
+import org.emoflon.ibex.common.slimgt.slimGT.BracketExpression;
+import org.emoflon.ibex.common.slimgt.slimGT.Constant;
+import org.emoflon.ibex.common.slimgt.slimGT.CountExpression;
+import org.emoflon.ibex.common.slimgt.slimGT.DoubleLiteral;
+import org.emoflon.ibex.common.slimgt.slimGT.EnumExpression;
+import org.emoflon.ibex.common.slimgt.slimGT.ExpArithmeticExpression;
+import org.emoflon.ibex.common.slimgt.slimGT.IntegerLiteral;
+import org.emoflon.ibex.common.slimgt.slimGT.MinMaxArithmeticExpression;
+import org.emoflon.ibex.common.slimgt.slimGT.NodeAttributeExpression;
+import org.emoflon.ibex.common.slimgt.slimGT.NodeExpression;
+import org.emoflon.ibex.common.slimgt.slimGT.ProductArithmeticExpression;
+import org.emoflon.ibex.common.slimgt.slimGT.SlimRuleAttributeAssignment;
+import org.emoflon.ibex.common.slimgt.slimGT.SlimRuleCondition;
 import org.emoflon.ibex.common.slimgt.slimGT.SlimRuleEdgeContext;
 import org.emoflon.ibex.common.slimgt.slimGT.SlimRuleEdgeCreation;
+import org.emoflon.ibex.common.slimgt.slimGT.SlimRuleInvocation;
+import org.emoflon.ibex.common.slimgt.slimGT.SlimRuleInvocationType;
 import org.emoflon.ibex.common.slimgt.slimGT.SlimRuleNodeContext;
 import org.emoflon.ibex.common.slimgt.slimGT.SlimRuleNodeCreation;
+import org.emoflon.ibex.common.slimgt.slimGT.StochasticArithmeticExpression;
+import org.emoflon.ibex.common.slimgt.slimGT.StringLiteral;
+import org.emoflon.ibex.common.slimgt.slimGT.SumArithmeticExpression;
+import org.emoflon.ibex.common.slimgt.slimGT.UnaryArithmeticExpression;
 import org.emoflon.ibex.common.slimgt.util.SlimGTEMFUtil;
+import org.emoflon.ibex.common.slimgt.util.SlimGTModelUtil;
+import org.emoflon.ibex.common.transformation.DataTypeUtil;
 import org.emoflon.ibex.common.transformation.SlimGtToIBeXCoreTransformer;
 import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuntimeModelPackage;
 import org.emoflon.ibex.tgg.tggl.scoping.TGGLScopeProvider;
@@ -35,6 +87,7 @@ import org.emoflon.ibex.tgg.tggl.tGGL.AttributeCondition;
 import org.emoflon.ibex.tgg.tggl.tGGL.AttributeConditionDefinition;
 import org.emoflon.ibex.tgg.tggl.tGGL.CorrespondenceType;
 import org.emoflon.ibex.tgg.tggl.tGGL.EditorFile;
+import org.emoflon.ibex.tgg.tggl.tGGL.LocalVariable;
 import org.emoflon.ibex.tgg.tggl.tGGL.SlimRule;
 import org.emoflon.ibex.tgg.tggl.tGGL.SlimRuleNode;
 import org.emoflon.ibex.tgg.tggl.tGGL.TGGCorrRule;
@@ -53,6 +106,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.CSPFactory;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinition;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGLocalVariable;
 
 record EdgeSignature(EObject source, EObject target, EReference type) {
 	
@@ -64,10 +118,10 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 	private CSPFactory cspFactory = CSPFactory.eINSTANCE;
 	private TGGRuntimeModelPackage runtimePackage = TGGRuntimeModelPackage.eINSTANCE;
 	
-	
 	private Map<Object, EObject> tggl2tggModel = new ConcurrentHashMap<>();
-	private Map<SlimRule, Collection<IBeXPattern>> pattern2ibexPatterns = new ConcurrentHashMap<>();
 	private EPackage correspondenceModel;
+
+	private IBeXFeatureConfig featureConfig;
 	
 	public TGGLToTGGModelTransformer(EditorFile editorFile, final IProject project) {
 		super(editorFile, project);
@@ -93,7 +147,7 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		for (EPackage pkg : usedPackages) {
 			EPackageDependency dependency = null;
 			try {
-				dependency = transform(pkg);
+				dependency = transformPackage(pkg);
 			} catch (IOException e) {
 				continue;
 			}
@@ -105,7 +159,7 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		// Add the ecore package if not present
 		if (!metadata.getName2package().containsKey("ecore")) {
 			try {
-				EPackageDependency dependency = transform(EcorePackage.eINSTANCE);
+				EPackageDependency dependency = transformPackage(EcorePackage.eINSTANCE);
 				metadata.getDependencies().add(dependency);
 				metadata.getName2package().put(dependency.getSimpleName(), dependency);
 			} catch (IOException e) {
@@ -125,6 +179,9 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 
 	@Override
 	public TGGModel transform() {
+		featureConfig = superFactory.createIBeXFeatureConfig();
+		model.setFeatureConfig(featureConfig);
+		
 		createCorrespondenceModel();
 		createAttributeConstraintLibraries();
 		
@@ -247,6 +304,18 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 			internalRule.getAttributeConstraints().getTggAttributeConstraints().add(transformAttributeConstraint(attributeCondition));
 		}
 		
+		var precondition = internalRule.getPrecondition();
+		var postcondition = internalRule.getPostcondition();
+		for(var invocation : rule.getSourceRule().getInvocations()) {
+			precondition.getInvocations().add(transformInvocation(precondition, invocation));
+			postcondition.getInvocations().add(transformInvocation(postcondition, invocation));
+		}
+		
+		for(var invocation : rule.getTargetRule().getInvocations()) {
+			precondition.getInvocations().add(transformInvocation(precondition, invocation));
+			postcondition.getInvocations().add(transformInvocation(postcondition, invocation));
+		}
+		
 		return internalRule;
 	}
 	
@@ -260,10 +329,16 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		attributeConstraint.setDefinition(transformAttributeConstraintDefinition(attributeCondition.getName()));
 		
 		for(var value : attributeCondition.getValues()) {
-			
+			var paramValue = cspFactory.createTGGAttributeConstraintParameterValue();
+			attributeConstraint.getParameters().add(paramValue);
+			if(value instanceof org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression aritExpr) {
+				paramValue.setExpression(transformArithmeticExpression(aritExpr));
+			} else {
+				throw new RuntimeException(value + " could not be converted to an internal model element");
+			}
 		}
 		
-		return null;
+		return attributeConstraint;
 	}
 
 	protected TGGCorrespondence transformTGGCorrespondenceNode(TGGCorrespondenceNode node, BindingType binding, DomainType domain) {
@@ -320,6 +395,10 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		return edge;
 	}
 	
+	private IBeXNode transformNode(EObject input) {
+		return transformNode(input, getBindingType(input), getDomainType(input));
+	}
+	
 	private IBeXNode transformNode(EObject input, BindingType bindingType, DomainType domainType) {
 		if(input instanceof TGGCorrespondenceNode corrNode)
 			return transformTGGCorrespondenceNode(corrNode, bindingType, domainType);
@@ -372,6 +451,10 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		if (corrRule != null) {
 			return DomainType.CORRESPONDENCE;
 		}
+		
+		var slimRule = getContainer(context, SlimRule.class);
+		if(slimRule != null)
+			return DomainType.PATTERN;
 
 		throw new RuntimeException("Could not identify domain of element " + context);
 	}
@@ -414,13 +497,40 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		var internPattern = superFactory.createIBeXPattern();
 		internPattern.setName(pattern.getName());
 		
-		internPattern.getSignatureNodes()
+		for(var node : pattern.getContextNodes()) {
+			internPattern.getSignatureNodes().add(transformTGGNode((SlimRuleNode) node.getContext(), BindingType.CONTEXT, DomainType.PATTERN));	
+		}
+		
+		for(var node : pattern.getCreatedNodes()) {
+			internPattern.getSignatureNodes().add(transformTGGNode((SlimRuleNode) node.getCreation(), BindingType.CREATE, DomainType.PATTERN));		
+		}
+		
+		for(var invocation : pattern.getInvocations()) {
+			internPattern.getInvocations().add(transformInvocation(internPattern, invocation));
+		}
 		
 		internPattern.setEmpty(!internPattern.getSignatureNodes().isEmpty() && !internPattern.getLocalNodes().isEmpty());
 		return internPattern;
 	}
 
-	protected EPackageDependency transform(final EPackage pkg) throws IOException {
+	private IBeXPatternInvocation transformInvocation(IBeXPattern parentPattern, SlimRuleInvocation slimInvocation) {
+		var invocation = superFactory.createIBeXPatternInvocation();
+		invocation.setPositive(slimInvocation.getType() == SlimRuleInvocationType.POSITIVE);
+		
+		invocation.setInvokedBy(parentPattern);
+		invocation.setInvocation(transformPattern((SlimRule) slimInvocation.getSupportPattern()));
+		
+		for(var slimMapping : slimInvocation.getMappings().getMappings()) {
+			SlimRuleNode source = (SlimRuleNode) slimMapping.getSource();
+			SlimRuleNode target = (SlimRuleNode) slimMapping.getTarget();
+			invocation.getMapping().put(
+					transformNode(source, getBindingType(source), getDomainType(source)), 
+					transformNode(target, getBindingType(target), getDomainType(target)));
+		}
+		return invocation;
+	}
+
+	protected EPackageDependency transformPackage(final EPackage pkg) throws IOException {
 		EPackageDependency dependency = superFactory.createEPackageDependency();
 
 		dependency.setSimpleName(pkg.getName());
@@ -447,6 +557,356 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 				dependency.getFullyQualifiedName() + "." + cls.getName()));
 
 		return dependency;
+	}
+	
+	protected IBeXAttributeAssignment transform(final SlimRuleNode assignee,
+			final SlimRuleAttributeAssignment assignment) {
+		IBeXAttributeAssignment attributeAssign = superFactory.createIBeXAttributeAssignment();
+		attributeAssign.setNode((IBeXNode) tggl2tggModel.get(assignee));
+		attributeAssign.setAttribute(assignment.getType());
+		ValueExpression value = transformValueExpression(assignment.getValue());
+		attributeAssign.setValue(value);
+		return attributeAssign;
+	}
+
+	protected BooleanExpression transformBoolExpression(org.emoflon.ibex.common.slimgt.slimGT.BooleanExpression expression) {
+		if (expression instanceof BooleanImplication impl) {
+			featureConfig.setBooleanExpressions(true);
+			BooleanBinaryExpression binary = arithmeticFactory.createBooleanBinaryExpression();
+			binary.setLhs(transformBoolExpression(impl.getLeft()));
+			binary.setRhs(transformBoolExpression(impl.getRight()));
+			binary.setOperator(BooleanBinaryOperator.IMPLICATION);
+			return binary;
+		} else if (expression instanceof BooleanDisjunction disj) {
+			featureConfig.setBooleanExpressions(true);
+			BooleanBinaryExpression binary = arithmeticFactory.createBooleanBinaryExpression();
+			binary.setLhs(transformBoolExpression(disj.getLeft()));
+			binary.setRhs(transformBoolExpression(disj.getRight()));
+			binary.setOperator(switch (disj.getOperator()) {
+			case OR -> {
+				yield BooleanBinaryOperator.OR;
+			}
+			case XOR -> {
+				yield BooleanBinaryOperator.XOR;
+			}
+			default -> throw new UnsupportedOperationException("Unkown boolean operator: " + disj.getOperator());
+			});
+			return binary;
+		} else if (expression instanceof BooleanConjunction conj) {
+			featureConfig.setBooleanExpressions(true);
+			BooleanBinaryExpression binary = arithmeticFactory.createBooleanBinaryExpression();
+			binary.setLhs(transformBoolExpression(conj.getLeft()));
+			binary.setRhs(transformBoolExpression(conj.getRight()));
+			binary.setOperator(switch (conj.getOperator()) {
+			case AND -> {
+				yield BooleanBinaryOperator.AND;
+			}
+			default -> throw new UnsupportedOperationException("Unkown boolean operator: " + conj.getOperator());
+			});
+			return binary;
+		} else if (expression instanceof BooleanNegation neg) {
+			featureConfig.setBooleanExpressions(true);
+			BooleanUnaryExpression unary = arithmeticFactory.createBooleanUnaryExpression();
+			unary.setOperand(transformBoolExpression(neg.getOperand()));
+			unary.setOperator(BooleanUnaryOperator.NEGATION);
+			return unary;
+		} else if (expression instanceof BooleanBracket brack) {
+			featureConfig.setBooleanExpressions(true);
+			BooleanUnaryExpression unary = arithmeticFactory.createBooleanUnaryExpression();
+			unary.setOperand(transformBoolExpression(brack.getOperand()));
+			unary.setOperator(BooleanUnaryOperator.BRACKET);
+			return unary;
+		} else if (expression instanceof org.emoflon.ibex.common.slimgt.slimGT.ValueExpression val) {
+			featureConfig.setBooleanExpressions(true);
+			ValueExpression gtValue = transformValueExpression(val);
+			if (gtValue instanceof IBeXBooleanValue boolValue) {
+				return boolValue;
+			} else if (gtValue instanceof IBeXAttributeValue atrValue
+					&& atrValue.getType() == EcorePackage.Literals.EBOOLEAN) {
+				return atrValue;
+			} else {
+				throw new UnsupportedOperationException(
+						"Value expression does not return a boolean value: " + expression);
+			}
+		} else if (expression instanceof org.emoflon.ibex.common.slimgt.slimGT.RelationalExpression rel) {
+			RelationalExpression gtRelation = arithmeticFactory.createRelationalExpression();
+			gtRelation.setLhs(transformValueExpression(rel.getLhs()));
+			gtRelation.setRhs(transformValueExpression(rel.getRhs()));
+			gtRelation.setOperator(switch (rel.getRelation()) {
+			case EQUAL -> {
+				if (gtRelation.getLhs().getType() != EcorePackage.Literals.ESTRING
+						&& (gtRelation.getLhs().getType() instanceof EDataType
+								|| gtRelation.getLhs().getType() instanceof EEnumLiteral)) {
+					yield org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator.EQUAL;
+				} else {
+					yield org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator.OBJECT_EQUALS;
+				}
+			}
+			case GREATER -> {
+				yield org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator.GREATER;
+			}
+			case GREATER_OR_EQUAL -> {
+				yield org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator.GREATER_OR_EQUAL;
+			}
+			case SMALLER -> {
+				yield org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator.SMALLER;
+			}
+			case SMALLER_OR_EQUAL -> {
+				yield org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator.SMALLER_OR_EQUAL;
+			}
+			case UNEQUAL -> {
+				if (gtRelation.getLhs().getType() != EcorePackage.Literals.ESTRING
+						&& (gtRelation.getLhs().getType() instanceof EDataType
+								|| gtRelation.getLhs().getType() instanceof EEnumLiteral)) {
+					yield org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator.UNEQUAL;
+				} else {
+					yield org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator.OBJECT_NOT_EQUALS;
+				}
+			}
+			default -> throw new UnsupportedOperationException("Unknown boolean operator: " + rel.getRelation());
+			});
+			return gtRelation;
+		} else {
+			throw new UnsupportedOperationException("Unkown arithmetic operation type: " + expression);
+		}
+	}
+
+	protected ValueExpression transformValueExpression(org.emoflon.ibex.common.slimgt.slimGT.ValueExpression value) {
+		return transformArithmeticExpression((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) value);
+	}
+
+	protected ArithmeticExpression transformArithmeticExpression(org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression expression) {
+		if (expression instanceof SumArithmeticExpression sum) {
+			featureConfig.setArithmeticExpressions(true);
+			BinaryExpression binary = arithmeticFactory.createBinaryExpression();
+			binary.setLhs(
+					transformArithmeticExpression((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) sum.getLhs()));
+			binary.setRhs(
+					transformArithmeticExpression((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) sum.getRhs()));
+			binary.setType(DataTypeUtil.mergeDataTypes(binary.getLhs(), binary.getRhs()));
+			binary.setOperator(switch (sum.getOperator()) {
+			case MINUS -> {
+				yield BinaryOperator.SUBTRACT;
+			}
+			case PLUS -> {
+				yield BinaryOperator.ADD;
+			}
+			default -> throw new UnsupportedOperationException("Unknown arithmetic operator: " + sum.getOperator());
+			});
+
+			return binary;
+		} else if (expression instanceof ProductArithmeticExpression prod) {
+			featureConfig.setArithmeticExpressions(true);
+			BinaryExpression binary = arithmeticFactory.createBinaryExpression();
+			binary.setLhs(
+					transformArithmeticExpression((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) prod.getLhs()));
+			binary.setRhs(
+					transformArithmeticExpression((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) prod.getRhs()));
+			binary.setType(DataTypeUtil.mergeDataTypes(binary.getLhs(), binary.getRhs()));
+			binary.setOperator(switch (prod.getOperator()) {
+			case MULT -> {
+				yield BinaryOperator.MULTIPLY;
+			}
+			case DIV -> {
+				yield BinaryOperator.DIVIDE;
+			}
+			case MOD -> {
+				yield BinaryOperator.MOD;
+			}
+			default -> throw new UnsupportedOperationException("Unknown arithmetic operator: " + prod.getOperator());
+			});
+
+			return binary;
+		} else if (expression instanceof ExpArithmeticExpression exp) {
+			featureConfig.setArithmeticExpressions(true);
+			BinaryExpression binary = arithmeticFactory.createBinaryExpression();
+			binary.setLhs(
+					transformArithmeticExpression((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) exp.getLhs()));
+			binary.setRhs(
+					transformArithmeticExpression((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) exp.getRhs()));
+			binary.setType(EcorePackage.Literals.EDOUBLE);
+			binary.setOperator(switch (exp.getOperator()) {
+			case POW -> {
+				yield BinaryOperator.POW;
+			}
+			case LOG -> {
+				yield BinaryOperator.LOG;
+			}
+			default -> throw new UnsupportedOperationException("Unknown arithmetic operator: " + exp.getOperator());
+			});
+
+			return binary;
+		} else if (expression instanceof StochasticArithmeticExpression stoc) {
+			featureConfig.setArithmeticExpressions(true);
+			return switch (stoc.getDistribution()) {
+			case NORMAL -> {
+				BinaryExpression binary = arithmeticFactory.createBinaryExpression();
+				binary.setLhs(transformArithmeticExpression(stoc.getMean()));
+				binary.setRhs(transformArithmeticExpression(stoc.getSd()));
+				binary.setType(EcorePackage.Literals.EDOUBLE);
+				binary.setOperator(BinaryOperator.NORMAL_DISTRIBUTION);
+				yield binary;
+			}
+			case UNIFORM -> {
+				BinaryExpression binary = arithmeticFactory.createBinaryExpression();
+				binary.setLhs(transformArithmeticExpression(stoc.getMean()));
+				binary.setRhs(transformArithmeticExpression(stoc.getSd()));
+				binary.setType(EcorePackage.Literals.EDOUBLE);
+				binary.setOperator(BinaryOperator.UNIFORM_DISTRIBUTION);
+				yield binary;
+			}
+			case EXPONENTIAL -> {
+				UnaryExpression unary = arithmeticFactory.createUnaryExpression();
+				unary.setOperand(transformArithmeticExpression(stoc.getMean()));
+				unary.setType(EcorePackage.Literals.EDOUBLE);
+				unary.setOperator(
+						org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.UnaryOperator.EXPONENTIAL_DISTRIBUTION);
+				yield unary;
+			}
+			default ->
+				throw new UnsupportedOperationException("Unknown arithmetic operator: " + stoc.getDistribution());
+			};
+		} else if (expression instanceof MinMaxArithmeticExpression minMax) {
+			featureConfig.setArithmeticExpressions(true);
+			BinaryExpression binary = arithmeticFactory.createBinaryExpression();
+			binary.setLhs(
+					transformArithmeticExpression((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) minMax.getLhs()));
+			binary.setRhs(
+					transformArithmeticExpression((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) minMax.getRhs()));
+			binary.setType(DataTypeUtil.mergeDataTypes(binary.getLhs(), binary.getRhs()));
+			binary.setOperator(switch (minMax.getMinMaxOperator()) {
+			case MIN -> {
+				yield BinaryOperator.MIN;
+			}
+			case MAX -> {
+				yield BinaryOperator.MAX;
+			}
+			default ->
+				throw new UnsupportedOperationException("Unknown arithmetic operator: " + minMax.getMinMaxOperator());
+			});
+
+			return binary;
+		} else if (expression instanceof UnaryArithmeticExpression un) {
+			featureConfig.setArithmeticExpressions(true);
+			UnaryExpression unary = arithmeticFactory.createUnaryExpression();
+			unary.setOperand(transformArithmeticExpression((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) expression.getLhs()));
+			unary.setOperator(switch (un.getOperator()) {
+			case NEG -> {
+				unary.setType(unary.getOperand().getType());
+				yield org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.UnaryOperator.NEGATIVE;
+			}
+			case ABS -> {
+				unary.setType(unary.getOperand().getType());
+				yield org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.UnaryOperator.ABSOLUTE;
+			}
+			case SQRT -> {
+				unary.setType(EcorePackage.Literals.EDOUBLE);
+				yield org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.UnaryOperator.SQRT;
+			}
+			case SIN -> {
+				unary.setType(EcorePackage.Literals.EDOUBLE);
+				yield org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.UnaryOperator.SIN;
+			}
+			case COS -> {
+				unary.setType(EcorePackage.Literals.EDOUBLE);
+				yield org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.UnaryOperator.COS;
+			}
+			case TAN -> {
+				unary.setType(EcorePackage.Literals.EDOUBLE);
+				yield org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.UnaryOperator.TAN;
+			}
+			default -> throw new UnsupportedOperationException("Unknown arithmetic operator: " + un.getOperator());
+			});
+			return unary;
+		} else if (expression instanceof BracketExpression brack) {
+			featureConfig.setArithmeticExpressions(true);
+			UnaryExpression unary = arithmeticFactory.createUnaryExpression();
+			unary.setOperand(transformArithmeticExpression((org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression) expression.getLhs()));
+			unary.setType(unary.getOperand().getType());
+			unary.setOperator(org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.UnaryOperator.BRACKET);
+			return unary;
+		} else if (expression instanceof org.emoflon.ibex.common.slimgt.slimGT.ExpressionOperand op) {
+			if (op.getOperand() instanceof NodeExpression ne) {
+				IBeXNodeValue nodeValue = superFactory.createIBeXNodeValue();
+				
+				nodeValue.setNode(transformNode(ne.getNode()));
+				nodeValue.setType(nodeValue.getNode().getType());
+				return nodeValue;
+			} else if (op.getOperand() instanceof NodeAttributeExpression nae) {
+				IBeXAttributeValue atrValue = superFactory.createIBeXAttributeValue();
+				atrValue.setNode(transformNode(nae.getNodeExpression().getNode()));
+				atrValue.setType(nae.getFeature().getEType());
+				atrValue.setAttribute(nae.getFeature());
+				return atrValue;
+			} else if (op.getOperand() instanceof ArithmeticLiteral lit) {
+				if (lit instanceof DoubleLiteral d) {
+					org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.DoubleLiteral gtD = arithmeticFactory
+							.createDoubleLiteral();
+					gtD.setValue(d.getValue());
+					gtD.setType(EcorePackage.Literals.EDOUBLE);
+					return gtD;
+				} else if (lit instanceof IntegerLiteral i) {
+					org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.IntegerLiteral gtI = arithmeticFactory
+							.createIntegerLiteral();
+					gtI.setValue(i.getValue());
+					gtI.setType(EcorePackage.Literals.EINT);
+					return gtI;
+				} else if (lit instanceof StringLiteral s) {
+					IBeXStringValue gtS = superFactory.createIBeXStringValue();
+					gtS.setValue(s.getValue());
+					gtS.setType(EcorePackage.Literals.ESTRING);
+					return (ArithmeticExpression) gtS;
+				} else if (lit instanceof BooleanLiteral b) {
+					IBeXBooleanValue gtB = superFactory.createIBeXBooleanValue();
+					gtB.setValue(b.isValue());
+					gtB.setType(EcorePackage.Literals.EBOOLEAN);
+					return (ArithmeticExpression) gtB;
+				} else {
+					throw new UnsupportedOperationException("Unkown arithmetic literal type: " + lit);
+				}
+			} else if (op.getOperand() instanceof EnumExpression en) {
+				IBeXEnumValue enumVal = superFactory.createIBeXEnumValue();
+				enumVal.setLiteral(en.getLiteral());
+				enumVal.setType(en.getLiteral().getEEnum());
+				return (ArithmeticExpression) enumVal;
+			} else if (op.getOperand() instanceof LocalVariable lo) {
+				TGGLocalVariable localVariable = cspFactory.createTGGLocalVariable();
+				localVariable.setName(lo.getName());
+				
+				var condition = (AttributeCondition) expression.eContainer();
+				TGGAttributeConstraint constraint = transformAttributeConstraint(condition);
+				var index = condition.getValues().indexOf(expression);
+				localVariable.setType(constraint.getDefinition().getParameterDefinitions().get(index).getType());
+				return (ArithmeticExpression) localVariable;
+			} else if (op.getOperand() instanceof Constant con) {
+				return switch (con.getValue()) {
+				case E -> {
+					org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.DoubleLiteral gtD = arithmeticFactory
+							.createDoubleLiteral();
+					gtD.setValue(Math.E);
+					gtD.setType(EcorePackage.Literals.EDOUBLE);
+					yield gtD;
+				}
+				case NULL -> {
+					IBeXNullValue nullVal = superFactory.createIBeXNullValue();
+					nullVal.setType(EcorePackage.Literals.EOBJECT);
+					yield (ArithmeticExpression) nullVal;
+				}
+				case PI -> {
+					org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.DoubleLiteral gtD = arithmeticFactory
+							.createDoubleLiteral();
+					gtD.setValue(Math.PI);
+					gtD.setType(EcorePackage.Literals.EDOUBLE);
+					yield gtD;
+				}
+				default -> throw new UnsupportedOperationException("Unkown constant: " + con);
+				};
+			} else {
+				throw new UnsupportedOperationException("Unkown arithmetic operand type: " + op.getOperand());
+			}
+		} else {
+			throw new UnsupportedOperationException("Unkown arithmetic operation type: " + expression);
+		}
 	}
 	
 	protected void postProcessing() {

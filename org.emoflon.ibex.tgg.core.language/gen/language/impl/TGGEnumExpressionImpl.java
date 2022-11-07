@@ -78,7 +78,8 @@ public class TGGEnumExpressionImpl extends TGGExpressionImpl implements TGGEnumE
 			eenum = (EEnum) eResolveProxy(oldEenum);
 			if (eenum != oldEenum) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, LanguagePackage.TGG_ENUM_EXPRESSION__EENUM, oldEenum, eenum));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							LanguagePackage.TGG_ENUM_EXPRESSION__EENUM, oldEenum, eenum));
 			}
 		}
 		return eenum;
@@ -103,7 +104,8 @@ public class TGGEnumExpressionImpl extends TGGExpressionImpl implements TGGEnumE
 		EEnum oldEenum = eenum;
 		eenum = newEenum;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_ENUM_EXPRESSION__EENUM, oldEenum, eenum));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_ENUM_EXPRESSION__EENUM, oldEenum,
+					eenum));
 	}
 
 	/**
@@ -118,7 +120,8 @@ public class TGGEnumExpressionImpl extends TGGExpressionImpl implements TGGEnumE
 			literal = (EEnumLiteral) eResolveProxy(oldLiteral);
 			if (literal != oldLiteral) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, LanguagePackage.TGG_ENUM_EXPRESSION__LITERAL, oldLiteral, literal));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							LanguagePackage.TGG_ENUM_EXPRESSION__LITERAL, oldLiteral, literal));
 			}
 		}
 		return literal;
@@ -143,7 +146,8 @@ public class TGGEnumExpressionImpl extends TGGExpressionImpl implements TGGEnumE
 		EEnumLiteral oldLiteral = literal;
 		literal = newLiteral;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_ENUM_EXPRESSION__LITERAL, oldLiteral, literal));
+			eNotify(new ENotificationImpl(this, Notification.SET, LanguagePackage.TGG_ENUM_EXPRESSION__LITERAL,
+					oldLiteral, literal));
 	}
 
 	/**

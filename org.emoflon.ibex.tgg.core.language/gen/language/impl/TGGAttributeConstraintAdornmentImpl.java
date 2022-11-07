@@ -63,7 +63,8 @@ public class TGGAttributeConstraintAdornmentImpl extends EObjectImpl implements 
 	@Override
 	public EList<String> getValue() {
 		if (value == null) {
-			value = new EDataTypeEList<String>(String.class, this, LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT_ADORNMENT__VALUE);
+			value = new EDataTypeEList<String>(String.class, this,
+					LanguagePackage.TGG_ATTRIBUTE_CONSTRAINT_ADORNMENT__VALUE);
 		}
 		return value;
 	}

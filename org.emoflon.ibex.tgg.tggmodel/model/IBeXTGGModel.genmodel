@@ -22,6 +22,7 @@
       <genEnumLiterals ecoreEnumLiteral="IBeXTGGModel.ecore#//DomainType/SOURCE"/>
       <genEnumLiterals ecoreEnumLiteral="IBeXTGGModel.ecore#//DomainType/TARGET"/>
       <genEnumLiterals ecoreEnumLiteral="IBeXTGGModel.ecore#//DomainType/CORRESPONDENCE"/>
+      <genEnumLiterals ecoreEnumLiteral="IBeXTGGModel.ecore#//DomainType/PATTERN"/>
     </genEnums>
     <genEnums typeSafeEnumCompatible="false" ecoreEnum="IBeXTGGModel.ecore#//BindingType">
       <genEnumLiterals ecoreEnumLiteral="IBeXTGGModel.ecore#//BindingType/CONTEXT"/>
@@ -46,6 +47,8 @@
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGRule/correspondenceNodes"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGRule/operationalisations"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGRule/attributeConstraints"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGRule/sourceInvocations"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGRule/targetInvocations"/>
     </genClasses>
     <genClasses ecoreClass="IBeXTGGModel.ecore#//TGGOperationalRule">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXTGGModel.ecore#//TGGOperationalRule/operationalisationMode"/>
@@ -101,6 +104,7 @@
         <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXTGGModel.ecore#//CSP/TGGCSP/package"/>
         <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//CSP/TGGCSP/values"/>
       </genClasses>
+      <genClasses ecoreClass="IBeXTGGModel.ecore#//CSP/TGGLocalVariable"/>
     </nestedGenPackages>
   </genPackages>
 </genmodel:GenModel>

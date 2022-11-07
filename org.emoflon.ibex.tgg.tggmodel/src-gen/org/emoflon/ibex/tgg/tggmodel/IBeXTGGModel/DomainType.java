@@ -46,7 +46,16 @@ public enum DomainType implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	CORRESPONDENCE(2, "CORRESPONDENCE", "CORRESPONDENCE");
+	CORRESPONDENCE(2, "CORRESPONDENCE", "CORRESPONDENCE"),
+	/**
+	 * The '<em><b>PATTERN</b></em>' literal object.
+	 * <!-- begin-user-doc -->
+	* <!-- end-user-doc -->
+	 * @see #PATTERN_VALUE
+	 * @generated
+	 * @ordered
+	 */
+	PATTERN(3, "PATTERN", "PATTERN");
 
 	/**
 	 * The '<em><b>SOURCE</b></em>' literal value.
@@ -82,12 +91,23 @@ public enum DomainType implements Enumerator {
 	public static final int CORRESPONDENCE_VALUE = 2;
 
 	/**
+	 * The '<em><b>PATTERN</b></em>' literal value.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #PATTERN
+	 * @model
+	 * @generated
+	 * @ordered
+	 */
+	public static final int PATTERN_VALUE = 3;
+
+	/**
 	 * An array of all the '<em><b>Domain Type</b></em>' enumerators.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private static final DomainType[] VALUES_ARRAY = new DomainType[] { SOURCE, TARGET, CORRESPONDENCE, };
+	private static final DomainType[] VALUES_ARRAY = new DomainType[] { SOURCE, TARGET, CORRESPONDENCE, PATTERN, };
 
 	/**
 	 * A public read-only list of all the '<em><b>Domain Type</b></em>' enumerators.
@@ -149,6 +169,8 @@ public enum DomainType implements Enumerator {
 			return TARGET;
 		case CORRESPONDENCE_VALUE:
 			return CORRESPONDENCE;
+		case PATTERN_VALUE:
+			return PATTERN;
 		}
 		return null;
 	}

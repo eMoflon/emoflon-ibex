@@ -2,6 +2,7 @@
  */
 package language.repair.impl;
 
+import language.repair.*;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
@@ -28,7 +29,8 @@ public class RepairFactoryImpl extends EFactoryImpl implements RepairFactory {
 	 */
 	public static RepairFactory init() {
 		try {
-			RepairFactory theRepairFactory = (RepairFactory) EPackage.Registry.INSTANCE.getEFactory(RepairPackage.eNS_URI);
+			RepairFactory theRepairFactory = (RepairFactory) EPackage.Registry.INSTANCE
+					.getEFactory(RepairPackage.eNS_URI);
 			if (theRepairFactory != null) {
 				return theRepairFactory;
 			}
