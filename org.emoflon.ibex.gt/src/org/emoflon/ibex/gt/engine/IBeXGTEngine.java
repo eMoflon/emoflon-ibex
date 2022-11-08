@@ -20,7 +20,6 @@ import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRule;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRuleSet;
 
 public class IBeXGTEngine<PM extends IBeXGTPatternMatcher<?>> {
-
 	final protected PM patternMatcher;
 	final protected GTModel ibexModel;
 	final protected ResourceSet model;
@@ -28,6 +27,8 @@ public class IBeXGTEngine<PM extends IBeXGTPatternMatcher<?>> {
 	protected Map<String, GTRule> name2rule = Collections.synchronizedMap(new LinkedHashMap<>());
 	protected Map<String, GTPattern> name2pattern = Collections.synchronizedMap(new LinkedHashMap<>());
 	protected Random rndGenerator;
+	protected boolean alwaysUpdatePrior = false;
+	protected boolean alwaysUpdateAfter = false;
 
 	/**
 	 * TODO: Reimplement this once the rest is complete. Returns the model state
@@ -142,6 +143,22 @@ public class IBeXGTEngine<PM extends IBeXGTPatternMatcher<?>> {
 
 	protected void registerTypedRule(IBeXGTRule<?, ?, ?, ?, ?> typedRule) {
 		name2typedRule.put(typedRule.ruleName, typedRule);
+	}
+
+	public boolean isAlwaysUpdatePrior() {
+		return alwaysUpdatePrior;
+	}
+
+	public void setAlwaysUpdatePrior(boolean alwaysUpdatePrior) {
+		this.alwaysUpdatePrior = alwaysUpdatePrior;
+	}
+
+	public boolean isAlwaysUpdateAfter() {
+		return alwaysUpdateAfter;
+	}
+
+	public void setAlwaysUpdateAfter(boolean alwaysUpdateAfter) {
+		this.alwaysUpdateAfter = alwaysUpdateAfter;
 	}
 
 	/**

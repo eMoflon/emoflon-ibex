@@ -100,7 +100,7 @@ public abstract class IBeXGTCoPattern<CP extends IBeXGTCoPattern<CP, CM, R, P, M
 	}
 
 	@Override
-	protected Collection<CM> getMatches() {
+	protected Collection<CM> getUnfilteredMatches() {
 		throw new UnsupportedOperationException("Co patterns do not have any matches.");
 	}
 

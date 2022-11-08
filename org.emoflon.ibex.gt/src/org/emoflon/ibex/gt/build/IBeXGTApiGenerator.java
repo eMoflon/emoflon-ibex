@@ -13,6 +13,7 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.emoflon.ibex.gt.build.template.GeneratorTemplate;
 import org.emoflon.ibex.gt.build.template.IBeXGTApiData;
+import org.emoflon.ibex.gt.build.template.IBeXGtApiAbstractTemplate;
 import org.emoflon.ibex.gt.build.template.IBeXGtApiTemplate;
 import org.emoflon.ibex.gt.build.template.IBeXGtCoMatchTemplate;
 import org.emoflon.ibex.gt.build.template.IBeXGtCoPatternTemplate;
@@ -37,6 +38,7 @@ public class IBeXGTApiGenerator {
 
 	public void generate() {
 		data.engines.values().forEach(ext -> templates.add(new IBeXGtApiTemplate(data, ext)));
+		templates.add(new IBeXGtApiAbstractTemplate(data, data.model));
 		templates.add(new IBeXGtRuleFactoryTemplate(data, data.model));
 		templates.add(new IBeXGtPatternFactoryTemplate(data, data.model));
 

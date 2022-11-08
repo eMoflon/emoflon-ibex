@@ -52,7 +52,7 @@ public abstract class IBeXGTPatternMatcher<EM> extends PatternMatchingEngine<GTM
 	@Override
 	protected Collection<IBeXGTMatch<?, ?>> insertNewMatchCollection(final String patternName) {
 		Collection<IBeXGTMatch<?, ?>> m = (Collection<IBeXGTMatch<?, ?>>) name2typedPattern.get(patternName)
-				.getMatches();
+				.getUnfilteredMatches();
 		matches.put(patternName, m);
 		return m;
 	}

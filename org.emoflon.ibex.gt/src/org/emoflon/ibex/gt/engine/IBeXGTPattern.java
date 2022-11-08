@@ -143,6 +143,13 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 		return filteredMatches.stream().findAny();
 	}
 
+	public Optional<M> findAnyMatch() {
+		if (gtEngine.alwaysUpdatePrior)
+			patternMatcher.updateMatches();
+
+		return filteredMatches.stream().findAny();
+	}
+
 	/**
 	 * Finds and returns the set of all matches for the pattern.
 	 * 
@@ -150,6 +157,13 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 	 */
 	public Collection<M> getMatches(boolean doUpdate) {
 		if (doUpdate)
+			patternMatcher.updateMatches();
+
+		return filteredMatches;
+	}
+
+	public Collection<M> getMatches() {
+		if (gtEngine.alwaysUpdatePrior)
 			patternMatcher.updateMatches();
 
 		return filteredMatches;
@@ -167,6 +181,13 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 		return filteredMatches.stream();
 	}
 
+	public Stream<M> matchStream() {
+		if (gtEngine.alwaysUpdatePrior)
+			patternMatcher.updateMatches();
+
+		return filteredMatches.stream();
+	}
+
 	/**
 	 * Returns whether any matches for the pattern exist.
 	 * 
@@ -179,6 +200,13 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 		return !filteredMatches.isEmpty();
 	}
 
+	public boolean hasMatches() {
+		if (gtEngine.alwaysUpdatePrior)
+			patternMatcher.updateMatches();
+
+		return !filteredMatches.isEmpty();
+	}
+
 	/**
 	 * Returns the number of matches found for the pattern.
 	 * 
@@ -186,6 +214,13 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 	 */
 	public long countMatches(boolean doUpdate) {
 		if (doUpdate)
+			patternMatcher.updateMatches();
+
+		return filteredMatches.size();
+	}
+
+	public long countMatches() {
+		if (gtEngine.alwaysUpdatePrior)
 			patternMatcher.updateMatches();
 
 		return filteredMatches.size();
@@ -296,7 +331,7 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 		return this;
 	}
 
-	protected Collection<M> getMatches() {
+	protected Collection<M> getUnfilteredMatches() {
 		return matches;
 	}
 

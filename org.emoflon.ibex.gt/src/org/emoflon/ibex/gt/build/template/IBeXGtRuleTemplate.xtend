@@ -229,7 +229,7 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 		«ENDIF»
 	}
 	
-	public «coMatchClassName» apply(final «matchClassName» match) {
+	protected «coMatchClassName» applyInternal(final «matchClassName» match) {
 		Map<String, Object> coMatchNodes = new HashMap<>();
 		«FOR node : context.allNodes.filter[node | context.precondition.signatureNodes.contains(node) && context.postcondition.signatureNodes.contains(node)]»
 		coMatchNodes.put("«node.name»", match.«node.name.toFirstLower»());
@@ -277,7 +277,7 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 		
 		// Assign attribute values
 		«FOR asgn : context.attributeAssignments»
-		«getNode("match", asgn.node)».set«asgn.attribute.name.toFirstUpper»((«exprHelper.EDataType2ExactJava(asgn.attribute.EType)»)«exprHelper.unparse("match", asgn.value)»);
+		«getNode("match", asgn.node)».set«asgn.attribute.name.toFirstUpper»((«exprHelper.EDataType2ExactJava(asgn.attribute.EType)»)(«exprHelper.unparse("match", asgn.value)»));
 		«ENDFOR»
 		«ENDIF»
 		«IF context.forEachOperations !== null && !context.forEachOperations.isEmpty»
@@ -308,7 +308,7 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 			«IF iterator.attributeAssignments !== null && !iterator.attributeAssignments.isEmpty»
 			// Assign attribute values
 			«FOR asgn : iterator.attributeAssignments»
-			«getNode("match", iterator, asgn.node)».set«asgn.attribute.name.toFirstUpper»((«exprHelper.EDataType2ExactJava(asgn.attribute.EType)»)«exprHelper.unparse("match", asgn.value)»);
+			«getNode("match", iterator, asgn.node)».set«asgn.attribute.name.toFirstUpper»((«exprHelper.EDataType2ExactJava(asgn.attribute.EType)»)(«exprHelper.unparse("match", asgn.value)»));
 			«ENDFOR»
 			«ENDIF»
 		}

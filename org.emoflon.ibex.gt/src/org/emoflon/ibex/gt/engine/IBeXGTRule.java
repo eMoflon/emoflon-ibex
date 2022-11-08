@@ -35,6 +35,10 @@ public abstract class IBeXGTRule<R extends IBeXGTRule<R, P, M, CP, CM>, P extend
 		return hasMatches(doUpdate);
 	}
 
+	public boolean isApplicable() {
+		return hasMatches();
+	}
+
 	/**
 	 * Returns the number of successful rule applications, i. e. apply() returned an
 	 * Optional which was not empty.
@@ -51,28 +55,57 @@ public abstract class IBeXGTRule<R extends IBeXGTRule<R, P, M, CP, CM>, P extend
 
 	public abstract double getProbability(final M match);
 
-	public abstract CM apply(final M match);
+	protected abstract CM applyInternal(final M match);
+
+	public CM apply(final M match) {
+		if (gtEngine.alwaysUpdatePrior)
+			gtEngine.updateMatches();
+
+		final CM coMatch = applyInternal(match);
+		if (gtEngine.alwaysUpdateAfter)
+			gtEngine.updateMatches();
+
+		return coMatch;
+	}
 
 	public CM apply(final M match, boolean doUpdate) {
 		if (doUpdate)
 			gtEngine.updateMatches();
 
-		return apply(match);
+		final CM coMatch = applyInternal(match);
+		if (gtEngine.alwaysUpdateAfter)
+			gtEngine.updateMatches();
+
+		return coMatch;
 	}
 
 	public CM applyAny() {
+		if (gtEngine.alwaysUpdatePrior)
+			gtEngine.updateMatches();
+
 		Iterator<M> it = getMatches(false).iterator();
-		if (it.hasNext())
-			return apply(it.next());
-		else
+
+		if (it.hasNext()) {
+			final CM coMatch = applyInternal(it.next());
+			if (gtEngine.alwaysUpdateAfter)
+				gtEngine.updateMatches();
+
+			return coMatch;
+		} else {
 			return null;
+		}
+
 	}
 
 	public CM applyAny(boolean doUpdate) {
 		if (doUpdate)
 			gtEngine.updateMatches();
 
-		return applyAny();
+		final CM coMatch = applyAny();
+		if (gtEngine.alwaysUpdateAfter)
+			gtEngine.updateMatches();
+
+		return coMatch;
 	}
 
 	// TODO: This might be interesting in the future!

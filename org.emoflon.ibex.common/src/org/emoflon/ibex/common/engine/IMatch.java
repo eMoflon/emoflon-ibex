@@ -3,8 +3,8 @@ package org.emoflon.ibex.common.engine;
 import java.util.Collection;
 
 /**
- * An interface for matches for a pattern providing a mapping between parameter names and
- * objects.
+ * An interface for matches for a pattern providing a mapping between parameter
+ * names and objects.
  */
 public interface IMatch {
 
@@ -75,8 +75,8 @@ public interface IMatch {
 	 * Checks whether this match is equal to the given match.
 	 * 
 	 * @param match the other match
-	 * @return <code>true</code> if and only if the two matches are for the same pattern and
-	 *         map all parameters to the same name
+	 * @return <code>true</code> if and only if the two matches are for the same
+	 *         pattern and map all parameters to the same name
 	 */
 	default boolean isEqual(final IMatch match) {
 		if (getParameterNames().size() != match.getParameterNames().size()) {

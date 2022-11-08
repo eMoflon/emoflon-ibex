@@ -19,6 +19,7 @@ public class IBeXGTApiData {
 	final public String apiPrefix;
 	final public String apiPackage;
 	final public String apiPackagePath;
+	final public String apiAbstractClassName;
 	final public String gtModelPath;
 	final public String matchPackage;
 	final public String matchPackagePath;
@@ -45,6 +46,7 @@ public class IBeXGTApiData {
 		apiPrefix = apiPrefixFromPackage(model.getMetaData().getPackage());
 		apiPackage = model.getMetaData().getPackage() + ".api";
 		apiPackagePath = model.getMetaData().getPackagePath().replace("src", "src-gen") + "/api";
+		apiAbstractClassName = apiPrefix + "GtAPI";
 		gtModelPath = model.getMetaData().getPackagePath().replace("src", "src-gen") + "/api/ibex_gt_model.xmi";
 		matchPackage = apiPackage + ".match";
 		matchPackagePath = apiPackagePath + "/match";

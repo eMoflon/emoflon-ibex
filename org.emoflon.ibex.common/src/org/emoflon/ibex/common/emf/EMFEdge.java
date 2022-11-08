@@ -14,12 +14,9 @@ public class EMFEdge {
 	/**
 	 * Creates an edge.
 	 * 
-	 * @param source
-	 *            the source object
-	 * @param target
-	 *            the target object
-	 * @param type
-	 *            the edge type
+	 * @param source the source object
+	 * @param target the target object
+	 * @param type   the edge type
 	 */
 	public EMFEdge(final EObject source, final EObject target, final EReference type) {
 		this.source = source;
@@ -57,7 +54,8 @@ public class EMFEdge {
 	@Override
 	public boolean equals(final Object o) {
 		if (o instanceof EMFEdge e)
-			return getSource().equals(e.getSource()) && getTarget().equals(e.getTarget()) && getType().equals(e.getType());
+			return getSource().equals(e.getSource()) && getTarget().equals(e.getTarget())
+					&& getType().equals(e.getType());
 		return false;
 	}
 
