@@ -1143,7 +1143,7 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 			if (iteratorAssignment.getAttribute() instanceof NodeAttributeExpression nae) {
 				IBeXAttributeAssignment gtAssign = superFactory.createIBeXAttributeAssignment();
 				gtAssign.setNode(node2node.get(nae.getNodeExpression().getNode()));
-				gtAssign.setAttribute(getProperAttributeType(nae.getNodeExpression().getFeature()));
+				gtAssign.setAttribute(getProperAttributeType(nae.getFeature()));
 				IBeXFeatureConfig features = superFactory.createIBeXFeatureConfig();
 				ValueExpression value = transform(iteratorAssignment.getValue(), features);
 				gtAssign.setValue(value);

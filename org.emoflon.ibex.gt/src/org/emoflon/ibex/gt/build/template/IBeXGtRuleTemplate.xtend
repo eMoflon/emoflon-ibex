@@ -371,7 +371,9 @@ import «imp»;
 		if(itr.iterator.type.equals(itr.reference.EType)) {
 			return '''new LinkedList<>(«getNode(methodContext, itr.source)».get«itr.reference.name.toFirstUpper»())'''
 		} else {
-			return '''«getNode(methodContext, itr.source)».get«itr.reference.name.toFirstUpper»().stream().map(n -> («itr.iterator.type.name») n).collect(Collectors.toList())'''
+			return '''«getNode(methodContext, itr.source)».get«itr.reference.name.toFirstUpper»().stream()
+			.filter(n -> (n instanceof «itr.iterator.type.name»))
+			.map(n -> («itr.iterator.type.name») n).collect(Collectors.toList())'''
 		}
 	}
 	
