@@ -95,6 +95,18 @@ class ExpressionHelper {
 				case UNEQUAL: {
 					return '''«unparse(methodContext, expression.lhs)» != «unparse(methodContext, expression.rhs)»'''
 				}
+				case OBJECT_GREATER: {
+					return '''(«unparse(methodContext, expression.lhs)»).compareTo(«unparse(methodContext, expression.rhs)»)>0'''
+				}
+				case OBJECT_GREATER_OR_EQUAL: {
+					return '''((«unparse(methodContext, expression.lhs)»).compareTo(«unparse(methodContext, expression.rhs)»)>0 || («unparse(methodContext, expression.lhs)»).equals(«unparse(methodContext, expression.rhs)»))'''
+				}
+				case OBJECT_SMALLER: {
+					return '''(«unparse(methodContext, expression.lhs)»).compareTo(«unparse(methodContext, expression.rhs)»)<0'''
+				}
+				case OBJECT_SMALLER_OR_EQUAL: {
+					return '''((«unparse(methodContext, expression.lhs)»).compareTo(«unparse(methodContext, expression.rhs)»)<0 || («unparse(methodContext, expression.lhs)»).equals(«unparse(methodContext, expression.rhs)»))'''
+				}
 			}
 		} else {
 			throw new UnsupportedOperationException("Unknown boolean expression type: " + expression)
@@ -108,7 +120,7 @@ class ExpressionHelper {
 			imports.add(data.getFQN(expression.type))
 			return '''«expression.type.name».«expression.literal.name»'''
 		} else if(expression instanceof IBeXStringValue) {
-			return expression.value
+			return '''"«expression.value»"'''
 		} else if(expression instanceof IBeXNullValue) {
 			return '''null'''
 		} else if(expression instanceof GTIteratorAttributeReference) {

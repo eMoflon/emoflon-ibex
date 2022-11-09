@@ -18,8 +18,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.codegen.ecore.genmodel.GenPackage;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EDataType;
-import org.eclipse.emf.ecore.EEnumLiteral;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EcorePackage;
@@ -775,29 +773,53 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 			gtRelation.setOperator(switch (rel.getRelation()) {
 			case EQUAL -> {
 				if (gtRelation.getLhs().getType() != EcorePackage.Literals.ESTRING
-						&& (gtRelation.getLhs().getType() instanceof EDataType
-								|| gtRelation.getLhs().getType() instanceof EEnumLiteral)) {
+						&& gtRelation.getLhs().getType() != EcorePackage.Literals.EDATE
+						&& !(gtRelation.getLhs().getType() instanceof EClass)) {
 					yield org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator.EQUAL;
 				} else {
 					yield org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator.OBJECT_EQUALS;
 				}
 			}
 			case GREATER -> {
-				yield org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator.GREATER;
+				if (gtRelation.getLhs().getType() != EcorePackage.Literals.ESTRING
+						&& gtRelation.getLhs().getType() != EcorePackage.Literals.EDATE
+						&& !(gtRelation.getLhs().getType() instanceof EClass)) {
+					yield org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator.GREATER;
+				} else {
+					yield org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator.OBJECT_GREATER;
+				}
 			}
 			case GREATER_OR_EQUAL -> {
-				yield org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator.GREATER_OR_EQUAL;
+				if (gtRelation.getLhs().getType() != EcorePackage.Literals.ESTRING
+						&& gtRelation.getLhs().getType() != EcorePackage.Literals.EDATE
+						&& !(gtRelation.getLhs().getType() instanceof EClass)) {
+					yield org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator.GREATER_OR_EQUAL;
+				} else {
+					yield org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator.OBJECT_GREATER_OR_EQUAL;
+				}
 			}
 			case SMALLER -> {
-				yield org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator.SMALLER;
+				if (gtRelation.getLhs().getType() != EcorePackage.Literals.ESTRING
+						&& gtRelation.getLhs().getType() != EcorePackage.Literals.EDATE
+						&& !(gtRelation.getLhs().getType() instanceof EClass)) {
+					yield org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator.SMALLER;
+				} else {
+					yield org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator.OBJECT_SMALLER;
+				}
 			}
 			case SMALLER_OR_EQUAL -> {
-				yield org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator.SMALLER_OR_EQUAL;
+				if (gtRelation.getLhs().getType() != EcorePackage.Literals.ESTRING
+						&& gtRelation.getLhs().getType() != EcorePackage.Literals.EDATE
+						&& !(gtRelation.getLhs().getType() instanceof EClass)) {
+					yield org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator.SMALLER_OR_EQUAL;
+				} else {
+					yield org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator.OBJECT_SMALLER_OR_EQUAL;
+				}
 			}
 			case UNEQUAL -> {
 				if (gtRelation.getLhs().getType() != EcorePackage.Literals.ESTRING
-						&& (gtRelation.getLhs().getType() instanceof EDataType
-								|| gtRelation.getLhs().getType() instanceof EEnumLiteral)) {
+						&& gtRelation.getLhs().getType() != EcorePackage.Literals.EDATE
+						&& !(gtRelation.getLhs().getType() instanceof EClass)) {
 					yield org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator.UNEQUAL;
 				} else {
 					yield org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator.OBJECT_NOT_EQUALS;

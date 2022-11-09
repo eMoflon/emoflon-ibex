@@ -773,6 +773,10 @@ public class IBeXCoreArithmeticPackageImpl extends EPackageImpl implements IBeXC
 		addEEnumLiteral(relationalOperatorEEnum, RelationalOperator.SMALLER);
 		addEEnumLiteral(relationalOperatorEEnum, RelationalOperator.OBJECT_EQUALS);
 		addEEnumLiteral(relationalOperatorEEnum, RelationalOperator.OBJECT_NOT_EQUALS);
+		addEEnumLiteral(relationalOperatorEEnum, RelationalOperator.OBJECT_GREATER_OR_EQUAL);
+		addEEnumLiteral(relationalOperatorEEnum, RelationalOperator.OBJECT_GREATER);
+		addEEnumLiteral(relationalOperatorEEnum, RelationalOperator.OBJECT_SMALLER_OR_EQUAL);
+		addEEnumLiteral(relationalOperatorEEnum, RelationalOperator.OBJECT_SMALLER);
 	}
 
 } //IBeXCoreArithmeticPackageImpl

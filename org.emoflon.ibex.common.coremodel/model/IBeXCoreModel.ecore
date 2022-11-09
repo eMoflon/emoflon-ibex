@@ -272,6 +272,10 @@
       <eLiterals name="SMALLER" value="5"/>
       <eLiterals name="OBJECT_EQUALS" value="6"/>
       <eLiterals name="OBJECT_NOT_EQUALS" value="7" literal="OBJECT_NOT_EQUALS"/>
+      <eLiterals name="OBJECT_GREATER_OR_EQUAL" value="8" literal="OBJECT_GREATER_OR_EQUAL"/>
+      <eLiterals name="OBJECT_GREATER" value="9"/>
+      <eLiterals name="OBJECT_SMALLER_OR_EQUAL" value="10"/>
+      <eLiterals name="OBJECT_SMALLER" value="11"/>
     </eClassifiers>
   </eSubpackages>
 </ecore:EPackage>
