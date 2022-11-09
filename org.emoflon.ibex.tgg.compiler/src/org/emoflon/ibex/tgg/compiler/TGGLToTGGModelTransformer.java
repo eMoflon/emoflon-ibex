@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.codegen.ecore.genmodel.GenPackage;
@@ -25,7 +26,6 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXBooleanValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEnumValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXFeatureConfig;
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXMatchCountValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModelMetadata;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNamedElement;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
@@ -36,7 +36,6 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternInvocation;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXStringValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ArithmeticExpression;
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ArithmeticValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BinaryExpression;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BinaryOperator;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanBinaryExpression;
@@ -56,7 +55,6 @@ import org.emoflon.ibex.common.slimgt.slimGT.BooleanLiteral;
 import org.emoflon.ibex.common.slimgt.slimGT.BooleanNegation;
 import org.emoflon.ibex.common.slimgt.slimGT.BracketExpression;
 import org.emoflon.ibex.common.slimgt.slimGT.Constant;
-import org.emoflon.ibex.common.slimgt.slimGT.CountExpression;
 import org.emoflon.ibex.common.slimgt.slimGT.DoubleLiteral;
 import org.emoflon.ibex.common.slimgt.slimGT.EnumExpression;
 import org.emoflon.ibex.common.slimgt.slimGT.ExpArithmeticExpression;
@@ -78,7 +76,6 @@ import org.emoflon.ibex.common.slimgt.slimGT.StringLiteral;
 import org.emoflon.ibex.common.slimgt.slimGT.SumArithmeticExpression;
 import org.emoflon.ibex.common.slimgt.slimGT.UnaryArithmeticExpression;
 import org.emoflon.ibex.common.slimgt.util.SlimGTEMFUtil;
-import org.emoflon.ibex.common.slimgt.util.SlimGTModelUtil;
 import org.emoflon.ibex.common.transformation.DataTypeUtil;
 import org.emoflon.ibex.common.transformation.SlimGtToIBeXCoreTransformer;
 import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuntimeModelPackage;
@@ -301,11 +298,18 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		}
 		
 		for(var attributeCondition : rule.getAttrConditions()) {
-			internalRule.getAttributeConstraints().getTggAttributeConstraints().add(transformAttributeConstraint(attributeCondition));
+			internalRule.getAttributeConstraints().getTggAttributeConstraints().add(transformAttributeCondition(attributeCondition));
 		}
+		
+		internalRule.getAllNodes().addAll(internalRule.getNodes());
+		internalRule.getAllEdges().addAll(internalRule.getEdges());
 		
 		var precondition = internalRule.getPrecondition();
 		var postcondition = internalRule.getPostcondition();
+		
+		populatePrecondition(rule, internalRule, precondition);
+		populatePostcondition(rule, internalRule, precondition);
+		
 		for(var invocation : rule.getSourceRule().getInvocations()) {
 			precondition.getInvocations().add(transformInvocation(precondition, invocation));
 			postcondition.getInvocations().add(transformInvocation(postcondition, invocation));
@@ -316,10 +320,61 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 			postcondition.getInvocations().add(transformInvocation(postcondition, invocation));
 		}
 		
+		var creation = superFactory.createIBeXRuleDelta();
+		creation.getNodes().addAll(filterNodes(internalRule.getNodes(), BindingType.CREATE));
+		creation.getEdges().addAll(filterEdges(internalRule.getEdges(), BindingType.CREATE));
+		internalRule.setCreation(creation);
+		
 		return internalRule;
 	}
 	
-	private TGGAttributeConstraint transformAttributeConstraint(AttributeCondition attributeCondition) {
+	private void populatePrecondition(org.emoflon.ibex.tgg.tggl.tGGL.TGGRule tggRule, TGGRule internalRule, IBeXPattern precondition) {
+		precondition.getSignatureNodes().addAll(filterNodes(internalRule.getNodes(), BindingType.CONTEXT));
+		precondition.getEdges().addAll(filterEdges(internalRule.getEdges(), BindingType.CONTEXT));
+		
+		for(var sourceCondition : tggRule.getSourceRule().getConditions()) {
+			precondition.getConditions().add(transformSlimRuleCondition(sourceCondition));
+		}
+		
+		for(var targetCondition : tggRule.getSourceRule().getConditions()) {
+			precondition.getConditions().add(transformSlimRuleCondition(targetCondition));
+		}
+		
+		for(var invocation : tggRule.getSourceRule().getInvocations()) {
+			precondition.getInvocations().add(transformInvocation(precondition, invocation));
+		}
+		
+		for(var invocation : tggRule.getTargetRule().getInvocations()) {
+			precondition.getInvocations().add(transformInvocation(precondition, invocation));
+		}
+	}
+
+	private void populatePostcondition(org.emoflon.ibex.tgg.tggl.tGGL.TGGRule tggRule, TGGRule internalRule, IBeXPattern postcondition) {
+		postcondition.getSignatureNodes().addAll(internalRule.getNodes());
+		postcondition.getEdges().addAll(internalRule.getEdges());
+		
+		for(var invocation : tggRule.getSourceRule().getInvocations()) {
+			postcondition.getInvocations().add(transformInvocation(postcondition, invocation));
+		}
+		
+		for(var invocation : tggRule.getTargetRule().getInvocations()) {
+			postcondition.getInvocations().add(transformInvocation(postcondition, invocation));
+		}
+	}
+	
+	private Collection<TGGNode> filterNodes(Collection<TGGNode> nodes, BindingType binding) {
+		return nodes.stream().filter(n -> n.getBindingType() == binding).collect(Collectors.toSet());
+	}
+	
+	private Collection<TGGEdge> filterEdges(Collection<TGGEdge> edges, BindingType binding) {
+		return edges.stream().filter(n -> n.getBindingType() == binding).collect(Collectors.toSet());
+	}
+
+	private BooleanExpression transformSlimRuleCondition(SlimRuleCondition condition) {
+		return transformBoolExpression(condition.getExpression());
+	}
+	
+	private TGGAttributeConstraint transformAttributeCondition(AttributeCondition attributeCondition) {
 		if(tggl2tggModel.containsKey(attributeCondition))
 			return (TGGAttributeConstraint) tggl2tggModel.get(attributeCondition);
 		
@@ -368,6 +423,8 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		transformTGGEdge(new EdgeSignature(node, node.getSource(), runtimePackage.getCorrespondence_Source()), binding, domain);
 		transformTGGEdge(new EdgeSignature(node, node.getTarget(), runtimePackage.getCorrespondence_Target()), binding, domain);
 		
+		model.getNodeSet().getNodes().add(corrNode);
+		
 		return corrNode;
 	}
 	
@@ -391,6 +448,8 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		edge.setName(source.getName() + " -" + edgeSignature.type().getName()+"-> " + target.getName());
 		edge.setSource(source);
 		edge.setTarget(target);
+		
+		model.getEdgeSet().getEdges().add(edge);
 		
 		return edge;
 	}
@@ -485,6 +544,8 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 			var creation = createdEdge.getCreation();
 			transformTGGEdge(new EdgeSignature(node, creation.getTarget(), creation.getType()), BindingType.CREATE, domain);
 		}
+		
+		model.getNodeSet().getNodes().add(tggNode);
 		
 		return tggNode;
 	}
@@ -874,7 +935,7 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 				localVariable.setName(lo.getName());
 				
 				var condition = (AttributeCondition) expression.eContainer();
-				TGGAttributeConstraint constraint = transformAttributeConstraint(condition);
+				TGGAttributeConstraint constraint = transformAttributeCondition(condition);
 				var index = condition.getValues().indexOf(expression);
 				localVariable.setType(constraint.getDefinition().getParameterDefinitions().get(index).getType());
 				return (ArithmeticExpression) localVariable;
