@@ -234,19 +234,6 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 		«FOR node : context.allNodes.filter[node | context.precondition.signatureNodes.contains(node) && context.postcondition.signatureNodes.contains(node)]»
 		coMatchNodes.put("«node.name»", match.«node.name.toFirstLower»());
 		«ENDFOR»
-		«IF !context.deletion.empty»
-		
-		// Delete elements
-		«FOR edge : context.deletion.edges.filter[edge | !(edge.type.isContainment || edge.type.isContainer)]»
-		gtEngine.deleteEdge(«getNode("match", edge.source)», «getNode("match", edge.target)», rule.getDeletion().getEdges().get(«context.deletion.edges.indexOf(edge)»));
-		«ENDFOR»
-		«FOR edge : context.deletion.edges.filter[edge | edge.type.isContainment || edge.type.isContainer]»
-		gtEngine.deleteEdge(«getNode("match", edge.source)», «getNode("match", edge.target)», rule.getDeletion().getEdges().get(«context.deletion.edges.indexOf(edge)»));
-		«ENDFOR»
-		«FOR node : context.deletion.nodes»
-		gtEngine.delete(«getNode("match", node)»);
-		«ENDFOR»
-		«ENDIF»
 		«IF !context.creation.empty»
 		
 		// Create new elements
@@ -273,6 +260,19 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 		«ENDIF»
 		«ENDFOR»
 		«ENDIF»
+		«IF !context.deletion.empty»
+		
+		// Delete elements
+		«FOR edge : context.deletion.edges.filter[edge | !(edge.type.isContainment || edge.type.isContainer)]»
+		gtEngine.deleteEdge(«getNode("match", edge.source)», «getNode("match", edge.target)», rule.getDeletion().getEdges().get(«context.deletion.edges.indexOf(edge)»));
+		«ENDFOR»
+		«FOR edge : context.deletion.edges.filter[edge | edge.type.isContainment || edge.type.isContainer]»
+		gtEngine.deleteEdge(«getNode("match", edge.source)», «getNode("match", edge.target)», rule.getDeletion().getEdges().get(«context.deletion.edges.indexOf(edge)»));
+		«ENDFOR»
+		«FOR node : context.deletion.nodes»
+		gtEngine.delete(«getNode("match", node)»);
+		«ENDFOR»
+		«ENDIF»
 		«IF context.attributeAssignments !== null && !context.attributeAssignments.empty»
 		
 		// Assign attribute values
@@ -286,15 +286,6 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 		«FOR iterator : context.forEachOperations»
 		Collection<«getIteratorType(iterator)»> elements = «getIteratorSet("match", iterator)»;
 		for(«getIteratorType(iterator)» «iterator.iterator.name» : elements) {
-			«IF iterator.deleted !== null && !iterator.deleted.isEmpty»
-			// Delete elements
-			«FOR edge : iterator.deleted.filter[edge | !(edge.type.isContainment || edge.type.isContainer)]»
-			gtEngine.deleteEdge(«getNode("match", iterator, edge.source)», «getNode("match", iterator, edge.target)», rule.getForEachOperations().get(«context.forEachOperations.indexOf(iterator)»).getDeleted().get(«iterator.deleted.indexOf(edge)»));
-			«ENDFOR»
-			«FOR edge : context.deletion.edges.filter[edge | edge.type.isContainment || edge.type.isContainer]»
-			gtEngine.deleteEdge(«getNode("match", iterator, edge.source)», «getNode("match", iterator, edge.target)», rule.getForEachOperations().get(«context.forEachOperations.indexOf(iterator)»).getDeleted().get(«iterator.deleted.indexOf(edge)»));
-			«ENDFOR»
-			«ENDIF»
 			«IF iterator.created !== null && !iterator.created.isEmpty»
 			// Create elements
 			«FOR edge : iterator.created»
@@ -303,6 +294,15 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 			«ELSE»
 			«getNode("match", iterator, edge.source)».set«edge.type.name.toFirstUpper»(«getNode("match", iterator, edge.target)»);
 			«ENDIF»
+			«ENDFOR»
+			«ENDIF»
+			«IF iterator.deleted !== null && !iterator.deleted.isEmpty»
+			// Delete elements
+			«FOR edge : iterator.deleted.filter[edge | !(edge.type.isContainment || edge.type.isContainer)]»
+			gtEngine.deleteEdge(«getNode("match", iterator, edge.source)», «getNode("match", iterator, edge.target)», rule.getForEachOperations().get(«context.forEachOperations.indexOf(iterator)»).getDeleted().get(«iterator.deleted.indexOf(edge)»));
+			«ENDFOR»
+			«FOR edge : context.deletion.edges.filter[edge | edge.type.isContainment || edge.type.isContainer]»
+			gtEngine.deleteEdge(«getNode("match", iterator, edge.source)», «getNode("match", iterator, edge.target)», rule.getForEachOperations().get(«context.forEachOperations.indexOf(iterator)»).getDeleted().get(«iterator.deleted.indexOf(edge)»));
 			«ENDFOR»
 			«ENDIF»
 			«IF iterator.attributeAssignments !== null && !iterator.attributeAssignments.isEmpty»

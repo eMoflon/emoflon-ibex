@@ -237,7 +237,7 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 	public GTModel transform() {
 		model.setRuleSet(factory.createGTRuleSet());
 
-		editorFile.getRules().parallelStream().filter(rule -> !rule.isAbstract()).forEach(rule -> {
+		editorFile.getRules().stream().filter(rule -> !rule.isAbstract()).forEach(rule -> {
 			// Transform to gt pattern
 			if (rule.getType() == GTLRuleType.PATTERN) {
 				transformPrecondition(rule);
