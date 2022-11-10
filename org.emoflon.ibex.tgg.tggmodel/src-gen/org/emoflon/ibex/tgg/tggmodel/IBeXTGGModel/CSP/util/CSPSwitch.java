@@ -7,6 +7,7 @@ import org.eclipse.emf.ecore.EPackage;
 
 import org.eclipse.emf.ecore.util.Switch;
 
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ArithmeticExpression;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ValueExpression;
 
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNamedElement;
@@ -143,9 +144,11 @@ public class CSPSwitch<T> extends Switch<T> {
 			TGGLocalVariable tggLocalVariable = (TGGLocalVariable) theEObject;
 			T result = caseTGGLocalVariable(tggLocalVariable);
 			if (result == null)
-				result = caseValueExpression(tggLocalVariable);
-			if (result == null)
 				result = caseIBeXNamedElement(tggLocalVariable);
+			if (result == null)
+				result = caseArithmeticExpression(tggLocalVariable);
+			if (result == null)
+				result = caseValueExpression(tggLocalVariable);
 			if (result == null)
 				result = defaultCase(theEObject);
 			return result;
@@ -332,6 +335,21 @@ public class CSPSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseValueExpression(ValueExpression object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Arithmetic Expression</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Arithmetic Expression</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseArithmeticExpression(ArithmeticExpression object) {
 		return null;
 	}
 

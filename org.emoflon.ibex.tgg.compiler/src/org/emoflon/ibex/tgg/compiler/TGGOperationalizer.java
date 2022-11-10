@@ -28,9 +28,11 @@ public class TGGOperationalizer {
 	private IBeXTGGModelFactory factory = IBeXTGGModelFactory.eINSTANCE;
 	private IBeXCoreArithmeticFactory arithmeticFactory = IBeXCoreArithmeticFactory.eINSTANCE;
 	private ProtocolInformation protocolInformation;
+	private TGGModel model;
 	
 	public TGGModel operationalizeTGGRules(TGGModel model, ProtocolInformation protocolInformation) {
 		this.protocolInformation = protocolInformation;
+		this.model = model;
 		for(var rule : model.getRuleSet().getRules()) {
 			operationalizeRule(rule);
 		}
@@ -40,19 +42,28 @@ public class TGGOperationalizer {
 	private void operationalizeRule(TGGRule rule) {
 		constructModelGen(rule);
 		constructForward(rule);
+		constructBackward(rule);
+		constructConsistencyCheck(rule);
+		constructCheckOnly(rule);
 	}
 
 	private void constructModelGen(TGGRule rule) {
 		var op = createOperationalizedTGGRule(rule);
 		op.setOperationalisationMode(OperationalisationMode.GENERATE);
+		
+		createProtocolNode(op, BindingType.CREATE);
+		rule.getOperationalisations().add(op);
 	}
-	
+
 	private void constructForward(TGGRule rule) {
 		var op = createOperationalizedTGGRule(rule);
 		op.setOperationalisationMode(OperationalisationMode.FORWARD);
 		
 		transformBindings(op, DomainType.SOURCE, BindingType.CREATE, BindingType.CONTEXT);
 		transformAssignments(op);
+		
+		createProtocolNode(op, BindingType.CREATE);
+		rule.getOperationalisations().add(op);
 	}
 
 	private void constructBackward(TGGRule rule) {
@@ -61,6 +72,34 @@ public class TGGOperationalizer {
 		
 		transformBindings(op, DomainType.TARGET, BindingType.CREATE, BindingType.CONTEXT);
 		transformAssignments(op);
+		
+		createProtocolNode(op, BindingType.CREATE);
+		rule.getOperationalisations().add(op);
+	}
+	
+	private void constructConsistencyCheck(TGGRule rule) {
+		var op = createOperationalizedTGGRule(rule);
+		op.setOperationalisationMode(OperationalisationMode.CONSISTENCY_CHECK);
+		
+		transformBindings(op, DomainType.SOURCE, BindingType.CREATE, BindingType.CONTEXT);
+		transformBindings(op, DomainType.TARGET, BindingType.CREATE, BindingType.CONTEXT);
+		transformAssignments(op);
+		
+		createProtocolNode(op, BindingType.CREATE);
+		rule.getOperationalisations().add(op);
+	}
+	
+	private void constructCheckOnly(TGGRule rule) {
+		var op = createOperationalizedTGGRule(rule);
+		op.setOperationalisationMode(OperationalisationMode.CHECK_ONLY);
+		
+		transformBindings(op, DomainType.SOURCE, BindingType.CREATE, BindingType.CONTEXT);
+		transformBindings(op,  DomainType.CORRESPONDENCE, BindingType.CREATE, BindingType.CONTEXT);
+		transformBindings(op, DomainType.TARGET, BindingType.CREATE, BindingType.CONTEXT);
+		transformAssignments(op);
+		
+		createProtocolNode(op, BindingType.CREATE);
+		rule.getOperationalisations().add(op);
 	}
 	
 	private void transformBindings(TGGOperationalRule op, DomainType domain, BindingType formerBinding, BindingType newBinding) {
@@ -152,5 +191,56 @@ public class TGGOperationalizer {
 		return op;
 	}
 	
+	private TGGNode createProtocolNode(TGGRule rule, BindingType binding) {
+		ProtocolNodeInformation protocolNodeInformation = protocolInformation.ruleToInformation().get(rule);
+
+		var protocolNode = factory.createTGGNode();
+		
+		protocolNode.setName(ProtocolGenerator.PROTOCOL_NODE_PREFIX);
+		protocolNode.setType(protocolNodeInformation.type());
+		
+		protocolNode.setDomainType(DomainType.PROTOCOL);
+		protocolNode.setBindingType(binding);
+		
+		for(var node : rule.getNodes()) {
+			var reference = protocolNodeInformation.nodeToReference().get(node);
+			var edge = factory.createTGGEdge();
+			
+			edge.setSource(protocolNode);
+			edge.setTarget(node);
+			edge.setType(reference);
+			
+			edge.setName("check_" + node.getName());
+			
+			edge.setDomainType(DomainType.PROTOCOL);
+			edge.setBindingType(binding);
+			switch(binding) {
+			case CONTEXT: 
+			case RELAXED:
+			case NEGATIVE:
+				edge.setOperationType(IBeXOperationType.CONTEXT);
+				break;
+			case CREATE:
+				edge.setOperationType(IBeXOperationType.CREATION);
+				break;
+			case DELETE:
+				edge.setOperationType(IBeXOperationType.DELETION);
+				break;
+			}
+			
+			rule.getAllEdges().add(edge);
+			rule.getEdges().add(edge);
+			
+			if(binding == BindingType.CREATE) 
+				rule.getCreation().getEdges().add(edge);
+		}
+		
+		rule.getAllNodes().add(protocolNode);
+		rule.getNodes().add(protocolNode);
+		if(binding == BindingType.CREATE)
+			rule.getCreation().getNodes().add(protocolNode);
+		
+		return protocolNode;
+	}
 	
 }

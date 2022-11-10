@@ -30,25 +30,25 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintSet;
  */
 public interface TGGRule extends IBeXRule {
 	/**
-	 * Returns the value of the '<em><b>Nodes</b></em>' reference list.
+	 * Returns the value of the '<em><b>Nodes</b></em>' containment reference list.
 	 * The list contents are of type {@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode}.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Nodes</em>' reference list.
+	 * @return the value of the '<em>Nodes</em>' containment reference list.
 	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage#getTGGRule_Nodes()
-	 * @model
+	 * @model containment="true"
 	 * @generated
 	 */
 	EList<TGGNode> getNodes();
 
 	/**
-	 * Returns the value of the '<em><b>Edges</b></em>' reference list.
+	 * Returns the value of the '<em><b>Edges</b></em>' containment reference list.
 	 * The list contents are of type {@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge}.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Edges</em>' reference list.
+	 * @return the value of the '<em>Edges</em>' containment reference list.
 	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage#getTGGRule_Edges()
-	 * @model
+	 * @model containment="true"
 	 * @generated
 	 */
 	EList<TGGEdge> getEdges();

@@ -593,10 +593,10 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 
 		initEClass(tggRuleEClass, TGGRule.class, "TGGRule", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getTGGRule_Nodes(), this.getTGGNode(), null, "nodes", null, 0, -1, TGGRule.class, !IS_TRANSIENT,
-				!IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
+				!IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
 				IS_ORDERED);
 		initEReference(getTGGRule_Edges(), this.getTGGEdge(), null, "edges", null, 0, -1, TGGRule.class, !IS_TRANSIENT,
-				!IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
+				!IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
 				IS_ORDERED);
 		initEReference(getTGGRule_CorrespondenceNodes(), this.getTGGCorrespondence(), null, "correspondenceNodes", null,
 				0, -1, TGGRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
@@ -656,6 +656,7 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 		addEEnumLiteral(domainTypeEEnum, DomainType.SOURCE);
 		addEEnumLiteral(domainTypeEEnum, DomainType.TARGET);
 		addEEnumLiteral(domainTypeEEnum, DomainType.CORRESPONDENCE);
+		addEEnumLiteral(domainTypeEEnum, DomainType.PROTOCOL);
 		addEEnumLiteral(domainTypeEEnum, DomainType.PATTERN);
 
 		initEEnum(bindingTypeEEnum, BindingType.class, "BindingType");

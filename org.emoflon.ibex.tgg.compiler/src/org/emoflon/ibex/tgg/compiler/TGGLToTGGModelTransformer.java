@@ -105,10 +105,6 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinition;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGLocalVariable;
 
-record EdgeSignature(EObject source, EObject target, EReference type) {
-	
-}
-
 public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<EditorFile, TGGModel, IBeXTGGModelFactory> {
 	
 	private EcoreFactory ecoreFactory = EcoreFactory.eINSTANCE;
@@ -307,6 +303,9 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		var precondition = internalRule.getPrecondition();
 		var postcondition = internalRule.getPostcondition();
 		
+		model.getPatternSet().getPatterns().add(precondition);
+		model.getPatternSet().getPatterns().add(postcondition);
+		
 		populatePrecondition(rule, internalRule, precondition);
 		populatePostcondition(rule, internalRule, precondition);
 		
@@ -433,6 +432,7 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 			return (TGGEdge) tggl2tggModel.get(edgeSignature);
 		
 		var edge = factory.createTGGEdge();
+		
 		edge.setOperationType(switch(binding) {
 				case CREATE -> IBeXOperationType.CREATION;
 				case DELETE -> IBeXOperationType.DELETION;
@@ -557,6 +557,7 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 			
 		var internPattern = superFactory.createIBeXPattern();
 		internPattern.setName(pattern.getName());
+		model.getPatternSet().getPatterns().add(internPattern);
 		
 		for(var node : pattern.getContextNodes()) {
 			internPattern.getSignatureNodes().add(transformTGGNode((SlimRuleNode) node.getContext(), BindingType.CONTEXT, DomainType.PATTERN));	
@@ -620,7 +621,7 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		return dependency;
 	}
 	
-	protected IBeXAttributeAssignment transform(final SlimRuleNode assignee,
+	protected IBeXAttributeAssignment transformAttributeAssignment(final SlimRuleNode assignee,
 			final SlimRuleAttributeAssignment assignment) {
 		IBeXAttributeAssignment attributeAssign = superFactory.createIBeXAttributeAssignment();
 		attributeAssign.setNode((IBeXNode) tggl2tggModel.get(assignee));
@@ -978,5 +979,9 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 			}
 		};
 	}
+	
+}
+
+record EdgeSignature(EObject source, EObject target, EReference type) {
 	
 }

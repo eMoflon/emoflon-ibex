@@ -23,8 +23,8 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintPara
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintParameterValue;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintSet;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintVariable;
-
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGLocalVariable;
+
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage;
 
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.IBeXTGGModelPackageImpl;
@@ -515,8 +515,8 @@ public class CSPPackageImpl extends EPackageImpl implements CSPPackage {
 		tggAttributeConstraintDefinitionEClass.getESuperTypes().add(theIBeXCoreModelPackage.getIBeXNamedElement());
 		tggAttributeConstraintVariableEClass.getESuperTypes().add(theIBeXCoreArithmeticPackage.getValueExpression());
 		tggcspEClass.getESuperTypes().add(theIBeXCoreModelPackage.getIBeXNamedElement());
-		tggLocalVariableEClass.getESuperTypes().add(theIBeXCoreArithmeticPackage.getValueExpression());
 		tggLocalVariableEClass.getESuperTypes().add(theIBeXCoreModelPackage.getIBeXNamedElement());
+		tggLocalVariableEClass.getESuperTypes().add(theIBeXCoreArithmeticPackage.getArithmeticExpression());
 
 		// Initialize classes, features, and operations; add parameters
 		initEClass(tggAttributeConstraintDefinitionEClass, TGGAttributeConstraintDefinition.class,

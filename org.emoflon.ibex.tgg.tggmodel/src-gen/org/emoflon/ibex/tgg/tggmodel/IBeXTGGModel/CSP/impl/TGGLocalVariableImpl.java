@@ -5,13 +5,16 @@ package org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.impl;
 import org.eclipse.emf.common.notify.Notification;
 
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EClassifier;
+import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.impl.ValueExpressionImpl;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ArithmeticExpression;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.IBeXCoreArithmeticPackage;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ValueExpression;
 
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage;
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNamedElement;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXNamedElementImpl;
 
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.CSPPackage;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGLocalVariable;
@@ -24,31 +27,21 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGLocalVariable;
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.impl.TGGLocalVariableImpl#getName <em>Name</em>}</li>
+ *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.impl.TGGLocalVariableImpl#getType <em>Type</em>}</li>
  * </ul>
  *
  * @generated
  */
-public class TGGLocalVariableImpl extends ValueExpressionImpl implements TGGLocalVariable {
+public class TGGLocalVariableImpl extends IBeXNamedElementImpl implements TGGLocalVariable {
 	/**
-	 * The default value of the '{@link #getName() <em>Name</em>}' attribute.
+	 * The cached value of the '{@link #getType() <em>Type</em>}' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getName()
+	 * @see #getType()
 	 * @generated
 	 * @ordered
 	 */
-	protected static final String NAME_EDEFAULT = null;
-
-	/**
-	 * The cached value of the '{@link #getName() <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getName()
-	 * @generated
-	 * @ordered
-	 */
-	protected String name = NAME_EDEFAULT;
+	protected EClassifier type;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -74,8 +67,17 @@ public class TGGLocalVariableImpl extends ValueExpressionImpl implements TGGLoca
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public String getName() {
-		return name;
+	public EClassifier getType() {
+		if (type != null && type.eIsProxy()) {
+			InternalEObject oldType = (InternalEObject) type;
+			type = (EClassifier) eResolveProxy(oldType);
+			if (type != oldType) {
+				if (eNotificationRequired())
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, CSPPackage.TGG_LOCAL_VARIABLE__TYPE,
+							oldType, type));
+			}
+		}
+		return type;
 	}
 
 	/**
@@ -83,11 +85,20 @@ public class TGGLocalVariableImpl extends ValueExpressionImpl implements TGGLoca
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setName(String newName) {
-		String oldName = name;
-		name = newName;
+	public EClassifier basicGetType() {
+		return type;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setType(EClassifier newType) {
+		EClassifier oldType = type;
+		type = newType;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, CSPPackage.TGG_LOCAL_VARIABLE__NAME, oldName, name));
+			eNotify(new ENotificationImpl(this, Notification.SET, CSPPackage.TGG_LOCAL_VARIABLE__TYPE, oldType, type));
 	}
 
 	/**
@@ -98,8 +109,10 @@ public class TGGLocalVariableImpl extends ValueExpressionImpl implements TGGLoca
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case CSPPackage.TGG_LOCAL_VARIABLE__NAME:
-			return getName();
+		case CSPPackage.TGG_LOCAL_VARIABLE__TYPE:
+			if (resolve)
+				return getType();
+			return basicGetType();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -112,8 +125,8 @@ public class TGGLocalVariableImpl extends ValueExpressionImpl implements TGGLoca
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case CSPPackage.TGG_LOCAL_VARIABLE__NAME:
-			setName((String) newValue);
+		case CSPPackage.TGG_LOCAL_VARIABLE__TYPE:
+			setType((EClassifier) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -127,8 +140,8 @@ public class TGGLocalVariableImpl extends ValueExpressionImpl implements TGGLoca
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case CSPPackage.TGG_LOCAL_VARIABLE__NAME:
-			setName(NAME_EDEFAULT);
+		case CSPPackage.TGG_LOCAL_VARIABLE__TYPE:
+			setType((EClassifier) null);
 			return;
 		}
 		super.eUnset(featureID);
@@ -142,8 +155,8 @@ public class TGGLocalVariableImpl extends ValueExpressionImpl implements TGGLoca
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case CSPPackage.TGG_LOCAL_VARIABLE__NAME:
-			return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
+		case CSPPackage.TGG_LOCAL_VARIABLE__TYPE:
+			return type != null;
 		}
 		return super.eIsSet(featureID);
 	}
@@ -155,10 +168,16 @@ public class TGGLocalVariableImpl extends ValueExpressionImpl implements TGGLoca
 	 */
 	@Override
 	public int eBaseStructuralFeatureID(int derivedFeatureID, Class<?> baseClass) {
-		if (baseClass == IBeXNamedElement.class) {
+		if (baseClass == ValueExpression.class) {
 			switch (derivedFeatureID) {
-			case CSPPackage.TGG_LOCAL_VARIABLE__NAME:
-				return IBeXCoreModelPackage.IBE_XNAMED_ELEMENT__NAME;
+			case CSPPackage.TGG_LOCAL_VARIABLE__TYPE:
+				return IBeXCoreArithmeticPackage.VALUE_EXPRESSION__TYPE;
+			default:
+				return -1;
+			}
+		}
+		if (baseClass == ArithmeticExpression.class) {
+			switch (derivedFeatureID) {
 			default:
 				return -1;
 			}
@@ -173,32 +192,21 @@ public class TGGLocalVariableImpl extends ValueExpressionImpl implements TGGLoca
 	 */
 	@Override
 	public int eDerivedStructuralFeatureID(int baseFeatureID, Class<?> baseClass) {
-		if (baseClass == IBeXNamedElement.class) {
+		if (baseClass == ValueExpression.class) {
 			switch (baseFeatureID) {
-			case IBeXCoreModelPackage.IBE_XNAMED_ELEMENT__NAME:
-				return CSPPackage.TGG_LOCAL_VARIABLE__NAME;
+			case IBeXCoreArithmeticPackage.VALUE_EXPRESSION__TYPE:
+				return CSPPackage.TGG_LOCAL_VARIABLE__TYPE;
+			default:
+				return -1;
+			}
+		}
+		if (baseClass == ArithmeticExpression.class) {
+			switch (baseFeatureID) {
 			default:
 				return -1;
 			}
 		}
 		return super.eDerivedStructuralFeatureID(baseFeatureID, baseClass);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public String toString() {
-		if (eIsProxy())
-			return super.toString();
-
-		StringBuilder result = new StringBuilder(super.toString());
-		result.append(" (name: ");
-		result.append(name);
-		result.append(')');
-		return result.toString();
 	}
 
 } //TGGLocalVariableImpl

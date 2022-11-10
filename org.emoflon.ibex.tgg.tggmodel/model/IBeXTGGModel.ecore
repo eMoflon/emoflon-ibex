@@ -19,9 +19,9 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="TGGRule" eSuperTypes="../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXRule">
     <eStructuralFeatures xsi:type="ecore:EReference" name="nodes" upperBound="-1"
-        eType="#//TGGNode"/>
+        eType="#//TGGNode" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="edges" upperBound="-1"
-        eType="#//TGGEdge"/>
+        eType="#//TGGEdge" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="correspondenceNodes" upperBound="-1"
         eType="#//TGGCorrespondence"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="operationalisations" upperBound="-1"
@@ -61,7 +61,8 @@
     <eLiterals name="SOURCE" literal="SOURCE"/>
     <eLiterals name="TARGET" value="1" literal="TARGET"/>
     <eLiterals name="CORRESPONDENCE" value="2" literal="CORRESPONDENCE"/>
-    <eLiterals name="PATTERN" value="3" literal="PATTERN"/>
+    <eLiterals name="PROTOCOL" value="3" literal="PROTOCOL"/>
+    <eLiterals name="PATTERN" value="4" literal="PATTERN"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="BindingType">
     <eLiterals name="CONTEXT" literal="CONTEXT"/>

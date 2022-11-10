@@ -488,22 +488,22 @@ public interface CSPPackage extends EPackage {
 	int TGG_LOCAL_VARIABLE = 9;
 
 	/**
-	 * The feature id for the '<em><b>Type</b></em>' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int TGG_LOCAL_VARIABLE__TYPE = IBeXCoreArithmeticPackage.VALUE_EXPRESSION__TYPE;
-
-	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_LOCAL_VARIABLE__NAME = IBeXCoreArithmeticPackage.VALUE_EXPRESSION_FEATURE_COUNT + 0;
+	int TGG_LOCAL_VARIABLE__NAME = IBeXCoreModelPackage.IBE_XNAMED_ELEMENT__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Type</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_LOCAL_VARIABLE__TYPE = IBeXCoreModelPackage.IBE_XNAMED_ELEMENT_FEATURE_COUNT + 0;
 
 	/**
 	 * The number of structural features of the '<em>TGG Local Variable</em>' class.
@@ -512,7 +512,7 @@ public interface CSPPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_LOCAL_VARIABLE_FEATURE_COUNT = IBeXCoreArithmeticPackage.VALUE_EXPRESSION_FEATURE_COUNT + 1;
+	int TGG_LOCAL_VARIABLE_FEATURE_COUNT = IBeXCoreModelPackage.IBE_XNAMED_ELEMENT_FEATURE_COUNT + 1;
 
 	/**
 	 * The number of operations of the '<em>TGG Local Variable</em>' class.
@@ -521,7 +521,7 @@ public interface CSPPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_LOCAL_VARIABLE_OPERATION_COUNT = IBeXCoreArithmeticPackage.VALUE_EXPRESSION_OPERATION_COUNT + 0;
+	int TGG_LOCAL_VARIABLE_OPERATION_COUNT = IBeXCoreModelPackage.IBE_XNAMED_ELEMENT_OPERATION_COUNT + 0;
 
 	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinition <em>TGG Attribute Constraint Definition</em>}'.

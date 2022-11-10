@@ -306,7 +306,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	int TGG_RULE__ALL_EDGES = IBeXCoreModelPackage.IBE_XRULE__ALL_EDGES;
 
 	/**
-	 * The feature id for the '<em><b>Nodes</b></em>' reference list.
+	 * The feature id for the '<em><b>Nodes</b></em>' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -315,7 +315,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	int TGG_RULE__NODES = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 0;
 
 	/**
-	 * The feature id for the '<em><b>Edges</b></em>' reference list.
+	 * The feature id for the '<em><b>Edges</b></em>' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -451,7 +451,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	int TGG_OPERATIONAL_RULE__ALL_EDGES = TGG_RULE__ALL_EDGES;
 
 	/**
-	 * The feature id for the '<em><b>Nodes</b></em>' reference list.
+	 * The feature id for the '<em><b>Nodes</b></em>' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -460,7 +460,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	int TGG_OPERATIONAL_RULE__NODES = TGG_RULE__NODES;
 
 	/**
-	 * The feature id for the '<em><b>Edges</b></em>' reference list.
+	 * The feature id for the '<em><b>Edges</b></em>' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -1022,10 +1022,10 @@ public interface IBeXTGGModelPackage extends EPackage {
 	EClass getTGGRule();
 
 	/**
-	 * Returns the meta object for the reference list '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getNodes <em>Nodes</em>}'.
+	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getNodes <em>Nodes</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the reference list '<em>Nodes</em>'.
+	 * @return the meta object for the containment reference list '<em>Nodes</em>'.
 	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getNodes()
 	 * @see #getTGGRule()
 	 * @generated
@@ -1033,10 +1033,10 @@ public interface IBeXTGGModelPackage extends EPackage {
 	EReference getTGGRule_Nodes();
 
 	/**
-	 * Returns the meta object for the reference list '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getEdges <em>Edges</em>}'.
+	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getEdges <em>Edges</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the reference list '<em>Edges</em>'.
+	 * @return the meta object for the containment reference list '<em>Edges</em>'.
 	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getEdges()
 	 * @see #getTGGRule()
 	 * @generated
@@ -1336,7 +1336,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 		EClass TGG_RULE = eINSTANCE.getTGGRule();
 
 		/**
-		 * The meta object literal for the '<em><b>Nodes</b></em>' reference list feature.
+		 * The meta object literal for the '<em><b>Nodes</b></em>' containment reference list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
@@ -1344,7 +1344,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 		EReference TGG_RULE__NODES = eINSTANCE.getTGGRule_Nodes();
 
 		/**
-		 * The meta object literal for the '<em><b>Edges</b></em>' reference list feature.
+		 * The meta object literal for the '<em><b>Edges</b></em>' containment reference list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated

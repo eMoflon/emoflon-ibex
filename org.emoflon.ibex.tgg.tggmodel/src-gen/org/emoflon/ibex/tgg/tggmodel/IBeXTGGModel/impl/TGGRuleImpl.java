@@ -48,7 +48,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
  */
 public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 	/**
-	 * The cached value of the '{@link #getNodes() <em>Nodes</em>}' reference list.
+	 * The cached value of the '{@link #getNodes() <em>Nodes</em>}' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @see #getNodes()
@@ -58,7 +58,7 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 	protected EList<TGGNode> nodes;
 
 	/**
-	 * The cached value of the '{@link #getEdges() <em>Edges</em>}' reference list.
+	 * The cached value of the '{@link #getEdges() <em>Edges</em>}' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @see #getEdges()
@@ -123,7 +123,7 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 	 */
 	public EList<TGGNode> getNodes() {
 		if (nodes == null) {
-			nodes = new EObjectResolvingEList<TGGNode>(TGGNode.class, this, IBeXTGGModelPackage.TGG_RULE__NODES);
+			nodes = new EObjectContainmentEList<TGGNode>(TGGNode.class, this, IBeXTGGModelPackage.TGG_RULE__NODES);
 		}
 		return nodes;
 	}
@@ -135,7 +135,7 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 	 */
 	public EList<TGGEdge> getEdges() {
 		if (edges == null) {
-			edges = new EObjectResolvingEList<TGGEdge>(TGGEdge.class, this, IBeXTGGModelPackage.TGG_RULE__EDGES);
+			edges = new EObjectContainmentEList<TGGEdge>(TGGEdge.class, this, IBeXTGGModelPackage.TGG_RULE__EDGES);
 		}
 		return edges;
 	}
@@ -226,6 +226,10 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
+		case IBeXTGGModelPackage.TGG_RULE__NODES:
+			return ((InternalEList<?>) getNodes()).basicRemove(otherEnd, msgs);
+		case IBeXTGGModelPackage.TGG_RULE__EDGES:
+			return ((InternalEList<?>) getEdges()).basicRemove(otherEnd, msgs);
 		case IBeXTGGModelPackage.TGG_RULE__OPERATIONALISATIONS:
 			return ((InternalEList<?>) getOperationalisations()).basicRemove(otherEnd, msgs);
 		case IBeXTGGModelPackage.TGG_RULE__ATTRIBUTE_CONSTRAINTS:

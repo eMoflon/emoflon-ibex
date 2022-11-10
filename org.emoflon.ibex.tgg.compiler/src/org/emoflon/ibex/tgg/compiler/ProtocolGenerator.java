@@ -17,37 +17,38 @@ import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.*;
 
 public class ProtocolGenerator {
 
-	public final static String PROTOCOL_NODE_PREFIX = "ProtocolNode_";
-	public final static String PROTOCOL_EDGE_PREFIX = "check_";
+	public final static String PROTOCOL_NODE_TYPE_PREFIX = "ProtocolNode_";
+	public final static String PROTOCOL_EDGE_TYPE_PREFIX = "check_";
+	public final static String PROTOCOL_NODE_PREFIX = "_protocol_";
 	
 	private EcoreFactory factory = EcoreFactory.eINSTANCE;
 	private EPackage protocol;
-	private Map<TGGRule, EClass> rule2protocol = new HashMap<>();
-	private Collection<ProtocolNodeInformation> nodeInformations = new LinkedList<>();
+	private Map<TGGRule, ProtocolNodeInformation> rule2information = new HashMap<>();
 	
 	private TGGRuntimeModelPackage runtimePackage = TGGRuntimeModelPackage.eINSTANCE;
 	
 	public ProtocolInformation createProtocol(TGGModel model) {
 		protocol = factory.createEPackage();
 		protocol.setName(model.getName() + "Protocol");
+		protocol.setNsPrefix(model.getName());
+		protocol.setNsURI("platform:/resource/" + model.getName() + "/model/" + model.getName() + ".ecore");
 		
 		for(var rule : model.getRuleSet().getRules()) {
 			protocol.getEClassifiers().add(createProtocolType(rule));
 		}
 		
-		return new ProtocolInformation(protocol, rule2protocol, nodeInformations);
+		return new ProtocolInformation(protocol, rule2information);
 	}
 
 	private EClass createProtocolType(TGGRule rule) {
 		var protocolType = factory.createEClass();
-		protocolType.setName(PROTOCOL_NODE_PREFIX + rule.getName());
+		protocolType.setName(PROTOCOL_NODE_TYPE_PREFIX + rule.getName());
 		protocolType.getESuperTypes().add(runtimePackage.getProtocol());
-		rule2protocol.put(rule, protocolType);
 		var nodeToReference = new HashMap<TGGNode, EReference>();
 		
 		for(var node : rule.getNodes()) {
 			var reference = factory.createEReference();
-			reference.setName(PROTOCOL_EDGE_PREFIX + node.getName());
+			reference.setName(PROTOCOL_EDGE_TYPE_PREFIX + node.getName());
 			reference.setEType(node.getType());
 			reference.setLowerBound(1);
 			reference.setUpperBound(1);
@@ -57,13 +58,14 @@ public class ProtocolGenerator {
 		}
 		
 		var nodeInformation = new ProtocolNodeInformation(protocolType, nodeToReference);
-		nodeInformations.add(nodeInformation);
+		rule2information.put(rule, nodeInformation);
+
 		return protocolType;
 	}
 	
 	
 }
 
-record ProtocolInformation(EPackage metamodel, Map<TGGRule, EClass> ruleToType, Collection<ProtocolNodeInformation> nodes) {}
+record ProtocolInformation(EPackage metamodel, Map<TGGRule, ProtocolNodeInformation> ruleToInformation) {}
 
 record ProtocolNodeInformation(EClass type, Map<TGGNode, EReference> nodeToReference) {}

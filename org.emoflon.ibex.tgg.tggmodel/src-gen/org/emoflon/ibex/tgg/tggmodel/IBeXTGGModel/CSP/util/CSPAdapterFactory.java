@@ -9,6 +9,7 @@ import org.eclipse.emf.common.notify.impl.AdapterFactoryImpl;
 
 import org.eclipse.emf.ecore.EObject;
 
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ArithmeticExpression;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ValueExpression;
 
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNamedElement;
@@ -128,6 +129,11 @@ public class CSPAdapterFactory extends AdapterFactoryImpl {
 		@Override
 		public Adapter caseValueExpression(ValueExpression object) {
 			return createValueExpressionAdapter();
+		}
+
+		@Override
+		public Adapter caseArithmeticExpression(ArithmeticExpression object) {
+			return createArithmeticExpressionAdapter();
 		}
 
 		@Override
@@ -314,6 +320,20 @@ public class CSPAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createValueExpressionAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ArithmeticExpression <em>Arithmetic Expression</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ArithmeticExpression
+	 * @generated
+	 */
+	public Adapter createArithmeticExpressionAdapter() {
 		return null;
 	}
 

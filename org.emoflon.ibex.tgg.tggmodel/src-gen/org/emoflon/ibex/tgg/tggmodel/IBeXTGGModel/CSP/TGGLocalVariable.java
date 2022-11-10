@@ -2,7 +2,7 @@
  */
 package org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP;
 
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ValueExpression;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ArithmeticExpression;
 
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNamedElement;
 
@@ -16,5 +16,5 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNamedElement;
  * @model
  * @generated
  */
-public interface TGGLocalVariable extends ValueExpression, IBeXNamedElement {
+public interface TGGLocalVariable extends IBeXNamedElement, ArithmeticExpression {
 } // TGGLocalVariable

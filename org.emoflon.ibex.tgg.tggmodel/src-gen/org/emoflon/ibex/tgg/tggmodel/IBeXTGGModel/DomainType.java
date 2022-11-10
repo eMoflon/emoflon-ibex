@@ -47,6 +47,16 @@ public enum DomainType implements Enumerator {
 	 * @ordered
 	 */
 	CORRESPONDENCE(2, "CORRESPONDENCE", "CORRESPONDENCE"),
+
+	/**
+	 * The '<em><b>PROTOCOL</b></em>' literal object.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #PROTOCOL_VALUE
+	 * @generated
+	 * @ordered
+	 */
+	PROTOCOL(3, "PROTOCOL", "PROTOCOL"),
 	/**
 	 * The '<em><b>PATTERN</b></em>' literal object.
 	 * <!-- begin-user-doc -->
@@ -55,7 +65,7 @@ public enum DomainType implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	PATTERN(3, "PATTERN", "PATTERN");
+	PATTERN(4, "PATTERN", "PATTERN");
 
 	/**
 	 * The '<em><b>SOURCE</b></em>' literal value.
@@ -91,6 +101,17 @@ public enum DomainType implements Enumerator {
 	public static final int CORRESPONDENCE_VALUE = 2;
 
 	/**
+	 * The '<em><b>PROTOCOL</b></em>' literal value.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #PROTOCOL
+	 * @model
+	 * @generated
+	 * @ordered
+	 */
+	public static final int PROTOCOL_VALUE = 3;
+
+	/**
 	 * The '<em><b>PATTERN</b></em>' literal value.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -99,7 +120,7 @@ public enum DomainType implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	public static final int PATTERN_VALUE = 3;
+	public static final int PATTERN_VALUE = 4;
 
 	/**
 	 * An array of all the '<em><b>Domain Type</b></em>' enumerators.
@@ -107,7 +128,8 @@ public enum DomainType implements Enumerator {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private static final DomainType[] VALUES_ARRAY = new DomainType[] { SOURCE, TARGET, CORRESPONDENCE, PATTERN, };
+	private static final DomainType[] VALUES_ARRAY = new DomainType[] { SOURCE, TARGET, CORRESPONDENCE, PROTOCOL,
+			PATTERN, };
 
 	/**
 	 * A public read-only list of all the '<em><b>Domain Type</b></em>' enumerators.
@@ -169,6 +191,8 @@ public enum DomainType implements Enumerator {
 			return TARGET;
 		case CORRESPONDENCE_VALUE:
 			return CORRESPONDENCE;
+		case PROTOCOL_VALUE:
+			return PROTOCOL;
 		case PATTERN_VALUE:
 			return PATTERN;
 		}
