@@ -159,14 +159,14 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 		if (doUpdate)
 			patternMatcher.updateMatches();
 
-		return filteredMatches;
+		return new LinkedHashSet<>(filteredMatches);
 	}
 
 	public Collection<M> getMatches() {
 		if (gtEngine.alwaysUpdatePrior)
 			patternMatcher.updateMatches();
 
-		return filteredMatches;
+		return new LinkedHashSet<>(filteredMatches);
 	}
 
 	/**
@@ -175,17 +175,11 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 	 * @return the Stream of matches
 	 */
 	public Stream<M> matchStream(boolean doUpdate) {
-		if (doUpdate)
-			patternMatcher.updateMatches();
-
-		return filteredMatches.stream();
+		return getMatches(doUpdate).stream();
 	}
 
 	public Stream<M> matchStream() {
-		if (gtEngine.alwaysUpdatePrior)
-			patternMatcher.updateMatches();
-
-		return filteredMatches.stream();
+		return getMatches().stream();
 	}
 
 	/**
