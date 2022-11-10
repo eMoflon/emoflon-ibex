@@ -205,6 +205,11 @@ public class IBeXCoreModelAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
+		public Adapter caseArithmeticExpression(ArithmeticExpression object) {
+			return createArithmeticExpressionAdapter();
+		}
+
+		@Override
 		public Adapter caseBooleanExpression(BooleanExpression object) {
 			return createBooleanExpressionAdapter();
 		}
@@ -212,11 +217,6 @@ public class IBeXCoreModelAdapterFactory extends AdapterFactoryImpl {
 		@Override
 		public Adapter caseBooleanValue(BooleanValue object) {
 			return createBooleanValueAdapter();
-		}
-
-		@Override
-		public Adapter caseArithmeticExpression(ArithmeticExpression object) {
-			return createArithmeticExpressionAdapter();
 		}
 
 		@Override

@@ -213,7 +213,9 @@ class ExpressionHelper {
 			return '''«expression.value.toString»'''
 		} else if(expression instanceof IntegerLiteral) {
 			return '''«expression.value.toString»'''
-		} else {
+		} else if(expression instanceof IBeXStringValue) {
+			return '''"«expression.value»"'''
+		}  else {
 			throw new UnsupportedOperationException("Unknown arithmetic expression type: " + expression)
 		}
 	}

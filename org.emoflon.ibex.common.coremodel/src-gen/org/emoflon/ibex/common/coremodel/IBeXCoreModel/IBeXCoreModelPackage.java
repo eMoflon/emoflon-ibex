@@ -1137,7 +1137,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XSTRING_VALUE__TYPE = IBeXCoreArithmeticPackage.VALUE_EXPRESSION__TYPE;
+	int IBE_XSTRING_VALUE__TYPE = IBeXCoreArithmeticPackage.ARITHMETIC_EXPRESSION__TYPE;
 
 	/**
 	 * The feature id for the '<em><b>Value</b></em>' attribute.
@@ -1146,7 +1146,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XSTRING_VALUE__VALUE = IBeXCoreArithmeticPackage.VALUE_EXPRESSION_FEATURE_COUNT + 0;
+	int IBE_XSTRING_VALUE__VALUE = IBeXCoreArithmeticPackage.ARITHMETIC_EXPRESSION_FEATURE_COUNT + 0;
 
 	/**
 	 * The number of structural features of the '<em>IBe XString Value</em>' class.
@@ -1155,7 +1155,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XSTRING_VALUE_FEATURE_COUNT = IBeXCoreArithmeticPackage.VALUE_EXPRESSION_FEATURE_COUNT + 1;
+	int IBE_XSTRING_VALUE_FEATURE_COUNT = IBeXCoreArithmeticPackage.ARITHMETIC_EXPRESSION_FEATURE_COUNT + 1;
 
 	/**
 	 * The number of operations of the '<em>IBe XString Value</em>' class.
@@ -1164,7 +1164,7 @@ public interface IBeXCoreModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IBE_XSTRING_VALUE_OPERATION_COUNT = IBeXCoreArithmeticPackage.VALUE_EXPRESSION_OPERATION_COUNT + 0;
+	int IBE_XSTRING_VALUE_OPERATION_COUNT = IBeXCoreArithmeticPackage.ARITHMETIC_EXPRESSION_OPERATION_COUNT + 0;
 
 	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXBooleanValueImpl <em>IBe XBoolean Value</em>}' class.
