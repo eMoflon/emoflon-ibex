@@ -93,6 +93,24 @@ public abstract class IBeXGTRule<R extends IBeXGTRule<R, P, M, CP, CM>, P extend
 
 	public abstract CM apply(final M match);
 
+	public CM apply(final M match, boolean doUpdate) {
+		if (doUpdate)
+			gtEngine.updateMatches();
+
+		return apply(match);
+	}
+
+	public CM applyAny() {
+		return apply(getMatches(false).iterator().next());
+	}
+
+	public CM applyAny(boolean doUpdate) {
+		if (doUpdate)
+			gtEngine.updateMatches();
+
+		return applyAny();
+	}
+
 	// TODO: This might be interesting in the future!
 //	public abstract Optional<M> applyReverse(final CM coMatch);
 }

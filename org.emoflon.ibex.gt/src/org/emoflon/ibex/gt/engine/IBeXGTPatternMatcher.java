@@ -16,10 +16,15 @@ import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTModel;
 
 public abstract class IBeXGTPatternMatcher<EM> extends PatternMatchingEngine<GTModel, EM, IBeXGTMatch<?, ?>> {
 
-	protected Map<String, IBeXGTPattern<?, ?>> name2typedPattern = Collections.synchronizedMap(new LinkedHashMap<>());
+	protected Map<String, IBeXGTPattern<?, ?>> name2typedPattern;
 
 	public IBeXGTPatternMatcher(GTModel ibexModel, ResourceSet model) {
 		super(ibexModel, model);
+	}
+
+	@Override
+	protected void initialize() {
+		name2typedPattern = Collections.synchronizedMap(new LinkedHashMap<>());
 	}
 
 	protected abstract Map<String, Object> extractNodes(final EM match);
@@ -42,31 +47,46 @@ public abstract class IBeXGTPatternMatcher<EM> extends PatternMatchingEngine<GTM
 	@SuppressWarnings("unchecked")
 	@Override
 	protected Collection<IBeXGTMatch<?, ?>> insertNewMatchCollection(final String patternName) {
-		return (Collection<IBeXGTMatch<?, ?>>) name2typedPattern.get(patternName).getMatches();
+		Collection<IBeXGTMatch<?, ?>> m = (Collection<IBeXGTMatch<?, ?>>) name2typedPattern.get(patternName)
+				.getMatches();
+		matches.put(patternName, m);
+		return m;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	protected Collection<IBeXGTMatch<?, ?>> insertNewPendingMatchCollection(final String patternName) {
-		return (Collection<IBeXGTMatch<?, ?>>) name2typedPattern.get(patternName).getPendingMatches();
+		Collection<IBeXGTMatch<?, ?>> m = (Collection<IBeXGTMatch<?, ?>>) name2typedPattern.get(patternName)
+				.getPendingMatches();
+		pendingMatches.put(patternName, m);
+		return m;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	protected Collection<IBeXGTMatch<?, ?>> insertNewFilteredMatchCollection(final String patternName) {
-		return (Collection<IBeXGTMatch<?, ?>>) name2typedPattern.get(patternName).getFilteredMatches();
+		Collection<IBeXGTMatch<?, ?>> m = (Collection<IBeXGTMatch<?, ?>>) name2typedPattern.get(patternName)
+				.getFilteredMatches();
+		filteredMatches.put(patternName, m);
+		return m;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	protected Collection<IBeXGTMatch<?, ?>> insertNewAddedMatchCollection(final String patternName) {
-		return (Collection<IBeXGTMatch<?, ?>>) name2typedPattern.get(patternName).getAddedMatches();
+		Collection<IBeXGTMatch<?, ?>> m = (Collection<IBeXGTMatch<?, ?>>) name2typedPattern.get(patternName)
+				.getAddedMatches();
+		addedMatches.put(patternName, m);
+		return m;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	protected Collection<IBeXGTMatch<?, ?>> insertNewRemovedMatchCollection(final String patternName) {
-		return (Collection<IBeXGTMatch<?, ?>>) name2typedPattern.get(patternName).getRemovedMatches();
+		Collection<IBeXGTMatch<?, ?>> m = (Collection<IBeXGTMatch<?, ?>>) name2typedPattern.get(patternName)
+				.getRemovedMatches();
+		removedMatches.put(patternName, m);
+		return m;
 	}
 
 	@Override
@@ -75,24 +95,56 @@ public abstract class IBeXGTPatternMatcher<EM> extends PatternMatchingEngine<GTM
 	}
 
 	@Override
+	protected synchronized void updateMatchesInternal(final String patternName) {
+		if (!matches.containsKey(patternName)) {
+			insertNewMatchCollection(patternName);
+			return;
+		}
+
+		IBeXPattern pattern = name2pattern.get(patternName);
+		if (!pattern.isEmpty() && matches.get(patternName).isEmpty()) {
+			return;
+		} else {
+
+			if (pattern.getDependencies().isEmpty()) {
+				updateFilteredMatches(patternName);
+			} else {
+				// Check dependencies to prevent deadlocks
+				pattern.getDependencies().forEach(depPattern -> {
+					updateMatchesInternal(depPattern.getName());
+				});
+				updateFilteredMatches(patternName);
+			}
+			return;
+		}
+	}
+
+	@Override
 	protected void updateFilteredMatches(final String patternName) {
 		IBeXPattern pattern = name2pattern.get(patternName);
-		if (!pattern.isEmpty())
+		if (!pattern.isEmpty()) {
 			super.updateFilteredMatches(patternName);
+			return;
+		}
 
-		Collection<IBeXGTMatch<?, ?>> patternMatches = insertNewFilteredMatchCollection(patternName);
+		Collection<IBeXGTMatch<?, ?>> patternMatches = filteredMatches.get(patternName);
+		if (patternMatches == null) {
+			patternMatches = insertNewFilteredMatchCollection(patternName);
+		}
+
 		// Check for any NACs or PACs that are attached to the empty-create pattern
 		List<IBeXPatternInvocation> invocations = Collections.synchronizedList(new LinkedList<>());
 		invocations.addAll(pattern.getInvocations());
 
 		if (invocations.isEmpty()) {
 			// Create a new empty match -> The pattern will know what to do
-			IBeXGTMatch<?, ?> match = name2typedPattern.get(patternName).createMatch(new HashMap<>());
-			patternMatches.add(match);
+			if (patternMatches.isEmpty()) {
+				IBeXGTMatch<?, ?> match = name2typedPattern.get(patternName).createMatch(new HashMap<>());
+				patternMatches.add(match);
+			}
 		} else {
 			boolean invocationsViolated = false;
 			for (IBeXPatternInvocation invocation : invocations) {
-				updateMatchesInternal(invocation.getInvocation().getName());
 				Collection<IBeXGTMatch<?, ?>> matches = filteredMatches.get(invocation.getInvocation().getName());
 				if (invocation.isPositive() && (matches == null || matches.size() <= 0)) {
 					invocationsViolated = true;

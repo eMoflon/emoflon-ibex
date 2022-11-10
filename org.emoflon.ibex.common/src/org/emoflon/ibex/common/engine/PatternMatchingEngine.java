@@ -22,7 +22,7 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, EM, IM
 
 	final protected IBEX_MODEL ibexModel;
 	final protected ResourceSet model;
-	protected Map<String, IBeXPattern> name2pattern;
+	protected Map<String, IBeXPattern> name2pattern = Collections.synchronizedMap(new LinkedHashMap<>());
 	protected MatchFilter<?, IBEX_MODEL, IM> matchFilter;
 	protected IBeXPMEngineInformation engineProperties;
 
@@ -64,7 +64,6 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, EM, IM
 		this.model = model;
 		for (IBeXPattern pattern : ibexModel.getPatternSet().getPatterns()) {
 			name2pattern.put(pattern.getName(), pattern);
-			insertNewMatchCollection(pattern.getName());
 		}
 		initialize();
 		matchFilter = createMatchFilter();
@@ -315,7 +314,12 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, EM, IM
 	}
 
 	protected synchronized void updateMatchesInternal(final String patternName) {
-		if (filteredMatches.containsKey(patternName)) {
+		if (!matches.containsKey(patternName)) {
+			insertNewMatchCollection(patternName);
+			return;
+		}
+
+		if (matches.get(patternName).isEmpty()) {
 			return;
 		} else {
 			IBeXPattern pattern = name2pattern.get(patternName);
@@ -333,7 +337,10 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, EM, IM
 	}
 
 	protected void updateFilteredMatches(final String patternName) {
-		Collection<IM> patternMatches = insertNewFilteredMatchCollection(patternName);
+		Collection<IM> patternMatches = filteredMatches.get(patternName);
+		if (patternMatches == null) {
+			patternMatches = insertNewFilteredMatchCollection(patternName);
+		}
 		IBeXPattern pattern = name2pattern.get(patternName);
 		patternMatches.addAll(matchFilter.filterMatches(pattern));
 	}
@@ -349,6 +356,8 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, EM, IM
 
 		// Fetch matches from pm
 		fetchMatches();
+		// Update filtered matches
+		name2pattern.keySet().forEach(patternName -> updateMatchesInternal(patternName));
 
 		// (1) ADDED: Check for appearing match subscribers and filter matches
 		subscriptionsForAppearingMatchesOfPattern.keySet().stream().forEach(patternName -> {
