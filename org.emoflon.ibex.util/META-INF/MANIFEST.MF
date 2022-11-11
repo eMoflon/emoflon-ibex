@@ -7,6 +7,7 @@ Automatic-Module-Name: org.emoflon.ibex.util
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Export-Package: org.emoflon.ibex.tgg.util,
  org.emoflon.ibex.tgg.util.benchmark,
+ org.emoflon.ibex.tgg.util.config,
  org.emoflon.ibex.tgg.util.debug,
  org.emoflon.ibex.tgg.util.ilp,
  org.emoflon.ibex.tgg.util.options
