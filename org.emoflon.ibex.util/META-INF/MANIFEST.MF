@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Util
+Bundle-SymbolicName: org.emoflon.ibex.tgg.util
+Bundle-Version: 1.0.0.qualifier
+Automatic-Module-Name: org.emoflon.ibex.util
+Bundle-RequiredExecutionEnvironment: JavaSE-17
+Export-Package: org.emoflon.ibex.tgg.util,
+ org.emoflon.ibex.tgg.util.benchmark,
+ org.emoflon.ibex.tgg.util.debug,
+ org.emoflon.ibex.tgg.util.ilp,
+ org.emoflon.ibex.tgg.util.options
+Require-Bundle: org.emoflon.smartemf,
+ org.emoflon.ibex.common;bundle-version="1.0.0",
+ org.emoflon.ibex.tgg.tggmodel;bundle-version="0.1.0"

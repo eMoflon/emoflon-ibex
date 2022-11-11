@@ -280,10 +280,14 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		}
 		
 		for(var node : rule.getCorrRule().getContextCorrespondenceNodes()) {
-			internalRule.getNodes().add(transformTGGCorrespondenceNode((TGGCorrespondenceNode) node.getContext(), BindingType.CONTEXT, DomainType.CORRESPONDENCE));
+			TGGCorrespondence correspondenceNode = transformTGGCorrespondenceNode((TGGCorrespondenceNode) node.getContext(), BindingType.CONTEXT, DomainType.CORRESPONDENCE);
+			internalRule.getNodes().add(correspondenceNode);
+			internalRule.getCorrespondenceNodes().add(correspondenceNode);
 		}
 		for(var node : rule.getCorrRule().getCreatedCorrespondenceNodes()) {
-			internalRule.getNodes().add(transformTGGCorrespondenceNode((TGGCorrespondenceNode) node.getCreation(), BindingType.CREATE, DomainType.CORRESPONDENCE));
+			TGGCorrespondence correspondenceNode = transformTGGCorrespondenceNode((TGGCorrespondenceNode) node.getCreation(), BindingType.CREATE, DomainType.CORRESPONDENCE);
+			internalRule.getNodes().add(correspondenceNode);
+			internalRule.getCorrespondenceNodes().add(correspondenceNode);
 		}
 		
 		for(var node : rule.getTargetRule().getContextNodes()) {
@@ -422,8 +426,6 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		transformTGGEdge(new EdgeSignature(node, node.getSource(), runtimePackage.getCorrespondence_Source()), binding, domain);
 		transformTGGEdge(new EdgeSignature(node, node.getTarget(), runtimePackage.getCorrespondence_Target()), binding, domain);
 		
-		model.getNodeSet().getNodes().add(corrNode);
-		
 		return corrNode;
 	}
 	
@@ -448,8 +450,6 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		edge.setName(source.getName() + " -" + edgeSignature.type().getName()+"-> " + target.getName());
 		edge.setSource(source);
 		edge.setTarget(target);
-		
-		model.getEdgeSet().getEdges().add(edge);
 		
 		return edge;
 	}
@@ -544,8 +544,6 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 			var creation = createdEdge.getCreation();
 			transformTGGEdge(new EdgeSignature(node, creation.getTarget(), creation.getType()), BindingType.CREATE, domain);
 		}
-		
-		model.getNodeSet().getNodes().add(tggNode);
 		
 		return tggNode;
 	}

@@ -1,8 +1,6 @@
 package org.emoflon.ibex.tgg.codegen;
 
 import java.util.Collection;
-import language.TGGAttributeConstraintDefinition;
-import language.TGGAttributeConstraintParameterDefinition;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.xtend2.lib.StringConcatenation;
 import org.emoflon.ibex.tgg.editor.tgg.Import;
@@ -90,117 +88,24 @@ public class DefaultFilesGenerator {
     return _builder.toString();
   }
 
-  public static String generateUserAttrCondDefStub(final TGGAttributeConstraintDefinition tacd, final String projectName) {
-    StringConcatenation _builder = new StringConcatenation();
-    _builder.append("package org.emoflon.ibex.tgg.operational.csp.constraints.custom.");
-    String _lowerCase = MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase();
-    _builder.append(_lowerCase);
-    _builder.append(";");
-    _builder.newLineIfNotEmpty();
-    _builder.newLine();
-    _builder.append("import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraint;");
-    _builder.newLine();
-    _builder.append("import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintVariable;");
-    _builder.newLine();
-    _builder.newLine();
-    _builder.append("public class ");
-    String _fileName = UserAttrCondHelper.getFileName(tacd.getName());
-    _builder.append(_fileName);
-    _builder.append(" extends RuntimeTGGAttributeConstraint");
-    _builder.newLineIfNotEmpty();
-    _builder.append("{");
-    _builder.newLine();
-    _builder.newLine();
-    _builder.append("   ");
-    _builder.append("/**");
-    _builder.newLine();
-    _builder.append("    ");
-    _builder.append("* Constraint ");
-    String _name = tacd.getName();
-    _builder.append(_name, "    ");
-    _builder.append("(");
-    String _parameterString = UserAttrCondHelper.getParameterString(tacd);
-    _builder.append(_parameterString, "    ");
-    _builder.append(")");
-    _builder.newLineIfNotEmpty();
-    _builder.append("    ");
-    _builder.append("* ");
-    _builder.newLine();
-    _builder.append("    ");
-    _builder.append("* @see TGGLanguage.csp.impl.ConstraintImpl#solve()");
-    _builder.newLine();
-    _builder.append("    ");
-    _builder.append("*/");
-    _builder.newLine();
-    _builder.append("\t");
-    _builder.append("@Override");
-    _builder.newLine();
-    _builder.append("\t");
-    _builder.append("public void solve() {");
-    _builder.newLine();
-    _builder.append("\t\t");
-    _builder.append("if (variables.size() != ");
-    int _size = tacd.getParameterDefinitions().size();
-    _builder.append(_size, "\t\t");
-    _builder.append(")");
-    _builder.newLineIfNotEmpty();
-    _builder.append("\t\t\t");
-    _builder.append("throw new RuntimeException(\"The CSP -");
-    String _upperCase = tacd.getName().toUpperCase();
-    _builder.append(_upperCase, "\t\t\t");
-    _builder.append("- needs exactly ");
-    int _size_1 = tacd.getParameterDefinitions().size();
-    _builder.append(_size_1, "\t\t\t");
-    _builder.append(" variables\");");
-    _builder.newLineIfNotEmpty();
-    _builder.newLine();
-    {
-      EList<TGGAttributeConstraintParameterDefinition> _parameterDefinitions = tacd.getParameterDefinitions();
-      for(final TGGAttributeConstraintParameterDefinition param : _parameterDefinitions) {
-        _builder.append("\t\t");
-        _builder.append("RuntimeTGGAttributeConstraintVariable v");
-        int _indexOf = tacd.getParameterDefinitions().indexOf(param);
-        _builder.append(_indexOf, "\t\t");
-        _builder.append(" = variables.get(");
-        int _indexOf_1 = tacd.getParameterDefinitions().indexOf(param);
-        _builder.append(_indexOf_1, "\t\t");
-        _builder.append(");");
-        _builder.newLineIfNotEmpty();
-      }
-    }
-    _builder.append("\t\t");
-    _builder.append("String bindingStates = getBindingStates(");
-    String _parameterString_1 = UserAttrCondHelper.getParameterString(tacd);
-    _builder.append(_parameterString_1, "\t\t");
-    _builder.append(");");
-    _builder.newLineIfNotEmpty();
-    _builder.newLine();
-    _builder.append("\t  \t");
-    _builder.append("switch(bindingStates) {");
-    _builder.newLine();
-    {
-      Collection<String> _adorments = UserAttrCondHelper.getAdorments(tacd);
-      for(final String adornment : _adorments) {
-        _builder.append("\t  \t\t");
-        _builder.append("case \"");
-        _builder.append(adornment, "\t  \t\t");
-        _builder.append("\": ");
-        _builder.newLineIfNotEmpty();
-      }
-    }
-    _builder.append("\t  \t\t");
-    _builder.append("default:  throw new UnsupportedOperationException(\"This case in the constraint has not been implemented yet: \" + bindingStates);");
-    _builder.newLine();
-    _builder.append("\t  \t\t \t");
-    _builder.append("}");
-    _builder.newLine();
-    _builder.append("\t  \t");
-    _builder.append("}");
-    _builder.newLine();
-    _builder.append("}");
-    _builder.newLine();
-    _builder.newLine();
-    return _builder.toString();
+  public static String generateUserAttrCondDefStub(final /* TGGAttributeConstraintDefinition */Object tacd, final String projectName) {
+    throw new Error("Unresolved compilation problems:"
+      + "\nThe method getParameterString(TGGAttributeConstraintDefinition) is undefined for the type Class<UserAttrCondHelper>"
+      + "\nThe method getParameterString(TGGAttributeConstraintDefinition) is undefined for the type Class<UserAttrCondHelper>"
+      + "\nThe method getAdorments(TGGAttributeConstraintDefinition) is undefined for the type Class<UserAttrCondHelper>"
+      + "\nname cannot be resolved"
+      + "\nname cannot be resolved"
+      + "\nparameterDefinitions cannot be resolved"
+      + "\nsize cannot be resolved"
+      + "\nname cannot be resolved"
+      + "\ntoUpperCase cannot be resolved"
+      + "\nparameterDefinitions cannot be resolved"
+      + "\nsize cannot be resolved"
+      + "\nparameterDefinitions cannot be resolved"
+      + "\nparameterDefinitions cannot be resolved"
+      + "\nindexOf cannot be resolved"
+      + "\nparameterDefinitions cannot be resolved"
+      + "\nindexOf cannot be resolved");
   }
 
   public static String generateBasicStructure(final String additionalImports, final String fileName, final String strategy, final String projectName, final String setUpRoutine) {
