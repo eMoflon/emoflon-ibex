@@ -8,6 +8,7 @@ import java.util.Set
 import java.util.HashSet
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression
+import java.util.List
 
 class IBeXGtRuleTemplate extends GeneratorTemplate<GTRule>{
 	
@@ -17,6 +18,7 @@ class IBeXGtRuleTemplate extends GeneratorTemplate<GTRule>{
 	protected String coPatternClassName;
 	protected String patternClassName;
 	
+	protected GTPattern precondition;
 	protected ExpressionHelper exprHelper;
 	
 	protected Set<String> factoryClasses = new HashSet
@@ -36,6 +38,8 @@ class IBeXGtRuleTemplate extends GeneratorTemplate<GTRule>{
 		
 		fqn = packageName + "." + className;
 		filePath = data.rulePackagePath + "/" + className
+		
+		precondition = context.precondition as GTPattern
 		
 		imports.add("java.util.Collection")
 		imports.add("java.util.stream.Collectors")
@@ -208,6 +212,34 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 	public «matchClassName» createMatch(final Map<String, Object> nodes, Object... args) {
 		return new «matchClassName»(this, nodes);
 	}
+	
+	«IF !precondition.watchDogs.isNullOrEmpty»«imports.addAll(List.of("java.util.Collections", "java.util.LinkedHashSet", "java.util.Set"))»
+	
+	@Override
+	protected Set<EObject> insertNodesAndMatch(final «matchClassName» match) {
+		Set<EObject> addedNodes = Collections.synchronizedSet(new LinkedHashSet<>());
+		«FOR wd : precondition.watchDogs»
+		«wd.node.type.name» «wd.node.name.toFirstLower» = match.«wd.node.name.toFirstLower»();
+		Set<«matchClassName»> «wd.node.name.toFirstLower»Matches = node2matches.get(«wd.node.name.toFirstLower»);
+		if(«wd.node.name.toFirstLower»Matches == null) {
+			«wd.node.name.toFirstLower»Matches = Collections.synchronizedSet(new LinkedHashSet<>());
+			node2matches.put(«wd.node.name.toFirstLower», «wd.node.name.toFirstLower»Matches);
+		}
+		«wd.node.name.toFirstLower»Matches.add(match);
+		addedNodes.add(«wd.node.name.toFirstLower»);
+		
+		«ENDFOR»
+		
+		match2nodes.put(match, addedNodes);
+		return addedNodes;
+	}
+	«ELSE»«imports.addAll(List.of("java.util.Set"))»
+	
+	@Override
+	protected Set<EObject> insertNodesAndMatch(final «matchClassName» match) {
+		throw new UnsupportedOperationException("The pattern <«context.name»> does not define any attributes to watch.");
+	}
+	«ENDIF»
 	
 	protected «coPatternClassName» createCoPattern() {
 		return new «coPatternClassName»(api, this, (GTPattern) rule.getPostcondition());

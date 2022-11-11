@@ -27,6 +27,11 @@ public abstract class IBeXGTPatternMatcher<EM> extends PatternMatchingEngine<GTM
 	protected abstract String extractPatternName(final EM match);
 
 	@Override
+	public void terminate() {
+		name2typedPattern.values().forEach(p -> p.terminate());
+	}
+
+	@Override
 	public IBeXGTMatch<?, ?> transformToIMatch(final EM match) {
 		return name2typedPattern.get(extractPatternName(match)).createMatch(extractNodes(match));
 	}
@@ -120,6 +125,8 @@ public abstract class IBeXGTPatternMatcher<EM> extends PatternMatchingEngine<GTM
 				updateFilteredMatches(patternName);
 			}
 		}
+
+		name2typedPattern.values().forEach(p -> p.update());
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package org.emoflon.ibex.gt.build.template
 
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern
+import java.util.List
 
 class IBeXGtPatternTemplate extends GeneratorTemplate<GTPattern>{
 	
@@ -168,7 +169,33 @@ class IBeXGtPatternTemplate extends GeneratorTemplate<GTPattern>{
 	public «matchClassName» createMatch(final Map<String, Object> nodes,  Object... args) {
 		return new «matchClassName»(this, nodes);
 	}
+	«IF !context.watchDogs.isNullOrEmpty»«imports.addAll(List.of("java.util.Collections", "java.util.LinkedHashSet", "java.util.Set"))»
 	
+	@Override
+	protected Set<EObject> insertNodesAndMatch(final «matchClassName» match) {
+		Set<EObject> addedNodes = Collections.synchronizedSet(new LinkedHashSet<>());
+		«FOR wd : context.watchDogs»
+		«wd.node.type.name» «wd.node.name.toFirstLower» = match.«wd.node.name.toFirstLower»();
+		Set<«matchClassName»> «wd.node.name.toFirstLower»Matches = node2matches.get(«wd.node.name.toFirstLower»);
+		if(«wd.node.name.toFirstLower»Matches == null) {
+			«wd.node.name.toFirstLower»Matches = Collections.synchronizedSet(new LinkedHashSet<>());
+			node2matches.put(«wd.node.name.toFirstLower», «wd.node.name.toFirstLower»Matches);
+		}
+		«wd.node.name.toFirstLower»Matches.add(match);
+		addedNodes.add(«wd.node.name.toFirstLower»);
+		
+		«ENDFOR»
+		
+		match2nodes.put(match, addedNodes);
+		return addedNodes;
+	}
+	«ELSE»«imports.addAll(List.of("java.util.Set"))»
+	
+	@Override
+	protected Set<EObject> insertNodesAndMatch(final «matchClassName» match) {
+		throw new UnsupportedOperationException("The pattern <«context.name»> does not define any attributes to watch.");
+	}
+	«ENDIF»
 }'''
 	}
 	
