@@ -212,35 +212,7 @@ public class «className» extends IBeXGTRule<«className», «patternClassName�
 	public «matchClassName» createMatch(final Map<String, Object> nodes, Object... args) {
 		return new «matchClassName»(this, nodes);
 	}
-	
-	«IF !precondition.watchDogs.isNullOrEmpty»«imports.addAll(List.of("java.util.Collections", "java.util.LinkedHashSet", "java.util.Set"))»
-	
-	@Override
-	protected Set<EObject> insertNodesAndMatch(final «matchClassName» match) {
-		Set<EObject> addedNodes = Collections.synchronizedSet(new LinkedHashSet<>());
-		«FOR wd : precondition.watchDogs»
-		«wd.node.type.name» «wd.node.name.toFirstLower» = match.«wd.node.name.toFirstLower»();
-		Set<«matchClassName»> «wd.node.name.toFirstLower»Matches = node2matches.get(«wd.node.name.toFirstLower»);
-		if(«wd.node.name.toFirstLower»Matches == null) {
-			«wd.node.name.toFirstLower»Matches = Collections.synchronizedSet(new LinkedHashSet<>());
-			node2matches.put(«wd.node.name.toFirstLower», «wd.node.name.toFirstLower»Matches);
-		}
-		«wd.node.name.toFirstLower»Matches.add(match);
-		addedNodes.add(«wd.node.name.toFirstLower»);
-		
-		«ENDFOR»
-		
-		match2nodes.put(match, addedNodes);
-		return addedNodes;
-	}
-	«ELSE»«imports.addAll(List.of("java.util.Set"))»
-	
-	@Override
-	protected Set<EObject> insertNodesAndMatch(final «matchClassName» match) {
-		throw new UnsupportedOperationException("The pattern <«context.name»> does not define any attributes to watch.");
-	}
-	«ENDIF»
-	
+	«generateWatchDogs»
 	protected «coPatternClassName» createCoPattern() {
 		return new «coPatternClassName»(api, this, (GTPattern) rule.getPostcondition());
 	}
@@ -372,6 +344,45 @@ import «imp»;
 «ENDFOR»
 
 «clazz»
+'''
+	}
+	
+	def String generateWatchDogs() {
+		if(!precondition.watchDogs.isNullOrEmpty) {
+			imports.addAll(List.of("org.eclipse.emf.ecore.EObject", "java.util.Collections", "java.util.LinkedHashSet", "java.util.Set"))
+		} else {
+			imports.addAll(List.of("org.eclipse.emf.ecore.EObject", "java.util.Set"))
+		}
+		return
+'''«IF !precondition.watchDogs.isNullOrEmpty»
+	
+	@Override
+	protected Set<EObject> insertNodesAndMatch(final «matchClassName» match) {
+		Set<EObject> addedNodes = Collections.synchronizedSet(new LinkedHashSet<>());
+		«FOR wd : precondition.watchDogs»
+		«wd.node.type.name» «wd.node.name.toFirstLower» = match.«wd.node.name.toFirstLower»();
+		Set<«matchClassName»> «wd.node.name.toFirstLower»Matches = node2matches.get(«wd.node.name.toFirstLower»);
+		if(«wd.node.name.toFirstLower»Matches == null) {
+			«wd.node.name.toFirstLower»Matches = Collections.synchronizedSet(new LinkedHashSet<>());
+			node2matches.put(«wd.node.name.toFirstLower», «wd.node.name.toFirstLower»Matches);
+		}
+		«wd.node.name.toFirstLower»Matches.add(match);
+		addedNodes.add(«wd.node.name.toFirstLower»);
+		
+		«ENDFOR»
+		
+		match2nodes.put(match, addedNodes);
+		return addedNodes;
+	}
+	
+	«ELSE»
+	
+	@Override
+	protected Set<EObject> insertNodesAndMatch(final «matchClassName» match) {
+		throw new UnsupportedOperationException("The pattern <«context.name»> does not define any attributes to watch.");
+	}
+	
+	«ENDIF»
 '''
 	}
 	

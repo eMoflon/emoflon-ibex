@@ -169,7 +169,30 @@ class IBeXGtPatternTemplate extends GeneratorTemplate<GTPattern>{
 	public «matchClassName» createMatch(final Map<String, Object> nodes,  Object... args) {
 		return new «matchClassName»(this, nodes);
 	}
-	«IF !context.watchDogs.isNullOrEmpty»«imports.addAll(List.of("java.util.Collections", "java.util.LinkedHashSet", "java.util.Set"))»
+	«generateWatchDogs»
+}'''
+	}
+	
+	override generate() {
+		val clazz = generateClass
+		code = '''package «data.patternPackage»;
+		
+«FOR imp : imports.filter[imp | imp !== null]»
+import «imp»;
+«ENDFOR»
+
+«clazz»
+'''
+	}
+	
+	def String generateWatchDogs() {
+		if(!context.watchDogs.isNullOrEmpty) {
+			imports.addAll(List.of("org.eclipse.emf.ecore.EObject", "java.util.Collections", "java.util.LinkedHashSet", "java.util.Set"))
+		} else {
+			imports.addAll(List.of("org.eclipse.emf.ecore.EObject", "java.util.Set"))
+		}
+		return
+'''«IF !context.watchDogs.isNullOrEmpty»
 	
 	@Override
 	protected Set<EObject> insertNodesAndMatch(final «matchClassName» match) {
@@ -189,25 +212,13 @@ class IBeXGtPatternTemplate extends GeneratorTemplate<GTPattern>{
 		match2nodes.put(match, addedNodes);
 		return addedNodes;
 	}
-	«ELSE»«imports.addAll(List.of("java.util.Set"))»
+	«ELSE»
 	
 	@Override
 	protected Set<EObject> insertNodesAndMatch(final «matchClassName» match) {
 		throw new UnsupportedOperationException("The pattern <«context.name»> does not define any attributes to watch.");
 	}
 	«ENDIF»
-}'''
-	}
-	
-	override generate() {
-		val clazz = generateClass
-		code = '''package «data.patternPackage»;
-		
-«FOR imp : imports.filter[imp | imp !== null]»
-import «imp»;
-«ENDFOR»
-
-«clazz»
 '''
 	}
 

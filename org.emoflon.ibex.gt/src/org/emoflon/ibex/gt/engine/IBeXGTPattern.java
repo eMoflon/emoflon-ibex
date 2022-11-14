@@ -437,9 +437,15 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 			unsubscribeAppearing(subscriber);
 			unsubscribeDisappearing(subscriber);
 		}
+		if (attributeAdapter != null) {
+			attributeAdapter.removeAdapter();
+			attributeAdapter = null;
+		}
 	}
 
 	protected void registerWatchDogs(final Collection<GTWatchDog> watchDogs) {
+		if (watchDogs == null || watchDogs.size() <= 0)
+			return;
 
 		if (attributeAdapter == null) {
 			attributeAdapter = new AttributeChangedAdapter(gtEngine.getModel().getResources());

@@ -1,11 +1,14 @@
 package org.emoflon.ibex.gt.engine;
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.gt.api.IBeXGtAPI;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern;
+import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTWatchDog;
 
 public abstract class IBeXGTCoPattern<CP extends IBeXGTCoPattern<CP, CM, R, P, M>, CM extends IBeXGTCoMatch<CM, CP, R, P, M>, R extends IBeXGTRule<R, P, M, CP, CM>, P extends IBeXGTPattern<P, M>, M extends IBeXGTMatch<M, P>>
 		extends IBeXGTPattern<CP, CM> {
@@ -127,6 +130,21 @@ public abstract class IBeXGTCoPattern<CP extends IBeXGTCoPattern<CP, CM, R, P, M
 	@Override
 	public Consumer<IBeXGTMatch<?, ?>> toIMatchConsumer(final Consumer<CM> consumer) {
 		throw new UnsupportedOperationException("Co patterns do not support the use of callbacks.");
+	}
+
+	@Override
+	protected void registerWatchDogs(Collection<GTWatchDog> watchDogs) {
+		return; // Do nothing
+	}
+
+	@Override
+	protected void terminate() {
+		return; // Do nothing
+	}
+
+	@Override
+	protected Set<EObject> insertNodesAndMatch(final CM match) {
+		throw new UnsupportedOperationException("Co patterns do not support the use of watch-dogs.");
 	}
 
 }
