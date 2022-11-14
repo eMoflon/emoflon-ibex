@@ -16,8 +16,8 @@ import java.util.stream.Stream;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.util.EContentAdapter;
+import org.emoflon.ibex.common.emf.AttributeChangedAdapter;
+import org.emoflon.ibex.common.emf.AttributeHistory;
 import org.emoflon.ibex.common.engine.IBeXPMEngineInformation;
 import org.emoflon.ibex.gt.api.IBeXGtAPI;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern;
@@ -462,19 +462,13 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 			attributeAdapter.addAttributeToWatch(watchDog.getAttribute());
 		}
 
-		subscribeAppearing(this::insertNodesAndMatch);
-		subscribeDisappearing(this::removeMatchAndMaybeNodes);
+		attributeAdapter.addNotificationConsumer(this::registerAttributeChange);
+		subscribeAppearing(this::registerAppearingMatchForWD);
+		subscribeDisappearing(this::registerDisappearingMatchForWD);
 	}
 
 	protected void registerAppearingMatchForWD(final M match) {
 		Set<EObject> nodes = insertNodesAndMatch(match);
-		if (match2nodes.containsKey(match)) {
-			match2nodes.get(match).addAll(nodes);
-		} else {
-			Set<EObject> n = Collections.synchronizedSet(new LinkedHashSet<>());
-			n.addAll(nodes);
-			match2nodes.put(match, nodes);
-		}
 		for (EObject node : nodes) {
 			attributeAdapter.addNodeToWatch(node);
 		}
@@ -482,7 +476,6 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 
 	protected void registerDisappearingMatchForWD(final M match) {
 		Set<EObject> nodes = removeMatchAndMaybeNodes(match);
-		match2nodes.remove(match);
 		for (EObject node : nodes) {
 			attributeAdapter.removeNodeToWatch(node);
 		}
@@ -502,7 +495,8 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 
 			AttributeHistory history = node2changes.get(node);
 			if (history == null) {
-				history = new AttributeHistory(node, notification.getOldValue(), notification.getNewValue());
+				history = new AttributeHistory(node, (EAttribute) notification.getFeature(), notification.getOldValue(),
+						notification.getNewValue());
 				node2changes.put(node, history);
 			} else {
 				history.addNewValue(notification.getNewValue());
@@ -510,102 +504,4 @@ public abstract class IBeXGTPattern<P extends IBeXGTPattern<P, M>, M extends IBe
 		}
 	}
 
-}
-
-class AttributeChangedAdapter extends EContentAdapter {
-	protected final Set<Resource> resources = Collections.synchronizedSet(new LinkedHashSet<>());
-	protected final Set<EObject> nodesToWatch = Collections.synchronizedSet(new LinkedHashSet<>());
-	protected final Set<EAttribute> featuresToWatch = Collections.synchronizedSet(new LinkedHashSet<>());
-	protected final Set<Consumer<Notification>> notificationConsumers = Collections
-			.synchronizedSet(new LinkedHashSet<>());
-
-	public AttributeChangedAdapter(final Resource... resources) {
-		for (Resource resource : resources) {
-			this.resources.add(resource);
-			resource.eAdapters().add(this);
-		}
-	}
-
-	public AttributeChangedAdapter(final Collection<Resource> resources) {
-		for (Resource resource : resources) {
-			this.resources.add(resource);
-			resource.eAdapters().add(this);
-		}
-	}
-
-	public synchronized void removeAdapter() {
-		for (Resource resource : resources) {
-			resource.eAdapters().remove(this);
-		}
-		resources.clear();
-		nodesToWatch.clear();
-		featuresToWatch.clear();
-	}
-
-	public void addAttributeToWatch(final EAttribute attribute) {
-		featuresToWatch.add(attribute);
-	}
-
-	public void addNodeToWatch(final EObject node) {
-		nodesToWatch.add(node);
-	}
-
-	public void removeNodeToWatch(final EObject node) {
-		nodesToWatch.remove(node);
-	}
-
-	public void addNotificationConsumer(final Consumer<Notification> consumer) {
-		notificationConsumers.add(consumer);
-	}
-
-	public void removeNotificationConsumer(final Consumer<Notification> consumer) {
-		notificationConsumers.remove(consumer);
-	}
-
-	@Override
-	public void notifyChanged(Notification notification) {
-		super.notifyChanged(notification);
-
-		if (notification.getFeature() == null || !(notification.getFeature() instanceof EAttribute))
-			return;
-
-		EAttribute feature = (EAttribute) notification.getFeature();
-		if (!featuresToWatch.contains(feature))
-			return;
-
-		if (!nodesToWatch.contains(notification.getNotifier()))
-			return;
-
-		switch (notification.getEventType()) {
-		case Notification.SET -> {
-			for (Consumer<Notification> consumer : notificationConsumers) {
-				consumer.accept(notification);
-			}
-		}
-		}
-	}
-}
-
-class AttributeHistory {
-	final public EObject node;
-	final public Object initialValue;
-	final Collection<Object> changes = Collections.synchronizedList(new LinkedList<>());
-	public Object newValue;
-
-	public AttributeHistory(final EObject node, final Object initialValue) {
-		this.node = node;
-		this.initialValue = initialValue;
-	}
-
-	public AttributeHistory(final EObject node, final Object initialValue, final Object newValue) {
-		this.node = node;
-		this.initialValue = initialValue;
-		changes.add(newValue);
-		this.newValue = newValue;
-	}
-
-	public void addNewValue(final Object newValue) {
-		changes.add(newValue);
-		this.newValue = newValue;
-	}
 }
