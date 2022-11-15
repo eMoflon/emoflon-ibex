@@ -2,21 +2,20 @@ package org.emoflon.ibex.tgg.compiler.patterns;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
-
-import language.TGGRuleNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 
 public class FilterNACCandidate {
-	private TGGRuleNode nodeInRule;
+	private TGGNode nodeInRule;
 	private EReference edgeType;
 	private EdgeDirection eDirection;
 
-	public FilterNACCandidate(TGGRuleNode nodeInRule, EReference edgeType, EdgeDirection eDirection) {
+	public FilterNACCandidate(TGGNode nodeInRule, EReference edgeType, EdgeDirection eDirection) {
 		this.nodeInRule = nodeInRule;
 		this.edgeType = edgeType;
 		this.eDirection = eDirection;
 	}
 
-	public TGGRuleNode getNodeInRule() {
+	public TGGNode getNodeInRule() {
 		return nodeInRule;
 	}
 
@@ -39,4 +38,11 @@ public class FilterNACCandidate {
 				(EClass) getEdgeType().getEType() : //
 				(EClass) getEdgeType().eContainer();
 	}
+
+	public enum EdgeDirection {
+		INCOMING,
+		OUTGOING
+	}
 }
+
+

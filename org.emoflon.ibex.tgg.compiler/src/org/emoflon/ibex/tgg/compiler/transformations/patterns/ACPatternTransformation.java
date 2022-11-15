@@ -1,6 +1,5 @@
 package org.emoflon.ibex.tgg.compiler.transformations.patterns;
 
-import static org.emoflon.ibex.common.patterns.IBeXPatternUtils.findIBeXNodeWithName;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -8,29 +7,21 @@ import java.util.function.BiFunction;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
-import org.emoflon.ibex.common.patterns.IBeXPatternFactory;
-import org.emoflon.ibex.common.patterns.IBeXPatternUtils;
-import org.emoflon.ibex.gt.transformations.EditorToIBeXPatternHelper;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternInvocation;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXPatternModelFactory;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternInvocation;
 import org.emoflon.ibex.tgg.compiler.patterns.ACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.ConclusionRule;
-import org.emoflon.ibex.tgg.compiler.patterns.EdgeDirection;
 import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
+import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate.EdgeDirection;
 import org.emoflon.ibex.tgg.compiler.patterns.PACCandidate;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
-import org.emoflon.ibex.tgg.compiler.transformations.patterns.common.OperationalPatternTransformation;
-import org.emoflon.ibex.tgg.compiler.transformations.patterns.inv.SRCPatternTransformation;
-import org.emoflon.ibex.tgg.compiler.transformations.patterns.inv.TRGPatternTransformation;
-import org.emoflon.ibex.util.config.IbexOptions;
-
-import language.DomainType;
-import language.TGGRule;
-import language.TGGRuleNode;
+import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 
 public class ACPatternTransformation {
 
@@ -45,11 +36,11 @@ public class ACPatternTransformation {
 		this.options = options;
 	}
 
-	protected IBeXContextPattern createFilterNAC(TGGRule rule, IBeXContextPattern ibexPattern, FilterNACCandidate candidate) {
-		TGGRuleNode firstNode = candidate.getNodeInRule();
+	protected IBeXContextPattern createFilterNAC(TGGOperationalRule operationalRule, FilterNACCandidate candidate) {
+		TGGNode firstNode = candidate.getNodeInRule();
 
 		BiFunction<FilterNACCandidate, TGGRule, String> getFilterNACPatternName;
-		if (firstNode.getDomainType() == DomainType.SRC)
+		if (firstNode.getDomainType() == DomainType.SOURCE)
 			getFilterNACPatternName = TGGPatternUtil::getFilterNACSRCPatternName;
 		else
 			getFilterNACPatternName = TGGPatternUtil::getFilterNACTRGPatternName;
@@ -266,13 +257,13 @@ public class ACPatternTransformation {
 		if (direction.equals(EdgeDirection.OUTGOING))
 			for (IBeXEdge edge : node.getOutgoingEdges()) {
 				if (edge.getType().equals(edgeType)) {
-					return edge.getTargetNode();
+					return edge.getTarget();
 				}
 			}
 		else
 			for (IBeXEdge edge : node.getIncomingEdges()) {
 				if (edge.getType().equals(edgeType)) {
-					return edge.getSourceNode();
+					return edge.getSource();
 				}
 			}
 		return null;

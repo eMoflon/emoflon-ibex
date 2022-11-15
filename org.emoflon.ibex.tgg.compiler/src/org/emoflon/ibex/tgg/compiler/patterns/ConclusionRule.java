@@ -1,7 +1,7 @@
 package org.emoflon.ibex.tgg.compiler.patterns;
 
-import language.TGGRule;
-import language.TGGRuleNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 
 /*
  * Provides a connection between the conclusion and the premise over a shared node Used for PAC
@@ -10,9 +10,9 @@ import language.TGGRuleNode;
 public class ConclusionRule {
 
 	private TGGRule conclusionRule;
-	private TGGRuleNode premiseConclusionNode;
+	private TGGNode premiseConclusionNode;
 
-	protected ConclusionRule(TGGRule conclusionRule, TGGRuleNode premiseConclusionNode) {
+	protected ConclusionRule(TGGRule conclusionRule, TGGNode premiseConclusionNode) {
 		this.conclusionRule = conclusionRule;
 		this.premiseConclusionNode = premiseConclusionNode;
 	}
@@ -21,7 +21,7 @@ public class ConclusionRule {
 		return conclusionRule;
 	}
 
-	public TGGRuleNode getPremiseConclusionNode() {
+	public TGGNode getPremiseConclusionNode() {
 		return premiseConclusionNode;
 	}
 }
