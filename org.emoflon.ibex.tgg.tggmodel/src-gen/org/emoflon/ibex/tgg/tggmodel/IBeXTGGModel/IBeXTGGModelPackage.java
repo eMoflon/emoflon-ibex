@@ -505,13 +505,22 @@ public interface IBeXTGGModelPackage extends EPackage {
 	int TGG_OPERATIONAL_RULE__OPERATIONALISATION_MODE = TGG_RULE_FEATURE_COUNT + 0;
 
 	/**
+	 * The feature id for the '<em><b>Marked</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_OPERATIONAL_RULE__MARKED = TGG_RULE_FEATURE_COUNT + 1;
+
+	/**
 	 * The number of structural features of the '<em>TGG Operational Rule</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_OPERATIONAL_RULE_FEATURE_COUNT = TGG_RULE_FEATURE_COUNT + 1;
+	int TGG_OPERATIONAL_RULE_FEATURE_COUNT = TGG_RULE_FEATURE_COUNT + 2;
 
 	/**
 	 * The number of operations of the '<em>TGG Operational Rule</em>' class.
@@ -1098,6 +1107,17 @@ public interface IBeXTGGModelPackage extends EPackage {
 	EAttribute getTGGOperationalRule_OperationalisationMode();
 
 	/**
+	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule#getMarked <em>Marked</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Marked</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule#getMarked()
+	 * @see #getTGGOperationalRule()
+	 * @generated
+	 */
+	EReference getTGGOperationalRule_Marked();
+
+	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement <em>TGG Rule Element</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1393,6 +1413,14 @@ public interface IBeXTGGModelPackage extends EPackage {
 		 */
 		EAttribute TGG_OPERATIONAL_RULE__OPERATIONALISATION_MODE = eINSTANCE
 				.getTGGOperationalRule_OperationalisationMode();
+
+		/**
+		 * The meta object literal for the '<em><b>Marked</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference TGG_OPERATIONAL_RULE__MARKED = eINSTANCE.getTGGOperationalRule_Marked();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleElementImpl <em>TGG Rule Element</em>}' class.

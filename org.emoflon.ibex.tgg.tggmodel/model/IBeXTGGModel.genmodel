@@ -17,6 +17,8 @@
       <genEnumLiterals ecoreEnumLiteral="IBeXTGGModel.ecore#//OperationalisationMode/BACKWARD"/>
       <genEnumLiterals ecoreEnumLiteral="IBeXTGGModel.ecore#//OperationalisationMode/CONSISTENCY_CHECK"/>
       <genEnumLiterals ecoreEnumLiteral="IBeXTGGModel.ecore#//OperationalisationMode/CHECK_ONLY"/>
+      <genEnumLiterals ecoreEnumLiteral="IBeXTGGModel.ecore#//OperationalisationMode/SOURCE"/>
+      <genEnumLiterals ecoreEnumLiteral="IBeXTGGModel.ecore#//OperationalisationMode/TARGET"/>
     </genEnums>
     <genEnums typeSafeEnumCompatible="false" ecoreEnum="IBeXTGGModel.ecore#//DomainType">
       <genEnumLiterals ecoreEnumLiteral="IBeXTGGModel.ecore#//DomainType/SOURCE"/>
@@ -51,6 +53,7 @@
     </genClasses>
     <genClasses ecoreClass="IBeXTGGModel.ecore#//TGGOperationalRule">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXTGGModel.ecore#//TGGOperationalRule/operationalisationMode"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGOperationalRule/marked"/>
     </genClasses>
     <genClasses image="false" ecoreClass="IBeXTGGModel.ecore#//TGGRuleElement">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXTGGModel.ecore#//TGGRuleElement/domainType"/>

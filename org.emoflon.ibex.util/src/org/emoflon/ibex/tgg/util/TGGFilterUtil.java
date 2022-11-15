@@ -3,6 +3,13 @@ package org.emoflon.ibex.tgg.util;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
+
 /**
  * A utility class to filter sets of TGGRuleElements.
  * 
@@ -11,38 +18,38 @@ import java.util.stream.Collectors;
  */
 public class TGGFilterUtil {
 
-	public static Collection<TGGRuleNode> filterNodes(Collection<TGGRuleElement> elements) {
-		return elements.stream().filter(e -> e instanceof TGGRuleNode).map(e -> (TGGRuleNode) e).collect(Collectors.toList());
+	public static Collection<TGGNode> filterNodes(Collection<TGGRuleElement> elements) {
+		return elements.stream().filter(e -> e instanceof TGGNode).map(e -> (TGGNode) e).collect(Collectors.toList());
 	}
 
-	public static Collection<TGGRuleEdge> filterEdges(Collection<TGGRuleElement> elements) {
-		return elements.stream().filter(e -> e instanceof TGGRuleEdge).map(e -> (TGGRuleEdge) e).collect(Collectors.toList());
+	public static Collection<TGGEdge> filterEdges(Collection<TGGRuleElement> elements) {
+		return elements.stream().filter(e -> e instanceof TGGEdge).map(e -> (TGGEdge) e).collect(Collectors.toList());
 	}
 
-	public static Collection<TGGRuleNode> filterNodes(Collection<TGGRuleNode> elements, BindingType type) {
+	public static Collection<TGGNode> filterNodes(Collection<TGGNode> elements, BindingType type) {
 		return elements.stream().filter(e -> e.getBindingType().equals(type)).collect(Collectors.toList());
 	}
 
-	public static Collection<TGGRuleEdge> filterEdges(Collection<TGGRuleEdge> elements, BindingType type) {
+	public static Collection<TGGEdge> filterEdges(Collection<TGGEdge> elements, BindingType type) {
 		return elements.stream().filter(e -> e.getBindingType().equals(type)).collect(Collectors.toList());
 	}
 
-	public static Collection<TGGRuleNode> filterNodes(Collection<TGGRuleNode> elements, DomainType type) {
+	public static Collection<TGGNode> filterNodes(Collection<TGGNode> elements, DomainType type) {
 		return elements.stream().filter(e -> e.getDomainType().equals(type)).collect(Collectors.toList());
 	}
 
-	public static Collection<TGGRuleEdge> filterEdges(Collection<TGGRuleEdge> elements, DomainType type) {
+	public static Collection<TGGEdge> filterEdges(Collection<TGGEdge> elements, DomainType type) {
 		return elements.stream().filter(e -> e.getDomainType().equals(type)).collect(Collectors.toList());
 	}
 
-	public static Collection<TGGRuleNode> filterNodes(Collection<TGGRuleNode> elements, DomainType dType, BindingType bType) {
+	public static Collection<TGGNode> filterNodes(Collection<TGGNode> elements, DomainType dType, BindingType bType) {
 		return elements.stream() //
 				.filter(e -> e.getDomainType() == dType) //
 				.filter(e -> e.getBindingType() == bType) //
 				.collect(Collectors.toList());
 	}
 
-	public static Collection<TGGRuleEdge> filterEdges(Collection<TGGRuleEdge> elements, DomainType dType, BindingType bType) {
+	public static Collection<TGGEdge> filterEdges(Collection<TGGEdge> elements, DomainType dType, BindingType bType) {
 		return elements.stream() //
 				.filter(e -> e.getDomainType() == dType) //
 				.filter(e -> e.getBindingType() == bType) //

@@ -66,7 +66,25 @@ public enum OperationalisationMode implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	CHECK_ONLY(4, "CHECK_ONLY", "CHECK_ONLY");
+	CHECK_ONLY(4, "CHECK_ONLY", "CHECK_ONLY"),
+	/**
+	* The '<em><b>SOURCE</b></em>' literal object.
+	* <!-- begin-user-doc -->
+	* <!-- end-user-doc -->
+	* @see #SOURCE_VALUE
+	* @generated
+	* @ordered
+	*/
+	SOURCE(5, "SOURCE", "SOURCE"),
+	/**
+	* The '<em><b>TARGET</b></em>' literal object.
+	* <!-- begin-user-doc -->
+	* <!-- end-user-doc -->
+	* @see #TARGET_VALUE
+	* @generated
+	* @ordered
+	*/
+	TARGET(6, "TARGET", "TARGET");
 
 	/**
 	 * The '<em><b>GENERATE</b></em>' literal value.
@@ -124,13 +142,35 @@ public enum OperationalisationMode implements Enumerator {
 	public static final int CHECK_ONLY_VALUE = 4;
 
 	/**
+	 * The '<em><b>SOURCE</b></em>' literal value.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #SOURCE
+	 * @model
+	 * @generated
+	 * @ordered
+	 */
+	public static final int SOURCE_VALUE = 5;
+
+	/**
+	 * The '<em><b>TARGET</b></em>' literal value.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #TARGET
+	 * @model
+	 * @generated
+	 * @ordered
+	 */
+	public static final int TARGET_VALUE = 6;
+
+	/**
 	 * An array of all the '<em><b>Operationalisation Mode</b></em>' enumerators.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	private static final OperationalisationMode[] VALUES_ARRAY = new OperationalisationMode[] { GENERATE, FORWARD,
-			BACKWARD, CONSISTENCY_CHECK, CHECK_ONLY, };
+			BACKWARD, CONSISTENCY_CHECK, CHECK_ONLY, SOURCE, TARGET, };
 
 	/**
 	 * A public read-only list of all the '<em><b>Operationalisation Mode</b></em>' enumerators.
@@ -196,6 +236,10 @@ public enum OperationalisationMode implements Enumerator {
 			return CONSISTENCY_CHECK;
 		case CHECK_ONLY_VALUE:
 			return CHECK_ONLY;
+		case SOURCE_VALUE:
+			return SOURCE;
+		case TARGET_VALUE:
+			return TARGET;
 		}
 		return null;
 	}

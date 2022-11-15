@@ -4,6 +4,7 @@
  */
 package org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.validation;
 
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalisationMode;
 
 /**
@@ -16,4 +17,6 @@ public interface TGGOperationalRuleValidator {
 	boolean validate();
 
 	boolean validateOperationalisationMode(OperationalisationMode value);
+
+	boolean validateMarked(IBeXRuleDelta value);
 }

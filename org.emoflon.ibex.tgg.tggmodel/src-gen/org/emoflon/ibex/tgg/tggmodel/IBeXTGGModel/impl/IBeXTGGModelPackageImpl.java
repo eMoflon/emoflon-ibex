@@ -338,6 +338,15 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EReference getTGGOperationalRule_Marked() {
+		return (EReference) tggOperationalRuleEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getTGGRuleElement() {
 		return tggRuleElementEClass;
 	}
@@ -498,6 +507,7 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 
 		tggOperationalRuleEClass = createEClass(TGG_OPERATIONAL_RULE);
 		createEAttribute(tggOperationalRuleEClass, TGG_OPERATIONAL_RULE__OPERATIONALISATION_MODE);
+		createEReference(tggOperationalRuleEClass, TGG_OPERATIONAL_RULE__MARKED);
 
 		tggRuleElementEClass = createEClass(TGG_RULE_ELEMENT);
 		createEAttribute(tggRuleElementEClass, TGG_RULE_ELEMENT__DOMAIN_TYPE);
@@ -613,6 +623,9 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 		initEAttribute(getTGGOperationalRule_OperationalisationMode(), this.getOperationalisationMode(),
 				"operationalisationMode", null, 0, 1, TGGOperationalRule.class, !IS_TRANSIENT, !IS_VOLATILE,
 				IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGGOperationalRule_Marked(), theIBeXCoreModelPackage.getIBeXRuleDelta(), null, "marked", null,
+				0, 1, TGGOperationalRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
+				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(tggRuleElementEClass, TGGRuleElement.class, "TGGRuleElement", IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);
@@ -651,6 +664,8 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 		addEEnumLiteral(operationalisationModeEEnum, OperationalisationMode.BACKWARD);
 		addEEnumLiteral(operationalisationModeEEnum, OperationalisationMode.CONSISTENCY_CHECK);
 		addEEnumLiteral(operationalisationModeEEnum, OperationalisationMode.CHECK_ONLY);
+		addEEnumLiteral(operationalisationModeEEnum, OperationalisationMode.SOURCE);
+		addEEnumLiteral(operationalisationModeEEnum, OperationalisationMode.TARGET);
 
 		initEEnum(domainTypeEEnum, DomainType.class, "DomainType");
 		addEEnumLiteral(domainTypeEEnum, DomainType.SOURCE);

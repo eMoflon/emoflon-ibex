@@ -4,14 +4,19 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeAssignment;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelFactory;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXOperationType;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternInvocation;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanExpression;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.IBeXCoreArithmeticFactory;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator;
+import org.emoflon.ibex.common.slimgt.slimGT.NodeAttributeExpression;
+import org.emoflon.ibex.common.slimgt.util.SlimGTModelUtil;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelFactory;
@@ -21,6 +26,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
 
 public class TGGOperationalizer {
 
@@ -28,11 +34,9 @@ public class TGGOperationalizer {
 	private IBeXTGGModelFactory factory = IBeXTGGModelFactory.eINSTANCE;
 	private IBeXCoreArithmeticFactory arithmeticFactory = IBeXCoreArithmeticFactory.eINSTANCE;
 	private ProtocolInformation protocolInformation;
-	private TGGModel model;
 	
 	public TGGModel operationalizeTGGRules(TGGModel model, ProtocolInformation protocolInformation) {
 		this.protocolInformation = protocolInformation;
-		this.model = model;
 		for(var rule : model.getRuleSet().getRules()) {
 			operationalizeRule(rule);
 		}
@@ -40,11 +44,139 @@ public class TGGOperationalizer {
 	}
 
 	private void operationalizeRule(TGGRule rule) {
+		constructSource(rule);
+		constructTarget(rule);
 		constructModelGen(rule);
 		constructForward(rule);
 		constructBackward(rule);
 		constructConsistencyCheck(rule);
 		constructCheckOnly(rule);
+	}
+
+	private void constructSource(TGGRule rule) {
+		var op = createOperationalizedTGGRule(rule);
+		op.setOperationalisationMode(OperationalisationMode.SOURCE);
+		
+		removeDomainInformation(op, DomainType.TARGET);
+	}
+	
+	private void constructTarget(TGGRule rule) {
+		var op = createOperationalizedTGGRule(rule);
+		op.setOperationalisationMode(OperationalisationMode.TARGET);
+		
+		removeDomainInformation(op, DomainType.SOURCE);
+	}
+	
+	private void removeDomainInformation(TGGOperationalRule op, DomainType type) {
+		
+		removeElements(op, type);
+		removeElements(op, DomainType.CORRESPONDENCE);
+
+		removeInvocations(op.getPrecondition().getInvocations(), type);
+		removeInvocations(op.getPostcondition().getInvocations(), type);
+
+		removeAttributeAssignments(op.getAttributeAssignments(), type);
+		removeAttributeConstraints(op.getAttributeConstraints().getTggAttributeConstraints(), type);
+		
+		removeAttributeConditions(op.getPrecondition().getConditions(), type);
+		removeAttributeConditions(op.getPostcondition().getConditions(), type);
+	}
+	
+	private void removeElements(TGGOperationalRule op, DomainType domainType) {
+		var deletedNodes = new LinkedList<EObject>();
+		// remove all unnecessary nodes
+		for(var node : op.getNodes()) {
+			if(node.getDomainType() == domainType) {
+				deletedNodes.add(node);
+			}
+		}
+		deletedNodes.forEach(EcoreUtil::delete);
+		
+		var deletedEdges = new LinkedList<EObject>();
+		// remove all unnecessary edges
+		for(var edge : op.getEdges()) {
+			if(edge.getDomainType() == domainType) {
+				deletedEdges.add(edge);
+			}
+		}
+		deletedEdges.forEach(EcoreUtil::delete);
+	}
+
+	private void removeAttributeConditions(Collection<BooleanExpression> conditions, DomainType domainType) {
+		var deletedConditions = new LinkedList<>();
+		for(var condition : conditions) {
+			var nodeExpressions = SlimGTModelUtil.getElements(condition, NodeAttributeExpression.class);	
+			for(var nodeAttrExpr : nodeExpressions) {
+				var ibexNode = nodeAttrExpr.getNodeExpression();
+				if(ibexNode == null) {
+					deletedConditions.add(condition);
+					break;
+				}
+				else 
+					if(ibexNode instanceof TGGNode tggNode) 
+						if(tggNode.getDomainType() == domainType) {
+							deletedConditions.add(condition);
+							break;
+						}
+			}
+		}
+		conditions.removeAll(deletedConditions);
+	}
+	
+	private void removeAttributeConstraints(Collection<TGGAttributeConstraint> constraints, DomainType domainType) {
+		var deletedConstraints = new LinkedList<>();
+		for(var constraint : constraints) {
+			for(var param : constraint.getParameters()) {
+				if(param instanceof NodeAttributeExpression nodeAttrExpr) {
+					var ibexNode = nodeAttrExpr.getNodeExpression();
+					if(ibexNode == null) {
+						deletedConstraints.add(constraint);
+						break;
+					}
+					else 
+						if(ibexNode instanceof TGGNode tggNode) 
+							if(tggNode.getDomainType() == domainType) {
+								deletedConstraints.add(constraint);
+								break;
+							}
+				}
+			}	
+		}
+		constraints.removeAll(deletedConstraints);
+	}
+	
+	private void removeAttributeAssignments(Collection<IBeXAttributeAssignment> assignments, DomainType domainType) {
+		var deletedAssignments = new LinkedList<>();
+		for(var assignment : assignments) {
+			var ibexNode = assignment.getNode();
+			if(ibexNode == null)
+				deletedAssignments.add(assignment);
+			else 
+				if(ibexNode instanceof TGGNode tggNode) 
+					if(tggNode.getDomainType() == domainType)
+						deletedAssignments.add(assignment);
+				
+		}
+	}
+	
+	private void removeInvocations(Collection<IBeXPatternInvocation> invocations, DomainType domainType) {
+		var deletedInvocations = new LinkedList<>();
+		for(var invocation : invocations) {
+			for(var mapping : invocation.getMapping()) {
+				var ibexNode = mapping.getKey();
+				if(ibexNode == null) {
+					deletedInvocations.add(invocation);
+				}
+				else
+					if(ibexNode instanceof TGGNode tggNode) {
+						if(tggNode.getDomainType() == domainType) {
+							deletedInvocations.add(invocation);
+						}
+					}
+			}
+		}
+		
+		invocations.removeAll(deletedInvocations);
 	}
 
 	private void constructModelGen(TGGRule rule) {

@@ -4,10 +4,13 @@ package org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl;
 
 import org.eclipse.emf.common.notify.Notification;
 
+import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.ecore.EClass;
 
+import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalisationMode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
@@ -21,6 +24,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
  * </p>
  * <ul>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGOperationalRuleImpl#getOperationalisationMode <em>Operationalisation Mode</em>}</li>
+ *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGOperationalRuleImpl#getMarked <em>Marked</em>}</li>
  * </ul>
  *
  * @generated
@@ -45,6 +49,16 @@ public class TGGOperationalRuleImpl extends TGGRuleImpl implements TGGOperationa
 	 * @ordered
 	 */
 	protected OperationalisationMode operationalisationMode = OPERATIONALISATION_MODE_EDEFAULT;
+
+	/**
+	 * The cached value of the '{@link #getMarked() <em>Marked</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getMarked()
+	 * @generated
+	 * @ordered
+	 */
+	protected IBeXRuleDelta marked;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -94,11 +108,77 @@ public class TGGOperationalRuleImpl extends TGGRuleImpl implements TGGOperationa
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public IBeXRuleDelta getMarked() {
+		return marked;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public NotificationChain basicSetMarked(IBeXRuleDelta newMarked, NotificationChain msgs) {
+		IBeXRuleDelta oldMarked = marked;
+		marked = newMarked;
+		if (eNotificationRequired()) {
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
+					IBeXTGGModelPackage.TGG_OPERATIONAL_RULE__MARKED, oldMarked, newMarked);
+			if (msgs == null)
+				msgs = notification;
+			else
+				msgs.add(notification);
+		}
+		return msgs;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setMarked(IBeXRuleDelta newMarked) {
+		if (newMarked != marked) {
+			NotificationChain msgs = null;
+			if (marked != null)
+				msgs = ((InternalEObject) marked).eInverseRemove(this,
+						EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_OPERATIONAL_RULE__MARKED, null, msgs);
+			if (newMarked != null)
+				msgs = ((InternalEObject) newMarked).eInverseAdd(this,
+						EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_OPERATIONAL_RULE__MARKED, null, msgs);
+			msgs = basicSetMarked(newMarked, msgs);
+			if (msgs != null)
+				msgs.dispatch();
+		} else if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_OPERATIONAL_RULE__MARKED,
+					newMarked, newMarked));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
+		switch (featureID) {
+		case IBeXTGGModelPackage.TGG_OPERATIONAL_RULE__MARKED:
+			return basicSetMarked(null, msgs);
+		}
+		return super.eInverseRemove(otherEnd, featureID, msgs);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
 		case IBeXTGGModelPackage.TGG_OPERATIONAL_RULE__OPERATIONALISATION_MODE:
 			return getOperationalisationMode();
+		case IBeXTGGModelPackage.TGG_OPERATIONAL_RULE__MARKED:
+			return getMarked();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -113,6 +193,9 @@ public class TGGOperationalRuleImpl extends TGGRuleImpl implements TGGOperationa
 		switch (featureID) {
 		case IBeXTGGModelPackage.TGG_OPERATIONAL_RULE__OPERATIONALISATION_MODE:
 			setOperationalisationMode((OperationalisationMode) newValue);
+			return;
+		case IBeXTGGModelPackage.TGG_OPERATIONAL_RULE__MARKED:
+			setMarked((IBeXRuleDelta) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -129,6 +212,9 @@ public class TGGOperationalRuleImpl extends TGGRuleImpl implements TGGOperationa
 		case IBeXTGGModelPackage.TGG_OPERATIONAL_RULE__OPERATIONALISATION_MODE:
 			setOperationalisationMode(OPERATIONALISATION_MODE_EDEFAULT);
 			return;
+		case IBeXTGGModelPackage.TGG_OPERATIONAL_RULE__MARKED:
+			setMarked((IBeXRuleDelta) null);
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -143,6 +229,8 @@ public class TGGOperationalRuleImpl extends TGGRuleImpl implements TGGOperationa
 		switch (featureID) {
 		case IBeXTGGModelPackage.TGG_OPERATIONAL_RULE__OPERATIONALISATION_MODE:
 			return operationalisationMode != OPERATIONALISATION_MODE_EDEFAULT;
+		case IBeXTGGModelPackage.TGG_OPERATIONAL_RULE__MARKED:
+			return marked != null;
 		}
 		return super.eIsSet(featureID);
 	}
