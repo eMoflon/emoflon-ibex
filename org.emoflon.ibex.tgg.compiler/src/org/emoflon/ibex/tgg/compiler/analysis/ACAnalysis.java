@@ -56,7 +56,7 @@ public class ACAnalysis {
 	public Collection<FilterNACCandidate> computeFilterNACCandidates(TGGRule rule, DomainType domain) {
 		final Collection<FilterNACCandidate> filterNACs = new ArrayList<>();
 
-		if (options.patterns.acStrategy().equals(ACStrategy.NONE))
+		if (options.patterns.acStrategy() == ACStrategy.NONE)
 			return filterNACs;
 
 		for (TGGNode n : rule.getNodes()) {

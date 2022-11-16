@@ -2,11 +2,9 @@ package org.emoflon.ibex.tgg.runtime.config.options;
 
 import java.util.function.BiPredicate;
 
-import org.emoflon.ibex.tgg.compiler.patterns.ACStrategy;
+import org.emoflon.ibex.tgg.compiler.analysis.ACStrategy;
 import org.emoflon.ibex.tgg.runtime.patterns.GreenPatternFactoryProvider;
-import org.emoflon.ibex.util.config.IbexOptions;
-
-import language.TGGRuleNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 
 public class PatternOptions extends IbexSubOptions {
 
@@ -17,7 +15,7 @@ public class PatternOptions extends IbexSubOptions {
 	 * (disabled), then edge patterns are never used.
 	 */
 	private boolean useEdgePatterns;
-	private BiPredicate<TGGRuleNode, TGGRuleNode> ignoreInjectivity;
+	private BiPredicate<TGGNode, TGGNode> ignoreInjectivity;
 	private boolean ignoreDomainConformity;
 	private boolean relaxDomainConformity;
 	private boolean optimizePattern;
@@ -67,11 +65,11 @@ public class PatternOptions extends IbexSubOptions {
 		return options;
 	}
 
-	public BiPredicate<TGGRuleNode, TGGRuleNode> ignoreInjectivity() {
+	public BiPredicate<TGGNode, TGGNode> ignoreInjectivity() {
 		return ignoreInjectivity;
 	}
 
-	public IbexOptions ignoreInjectivity(BiPredicate<TGGRuleNode, TGGRuleNode> ignoreInjecitity) {
+	public IbexOptions ignoreInjectivity(BiPredicate<TGGNode, TGGNode> ignoreInjecitity) {
 		this.ignoreInjectivity = ignoreInjecitity;
 		return options;
 	}
