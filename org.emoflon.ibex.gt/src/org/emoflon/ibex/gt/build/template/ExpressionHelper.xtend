@@ -69,6 +69,8 @@ class ExpressionHelper {
 			return '''null'''
 		} else if(expression instanceof IBeXAttributeValue) {
 			return '''«unparse(methodContext, expression)»'''
+		} else if(expression instanceof GTIteratorAttributeReference) {
+			return unparse(methodContext, expression)
 		} else if(expression instanceof RelationalExpression) {
 			switch(expression.operator) {
 				case EQUAL: {
@@ -134,6 +136,8 @@ class ExpressionHelper {
 	
 	def String unparse(String methodContext, ArithmeticExpression expression) {
 		if(expression instanceof IBeXAttributeValue) {
+			return unparse(methodContext, expression)
+		} else if(expression instanceof GTIteratorAttributeReference) {
 			return unparse(methodContext, expression)
 		} else if(expression instanceof IBeXNodeValue) {
 			return unparse(methodContext, expression)
@@ -228,6 +232,10 @@ class ExpressionHelper {
 		return '''«methodContext».«expression.node.name.toFirstLower»().«unparse(expression.attribute)»'''
 	}
 	
+	def String unparse(String methodContext, GTIteratorAttributeReference expression) {
+		return '''«expression.iterator.iterator.name».«unparse(expression.attribute)»'''
+	}
+	
 	def String unparse(EAttribute attribute) {
 		if(attribute.EType == EcorePackage.Literals.EBOOLEAN) {
 			return '''is«attribute.name.toFirstUpper»()'''
@@ -290,6 +298,26 @@ class ExpressionHelper {
 		} else if(type instanceof EClass || type instanceof EEnum) {
 			imports.add(data.getFQN(type))
 			return '''«type.name»'''
+		} else {
+			throw new IllegalArgumentException("Unknown or unsupported data type: " + type)
+		}
+	}
+	
+	def void addImportForType(EClassifier type) {
+		val simplifiedType = DataTypeUtil.simplifiyType(type)
+		if(simplifiedType == EcorePackage.Literals.ELONG) {
+			return
+		} else if(simplifiedType == EcorePackage.Literals.EDOUBLE) {
+			return
+		} else if(simplifiedType == EcorePackage.Literals.ESTRING) {
+			return
+		} else if(simplifiedType == EcorePackage.Literals.EBOOLEAN) {
+			return
+		} else if(simplifiedType == EcorePackage.Literals.EDATE) {
+			imports.add("java.util.Date")
+			return
+		} else if(type instanceof EClass || type instanceof EEnum) {
+			imports.add(data.getFQN(type))
 		} else {
 			throw new IllegalArgumentException("Unknown or unsupported data type: " + type)
 		}

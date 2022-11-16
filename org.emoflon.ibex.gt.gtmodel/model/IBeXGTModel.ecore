@@ -58,7 +58,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="iterator" lowerBound="1"
         eType="#//GTForEachExpression"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="GTIteratorAttributeReference" eSuperTypes="../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXCoreArithmetic/ValueExpression">
+  <eClassifiers xsi:type="ecore:EClass" name="GTIteratorAttributeReference" eSuperTypes="../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXCoreArithmetic/ArithmeticValue ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXCoreArithmetic/BooleanValue">
     <eStructuralFeatures xsi:type="ecore:EReference" name="iterator" lowerBound="1"
         eType="#//GTForEachExpression"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="attribute" lowerBound="1"

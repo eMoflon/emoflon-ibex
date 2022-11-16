@@ -780,7 +780,7 @@ public interface IBeXGTModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int GT_ITERATOR_ATTRIBUTE_REFERENCE__TYPE = IBeXCoreArithmeticPackage.VALUE_EXPRESSION__TYPE;
+	int GT_ITERATOR_ATTRIBUTE_REFERENCE__TYPE = IBeXCoreArithmeticPackage.ARITHMETIC_VALUE__TYPE;
 
 	/**
 	 * The feature id for the '<em><b>Iterator</b></em>' reference.
@@ -789,7 +789,7 @@ public interface IBeXGTModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int GT_ITERATOR_ATTRIBUTE_REFERENCE__ITERATOR = IBeXCoreArithmeticPackage.VALUE_EXPRESSION_FEATURE_COUNT + 0;
+	int GT_ITERATOR_ATTRIBUTE_REFERENCE__ITERATOR = IBeXCoreArithmeticPackage.ARITHMETIC_VALUE_FEATURE_COUNT + 0;
 
 	/**
 	 * The feature id for the '<em><b>Attribute</b></em>' reference.
@@ -798,7 +798,7 @@ public interface IBeXGTModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int GT_ITERATOR_ATTRIBUTE_REFERENCE__ATTRIBUTE = IBeXCoreArithmeticPackage.VALUE_EXPRESSION_FEATURE_COUNT + 1;
+	int GT_ITERATOR_ATTRIBUTE_REFERENCE__ATTRIBUTE = IBeXCoreArithmeticPackage.ARITHMETIC_VALUE_FEATURE_COUNT + 1;
 
 	/**
 	 * The number of structural features of the '<em>GT Iterator Attribute Reference</em>' class.
@@ -807,7 +807,7 @@ public interface IBeXGTModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int GT_ITERATOR_ATTRIBUTE_REFERENCE_FEATURE_COUNT = IBeXCoreArithmeticPackage.VALUE_EXPRESSION_FEATURE_COUNT + 2;
+	int GT_ITERATOR_ATTRIBUTE_REFERENCE_FEATURE_COUNT = IBeXCoreArithmeticPackage.ARITHMETIC_VALUE_FEATURE_COUNT + 2;
 
 	/**
 	 * The number of operations of the '<em>GT Iterator Attribute Reference</em>' class.
@@ -816,7 +816,7 @@ public interface IBeXGTModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int GT_ITERATOR_ATTRIBUTE_REFERENCE_OPERATION_COUNT = IBeXCoreArithmeticPackage.VALUE_EXPRESSION_OPERATION_COUNT
+	int GT_ITERATOR_ATTRIBUTE_REFERENCE_OPERATION_COUNT = IBeXCoreArithmeticPackage.ARITHMETIC_VALUE_OPERATION_COUNT
 			+ 0;
 
 	/**

@@ -92,10 +92,7 @@ public class IBeXGtPackageBuilder implements SlimGTBuilderExtension<EditorFile> 
 			pkgPath.mkdirs();
 		}
 
-		apiPath.mkdir();
-		matchPath.mkdir();
-		patternPath.mkdir();
-		rulePath.mkdir();
+		createFoldersInPackage();
 
 		// Create build properties file if it does not exists, update otherwise
 		bpManager = new BuildPropertiesManager(project);
@@ -104,6 +101,13 @@ public class IBeXGtPackageBuilder implements SlimGTBuilderExtension<EditorFile> 
 
 		// Create manifest file if it does not exists, update otherwise
 		new ManifestFileUpdater().processManifest(project, this::processManifestForPackage);
+	}
+
+	protected void createFoldersInPackage() {
+		apiPath.mkdir();
+		matchPath.mkdir();
+		patternPath.mkdir();
+		rulePath.mkdir();
 	}
 
 	protected void transformToGTModel() {
@@ -139,7 +143,7 @@ public class IBeXGtPackageBuilder implements SlimGTBuilderExtension<EditorFile> 
 		boolean changedBasics = ManifestFileUpdater.setBasicProperties(manifest, project.getName());
 
 		List<String> dependencies = new LinkedList<String>();
-		dependencies.addAll(List.of("org.emoflon.ibex.common", "org.emoflon.ibex.gt", "org.emoflon.ibex.gt.gtmodel"));
+		dependencies.addAll(createDependencies());
 
 		// Add engine dependencies
 		ExtensionsUtil.collectExtensions(IBeXPMEngineInformation.PLUGIN_EXTENSON_ID, "engine_information",
@@ -152,25 +156,30 @@ public class IBeXGtPackageBuilder implements SlimGTBuilderExtension<EditorFile> 
 
 		boolean updatedDependencies = ManifestFileUpdater.updateDependencies(manifest, dependencies);
 
-		String apiPackageName = pkg + "." + API_FOLDER;
-		String matchPackageName = apiPackageName + "." + MATCH_FOLDER;
-		String patternPackageName = apiPackageName + "." + PATTERN_FOLDER;
-		String rulePackageName = apiPackageName + "." + RULE_FOLDER;
 		boolean updateExports = false;
-
-		if (gtModel.getRuleSet() == null || gtModel.getRuleSet().getRules().isEmpty()) {
-			updateExports = ManifestFileUpdater.updateExports(manifest,
-					List.of(apiPackageName, matchPackageName, patternPackageName));
-		} else {
-			updateExports = ManifestFileUpdater.updateExports(manifest,
-					List.of(apiPackageName, matchPackageName, patternPackageName, rulePackageName));
-		}
+		updateExports = ManifestFileUpdater.updateExports(manifest, createExports());
 
 		if (updateExports) {
 			LogUtils.info(logger, "Updated manifest file!");
 		}
 
 		return updateExports || updatedDependencies || changedBasics;
+	}
+
+	protected List<String> createDependencies() {
+		return List.of("org.emoflon.ibex.common", "org.emoflon.ibex.gt", "org.emoflon.ibex.gt.gtmodel");
+	}
+
+	protected List<String> createExports() {
+		String apiPackageName = pkg + "." + API_FOLDER;
+		String matchPackageName = apiPackageName + "." + MATCH_FOLDER;
+		String patternPackageName = apiPackageName + "." + PATTERN_FOLDER;
+		String rulePackageName = apiPackageName + "." + RULE_FOLDER;
+		if (gtModel.getRuleSet() == null || gtModel.getRuleSet().getRules().isEmpty()) {
+			return List.of(apiPackageName, matchPackageName, patternPackageName);
+		} else {
+			return List.of(apiPackageName, matchPackageName, patternPackageName, rulePackageName);
+		}
 	}
 
 	@Override

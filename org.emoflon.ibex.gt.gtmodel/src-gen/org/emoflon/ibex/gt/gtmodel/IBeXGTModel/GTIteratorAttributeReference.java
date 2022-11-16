@@ -4,7 +4,8 @@ package org.emoflon.ibex.gt.gtmodel.IBeXGTModel;
 
 import org.eclipse.emf.ecore.EAttribute;
 
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ValueExpression;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ArithmeticValue;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanValue;
 
 /**
  * <!-- begin-user-doc -->
@@ -23,7 +24,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ValueE
  * @model
  * @generated
  */
-public interface GTIteratorAttributeReference extends ValueExpression {
+public interface GTIteratorAttributeReference extends ArithmeticValue, BooleanValue {
 	/**
 	 * Returns the value of the '<em><b>Iterator</b></em>' reference.
 	 * <!-- begin-user-doc -->
