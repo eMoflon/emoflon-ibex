@@ -1,6 +1,6 @@
 package org.emoflon.ibex.tgg.compiler.patterns;
 
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 
 /*
@@ -10,9 +10,9 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 public class ConclusionRule {
 
 	private TGGRule conclusionRule;
-	private TGGNode premiseConclusionNode;
+	private IBeXNode premiseConclusionNode;
 
-	protected ConclusionRule(TGGRule conclusionRule, TGGNode premiseConclusionNode) {
+	protected ConclusionRule(TGGRule conclusionRule, IBeXNode premiseConclusionNode) {
 		this.conclusionRule = conclusionRule;
 		this.premiseConclusionNode = premiseConclusionNode;
 	}
@@ -21,7 +21,7 @@ public class ConclusionRule {
 		return conclusionRule;
 	}
 
-	public TGGNode getPremiseConclusionNode() {
+	public IBeXNode getPremiseConclusionNode() {
 		return premiseConclusionNode;
 	}
 }

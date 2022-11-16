@@ -1,14 +1,18 @@
 package org.emoflon.ibex.tgg.compiler.transformations.patterns;
 
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelFactory;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXOperationType;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternInvocation;
 import org.emoflon.ibex.tgg.compiler.patterns.ACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.ConclusionRule;
@@ -19,24 +23,35 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 
 public class ACPatternTransformation {
 
+	
 	protected static final String FILTER_NAC_NODE_NAME = "FILTER_NAC_NODE";
 	protected static final String PAC_NODE_NAME = "PAC_NODE";
+	
+	private IBeXCoreModelFactory factory = IBeXCoreModelFactory.eINSTANCE;
 
+	private TGGModel tgg;
 	private IbexOptions options;
-	private ContextPatternTransformation parent;
 
-	public ACPatternTransformation(ContextPatternTransformation parent, IbexOptions options) {
-		this.parent = parent;
+	private Map<IBeXNode, IBeXNode> copyToOriginal = new HashMap<>();
+	
+	public ACPatternTransformation(TGGModel tgg, IbexOptions options) {
+		this.tgg = tgg;
 		this.options = options;
 	}
 
-	protected IBeXContextPattern createFilterNAC(TGGOperationalRule operationalRule, FilterNACCandidate candidate) {
+	/**
+	 * Given a filterNACCandidate, we create a filterNAC for a given operationalRule
+	 * @param operationalRule
+	 * @param candidate
+	 */
+	protected void addFilterNAC(TGGOperationalRule operationalRule, FilterNACCandidate candidate) {
 		TGGNode firstNode = candidate.getNodeInRule();
 
 		BiFunction<FilterNACCandidate, TGGRule, String> getFilterNACPatternName;
@@ -45,33 +60,41 @@ public class ACPatternTransformation {
 		else
 			getFilterNACPatternName = TGGPatternUtil::getFilterNACTRGPatternName;
 
-		if (parent.isTransformed(getFilterNACPatternName.apply(candidate, rule))) {
-			IBeXContextPattern nacPattern = parent.getPattern(getFilterNACPatternName.apply(candidate, rule));
-			createNegativeInvocation(ibexPattern, nacPattern);
-			return nacPattern;
-		}
-
-		// Root pattern
-		IBeXContextPattern nacPattern = IBeXPatternModelFactory.eINSTANCE.createIBeXContextPattern();
+		// NAC pattern
+		var nacPattern = factory.createIBeXPattern();
+		nacPattern.setName(getFilterNACPatternName.apply(candidate, operationalRule));
 
 		// Transform nodes
-		IBeXNode firstIBeXNode = parent.transformNode(nacPattern, firstNode);
+		IBeXNode checkedNode = copyIBeXNode(firstNode);
+		nacPattern.getSignatureNodes().add(checkedNode);
 
-		addNodesOfSameTypeFromInvoker(nacPattern, candidate, firstIBeXNode);
+		addNodesOfSameTypeFromInvoker(nacPattern, checkedNode, candidate);
 
-		IBeXNode secondIBeXNode = IBeXPatternFactory.createNode(FILTER_NAC_NODE_NAME, getOtherNodeType(candidate));
-		nacPattern.getSignatureNodes().add(secondIBeXNode);
+		// nac node should be local since when calling this pattern, we are not interested in how many NACs are violated
+		IBeXNode nacNode = factory.createIBeXNode();
+		nacNode.setName(FILTER_NAC_NODE_NAME);
+		nacNode.setOperationType(IBeXOperationType.CONTEXT);
+		nacNode.setType(getNACNodeType(candidate));
+		nacPattern.getLocalNodes().add(nacNode);
 
-		// Transform edges
-		if (candidate.getEDirection() == EdgeDirection.OUTGOING)
-			parent.transformEdge(candidate.getEdgeType(), firstIBeXNode, secondIBeXNode, nacPattern);
-		else
-			parent.transformEdge(candidate.getEdgeType(), secondIBeXNode, firstIBeXNode, nacPattern);
+		// create edge to nac node
+		IBeXEdge nacEdge = factory.createIBeXEdge();
+		nacEdge.setName("nac edge");
+		nacEdge.setOperationType(IBeXOperationType.CONTEXT);
+		nacEdge.setType(candidate.getEdgeType());
+		
+		if (candidate.getEDirection() == EdgeDirection.OUTGOING) {
+			nacEdge.setSource(checkedNode);
+			nacEdge.setTarget(nacNode);
+		}
+		else {
+			nacEdge.setSource(nacNode);
+			nacEdge.setTarget(checkedNode);
+		}
 
-		nacPattern.setName(getFilterNACPatternName.apply(candidate, rule));
-
-		// Invoke NAC from parent: nodes with/without pre-image are signature/local
-		createNegativeInvocation(ibexPattern, nacPattern);
+		// call nac pattern form both the pre and the postcondition
+		createNegativeInvocation(operationalRule.getPrecondition(), nacPattern);
+		createNegativeInvocation(operationalRule.getPostcondition(), nacPattern);
 
 		// Ensure that all nodes must be disjoint even if they have the same type.
 		EditorToIBeXPatternHelper.addInjectivityConstraints(nacPattern);
@@ -79,43 +102,95 @@ public class ACPatternTransformation {
 		return nacPattern;
 	}
 
-	private void createNegativeInvocation(IBeXContextPattern invoker, IBeXContextPattern invokee) {
-		IBeXPatternInvocation invocation = IBeXPatternModelFactory.eINSTANCE.createIBeXPatternInvocation();
+	/**
+	 * Copy the node and register it 
+	 * 
+	 * @param node
+	 * @return
+	 */
+	private IBeXNode copyIBeXNode(IBeXNode node) {
+		var newNode = factory.createIBeXNode();
+		newNode.setName(node.getName());
+		newNode.setType(node.getType());
+		newNode.setOperationType(IBeXOperationType.CONTEXT);
+		tgg.getNodeSet().getNodes().add(newNode);
+		
+		copyToOriginal.put(newNode, node);
+		return newNode;
+	}
+	
+	/**
+	 * Copy the edge, register it and connect it with two nodes
+	 * 
+	 * @param edge
+	 * @param from
+	 * @param to
+	 * @return
+	 */
+	private IBeXEdge copyIBeXEdge(IBeXEdge edge, IBeXNode from, IBeXNode to) {
+		var newEdge = factory.createIBeXEdge();
+		newEdge.setName(edge.getName());
+		newEdge.setType(edge.getType());
+		newEdge.setOperationType(IBeXOperationType.CONTEXT);
+		newEdge.setSource(from);
+		newEdge.setTarget(to);
+		tgg.getEdgeSet().getEdges().add(newEdge);
+		return newEdge;
+	}
+	
+	/**
+	 * Connect both pattern with a negative pattern invocation
+	 * 
+	 * @param invoker
+	 * @param invokee
+	 */
+	private void createNegativeInvocation(IBeXPattern invoker, IBeXPattern invokee) {
+		IBeXPatternInvocation invocation = factory.createIBeXPatternInvocation();
 		invocation.setPositive(false);
-		ArrayList<IBeXNode> localNodes = new ArrayList<>();
-
+		invocation.setInvocation(invokee);
+		invocation.setInvokedBy(invoker);
+		
+		// connect all elements with their counterpart in the calling pattern
 		for (IBeXNode node : invokee.getSignatureNodes()) {
-			Optional<IBeXNode> src = findIBeXNodeWithName(invoker, node.getName());
-
-			if (src.isPresent())
-				invocation.getMapping().put(src.get(), node);
-			else if (!invokee.getSignatureNodes().contains(node))
-				localNodes.add(node);
+			var original = copyToOriginal.get(node);
+			invocation.getMapping().put(node, original);
 		}
-
-		invokee.getLocalNodes().addAll(localNodes);
-
-		invocation.setInvokedPattern(invokee);
-		invoker.getInvocations().add(invocation);
 	}
 
-	private void addNodesOfSameTypeFromInvoker(IBeXContextPattern nacPattern, FilterNACCandidate candidate, IBeXNode inRuleNode) {
-		TGGRuleNode nodeInRule = candidate.getNodeInRule();
+	/**
+	 * This method adds other nodes to the nac pattern, which have the same type as the nac candidate.
+	 * The consequence of not doing this would be that no match could be found as the nac would block all
+	 * valid tgg matches.
+	 * 
+	 * @param nacPattern
+	 * @param checkedNode the copy of the node within the nac pattern that is the source of the DEC analysis
+	 * @param candidate
+	 */
+	private void addNodesOfSameTypeFromInvoker(IBeXPattern nacPattern, IBeXNode checkedNode, FilterNACCandidate candidate) {
+		TGGNode nodeInOriginalRule = candidate.getNodeInRule();
 		switch (candidate.getEDirection()) {
 			case INCOMING -> {
-				nodeInRule.getIncomingEdges().stream() //
+				nodeInOriginalRule.getIncomingEdges().stream() //
 						.filter(e -> e.getType().equals(candidate.getEdgeType())) //
 						.forEach(e -> {
-							IBeXNode node = parent.transformNode(nacPattern, e.getSrcNode());
-							parent.transformEdge(candidate.getEdgeType(), node, inRuleNode, nacPattern);
+							// make a copy of this node and append it to nac pattern then connect it via edge
+							IBeXNode nodeCopy = copyIBeXNode(e.getSource());
+							nacPattern.getSignatureNodes().add(nodeCopy);
+							
+							IBeXEdge edgeCopy = copyIBeXEdge(e, nodeCopy, checkedNode);
+							nacPattern.getEdges().add(edgeCopy);
 						});
 			}
 			case OUTGOING -> {
-				nodeInRule.getOutgoingEdges().stream() //
+				nodeInOriginalRule.getOutgoingEdges().stream() //
 						.filter(e -> e.getType().equals(candidate.getEdgeType())) //
 						.forEach(e -> {
-							IBeXNode node = parent.transformNode(nacPattern, e.getTrgNode());
-							parent.transformEdge(candidate.getEdgeType(), inRuleNode, node, nacPattern);
+							// make a copy of this node and append it to nac pattern then connect it via edge
+							IBeXNode nodeCopy = copyIBeXNode(e.getSource());
+							nacPattern.getSignatureNodes().add(nodeCopy);
+							
+							IBeXEdge edgeCopy = copyIBeXEdge(e, checkedNode, nodeCopy);
+							nacPattern.getEdges().add(edgeCopy);
 						});
 			}
 		}
@@ -221,8 +296,9 @@ public class ACPatternTransformation {
 			} else {
 				otherNodePremise = IBeXPatternUtils.findIBeXNodeWithName(pacPattern, PAC_NODE_NAME);
 			}
-			if (otherNodeConclusion.isPresent() && otherNodePremise.isPresent())
+			if (otherNodeConclusion.isPresent() && otherNodePremise.isPresent()) 
 				inv.getMapping().put(otherNodePremise.get(), otherNodeConclusion.get());
+			
 			// To map all nodes from the conclusion with the pacPattern
 			// example special case-> TGG: FamiliesToPersons_V0, Rule: ReplaceFatherWithSon, Pattern:
 			// ReplaceFatherWithSon_son_father_incoming_SRC__FILTER_NAC_SRC
@@ -269,7 +345,7 @@ public class ACPatternTransformation {
 		return null;
 	}
 
-	private EClass getOtherNodeType(FilterNACCandidate candidate) {
+	private EClass getNACNodeType(FilterNACCandidate candidate) {
 		return candidate.getEDirection() == EdgeDirection.OUTGOING ? //
 				(EClass) candidate.getEdgeType().getEType() : //
 				(EClass) candidate.getEdgeType().eContainer();
