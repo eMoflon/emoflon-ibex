@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.compiler.patterns;
+package org.emoflon.ibex.tgg.compiler.analysis;
 
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;

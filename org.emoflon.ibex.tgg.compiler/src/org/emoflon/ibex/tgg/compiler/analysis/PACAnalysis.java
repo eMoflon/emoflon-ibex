@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.compiler.patterns;
+package org.emoflon.ibex.tgg.compiler.analysis;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXOperationType;
-import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate.EdgeDirection;
+import org.emoflon.ibex.tgg.compiler.analysis.FilterNACCandidate.EdgeDirection;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;

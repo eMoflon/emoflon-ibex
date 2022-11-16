@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.compiler.patterns;
+package org.emoflon.ibex.tgg.compiler.analysis;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,7 +16,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXOperationType;
 import org.emoflon.ibex.common.slimgt.util.SlimGTModelUtil;
-import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate.EdgeDirection;
+import org.emoflon.ibex.tgg.compiler.analysis.FilterNACCandidate.EdgeDirection;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;

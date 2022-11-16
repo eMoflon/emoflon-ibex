@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.compiler.patterns;
+package org.emoflon.ibex.tgg.compiler.analysis;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;

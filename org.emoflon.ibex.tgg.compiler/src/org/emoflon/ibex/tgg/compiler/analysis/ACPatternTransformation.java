@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.compiler.transformations.patterns;
+package org.emoflon.ibex.tgg.compiler.analysis;
 
 
 import java.util.HashMap;
@@ -14,11 +14,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXOperationType;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternInvocation;
-import org.emoflon.ibex.tgg.compiler.patterns.ACAnalysis;
-import org.emoflon.ibex.tgg.compiler.patterns.ConclusionRule;
-import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate;
-import org.emoflon.ibex.tgg.compiler.patterns.FilterNACCandidate.EdgeDirection;
-import org.emoflon.ibex.tgg.compiler.patterns.PACCandidate;
+import org.emoflon.ibex.tgg.compiler.analysis.FilterNACCandidate.EdgeDirection;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
@@ -96,6 +92,7 @@ public class ACPatternTransformation {
 		createNegativeInvocation(operationalRule.getPrecondition(), nacPattern);
 		createNegativeInvocation(operationalRule.getPostcondition(), nacPattern);
 
+		
 		// Ensure that all nodes must be disjoint even if they have the same type.
 		EditorToIBeXPatternHelper.addInjectivityConstraints(nacPattern);
 
