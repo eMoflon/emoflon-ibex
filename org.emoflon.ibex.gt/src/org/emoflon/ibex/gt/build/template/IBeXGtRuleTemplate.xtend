@@ -9,6 +9,7 @@ import java.util.HashSet
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression
 import java.util.List
+import org.eclipse.emf.ecore.EPackage
 
 class IBeXGtRuleTemplate extends GeneratorTemplate<GTRule>{
 	
@@ -58,8 +59,12 @@ class IBeXGtRuleTemplate extends GeneratorTemplate<GTRule>{
 		imports.addAll(context.allNodes.map[node | data.getPackageFQN(node.type) + "." 
 			+ data.getPackageClass(node.type)
 		])
-		
-		imports.addAll(context.allNodes.map[node |data.getPackageFactoryClass(node.type)])
+		imports.addAll(context.allNodes.filter(node | node.type.eContainer() !== null && node.type.eContainer() instanceof EPackage)
+			.filter[node | (node.type.eContainer() as EPackage).name.equals("ecore")].map[node | data.getPackageFQN(node.type) + "." + data.getPackageFactoryClass(node.type)]
+		)
+		imports.addAll(context.allNodes.filter(node | node.type.eContainer() !== null && node.type.eContainer() instanceof EPackage)
+			.filter[node | !(node.type.eContainer() as EPackage).name.equals("ecore")].map[node | data.getPackageFactoryClass(node.type)]
+		)
 		
 		context.allNodes.forEach[node | factoryClasses.add(data.getSimplePackageFactoryClass(node.type))]
 		context.allNodes.forEach[node | nodeName2FactoryClass.put(node.name, data.getSimplePackageFactoryClass(node.type))]

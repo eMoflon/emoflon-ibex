@@ -452,8 +452,8 @@ public class GTLtoGTModelTransformer extends SlimGtToIBeXCoreTransformer<EditorF
 		}
 
 		// Automatic injectivity constraints, if necessary
-		if (!pattern.isConfigured() || !pattern.getConfiguration().getConfigurations()
-				.contains(SlimRuleConfiguration.DISABLE_INJECTIVITY_CONSTRAINTS)) {
+		if (!(pattern.isConfigured() && pattern.getConfiguration().getConfigurations()
+				.contains(SlimRuleConfiguration.DISABLE_INJECTIVITY_CONSTRAINTS))) {
 			Set<IBeXNodePair> pairs = new HashSet<>();
 			Set<IBeXNode> allNodes = new HashSet<>(gtPattern.getSignatureNodes());
 			allNodes.addAll(gtPattern.getLocalNodes());

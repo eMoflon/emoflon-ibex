@@ -46,7 +46,7 @@ public class IBeXGTApiData {
 		apiPrefix = apiPrefixFromPackage(model.getMetaData().getPackage());
 		apiPackage = model.getMetaData().getPackage() + ".api";
 		apiPackagePath = model.getMetaData().getPackagePath().replace("src", "src-gen") + "/api";
-		apiAbstractClassName = apiPrefix + "GtAPI";
+		apiAbstractClassName = apiPrefix + "GtApi";
 		gtModelPath = model.getMetaData().getPackagePath().replace("src", "src-gen") + "/api/ibex_gt_model.xmi";
 		matchPackage = apiPackage + ".match";
 		matchPackagePath = apiPackagePath + "/match";
@@ -57,7 +57,7 @@ public class IBeXGTApiData {
 
 		ExtensionsUtil.collectExtensions(IBeXPMEngineInformation.PLUGIN_EXTENSON_ID, "engine_information",
 				IBeXPMEngineInformation.class).forEach(ext -> engines.put(ext.getEngineName(), ext));
-		engines.forEach((extName, ext) -> apiClassNames.put(ext, apiPrefix + firstToUpper(extName) + "GtAPI"));
+		engines.forEach((extName, ext) -> apiClassNames.put(ext, apiPrefix + firstToUpper(extName) + "GtApi"));
 		patternFactoryClassName = apiPrefix + "GtPatternFactory";
 		ruleFactoryClassName = apiPrefix + "GtRuleFactory";
 
