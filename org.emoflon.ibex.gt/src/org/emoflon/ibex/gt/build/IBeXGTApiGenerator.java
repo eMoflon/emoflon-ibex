@@ -46,6 +46,7 @@ public class IBeXGTApiGenerator {
 				.forEach(pattern -> templates.add(new IBeXGtMatchTemplate(data, pattern)));
 
 		data.pattern2patternClassName.keySet().parallelStream()
+				.filter(pattern -> !data.pattern2rule.containsKey(pattern))
 				.forEach(pattern -> templates.add(new IBeXGtPatternTemplate(data, pattern)));
 
 		data.rule2ruleClassName.keySet().parallelStream().forEach(rule -> {

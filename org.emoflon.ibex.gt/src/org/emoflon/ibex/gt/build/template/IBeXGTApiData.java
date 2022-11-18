@@ -73,6 +73,7 @@ public class IBeXGTApiData {
 			rule2CoPatternClassName.put(rule, firstToUpper(rule.getPostcondition().getName()));
 			rule2CoMatchClassName.put(rule, firstToUpper(rule.getName()) + "CoMatch");
 			pattern2rule.put((GTPattern) rule.getPrecondition(), rule);
+			pattern2patternClassName.put((GTPattern) rule.getPrecondition(), firstToUpper(rule.getName()) + "Rule");
 		});
 		model.getPatternSet().getPatterns().stream().map(pattern -> (GTPattern) pattern)
 				.filter(pattern -> !rulePatterns.contains(pattern)).forEach(pattern -> {

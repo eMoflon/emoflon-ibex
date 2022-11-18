@@ -21,7 +21,7 @@ class IBeXGtApiAbstractTemplate extends GeneratorTemplate<GTModel> {
 		imports.add("org.emoflon.ibex.gt.api.IBeXGtAPI")
 		imports.add("org.emoflon.ibex.gt.engine.IBeXGTPatternMatcher")
 		
-		data.pattern2patternClassName.forEach[pattern, name | imports.add(data.patternPackage + "." + name)]
+		data.pattern2patternClassName.filter[pattern, name | !data.pattern2rule.containsKey(pattern)].forEach[pattern, name | imports.add(data.patternPackage + "." + name)]
 		data.rule2ruleClassName.forEach[rule, name | imports.add(data.rulePackage + "." + name)]
 		
 		data.model.metaData.dependencies.forEach[dep | imports.add(dep.fullyQualifiedName + "." + dep.packageClassName)]
@@ -32,7 +32,7 @@ class IBeXGtApiAbstractTemplate extends GeneratorTemplate<GTModel> {
 		return
 '''public abstract class «className» <ENGINE extends IBeXGTPatternMatcher<?>> extends IBeXGtAPI<ENGINE, «data.patternFactoryClassName», «data.ruleFactoryClassName»> {
 	
-	«FOR pattern : data.pattern2patternClassName.keySet»
+	«FOR pattern : data.pattern2patternClassName.keySet.filter[p | !data.pattern2rule.containsKey(p)]»
 	protected «data.pattern2patternClassName.get(pattern)» «pattern.name.toFirstLower»;
 	«ENDFOR»
 	
@@ -79,7 +79,7 @@ class IBeXGtApiAbstractTemplate extends GeneratorTemplate<GTModel> {
 	
 	@Override
 	protected void initializePatterns() {
-		«FOR pattern : data.pattern2patternClassName.keySet»
+		«FOR pattern : data.pattern2patternClassName.keySet.filter[p | !data.pattern2rule.containsKey(p)]»
 		«pattern.name.toFirstLower» = patternFactory.create«data.pattern2patternClassName.get(pattern)»();
 		«ENDFOR»
 	}
@@ -91,7 +91,7 @@ class IBeXGtApiAbstractTemplate extends GeneratorTemplate<GTModel> {
 		«ENDFOR»
 	}
 	
-	«FOR pattern : data.pattern2patternClassName.keySet»
+	«FOR pattern : data.pattern2patternClassName.keySet.filter[p | !data.pattern2rule.containsKey(p)]»
 	public «data.pattern2patternClassName.get(pattern)» «pattern.name.toFirstLower»() {
 		return 	«pattern.name.toFirstLower»;
 	}
