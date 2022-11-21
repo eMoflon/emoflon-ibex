@@ -62,8 +62,6 @@ public class ProtocolGenerator {
 
 		return protocolType;
 	}
-	
-	
 }
 
 record ProtocolInformation(EPackage metamodel, Map<TGGRule, ProtocolNodeInformation> ruleToInformation) {}

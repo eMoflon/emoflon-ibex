@@ -5,20 +5,16 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeConstraint;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXAttributeExpression;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXContextPattern;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXEdge;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXInjectivityConstraint;
-import org.emoflon.ibex.patternmodel.IBeXPatternModel.IBeXNode;
-
-import language.TGGInplaceAttributeExpression;
-import language.TGGLiteralExpression;
-import language.TGGRuleEdge;
-import language.TGGRuleNode;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNodeValue;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternInvocation;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanExpression;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalExpression;
 
 public class IBeXPatternOptimiser {
 
@@ -43,37 +39,38 @@ public class IBeXPatternOptimiser {
 	 * @param nodes The pair of nodes between which a unequal-constraint might be necessary.
 	 * @return true, if the pair requires an unequal-constraint.
 	 */
-	public static boolean unequalConstraintNecessary(TGGRuleNode left, TGGRuleNode right) {
-		return !unequalConstantAttributeValues(left, right) //
-				&& !transitiveContainment(left, right) //
+	public static boolean unequalConstraintNecessary(IBeXNode left, IBeXNode right) {
+		return 
+				//!unequalConstantAttributeValues(left, right) && 
+				!transitiveContainment(left, right) //
 				&& !differentContainmentSubTrees(left, right);
 	}
 
-	private static boolean unequalConstantAttributeValues(TGGRuleNode left, TGGRuleNode right) {
-		for (TGGInplaceAttributeExpression attrExprLeft : left.getAttrExpr()) {
-			if (attrExprLeft.getValueExpr() instanceof TGGLiteralExpression leftValExpr) {
-				for (TGGInplaceAttributeExpression attrExprRight : right.getAttrExpr()) {
-					if (attrExprRight.getValueExpr() instanceof TGGLiteralExpression rightValExpr
-							&& attrExprLeft.getAttribute().equals(attrExprRight.getAttribute())) {
-						if (!leftValExpr.getValue().equals(rightValExpr.getValue()))
-							return true;
-					}
-				}
-			}
-		}
+//	private static boolean unequalConstantAttributeValues(IBeXNode left, IBeXNode right) {
+//		for (TGGInplaceAttributeExpression attrExprLeft : left.getAttrExpr()) {
+//			if (attrExprLeft.getValueExpr() instanceof TGGLiteralExpression leftValExpr) {
+//				for (TGGInplaceAttributeExpression attrExprRight : right.getAttrExpr()) {
+//					if (attrExprRight.getValueExpr() instanceof TGGLiteralExpression rightValExpr
+//							&& attrExprLeft.getAttribute().equals(attrExprRight.getAttribute())) {
+//						if (!leftValExpr.getValue().equals(rightValExpr.getValue()))
+//							return true;
+//					}
+//				}
+//			}
+//		}
+//
+//		return false;
+//	}
 
-		return false;
-	}
+	private static boolean transitiveContainment(IBeXNode left, IBeXNode right) {
+		List<IBeXNode> leftHierarchy = containmentHierarchyFromNodeToRoot(left);
+		List<IBeXNode> rightHierarchy = containmentHierarchyFromNodeToRoot(right);
 
-	private static boolean transitiveContainment(TGGRuleNode left, TGGRuleNode right) {
-		List<TGGRuleNode> leftHierarchy = containmentHierarchyFromNodeToRoot(left);
-		List<TGGRuleNode> rightHierarchy = containmentHierarchyFromNodeToRoot(right);
-
-		for (TGGRuleNode leftHierNode : leftHierarchy) {
+		for (IBeXNode leftHierNode : leftHierarchy) {
 			if (leftHierNode.equals(right))
 				return true;
 		}
-		for (TGGRuleNode rightHierNode : rightHierarchy) {
+		for (IBeXNode rightHierNode : rightHierarchy) {
 			if (rightHierNode.equals(left))
 				return true;
 		}
@@ -81,9 +78,9 @@ public class IBeXPatternOptimiser {
 		return false;
 	}
 
-	private static boolean differentContainmentSubTrees(TGGRuleNode left, TGGRuleNode right) {
-		List<TGGRuleNode> leftHierarchy = containmentHierarchyFromNodeToRoot(left);
-		List<TGGRuleNode> rightHierarchy = containmentHierarchyFromNodeToRoot(right);
+	private static boolean differentContainmentSubTrees(IBeXNode left, IBeXNode right) {
+		List<IBeXNode> leftHierarchy = containmentHierarchyFromNodeToRoot(left);
+		List<IBeXNode> rightHierarchy = containmentHierarchyFromNodeToRoot(right);
 
 		// if one of the nodes is the root of its tree, both nodes cannot be in
 		// different sub-trees
@@ -106,78 +103,79 @@ public class IBeXPatternOptimiser {
 		return true;
 	}
 
-	private static List<TGGRuleNode> containmentHierarchyFromNodeToRoot(TGGRuleNode node) {
-		List<TGGRuleNode> hierarchy = new ArrayList<>();
-		Optional<TGGRuleNode> possibleCurrentNode = Optional.of(node);
+	private static List<IBeXNode> containmentHierarchyFromNodeToRoot(IBeXNode node) {
+		List<IBeXNode> hierarchy = new ArrayList<>();
+		Optional<IBeXNode> possibleCurrentNode = Optional.of(node);
 
 		while (possibleCurrentNode.isPresent()) {
-			TGGRuleNode currentNode = possibleCurrentNode.get();
+			IBeXNode currentNode = possibleCurrentNode.get();
 			hierarchy.add(currentNode);
 
-			Optional<TGGRuleEdge> possibleContainmentEdge = currentNode.getIncomingEdges().stream() //
+			Optional<IBeXEdge> possibleContainmentEdge = currentNode.getIncomingEdges().stream() //
 					.filter(e -> e.getType().isContainment()) //
 					.findAny();
 
-			possibleCurrentNode = possibleContainmentEdge.map(e -> e.getSrcNode());
+			possibleCurrentNode = possibleContainmentEdge.map(e -> e.getSource());
 		}
 
 		return hierarchy;
 	}
 
-	public static void optimizeIBeXPattern(IBeXContextPattern invoker, IBeXContextPattern invokee) {
-		optimizeEdges(invoker, invokee);
-		optimizeInjectivityConstraints(invoker, invokee);
-		optimizeAttributeConstraints(invoker, invokee);
+	public static void optimizeIBeXPattern(IBeXPattern invoker, IBeXPatternInvocation invocation) {
+		optimizeEdges(invoker, invocation);
+		optimizeInjectivityConstraints(invoker, invocation);
+//		optimizeAttributeConstraints(invoker, invokee);
 	}
 
-	private static void optimizeAttributeConstraints(IBeXContextPattern invoker, IBeXContextPattern invokee) {
-		Collection<IBeXAttributeConstraint> revokedConstraints = new ArrayList<>();
-		List<IBeXAttributeConstraint> constraints = invoker.getAttributeConstraint().stream() //
-				.filter(constraint -> (constraint.getLhs() instanceof IBeXAttributeExpression)) //
-				.collect(Collectors.toList());
-		for (IBeXAttributeConstraint constraint : constraints) {
-			if (invokee.getSignatureNodes().stream()
-					.anyMatch(n -> n.getName().equals(((IBeXAttributeExpression) constraint.getLhs()).getNode().getName()))) {
-				revokedConstraints.add(constraint);
-			}
-		}
-		EcoreUtil.deleteAll(revokedConstraints, true);
-		invoker.getAttributeConstraint().removeAll(revokedConstraints);
-	}
+//	private static void optimizeAttributeConstraints(IBeXPattern invoker, IBeXPattern invokee) {
+//		Collection<IBeXAttributeConstraint> revokedConstraints = new ArrayList<>();
+//		List<IBeXAttributeConstraint> constraints = invoker.getAttributeConstraint().stream() //
+//				.filter(constraint -> (constraint.getLhs() instanceof IBeXAttributeExpression)) //
+//				.collect(Collectors.toList());
+//		for (IBeXAttributeConstraint constraint : constraints) {
+//			if (invokee.getSignatureNodes().stream()
+//					.anyMatch(n -> n.getName().equals(((IBeXAttributeExpression) constraint.getLhs()).getNode().getName()))) {
+//				revokedConstraints.add(constraint);
+//			}
+//		}
+//		EcoreUtil.deleteAll(revokedConstraints, true);
+//		invoker.getAttributeConstraint().removeAll(revokedConstraints);
+//	}
 
-	private static void optimizeInjectivityConstraints(IBeXContextPattern invoker, IBeXContextPattern invokee) {
-		Collection<IBeXInjectivityConstraint> revokedPairs = new ArrayList<>();
-
-		for (IBeXInjectivityConstraint injPair : invoker.getInjectivityConstraints()) {
-			IBeXNode first = injPair.getValues().get(0);
-			IBeXNode second = injPair.getValues().get(1);
-			boolean firstFoundInInvokee = invokee.getSignatureNodes().stream().anyMatch(n -> n.getName().equals(first.getName()));
-			boolean secondFoundInInvokee = invokee.getSignatureNodes().stream().anyMatch(n -> n.getName().equals(second.getName()));
-
-			if (firstFoundInInvokee && secondFoundInInvokee) {
-				revokedPairs.add(injPair);
+	private static void optimizeInjectivityConstraints(IBeXPattern invoker, IBeXPatternInvocation invocation) {
+		Collection<BooleanExpression> revokedPairs = new ArrayList<>();
+		Collection<IBeXNode> mappedElements = invocation.getMapping().stream().map(i -> i.getKey()).toList();
+		
+		for (var condition : invoker.getConditions()) {
+			if(condition instanceof RelationalExpression rel) {
+				if(rel.getLhs() instanceof IBeXNodeValue left && rel.getRhs() instanceof IBeXNodeValue right) {			
+					if (mappedElements.contains(left.getNode()) && mappedElements.contains(right.getNode())) {
+						revokedPairs.add(condition);
+					}
+				}
 			}
 		}
 		EcoreUtil.deleteAll(revokedPairs, true);
-		invoker.getInjectivityConstraints().removeAll(revokedPairs);
+		invoker.getConditions().removeAll(revokedPairs);
 	}
 
-	private static void optimizeEdges(IBeXContextPattern invoker, IBeXContextPattern invokee) {
-		Collection<IBeXEdge> revokedEdges = new ArrayList<>();
+	private static void optimizeEdges(IBeXPattern invoker, IBeXPatternInvocation invocation) {
+		var revokedEdges = new ArrayList<EObject>();
+		var invokee = invocation.getInvocation();
 
-		for (IBeXEdge edge : invoker.getLocalEdges()) {
-			IBeXNode srcNode = edge.getSourceNode();
-			IBeXNode trgNode = edge.getTargetNode();
+		for (IBeXEdge edge : invoker.getEdges()) {
+			IBeXNode srcNode = edge.getSource();
+			IBeXNode trgNode = edge.getTarget();
 
-			boolean foundInInvokee = invokee.getLocalEdges().stream() //
-					.anyMatch(e -> e.getSourceNode().getName().equals(srcNode.getName()) && e.getTargetNode().getName().equals(trgNode.getName()));
+			boolean foundInInvokee = invokee.getEdges().stream() //
+					.anyMatch(e -> e.getSource().getName().equals(srcNode.getName()) && e.getTarget().getName().equals(trgNode.getName()));
 
 			if (foundInInvokee) {
 				revokedEdges.add(edge);
 			}
 		}
 		EcoreUtil.deleteAll(revokedEdges, true);
-		invoker.getLocalEdges().removeAll(revokedEdges);
+		invoker.getEdges().removeAll(revokedEdges);
 	}
 
 }
