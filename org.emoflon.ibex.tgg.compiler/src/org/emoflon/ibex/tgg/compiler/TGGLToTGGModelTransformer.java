@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.codegen.ecore.genmodel.GenPackage;
@@ -81,6 +82,7 @@ import org.emoflon.ibex.common.slimgt.slimGT.UnaryArithmeticExpression;
 import org.emoflon.ibex.common.slimgt.util.SlimGTEMFUtil;
 import org.emoflon.ibex.common.transformation.DataTypeUtil;
 import org.emoflon.ibex.common.transformation.SlimGtToIBeXCoreTransformer;
+import org.emoflon.ibex.tgg.compiler.defaults.TGGBuildUtil;
 import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuntimeModelPackage;
 import org.emoflon.ibex.tgg.tggl.scoping.TGGLScopeProvider;
 import org.emoflon.ibex.tgg.tggl.tGGL.AttributeCondition;
@@ -108,8 +110,11 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinition;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGLocalVariable;
 import org.moflon.core.utilities.LogUtils;
+import org.moflon.core.utilities.MoflonUtil;
 
 public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<EditorFile, TGGModel, IBeXTGGModelFactory> {
+	
+	private Logger logger = Logger.getLogger(this.getClass());
 	
 	private EcoreFactory ecoreFactory = EcoreFactory.eINSTANCE;
 	private CSPFactory cspFactory = CSPFactory.eINSTANCE;
@@ -193,30 +198,35 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		var operationalizer = new TGGOperationalizer();
 		operationalizer.operationalizeTGGRules(model, protocolInformation);
 		
+		// merge both corr and protocol metamodel together to make imports easier
+		var corrModel = model.getCorrespondence();
+		corrModel.getEClassifiers().addAll(protocolInformation.metamodel().getEClassifiers());
+		
 		postProcessing();
 		
-		saveModels(model, protocolInformation);
+		saveModels(model);
 		
 		return model;
 	}
 	
-	private void saveModels(TGGModel model, ProtocolInformation protocolInformation) {
+	private void saveModels(TGGModel model) {
+		
 		try {
-			ResourceSet rs = xtextParsedTGG.eResource().getResourceSet();
+			ResourceSet rs = editorFile.eResource().getResourceSet();
 			EcoreUtil.resolveAll(rs);
 			IFile corrFile = project.getFolder(TGGBuildUtil.MODEL_FOLDER)//
 					.getFile(getNameOfGeneratedFile(project) + TGGBuildUtil.ECORE_FILE_EXTENSION);
-			TGGBuildUtil.saveModelInProject(corrFile, rs, p.getCorrPackage());
+			TGGBuildUtil.saveModelInProject(corrFile, rs, model.getCorrespondence());
 			IFile tggFile = project.getFolder(TGGBuildUtil.MODEL_FOLDER)//
 					.getFile(getNameOfGeneratedFile(project) + TGGBuildUtil.INTERNAL_TGG_MODEL_EXTENSION);
-			TGGBuildUtil.saveModelInProject(tggFile, rs, p.getTggModel());
-			IFile flattenedTggFile = project.getFolder(TGGBuildUtil.MODEL_FOLDER)//
-					.getFile(getNameOfGeneratedFile(project)
-							+ TGGBuildUtil.INTERNAL_TGG_FLATTENED_MODEL_EXTENSION);
-			TGGBuildUtil.saveModelInProject(flattenedTggFile, rs, p.getFlattenedTggModel());
+			TGGBuildUtil.saveModelInProject(tggFile, rs, model);
 		} catch (IOException e) {
 			LogUtils.error(logger, e);
 		}
+	}
+	
+	private String getNameOfGeneratedFile(IProject project) {
+		return MoflonUtil.lastCapitalizedSegmentOf(project.getName());
 	}
 
 	private void createAttributeConstraintLibraries() {
