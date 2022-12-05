@@ -7,9 +7,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.runtime.csp.RuntimeTGGAttributeConstraint;
-
-import language.TGGAttributeConstraintDefinition;
-import language.TGGAttributeConstraintDefinitionLibrary;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinition;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinitionLibrary;
 
 public class RuntimeTGGAttrConstraintProvider {
 

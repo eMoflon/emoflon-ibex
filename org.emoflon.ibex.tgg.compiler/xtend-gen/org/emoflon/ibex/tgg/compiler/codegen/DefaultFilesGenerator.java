@@ -1,7 +1,13 @@
-package org.emoflon.ibex.tgg.codegen;
+package org.emoflon.ibex.tgg.compiler.codegen;
 
 import java.util.Collection;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.xtend2.lib.StringConcatenation;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency;
+import org.emoflon.ibex.tgg.compiler.builder.UserAttrCondHelper;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinition;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintParameterDefinition;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel;
 import org.moflon.core.utilities.MoflonUtil;
 
 @SuppressWarnings("all")
@@ -85,24 +91,117 @@ public class DefaultFilesGenerator {
     return _builder.toString();
   }
 
-  public static String generateUserAttrCondDefStub(final /* TGGAttributeConstraintDefinition */Object tacd, final String projectName) {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method getParameterString(TGGAttributeConstraintDefinition) is undefined for the type Class<UserAttrCondHelper>"
-      + "\nThe method getParameterString(TGGAttributeConstraintDefinition) is undefined for the type Class<UserAttrCondHelper>"
-      + "\nThe method getAdorments(TGGAttributeConstraintDefinition) is undefined for the type Class<UserAttrCondHelper>"
-      + "\nname cannot be resolved"
-      + "\nname cannot be resolved"
-      + "\nparameterDefinitions cannot be resolved"
-      + "\nsize cannot be resolved"
-      + "\nname cannot be resolved"
-      + "\ntoUpperCase cannot be resolved"
-      + "\nparameterDefinitions cannot be resolved"
-      + "\nsize cannot be resolved"
-      + "\nparameterDefinitions cannot be resolved"
-      + "\nparameterDefinitions cannot be resolved"
-      + "\nindexOf cannot be resolved"
-      + "\nparameterDefinitions cannot be resolved"
-      + "\nindexOf cannot be resolved");
+  public static String generateUserAttrCondDefStub(final TGGAttributeConstraintDefinition tacd, final String projectName) {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("package org.emoflon.ibex.tgg.operational.csp.constraints.custom.");
+    String _lowerCase = MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase();
+    _builder.append(_lowerCase);
+    _builder.append(";");
+    _builder.newLineIfNotEmpty();
+    _builder.newLine();
+    _builder.append("import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraint;");
+    _builder.newLine();
+    _builder.append("import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintVariable;");
+    _builder.newLine();
+    _builder.newLine();
+    _builder.append("public class ");
+    String _fileName = UserAttrCondHelper.getFileName(tacd.getName());
+    _builder.append(_fileName);
+    _builder.append(" extends RuntimeTGGAttributeConstraint");
+    _builder.newLineIfNotEmpty();
+    _builder.append("{");
+    _builder.newLine();
+    _builder.newLine();
+    _builder.append("   ");
+    _builder.append("/**");
+    _builder.newLine();
+    _builder.append("    ");
+    _builder.append("* Constraint ");
+    String _name = tacd.getName();
+    _builder.append(_name, "    ");
+    _builder.append("(");
+    String _parameterString = UserAttrCondHelper.getParameterString(tacd);
+    _builder.append(_parameterString, "    ");
+    _builder.append(")");
+    _builder.newLineIfNotEmpty();
+    _builder.append("    ");
+    _builder.append("* ");
+    _builder.newLine();
+    _builder.append("    ");
+    _builder.append("* @see TGGLanguage.csp.impl.ConstraintImpl#solve()");
+    _builder.newLine();
+    _builder.append("    ");
+    _builder.append("*/");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("@Override");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("public void solve() {");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("if (variables.size() != ");
+    int _size = tacd.getParameterDefinitions().size();
+    _builder.append(_size, "\t\t");
+    _builder.append(")");
+    _builder.newLineIfNotEmpty();
+    _builder.append("\t\t\t");
+    _builder.append("throw new RuntimeException(\"The CSP -");
+    String _upperCase = tacd.getName().toUpperCase();
+    _builder.append(_upperCase, "\t\t\t");
+    _builder.append("- needs exactly ");
+    int _size_1 = tacd.getParameterDefinitions().size();
+    _builder.append(_size_1, "\t\t\t");
+    _builder.append(" variables\");");
+    _builder.newLineIfNotEmpty();
+    _builder.newLine();
+    {
+      EList<TGGAttributeConstraintParameterDefinition> _parameterDefinitions = tacd.getParameterDefinitions();
+      for(final TGGAttributeConstraintParameterDefinition param : _parameterDefinitions) {
+        _builder.append("\t\t");
+        _builder.append("RuntimeTGGAttributeConstraintVariable v");
+        int _indexOf = tacd.getParameterDefinitions().indexOf(param);
+        _builder.append(_indexOf, "\t\t");
+        _builder.append(" = variables.get(");
+        int _indexOf_1 = tacd.getParameterDefinitions().indexOf(param);
+        _builder.append(_indexOf_1, "\t\t");
+        _builder.append(");");
+        _builder.newLineIfNotEmpty();
+      }
+    }
+    _builder.append("\t\t");
+    _builder.append("String bindingStates = getBindingStates(");
+    String _parameterString_1 = UserAttrCondHelper.getParameterString(tacd);
+    _builder.append(_parameterString_1, "\t\t");
+    _builder.append(");");
+    _builder.newLineIfNotEmpty();
+    _builder.newLine();
+    _builder.append("\t  \t");
+    _builder.append("switch(bindingStates) {");
+    _builder.newLine();
+    {
+      Collection<String> _adorments = UserAttrCondHelper.getAdorments(tacd);
+      for(final String adornment : _adorments) {
+        _builder.append("\t  \t\t");
+        _builder.append("case \"");
+        _builder.append(adornment, "\t  \t\t");
+        _builder.append("\": ");
+        _builder.newLineIfNotEmpty();
+      }
+    }
+    _builder.append("\t  \t\t");
+    _builder.append("default:  throw new UnsupportedOperationException(\"This case in the constraint has not been implemented yet: \" + bindingStates);");
+    _builder.newLine();
+    _builder.append("\t  \t\t \t");
+    _builder.append("}");
+    _builder.newLine();
+    _builder.append("\t  \t");
+    _builder.append("}");
+    _builder.newLine();
+    _builder.append("}");
+    _builder.newLine();
+    _builder.newLine();
+    return _builder.toString();
   }
 
   public static String generateBasicStructure(final String additionalImports, final String fileName, final String strategy, final String projectName, final String setUpRoutine) {
@@ -975,9 +1074,100 @@ public class DefaultFilesGenerator {
     return _builder.toString();
   }
 
-  public static String generateRegHelperFile(final String projectName, final /* TripleGraphGrammarFile */Object tgg) {
-    throw new Error("Unresolved compilation problems:"
-      + "\nimports cannot be resolved"
-      + "\nname cannot be resolved");
+  public static String generateRegHelperFile(final String projectName, final TGGModel tgg) {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("package org.emoflon.ibex.tgg.run.");
+    String _lowerCase = MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase();
+    _builder.append(_lowerCase);
+    _builder.append(".config;");
+    _builder.newLineIfNotEmpty();
+    _builder.newLine();
+    _builder.append("import java.io.IOException;");
+    _builder.newLine();
+    _builder.newLine();
+    _builder.append("import org.eclipse.emf.ecore.resource.ResourceSet;");
+    _builder.newLine();
+    _builder.append("import org.emoflon.ibex.tgg.operational.csp.constraints.factories.");
+    String _lowerCase_1 = MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase();
+    _builder.append(_lowerCase_1);
+    _builder.append(".UserDefinedRuntimeTGGAttrConstraintFactory;");
+    _builder.newLineIfNotEmpty();
+    _builder.append("import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;");
+    _builder.newLine();
+    _builder.append("import org.emoflon.ibex.tgg.compiler.defaults.IRegistrationHelper;");
+    _builder.newLine();
+    _builder.append("import org.emoflon.ibex.tgg.operational.strategies.modules.IbexExecutable;");
+    _builder.newLine();
+    _builder.append("import org.emoflon.ibex.tgg.runtime.democles.DemoclesTGGEngine;");
+    _builder.newLine();
+    _builder.newLine();
+    _builder.append("public class DemoclesRegistrationHelper implements IRegistrationHelper {");
+    _builder.newLine();
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("/** Load and register source and target metamodels */");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("public void registerMetamodels(ResourceSet rs, IbexExecutable executable) throws IOException {");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("// Replace to register generated code or handle other URI-related requirements");
+    _builder.newLine();
+    {
+      EList<EPackageDependency> _dependencies = tgg.getMetaData().getDependencies();
+      for(final EPackageDependency dependency : _dependencies) {
+        _builder.append("\t\t");
+        _builder.append("executable.getResourceHandler().loadAndRegisterMetamodel(\"");
+        String _name = dependency.getPackage().getName();
+        _builder.append(_name, "\t\t");
+        _builder.append("\");");
+        _builder.newLineIfNotEmpty();
+      }
+    }
+    _builder.append("\t");
+    _builder.append("}");
+    _builder.newLine();
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("/** Create default options **/");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("public IbexOptions createIbexOptions() {");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("IbexOptions options = new IbexOptions();");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("options.blackInterpreter(new DemoclesTGGEngine());");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("options.project.name(\"");
+    String _lastCapitalizedSegmentOf = MoflonUtil.lastCapitalizedSegmentOf(projectName);
+    _builder.append(_lastCapitalizedSegmentOf, "\t\t");
+    _builder.append("\");");
+    _builder.newLineIfNotEmpty();
+    _builder.append("\t\t");
+    _builder.append("options.project.path(\"");
+    _builder.append(projectName, "\t\t");
+    _builder.append("\");");
+    _builder.newLineIfNotEmpty();
+    _builder.append("\t\t");
+    _builder.append("options.debug.ibexDebug(false);");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("options.csp.userDefinedConstraints(new UserDefinedRuntimeTGGAttrConstraintFactory());");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("options.registrationHelper(this);");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("return options;");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("}");
+    _builder.newLine();
+    _builder.append("}");
+    _builder.newLine();
+    return _builder.toString();
   }
 }

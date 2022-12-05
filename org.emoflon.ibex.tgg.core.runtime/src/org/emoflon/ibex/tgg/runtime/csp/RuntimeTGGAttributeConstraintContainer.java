@@ -16,28 +16,34 @@ import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EEnumLiteral;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeValue;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXBooleanValue;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEnumValue;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNullValue;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXStringValue;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.DoubleLiteral;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.IntegerLiteral;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ValueExpression;
 import org.emoflon.ibex.tgg.runtime.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintParameterValue;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGLocalVariable;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
 import org.moflon.core.utilities.EcoreUtils;
 
-import language.TGGAttributeConstraint;
-import language.TGGAttributeExpression;
-import language.TGGAttributeVariable;
-import language.TGGEnumExpression;
-import language.TGGLiteralExpression;
-import language.TGGParamValue;
 
 public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrConstrContainer {
 
 	private List<RuntimeTGGAttributeConstraint> constraints;
 	private RuntimeTGGAttrConstraintProvider constraintProvider;
-	protected Map<TGGParamValue, RuntimeTGGAttributeConstraintVariable> params2runtimeVariable = new HashMap<>();
+	protected Map<TGGAttributeConstraintParameterValue, RuntimeTGGAttributeConstraintVariable> params2runtimeVariable = new HashMap<>();
 
 	private ITGGMatch match;
 	private Collection<String> boundObjectNames;
 
-	public RuntimeTGGAttributeConstraintContainer(List<TGGParamValue> variables,
+	public RuntimeTGGAttributeConstraintContainer(
+			List<TGGAttributeConstraintParameterValue> variables,
 			List<TGGAttributeConstraint> sortedConstraints, ITGGMatch match,
 			RuntimeTGGAttrConstraintProvider runtimeConstraintProvider) {
 		this.match = match;
@@ -59,52 +65,68 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 		return runtimeConstraint;
 	}
 
-	private void extractRuntimeParameters(List<TGGParamValue> variables) {
-		variables.forEach(
-				p -> params2runtimeVariable.put(p, new RuntimeTGGAttributeConstraintVariable(calculateBoundState(p),
-						calculateValue(p), calculateType(p))));
+	private void extractRuntimeParameters(List<TGGAttributeConstraintParameterValue> parameterValues) {
+		for(var paramValue : parameterValues) {
+			var variable = new RuntimeTGGAttributeConstraintVariable( //
+					calculateBoundState(paramValue), //
+					calculateValue(paramValue.getExpression()), //
+					calculateType(paramValue));			
+			params2runtimeVariable.put(paramValue, variable);
+		}
 	}
 
-	private boolean calculateBoundState(TGGParamValue value) {
-		if (value instanceof TGGAttributeExpression tae) {
-			if (tae.isDerived())
-				return false;
-			return boundObjectNames.contains(tae.getObjectVar().getName());
+	private boolean calculateBoundState(TGGAttributeConstraintParameterValue value) {
+		if (value instanceof IBeXAttributeValue tae) {
+			
+			// TODO: What was that supposed to do?
+//			if (tae.isDerived())
+//				return false;
+			return boundObjectNames.contains(tae.getNode().getName());
 		}
-		if (value instanceof TGGAttributeVariable) {
+		
+		// TODO: check why TGGAtributeVariable were also unbound
+//		if (value instanceof TGGAttributeVariable) {
+//			return false;
+//		}
+		
+		if (value instanceof TGGLocalVariable lv)
 			return false;
-		}
 		return true;
 	}
 
-	private Object calculateValue(TGGParamValue value) {
-		if (value instanceof TGGAttributeExpression tae) {
-			String varName = tae.getObjectVar().getName();
+	private Object calculateValue(ValueExpression value) {
+		if (value instanceof IBeXAttributeValue ae) {
+			String varName = ae.getNode().getName();
 			if (match.isInMatch(varName)) {
 				EObject obj = (EObject) match.get(varName);
-				return obj.eGet(tae.getAttribute());
+				return obj.eGet(ae.getAttribute());
 			}
-
 			return null;
 		}
-		if (value instanceof TGGLiteralExpression tle) {
-			return extractLiteralValue(tle);
+		if (value instanceof IBeXEnumValue ev) {
+			return ev.getLiteral().getInstance();
 		}
-		if (value instanceof TGGAttributeVariable) {
-			return null;
+		if (value instanceof IBeXStringValue sv) {
+			return sv.getValue();
 		}
-		if (value instanceof TGGEnumExpression tee) {
-			return tee.getLiteral().getInstance();
+		if (value instanceof IBeXBooleanValue bv) {
+			return bv.isValue();
 		}
+		if (value instanceof IBeXNullValue nv) {
+			return null;			
+		}
+		if(value instanceof DoubleLiteral dl) {
+			return dl.getValue();
+		}
+		if(value instanceof IntegerLiteral il) {
+			return il.getValue();
+		}
+		
 		throw new RuntimeException("TGGAttributeConstraintVariable value could not be recognized.");
 	}
 
-	private String calculateType(TGGParamValue value) {
+	private String calculateType(TGGAttributeConstraintParameterValue value) {
 		return value.getParameterDefinition().getType().getInstanceTypeName();
-	}
-
-	private Object extractLiteralValue(TGGLiteralExpression lExp) {
-		return String2EPrimitive.convertLiteral(lExp.getValue(), lExp.getParameterDefinition().getType());
 	}
 
 	public void addConstraint(RuntimeTGGAttributeConstraint constraint) {
@@ -121,7 +143,6 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 		return true;
 	}
 
-	// FIXME: Code is hard to read, avoid pairs
 	private Collection<Pair<TGGAttributeExpression, Object>> getBoundAttributeExpValues() {
 		Collection<Pair<TGGAttributeExpression, Object>> col = constraints.stream()
 				.map(constraint -> constraint.getBoundAttrExprValues())
@@ -130,7 +151,6 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 	}
 
 	@Override
-	// FIXME: Code is hard to read, avoid pairs
 	public void applyCSPValues(ITGGMatch comatch) {
 		Collection<Pair<TGGAttributeExpression, Object>> cspValues = getBoundAttributeExpValues();
 

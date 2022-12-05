@@ -18,12 +18,12 @@ Require-Bundle: net.sourceforge.plantuml.eclipse,
  org.eclipse.xtend.lib,
  org.eclipse.xtend.lib.macro,
  org.moflon.core.utilities;visibility:=reexport,
- org.emoflon.ibex.tgg.language,
  org.eclipse.equinox.registry,
  org.emoflon.smartemf;visibility:=reexport,
  org.emoflon.ibex.common.slimgt,
  org.emoflon.ibex.common.coremodel,
- org.emoflon.ibex.gt.gtmodel
+ org.emoflon.ibex.gt.gtmodel,
+ org.emoflon.ibex.tgg.tggmodel;bundle-version="0.1.0"
 Bundle-ClassPath: .
 Automatic-Module-Name: org.emoflon.ibex.common
 Bundle-RequiredExecutionEnvironment: JavaSE-17

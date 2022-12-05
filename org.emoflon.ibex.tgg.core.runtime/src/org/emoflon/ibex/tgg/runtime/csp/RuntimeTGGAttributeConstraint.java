@@ -8,10 +8,10 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintBinding;
 import org.emoflon.ibex.tgg.util.LoremIpsum;
 
-import language.TGGAttributeConstraint;
-import language.TGGAttributeConstraintAdornment;
 import language.TGGAttributeExpression;
 
 public abstract class RuntimeTGGAttributeConstraint {
@@ -93,10 +93,10 @@ public abstract class RuntimeTGGAttributeConstraint {
 
 	}
 
-	public List<TGGAttributeConstraintAdornment> getAllowedAdornments(boolean isModelGen) {
+	public List<TGGAttributeConstraintBinding> getAllowedAdornments(boolean isModelGen) {
 		if(isModelGen)
-			return constraint.getDefinition().getGenAdornments();
+			return constraint.getDefinition().getGenBindings();
 		else
-			return constraint.getDefinition().getSyncAdornments();
+			return constraint.getDefinition().getSyncBindings();
 	}
 }
