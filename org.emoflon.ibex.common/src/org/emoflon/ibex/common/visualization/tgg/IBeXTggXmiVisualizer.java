@@ -9,11 +9,12 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.ui.IEditorPart;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 import org.moflon.core.ui.VisualiserUtilities;
 import org.moflon.core.ui.visualisation.common.EMoflonDiagramTextProvider;
 
 import language.TGG;
-import language.TGGRule;
 import language.repair.ExternalShortcutRule;
 import language.repair.TGGRuleElementMapping;
 
@@ -30,7 +31,7 @@ public class IBeXTggXmiVisualizer implements EMoflonDiagramTextProvider {
 	@SuppressWarnings("unchecked")
 	private String visualizeSelection(IStructuredSelection selection) {
 		Object element = selection.getFirstElement();
-		if (element instanceof TGG tgg)
+		if (element instanceof TGGModel tgg)
 			return IBeXTggXmiPlantUMLGenerator.visualizeTGG(tgg);
 		if (element instanceof TGGRule tggRule)
 			return IBeXTggXmiPlantUMLGenerator.visualizeTGGRule(tggRule);
@@ -70,7 +71,7 @@ public class IBeXTggXmiVisualizer implements EMoflonDiagramTextProvider {
 				.map(EcoreEditor::getSelection) //
 				.flatMap(maybeCast(TreeSelection.class)) //
 				.map(TreeSelection::getFirstElement) //
-				.filter(elt -> elt instanceof TGG || elt instanceof TGGRule || elt instanceof ExternalShortcutRule
+				.filter(elt -> elt instanceof TGGModel || elt instanceof TGGRule || elt instanceof ExternalShortcutRule
 						|| elt instanceof TGGRuleElementMapping) //
 				.isPresent();
 	}
