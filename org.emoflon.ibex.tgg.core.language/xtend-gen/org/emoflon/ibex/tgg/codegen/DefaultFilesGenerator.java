@@ -974,10 +974,4 @@ public class DefaultFilesGenerator {
     _builder.newLine();
     return _builder.toString();
   }
-
-  public static String generateRegHelperFile(final String projectName, final /* TripleGraphGrammarFile */Object tgg) {
-    throw new Error("Unresolved compilation problems:"
-      + "\nimports cannot be resolved"
-      + "\nname cannot be resolved");
-  }
 }
