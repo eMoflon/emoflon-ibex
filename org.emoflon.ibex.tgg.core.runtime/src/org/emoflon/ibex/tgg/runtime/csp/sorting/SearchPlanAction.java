@@ -7,24 +7,26 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeValue;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXBooleanValue;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEnumValue;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXStringValue;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.DoubleLiteral;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.IntegerLiteral;
 import org.emoflon.ibex.tgg.runtime.csp.sorting.solver.democles.common.Adornment;
 import org.emoflon.ibex.tgg.runtime.csp.sorting.solver.democles.plan.Algorithm;
 import org.emoflon.ibex.tgg.runtime.csp.sorting.solver.democles.plan.WeightedOperation;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintBinding;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintParameterValue;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGLocalVariable;
 
 import com.google.common.collect.Lists;
 
-import language.TGGAttributeConstraint;
-import language.TGGAttributeConstraintAdornment;
-import language.TGGAttributeExpression;
-import language.TGGAttributeVariable;
-import language.TGGEnumExpression;
-import language.TGGLiteralExpression;
-import language.TGGParamValue;
-import language.TGGRuleNode;
-
 public class SearchPlanAction extends Algorithm<SimpleCombiner, TGGAttributeConstraint> {
 
-	private final List<TGGParamValue> variables = new ArrayList<>();
+	private final List<TGGAttributeConstraintParameterValue> variables = new ArrayList<>();
 	private final List<TGGAttributeConstraint> constraints = new ArrayList<>();
 	private final boolean useGenAdornments;
 	private final Collection<String> nodesCreatedByPattern = new ArrayList<>();
@@ -36,12 +38,12 @@ public class SearchPlanAction extends Algorithm<SimpleCombiner, TGGAttributeCons
 	 * @param availableNodes
 	 *            Nodes from which bound values for parameters are taken.
 	 */
-	public SearchPlanAction(List<TGGParamValue> variables, List<TGGAttributeConstraint> constraints,
-			boolean useGenAdornments, Collection<TGGRuleNode> availableNodes) {
+	public SearchPlanAction(List<TGGAttributeConstraintParameterValue> variables, List<TGGAttributeConstraint> constraints,
+			boolean useGenAdornments, Collection<TGGNode> availableNodes) {
 		this.variables.addAll(variables);
 		this.constraints.addAll(constraints);
 		this.useGenAdornments = useGenAdornments;
-		this.nodesCreatedByPattern.addAll(availableNodes.stream().map(TGGRuleNode::getName).collect(Collectors.toList()));
+		this.nodesCreatedByPattern.addAll(availableNodes.stream().map(TGGNode::getName).collect(Collectors.toList()));
 	}
 
 	// Unsorted list of our constraints => return a new List where constraints are
@@ -99,18 +101,27 @@ public class SearchPlanAction extends Algorithm<SimpleCombiner, TGGAttributeCons
 	 * @param patternContainsNode
 	 * @return
 	 */
-	public static boolean isBoundInPattern(TGGParamValue variable, Predicate<String> patternContainsNode) {
-		if (variable instanceof TGGAttributeExpression attrExpr) {
-			String nameOfObj = attrExpr.getObjectVar().getName();
+	public static boolean isBoundInPattern(TGGAttributeConstraintParameterValue variable, Predicate<String> patternContainsNode) {
+		if (variable instanceof IBeXAttributeValue attrExpr) {
+			String nameOfObj = attrExpr.getNode().getName();
 			return patternContainsNode.test(nameOfObj);
 		}
 
-		if (variable instanceof TGGAttributeVariable)
+		if (variable instanceof TGGLocalVariable)
 			return false;
 
-		if (variable instanceof TGGLiteralExpression || variable instanceof TGGEnumExpression)
+		if (variable instanceof IBeXStringValue)
 			return true;
-
+		if (variable instanceof IBeXBooleanValue)
+			return true;
+		if (variable instanceof DoubleLiteral)
+			return true;
+		if (variable instanceof IntegerLiteral)
+			return true;
+		
+		if (variable instanceof IBeXEnumValue)
+			return true;
+			
 		throw new IllegalStateException("Unable to handle " + variable);
 	}
 
@@ -122,7 +133,7 @@ public class SearchPlanAction extends Algorithm<SimpleCombiner, TGGAttributeCons
 	 * @param patternContainsNode
 	 * @return
 	 */
-	public static boolean isConnectedToPattern(TGGParamValue variable, Predicate<String> patternContainsNode) {
+	public static boolean isConnectedToPattern(TGGAttributeConstraintParameterValue variable, Predicate<String> patternContainsNode) {
 		return isBoundInPattern(variable, patternContainsNode);
 	}
 	
@@ -138,22 +149,22 @@ public class SearchPlanAction extends Algorithm<SimpleCombiner, TGGAttributeCons
 		// for each constraint ...
 		for (TGGAttributeConstraint constraint : constraints) {
 			// and each allowed adornment ...
-			for (TGGAttributeConstraintAdornment adornment : getAllowedAdornmentsForMode(constraint)) {
+			for (TGGAttributeConstraintBinding adornment : getAllowedAdornmentsForMode(constraint)) {
 				result.add(createWeightedOperationForConstraintWithAdornment(constraint, adornment));
 			}
 		}
 		return result;
 	}
 
-	private List<TGGAttributeConstraintAdornment> getAllowedAdornmentsForMode(TGGAttributeConstraint constraint) {
+	private List<TGGAttributeConstraintBinding> getAllowedAdornmentsForMode(TGGAttributeConstraint constraint) {
 		if (useGenAdornments)
-			return constraint.getDefinition().getGenAdornments();
+			return constraint.getDefinition().getGenBindings();
 		else
-			return constraint.getDefinition().getSyncAdornments();
+			return constraint.getDefinition().getSyncBindings();
 	}
 
 	private WeightedOperation<TGGAttributeConstraint> createWeightedOperationForConstraintWithAdornment(
-			final TGGAttributeConstraint constraint, final TGGAttributeConstraintAdornment adornment) {
+			final TGGAttributeConstraint constraint, final TGGAttributeConstraintBinding adornment) {
 		long frees = adornment.getValue().stream().filter(c -> c.equals("F")).count();
 		float weight = (float) Math.pow(frees, 3);
 
@@ -162,21 +173,21 @@ public class SearchPlanAction extends Algorithm<SimpleCombiner, TGGAttributeCons
 	}
 
 	private Adornment createBoundMask(final TGGAttributeConstraint constraint,
-			final TGGAttributeConstraintAdornment adornment) {
+			final TGGAttributeConstraintBinding adornment) {
 		return createMask(constraint, adornment, "B");
 	}
 
 	private Adornment createFreeMask(final TGGAttributeConstraint constraint,
-			final TGGAttributeConstraintAdornment adornment) {
+			final TGGAttributeConstraintBinding adornment) {
 		return createMask(constraint, adornment, "F");
 	}
 
 	private Adornment createMask(final TGGAttributeConstraint constraint,
-			final TGGAttributeConstraintAdornment adornment, String mode) {
+			final TGGAttributeConstraintBinding adornment, String mode) {
 		boolean[] bits = new boolean[variables.size()];
 
 		for (int i = 0; i < constraint.getParameters().size(); i++) {
-			TGGParamValue variable = constraint.getParameters().get(i);
+			TGGAttributeConstraintParameterValue variable = constraint.getParameters().get(i);
 			int index = variables.indexOf(variable);
 			if (adornment.getValue().get(i).equals(mode)) {
 				bits[index] = true;

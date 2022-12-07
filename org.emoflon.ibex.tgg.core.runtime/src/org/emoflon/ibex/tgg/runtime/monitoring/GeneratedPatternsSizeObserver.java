@@ -21,12 +21,12 @@ public class GeneratedPatternsSizeObserver extends AbstractIbexObserver {
 		factories.forEach((k, v) -> {
 			int size = 0;
 
-			size += v.getBlackCorrEdgesInRule().size();
-			size += v.getBlackSrcEdgesInRule().size();
-			size += v.getBlackTrgEdgesInRule().size();
-			size += v.getBlackCorrNodesInRule().size();
-			size += v.getBlackSrcNodesInRule().size();
-			size += v.getBlackTrgNodesInRule().size();
+//			size += v.getBlackCorrEdgesInRule().size();
+//			size += v.getBlackSrcEdgesInRule().size();
+//			size += v.getBlackTrgEdgesInRule().size();
+//			size += v.getBlackCorrNodesInRule().size();
+//			size += v.getBlackSrcNodesInRule().size();
+//			size += v.getBlackTrgNodesInRule().size();
 
 			logger.info(k + ": " + size);
 		});

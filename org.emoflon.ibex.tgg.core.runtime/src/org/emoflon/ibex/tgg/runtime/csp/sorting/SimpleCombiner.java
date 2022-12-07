@@ -21,8 +21,7 @@
 package org.emoflon.ibex.tgg.runtime.csp.sorting;
 
 import org.emoflon.ibex.tgg.runtime.csp.sorting.solver.democles.common.Combiner;
-
-import language.TGGAttributeConstraint;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
 
 public class SimpleCombiner implements Combiner<SimpleCombiner, TGGAttributeConstraint> {
 	private final Chain<TGGAttributeConstraint> last;

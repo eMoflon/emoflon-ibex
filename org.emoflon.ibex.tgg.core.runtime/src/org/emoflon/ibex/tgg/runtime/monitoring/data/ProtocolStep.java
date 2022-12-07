@@ -1,6 +1,6 @@
 package org.emoflon.ibex.tgg.runtime.monitoring.data;
 
-import language.TGGRule;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 
 public class ProtocolStep {
 	private int index;

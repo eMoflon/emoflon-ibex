@@ -59,7 +59,6 @@ public abstract class RuntimeTGGAttributeConstraint {
 
 	public abstract void solve();
 
-	//FIXME:  Code is hard to read, avoid pairs
 	public Collection<Pair<TGGAttributeExpression, Object>> getBoundAttrExprValues() {
 		Collection<Pair<TGGAttributeExpression, Object>> tuples = new ArrayList<Pair<TGGAttributeExpression, Object>>();
 		for (int i = 0; i < constraint.getParameters().size(); i++) {
