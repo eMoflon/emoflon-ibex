@@ -22,10 +22,10 @@ There are 4 ways how to use eMoflon::IBeX:
 ## Pre-built Eclipse
 
 1. Install [GraphViz](http://www.graphviz.org/download/).
-1. Choose the right pre-built Eclipse version for your need. A comparisson table can be found in the [readme of the emoflon-eclipse-build repository](https://github.com/eMoflon/emoflon-eclipse-build). Typically, you want to download:
+1. Choose the right pre-built Eclipse version for your need. A comparisson table can be found in the [readme of the emoflon-ibex-eclipse-build repository](https://github.com/eMoflon/emoflon-ibex-eclipse-build). Typically, you want to download:
 	+ `eclipse-emoflon-$yourOS-dev.zip` if you want to develop eMoflon::IBeX
 	+ `eclipse-emoflon-$yourOS-user.zip` if you want to use eMoflon::IBeX without developing it
-1. Download your chosen [Eclipse archive](https://github.com/eMoflon/emoflon-eclipse-build/releases/latest).
+1. Download your chosen [Eclipse archive](https://github.com/eMoflon/emoflon-ibex-eclipse-build/releases/latest).
 1. Extract the archive to a folder, e.g., to `~/eclipse-apps/emoflon-ibex`.
 1. Start your Eclipse (= the binary in the extracted folder) and create a new workspace.
 
@@ -41,8 +41,8 @@ Complete steps 9, 10, 12-15 from [the next section](#how-to-develop) to clone th
 
 ## Pre-built virtual machine (VM)
 
-You can download the latest version of our pre-built virtual machine image from the [release section](https://github.com/eMoflon/emoflon-vm/releases).
-For detailed installation instructions, please refer to the [README.md file](https://github.com/eMoflon/emoflon-vm#usageinstallation) within the repository.
+You can download the latest version of our pre-built virtual machine image from the [release section](https://github.com/eMoflon/emoflon-ibex-vm/releases).
+For detailed installation instructions, please refer to the [README.md file](https://github.com/eMoflon/emoflon-ibex-vm#usageinstallation) within the repository.
 
 
 ## How to develop
