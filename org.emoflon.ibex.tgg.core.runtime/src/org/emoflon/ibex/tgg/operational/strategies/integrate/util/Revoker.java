@@ -88,6 +88,7 @@ public class Revoker implements TimeMeasurable {
 		LoggerConfig.log(LoggerConfig.log_ruleApplication(),
 				() -> "Rule application: rolled back " + brokenMatch.getPatternName() + "(" + brokenMatch.hashCode() + ")\n" //
 						+ ConsoleUtil.indent(ConsoleUtil.printMatchParameter(brokenMatch), 18, true));
+		opStrat.getOptions().debug.benchmarkLogger().addToNumOfMatchesRevoked(1);
 	}
 
 	public void removeBrokenMatch(ITGGMatch brokenMatch) {
