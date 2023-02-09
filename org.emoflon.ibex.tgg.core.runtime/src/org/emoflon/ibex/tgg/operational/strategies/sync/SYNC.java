@@ -7,7 +7,6 @@ import java.util.Set;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
-import org.emoflon.ibex.tgg.operational.benchmark.Timer;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.patterns.EmptyGreenPattern;
@@ -42,7 +41,6 @@ public class SYNC extends PropagatingOperationalStrategy {
 	@Override
 	public void run() throws IOException {
 		options.debug.benchmarkLogger().startNewRun();
-		Timer.start();
 
 		repair();
 		rollBack();
@@ -50,7 +48,6 @@ public class SYNC extends PropagatingOperationalStrategy {
 		logCreatedAndDeletedNumbers();
 
 		collectDataToBeLogged();
-		options.debug.benchmarkLogger().addToExecutionTime(Timer.stop());
 	}
 
 	public void forward() throws IOException {
