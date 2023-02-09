@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.ClassifiedMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DeletionType;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassifier;
@@ -20,6 +21,8 @@ public class ShortcutApplicationPointFinder {
 
 	private final PrecedenceGraph pg;
 	private final MatchClassifier mc;
+	
+	private Map<ITGGMatch, PatternType> followUpRepairTypes;
 
 	public ShortcutApplicationPointFinder(PrecedenceGraph pg, MatchClassifier mc) {
 		this.pg = pg;
@@ -39,6 +42,11 @@ public class ShortcutApplicationPointFinder {
 		processSubsetShortcutApplications(results);
 
 		return results;
+	}
+	
+	public Set<ShortcutApplicationPoint> searchForShortcutApplications(Map<ITGGMatch, PatternType> followUpRepairTypes) {
+		this.followUpRepairTypes = followUpRepairTypes;
+		return searchForShortcutApplications();
 	}
 
 	private ShortcutApplicationPoint exploreShortcutApplicationPoint(ClassifiedMatch classifiedMatch) {
@@ -88,7 +96,7 @@ public class ShortcutApplicationPointFinder {
 	}
 
 	private PatternType filterMatchesAndCalcPropagationType(ClassifiedMatch classifiedMatch) {
-		// TODO differentiate between application note and subsequent node for deletion type
+		// TODO differentiate between application node and subsequent node for deletion type
 		// -> important: then, subset application points won't work
 		
 		boolean srcViolations = false;
@@ -121,6 +129,16 @@ public class ShortcutApplicationPointFinder {
 			return PatternType.SRC;
 		if (trgViolations)
 			return PatternType.TRG;
+		
+		if (followUpRepairTypes != null) {
+			PatternType followUpRepairType = followUpRepairTypes.get(classifiedMatch.getMatch());
+			if (followUpRepairType != null)
+				return switch (followUpRepairType) {
+					case FWD -> PatternType.SRC;
+					case BWD -> PatternType.TRG;
+					default -> null;
+				};
+		}
 		return null;
 	}
 

@@ -156,16 +156,18 @@ public class ConcRepair implements TimeMeasurable {
 					repairType = repairResult.repairType();
 				}
 
-				if (usePGbasedSCruleCreation) {
-					if (applPoints.containsKey(repairCandidate))
-						repairResult = repairViaShortcut(applPoints.get(repairCandidate));
-					else
-						repairResult = null;
+				PatternType followUpPatternType = followUpRepairTypes.get(repairCandidate);
+				if (followUpPatternType != null) {
+					// TODO For now, follow-ups are always repaired with normal SCRs 
+					// since the application point finder can not handle broken follow-up matches yet
+					RepairApplicationPoint applPoint = new RepairApplicationPoint(classifiedMatch.getMatch(), followUpPatternType);
+					repairResult = repairViaShortcut(applPoint);
 				} else {
-					PatternType followUpPatternType = followUpRepairTypes.get(repairCandidate);
-					if (followUpPatternType != null) {
-						RepairApplicationPoint applPoint = new RepairApplicationPoint(classifiedMatch.getMatch(), followUpPatternType);
-						repairResult = repairViaShortcut(applPoint);
+					if (usePGbasedSCruleCreation) {
+						if (applPoints.containsKey(repairCandidate))
+							repairResult = repairViaShortcut(applPoints.get(repairCandidate));
+						else
+							repairResult = null;
 					} else {
 						repairResult = repairViaShortcut(classifiedMatch);
 					}
@@ -190,7 +192,7 @@ public class ConcRepair implements TimeMeasurable {
 			opStrat.getOptions().matchDistributor().updateMatches();
 
 			if (usePGbasedSCruleCreation) {
-				applPoints = scApplPointFinder.searchForShortcutApplications().stream() //
+				applPoints = scApplPointFinder.searchForShortcutApplications(followUpRepairTypes).stream() //
 						.collect(Collectors.toMap(p -> p.getApplicationMatch(), p -> p));
 			} else {
 				opStrat.matchClassifier().clearAndClassifyAll(opStrat.getMatchHandler().getBrokenMatches());
