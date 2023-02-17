@@ -128,13 +128,8 @@ public class ConcRepair implements TimeMeasurable {
 		}
 
 		Map<ITGGMatch, PatternType> followUpRepairTypes = new HashMap<>();
-		Set<ITGGMatch> matchesToBeProcessed = dependencyContainer.getMatches();
-		for (ITGGMatch m : opStrat.getMatchHandler().getBrokenMatches()) {
-			if (matchesToBeProcessed.contains(m))
-				followUpRepairTypes.put(m, null);
-			else
-				alreadyProcessed.add(m);
-		}
+		for (ITGGMatch m : opStrat.getMatchHandler().getBrokenMatches())
+			followUpRepairTypes.put(m, null);
 
 		boolean processedOnce = true;
 		while (processedOnce) {
@@ -144,8 +139,10 @@ public class ConcRepair implements TimeMeasurable {
 				PatternType repairType = null;
 				ITGGMatch repairCandidate = dependencyContainer.getNext();
 
-				if (alreadyProcessed.contains(repairCandidate))
+				if (alreadyProcessed.contains(repairCandidate)) {
+					dependencyContainer.matchApplied(repairCandidate);
 					continue;
+				}
 
 				boolean repairedSth = false;
 				ClassifiedMatch classifiedMatch = opStrat.matchClassifier().get(repairCandidate);
