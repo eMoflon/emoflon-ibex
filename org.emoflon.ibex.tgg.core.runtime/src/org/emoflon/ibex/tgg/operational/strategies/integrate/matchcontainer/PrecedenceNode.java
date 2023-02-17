@@ -140,18 +140,24 @@ public class PrecedenceNode {
 	 * @param action the action
 	 */
 	public void forAllRequires_ts(BiPredicate<? super PrecedenceNode, ? super PrecedenceNode> action) {
+		Stack<NodeDependency> nodeStack = new Stack<>();
 		Set<PrecedenceNode> processed = cfactory.createObjectSet();
-		forAllRequires_ts(this, action, processed);
-	}
 
-	private void forAllRequires_ts(PrecedenceNode node, BiPredicate<? super PrecedenceNode, ? super PrecedenceNode> action, Set<PrecedenceNode> processed) {
-		synchronized (node.getRequires()) {
-			for (PrecedenceNode n : node.getRequires()) {
-				if (!processed.contains(n)) {
-					processed.add(n);
-					if (action.test(n, node))
-						forAllRequires_ts(n, action, processed);
-				}
+		synchronized (this.getRequires()) {
+			for (PrecedenceNode node : this.getRequires())
+				nodeStack.push(new NodeDependency(this, node));
+		}
+
+		while (!nodeStack.isEmpty()) {
+			NodeDependency dep = nodeStack.pop();
+
+			if (!processed.contains(dep.actual())) {
+				processed.add(dep.actual());
+				if (action.test(dep.actual(), dep.previous()))
+					synchronized (dep.actual().getRequires()) {
+						for (PrecedenceNode node : dep.actual().getRequires())
+							nodeStack.push(new NodeDependency(dep.actual(), node));
+					}
 			}
 		}
 	}
@@ -197,18 +203,24 @@ public class PrecedenceNode {
 	 * @param action the action
 	 */
 	public void forAllRequiredBy_ts(BiPredicate<? super PrecedenceNode, ? super PrecedenceNode> action) {
+		Stack<NodeDependency> nodeStack = new Stack<>();
 		Set<PrecedenceNode> processed = cfactory.createObjectSet();
-		forAllRequiredBy_ts(this, action, processed);
-	}
 
-	private void forAllRequiredBy_ts(PrecedenceNode node, BiPredicate<? super PrecedenceNode, ? super PrecedenceNode> action, Set<PrecedenceNode> processed) {
-		synchronized (node.getRequiredBy()) {
-			for (PrecedenceNode n : node.getRequiredBy()) {
-				if (!processed.contains(n)) {
-					processed.add(n);
-					if (action.test(n, node))
-						forAllRequiredBy_ts(n, action, processed);
-				}
+		synchronized (this.getRequiredBy()) {
+			for (PrecedenceNode node : this.getRequiredBy())
+				nodeStack.push(new NodeDependency(this, node));
+		}
+
+		while (!nodeStack.isEmpty()) {
+			NodeDependency dep = nodeStack.pop();
+
+			if (!processed.contains(dep.actual())) {
+				processed.add(dep.actual());
+				if (action.test(dep.actual(), dep.previous()))
+					synchronized (dep.actual().getRequiredBy()) {
+						for (PrecedenceNode node : dep.actual().getRequiredBy())
+							nodeStack.push(new NodeDependency(dep.actual(), node));
+					}
 			}
 		}
 	}
