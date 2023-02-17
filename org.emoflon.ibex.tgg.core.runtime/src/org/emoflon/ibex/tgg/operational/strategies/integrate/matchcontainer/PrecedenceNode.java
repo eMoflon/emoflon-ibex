@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.Stack;
 import java.util.function.BiPredicate;
 
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
@@ -94,6 +95,9 @@ public class PrecedenceNode {
 	}
 
 	//// UTILS ////
+	
+	record NodeDependency(PrecedenceNode previous, PrecedenceNode actual) {
+	}
 
 	/**
 	 * Executes the specified <code>action</code> for all nodes that are (transitively) required by this
@@ -105,16 +109,20 @@ public class PrecedenceNode {
 	 * @param action the action
 	 */
 	public void forAllRequires(BiPredicate<? super PrecedenceNode, ? super PrecedenceNode> action) {
+		Stack<NodeDependency> nodeStack = new Stack<>();
 		Set<PrecedenceNode> processed = cfactory.createObjectSet();
-		forAllRequires(this, action, processed);
-	}
-
-	private void forAllRequires(PrecedenceNode node, BiPredicate<? super PrecedenceNode, ? super PrecedenceNode> action, Set<PrecedenceNode> processed) {
-		for (PrecedenceNode n : node.getRequires()) {
-			if (!processed.contains(n)) {
-				processed.add(n);
-				if (action.test(n, node))
-					forAllRequires(n, action, processed);
+		
+		for (PrecedenceNode node : this.getRequires())
+			nodeStack.push(new NodeDependency(this, node));
+		
+		while (!nodeStack.isEmpty()) {
+			NodeDependency dep = nodeStack.pop();
+			
+			if (!processed.contains(dep.actual())) {
+				processed.add(dep.actual());
+				if (action.test(dep.actual(), dep.previous()))
+					for (PrecedenceNode node : dep.actual().getRequires())
+						nodeStack.push(new NodeDependency(dep.actual(), node));
 			}
 		}
 	}
@@ -158,16 +166,20 @@ public class PrecedenceNode {
 	 * @param action the action
 	 */
 	public void forAllRequiredBy(BiPredicate<? super PrecedenceNode, ? super PrecedenceNode> action) {
+		Stack<NodeDependency> nodeStack = new Stack<>();
 		Set<PrecedenceNode> processed = cfactory.createObjectSet();
-		forAllRequiredBy(this, action, processed);
-	}
-
-	private void forAllRequiredBy(PrecedenceNode node, BiPredicate<? super PrecedenceNode, ? super PrecedenceNode> action, Set<PrecedenceNode> processed) {
-		for (PrecedenceNode n : node.getRequiredBy()) {
-			if (!processed.contains(n)) {
-				processed.add(n);
-				if (action.test(n, node))
-					forAllRequiredBy(n, action, processed);
+		
+		for (PrecedenceNode node : this.getRequiredBy())
+			nodeStack.push(new NodeDependency(this, node));
+		
+		while (!nodeStack.isEmpty()) {
+			NodeDependency dep = nodeStack.pop();
+			
+			if (!processed.contains(dep.actual())) {
+				processed.add(dep.actual());
+				if (action.test(dep.actual(), dep.previous()))
+					for (PrecedenceNode node : dep.actual().getRequiredBy())
+						nodeStack.push(new NodeDependency(dep.actual(), node));
 			}
 		}
 	}
@@ -213,13 +225,17 @@ public class PrecedenceNode {
 	 * @param action the action
 	 */
 	public void forAllRequiredByMultiVisit(BiPredicate<? super PrecedenceNode, ? super PrecedenceNode> action) {
-		forAllRequiredBy(this, action);
-	}
+		Stack<NodeDependency> nodeStack = new Stack<>();
 
-	private void forAllRequiredBy(PrecedenceNode node, BiPredicate<? super PrecedenceNode, ? super PrecedenceNode> action) {
-		for (PrecedenceNode n : node.getRequiredBy()) {
-			if (action.test(n, node))
-				forAllRequiredBy(n, action);
+		for (PrecedenceNode node : this.getRequiredBy())
+			nodeStack.push(new NodeDependency(this, node));
+
+		while (!nodeStack.isEmpty()) {
+			NodeDependency dep = nodeStack.pop();
+
+			if (action.test(dep.actual(), dep.previous()))
+				for (PrecedenceNode node : dep.actual().getRequiredBy())
+					nodeStack.push(new NodeDependency(dep.actual(), node));
 		}
 	}
 
@@ -233,17 +249,20 @@ public class PrecedenceNode {
 	 * @param action the action
 	 */
 	public void forAllToBeRolledBackBy(BiPredicate<? super PrecedenceNode, ? super PrecedenceNode> action) {
+		Stack<NodeDependency> nodeStack = new Stack<>();
 		Set<PrecedenceNode> processed = cfactory.createObjectSet();
-		forAllToBeRolledBackBy(this, action, processed);
-	}
-
-	private void forAllToBeRolledBackBy(PrecedenceNode node, BiPredicate<? super PrecedenceNode, ? super PrecedenceNode> action,
-			Set<PrecedenceNode> processed) {
-		for (PrecedenceNode n : node.getToBeRolledBackBy()) {
-			if (!processed.contains(n)) {
-				processed.add(n);
-				if (action.test(n, node))
-					forAllToBeRolledBackBy(n, action, processed);
+		
+		for (PrecedenceNode node : this.getToBeRolledBackBy())
+			nodeStack.push(new NodeDependency(this, node));
+		
+		while (!nodeStack.isEmpty()) {
+			NodeDependency dep = nodeStack.pop();
+			
+			if (!processed.contains(dep.actual())) {
+				processed.add(dep.actual());
+				if (action.test(dep.actual(), dep.previous()))
+					for (PrecedenceNode node : dep.actual().getToBeRolledBackBy())
+						nodeStack.push(new NodeDependency(dep.actual(), node));
 			}
 		}
 	}
