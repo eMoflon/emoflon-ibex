@@ -4,6 +4,7 @@ import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +54,7 @@ public class ConcRepair implements TimeMeasurable {
 	protected AttributeRepairStrategy attributeRepairStrat;
 
 	protected boolean strategiesInitialized;
+	protected Runnable patternPersister = () -> {};
 
 	protected static final PatternType[] shortcutPatternTypes = //
 			{ PatternType.FWD, PatternType.BWD, PatternType.CC, PatternType.SRC, PatternType.TRG };
@@ -88,8 +90,10 @@ public class ConcRepair implements TimeMeasurable {
 
 	private ShortcutPatternProvider initShortcutPatternProvider(IbexOptions options) {
 		if (options.repair.usePGbasedSCruleCreation()) {
-			return new HigherOrderShortcutPatternProvider(options, //
-					opStrat.precedenceGraph(), opStrat.matchUtils(), shortcutPatternTypes, true);
+			ShortcutPatternProvider scpp = new HigherOrderShortcutPatternProvider(options, //
+					opStrat.precedenceGraph(), opStrat.matchUtils(), shortcutPatternTypes, false);
+			patternPersister = () -> scpp.persistShortcutRules();
+			return scpp;
 		} else {
 			return new BasicShortcutPatternProvider(options, shortcutPatternTypes, true);
 		}
@@ -123,46 +127,69 @@ public class ConcRepair implements TimeMeasurable {
 					.collect(Collectors.toMap(p -> p.getApplicationMatch(), p -> p));
 		}
 
+		Map<ITGGMatch, PatternType> followUpRepairTypes = new HashMap<>();
+		for (ITGGMatch m : opStrat.getMatchHandler().getBrokenMatches())
+			followUpRepairTypes.put(m, null);
+
 		boolean processedOnce = true;
 		while (processedOnce) {
 			processedOnce = false;
 			while (!dependencyContainer.isEmpty()) {
 				processedOnce = true;
+				PatternType repairType = null;
 				ITGGMatch repairCandidate = dependencyContainer.getNext();
 
-				if (alreadyProcessed.contains(repairCandidate))
+				if (alreadyProcessed.contains(repairCandidate)) {
+					dependencyContainer.matchApplied(repairCandidate);
 					continue;
+				}
 
 				boolean repairedSth = false;
 				ClassifiedMatch classifiedMatch = opStrat.matchClassifier().get(repairCandidate);
 
-				Collection<ITGGMatch> repairedMatches = repairAttributes(classifiedMatch);
-				if (repairedMatches != null) {
+				RepairResult repairResult = repairAttributes(classifiedMatch);
+				if (repairResult != null) {
 					repairedSth = true;
+					repairType = repairResult.repairType();
 				}
 
-				if (usePGbasedSCruleCreation) {
-					if (applPoints.containsKey(repairCandidate))
-						repairedMatches = repairViaShortcut(applPoints.get(repairCandidate));
-					else
-						repairedMatches = null;
+				PatternType followUpPatternType = followUpRepairTypes.get(repairCandidate);
+				if (followUpPatternType != null) {
+					// TODO For now, follow-ups are always repaired with normal SCRs 
+					// since the application point finder can not handle broken follow-up matches yet
+					RepairApplicationPoint applPoint = new RepairApplicationPoint(classifiedMatch.getMatch(), followUpPatternType);
+					repairResult = repairViaShortcut(applPoint);
 				} else {
-					repairedMatches = repairViaShortcut(classifiedMatch);
+					if (usePGbasedSCruleCreation) {
+						if (applPoints.containsKey(repairCandidate))
+							repairResult = repairViaShortcut(applPoints.get(repairCandidate));
+						else
+							repairResult = null;
+					} else {
+						repairResult = repairViaShortcut(classifiedMatch);
+					}
 				}
-				if (repairedMatches != null) {
+				if (repairResult != null) {
 					repairedSth = true;
-					alreadyProcessed.addAll(repairedMatches);
+					repairType = repairResult.repairType();
+					alreadyProcessed.addAll(repairResult.repairedMatches());
 				}
 
-				if (repairedSth)
+				if (repairedSth) {
 					alreadyProcessed.add(repairCandidate);
+					opStrat.getOptions().matchDistributor().updateMatches();
+					PatternType finalRepairType = repairType;
+					followUpRepairTypes.putAll(opStrat.getMatchHandler().getBrokenMatches().stream() //
+							.filter(m -> !followUpRepairTypes.containsKey(m)) //
+							.collect(Collectors.toMap(m -> m, m -> finalRepairType)));
+				}
 				dependencyContainer.matchApplied(repairCandidate);
 			}
-			alreadyProcessed.addAll(opStrat.getMatchHandler().getBrokenMatches());
+
 			opStrat.getOptions().matchDistributor().updateMatches();
 
 			if (usePGbasedSCruleCreation) {
-				applPoints = scApplPointFinder.searchForShortcutApplications().stream() //
+				applPoints = scApplPointFinder.searchForShortcutApplications(followUpRepairTypes).stream() //
 						.collect(Collectors.toMap(p -> p.getApplicationMatch(), p -> p));
 			} else {
 				opStrat.matchClassifier().clearAndClassifyAll(opStrat.getMatchHandler().getBrokenMatches());
@@ -176,6 +203,8 @@ public class ConcRepair implements TimeMeasurable {
 	}
 
 	private boolean filterRepairCandidates(ITGGMatch match) {
+		// we do not need to consider matches which are completely broken at one domain since these are not
+		// meant to be repaired but to be rolled back:
 		DeletionPattern pattern = opStrat.matchClassifier().get(match).getDeletionPattern();
 		DomainModification srcModType = pattern.getModType(DomainType.SRC, BindingType.CREATE);
 		DomainModification trgModType = pattern.getModType(DomainType.TRG, BindingType.CREATE);
@@ -183,12 +212,17 @@ public class ConcRepair implements TimeMeasurable {
 				srcModType == DomainModification.UNCHANGED && trgModType == DomainModification.COMPL_DEL);
 	}
 
-	private Collection<ITGGMatch> repairAttributes(ClassifiedMatch classifiedMatch) {
+	record RepairResult(Collection<ITGGMatch> repairedMatches, PatternType repairType) {
+	}
+
+	private RepairResult repairAttributes(ClassifiedMatch classifiedMatch) {
 		Set<ConstrainedAttributeChanges> attrChanges = classifiedMatch.getConstrainedAttrChanges();
 		if (attrChanges.isEmpty())
 			return null;
 
 		boolean repairedSth = false;
+		PatternType repairType = null;
+		boolean mixedRepairTypes = false;
 		for (ConstrainedAttributeChanges attrCh : attrChanges) {
 			boolean srcChange = false;
 			boolean trgChange = false;
@@ -206,42 +240,57 @@ public class ConcRepair implements TimeMeasurable {
 				constraints.add(attrCh.constraint);
 				RepairApplicationPoint applPoint = new RepairApplicationPoint(classifiedMatch.getMatch(), type);
 				Collection<ITGGMatch> repairedMatches = attributeRepairStrat.repair(constraints, applPoint);
-				if (repairedMatches != null)
+				if (repairedMatches != null) {
 					repairedSth = true;
+					if (repairType == null)
+						repairType = type;
+					else if (repairType != type)
+						mixedRepairTypes = true;
+				}
 			}
 		}
 
-		return repairedSth ? Collections.singletonList(classifiedMatch.getMatch()) : null;
+		if (repairedSth)
+			return new RepairResult(Collections.singletonList(classifiedMatch.getMatch()), mixedRepairTypes ? null : repairType);
+		return null;
 	}
 
-	private Collection<ITGGMatch> repairViaShortcut(ClassifiedMatch classifiedMatch) {
+	private RepairResult repairViaShortcut(ClassifiedMatch classifiedMatch) {
 		DeletionType delType = classifiedMatch.getDeletionType();
 		RepairApplicationPoint applPoint = null;
 		Collection<ITGGMatch> repairedMatches = null;
+		PatternType repairType = null;
 
 		if (DeletionType.shortcutCCCandidates.contains(delType)) {
-			applPoint = new RepairApplicationPoint(classifiedMatch.getMatch(), PatternType.CC);
+			repairType = PatternType.CC;
+			applPoint = new RepairApplicationPoint(classifiedMatch.getMatch(), repairType);
 			repairedMatches = shortcutRepairStrat.repair(applPoint);
 		} else if (DeletionType.shortcutPropCandidates.contains(delType)) {
-			PatternType type = delType == DeletionType.SRC_PARTLY_TRG_NOT ? PatternType.FWD : PatternType.BWD;
-			applPoint = new RepairApplicationPoint(classifiedMatch.getMatch(), type);
+			// FIXME inplace attributes and filter NACS are not considered here!
+			repairType = delType == DeletionType.SRC_PARTLY_TRG_NOT ? PatternType.FWD : PatternType.BWD;
+			applPoint = new RepairApplicationPoint(classifiedMatch.getMatch(), repairType);
 			repairedMatches = shortcutRepairStrat.repair(applPoint);
 			if (repairedMatches == null) {
-				applPoint = new RepairApplicationPoint(classifiedMatch.getMatch(), PatternType.CC);
+				repairType = PatternType.CC;
+				applPoint = new RepairApplicationPoint(classifiedMatch.getMatch(), repairType);
 				repairedMatches = shortcutRepairStrat.repair(applPoint);
 			}
 		}
 
-		if (repairedMatches != null)
+		if (repairedMatches != null) {
 			processRepairedMatches(applPoint, repairedMatches);
-		return repairedMatches;
+			return new RepairResult(repairedMatches, repairType);
+		}
+		return null;
 	}
 
-	private Collection<ITGGMatch> repairViaShortcut(ShortcutApplicationPoint applPoint) {
+	private RepairResult repairViaShortcut(RepairApplicationPoint applPoint) {
 		Collection<ITGGMatch> repairedMatches = shortcutRepairStrat.repair(applPoint);
-		if (repairedMatches != null)
+		if (repairedMatches != null) {
 			processRepairedMatches(applPoint, repairedMatches);
-		return repairedMatches;
+			return new RepairResult(repairedMatches, applPoint.getRepairType());
+		}
+		return null;
 	}
 
 	public Collection<ITGGMatch> attributeRepairOneMatch(ITGGMatch repairCandidate, PatternType type) {
@@ -288,6 +337,10 @@ public class ConcRepair implements TimeMeasurable {
 			opStrat.precedenceGraph().notifyAddedMatch(repairedMatch);
 			opStrat.precedenceGraph().notifyRemovedMatch(repairedMatch);
 		}
+	}
+
+	public void terminate() {
+		patternPersister.run();
 	}
 
 	@Override

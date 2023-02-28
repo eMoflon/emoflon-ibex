@@ -8,21 +8,10 @@ public abstract class BenchmarkLogger {
 	// Run logs
 	protected final List<BenchmarkRunLog> runLogs = new ArrayList<>();
 	protected int runCount = -1;
-	
-	// Timing in milliseconds
-	protected long initTime = 0;	
 
 	public abstract boolean isLoggingEnabled();
 
 	public abstract void startNewRun();
-
-	public abstract long getInitTime();
-
-	public abstract void addToInitTime(long time);
-
-	public abstract long getTotalExecutionTime();
-
-	public abstract void addToExecutionTime(long time);
 
 	public abstract long getTotalElementsCreated();
 

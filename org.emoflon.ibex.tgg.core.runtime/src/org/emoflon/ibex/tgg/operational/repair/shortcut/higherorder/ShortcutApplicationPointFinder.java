@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.ClassifiedMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DeletionType;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassifier;
@@ -20,6 +21,8 @@ public class ShortcutApplicationPointFinder {
 
 	private final PrecedenceGraph pg;
 	private final MatchClassifier mc;
+	
+	private Map<ITGGMatch, PatternType> followUpRepairTypes;
 
 	public ShortcutApplicationPointFinder(PrecedenceGraph pg, MatchClassifier mc) {
 		this.pg = pg;
@@ -40,11 +43,16 @@ public class ShortcutApplicationPointFinder {
 
 		return results;
 	}
+	
+	public Set<ShortcutApplicationPoint> searchForShortcutApplications(Map<ITGGMatch, PatternType> followUpRepairTypes) {
+		this.followUpRepairTypes = followUpRepairTypes;
+		return searchForShortcutApplications();
+	}
 
 	private ShortcutApplicationPoint exploreShortcutApplicationPoint(ClassifiedMatch classifiedMatch) {
 		PrecedenceNode applNode = pg.getNode(classifiedMatch.getMatch());
 
-		PatternType propagationType = calcPropagationType(classifiedMatch);
+		PatternType propagationType = filterMatchesAndCalcPropagationType(classifiedMatch);
 		if (propagationType == null)
 			return null;
 
@@ -60,7 +68,7 @@ public class ShortcutApplicationPointFinder {
 				return false;
 
 			ClassifiedMatch classifiedAct = mc.get(act.getMatch());
-			if (propagationType == calcPropagationType(classifiedAct)) {
+			if (propagationType == filterMatchesAndCalcPropagationType(classifiedAct)) {
 				originalNodes.addFirst(act);
 				return true;
 			}
@@ -87,25 +95,63 @@ public class ShortcutApplicationPointFinder {
 		return shortcutApplPoint;
 	}
 
-	private PatternType calcPropagationType(ClassifiedMatch classifiedMatch) {
+	private PatternType filterMatchesAndCalcPropagationType(ClassifiedMatch classifiedMatch) {
+		// TODO differentiate between application node and subsequent node for deletion type
+		// -> important: then, subset application points won't work
+		
+		boolean srcViolations = false;
+		boolean trgViolations = false;
+
+		// deletions:
 		DeletionType deletionType = classifiedMatch.getDeletionType();
-		if (DeletionType.propFWDCandidates.contains(deletionType) || classifiedMatch.getFilterNacViolations().containsValue(DomainType.SRC))
+		if (DeletionType.propFWDCandidates.contains(deletionType))
+			srcViolations = true;
+		else if (DeletionType.propBWDCandidates.contains(deletionType))
+			trgViolations = true;
+		else if (deletionType != DeletionType.NOTHING)
+			return null;
+
+		// filter NACs & inplace attributes:
+		if (classifiedMatch.getFilterNacViolations().containsValue(DomainType.SRC)
+				|| classifiedMatch.getInplaceAttrChanges().containsValue(DomainType.SRC)) {
+			if (trgViolations)
+				return null;
+			srcViolations = true;
+		}
+		if (classifiedMatch.getFilterNacViolations().containsValue(DomainType.TRG)
+				|| classifiedMatch.getInplaceAttrChanges().containsValue(DomainType.TRG)) {
+			if (srcViolations)
+				return null;
+			trgViolations = true;
+		}
+
+		if (srcViolations)
 			return PatternType.SRC;
-		else if (DeletionType.propBWDCandidates.contains(deletionType) || classifiedMatch.getFilterNacViolations().containsValue(DomainType.TRG))
+		if (trgViolations)
 			return PatternType.TRG;
+		
+		if (followUpRepairTypes != null) {
+			PatternType followUpRepairType = followUpRepairTypes.get(classifiedMatch.getMatch());
+			if (followUpRepairType != null)
+				return switch (followUpRepairType) {
+					case FWD -> PatternType.SRC;
+					case BWD -> PatternType.TRG;
+					default -> null;
+				};
+		}
 		return null;
 	}
 
 	private void processSubsetShortcutApplications(Set<ShortcutApplicationPoint> shortcutApplications) {
-		Map<PrecedenceNode, ShortcutApplicationPoint> upperNode2scApplication = shortcutApplications.stream() //
-				.collect(Collectors.toMap(a -> a.getOriginalNodes().get(0), a -> a));
+		Map<PrecedenceNode, ShortcutApplicationPoint> applNode2scApplication = shortcutApplications.stream() //
+				.collect(Collectors.toMap(a -> pg.getNode(a.getApplicationMatch()), a -> a));
 
 		Set<ShortcutApplicationPoint> subsetScApplications = new HashSet<>();
 		for (ShortcutApplicationPoint shortcutApplication : shortcutApplications) {
-			for (int i = 1; i < shortcutApplication.getOriginalNodes().size(); i++) {
+			for (int i = 0; i < shortcutApplication.getOriginalNodes().size() - 1; i++) {
 				PrecedenceNode originalNode = shortcutApplication.getOriginalNodes().get(i);
-				if (upperNode2scApplication.containsKey(originalNode)) {
-					ShortcutApplicationPoint subsetScAppl = upperNode2scApplication.get(originalNode);
+				if (applNode2scApplication.containsKey(originalNode)) {
+					ShortcutApplicationPoint subsetScAppl = applNode2scApplication.get(originalNode);
 					shortcutApplication.subsetScApplications.add(subsetScAppl);
 					subsetScApplications.add(subsetScAppl);
 

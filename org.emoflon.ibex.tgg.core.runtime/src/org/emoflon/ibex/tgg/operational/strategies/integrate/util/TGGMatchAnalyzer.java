@@ -20,13 +20,16 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.Dele
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DomainModification;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.AttributeChange;
 import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
+import org.emoflon.ibex.tgg.util.TGGInplaceAttrExprUtil;
 
 import language.DomainType;
 import language.TGGAttributeConstraint;
 import language.TGGAttributeExpression;
+import language.TGGInplaceAttributeExpression;
 import language.TGGParamValue;
 import language.TGGRuleEdge;
 import language.TGGRuleElement;
+import language.TGGRuleNode;
 
 public class TGGMatchAnalyzer {
 
@@ -102,7 +105,7 @@ public class TGGMatchAnalyzer {
 				);
 	}
 
-	public Set<ConstrainedAttributeChanges> analyzeAttributeChanges() {
+	public Set<ConstrainedAttributeChanges> analyzeConstrainedAttributeChanges() {
 		Set<ConstrainedAttributeChanges> constrainedAttrChanges = new HashSet<>();
 
 		for (TGGAttributeConstraint constr : util.rule.getAttributeConditionLibrary().getTggAttributeConstraints()) {
@@ -130,6 +133,33 @@ public class TGGMatchAnalyzer {
 		}
 
 		return constrainedAttrChanges;
+	}
+
+	public Map<InplAttributeChange, DomainType> analyzeInplaceAttributeChanges() {
+		Set<InplAttributeChange> inplAttrChanges = new HashSet<>();
+
+		Map<String, EObject> nodeName2eObject = util.getNodeToEObject().entrySet().stream() //
+				.collect(Collectors.toMap(e -> e.getKey().getName(), e -> e.getValue()));
+		for (TGGRuleNode node : util.rule.getNodes()) {
+			EObject eObject = util.getEObject(node);
+			for (TGGInplaceAttributeExpression attrExpr : node.getAttrExpr()) {
+				if (!TGGInplaceAttrExprUtil.checkInplaceAttributeCondition(attrExpr, eObject, nodeName2eObject)) {
+					Set<AttributeChange> attrChanges = util.integrate.generalModelChanges().getAttributeChanges(eObject);
+					for (AttributeChange attrChange : attrChanges) {
+						if (attrChange.getAttribute().equals(attrExpr.getAttribute())) {
+							inplAttrChanges.add(new InplAttributeChange(node, attrExpr, attrChange));
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		return inplAttrChanges.stream() //
+				.collect(Collectors.toMap( //
+						ac -> ac, //
+						ac -> ac.node.getDomainType() //
+				));
 	}
 
 	private IRuntimeTGGAttrConstrContainer getRuntimeAttrConstraint(TGGAttributeConstraint constraint, ITGGMatch match) {
@@ -166,6 +196,34 @@ public class TGGMatchAnalyzer {
 				b.append(ac.getNewValue());
 				b.append("') ");
 			});
+			return b.toString();
+		}
+	}
+
+	public class InplAttributeChange {
+		public final TGGRuleNode node;
+		public final TGGInplaceAttributeExpression attrExpr;
+		public final AttributeChange attrChange;
+
+		public InplAttributeChange(TGGRuleNode node, TGGInplaceAttributeExpression attrExpr, AttributeChange attrChange) {
+			this.node = node;
+			this.attrExpr = attrExpr;
+			this.attrChange = attrChange;
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder b = new StringBuilder();
+			b.append(node.getName());
+			b.append(":");
+			b.append(node.getType().getName());
+			b.append("#");
+			b.append(attrExpr.getAttribute().getName());
+			b.append(", '");
+			b.append(attrChange.getOldValue());
+			b.append("'->'");
+			b.append(attrChange.getNewValue());
+			b.append("'");
 			return b.toString();
 		}
 	}

@@ -109,6 +109,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 	@Override
 	public void run() throws IOException {
+		options.debug.benchmarkLogger().startNewRun();
 		Timer.start();
 
 		initialize();
@@ -121,6 +122,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		cleanUp();
 
 		times.addTo("run", Timer.stop());
+		collectDataToBeLogged();
 	}
 
 	protected void initialize() {
@@ -143,6 +145,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 	@Override
 	public void terminate() throws IOException {
+		repair.terminate();
 		modelChangeProtocol.deregisterKey(generalDeltaKey);
 		modelChangeProtocol.detachAdapter();
 		super.terminate();

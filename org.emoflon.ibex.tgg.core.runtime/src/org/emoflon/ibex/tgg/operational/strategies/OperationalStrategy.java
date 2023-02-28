@@ -73,7 +73,6 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	}
 
 	private void initializeBasicModules(IbexOptions options, IUpdatePolicy policy) {
-		Timer.start();
 		this.notifyStartInit();
 
 		options.executable(this);
@@ -105,7 +104,6 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		TGGMatchParameterOrderProvider.init(options.tgg.flattenedTGG());
 
 		this.notifyDoneInit();
-		options.debug.benchmarkLogger().addToInitTime(Timer.stop());
 	}
 
 	protected abstract void initializeAdditionalModules(IbexOptions options) throws IOException;

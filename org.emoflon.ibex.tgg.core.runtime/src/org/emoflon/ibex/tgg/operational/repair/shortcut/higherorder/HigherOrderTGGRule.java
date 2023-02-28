@@ -207,6 +207,8 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 
 		ComponentSpecificRuleElement componentNode = component.getComponentSpecificRuleElement(node);
 		componentElt2higherOrderElt.put(componentNode, higherOrderNode);
+
+		// TODO transfer inplace attributes!
 	}
 
 	private void transformHigherOrderEdge(HigherOrderRuleComponent component, TGGRuleEdge edge, ComponentSpecificRuleElement mappedComponentNode) {
@@ -271,13 +273,20 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 	}
 
 	private void adaptInplaceAttrExpr(TGGRule rule, HigherOrderRuleComponent component) {
-		nodes.stream() //
+		rule.getNodes().stream() //
+				.filter(n -> n.getBindingType() == BindingType.CREATE) //
+				.map(n -> {
+					ComponentSpecificRuleElement compSpecRuleElt = component.getComponentSpecificRuleElement(n);
+					return (TGGRuleNode) componentElt2higherOrderElt.get(compSpecRuleElt);
+				}) //
 				.flatMap(n -> n.getAttrExpr().stream()) //
 				.filter(e -> e.getValueExpr() instanceof TGGAttributeExpression) //
 				.map(e -> (TGGAttributeExpression) e.getValueExpr()) //
 				.forEach(attrExpr -> {
 					ComponentSpecificRuleElement compSpecRuleElt = component.getComponentSpecificRuleElement(attrExpr.getObjectVar());
-					attrExpr.setObjectVar((TGGRuleNode) componentElt2higherOrderElt.get(compSpecRuleElt));
+					TGGRuleNode newValue = (TGGRuleNode) componentElt2higherOrderElt.get(compSpecRuleElt);
+					if (newValue != null)
+						attrExpr.setObjectVar(newValue);
 				});
 
 		// Edge case: higher-order rules are able to create multiple rule applications at once. This causes

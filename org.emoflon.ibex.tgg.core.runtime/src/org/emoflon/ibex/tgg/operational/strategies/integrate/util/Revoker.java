@@ -11,6 +11,7 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.emf.EMFManipulationUtils;
+import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.benchmark.TimeMeasurable;
 import org.emoflon.ibex.tgg.operational.benchmark.Timer;
 import org.emoflon.ibex.tgg.operational.benchmark.Times;
@@ -42,27 +43,35 @@ public class Revoker implements TimeMeasurable {
 
 	public void rollBack() {
 		Timer.start();
+		
+		Map<ITGGMatch, PatternType> followUpRevokeDirections = new HashMap<>();
+		
+		opStrat.getOptions().matchDistributor().updateMatches();
+		for (ITGGMatch m : opStrat.getMatchHandler().getBrokenMatches())
+			followUpRevokeDirections.put(m, null);
 
-		do {
-			opStrat.getOptions().matchDistributor().updateMatches();
-			revokeCurrentlyBrokenMatches();
-		} while (!opStrat.getMatchHandler().noBrokenRuleApplications());
+		while (!opStrat.getMatchHandler().noBrokenRuleApplications())
+			revokeCurrentlyBrokenMatches(followUpRevokeDirections);
+		
+		((PrecedenceMatchContainer) opStrat.getMatchContainer()).clearPendingElements();
 
 		times.addTo("rollBack", Timer.stop());
 	}
 
-	private void revokeCurrentlyBrokenMatches() {
+	private void revokeCurrentlyBrokenMatches(Map<ITGGMatch, PatternType> followUpRevokeDirections) {
 		opStrat.matchClassifier().clearAndClassifyAll(opStrat.getMatchHandler().getBrokenMatches());
 
-		for (ClassifiedMatch classifiedBrokenMatch : opStrat.matchClassifier().getAllClassifiedMatches())
-			revokeBrokenMatch(classifiedBrokenMatch);
-		((PrecedenceMatchContainer) opStrat.getMatchContainer()).clearPendingElements();
+		for (ClassifiedMatch classifiedBrokenMatch : opStrat.matchClassifier().getAllClassifiedMatches()) {
+			PatternType revokeDirection = revokeBrokenMatch(classifiedBrokenMatch, followUpRevokeDirections);
+			for (ITGGMatch m : opStrat.getMatchHandler().getBrokenMatches())
+				if (!followUpRevokeDirections.containsKey(m))
+					followUpRevokeDirections.put(m, revokeDirection);
 
-		if (!opStrat.getMatchHandler().noBrokenRuleApplications())
 			LoggerConfig.log(LoggerConfig.log_ruleApplication(), () -> "");
+		}
 	}
 
-	private void revokeBrokenMatch(ClassifiedMatch classifiedMatch) {
+	private PatternType revokeBrokenMatch(ClassifiedMatch classifiedMatch, Map<ITGGMatch, PatternType> followUpRevokeDirections) {
 		ITGGMatch brokenMatch = classifiedMatch.getMatch();
 
 		deleteGreenCorrs(brokenMatch);
@@ -70,10 +79,11 @@ public class Revoker implements TimeMeasurable {
 		Set<EObject> nodesToBeDeleted = new HashSet<>();
 		Set<EMFEdge> edgesToBeDeleted = new HashSet<>();
 
-		EltFilter filter = new EltFilter().create().notDeleted();
-		if (DeletionType.propFWDCandidates.contains(classifiedMatch.getDeletionType()))
+		EltFilter filter = new EltFilter().create();
+		PatternType revokeDirection = determineRevokeDirection(classifiedMatch, followUpRevokeDirections);
+		if (revokeDirection == PatternType.FWD)
 			filter.trg();
-		else if (DeletionType.propBWDCandidates.contains(classifiedMatch.getDeletionType()))
+		else if (revokeDirection == PatternType.BWD)
 			filter.src();
 		else
 			filter.srcAndTrg();
@@ -86,8 +96,24 @@ public class Revoker implements TimeMeasurable {
 		removeBrokenMatch(brokenMatch);
 
 		LoggerConfig.log(LoggerConfig.log_ruleApplication(),
-				() -> "Rule application: rolled back " + brokenMatch.getPatternName() + "(" + brokenMatch.hashCode() + ")\n" //
+				() -> "Rule application: rolled back " + brokenMatch.getPatternName() + "(" + brokenMatch.hashCode() + "), direction: " //
+						+ (revokeDirection == null ? "BOTH" : revokeDirection) + "\n" //
 						+ ConsoleUtil.indent(ConsoleUtil.printMatchParameter(brokenMatch), 18, true));
+		opStrat.getOptions().debug.benchmarkLogger().addToNumOfMatchesRevoked(1);
+		
+		return revokeDirection;
+	}
+
+	private PatternType determineRevokeDirection(ClassifiedMatch classifiedMatch, Map<ITGGMatch, PatternType> followUpRevokeDirections) {
+		PatternType followUpRevokeDirection = followUpRevokeDirections.get(classifiedMatch.getMatch());
+		if (followUpRevokeDirection != null)
+			return followUpRevokeDirection;
+
+		if (DeletionType.propFWDCandidates.contains(classifiedMatch.getDeletionType()))
+			return PatternType.FWD;
+		if (DeletionType.propBWDCandidates.contains(classifiedMatch.getDeletionType()))
+			return PatternType.BWD;
+		return null;
 	}
 
 	public void removeBrokenMatch(ITGGMatch brokenMatch) {
