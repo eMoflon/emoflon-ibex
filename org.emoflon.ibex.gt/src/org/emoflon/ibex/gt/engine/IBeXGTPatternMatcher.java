@@ -22,18 +22,27 @@ public abstract class IBeXGTPatternMatcher<EM> extends PatternMatchingEngine<GTM
 		super(ibexModel, model);
 	}
 
-	@Override
-	protected void initialize() {
-		name2typedPattern = Collections.synchronizedMap(new LinkedHashMap<>());
-	}
-
 	protected abstract Map<String, Object> extractNodes(final EM match);
 
 	protected abstract String extractPatternName(final EM match);
 
 	@Override
+	public void terminate() {
+		name2typedPattern.values().forEach(p -> p.terminate());
+	}
+
+	@Override
 	public IBeXGTMatch<?, ?> transformToIMatch(final EM match) {
 		return name2typedPattern.get(extractPatternName(match)).createMatch(extractNodes(match));
+	}
+
+	public IBeXGTPattern<?, ?> getTypedPattern(final String patternName) {
+		return name2typedPattern.get(patternName);
+	}
+
+	@Override
+	protected void initialize() {
+		name2typedPattern = Collections.synchronizedMap(new LinkedHashMap<>());
 	}
 
 	protected void registerTypedPattern(IBeXGTPattern<?, ?> typedPattern) {
@@ -48,7 +57,7 @@ public abstract class IBeXGTPatternMatcher<EM> extends PatternMatchingEngine<GTM
 	@Override
 	protected Collection<IBeXGTMatch<?, ?>> insertNewMatchCollection(final String patternName) {
 		Collection<IBeXGTMatch<?, ?>> m = (Collection<IBeXGTMatch<?, ?>>) name2typedPattern.get(patternName)
-				.getMatches();
+				.getUnfilteredMatches();
 		matches.put(patternName, m);
 		return m;
 	}
@@ -98,7 +107,7 @@ public abstract class IBeXGTPatternMatcher<EM> extends PatternMatchingEngine<GTM
 	protected synchronized void updateMatchesInternal(final String patternName) {
 		if (!matches.containsKey(patternName)) {
 			insertNewMatchCollection(patternName);
-			return;
+			insertNewFilteredMatchCollection(patternName);
 		}
 
 		IBeXPattern pattern = name2pattern.get(patternName);
@@ -115,8 +124,9 @@ public abstract class IBeXGTPatternMatcher<EM> extends PatternMatchingEngine<GTM
 				});
 				updateFilteredMatches(patternName);
 			}
-			return;
 		}
+
+		name2typedPattern.values().forEach(p -> p.update());
 	}
 
 	@Override

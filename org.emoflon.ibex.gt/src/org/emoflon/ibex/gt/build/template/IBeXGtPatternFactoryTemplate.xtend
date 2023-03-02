@@ -18,7 +18,7 @@ class IBeXGtPatternFactoryTemplate extends GeneratorTemplate<GTModel> {
 		imports.add("org.emoflon.ibex.gt.api.IBeXGtAPI")
 		imports.add("org.emoflon.ibex.gt.engine.IBeXGTPatternFactory")
 		
-		data.pattern2patternClassName.forEach[pattern, name | imports.add(data.patternPackage + "." + name)]
+		data.pattern2patternClassName.filter[pattern, name | !data.pattern2rule.containsKey(pattern)].forEach[pattern, name | imports.add(data.patternPackage + "." + name)]
 	}
 	
 	override generate() {
@@ -34,7 +34,7 @@ public class «className» extends IBeXGTPatternFactory {
 			super(api);
 	}
 	
-	«FOR pattern : data.pattern2patternClassName.keySet»
+	«FOR pattern : data.pattern2patternClassName.keySet.filter[p | !data.pattern2rule.containsKey(p)]»
 	protected «data.pattern2patternClassName.get(pattern)» create«data.pattern2patternClassName.get(pattern)»() {
 		«data.pattern2patternClassName.get(pattern)» pattern = new «data.pattern2patternClassName.get(pattern)»(api, api.getGTEngine().getPattern("«pattern.name»"));
 		return pattern;

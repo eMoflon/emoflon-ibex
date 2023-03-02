@@ -96,7 +96,43 @@ public enum RelationalOperator implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	OBJECT_NOT_EQUALS(7, "OBJECT_NOT_EQUALS", "OBJECT_NOT_EQUALS");
+	OBJECT_NOT_EQUALS(7, "OBJECT_NOT_EQUALS", "OBJECT_NOT_EQUALS"),
+	/**
+	 * The '<em><b>OBJECT GREATER OR EQUAL</b></em>' literal object.
+	 * <!-- begin-user-doc -->
+	* <!-- end-user-doc -->
+	 * @see #OBJECT_GREATER_OR_EQUAL_VALUE
+	 * @generated
+	 * @ordered
+	 */
+	OBJECT_GREATER_OR_EQUAL(8, "OBJECT_GREATER_OR_EQUAL", "OBJECT_GREATER_OR_EQUAL"),
+	/**
+	 * The '<em><b>OBJECT GREATER</b></em>' literal object.
+	 * <!-- begin-user-doc -->
+	* <!-- end-user-doc -->
+	 * @see #OBJECT_GREATER_VALUE
+	 * @generated
+	 * @ordered
+	 */
+	OBJECT_GREATER(9, "OBJECT_GREATER", "OBJECT_GREATER"),
+	/**
+	 * The '<em><b>OBJECT SMALLER OR EQUAL</b></em>' literal object.
+	 * <!-- begin-user-doc -->
+	* <!-- end-user-doc -->
+	 * @see #OBJECT_SMALLER_OR_EQUAL_VALUE
+	 * @generated
+	 * @ordered
+	 */
+	OBJECT_SMALLER_OR_EQUAL(10, "OBJECT_SMALLER_OR_EQUAL", "OBJECT_SMALLER_OR_EQUAL"),
+	/**
+	 * The '<em><b>OBJECT SMALLER</b></em>' literal object.
+	 * <!-- begin-user-doc -->
+	* <!-- end-user-doc -->
+	 * @see #OBJECT_SMALLER_VALUE
+	 * @generated
+	 * @ordered
+	 */
+	OBJECT_SMALLER(11, "OBJECT_SMALLER", "OBJECT_SMALLER");
 
 	/**
 	 * The '<em><b>GREATER OR EQUAL</b></em>' literal value.
@@ -187,13 +223,58 @@ public enum RelationalOperator implements Enumerator {
 	public static final int OBJECT_NOT_EQUALS_VALUE = 7;
 
 	/**
+	 * The '<em><b>OBJECT GREATER OR EQUAL</b></em>' literal value.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #OBJECT_GREATER_OR_EQUAL
+	 * @model
+	 * @generated
+	 * @ordered
+	 */
+	public static final int OBJECT_GREATER_OR_EQUAL_VALUE = 8;
+
+	/**
+	 * The '<em><b>OBJECT GREATER</b></em>' literal value.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #OBJECT_GREATER
+	 * @model
+	 * @generated
+	 * @ordered
+	 */
+	public static final int OBJECT_GREATER_VALUE = 9;
+
+	/**
+	 * The '<em><b>OBJECT SMALLER OR EQUAL</b></em>' literal value.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #OBJECT_SMALLER_OR_EQUAL
+	 * @model
+	 * @generated
+	 * @ordered
+	 */
+	public static final int OBJECT_SMALLER_OR_EQUAL_VALUE = 10;
+
+	/**
+	 * The '<em><b>OBJECT SMALLER</b></em>' literal value.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #OBJECT_SMALLER
+	 * @model
+	 * @generated
+	 * @ordered
+	 */
+	public static final int OBJECT_SMALLER_VALUE = 11;
+
+	/**
 	 * An array of all the '<em><b>Relational Operator</b></em>' enumerators.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	private static final RelationalOperator[] VALUES_ARRAY = new RelationalOperator[] { GREATER_OR_EQUAL, GREATER,
-			EQUAL, UNEQUAL, SMALLER_OR_EQUAL, SMALLER, OBJECT_EQUALS, OBJECT_NOT_EQUALS, };
+			EQUAL, UNEQUAL, SMALLER_OR_EQUAL, SMALLER, OBJECT_EQUALS, OBJECT_NOT_EQUALS, OBJECT_GREATER_OR_EQUAL,
+			OBJECT_GREATER, OBJECT_SMALLER_OR_EQUAL, OBJECT_SMALLER, };
 
 	/**
 	 * A public read-only list of all the '<em><b>Relational Operator</b></em>' enumerators.
@@ -265,6 +346,14 @@ public enum RelationalOperator implements Enumerator {
 			return OBJECT_EQUALS;
 		case OBJECT_NOT_EQUALS_VALUE:
 			return OBJECT_NOT_EQUALS;
+		case OBJECT_GREATER_OR_EQUAL_VALUE:
+			return OBJECT_GREATER_OR_EQUAL;
+		case OBJECT_GREATER_VALUE:
+			return OBJECT_GREATER;
+		case OBJECT_SMALLER_OR_EQUAL_VALUE:
+			return OBJECT_SMALLER_OR_EQUAL;
+		case OBJECT_SMALLER_VALUE:
+			return OBJECT_SMALLER;
 		}
 		return null;
 	}

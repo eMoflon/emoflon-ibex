@@ -19,6 +19,7 @@ public class IBeXGTApiData {
 	final public String apiPrefix;
 	final public String apiPackage;
 	final public String apiPackagePath;
+	final public String apiAbstractClassName;
 	final public String gtModelPath;
 	final public String matchPackage;
 	final public String matchPackagePath;
@@ -45,6 +46,7 @@ public class IBeXGTApiData {
 		apiPrefix = apiPrefixFromPackage(model.getMetaData().getPackage());
 		apiPackage = model.getMetaData().getPackage() + ".api";
 		apiPackagePath = model.getMetaData().getPackagePath().replace("src", "src-gen") + "/api";
+		apiAbstractClassName = apiPrefix + "GtApi";
 		gtModelPath = model.getMetaData().getPackagePath().replace("src", "src-gen") + "/api/ibex_gt_model.xmi";
 		matchPackage = apiPackage + ".match";
 		matchPackagePath = apiPackagePath + "/match";
@@ -55,7 +57,7 @@ public class IBeXGTApiData {
 
 		ExtensionsUtil.collectExtensions(IBeXPMEngineInformation.PLUGIN_EXTENSON_ID, "engine_information",
 				IBeXPMEngineInformation.class).forEach(ext -> engines.put(ext.getEngineName(), ext));
-		engines.forEach((extName, ext) -> apiClassNames.put(ext, apiPrefix + firstToUpper(extName) + "GtAPI"));
+		engines.forEach((extName, ext) -> apiClassNames.put(ext, apiPrefix + firstToUpper(extName) + "GtApi"));
 		patternFactoryClassName = apiPrefix + "GtPatternFactory";
 		ruleFactoryClassName = apiPrefix + "GtRuleFactory";
 
@@ -71,6 +73,7 @@ public class IBeXGTApiData {
 			rule2CoPatternClassName.put(rule, firstToUpper(rule.getPostcondition().getName()));
 			rule2CoMatchClassName.put(rule, firstToUpper(rule.getName()) + "CoMatch");
 			pattern2rule.put((GTPattern) rule.getPrecondition(), rule);
+			pattern2patternClassName.put((GTPattern) rule.getPrecondition(), firstToUpper(rule.getName()) + "Rule");
 		});
 		model.getPatternSet().getPatterns().stream().map(pattern -> (GTPattern) pattern)
 				.filter(pattern -> !rulePatterns.contains(pattern)).forEach(pattern -> {

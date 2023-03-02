@@ -190,6 +190,10 @@
         <genEnumLiterals ecoreEnumLiteral="IBeXCoreModel.ecore#//IBeXCoreArithmetic/RelationalOperator/SMALLER"/>
         <genEnumLiterals ecoreEnumLiteral="IBeXCoreModel.ecore#//IBeXCoreArithmetic/RelationalOperator/OBJECT_EQUALS"/>
         <genEnumLiterals ecoreEnumLiteral="IBeXCoreModel.ecore#//IBeXCoreArithmetic/RelationalOperator/OBJECT_NOT_EQUALS"/>
+        <genEnumLiterals ecoreEnumLiteral="IBeXCoreModel.ecore#//IBeXCoreArithmetic/RelationalOperator/OBJECT_GREATER_OR_EQUAL"/>
+        <genEnumLiterals ecoreEnumLiteral="IBeXCoreModel.ecore#//IBeXCoreArithmetic/RelationalOperator/OBJECT_GREATER"/>
+        <genEnumLiterals ecoreEnumLiteral="IBeXCoreModel.ecore#//IBeXCoreArithmetic/RelationalOperator/OBJECT_SMALLER_OR_EQUAL"/>
+        <genEnumLiterals ecoreEnumLiteral="IBeXCoreModel.ecore#//IBeXCoreArithmetic/RelationalOperator/OBJECT_SMALLER"/>
       </genEnums>
       <genClasses image="false" ecoreClass="IBeXCoreModel.ecore#//IBeXCoreArithmetic/ValueExpression">
         <genFeatures notify="false" createChild="false" propertySortChoices="true"

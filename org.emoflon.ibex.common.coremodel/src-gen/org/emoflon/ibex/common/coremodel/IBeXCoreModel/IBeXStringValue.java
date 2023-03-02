@@ -2,7 +2,7 @@
  */
 package org.emoflon.ibex.common.coremodel.IBeXCoreModel;
 
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ValueExpression;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ArithmeticExpression;
 
 /**
  * <!-- begin-user-doc -->
@@ -20,7 +20,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ValueE
  * @model
  * @generated
  */
-public interface IBeXStringValue extends ValueExpression {
+public interface IBeXStringValue extends ArithmeticExpression {
 	/**
 	 * Returns the value of the '<em><b>Value</b></em>' attribute.
 	 * <!-- begin-user-doc -->

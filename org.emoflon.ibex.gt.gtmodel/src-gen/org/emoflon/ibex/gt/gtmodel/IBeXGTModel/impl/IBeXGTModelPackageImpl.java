@@ -590,7 +590,8 @@ public class IBeXGTModelPackageImpl extends EPackageImpl implements IBeXGTModelP
 		gtParameterValueEClass.getESuperTypes().add(theIBeXCoreArithmeticPackage.getArithmeticValue());
 		gtIteratorEdgeEClass.getESuperTypes().add(theIBeXCoreModelPackage.getIBeXEdge());
 		gtIteratorAttributeAssignmentEClass.getESuperTypes().add(theIBeXCoreModelPackage.getIBeXAttributeAssignment());
-		gtIteratorAttributeReferenceEClass.getESuperTypes().add(theIBeXCoreArithmeticPackage.getValueExpression());
+		gtIteratorAttributeReferenceEClass.getESuperTypes().add(theIBeXCoreArithmeticPackage.getArithmeticValue());
+		gtIteratorAttributeReferenceEClass.getESuperTypes().add(theIBeXCoreArithmeticPackage.getBooleanValue());
 
 		// Initialize classes, features, and operations; add parameters
 		initEClass(gtModelEClass, GTModel.class, "GTModel", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);

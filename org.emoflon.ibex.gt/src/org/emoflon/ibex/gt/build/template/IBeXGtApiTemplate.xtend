@@ -16,102 +16,32 @@ class IBeXGtApiTemplate extends GeneratorTemplate<IBeXPMEngineInformation> {
 		filePath = data.apiPackagePath + "/" + className
 		
 		imports.add("org.eclipse.emf.ecore.resource.ResourceSet");
-		imports.add("org.emoflon.ibex.gt.api.IBeXGtAPI")
 		imports.addAll(context.imports)
 		
-		data.pattern2patternClassName.forEach[pattern, name | imports.add(data.patternPackage + "." + name)]
-		data.rule2ruleClassName.forEach[rule, name | imports.add(data.rulePackage + "." + name)]
-		
-		data.model.metaData.dependencies.forEach[dep | imports.add(dep.fullyQualifiedName + "." + dep.packageClassName)]
 	}
 	
-	override generate() {
-		code = '''package «packageName»;
-		
-«FOR imp : imports.filter[imp | imp !== null]»
-import «imp»;
-«ENDFOR»
-		
-public class «className» extends IBeXGtAPI<«context.engineClassName», «data.patternFactoryClassName», «data.ruleFactoryClassName»> {
-	
-	«FOR pattern : data.pattern2patternClassName.keySet»
-	protected «data.pattern2patternClassName.get(pattern)» «pattern.name.toFirstLower»;
-	«ENDFOR»
-	
-	«FOR rule : data.rule2ruleClassName.keySet»
-	protected «data.rule2ruleClassName.get(rule)» «rule.name.toFirstLower»;
-	«ENDFOR»
-	
-	@Override
-	public String getWorkspacePath() {
-		return "«data.model.metaData.projectPath»/../";
-	}
-	
-	@Override
-	public String getProjectPath() {
-		return "«data.model.metaData.projectPath»";
-	}
-	
-	@Override
-	public String getIBeXModelPath() {
-		return "«data.model.metaData.projectPath»«data.gtModelPath»";
-	}
-	
-	@Override
-	public String getProjectName() {
-		return "«data.model.metaData.project»";
-	}
+	def String generateClass() {
+		return
+'''public class «className» extends «data.apiAbstractClassName»<«context.engineClassName»> {
 	
 	@Override
 	protected «context.engineClassName» createPatternMatcher() {
 		return new «context.engineClassName»(ibexModel, model);
 	}
-	
-	@Override
-	protected «data.patternFactoryClassName» createPatternFactory() {
-		return new 	«data.patternFactoryClassName»(this);
+}
+'''
 	}
 	
-	@Override
-	protected «data.ruleFactoryClassName» createRuleFactory() {
-		return new 	«data.ruleFactoryClassName»(this);
-	}
-	
-	@Override
-	protected void initializeRules() {
-		«FOR rule : data.rule2ruleClassName.keySet»
-		«rule.name.toFirstLower» = ruleFactory.create«data.rule2ruleClassName.get(rule)»();
-		«ENDFOR»
-	}
-	
-	@Override
-	protected void initializePatterns() {
-		«FOR pattern : data.pattern2patternClassName.keySet»
-		«pattern.name.toFirstLower» = patternFactory.create«data.pattern2patternClassName.get(pattern)»();
-		«ENDFOR»
-	}
-	
-	@Override
-	protected void registerMetamodels(final ResourceSet rs) {
-		«FOR dep : data.model.metaData.dependencies»
-		rs.getPackageRegistry().put(«dep.packageClassName».eINSTANCE.getNsURI(), «dep.packageClassName».eINSTANCE);
-		«ENDFOR»
-	}
-	
-	«FOR pattern : data.pattern2patternClassName.keySet»
-	public «data.pattern2patternClassName.get(pattern)» «pattern.name.toFirstLower»() {
-		return 	«pattern.name.toFirstLower»;
-	}
-	
-	«ENDFOR»
-	«FOR rule : data.rule2ruleClassName.keySet»
-	public «data.rule2ruleClassName.get(rule)» «rule.name.toFirstLower»() {
-		return 	«rule.name.toFirstLower»;
-	}
-	
-	«ENDFOR»
-	
-}'''
+	override generate() {
+		val clazz = generateClass
+		code = '''package «packageName»;
+		
+«FOR imp : imports.filter[imp | imp !== null]»
+import «imp»;
+«ENDFOR»
+
+«clazz»
+'''
 }
 	
 }

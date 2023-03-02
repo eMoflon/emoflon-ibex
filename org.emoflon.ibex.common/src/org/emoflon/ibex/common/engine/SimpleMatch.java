@@ -12,7 +12,7 @@ public class SimpleMatch implements IMatch {
 	 * The name of the pattern.
 	 */
 	private String patternName;
-	
+
 	protected long hash;
 	protected boolean hashInit = false;
 
@@ -24,8 +24,7 @@ public class SimpleMatch implements IMatch {
 	/**
 	 * Initializes an empty match with the given pattern name.
 	 * 
-	 * @param patternName
-	 *            the name of the pattern
+	 * @param patternName the name of the pattern
 	 */
 	public SimpleMatch(final String patternName) {
 		this.patternName = patternName;
@@ -35,8 +34,7 @@ public class SimpleMatch implements IMatch {
 	/**
 	 * Initializes the match as a copy of the given match.
 	 * 
-	 * @param match
-	 *            the match to copy
+	 * @param match the match to copy
 	 */
 	public SimpleMatch(final IMatch match) {
 		this.patternName = match.getPatternName();
@@ -71,7 +69,7 @@ public class SimpleMatch implements IMatch {
 	public Collection<String> getParameterNames() {
 		return parameters.keySet();
 	}
-	
+
 	@Override
 	public Collection<Object> getObjects() {
 		return parameters.values();
@@ -79,7 +77,7 @@ public class SimpleMatch implements IMatch {
 
 	@Override
 	public long getHashCode() {
-		if(!hashInit) {
+		if (!hashInit) {
 			hash = HashUtil.collectionToHash(parameters.values());
 			hashInit = true;
 		}
@@ -88,9 +86,9 @@ public class SimpleMatch implements IMatch {
 
 	@Override
 	public int hashCode() {
-		return (int)getHashCode();
+		return (int) getHashCode();
 	}
-	
+
 	public void setHashCode(long hashCode) {
 		this.hash = hashCode;
 		hashInit = true;
@@ -105,7 +103,8 @@ public class SimpleMatch implements IMatch {
 	@Override
 	public String toString() {
 		StringBuilder s = new StringBuilder();
-		s.append("IMatch for ").append(getPatternName()).append("(" + this.hashCode()+ ") {").append(System.lineSeparator());
+		s.append("IMatch for ").append(getPatternName()).append("(" + this.hashCode() + ") {")
+				.append(System.lineSeparator());
 
 		for (final String parameterName : getParameterNames()) {
 			s.append("	").append(parameterName);

@@ -1,6 +1,10 @@
 package org.emoflon.ibex.gt.engine;
 
-import java.util.Optional;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.function.BiConsumer;
 
 import org.emoflon.ibex.gt.api.IBeXGtAPI;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTPattern;
@@ -10,13 +14,10 @@ public abstract class IBeXGTRule<R extends IBeXGTRule<R, P, M, CP, CM>, P extend
 		extends IBeXGTPattern<P, M> {
 
 	public final String ruleName;
-	protected final GTRule rule;
+	public final GTRule rule;
 	protected CP coPattern;
 
-	/**
-	 * The pushout approach for the rule.
-	 */
-	protected Optional<PushoutApproach> pushoutApproach = Optional.empty();
+	protected Set<BiConsumer<M, CM>> subscriptions = Collections.synchronizedSet(new LinkedHashSet<>());
 
 	/**
 	 * The number of rule applications until now.
@@ -31,40 +32,13 @@ public abstract class IBeXGTRule<R extends IBeXGTRule<R, P, M, CP, CM>, P extend
 		coPattern = createCoPattern();
 	}
 
-	/**
-	 * Returns the pushout approach. If the pushout approach has not been set for
-	 * the rule, the pushout approach defaults to the one set for the API.
-	 * 
-	 * @return the pushout approach
-	 */
-	public PushoutApproach getPushoutApproach() {
-		return pushoutApproach.orElse(gtEngine.getDefaultPushoutApproach());
-	}
+	protected abstract CP createCoPattern();
 
-	/**
-	 * Sets the pushout approach for the rule.
-	 * 
-	 * @param pushoutApproach the pushout approach
-	 */
-	public void setPushoutApproach(final PushoutApproach pushoutApproach) {
-		this.pushoutApproach = Optional.of(pushoutApproach);
-	}
+	public abstract boolean hasProbability();
 
-	/**
-	 * Sets the pushout approach for the rule to double pushout (see
-	 * {@link PushoutApproach}).
-	 */
-	public void setDPO() {
-		setPushoutApproach(PushoutApproach.DPO);
-	}
+	public abstract double getProbability(final M match);
 
-	/**
-	 * Sets the pushout approach for the rule to single pushout (see
-	 * {@link PushoutApproach}).
-	 */
-	public void setSPO() {
-		setPushoutApproach(PushoutApproach.SPO);
-	}
+	protected abstract CM applyInternal(final M match);
 
 	/**
 	 * Checks whether the rule is applicable.
@@ -73,6 +47,10 @@ public abstract class IBeXGTRule<R extends IBeXGTRule<R, P, M, CP, CM>, P extend
 	 */
 	public boolean isApplicable(boolean doUpdate) {
 		return hasMatches(doUpdate);
+	}
+
+	public boolean isApplicable() {
+		return hasMatches();
 	}
 
 	/**
@@ -85,30 +63,120 @@ public abstract class IBeXGTRule<R extends IBeXGTRule<R, P, M, CP, CM>, P extend
 		return ruleApplicationCount;
 	}
 
-	protected abstract CP createCoPattern();
+	public CM apply(final M match) {
+		if (gtEngine.alwaysUpdatePrior)
+			gtEngine.updateMatches();
 
-	public abstract boolean hasProbability();
+		final CM coMatch = applyInternal(match);
+		if (gtEngine.alwaysUpdateAfter)
+			gtEngine.updateMatches();
 
-	public abstract double getProbability(final M match);
+		invokeSubscribers(match, coMatch);
 
-	public abstract CM apply(final M match);
+		return coMatch;
+	}
 
 	public CM apply(final M match, boolean doUpdate) {
 		if (doUpdate)
 			gtEngine.updateMatches();
 
-		return apply(match);
+		final CM coMatch = applyInternal(match);
+		if (gtEngine.alwaysUpdateAfter)
+			gtEngine.updateMatches();
+
+		invokeSubscribers(match, coMatch);
+
+		return coMatch;
 	}
 
 	public CM applyAny() {
-		return apply(getMatches(false).iterator().next());
+		if (gtEngine.alwaysUpdatePrior)
+			gtEngine.updateMatches();
+
+		Iterator<M> it = getMatches(false).iterator();
+
+		if (it.hasNext()) {
+			final M match = it.next();
+			final CM coMatch = applyInternal(match);
+			if (gtEngine.alwaysUpdateAfter)
+				gtEngine.updateMatches();
+
+			invokeSubscribers(match, coMatch);
+
+			return coMatch;
+		} else {
+			return null;
+		}
+
 	}
 
 	public CM applyAny(boolean doUpdate) {
 		if (doUpdate)
 			gtEngine.updateMatches();
 
-		return applyAny();
+		Iterator<M> it = getMatches(false).iterator();
+
+		if (it.hasNext()) {
+			final M match = it.next();
+			final CM coMatch = applyInternal(match);
+			if (gtEngine.alwaysUpdateAfter)
+				gtEngine.updateMatches();
+
+			invokeSubscribers(match, coMatch);
+
+			return coMatch;
+		} else {
+			return null;
+		}
+	}
+
+	public Set<CM> applyAsLongAsPossible(int upperBound) {
+		boolean prior = gtEngine.isAlwaysUpdatePrior();
+		boolean after = gtEngine.isAlwaysUpdateAfter();
+		gtEngine.setAlwaysUpdatePrior(false);
+		gtEngine.setAlwaysUpdateAfter(true);
+
+		Set<CM> results = Collections.synchronizedSet(new LinkedHashSet<>());
+		while (upperBound > 0 && hasMatches(true)) {
+			upperBound--;
+			final CM coMatch = applyAny();
+			if (coMatch != null)
+				results.add(coMatch);
+		}
+
+		gtEngine.setAlwaysUpdatePrior(prior);
+		gtEngine.setAlwaysUpdateAfter(after);
+
+		return results;
+	}
+
+	public BiConsumer<M, CM> subscribeApplications(final BiConsumer<M, CM> consumer) {
+		if (subscriptions.add(consumer))
+			return consumer;
+
+		return null;
+	}
+
+	public BiConsumer<M, CM> unsubscribeApplications(final BiConsumer<M, CM> consumer) {
+		if (subscriptions.remove(consumer))
+			return consumer;
+
+		return null;
+	}
+
+	public Set<BiConsumer<M, CM>> unsubscribeApplications() {
+		Set<BiConsumer<M, CM>> subscriptions = Collections.synchronizedSet(new LinkedHashSet<>(this.subscriptions));
+		this.subscriptions.clear();
+		return subscriptions;
+	}
+
+	protected void invokeSubscribers(final M match, final CM coMatch) {
+		if (subscriptions.isEmpty())
+			return;
+
+		for (BiConsumer<M, CM> consumer : subscriptions) {
+			consumer.accept(match, coMatch);
+		}
 	}
 
 	// TODO: This might be interesting in the future!

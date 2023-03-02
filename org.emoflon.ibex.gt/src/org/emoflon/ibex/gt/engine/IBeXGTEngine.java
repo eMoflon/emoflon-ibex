@@ -20,7 +20,6 @@ import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRule;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTRuleSet;
 
 public class IBeXGTEngine<PM extends IBeXGTPatternMatcher<?>> {
-
 	final protected PM patternMatcher;
 	final protected GTModel ibexModel;
 	final protected ResourceSet model;
@@ -28,11 +27,8 @@ public class IBeXGTEngine<PM extends IBeXGTPatternMatcher<?>> {
 	protected Map<String, GTRule> name2rule = Collections.synchronizedMap(new LinkedHashMap<>());
 	protected Map<String, GTPattern> name2pattern = Collections.synchronizedMap(new LinkedHashMap<>());
 	protected Random rndGenerator;
-
-	/**
-	 * The pushout approach to use if no approach is specified.
-	 */
-	protected PushoutApproach defaultPushoutApproach = PushoutApproach.SPO;
+	protected boolean alwaysUpdatePrior = false;
+	protected boolean alwaysUpdateAfter = false;
 
 	/**
 	 * TODO: Reimplement this once the rest is complete. Returns the model state
@@ -149,6 +145,22 @@ public class IBeXGTEngine<PM extends IBeXGTPatternMatcher<?>> {
 		name2typedRule.put(typedRule.ruleName, typedRule);
 	}
 
+	public boolean isAlwaysUpdatePrior() {
+		return alwaysUpdatePrior;
+	}
+
+	public void setAlwaysUpdatePrior(boolean alwaysUpdatePrior) {
+		this.alwaysUpdatePrior = alwaysUpdatePrior;
+	}
+
+	public boolean isAlwaysUpdateAfter() {
+		return alwaysUpdateAfter;
+	}
+
+	public void setAlwaysUpdateAfter(boolean alwaysUpdateAfter) {
+		this.alwaysUpdateAfter = alwaysUpdateAfter;
+	}
+
 	/**
 	 * Returns the resource set opened for transformations with the API.
 	 * 
@@ -170,38 +182,6 @@ public class IBeXGTEngine<PM extends IBeXGTPatternMatcher<?>> {
 	 */
 	public void terminate() {
 		patternMatcher.terminate();
-	}
-
-	/**
-	 * Sets the default pushout approach.
-	 * 
-	 * @param defaultPushoutApproach the pushout approach to set
-	 */
-	public void setDefaultPushoutApproach(final PushoutApproach defaultPushoutApproach) {
-		this.defaultPushoutApproach = defaultPushoutApproach;
-	}
-
-	/**
-	 * Sets the pushout approach to double pushout (see {@link PushoutApproach}).
-	 */
-	public void setDPO() {
-		setDefaultPushoutApproach(PushoutApproach.DPO);
-	}
-
-	/**
-	 * Sets the pushout approach to single pushout (see {@link PushoutApproach}).
-	 */
-	public void setSPO() {
-		setDefaultPushoutApproach(PushoutApproach.SPO);
-	}
-
-	/**
-	 * Returns the default pushout approach
-	 * 
-	 * @return the default pushout approach
-	 */
-	public PushoutApproach getDefaultPushoutApproach() {
-		return defaultPushoutApproach;
 	}
 
 	/**

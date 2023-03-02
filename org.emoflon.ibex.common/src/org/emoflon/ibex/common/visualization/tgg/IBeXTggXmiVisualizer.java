@@ -46,11 +46,11 @@ public class IBeXTggXmiVisualizer implements EMoflonDiagramTextProvider {
 
 		throw new IllegalArgumentException("Invalid selection: " + selection);
 	}
-	
+
 	@Override
 	public boolean supportsSelection(ISelection selection) {
 		Collection<EObject> elements = VisualiserUtilities.extractEcoreSelection(selection);
-		if(elements == null)
+		if (elements == null)
 			return false;
 
 		return elements.stream() //

@@ -48,8 +48,8 @@ public class «className» extends IBeXGTCoMatch<«className», «coPatternClass
 	protected «node.type.name» «node.name.toFirstLower»;
 	«ENDFOR»
 	
-	public «className»(final «ruleClassName» typedRule, final «coPatternClassName» typedCoPattern, final Map<String, Object> nodes) {
-		super(typedRule, typedCoPattern, nodes);
+	public «className»(final «ruleClassName» typedRule, final «coPatternClassName» typedCoPattern, final «matchClassName» typedMatch, final Map<String, Object> nodes) {
+		super(typedRule, typedCoPattern, typedMatch, nodes);
 	}
 	
 	public «className»(final «className» other) {

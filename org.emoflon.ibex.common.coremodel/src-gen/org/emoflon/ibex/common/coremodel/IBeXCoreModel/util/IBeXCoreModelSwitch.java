@@ -203,6 +203,8 @@ public class IBeXCoreModelSwitch<T> extends Switch<T> {
 			IBeXStringValue iBeXStringValue = (IBeXStringValue) theEObject;
 			T result = caseIBeXStringValue(iBeXStringValue);
 			if (result == null)
+				result = caseArithmeticExpression(iBeXStringValue);
+			if (result == null)
 				result = caseValueExpression(iBeXStringValue);
 			if (result == null)
 				result = defaultCase(theEObject);

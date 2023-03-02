@@ -10,6 +10,8 @@ import org.eclipse.emf.ecore.util.Switch;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeAssignment;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ArithmeticExpression;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ArithmeticValue;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanExpression;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ValueExpression;
 
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
@@ -169,6 +171,14 @@ public class IBeXGTModelSwitch<T> extends Switch<T> {
 		case IBeXGTModelPackage.GT_ITERATOR_ATTRIBUTE_REFERENCE: {
 			GTIteratorAttributeReference gtIteratorAttributeReference = (GTIteratorAttributeReference) theEObject;
 			T result = caseGTIteratorAttributeReference(gtIteratorAttributeReference);
+			if (result == null)
+				result = caseArithmeticValue(gtIteratorAttributeReference);
+			if (result == null)
+				result = caseBooleanValue(gtIteratorAttributeReference);
+			if (result == null)
+				result = caseArithmeticExpression(gtIteratorAttributeReference);
+			if (result == null)
+				result = caseBooleanExpression(gtIteratorAttributeReference);
 			if (result == null)
 				result = caseValueExpression(gtIteratorAttributeReference);
 			if (result == null)
@@ -484,6 +494,36 @@ public class IBeXGTModelSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseIBeXAttributeAssignment(IBeXAttributeAssignment object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Boolean Expression</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Boolean Expression</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseBooleanExpression(BooleanExpression object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Boolean Value</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Boolean Value</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseBooleanValue(BooleanValue object) {
 		return null;
 	}
 

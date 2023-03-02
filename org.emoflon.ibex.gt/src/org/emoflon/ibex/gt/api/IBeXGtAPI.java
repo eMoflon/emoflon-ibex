@@ -143,14 +143,14 @@ public abstract class IBeXGtAPI<PM extends IBeXGTPatternMatcher<?>, PF extends I
 		return createModel(modelUri.toFileString());
 	}
 
-	public void saveModel() throws Exception {
+	public void writeBackModel() throws Exception {
 		for (Resource r : model.getResources().stream().filter(r -> !r.getURI().toFileString().contains("-trash"))
 				.collect(Collectors.toSet())) {
 			r.save(null);
 		}
 	}
 
-	public void saveModel(final URI modelUri) throws Exception {
+	public void writeBackModel(final URI modelUri) throws Exception {
 		model.getResources().stream().filter(r -> r.getURI().toFileString().equals(modelUri.toFileString())).findAny()
 				.ifPresent(r -> {
 					try {
@@ -161,9 +161,32 @@ public abstract class IBeXGtAPI<PM extends IBeXGTPatternMatcher<?>, PF extends I
 				});
 	}
 
-	public void saveModel(final Resource r) throws Exception {
+	public void writeBackModel(final Resource r) throws Exception {
 		if (model.getResources().contains(r)) {
 			r.save(null);
+		}
+	}
+
+	public void saveModelTo(final URI sourceUri, final URI targetUri) throws Exception {
+		model.getResources().stream().filter(r -> r.getURI().toFileString().equals(sourceUri.toFileString())).findAny()
+				.ifPresent(r -> {
+					try {
+						Resource newR = model.createResource(targetUri);
+						newR.getContents().addAll(r.getContents());
+						newR.save(null);
+						r.getContents().addAll(newR.getContents());
+						newR.unload();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				});
+	}
+
+	public void saveModelTo(final Resource sourceR, final Resource targetR) throws Exception {
+		if (model.getResources().contains(sourceR)) {
+			targetR.getContents().addAll(sourceR.getContents());
+			targetR.save(null);
+			sourceR.getContents().addAll(targetR.getContents());
 		}
 	}
 

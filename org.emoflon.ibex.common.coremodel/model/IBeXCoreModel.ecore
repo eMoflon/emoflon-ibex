@@ -129,7 +129,7 @@
   <eClassifiers xsi:type="ecore:EClass" name="IBeXEnumValue" eSuperTypes="#//IBeXCoreArithmetic/ValueExpression">
     <eStructuralFeatures xsi:type="ecore:EReference" name="literal" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EEnumLiteral"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="IBeXStringValue" eSuperTypes="#//IBeXCoreArithmetic/ValueExpression">
+  <eClassifiers xsi:type="ecore:EClass" name="IBeXStringValue" eSuperTypes="#//IBeXCoreArithmetic/ArithmeticExpression">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IBeXBooleanValue" eSuperTypes="#//IBeXCoreArithmetic/ValueExpression #//IBeXCoreArithmetic/BooleanValue">
@@ -272,6 +272,10 @@
       <eLiterals name="SMALLER" value="5"/>
       <eLiterals name="OBJECT_EQUALS" value="6"/>
       <eLiterals name="OBJECT_NOT_EQUALS" value="7" literal="OBJECT_NOT_EQUALS"/>
+      <eLiterals name="OBJECT_GREATER_OR_EQUAL" value="8" literal="OBJECT_GREATER_OR_EQUAL"/>
+      <eLiterals name="OBJECT_GREATER" value="9"/>
+      <eLiterals name="OBJECT_SMALLER_OR_EQUAL" value="10"/>
+      <eLiterals name="OBJECT_SMALLER" value="11"/>
     </eClassifiers>
   </eSubpackages>
 </ecore:EPackage>

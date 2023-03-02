@@ -1482,7 +1482,7 @@ public class IBeXCoreModelPackageImpl extends EPackageImpl implements IBeXCoreMo
 		iBeXEdgeEClass.getESuperTypes().add(this.getIBeXNamedElement());
 		iBeXPatternEClass.getESuperTypes().add(this.getIBeXNamedElement());
 		iBeXEnumValueEClass.getESuperTypes().add(theIBeXCoreArithmeticPackage.getValueExpression());
-		iBeXStringValueEClass.getESuperTypes().add(theIBeXCoreArithmeticPackage.getValueExpression());
+		iBeXStringValueEClass.getESuperTypes().add(theIBeXCoreArithmeticPackage.getArithmeticExpression());
 		iBeXBooleanValueEClass.getESuperTypes().add(theIBeXCoreArithmeticPackage.getValueExpression());
 		iBeXBooleanValueEClass.getESuperTypes().add(theIBeXCoreArithmeticPackage.getBooleanValue());
 		iBeXNullValueEClass.getESuperTypes().add(theIBeXCoreArithmeticPackage.getValueExpression());

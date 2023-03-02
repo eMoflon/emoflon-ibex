@@ -10,8 +10,7 @@ import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.impl.ValueExpressionImpl;
-
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.impl.ArithmeticValueImpl;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTForEachExpression;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.GTIteratorAttributeReference;
 import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.IBeXGTModelPackage;
@@ -30,7 +29,7 @@ import org.emoflon.ibex.gt.gtmodel.IBeXGTModel.IBeXGTModelPackage;
  *
  * @generated
  */
-public class GTIteratorAttributeReferenceImpl extends ValueExpressionImpl implements GTIteratorAttributeReference {
+public class GTIteratorAttributeReferenceImpl extends ArithmeticValueImpl implements GTIteratorAttributeReference {
 	/**
 	 * The cached value of the '{@link #getIterator() <em>Iterator</em>}' reference.
 	 * <!-- begin-user-doc -->
