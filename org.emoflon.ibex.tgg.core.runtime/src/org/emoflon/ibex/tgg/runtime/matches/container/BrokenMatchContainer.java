@@ -10,18 +10,16 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.runtime.benchmark.TimeMeasurable;
-import org.emoflon.ibex.tgg.runtime.benchmark.TimeRegistry;
-import org.emoflon.ibex.tgg.runtime.benchmark.Timer;
-import org.emoflon.ibex.tgg.runtime.benchmark.Times;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.runtime.patterns.IGreenPattern;
-import org.emoflon.ibex.tgg.runtime.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.runtime.strategies.PropagatingOperationalStrategy;
-
-import language.TGGRuleEdge;
-import language.TGGRuleNode;
-import runtime.TGGRuleApplication;
+import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuleApplication;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
+import org.emoflon.ibex.tgg.util.benchmark.TimeMeasurable;
+import org.emoflon.ibex.tgg.util.benchmark.TimeRegistry;
+import org.emoflon.ibex.tgg.util.benchmark.Timer;
+import org.emoflon.ibex.tgg.util.benchmark.Times;
 
 
 public class BrokenMatchContainer implements IMatchContainer, TimeMeasurable {
@@ -103,9 +101,6 @@ public class BrokenMatchContainer implements IMatchContainer, TimeMeasurable {
 	}
 
 	private void handleMatch(ITGGMatch m) {
-		IGreenPatternFactory gFactory = strategy.getGreenFactories().get(m.getRuleName());
-		IGreenPattern gPattern = gFactory.create(PatternType.CC);
-
 		if (anElementHasAlreadyBeenTranslated(m, gPattern))
 			return;
 		
@@ -169,14 +164,14 @@ public class BrokenMatchContainer implements IMatchContainer, TimeMeasurable {
 		}
 	}
 
-	private boolean anElementHasAlreadyBeenTranslated(ITGGMatch m, IGreenPattern gPattern) {
-		for (TGGRuleNode createdNode : gPattern.getNodesMarkedByPattern()) {
+	private boolean anElementHasAlreadyBeenTranslated(ITGGMatch m, TGGOperationalRule operationRule) {
+		for (TGGNode createdNode : gPattern.getNodesMarkedByPattern()) {
 			Object createdObj = m.get(createdNode.getName());
 			if (translated.contains(createdObj))
 				return true;
 		}
 
-		for (TGGRuleEdge createdEdge : gPattern.getEdgesMarkedByPattern()) {
+		for (TGGEdge createdEdge : gPattern.getEdgesMarkedByPattern()) {
 			Object createdRuntimeEdge = getRuntimeEdge(m, createdEdge);
 			if (translated.contains(createdRuntimeEdge))
 				return true;

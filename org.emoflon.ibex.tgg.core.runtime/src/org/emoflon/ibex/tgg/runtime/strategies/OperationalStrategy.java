@@ -28,6 +28,7 @@ import org.emoflon.ibex.tgg.runtime.strategies.modules.TGGResourceHandler;
 import org.emoflon.ibex.tgg.runtime.updatepolicy.IUpdatePolicy;
 import org.emoflon.ibex.tgg.runtime.updatepolicy.NextMatchUpdatePolicy;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 import org.emoflon.ibex.tgg.util.benchmark.TimeMeasurable;
 import org.emoflon.ibex.tgg.util.benchmark.TimeRegistry;
 import org.emoflon.ibex.tgg.util.benchmark.Timer;
@@ -44,6 +45,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	protected IMatchContainer operationalMatchContainer;
 	protected MatchHandler matchHandler;
 
+	private Map<String, TGGOperationalRule> name2operationalRule = cfactory.createObjectToObjectHashMap();
 	protected Map<ITGGMatch, String> blockedMatches = cfactory.createObjectToObjectHashMap();
 
 	// Configuration
@@ -101,8 +103,18 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 		TGGMatchParameterOrderProvider.init(options.tgg.flattenedTGG());
 
+		registerRules(options.tgg.flattenedTGG());
+		
 		this.notifyDoneInit();
 		options.debug.benchmarkLogger().addToInitTime(Timer.stop());
+	}
+
+	private void registerRules(TGGModel flattenedTGG) {
+		for(var tggRule : flattenedTGG.getRuleSet().getRules()) {
+			for(var operationRule : tggRule.getOperationalisations()) {
+				name2operationalRule.put(operationRule.getName(), operationRule);				
+			}
+		}
 	}
 
 	protected abstract void initializeAdditionalModules(IbexOptions options) throws IOException;
@@ -251,6 +263,10 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	protected void createMarkers(IGreenPattern greenPattern, ITGGMatch comatch, String ruleName) {
 		prepareMarkerCreation(greenPattern, comatch, ruleName);
 		greenPattern.createMarkers(ruleName, comatch);
+	}
+	
+	public TGGOperationalRule getOperationalRule(String name) {
+		
 	}
 
 	/***** Configuration *****/
