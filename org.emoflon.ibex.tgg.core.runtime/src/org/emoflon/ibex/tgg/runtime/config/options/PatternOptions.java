@@ -2,12 +2,10 @@ package org.emoflon.ibex.tgg.runtime.config.options;
 
 import java.util.function.BiPredicate;
 import org.emoflon.ibex.tgg.compiler.analysis.ACStrategy;
-import org.emoflon.ibex.tgg.runtime.patterns.GreenPatternFactoryProvider;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 
 public class PatternOptions extends IbexSubOptions {
 
-	private GreenPatternFactoryProvider greenPatternFactories;
 	private ACStrategy acStrategy;
 	/**
 	 * Switch to using edge patterns based on some heuristics (e.g., pattern size). If this is false
@@ -25,7 +23,6 @@ public class PatternOptions extends IbexSubOptions {
 	public PatternOptions(IbexOptions options) {
 		super(options);
 
-		greenPatternFactories = new GreenPatternFactoryProvider(options);
 		acStrategy = ACStrategy.FILTER_NACS;
 		useEdgePatterns = false;
 		ignoreInjectivity = (x, y) -> false;
@@ -35,15 +32,6 @@ public class PatternOptions extends IbexSubOptions {
 		useGenPattern = false;
 		parallelizeMatchProcessing = true;
 		optimizeCSPs = false;
-	}
-
-	public GreenPatternFactoryProvider greenPatternFactories() {
-		return greenPatternFactories;
-	}
-
-	public IbexOptions greenPatternFactories(GreenPatternFactoryProvider greenPatternFactories) {
-		this.greenPatternFactories = greenPatternFactories;
-		return options;
 	}
 
 	public ACStrategy acStrategy() {

@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.matches.container.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.runtime.monitoring.data.ProtocolStep;
@@ -19,7 +20,6 @@ import org.emoflon.ibex.tgg.runtime.monitoring.data.TGGObjectGraph;
 import org.emoflon.ibex.tgg.runtime.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.TGGResourceHandler;
 import org.emoflon.ibex.tgg.runtime.updatepolicy.IUpdatePolicy;
-import org.emoflon.ibex.util.config.IbexOptions;
 
 public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 
@@ -74,7 +74,7 @@ public abstract class IbexController implements IbexObserver, IUpdatePolicy {
 				new TGGObjectGraph(filterResourceItems(items, resourceHandler.getSourceResource()),
 						filterResourceItems(items, resourceHandler.getTargetResource()),
 						filterResourceItems(items, resourceHandler.getCorrResource())),
-				options.tgg.tgg().getRules().stream().filter(rule -> rule.getName().equals(appliedRuleName))
+				options.tgg.tgg().getRuleSet().getRules().stream().filter(rule -> rule.getName().equals(appliedRuleName))
 						.findFirst().orElse(null));
 		protocolsStepList.add(protocolStep);
 	}

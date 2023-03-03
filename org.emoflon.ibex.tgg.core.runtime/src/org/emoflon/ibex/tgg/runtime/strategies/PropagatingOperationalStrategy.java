@@ -6,19 +6,18 @@ import java.io.IOException;
 import java.util.Set;
 
 import org.emoflon.ibex.tgg.runtime.IRedInterpreter;
-import org.emoflon.ibex.tgg.runtime.benchmark.EmptyBenchmarkLogger;
-import org.emoflon.ibex.tgg.runtime.benchmark.Timer;
-import org.emoflon.ibex.tgg.runtime.debug.LoggerConfig;
+import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.defaults.IbexRedInterpreter;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.matches.container.IMatchContainer;
 import org.emoflon.ibex.tgg.runtime.matches.container.MarkingMatchContainer;
 import org.emoflon.ibex.tgg.runtime.matches.container.PrecedenceMatchContainer;
 import org.emoflon.ibex.tgg.runtime.patterns.IGreenPattern;
-import org.emoflon.ibex.tgg.util.ConsoleUtil;
-import org.emoflon.ibex.util.config.IbexOptions;
-
-import runtime.TGGRuleApplication;
+import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuleApplication;
+import org.emoflon.ibex.tgg.util.benchmark.EmptyBenchmarkLogger;
+import org.emoflon.ibex.tgg.util.benchmark.Timer;
+import org.emoflon.ibex.tgg.util.debug.ConsoleUtil;
+import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 
 public abstract class PropagatingOperationalStrategy extends OperationalStrategy {
 

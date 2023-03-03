@@ -9,18 +9,18 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.runtime.benchmark.TimeMeasurable;
-import org.emoflon.ibex.tgg.runtime.benchmark.TimeRegistry;
-import org.emoflon.ibex.tgg.runtime.benchmark.Timer;
-import org.emoflon.ibex.tgg.runtime.benchmark.Times;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.runtime.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.runtime.strategies.PropagatingOperationalStrategy;
-
-import language.TGGRuleEdge;
-import language.TGGRuleNode;
-import runtime.TGGRuleApplication;
+import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuleApplication;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
+import org.emoflon.ibex.tgg.util.benchmark.TimeMeasurable;
+import org.emoflon.ibex.tgg.util.benchmark.TimeRegistry;
+import org.emoflon.ibex.tgg.util.benchmark.Timer;
+import org.emoflon.ibex.tgg.util.benchmark.Times;
 
 public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable {
 
@@ -73,7 +73,7 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 			return;
 
 		// Register nodes
-		for (TGGRuleNode contextNode : gPattern.getMarkedContextNodes()) {
+		for (TGGNode contextNode : gPattern.getMarkedContextNodes()) {
 			Object contextObj = m.get(contextNode.getName());
 
 			if (!translated.contains(contextObj)) {
@@ -84,7 +84,7 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 				requiredBy.get(contextObj).add(m);
 			}
 		}
-		for (TGGRuleNode createdNode : gPattern.getNodesMarkedByPattern()) {
+		for (TGGNode createdNode : gPattern.getNodesMarkedByPattern()) {
 			Object createdObj = m.get(createdNode.getName());
 
 			translates.computeIfAbsent(m, (x) -> cfactory.createObjectSet());
@@ -95,7 +95,7 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 		}
 
 		// Register edges
-		for (TGGRuleEdge contextEdge : gPattern.getMarkedContextEdges()) {
+		for (TGGEdge contextEdge : gPattern.getMarkedContextEdges()) {
 			Object contextRuntimeEdge = getRuntimeEdge(m, contextEdge);
 
 			if (!translated.contains(contextRuntimeEdge)) {
@@ -106,7 +106,7 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 				requires.get(m).add(contextRuntimeEdge);
 			}
 		}
-		for (TGGRuleEdge createdEdge : gPattern.getEdgesMarkedByPattern()) {
+		for (TGGEdge createdEdge : gPattern.getEdgesMarkedByPattern()) {
 			Object createdRuntimeEdge = getRuntimeEdge(m, createdEdge);
 			translates.computeIfAbsent(m, (x) -> cfactory.createObjectSet());
 			translatedBy.computeIfAbsent(createdRuntimeEdge, (x) -> cfactory.createObjectSet());
@@ -121,13 +121,13 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 	}
 
 	private boolean anElementHasAlreadyBeenTranslated(ITGGMatch m, IGreenPattern gPattern) {
-		for (TGGRuleNode createdNode : gPattern.getNodesMarkedByPattern()) {
+		for (TGGNode createdNode : gPattern.getNodesMarkedByPattern()) {
 			Object createdObj = m.get(createdNode.getName());
 			if (translated.contains(createdObj))
 				return true;
 		}
 
-		for (TGGRuleEdge createdEdge : gPattern.getEdgesMarkedByPattern()) {
+		for (TGGEdge createdEdge : gPattern.getEdgesMarkedByPattern()) {
 			Object createdRuntimeEdge = getRuntimeEdge(m, createdEdge);
 			if (translated.contains(createdRuntimeEdge))
 				return true;
@@ -140,13 +140,13 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 		IGreenPatternFactory gFactory = strategy.getGreenFactories().get(m.getRuleName());
 		IGreenPattern gPattern = gFactory.create(m.getType());
 
-		for (TGGRuleNode createdNode : gPattern.getNodesMarkedByPattern()) {
+		for (TGGNode createdNode : gPattern.getNodesMarkedByPattern()) {
 			Object createdObj = m.get(createdNode.getName());
 			if (pendingElts.contains(createdObj))
 				return false;
 		}
 
-		for (TGGRuleNode contextNode : gPattern.getMarkedContextNodes()) {
+		for (TGGNode contextNode : gPattern.getMarkedContextNodes()) {
 			Object contextObj = m.get(contextNode.getName());
 			if (pendingElts.contains(contextObj))
 				return false;
@@ -198,7 +198,7 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 		if (raToTranslated.containsKey(ra))
 			return;
 
-		IGreenPatternFactory gFactory = strategy.getGreenFactories().get(m.getRuleName());
+		TGGRule gFactory = strategy.getRule(m.getRuleName());
 
 		// Add translated elements
 		Collection<Object> translatedElts = cfactory.createObjectSet();

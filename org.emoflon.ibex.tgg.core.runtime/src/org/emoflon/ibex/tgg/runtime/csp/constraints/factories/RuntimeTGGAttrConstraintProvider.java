@@ -15,6 +15,14 @@ public class RuntimeTGGAttrConstraintProvider {
 	private Collection<RuntimeTGGAttrConstraintFactory> factories;
 	private Map<String, TGGAttributeConstraintDefinition> constraintDefinitions;
 	
+	public RuntimeTGGAttrConstraintProvider(Collection<TGGAttributeConstraintDefinitionLibrary> constraintDefLibraries) {
+		factories = new ArrayList<>();
+		registerFactory(new PredefRuntimeTGGAttrConstraintFactory());
+		constraintDefinitions = new HashMap<>();
+		for(var constraintDefLib : constraintDefLibraries)
+			registerAllTGGAttributeConstraintDefinitions(constraintDefLib);
+	}
+	
 	public RuntimeTGGAttrConstraintProvider(TGGAttributeConstraintDefinitionLibrary constraintDefLib) {
 		factories = new ArrayList<>();
 		registerFactory(new PredefRuntimeTGGAttrConstraintFactory());

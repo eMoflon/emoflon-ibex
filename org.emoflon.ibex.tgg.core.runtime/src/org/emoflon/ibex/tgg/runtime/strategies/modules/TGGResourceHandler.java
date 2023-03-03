@@ -21,7 +21,8 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.emf.EMFSaveUtils;
-import org.emoflon.ibex.tgg.compiler.defaults.IRegistrationHelper;
+import org.emoflon.ibex.tgg.runtime.config.IRegistrationHelper;
+import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
 import org.emoflon.ibex.tgg.runtime.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.runtime.strategies.gen.MODELGEN;
@@ -35,15 +36,10 @@ import org.emoflon.ibex.tgg.runtime.strategies.opt.MetamodelRelaxer;
 import org.emoflon.ibex.tgg.runtime.strategies.sync.INITIAL_BWD;
 import org.emoflon.ibex.tgg.runtime.strategies.sync.INITIAL_FWD;
 import org.emoflon.ibex.tgg.runtime.strategies.sync.SYNC;
-import org.emoflon.ibex.util.config.IbexOptions;
+import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TempContainer;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel;
 import org.emoflon.smartemf.runtime.SmartObject;
 import org.moflon.core.utilities.MoflonUtil;
-
-import language.TGG;
-import language.impl.LanguagePackageImpl;
-import runtime.RuntimeFactory;
-import runtime.TempContainer;
-import runtime.impl.RuntimePackageImpl;
 
 public class TGGResourceHandler {
 
@@ -92,11 +88,6 @@ public class TGGResourceHandler {
 			registerUserMetamodels();
 			loadTGG();
 			loadRelevantModels();
-
-			if (options.blackInterpreter() != null && options.blackInterpreter().getClass().getName().contains("Democles")) {
-				trash = createResource("instances/trash.xmi");
-				trash.getContents().add(RuntimeFactory.eINSTANCE.createTempContainer());
-			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -188,12 +179,12 @@ public class TGGResourceHandler {
 	public void saveRelevantModels() throws IOException {
 		if (executable instanceof FWD_OPT) {
 			// Unrelax the metamodel
-			relaxer.unrelaxReferences(options.tgg.tgg().getTrg());
+			relaxer.unrelaxReferences(options.tgg.tgg().getTarget());
 		}
 
 		if (executable instanceof BWD_OPT) {
 			// Unrelax the metamodel
-			relaxer.unrelaxReferences(options.tgg.tgg().getSrc());
+			relaxer.unrelaxReferences(options.tgg.tgg().getSource());
 		}
 
 		saveModels();
@@ -277,11 +268,11 @@ public class TGGResourceHandler {
 
 	public void loadRelevantModels() throws IOException {
 		if (executable instanceof FWD_OPT) {
-			relaxer.relaxReferences(options.tgg.tgg().getTrg());
+			relaxer.relaxReferences(options.tgg.tgg().getTarget());
 		}
 
 		if (executable instanceof BWD_OPT) {
-			relaxer.relaxReferences(options.tgg.tgg().getSrc());
+			relaxer.relaxReferences(options.tgg.tgg().getSource());
 		}
 
 		loadModels();
@@ -454,11 +445,11 @@ public class TGGResourceHandler {
 				.find(rs)//
 				.forEach((eob, settings) -> logger.error("Problems resolving: " + eob));
 
-		options.tgg.tgg((TGG) res.getContents().get(0));
-		options.tgg.flattenedTgg((TGG) flattenedRes.getContents().get(0));
+		options.tgg.tgg((TGGModel) res.getContents().get(0));
+		options.tgg.flattenedTgg((TGGModel) flattenedRes.getContents().get(0));
 
 		RuntimeTGGAttrConstraintProvider runtimeConstraintProvider = new RuntimeTGGAttrConstraintProvider(
-				options.tgg.tgg().getAttributeConstraintDefinitionLibrary());
+				options.tgg.tgg().getAttributeConstraintDefinitionLibraries());
 		runtimeConstraintProvider.registerFactory(options.csp.userDefinedConstraints());
 		options.csp.constraintProvider(runtimeConstraintProvider);
 

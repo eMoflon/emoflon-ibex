@@ -35,8 +35,6 @@ import org.emoflon.ibex.tgg.util.benchmark.Times;
 import org.emoflon.ibex.tgg.util.debug.ConsoleUtil;
 import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 
-import language.TGG;
-
 public abstract class OperationalStrategy extends AbstractIbexObservable implements IbexExecutable, TimeMeasurable {
 
 	protected final static Logger logger = Logger.getRootLogger();
@@ -45,7 +43,6 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	// Match and pattern management
 	protected IMatchContainer operationalMatchContainer;
 	protected MatchHandler matchHandler;
-	protected GreenPatternFactoryProvider greenFactories;
 
 	protected Map<ITGGMatch, String> blockedMatches = cfactory.createObjectToObjectHashMap();
 
@@ -83,7 +80,6 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 		resourceHandler = options.resourceHandler();
 		matchDistributor = options.matchDistributor();
-		greenFactories = options.patterns.greenPatternFactories();
 		matchHandler = options.matchHandler();
 
 		this.notifyStartLoading();
@@ -258,10 +254,6 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	}
 
 	/***** Configuration *****/
-
-	public GreenPatternFactoryProvider getGreenFactories() {
-		return greenFactories;
-	}
 
 	public IbexOptions getOptions() {
 		return options;
