@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Analysis
+Bundle-SymbolicName: org.emoflon.ibex.tgg.analysis
+Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-17
+Automatic-Module-Name: org.emoflon.ibex.tgg.analysis
+Export-Package: org.emoflon.ibex.tgg.compiler.analysis,
+ org.emoflon.ibex.tgg.compiler.patterns
+Require-Bundle: org.emoflon.ibex.tgg.tggmodel,
+ org.emoflon.ibex.common.slimgt
