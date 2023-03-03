@@ -2,7 +2,6 @@ package org.emoflon.ibex.tgg.runtime.config.options;
 
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.updatepolicy.DefaultSCRUpdatePolicy;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.updatepolicy.IShortcutRuleUpdatePolicy;
-import org.emoflon.ibex.util.config.IbexOptions;
 
 public class RepairOptions extends IbexSubOptions {
 

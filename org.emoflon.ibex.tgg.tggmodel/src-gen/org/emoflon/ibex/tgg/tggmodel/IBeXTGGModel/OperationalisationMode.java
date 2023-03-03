@@ -68,22 +68,22 @@ public enum OperationalisationMode implements Enumerator {
 	 */
 	CHECK_ONLY(4, "CHECK_ONLY", "CHECK_ONLY"),
 	/**
-	* The '<em><b>SOURCE</b></em>' literal object.
-	* <!-- begin-user-doc -->
+	 * The '<em><b>SOURCE</b></em>' literal object.
+	 * <!-- begin-user-doc -->
 	* <!-- end-user-doc -->
-	* @see #SOURCE_VALUE
-	* @generated
-	* @ordered
-	*/
+	 * @see #SOURCE_VALUE
+	 * @generated
+	 * @ordered
+	 */
 	SOURCE(5, "SOURCE", "SOURCE"),
 	/**
-	* The '<em><b>TARGET</b></em>' literal object.
-	* <!-- begin-user-doc -->
+	 * The '<em><b>TARGET</b></em>' literal object.
+	 * <!-- begin-user-doc -->
 	* <!-- end-user-doc -->
-	* @see #TARGET_VALUE
-	* @generated
-	* @ordered
-	*/
+	 * @see #TARGET_VALUE
+	 * @generated
+	 * @ordered
+	 */
 	TARGET(6, "TARGET", "TARGET");
 
 	/**

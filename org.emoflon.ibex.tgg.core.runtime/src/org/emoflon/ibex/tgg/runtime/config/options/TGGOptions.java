@@ -4,48 +4,46 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EPackage;
-import org.emoflon.ibex.util.config.IbexOptions;
-
-import language.TGG;
-import language.TGGRule;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 
 public class TGGOptions extends IbexSubOptions {
 
-	private TGG tgg;
-	private TGG flattenedTGG;
+	private TGGModel tgg;
+	private TGGModel flattenedTGG;
 	private EPackage corrMetamodel;
 
 	public TGGOptions(IbexOptions options) {
 		super(options);
 	}
 
-	public IbexOptions tgg(TGG tgg) {
+	public IbexOptions tgg(TGGModel tgg) {
 		this.tgg = tgg;
 		return options;
 	}
 
-	public TGG tgg() {
+	public TGGModel tgg() {
 		return tgg;
 	}
 
-	public IbexOptions flattenedTgg(TGG flattenedTGG) {
+	public IbexOptions flattenedTgg(TGGModel flattenedTGG) {
 		this.flattenedTGG = flattenedTGG;
 		return options;
 	}
 
-	public TGG flattenedTGG() {
+	public TGGModel flattenedTGG() {
 		return flattenedTGG;
 	}
 
 	public Collection<TGGRule> getFlattenedConcreteTGGRules() {
-		return flattenedTGG.getRules() //
+		return flattenedTGG.getRuleSet().getRules() //
 				.stream() //
 				.filter(r -> !r.isAbstract()) //
 				.collect(Collectors.toList());
 	}
 
 	public Collection<TGGRule> getConcreteTGGRules() {
-		return tgg.getRules() //
+		return tgg.getRuleSet().getRules() //
 				.stream() //
 				.filter(r -> !r.isAbstract()) //
 				.collect(Collectors.toList());

@@ -1,7 +1,6 @@
 package org.emoflon.ibex.tgg.runtime.config.options;
 
 import java.util.function.BiPredicate;
-
 import org.emoflon.ibex.tgg.compiler.analysis.ACStrategy;
 import org.emoflon.ibex.tgg.runtime.patterns.GreenPatternFactoryProvider;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;

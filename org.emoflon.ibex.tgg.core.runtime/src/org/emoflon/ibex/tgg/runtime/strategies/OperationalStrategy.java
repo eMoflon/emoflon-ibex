@@ -10,11 +10,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.IGreenInterpreter;
-import org.emoflon.ibex.tgg.runtime.benchmark.TimeMeasurable;
-import org.emoflon.ibex.tgg.runtime.benchmark.TimeRegistry;
-import org.emoflon.ibex.tgg.runtime.benchmark.Timer;
-import org.emoflon.ibex.tgg.runtime.benchmark.Times;
-import org.emoflon.ibex.tgg.runtime.debug.LoggerConfig;
+import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.matches.TGGMatchParameterOrderProvider;
@@ -31,8 +27,13 @@ import org.emoflon.ibex.tgg.runtime.strategies.modules.MatchHandler;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.TGGResourceHandler;
 import org.emoflon.ibex.tgg.runtime.updatepolicy.IUpdatePolicy;
 import org.emoflon.ibex.tgg.runtime.updatepolicy.NextMatchUpdatePolicy;
-import org.emoflon.ibex.tgg.util.ConsoleUtil;
-import org.emoflon.ibex.util.config.IbexOptions;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel;
+import org.emoflon.ibex.tgg.util.benchmark.TimeMeasurable;
+import org.emoflon.ibex.tgg.util.benchmark.TimeRegistry;
+import org.emoflon.ibex.tgg.util.benchmark.Timer;
+import org.emoflon.ibex.tgg.util.benchmark.Times;
+import org.emoflon.ibex.tgg.util.debug.ConsoleUtil;
+import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 
 import language.TGG;
 
@@ -112,7 +113,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 	/***** Resource management *****/
 
-	public TGG getTGG() {
+	public TGGModel getTGG() {
 		return options.tgg.tgg();
 	}
 

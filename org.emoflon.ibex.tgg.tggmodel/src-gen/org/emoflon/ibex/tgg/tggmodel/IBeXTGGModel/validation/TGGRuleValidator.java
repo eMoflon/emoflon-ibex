@@ -31,4 +31,6 @@ public interface TGGRuleValidator {
 	boolean validateOperationalisations(EList<TGGOperationalRule> value);
 
 	boolean validateAttributeConstraints(TGGAttributeConstraintSet value);
+
+	boolean validateAbstract(boolean value);
 }

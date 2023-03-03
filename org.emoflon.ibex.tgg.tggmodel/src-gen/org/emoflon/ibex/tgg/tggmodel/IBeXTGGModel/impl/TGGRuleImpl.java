@@ -42,6 +42,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getCorrespondenceNodes <em>Correspondence Nodes</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getOperationalisations <em>Operationalisations</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getAttributeConstraints <em>Attribute Constraints</em>}</li>
+ *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#isAbstract <em>Abstract</em>}</li>
  * </ul>
  *
  * @generated
@@ -96,6 +97,26 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 	 * @ordered
 	 */
 	protected TGGAttributeConstraintSet attributeConstraints;
+
+	/**
+	 * The default value of the '{@link #isAbstract() <em>Abstract</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isAbstract()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final boolean ABSTRACT_EDEFAULT = false;
+
+	/**
+	 * The cached value of the '{@link #isAbstract() <em>Abstract</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isAbstract()
+	 * @generated
+	 * @ordered
+	 */
+	protected boolean abstract_ = ABSTRACT_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -223,6 +244,28 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public boolean isAbstract() {
+		return abstract_;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setAbstract(boolean newAbstract) {
+		boolean oldAbstract = abstract_;
+		abstract_ = newAbstract;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__ABSTRACT, oldAbstract,
+					abstract_));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
@@ -256,6 +299,8 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 			return getOperationalisations();
 		case IBeXTGGModelPackage.TGG_RULE__ATTRIBUTE_CONSTRAINTS:
 			return getAttributeConstraints();
+		case IBeXTGGModelPackage.TGG_RULE__ABSTRACT:
+			return isAbstract();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -288,6 +333,9 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		case IBeXTGGModelPackage.TGG_RULE__ATTRIBUTE_CONSTRAINTS:
 			setAttributeConstraints((TGGAttributeConstraintSet) newValue);
 			return;
+		case IBeXTGGModelPackage.TGG_RULE__ABSTRACT:
+			setAbstract((Boolean) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -315,6 +363,9 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		case IBeXTGGModelPackage.TGG_RULE__ATTRIBUTE_CONSTRAINTS:
 			setAttributeConstraints((TGGAttributeConstraintSet) null);
 			return;
+		case IBeXTGGModelPackage.TGG_RULE__ABSTRACT:
+			setAbstract(ABSTRACT_EDEFAULT);
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -337,8 +388,27 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 			return operationalisations != null && !operationalisations.isEmpty();
 		case IBeXTGGModelPackage.TGG_RULE__ATTRIBUTE_CONSTRAINTS:
 			return attributeConstraints != null;
+		case IBeXTGGModelPackage.TGG_RULE__ABSTRACT:
+			return abstract_ != ABSTRACT_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public String toString() {
+		if (eIsProxy())
+			return super.toString();
+
+		StringBuilder result = new StringBuilder(super.toString());
+		result.append(" (abstract: ");
+		result.append(abstract_);
+		result.append(')');
+		return result.toString();
 	}
 
 } //TGGRuleImpl

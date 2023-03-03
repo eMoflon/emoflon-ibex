@@ -50,6 +50,7 @@
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGRule/correspondenceNodes"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGRule/operationalisations"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGRule/attributeConstraints"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXTGGModel.ecore#//TGGRule/abstract"/>
     </genClasses>
     <genClasses ecoreClass="IBeXTGGModel.ecore#//TGGOperationalRule">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXTGGModel.ecore#//TGGOperationalRule/operationalisationMode"/>

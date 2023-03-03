@@ -22,6 +22,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintSet;
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getCorrespondenceNodes <em>Correspondence Nodes</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getOperationalisations <em>Operationalisations</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getAttributeConstraints <em>Attribute Constraints</em>}</li>
+ *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#isAbstract <em>Abstract</em>}</li>
  * </ul>
  *
  * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage#getTGGRule()
@@ -98,5 +99,27 @@ public interface TGGRule extends IBeXRule {
 	 * @generated
 	 */
 	void setAttributeConstraints(TGGAttributeConstraintSet value);
+
+	/**
+	 * Returns the value of the '<em><b>Abstract</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Abstract</em>' attribute.
+	 * @see #setAbstract(boolean)
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage#getTGGRule_Abstract()
+	 * @model
+	 * @generated
+	 */
+	boolean isAbstract();
+
+	/**
+	 * Sets the value of the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#isAbstract <em>Abstract</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Abstract</em>' attribute.
+	 * @see #isAbstract()
+	 * @generated
+	 */
+	void setAbstract(boolean value);
 
 } // TGGRule

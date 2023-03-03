@@ -351,13 +351,22 @@ public interface IBeXTGGModelPackage extends EPackage {
 	int TGG_RULE__ATTRIBUTE_CONSTRAINTS = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 4;
 
 	/**
+	 * The feature id for the '<em><b>Abstract</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_RULE__ABSTRACT = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 5;
+
+	/**
 	 * The number of structural features of the '<em>TGG Rule</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE_FEATURE_COUNT = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 5;
+	int TGG_RULE_FEATURE_COUNT = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 6;
 
 	/**
 	 * The number of operations of the '<em>TGG Rule</em>' class.
@@ -494,6 +503,15 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int TGG_OPERATIONAL_RULE__ATTRIBUTE_CONSTRAINTS = TGG_RULE__ATTRIBUTE_CONSTRAINTS;
+
+	/**
+	 * The feature id for the '<em><b>Abstract</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_OPERATIONAL_RULE__ABSTRACT = TGG_RULE__ABSTRACT;
 
 	/**
 	 * The feature id for the '<em><b>Operationalisation Mode</b></em>' attribute.
@@ -1086,6 +1104,17 @@ public interface IBeXTGGModelPackage extends EPackage {
 	EReference getTGGRule_AttributeConstraints();
 
 	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#isAbstract <em>Abstract</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Abstract</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#isAbstract()
+	 * @see #getTGGRule()
+	 * @generated
+	 */
+	EAttribute getTGGRule_Abstract();
+
+	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule <em>TGG Operational Rule</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1394,6 +1423,14 @@ public interface IBeXTGGModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference TGG_RULE__ATTRIBUTE_CONSTRAINTS = eINSTANCE.getTGGRule_AttributeConstraints();
+
+		/**
+		 * The meta object literal for the '<em><b>Abstract</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute TGG_RULE__ABSTRACT = eINSTANCE.getTGGRule_Abstract();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGOperationalRuleImpl <em>TGG Operational Rule</em>}' class.

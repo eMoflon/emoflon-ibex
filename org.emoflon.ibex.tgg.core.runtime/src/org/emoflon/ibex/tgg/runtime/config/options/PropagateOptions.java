@@ -1,7 +1,5 @@
 package org.emoflon.ibex.tgg.runtime.config.options;
 
-import org.emoflon.ibex.util.config.IbexOptions;
-
 public class PropagateOptions extends IbexSubOptions {
 	
 	private boolean applyConcurrently;
