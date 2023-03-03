@@ -18,7 +18,6 @@ import org.emoflon.ibex.tgg.compiler.analysis.FilterNACCandidate.EdgeDirection;
 import org.emoflon.ibex.tgg.compiler.patterns.InjectivityConstraintHandler;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
-import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
@@ -34,13 +33,11 @@ public class ACPatternTransformation {
 	private IBeXCoreModelFactory factory = IBeXCoreModelFactory.eINSTANCE;
 
 	private TGGModel tgg;
-	private IbexOptions options;
 
 	private Map<IBeXNode, IBeXNode> copyToOriginal = new HashMap<>();
 	
-	public ACPatternTransformation(TGGModel tgg, IbexOptions options) {
+	public ACPatternTransformation(TGGModel tgg) {
 		this.tgg = tgg;
-		this.options = options;
 	}
 
 	/**

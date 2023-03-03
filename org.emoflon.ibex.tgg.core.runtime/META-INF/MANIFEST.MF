@@ -24,7 +24,6 @@ Require-Bundle: org.eclipse.emf.ecore,
  org.emoflon.smartemf,
  org.moflon.core.propertycontainer;bundle-version="2.1.0",
  org.emoflon.ibex.tgg.util;bundle-version="1.0.0",
- org.emoflon.ibex.tgg.compiler,
  org.emoflon.ibex.tgg.tggmodel,
  org.emoflon.ibex.tgg.runtimemodel
 Bundle-ManifestVersion: 2

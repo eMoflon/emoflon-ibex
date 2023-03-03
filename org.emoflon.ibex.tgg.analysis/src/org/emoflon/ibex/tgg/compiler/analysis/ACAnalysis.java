@@ -17,7 +17,6 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXOperationType;
 import org.emoflon.ibex.common.slimgt.util.SlimGTModelUtil;
 import org.emoflon.ibex.tgg.compiler.analysis.FilterNACCandidate.EdgeDirection;
-import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
@@ -29,13 +28,13 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 public class ACAnalysis {
 	private DomainType domain;
 	private TGGModel tgg;
-	private IbexOptions options;
-
+	private ACStrategy acStrategy;
+	
 	protected Map<EReference, Collection<TGGRule>> ref2rules = new HashMap<>();
 
-	public ACAnalysis(TGGModel tgg, IbexOptions options) {
+	public ACAnalysis(TGGModel tgg, ACStrategy acStrategy) {
 		this.tgg = tgg;
-		this.options = options;
+		this.acStrategy = acStrategy;
 
 		initializeCaching();
 	}
@@ -56,7 +55,7 @@ public class ACAnalysis {
 	public Collection<FilterNACCandidate> computeFilterNACCandidates(TGGRule rule, DomainType domain) {
 		final Collection<FilterNACCandidate> filterNACs = new ArrayList<>();
 
-		if (options.patterns.acStrategy() == ACStrategy.NONE)
+		if (acStrategy == ACStrategy.NONE)
 			return filterNACs;
 
 		for (TGGNode n : rule.getNodes()) {

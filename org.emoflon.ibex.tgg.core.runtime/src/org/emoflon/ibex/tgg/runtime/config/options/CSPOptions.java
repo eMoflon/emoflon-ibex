@@ -2,7 +2,6 @@ package org.emoflon.ibex.tgg.runtime.config.options;
 
 import org.emoflon.ibex.tgg.runtime.csp.constraints.factories.RuntimeTGGAttrConstraintFactory;
 import org.emoflon.ibex.tgg.runtime.csp.constraints.factories.RuntimeTGGAttrConstraintProvider;
-import org.emoflon.ibex.util.config.IbexOptions;
 
 public class CSPOptions extends IbexSubOptions {
 	

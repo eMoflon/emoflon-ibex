@@ -3,7 +3,6 @@ package org.emoflon.ibex.tgg.runtime.config.options;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.resolution.util.ConflictResolver;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.resolution.util.DefaultConflictResolver;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.pattern.IntegrationPattern;
-import org.emoflon.ibex.util.config.IbexOptions;
 
 public class IntegrationOptions extends IbexSubOptions {
 

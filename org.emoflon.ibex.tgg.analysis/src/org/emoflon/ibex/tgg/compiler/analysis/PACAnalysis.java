@@ -9,7 +9,6 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXOperationType;
 import org.emoflon.ibex.tgg.compiler.analysis.FilterNACCandidate.EdgeDirection;
-import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
@@ -21,8 +20,8 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 public class PACAnalysis extends ACAnalysis {
 	private TGGModel tgg;
 
-	public PACAnalysis(TGGModel tgg, IbexOptions options) {
-		super(tgg, options);
+	public PACAnalysis(TGGModel tgg) {
+		super(tgg, ACStrategy.PACS);
 		this.tgg = tgg;
 
 		initializeCaching();
