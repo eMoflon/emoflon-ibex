@@ -13,29 +13,26 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXOperationType;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 import org.emoflon.ibex.tgg.runtime.IGreenInterpreter;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.runtime.patterns.IGreenPattern;
-import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.GreenSCPattern;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.SCMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.TGGResourceHandler;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
 import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
-
-import language.TGGAttributeConstraintOperators;
-import language.TGGAttributeExpression;
-import language.TGGEnumExpression;
-import language.TGGInplaceAttributeExpression;
-import language.TGGLiteralExpression;
-import language.TGGNamedElement;
-import language.TGGRuleCorr;
-import language.TGGRuleEdge;
-import language.TGGRuleNode;
 
 /**
  * Util class for creating EObjects, Edges, and Correspondences for a given set
@@ -60,22 +57,28 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		resourceHandler = options.resourceHandler();
 	}
 
-	public void createNonCorrNodes(ITGGMatch comatch, Collection<TGGRuleNode> greenNodes, Resource nodeResource) {
-		for (TGGRuleNode n : greenNodes) {
-			comatch.put(n.getName(), createNode(comatch, n));
-			numOfCreatedNodes++;
-		}
+	public void createNonCorrNode(ITGGMatch comatch, TGGNode node, Resource nodeResource) {
+		comatch.put(node.getName(), createNode(comatch, node));
+		numOfCreatedNodes++;
 	}
 
-	public Collection<EMFEdge> createEdges(ITGGMatch comatch, Collection<TGGRuleEdge> greenEdges, boolean createEMFEdge) {
+	public Collection<EMFEdge> createEdges(ITGGMatch comatch, Collection<IBeXEdge> greenEdges, boolean createEMFEdge) {
 		Collection<EMFEdge> result = new ArrayList<>();
-		for (TGGRuleEdge e : greenEdges) {
-			EObject src = (EObject) comatch.get(e.getSrcNode().getName());
-			EObject trg = (EObject) comatch.get(e.getTrgNode().getName());
+		for (IBeXEdge e : greenEdges) {
+			EObject src = (EObject) comatch.get(e.getSource().getName());
+			EObject trg = (EObject) comatch.get(e.getTarget().getName());
 			if (createEMFEdge) {
 				EMFManipulationUtils.createEdge(src, trg, e.getType());
 			}
-			result.add(new EMFEdge(src, trg, e.getType()));
+			
+			// create actual edge
+			var newEdge = new EMFEdge(src, trg, e.getType());
+
+			// add corr caching in case that this is a correspondence edge
+			if(e.getSource() instanceof TGGCorrespondence) 
+				resourceHandler.addCorrCachingEdge(newEdge);
+			
+			result.add(newEdge);
 		}
 
 		comatch.getCreatedEdges().addAll(result);
@@ -83,16 +86,13 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		return result;
 	}
 
-	public void createCorrs(ITGGMatch comatch, Collection<TGGRuleCorr> greenCorrs, Resource corrR) {
-		for (TGGRuleCorr c : greenCorrs) {
-			EObject createCorr = createCorr(comatch, c, comatch.get(c.getSource().getName()),
-					comatch.get(c.getTarget().getName()));
-			resourceHandler.addCorrCachingNode(createCorr);
-			comatch.put(c.getName(), createCorr);
-		}
+	public void createCorr(ITGGMatch comatch, TGGCorrespondence correspondence, Resource correspondenceResource) {
+		EObject createCorr = createCorr(comatch, correspondence, comatch.get(correspondence.getSource().getName()), comatch.get(correspondence.getTarget().getName()));
+		resourceHandler.addCorrCachingNode(createCorr);
+		comatch.put(correspondence.getName(), createCorr);
 	}
 
-	private EObject createNode(ITGGMatch match, TGGRuleNode node) {
+	private EObject createNode(ITGGMatch match, TGGNode node) {
 		EObject newObj = EcoreUtil.create(node.getType());
 
 		applyInPlaceAttributeAssignments(match, node, newObj);
@@ -110,7 +110,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		return Optional.of(Pair.of(node_attr[1], node_attr[2]));
 	}
 
-	private void applyAttributeAssignments(ITGGMatch match, TGGRuleNode node, EObject newObj) {
+	private void applyAttributeAssignments(ITGGMatch match, TGGNode node, EObject newObj) {
 		Collection<String> attributeNames = match.getParameterNames().stream() //
 				.filter(pname -> {
 					Optional<Pair<String, String>> o = getNodeAndAttrFromVarName(pname);
@@ -129,12 +129,11 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		}
 	}
 
-	public void applyInPlaceAttributeAssignments(ITGGMatch match, TGGRuleNode node, EObject newObj) {
+	public void applyInPlaceAttributeAssignments(ITGGMatch match, TGGNode node, EObject newObj) {
 		for (TGGInplaceAttributeExpression attrExpr : node.getAttrExpr()) {
 			if (attrExpr.getOperator().equals(TGGAttributeConstraintOperators.EQUAL)) {
 				if (attrExpr.getValueExpr() instanceof TGGLiteralExpression tle) {
-					newObj.eSet(attrExpr.getAttribute(), String2EPrimitive.convertLiteral(tle.getValue(),
-							attrExpr.getAttribute().getEAttributeType()));
+					newObj.eSet(attrExpr.getAttribute(), String2EPrimitive.convertLiteral(tle.getValue(), attrExpr.getAttribute().getEAttributeType()));
 					continue;
 				}
 				if (attrExpr.getValueExpr() instanceof TGGEnumExpression tee) {
@@ -146,12 +145,11 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 					newObj.eSet(attrExpr.getAttribute(), obj.eGet(tae.getAttribute()));
 					continue;
 				}
-
 			}
 		}
 	}
 
-	private void handlePlacementInResource(TGGRuleNode node, Resource resource, EObject newObj) {
+	private void handlePlacementInResource(TGGNode node, Resource resource, EObject newObj) {
 		try {
 			if(newObj.eContainer() == null)
 				resource.getContents().add(newObj);
@@ -160,7 +158,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		}
 	}
 
-	private EObject createCorr(ITGGMatch comatch, TGGRuleNode node, Object src, Object trg) {
+	private EObject createCorr(ITGGMatch comatch, TGGNode node, Object src, Object trg) {
 		EObject corr = createNode(comatch, node);
 		corr.eSet(corr.eClass().getEStructuralFeature("source"), src);
 		corr.eSet(corr.eClass().getEStructuralFeature("target"), trg);
@@ -169,60 +167,65 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	}
 
 	@Override
-	public Optional<ITGGMatch> apply(IGreenPattern greenPattern, String ruleName, ITGGMatch match) {
+	public Optional<ITGGMatch> apply(TGGOperationalRule operationRule, String ruleName, ITGGMatch match) {
 		// Check if match is valid
 		// TODO lfritsche, amoeller: this can maybe make problems? here the problem is that we create before deleting 
-		if (matchIsInvalid(ruleName, greenPattern, match) && !(options.repair.disableInjectivity() && match instanceof SCMatch)) {
+		if (matchIsInvalid(ruleName, operationRule, match) && !(options.repair.disableInjectivity() && match instanceof SCMatch)) {
 			LoggerConfig.log(LoggerConfig.log_ruleApplication(), () -> "Blocking application as match is invalid.");
 			return Optional.empty();
 		}
 
-		// Check if pattern should be ignored
-		if (greenPattern.isToBeIgnored(match)) {
-			return Optional.empty();
-		}
-
 		// Check if all attribute values provided match are as expected
-		IRuntimeTGGAttrConstrContainer cspContainer = greenPattern.getAttributeConstraintContainer(match);
+		IRuntimeTGGAttrConstrContainer cspContainer = operationRule.getAttributeConstraintContainer(match);
 		if (!cspContainer.solve()) {
 			LoggerConfig.log(LoggerConfig.log_ruleApplication(), () -> "Blocking application as attribute conditions don't hold.");
 			return Optional.empty();
 		}
 
 		ITGGMatch comatch = match.copy();
-
-		createNonCorrNodes(comatch, greenPattern.getSrcNodes(), resourceHandler.getSourceResource());
-		createNonCorrNodes(comatch, greenPattern.getTrgNodes(), resourceHandler.getTargetResource());
-		createCorrs(comatch, greenPattern.getCorrNodes(), resourceHandler.getCorrResource());
-
+		IBeXRuleDelta createDelta = operationRule.getCreation();
+		
+		for(var createdNode : createDelta.getNodes()) {
+			if(createdNode instanceof TGGCorrespondence correspondence)
+				createCorr(comatch, correspondence, resourceHandler.getCorrResource());
+			else if(createdNode instanceof TGGNode node) {
+				if(node.getDomainType() == DomainType.SOURCE)
+					createNonCorrNode(comatch, node, resourceHandler.getSourceResource());
+				else 
+					createNonCorrNode(comatch, node, resourceHandler.getTargetResource());
+			}
+		}
+		
 		cspContainer.applyCSPValues(comatch);
 
-		createEdges(comatch, greenPattern.getSrcEdges(), true);
-		createEdges(comatch, greenPattern.getTrgEdges(), true);
-		Collection<EMFEdge> corrEdges = createEdges(comatch, greenPattern.getCorrEdges(), true);
-
-		greenPattern.getSrcNodes().forEach(n -> handlePlacementInResource(n, resourceHandler.getSourceResource(), (EObject) comatch.get(n.getName())));
-		greenPattern.getCorrNodes().forEach(n -> handlePlacementInResource(n, resourceHandler.getCorrResource(), (EObject) comatch.get(n.getName())));
-		greenPattern.getTrgNodes().forEach(n -> handlePlacementInResource(n, resourceHandler.getTargetResource(), (EObject) comatch.get(n.getName())));
-
-		corrEdges.forEach(resourceHandler::addCorrCachingEdge);
+		createEdges(comatch, operationRule.getCreation().getEdges(), true);
 		
+		for(var greenElement : createDelta.getNodes()) {
+			handlePlacementInResource((TGGNode) greenElement, resourceHandler.getSourceResource(), (EObject) comatch.get(greenElement.getName()));
+		}
+
 		return Optional.of(comatch);
 	}
 
-	private boolean matchIsInvalid(String ruleName, IGreenPattern greenPattern, ITGGMatch match) {
-		return violatesConformTypesOfGreenNodes(match, greenPattern, ruleName)
-				|| violatesUpperBounds(ruleName, greenPattern, match)
-				|| violatesContainerSemantics(ruleName, greenPattern, match)
-				|| createsDoubleEdge(ruleName, greenPattern, match)
-				|| createsCyclicContainment(ruleName, greenPattern, match);
+	private boolean matchIsInvalid(String ruleName, TGGOperationalRule operationalRule, ITGGMatch match) {
+		return violatesConformTypesOfGreenNodes(match, operationalRule, ruleName)
+				|| violatesUpperBounds(ruleName, operationalRule, match)
+				|| violatesContainerSemantics(ruleName, operationalRule, match)
+				|| createsDoubleEdge(ruleName, operationalRule, match)
+				|| createsCyclicContainment(ruleName, operationalRule, match);
 	}
 
-	private boolean createsCyclicContainment(String ruleName, IGreenPattern greenPattern, ITGGMatch match) {
-		for (TGGRuleEdge edge : greenPattern.getSrcTrgEdgesCreatedByPattern()) {
-			if (canCreateCyclicContainment(greenPattern, edge)) {
-				EObject src = (EObject) match.get(edge.getSrcNode().getName());
-				EObject trg = (EObject) match.get(edge.getTrgNode().getName());
+	private boolean createsCyclicContainment(String ruleName, TGGOperationalRule operationalRule, ITGGMatch match) {
+		for (IBeXEdge edge : operationalRule.getCreation().getEdges()) {
+			TGGEdge tggEdge = (TGGEdge) edge;
+
+			// we only search for cyclic containments on the source and target side
+			if(tggEdge.getDomainType() == DomainType.CORRESPONDENCE)
+				continue;
+			
+			if (canCreateCyclicContainment(operationalRule, tggEdge)) {
+				EObject src = (EObject) match.get(tggEdge.getSource().getName());
+				EObject trg = (EObject) match.get(tggEdge.getTarget().getName());
 
 				Iterator<?> itr = trg.eAllContents();
 				while (itr.hasNext()) {
@@ -235,16 +238,16 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		return false;
 	}
 
-	private boolean canCreateCyclicContainment(IGreenPattern greenPattern, TGGRuleEdge edge) {
-		return isBlackNode(edge.getSrcNode(), greenPattern) && isBlackNode(edge.getTrgNode(), greenPattern)
+	private boolean canCreateCyclicContainment(TGGOperationalRule operationRule, TGGEdge edge) {
+		return isBlackNode(edge.getSource()) && isBlackNode(edge.getTarget())
 				&& edge.getType().isContainment();
 	}
 
-	private boolean createsDoubleEdge(String ruleName, IGreenPattern greenPattern, ITGGMatch match) {
-		for (TGGRuleEdge edge : greenPattern.getSrcTrgEdgesCreatedByPattern()) {
-			if (canCreateDoubleEdge(greenPattern, edge)) {
-				EObject src = (EObject) match.get(edge.getSrcNode().getName());
-				EObject trg = (EObject) match.get(edge.getTrgNode().getName());
+	private boolean createsDoubleEdge(String ruleName, TGGOperationalRule operationRule, ITGGMatch match) {
+		for (IBeXEdge edge : operationRule.getCreation().getEdges()) {
+			if (canCreateDoubleEdge(edge)) {
+				EObject src = (EObject) match.get(edge.getSource().getName());
+				EObject trg = (EObject) match.get(edge.getTarget().getName());
 
 				EReference ref = edge.getType();
 
@@ -262,23 +265,23 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		return false;
 	}
 
-	private boolean canCreateDoubleEdge(IGreenPattern greenPattern, TGGRuleEdge edge) {
-		return isBlackNode(edge.getSrcNode(), greenPattern) && isBlackNode(edge.getTrgNode(), greenPattern);
+	private boolean canCreateDoubleEdge(IBeXEdge edge) {
+		return isBlackNode(edge.getSource()) && isBlackNode(edge.getTarget());
 	}
 
-	private boolean isBlackNode(TGGRuleNode srcNode, IGreenPattern greenPattern) {
-		return !containsByName(greenPattern.getSrcTrgNodesCreatedByPattern(), srcNode);
+	private boolean isBlackNode(IBeXNode srcNode) {
+		return srcNode.getOperationType() == IBeXOperationType.CONTEXT;
 	}
 
-	private boolean violatesContainerSemantics(String ruleName, IGreenPattern greenPattern, ITGGMatch match) {
-		// GreenSCPattern do not need this check since it is allowed in order to repair
-		// a model
-		if (greenPattern instanceof GreenSCPattern)
-			return false;
+	private boolean violatesContainerSemantics(String ruleName, TGGOperationalRule operationalRule, ITGGMatch match) {
+		// TODO larsF, adrianM: fix für short cut framework
+		// GreenSCPattern do not need this check since it is allowed in order to repair a model
+//		if (greenPattern instanceof GreenSCPattern)
+//			return false;
 
-		for (TGGRuleEdge greenEdge : greenPattern.getSrcTrgEdgesCreatedByPattern()) {
-			if (violationOfContainerSemanticsIsPossible(greenPattern, greenEdge)) {
-				EObject trgObj = (EObject) match.get(greenEdge.getTrgNode().getName());
+		for (IBeXEdge greenEdge : operationalRule.getCreation().getEdges()) {
+			if (violationOfContainerSemanticsIsPossible(operationalRule, greenEdge)) {
+				EObject trgObj = (EObject) match.get(greenEdge.getTarget().getName());
 				if (trgObj.eContainer() != null)
 					return true;
 			}
@@ -287,15 +290,14 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		return false;
 	}
 
-	private boolean violationOfContainerSemanticsIsPossible(IGreenPattern greenPattern, TGGRuleEdge greenEdge) {
-		return greenEdge.getType().isContainment()
-				&& !containsByName(greenPattern.getSrcTrgNodesCreatedByPattern(), greenEdge.getTrgNode());
+	private boolean violationOfContainerSemanticsIsPossible(TGGOperationalRule operationalRule, IBeXEdge greenEdge) {
+		return greenEdge.getType().isContainment() && isBlackNode(greenEdge.getTarget());
 	}
 
-	private boolean violatesUpperBounds(String ruleName, IGreenPattern greenPattern, ITGGMatch match) {
-		for (TGGRuleEdge greenEdge : greenPattern.getSrcTrgEdgesCreatedByPattern()) {
-			if (violationIsPossible(greenPattern, greenEdge)) {
-				if (violatesUpperBounds(ruleName, greenEdge, match, greenPattern))
+	private boolean violatesUpperBounds(String ruleName, TGGOperationalRule operationalRule, ITGGMatch match) {
+		for (IBeXEdge greenEdge : operationalRule.getCreation().getEdges()) {
+			if (violationIsPossible(greenEdge)) {
+				if (violatesUpperBounds(ruleName, greenEdge, match, operationalRule))
 					return true;
 			}
 		}
@@ -311,33 +313,27 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	 * @param greenEdge
 	 * @return
 	 */
-	private boolean violationIsPossible(IGreenPattern greenPattern, TGGRuleEdge greenEdge) {
+	private boolean violationIsPossible(IBeXEdge greenEdge) {
 		return greenEdge.getType().getUpperBound() != -1
-				&& !containsByName(greenPattern.getSrcTrgNodesCreatedByPattern(), greenEdge.getSrcNode());
+				&& isBlackNode(greenEdge.getSource());
 	}
 
-	private boolean containsByName(Collection<? extends TGGNamedElement> elts, TGGNamedElement elt) {
-		return elts.stream().anyMatch(x -> x.getName().equals(elt.getName()));
-	}
-
-	private boolean violatesUpperBounds(String ruleName, TGGRuleEdge greenEdge, ITGGMatch match,
-			IGreenPattern greenPattern) {
-		EObject matchedSrcNode = (EObject) match.get(greenEdge.getSrcNode().getName());
+	private boolean violatesUpperBounds(String ruleName, IBeXEdge greenEdge, ITGGMatch match, TGGOperationalRule operationalRule) {
+		EObject matchedSrcNode = (EObject) match.get(greenEdge.getSource().getName());
 		int upperBound = greenEdge.getType().getUpperBound();
 
 		if (greenEdge.getType().isMany()) {
 			Collection<?> existingObjects = (Collection<?>) matchedSrcNode.eGet(greenEdge.getType());
-			return existingObjects.size() + edgesOfThisTypeCreatedByRule(greenEdge.getSrcNode(), greenEdge.getType(),
-					greenPattern) > upperBound;
+			return existingObjects.size() + edgesOfThisTypeCreatedByRule(greenEdge.getSource(), greenEdge.getType(), operationalRule) > upperBound;
 		} else {
 			assert (upperBound == 1);
 			return matchedSrcNode.eGet(greenEdge.getType()) != null;
 		}
 	}
 
-	private long edgesOfThisTypeCreatedByRule(TGGRuleNode srcOfEdge, EReference ref, IGreenPattern greenPattern) {
-		return greenPattern.getSrcTrgEdgesCreatedByPattern().stream()//
-				.filter(e -> e.getSrcNode().equals(srcOfEdge))//
+	private long edgesOfThisTypeCreatedByRule(IBeXNode srcOfEdge, EReference ref, TGGOperationalRule operationalRule) {
+		return operationalRule.getCreation().getEdges().stream()//
+				.filter(e -> e.getSource().equals(srcOfEdge))//
 				.filter(e -> e.getType().equals(ref))//
 				.count();
 	}
@@ -354,9 +350,9 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	 * @param ruleName
 	 * @return
 	 */
-	protected boolean violatesConformTypesOfGreenNodes(ITGGMatch match, IGreenPattern greenPattern, String ruleName) {
-		for (TGGRuleNode gsn : greenPattern.getNodesMarkedByPattern()) {
-			if (gsn.getType() != ((EObject) match.get(gsn.getName())).eClass())
+	protected boolean violatesConformTypesOfGreenNodes(ITGGMatch match, TGGOperationalRule operationalRule, String ruleName) {
+		for (IBeXNode markedNode : operationalRule.getMarked().getNodes()) {
+			if (markedNode.getType() != ((EObject) match.get(markedNode.getName())).eClass())
 				return true;
 		}
 

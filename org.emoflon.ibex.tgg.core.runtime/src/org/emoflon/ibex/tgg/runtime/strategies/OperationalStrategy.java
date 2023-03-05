@@ -18,9 +18,6 @@ import org.emoflon.ibex.tgg.runtime.matches.container.DefaultMatchContainer;
 import org.emoflon.ibex.tgg.runtime.matches.container.IMatchContainer;
 import org.emoflon.ibex.tgg.runtime.matches.container.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.runtime.monitoring.AbstractIbexObservable;
-import org.emoflon.ibex.tgg.runtime.patterns.GreenPatternFactoryProvider;
-import org.emoflon.ibex.tgg.runtime.patterns.IGreenPattern;
-import org.emoflon.ibex.tgg.runtime.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.IbexExecutable;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.MatchDistributor;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.MatchHandler;
@@ -196,16 +193,15 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 			return Optional.empty();
 		}
 
-		IGreenPatternFactory factory = greenFactories.get(ruleName);
-		IGreenPattern greenPattern = factory.create(match.getType());
-
+		TGGOperationalRule operationRule = getOperationalRule(ruleName);
+		
 		LoggerConfig.log(LoggerConfig.log_ruleApplication(),
 				() -> "Rule application: attempting to apply " + match.getPatternName() + "(" + match.hashCode() + ") with " //
-						+ greenPattern.getClass().getSimpleName() + "@" + Integer.toHexString(greenPattern.hashCode()));
+						+ operationRule.getClass().getSimpleName() + "@" + Integer.toHexString(operationRule.hashCode()));
 		times.addTo("ruleApplication:init", Timer.stop());
 
 		Timer.start();
-		Optional<ITGGMatch> comatch = greenInterpreter.apply(greenPattern, ruleName, match);
+		Optional<ITGGMatch> comatch = greenInterpreter.apply(operationRule, ruleName, match);
 		times.addTo("ruleApplication:createElements", Timer.stop());
 
 		comatch.ifPresent(cm -> {
@@ -216,15 +212,15 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 			operationalMatchContainer.matchApplied(match);
 
 			Timer.start();
-			handleSuccessfulRuleApplication(cm, ruleName, greenPattern);
+			handleSuccessfulRuleApplication(cm, ruleName, operationRule);
 			times.addTo("ruleApplication:finish", Timer.stop());
 		});
 
 		return comatch;
 	}
 
-	protected void handleSuccessfulRuleApplication(ITGGMatch cm, String ruleName, IGreenPattern greenPattern) {
-		createMarkers(greenPattern, cm, ruleName);
+	protected void handleSuccessfulRuleApplication(ITGGMatch cm, String ruleName, TGGOperationalRule operationRule) {
+		createMarkers(operationRule, cm, ruleName);
 	}
 
 	protected void updateBlockedMatches() {
@@ -256,17 +252,17 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		TimeRegistry.logTimes();
 	}
 
-	protected void prepareMarkerCreation(IGreenPattern greenPattern, ITGGMatch comatch, String ruleName) {
+	protected void prepareMarkerCreation(TGGOperationalRule operationRule, ITGGMatch comatch, String ruleName) {
 
 	}
 
-	protected void createMarkers(IGreenPattern greenPattern, ITGGMatch comatch, String ruleName) {
-		prepareMarkerCreation(greenPattern, comatch, ruleName);
-		greenPattern.createMarkers(ruleName, comatch);
+	protected void createMarkers(TGGOperationalRule operationRule, ITGGMatch comatch, String ruleName) {
+		prepareMarkerCreation(operationRule, comatch, ruleName);
+		operationRule.createMarkers(ruleName, comatch);
 	}
 	
 	public TGGOperationalRule getOperationalRule(String name) {
-		
+		return name2operationalRule.get(name);
 	}
 
 	/***** Configuration *****/
