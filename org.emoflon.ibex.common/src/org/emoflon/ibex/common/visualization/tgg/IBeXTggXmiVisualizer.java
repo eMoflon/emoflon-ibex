@@ -14,10 +14,6 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 import org.moflon.core.ui.VisualiserUtilities;
 import org.moflon.core.ui.visualisation.common.EMoflonDiagramTextProvider;
 
-import language.TGG;
-import language.repair.ExternalShortcutRule;
-import language.repair.TGGRuleElementMapping;
-
 public class IBeXTggXmiVisualizer implements EMoflonDiagramTextProvider {
 
 	@Override
@@ -35,14 +31,15 @@ public class IBeXTggXmiVisualizer implements EMoflonDiagramTextProvider {
 			return IBeXTggXmiPlantUMLGenerator.visualizeTGG(tgg);
 		if (element instanceof TGGRule tggRule)
 			return IBeXTggXmiPlantUMLGenerator.visualizeTGGRule(tggRule);
-		if (element instanceof ExternalShortcutRule extShortcutRule)
-			return IBeXTggXmiPlantUMLGenerator.visualizeSCRuleMerged(extShortcutRule);
-		if (element instanceof TGGRuleElementMapping ruleEltMapping) {
-			if (selection.size() <= 1)
-				return IBeXTggXmiPlantUMLGenerator.visualizeMapping(ruleEltMapping);
-			else if (selection.toList().stream().allMatch(e -> e instanceof TGGRuleElementMapping))
-				return IBeXTggXmiPlantUMLGenerator.visualizeMappings(selection.toList());
-		}
+		// TODO larsF, adrianM: fix this to visualize sc rules again
+//				if (element instanceof ExternalShortcutRule extShortcutRule)
+//			return IBeXTggXmiPlantUMLGenerator.visualizeSCRuleMerged(extShortcutRule);
+//		if (element instanceof TGGRuleElementMapping ruleEltMapping) {
+//			if (selection.size() <= 1)
+//				return IBeXTggXmiPlantUMLGenerator.visualizeMapping(ruleEltMapping);
+//			else if (selection.toList().stream().allMatch(e -> e instanceof TGGRuleElementMapping))
+//				return IBeXTggXmiPlantUMLGenerator.visualizeMappings(selection.toList());
+//		}
 
 		throw new IllegalArgumentException("Invalid selection: " + selection);
 	}
@@ -71,8 +68,11 @@ public class IBeXTggXmiVisualizer implements EMoflonDiagramTextProvider {
 				.map(EcoreEditor::getSelection) //
 				.flatMap(maybeCast(TreeSelection.class)) //
 				.map(TreeSelection::getFirstElement) //
-				.filter(elt -> elt instanceof TGGModel || elt instanceof TGGRule || elt instanceof ExternalShortcutRule
-						|| elt instanceof TGGRuleElementMapping) //
+				.filter(elt -> elt instanceof TGGModel || elt instanceof TGGRule
+//						TODO larsF, adrianM: and this
+//						|| elt instanceof ExternalShortcutRule
+//						|| elt instanceof TGGRuleElementMapping
+						) //
 				.isPresent();
 	}
 

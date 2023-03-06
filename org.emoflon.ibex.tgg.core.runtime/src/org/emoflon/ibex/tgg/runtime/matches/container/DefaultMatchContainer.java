@@ -6,11 +6,10 @@ import java.util.Collection;
 import java.util.Set;
 
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
-
-import language.TGG;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel;
 
 public class DefaultMatchContainer implements IMatchContainer {
-	private TGG tgg;
+	private TGGModel tgg;
 	private Set<ITGGMatch> matches;
 
 	private DefaultMatchContainer(DefaultMatchContainer old) {
@@ -18,7 +17,7 @@ public class DefaultMatchContainer implements IMatchContainer {
 		this.tgg = old.tgg;
 	}
 	
-	public DefaultMatchContainer(TGG tgg) {
+	public DefaultMatchContainer(TGGModel tgg) {
 		this.matches = cfactory.createObjectSet();
 		this.tgg = tgg;
 	}

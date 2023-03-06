@@ -14,7 +14,8 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta;
  * </p>
  * <ul>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule#getOperationalisationMode <em>Operationalisation Mode</em>}</li>
- *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule#getMarked <em>Marked</em>}</li>
+ *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule#getToBeMarked <em>To Be Marked</em>}</li>
+ *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule#getAlreadyMarked <em>Already Marked</em>}</li>
  * </ul>
  *
  * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage#getTGGOperationalRule()
@@ -48,25 +49,47 @@ public interface TGGOperationalRule extends TGGRule {
 	void setOperationalisationMode(OperationalisationMode value);
 
 	/**
-	 * Returns the value of the '<em><b>Marked</b></em>' containment reference.
+	 * Returns the value of the '<em><b>To Be Marked</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Marked</em>' containment reference.
-	 * @see #setMarked(IBeXRuleDelta)
-	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage#getTGGOperationalRule_Marked()
+	 * @return the value of the '<em>To Be Marked</em>' containment reference.
+	 * @see #setToBeMarked(IBeXRuleDelta)
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage#getTGGOperationalRule_ToBeMarked()
 	 * @model containment="true"
 	 * @generated
 	 */
-	IBeXRuleDelta getMarked();
+	IBeXRuleDelta getToBeMarked();
 
 	/**
-	 * Sets the value of the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule#getMarked <em>Marked</em>}' containment reference.
+	 * Sets the value of the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule#getToBeMarked <em>To Be Marked</em>}' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Marked</em>' containment reference.
-	 * @see #getMarked()
+	 * @param value the new value of the '<em>To Be Marked</em>' containment reference.
+	 * @see #getToBeMarked()
 	 * @generated
 	 */
-	void setMarked(IBeXRuleDelta value);
+	void setToBeMarked(IBeXRuleDelta value);
+
+	/**
+	 * Returns the value of the '<em><b>Already Marked</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Already Marked</em>' containment reference.
+	 * @see #setAlreadyMarked(IBeXRuleDelta)
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage#getTGGOperationalRule_AlreadyMarked()
+	 * @model containment="true"
+	 * @generated
+	 */
+	IBeXRuleDelta getAlreadyMarked();
+
+	/**
+	 * Sets the value of the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule#getAlreadyMarked <em>Already Marked</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Already Marked</em>' containment reference.
+	 * @see #getAlreadyMarked()
+	 * @generated
+	 */
+	void setAlreadyMarked(IBeXRuleDelta value);
 
 } // TGGOperationalRule

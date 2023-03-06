@@ -347,8 +347,17 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getTGGOperationalRule_Marked() {
+	public EReference getTGGOperationalRule_ToBeMarked() {
 		return (EReference) tggOperationalRuleEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getTGGOperationalRule_AlreadyMarked() {
+		return (EReference) tggOperationalRuleEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
@@ -517,7 +526,8 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 
 		tggOperationalRuleEClass = createEClass(TGG_OPERATIONAL_RULE);
 		createEAttribute(tggOperationalRuleEClass, TGG_OPERATIONAL_RULE__OPERATIONALISATION_MODE);
-		createEReference(tggOperationalRuleEClass, TGG_OPERATIONAL_RULE__MARKED);
+		createEReference(tggOperationalRuleEClass, TGG_OPERATIONAL_RULE__TO_BE_MARKED);
+		createEReference(tggOperationalRuleEClass, TGG_OPERATIONAL_RULE__ALREADY_MARKED);
 
 		tggRuleElementEClass = createEClass(TGG_RULE_ELEMENT);
 		createEAttribute(tggRuleElementEClass, TGG_RULE_ELEMENT__DOMAIN_TYPE);
@@ -635,9 +645,12 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 		initEAttribute(getTGGOperationalRule_OperationalisationMode(), this.getOperationalisationMode(),
 				"operationalisationMode", null, 0, 1, TGGOperationalRule.class, !IS_TRANSIENT, !IS_VOLATILE,
 				IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getTGGOperationalRule_Marked(), theIBeXCoreModelPackage.getIBeXRuleDelta(), null, "marked", null,
-				0, 1, TGGOperationalRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
-				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGGOperationalRule_ToBeMarked(), theIBeXCoreModelPackage.getIBeXRuleDelta(), null,
+				"toBeMarked", null, 0, 1, TGGOperationalRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGGOperationalRule_AlreadyMarked(), theIBeXCoreModelPackage.getIBeXRuleDelta(), null,
+				"alreadyMarked", null, 0, 1, TGGOperationalRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(tggRuleElementEClass, TGGRuleElement.class, "TGGRuleElement", IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);

@@ -33,7 +33,9 @@
   <eClassifiers xsi:type="ecore:EClass" name="TGGOperationalRule" eSuperTypes="#//TGGRule">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="operationalisationMode"
         eType="#//OperationalisationMode"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="marked" eType="ecore:EClass ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXRuleDelta"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="toBeMarked" eType="ecore:EClass ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXRuleDelta"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="alreadyMarked" eType="ecore:EClass ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXRuleDelta"
         containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="TGGRuleElement" abstract="true">

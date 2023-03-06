@@ -1,7 +1,5 @@
 package org.emoflon.ibex.tgg.runtime.defaults;
 
-import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
-
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -11,15 +9,13 @@ import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 import org.emoflon.ibex.tgg.runtime.IRedInterpreter;
+import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.runtime.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.runtime.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.TGGResourceHandler;
-import org.emoflon.ibex.util.config.IbexOptions;
-
-import language.TGGRuleNode;
-import runtime.CorrespondenceNode;
-import runtime.TGGRuleApplication;
+import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.Correspondence;
+import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuleApplication;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 
 public class IbexRedInterpreter implements IRedInterpreter {
 	private final OperationalStrategy strategy;
@@ -108,7 +104,7 @@ public class IbexRedInterpreter implements IRedInterpreter {
 		Set<EMFEdge> edgesToRevoke = new HashSet<EMFEdge>();
 
 		pattern.getCorrNodes().stream() //
-				.map(TGGRuleNode::getName) //
+				.map(TGGNode::getName) //
 				.map(match::get) //
 				.map(EObject.class::cast) //
 				.forEach(corr -> revokeCorr(corr, nodesToRevoke, edgesToRevoke));
@@ -151,7 +147,7 @@ public class IbexRedInterpreter implements IRedInterpreter {
 	 */
 	public void revoke(final Set<EObject> nodesToRevoke, final Set<EMFEdge> edgesToRevoke) {
 		nodesToRevoke.forEach(n -> {
-			if (n instanceof CorrespondenceNode)
+			if (n instanceof Correspondence)
 				numOfDeletedCorrNodes++;
 			else
 				numOfDeletedNodes++;

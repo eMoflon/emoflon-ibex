@@ -18,5 +18,9 @@ public interface TGGOperationalRuleValidator {
 
 	boolean validateOperationalisationMode(OperationalisationMode value);
 
+	boolean validateToBeMarked(IBeXRuleDelta value);
+
+	boolean validateAlreadyMarked(IBeXRuleDelta value);
+
 	boolean validateMarked(IBeXRuleDelta value);
 }

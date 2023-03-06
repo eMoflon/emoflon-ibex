@@ -5,23 +5,24 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.emoflon.ibex.tgg.tggl.tGGL.TGGRule;
+
 import language.BindingType;
 import language.DomainType;
 import language.NAC;
-import language.TGGRule;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
 public class TGGModelUtils {
 
-	public static List<TGGRuleNode> getNodesByOperator(TGGRule rule, BindingType type) {
+	public static List<TGGNode> getNodesByOperator(TGGRule rule, BindingType type) {
 		Objects.requireNonNull(rule, "The rule must not be null!");
 		return rule.getNodes().stream() //
 				.filter(n -> type.equals(n.getBindingType())).sorted((a, b) -> a.getName().compareTo(b.getName())) //
 				.collect(Collectors.toList());
 	}
 
-	public static List<TGGRuleEdge> getEdgesByOperator(TGGRule rule, BindingType type) {
+	public static List<TGGEdge> getEdgesByOperator(TGGRule rule, BindingType type) {
 		Objects.requireNonNull(rule, "The rule must not be null!");
 		return rule.getEdges().stream() //
 				.filter(n -> type.equals(n.getBindingType())).sorted((a, b) -> a.getName().compareTo(b.getName())) //

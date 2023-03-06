@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.PropagatingOperationalStrategy;
@@ -101,11 +103,13 @@ public class BrokenMatchContainer implements IMatchContainer, TimeMeasurable {
 	}
 
 	private void handleMatch(ITGGMatch m) {
-		if (anElementHasAlreadyBeenTranslated(m, gPattern))
+		TGGOperationalRule operationalRule = strategy.getOperationalRule(m.getRuleName());
+		
+		if (anElementHasAlreadyBeenTranslated(m, operationalRule))
 			return;
 		
 		// Register nodes
-		for (TGGRuleNode contextNode : gPattern.getMarkedContextNodes()) {
+		for (IBeXNode contextNode : operationalRule.getAlreadyMarked().getNodes()) {
 			Object contextObj = m.get(contextNode.getName());
 
 			if (!translated.contains(contextObj)) {
@@ -116,7 +120,7 @@ public class BrokenMatchContainer implements IMatchContainer, TimeMeasurable {
 				requiredBy.get(contextObj).add(m);
 			}
 		}
-		for (TGGRuleNode createdNode : gPattern.getNodesMarkedByPattern()) {
+		for (IBeXNode createdNode : operationalRule.getToBeMarked().getNodes()) {
 			Object createdObj = m.get(createdNode.getName());
 
 			translates.computeIfAbsent(m, (x) -> cfactory.createObjectSet());
@@ -130,7 +134,7 @@ public class BrokenMatchContainer implements IMatchContainer, TimeMeasurable {
 		}
 
 		// Register edges
-		for (TGGRuleEdge contextEdge : gPattern.getMarkedContextEdges()) {
+		for (IBeXEdge contextEdge : operationalRule.getAlreadyMarked().getEdges()) {
 			Object contextRuntimeEdge = getRuntimeEdge(m, contextEdge);
 
 			if (!translated.contains(contextRuntimeEdge)) {
@@ -141,7 +145,7 @@ public class BrokenMatchContainer implements IMatchContainer, TimeMeasurable {
 				requires.get(m).add(contextRuntimeEdge);
 			}
 		}
-		for (TGGRuleEdge createdEdge : gPattern.getEdgesMarkedByPattern()) {
+		for (IBeXEdge createdEdge : operationalRule.getToBeMarked().getEdges()) {
 			Object createdRuntimeEdge = getRuntimeEdge(m, createdEdge);
 			translates.computeIfAbsent(m, (x) -> cfactory.createObjectSet());
 			translatedBy.computeIfAbsent(createdRuntimeEdge, (x) -> cfactory.createObjectSet());
@@ -164,14 +168,14 @@ public class BrokenMatchContainer implements IMatchContainer, TimeMeasurable {
 		}
 	}
 
-	private boolean anElementHasAlreadyBeenTranslated(ITGGMatch m, TGGOperationalRule operationRule) {
-		for (TGGNode createdNode : gPattern.getNodesMarkedByPattern()) {
+	private boolean anElementHasAlreadyBeenTranslated(ITGGMatch m, TGGOperationalRule operationalRule) {
+		for (IBeXNode createdNode : operationalRule.getToBeMarked().getNodes()) {
 			Object createdObj = m.get(createdNode.getName());
 			if (translated.contains(createdObj))
 				return true;
 		}
 
-		for (TGGEdge createdEdge : gPattern.getEdgesMarkedByPattern()) {
+		for (IBeXEdge createdEdge : operationalRule.getToBeMarked().getEdges()) {
 			Object createdRuntimeEdge = getRuntimeEdge(m, createdEdge);
 			if (translated.contains(createdRuntimeEdge))
 				return true;
@@ -181,16 +185,15 @@ public class BrokenMatchContainer implements IMatchContainer, TimeMeasurable {
 	}
 	
 	private boolean noElementIsPending(ITGGMatch m) {
-		IGreenPatternFactory gFactory = strategy.getGreenFactories().get(m.getRuleName());
-		IGreenPattern gPattern = gFactory.create(m.getType());
+		TGGOperationalRule operationalRule = strategy.getOperationalRule(m.getRuleName());
 		
-		for (TGGRuleNode createdNode : gPattern.getNodesMarkedByPattern()) {
+		for (IBeXNode createdNode : operationalRule.getToBeMarked().getNodes()) {
 			Object createdObj = m.get(createdNode.getName());
 			if (pendingElts.contains(createdObj))
 				return false;
 		}
 		
-		for (TGGRuleNode contextNode : gPattern.getMarkedContextNodes()) {
+		for (IBeXNode contextNode : operationalRule.getAlreadyMarked().getNodes()) {
 			Object contextObj = m.get(contextNode.getName());
 			if (pendingElts.contains(contextObj))
 				return false;
