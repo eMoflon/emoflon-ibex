@@ -4,12 +4,12 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import language.BindingType;
-import language.DomainType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 
 public class EltFilter {
 
-	List<DomainType> domainTypes = Arrays.asList(DomainType.SRC, DomainType.CORR, DomainType.TRG);
+	List<DomainType> domainTypes = Arrays.asList(DomainType.SOURCE, DomainType.CORRESPONDENCE, DomainType.TARGET);
 	List<BindingType> bindingTypes = Arrays.asList(BindingType.CONTEXT, BindingType.CREATE);
 
 	boolean all = true;
@@ -21,22 +21,22 @@ public class EltFilter {
 	}
 
 	public EltFilter src() {
-		this.domainTypes = Arrays.asList(DomainType.SRC);
+		this.domainTypes = Arrays.asList(DomainType.SOURCE);
 		return this;
 	}
 
 	public EltFilter trg() {
-		this.domainTypes = Arrays.asList(DomainType.TRG);
+		this.domainTypes = Arrays.asList(DomainType.TARGET);
 		return this;
 	}
 
 	public EltFilter corr() {
-		this.domainTypes = Arrays.asList(DomainType.CORR);
+		this.domainTypes = Arrays.asList(DomainType.CORRESPONDENCE);
 		return this;
 	}
 
 	public EltFilter srcAndTrg() {
-		this.domainTypes = Arrays.asList(DomainType.SRC, DomainType.TRG);
+		this.domainTypes = Arrays.asList(DomainType.SOURCE, DomainType.TARGET);
 		return this;
 	}
 

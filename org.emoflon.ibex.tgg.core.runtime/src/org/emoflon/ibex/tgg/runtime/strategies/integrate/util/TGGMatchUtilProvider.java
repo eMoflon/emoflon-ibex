@@ -7,8 +7,7 @@ import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.INTEGRATE;
-
-import language.TGGRule;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 
 public class TGGMatchUtilProvider {
 

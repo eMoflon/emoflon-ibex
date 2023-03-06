@@ -351,7 +351,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	 * @return
 	 */
 	protected boolean violatesConformTypesOfGreenNodes(ITGGMatch match, TGGOperationalRule operationalRule, String ruleName) {
-		for (IBeXNode markedNode : operationalRule.getMarked().getNodes()) {
+		for (IBeXNode markedNode : operationalRule.getToBeMarked().getNodes()) {
 			if (markedNode.getType() != ((EObject) match.get(markedNode.getName())).eClass())
 				return true;
 		}

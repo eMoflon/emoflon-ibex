@@ -75,7 +75,7 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 			return;
 
 		// Register nodes
-		for (IBeXNode contextNode : operationalRule.getMarked().getNodes()) {
+		for (IBeXNode contextNode : operationalRule.getAlreadyMarked().getNodes()) {
 			Object contextObj = m.get(contextNode.getName());
 
 			if (!translated.contains(contextObj)) {
@@ -86,7 +86,7 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 				requiredBy.get(contextObj).add(m);
 			}
 		}
-		for (TGGNode createdNode : gPattern.getNodesMarkedByPattern()) {
+		for (IBeXNode createdNode : operationalRule.getToBeMarked().getNodes()) {
 			Object createdObj = m.get(createdNode.getName());
 
 			translates.computeIfAbsent(m, (x) -> cfactory.createObjectSet());
@@ -97,7 +97,7 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 		}
 
 		// Register edges
-		for (TGGEdge contextEdge : gPattern.getMarkedContextEdges()) {
+		for (IBeXEdge contextEdge : operationalRule.getAlreadyMarked().getEdges()) {
 			Object contextRuntimeEdge = getRuntimeEdge(m, contextEdge);
 
 			if (!translated.contains(contextRuntimeEdge)) {
@@ -108,7 +108,7 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 				requires.get(m).add(contextRuntimeEdge);
 			}
 		}
-		for (TGGEdge createdEdge : gPattern.getEdgesMarkedByPattern()) {
+		for (IBeXEdge createdEdge : operationalRule.getToBeMarked().getEdges()) {
 			Object createdRuntimeEdge = getRuntimeEdge(m, createdEdge);
 			translates.computeIfAbsent(m, (x) -> cfactory.createObjectSet());
 			translatedBy.computeIfAbsent(createdRuntimeEdge, (x) -> cfactory.createObjectSet());
@@ -123,13 +123,13 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 	}
 
 	private boolean anElementHasAlreadyBeenTranslated(ITGGMatch m, TGGOperationalRule operationalRule) {
-		for (IBeXNode createdNode : operationalRule.getMarked().getNodes()) {
+		for (IBeXNode createdNode : operationalRule.getToBeMarked().getNodes()) {
 			Object createdObj = m.get(createdNode.getName());
 			if (translated.contains(createdObj))
 				return true;
 		}
 
-		for (IBeXEdge createdEdge : operationalRule.getMarked().getEdges()) {
+		for (IBeXEdge createdEdge : operationalRule.getToBeMarked().getEdges()) {
 			Object createdRuntimeEdge = getRuntimeEdge(m, createdEdge);
 			if (translated.contains(createdRuntimeEdge))
 				return true;
@@ -139,14 +139,15 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 	}
 
 	private boolean noElementIsPending(ITGGMatch m) {
-
-		for (TGGNode createdNode : gPattern.getNodesMarkedByPattern()) {
+		TGGOperationalRule operationalRule = strategy.getOperationalRule(m.getRuleName());
+		
+		for (IBeXNode createdNode : operationalRule.getToBeMarked().getNodes()) {
 			Object createdObj = m.get(createdNode.getName());
 			if (pendingElts.contains(createdObj))
 				return false;
 		}
 
-		for (TGGNode contextNode : gPattern.getMarkedContextNodes()) {
+		for (IBeXNode contextNode : operationalRule.getAlreadyMarked().getNodes()) {
 			Object contextObj = m.get(contextNode.getName());
 			if (pendingElts.contains(contextObj))
 				return false;
@@ -198,11 +199,13 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 		if (raToTranslated.containsKey(ra))
 			return;
 
-		TGGRule gFactory = strategy.getRule(m.getRuleName());
+		TGGOperationalRule operationalRule = strategy.getOperationalRule(m.getRuleName());
 
 		// Add translated elements
 		Collection<Object> translatedElts = cfactory.createObjectSet();
 
+		operationalRule.
+		
 		gFactory.getGreenSrcNodesInRule().forEach(n -> translatedElts.add(m.get(n.getName())));
 		gFactory.getGreenTrgNodesInRule().forEach(n -> translatedElts.add(m.get(n.getName())));
 		gFactory.getGreenSrcEdgesInRule().forEach(e -> translatedElts.add(getRuntimeEdge(m, e)));

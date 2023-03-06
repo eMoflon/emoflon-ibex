@@ -12,14 +12,13 @@ import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.INTEGRATE;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
 import org.emoflon.ibex.tgg.util.TGGEdgeUtil;
-
-import language.BindingType;
-import language.DomainType;
-import language.TGGRule;
-import language.TGGRuleEdge;
-import language.TGGRuleElement;
-import language.TGGRuleNode;
 
 public class TGGMatchUtil {
 
@@ -27,11 +26,11 @@ public class TGGMatchUtil {
 	final ITGGMatch match;
 	final TGGRule rule;
 
-	Map<TGGRuleNode, EObject> node2eObject;
-	Map<EObject, TGGRuleNode> eObject2node;
+	Map<TGGNode, EObject> node2eObject;
+	Map<EObject, TGGNode> eObject2node;
 
-	Map<TGGRuleEdge, EMFEdge> edge2emfEdge;
-	Map<EMFEdge, TGGRuleEdge> emfEdge2edge;
+	Map<TGGEdge, EMFEdge> edge2emfEdge;
+	Map<EMFEdge, TGGEdge> emfEdge2edge;
 
 	Map<TGGRuleElement, Object> element2object;
 	Map<Object, TGGRuleElement> object2element;
@@ -55,7 +54,7 @@ public class TGGMatchUtil {
 		node2eObject.forEach((n, o) -> eObject2node.put(o, n));
 
 		this.edge2emfEdge = rule.getEdges().stream() //
-				.filter(e -> node2eObject.containsKey(e.getSrcNode()) && node2eObject.containsKey(e.getTrgNode())) //
+				.filter(e -> node2eObject.containsKey(e.getSource()) && node2eObject.containsKey(e.getTarget())) //
 				.collect(Collectors.toMap(e -> e, e -> TGGEdgeUtil.getRuntimeEdge(match, e)));
 		this.emfEdge2edge = new HashMap<>();
 		edge2emfEdge.forEach((e, f) -> emfEdge2edge.put(f, e));
@@ -89,11 +88,11 @@ public class TGGMatchUtil {
 
 	//// GETTER, CONVERTER ////
 
-	public Set<TGGRuleNode> getNodes() {
+	public Set<TGGNode> getNodes() {
 		return node2eObject.keySet();
 	}
 
-	public Set<TGGRuleEdge> getEdges() {
+	public Set<TGGEdge> getEdges() {
 		return edge2emfEdge.keySet();
 	}
 
@@ -105,35 +104,35 @@ public class TGGMatchUtil {
 		return emfEdge2edge.keySet();
 	}
 
-	public Map<TGGRuleNode, EObject> getNodeToEObject() {
+	public Map<TGGNode, EObject> getNodeToEObject() {
 		return node2eObject;
 	}
 
-	public Map<EObject, TGGRuleNode> getEObjectToNode() {
+	public Map<EObject, TGGNode> getEObjectToNode() {
 		return eObject2node;
 	}
 
-	public Map<TGGRuleEdge, EMFEdge> getEdgeToEMFEdge() {
+	public Map<TGGEdge, EMFEdge> getEdgeToEMFEdge() {
 		return edge2emfEdge;
 	}
 
-	public Map<EMFEdge, TGGRuleEdge> getEmfEdgeToEdge() {
+	public Map<EMFEdge, TGGEdge> getEmfEdgeToEdge() {
 		return emfEdge2edge;
 	}
 
-	public TGGRuleNode getNode(EObject eObject) {
+	public TGGNode getNode(EObject eObject) {
 		return eObject2node.get(eObject);
 	}
 
-	public EObject getEObject(TGGRuleNode node) {
+	public EObject getEObject(TGGNode node) {
 		return node2eObject.get(node);
 	}
 
-	public TGGRuleEdge getEdge(EMFEdge emfEdge) {
+	public TGGEdge getEdge(EMFEdge emfEdge) {
 		return emfEdge2edge.get(emfEdge);
 	}
 
-	public EMFEdge getEMFEdge(TGGRuleEdge edge) {
+	public EMFEdge getEMFEdge(TGGEdge edge) {
 		return edge2emfEdge.get(edge);
 	}
 
@@ -179,13 +178,13 @@ public class TGGMatchUtil {
 				.collect(Collectors.toSet());
 	}
 
-	public Stream<TGGRuleNode> getNodeStream(EltFilter filter) {
+	public Stream<TGGNode> getNodeStream(EltFilter filter) {
 		return getElts(filter).stream() //
-				.filter(elt -> elt instanceof TGGRuleNode) //
-				.map(elt -> (TGGRuleNode) elt);
+				.filter(elt -> elt instanceof TGGNode) //
+				.map(elt -> (TGGNode) elt);
 	}
 
-	public Set<TGGRuleNode> getNodes(EltFilter filter) {
+	public Set<TGGNode> getNodes(EltFilter filter) {
 		return getNodeStream(filter).collect(Collectors.toSet());
 	}
 
@@ -197,13 +196,13 @@ public class TGGMatchUtil {
 		return getEObjectStream(filter).collect(Collectors.toSet());
 	}
 
-	public Stream<TGGRuleEdge> getEdgeStream(EltFilter filter) {
+	public Stream<TGGEdge> getEdgeStream(EltFilter filter) {
 		return getElts(filter).stream() //
-				.filter(elt -> elt instanceof TGGRuleEdge) //
-				.map(elt -> (TGGRuleEdge) elt);
+				.filter(elt -> elt instanceof TGGEdge) //
+				.map(elt -> (TGGEdge) elt);
 	}
 
-	public Set<TGGRuleEdge> getEdges(EltFilter filter) {
+	public Set<TGGEdge> getEdges(EltFilter filter) {
 		return getEdgeStream(filter).collect(Collectors.toSet());
 	}
 

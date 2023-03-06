@@ -20,13 +20,13 @@ import org.emoflon.ibex.tgg.runtime.strategies.integrate.classification.Deletion
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.classification.DomainModification;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.modelchange.AttributeChange;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.TGGResourceHandler;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
 
-import language.DomainType;
-import language.TGGAttributeConstraint;
 import language.TGGAttributeExpression;
 import language.TGGParamValue;
 import language.TGGRuleEdge;
-import language.TGGRuleElement;
 
 public class TGGMatchAnalyzer {
 

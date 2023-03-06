@@ -14,18 +14,18 @@ import java.util.stream.Collectors;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.runtime.debug.LoggerConfig;
+import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.matches.container.IMatchContainer;
 import org.emoflon.ibex.tgg.runtime.patterns.IGreenPatternFactory;
-import org.emoflon.ibex.tgg.util.ConsoleUtil;
-import org.emoflon.ibex.util.config.IbexOptions;
+import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuleApplication;
+import org.emoflon.ibex.tgg.util.debug.ConsoleUtil;
+import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 
 import com.google.common.collect.Sets;
 
 import language.TGG;
 import language.TGGRuleNode;
-import runtime.TGGRuleApplication;
 
 public class MatchHandler {
 
