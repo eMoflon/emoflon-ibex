@@ -9,7 +9,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRule.ComponentSpecificRuleElement;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRule.HigherOrderRuleComponent;
@@ -18,21 +20,23 @@ import org.emoflon.ibex.tgg.runtime.strategies.integrate.matchcontainer.Preceden
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.EltFilter;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.TGGMatchUtil;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.TGGMatchUtilProvider;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
 import org.emoflon.ibex.tgg.util.TGGFilterUtil;
 import org.emoflon.ibex.tgg.util.TGGInplaceAttrExprUtil;
 import org.emoflon.ibex.tgg.util.TGGModelUtils;
-import org.emoflon.ibex.util.config.IbexOptions;
 
-import language.BindingType;
-import language.DomainType;
 import language.TGGEnumExpression;
 import language.TGGExpression;
 import language.TGGInplaceAttributeExpression;
 import language.TGGLiteralExpression;
-import language.TGGRule;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
-import language.TGGRuleElement;
 import language.TGGRuleNode;
 
 public class HigherOrderTGGRuleFactory {
@@ -178,18 +182,18 @@ public class HigherOrderTGGRuleFactory {
 
 			// since the ILP solution doesn't include correspondence edges, we have to manually find the
 			// correspondence edge mappings:
-			Collection<TGGRuleNode> corrNodes = TGGFilterUtil.filterNodes(rule.getNodes(), DomainType.CORR, BindingType.CONTEXT);
-			for (TGGRuleNode corrNode : corrNodes) {
-				TGGRuleCorr corr = (TGGRuleCorr) corrNode;
+			Collection<TGGNode> corrNodes = TGGFilterUtil.filterNodes(rule.getNodes(), DomainType.CORRESPONDENCE, BindingType.CONTEXT);
+			for (TGGNode corrNode : corrNodes) {
+				TGGCorrespondence corr = (TGGCorrespondence) corrNode;
 				ComponentSpecificRuleElement mappedCompSpecCorr = contextMapping.get(corr);
 				if (mappedCompSpecCorr == null)
 					continue;
 
-				TGGRuleCorr mappedCorr = (TGGRuleCorr) mappedCompSpecCorr.ruleElement;
-				for (TGGRuleEdge corrEdge : corr.getOutgoingEdges()) {
-					DomainType corrEdgePointDomain = corrEdge.getTrgNode().getDomainType();
-					for (TGGRuleEdge mappedCorrEdge : mappedCorr.getOutgoingEdges()) {
-						if (mappedCorrEdge.getTrgNode().getDomainType() == corrEdgePointDomain) {
+				TGGCorrespondence mappedCorr = (TGGCorrespondence) mappedCompSpecCorr.ruleElement;
+				for (IBeXEdge corrEdge : corr.getOutgoingEdges()) {
+					DomainType corrEdgePointDomain = ((TGGNode) corrEdge.getTarget()).getDomainType();
+					for (IBeXEdge mappedCorrEdge : mappedCorr.getOutgoingEdges()) {
+						if (((TGGNode) mappedCorrEdge.getTarget()).getDomainType() == corrEdgePointDomain) {
 							contextMapping.put(corrEdge, mappedCompSpecCorr.component.getComponentSpecificRuleElement(mappedCorrEdge));
 							break;
 						}
@@ -263,13 +267,13 @@ public class HigherOrderTGGRuleFactory {
 
 		MatchRelatedRuleElementMap contextMapping = new MatchRelatedRuleElementMap();
 
-		Collection<TGGRuleNode> ruleNodes = TGGFilterUtil.filterNodes(rule.getNodes(), oppositeDomain, BindingType.CONTEXT);
-		for (TGGRuleNode ruleNode : ruleNodes) {
+		Collection<TGGNode> ruleNodes = TGGFilterUtil.filterNodes(rule.getNodes(), oppositeDomain, BindingType.CONTEXT);
+		for (TGGNode ruleNode : ruleNodes) {
 			// TODO cache node type to {rule & node}
 			Set<MatchRelatedRuleElement> mappedElements = new HashSet<>();
 			for (TGGRule mappedRule : rule2matches.keySet()) {
-				Collection<TGGRuleNode> mappedNodes = TGGFilterUtil.filterNodes(mappedRule.getNodes(), oppositeDomain);
-				for (TGGRuleNode mappedNode : mappedNodes) {
+				Collection<TGGNode> mappedNodes = TGGFilterUtil.filterNodes(mappedRule.getNodes(), oppositeDomain);
+				for (TGGNode mappedNode : mappedNodes) {
 					if (matchesContext(ruleNode, mappedNode)) {
 						for (ITGGMatch mappedMatch : rule2matches.get(mappedRule))
 							mappedElements.add(new MatchRelatedRuleElement(mappedNode, mappedMatch));
@@ -281,12 +285,12 @@ public class HigherOrderTGGRuleFactory {
 				contextMapping.put(new MatchRelatedRuleElement(ruleNode, pgNode.getMatch()), mappedElements);
 		}
 
-		Collection<TGGRuleEdge> ruleEdges = TGGFilterUtil.filterEdges(rule.getEdges(), oppositeDomain, BindingType.CONTEXT);
-		for (TGGRuleEdge ruleEdge : ruleEdges) {
+		Collection<TGGEdge> ruleEdges = TGGFilterUtil.filterEdges(rule.getEdges(), oppositeDomain, BindingType.CONTEXT);
+		for (TGGEdge ruleEdge : ruleEdges) {
 			Set<MatchRelatedRuleElement> mappedElements = new HashSet<>();
 			for (TGGRule mappedRule : rule2matches.keySet()) {
-				Collection<TGGRuleEdge> mappedEdges = TGGFilterUtil.filterEdges(mappedRule.getEdges(), oppositeDomain);
-				for (TGGRuleEdge mappedEdge : mappedEdges) {
+				Collection<TGGEdge> mappedEdges = TGGFilterUtil.filterEdges(mappedRule.getEdges(), oppositeDomain);
+				for (TGGEdge mappedEdge : mappedEdges) {
 					if (matchesContext(ruleEdge, mappedEdge)) {
 						for (ITGGMatch mappedMatch : rule2matches.get(mappedRule))
 							mappedElements.add(new MatchRelatedRuleElement(mappedEdge, mappedMatch));
@@ -307,13 +311,13 @@ public class HigherOrderTGGRuleFactory {
 
 		MatchRelatedRuleElementMap contextMapping = new MatchRelatedRuleElementMap();
 
-		Collection<TGGRuleNode> ruleCorrs = TGGFilterUtil.filterNodes(rule.getNodes(), DomainType.CORR, BindingType.CONTEXT);
-		for (TGGRuleNode ruleCorr : ruleCorrs) {
+		Collection<TGGNode> ruleCorrs = TGGFilterUtil.filterNodes(rule.getNodes(), DomainType.CORRESPONDENCE, BindingType.CONTEXT);
+		for (TGGNode ruleCorr : ruleCorrs) {
 			Set<MatchRelatedRuleElement> mappedElements = new HashSet<>();
 			for (TGGRule mappedRule : rule2matches.keySet()) {
-				Collection<TGGRuleNode> mappedCorrs = TGGFilterUtil.filterNodes(mappedRule.getNodes(), DomainType.CORR);
-				for (TGGRuleNode mappedCorr : mappedCorrs) {
-					if (matchesContext((TGGRuleCorr) ruleCorr, (TGGRuleCorr) mappedCorr)) {
+				Collection<TGGNode> mappedCorrs = TGGFilterUtil.filterNodes(mappedRule.getNodes(), DomainType.CORRESPONDENCE);
+				for (TGGNode mappedCorr : mappedCorrs) {
+					if (matchesContext((TGGCorrespondence) ruleCorr, (TGGCorrespondence) mappedCorr)) {
 						for (ITGGMatch mappedMatch : rule2matches.get(mappedRule))
 							mappedElements.add(new MatchRelatedRuleElement(mappedCorr, mappedMatch));
 					}
@@ -343,7 +347,7 @@ public class HigherOrderTGGRuleFactory {
 		return rule2matches;
 	}
 
-	private boolean matchesContext(TGGRuleNode context, TGGRuleNode matchCandidate) {
+	private boolean matchesContext(TGGNode context, TGGNode matchCandidate) {
 		if (!context.getType().isSuperTypeOf(matchCandidate.getType()))
 			return false;
 
@@ -369,14 +373,14 @@ public class HigherOrderTGGRuleFactory {
 		return true;
 	}
 
-	private boolean matchesContext(TGGRuleCorr context, TGGRuleCorr matchCandidate) {
+	private boolean matchesContext(TGGCorrespondence context, TGGCorrespondence matchCandidate) {
 		if (!context.getType().isSuperTypeOf(matchCandidate.getType()))
 			return false;
 
 		return true;
 	}
 
-	private boolean matchesContext(TGGRuleEdge context, TGGRuleEdge matchCandidate) {
+	private boolean matchesContext(TGGEdge context, TGGEdge matchCandidate) {
 		// TODO check for more restrictions?
 		return context.getType().equals(matchCandidate.getType());
 	}

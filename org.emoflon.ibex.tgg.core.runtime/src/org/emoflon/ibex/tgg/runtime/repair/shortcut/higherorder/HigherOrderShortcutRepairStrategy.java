@@ -6,7 +6,7 @@ import java.util.Set;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.IGreenInterpreter;
 import org.emoflon.ibex.tgg.runtime.IRedInterpreter;
-import org.emoflon.ibex.tgg.runtime.debug.LoggerConfig;
+import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.HigherOrderShortcutPatternProvider;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.ShortcutApplicationTool;
@@ -15,7 +15,7 @@ import org.emoflon.ibex.tgg.runtime.strategies.integrate.classification.MatchCla
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.matchcontainer.PrecedenceGraph;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.matchcontainer.PrecedenceNode;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.TGGMatchUtilProvider;
-import org.emoflon.ibex.util.config.IbexOptions;
+import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 
 public class HigherOrderShortcutRepairStrategy {
 

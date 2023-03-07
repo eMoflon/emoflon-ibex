@@ -2,7 +2,7 @@ package org.emoflon.ibex.tgg.runtime.strategies.modules;
 
 import java.io.IOException;
 
-import org.emoflon.ibex.util.config.IbexOptions;
+import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 
 public interface IbexExecutable {
 

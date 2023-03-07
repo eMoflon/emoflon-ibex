@@ -13,27 +13,32 @@ import java.util.stream.Collectors;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.util.ConsoleUtil;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRule.ComponentSpecificRuleElement;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelFactory;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinition;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintParameterDefinition;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl;
 import org.emoflon.ibex.tgg.util.TGGFilterUtil;
+import org.emoflon.ibex.tgg.util.debug.ConsoleUtil;
 
-import language.BindingType;
 import language.LanguageFactory;
 import language.NAC;
 import language.TGG;
-import language.TGGAttributeConstraint;
-import language.TGGAttributeConstraintDefinition;
 import language.TGGAttributeConstraintLibrary;
-import language.TGGAttributeConstraintParameterDefinition;
 import language.TGGAttributeExpression;
 import language.TGGInplaceAttributeExpression;
 import language.TGGParamValue;
-import language.TGGRule;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
-import language.TGGRuleElement;
 import language.TGGRuleNode;
 import language.impl.LanguageFactoryImpl;
-import language.impl.TGGRuleImpl;
 
 public class HigherOrderTGGRule extends TGGRuleImpl {
 
@@ -89,7 +94,7 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 		public final ITGGMatch match;
 		public final Map<TGGRuleElement, ComponentSpecificRuleElement> contextMapping;
 		public final int id;
-		private final Map<String, TGGRuleNode> name2ruleNode;
+		private final Map<String, TGGNode> name2ruleNode;
 
 		private HigherOrderRuleComponent(TGGRule rule, ITGGMatch match, Map<TGGRuleElement, ComponentSpecificRuleElement> contextMapping) {
 			this.rule = rule;
@@ -107,7 +112,7 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 				return null;
 		}
 
-		public TGGRuleNode getNodeFromName(String nodeName) {
+		public TGGNode getNodeFromName(String nodeName) {
 			return name2ruleNode.get(nodeName);
 		}
 
@@ -184,14 +189,14 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 	}
 
 	private void populateElts(TGGRule rule, HigherOrderRuleComponent component, Map<TGGRuleElement, ComponentSpecificRuleElement> contextMapping) {
-		for (TGGRuleNode node : rule.getNodes()) {
+		for (TGGNode node : rule.getNodes()) {
 			ComponentSpecificRuleElement componentNode = contextMapping.get(node);
 			if (componentNode != null)
 				transformHigherOrderNode(component, node, componentNode);
 			else
 				createNewHigherOrderNode(component, node);
 		}
-		for (TGGRuleEdge edge : rule.getEdges()) {
+		for (TGGEdge edge : rule.getEdges()) {
 			ComponentSpecificRuleElement componentEdge = contextMapping.get(edge);
 			if (componentEdge != null)
 				transformHigherOrderEdge(component, edge, componentEdge);
@@ -200,8 +205,8 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 		}
 	}
 
-	private void transformHigherOrderNode(HigherOrderRuleComponent component, TGGRuleNode node, ComponentSpecificRuleElement mappedComponentNode) {
-		TGGRuleNode higherOrderNode = (TGGRuleNode) componentElt2higherOrderElt.get(mappedComponentNode);
+	private void transformHigherOrderNode(HigherOrderRuleComponent component, TGGNode node, ComponentSpecificRuleElement mappedComponentNode) {
+		TGGNode higherOrderNode = (TGGNode) componentElt2higherOrderElt.get(mappedComponentNode);
 		if (higherOrderNode == null)
 			throw new RuntimeException("Inconsistent context mapping!");
 
@@ -218,8 +223,8 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 		componentElt2higherOrderElt.put(componentEdge, higherOrderEdge);
 	}
 
-	private void createNewHigherOrderNode(HigherOrderRuleComponent component, TGGRuleNode node) {
-		TGGRuleNode higherOrderNode = (TGGRuleNode) LanguageFactory.eINSTANCE.create(node.eClass());
+	private void createNewHigherOrderNode(HigherOrderRuleComponent component, TGGNode node) {
+		TGGNode higherOrderNode = IBeXTGGModelFactory.eINSTANCE.createTGGNode();
 
 		String newName = node.getName();
 		char c = 'a';
@@ -240,24 +245,24 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 		componentElt2higherOrderElt.put(componentNode, higherOrderNode);
 	}
 
-	private void createNewHigherOrderEdge(HigherOrderRuleComponent component, TGGRuleEdge edge) {
-		TGGRuleEdge higherOrderEdge = LanguageFactoryImpl.eINSTANCE.createTGGRuleEdge();
+	private void createNewHigherOrderEdge(HigherOrderRuleComponent component, TGGEdge edge) {
+		TGGEdge higherOrderEdge = IBeXTGGModelFactory.eINSTANCE.createTGGEdge();
 
-		TGGRuleNode hoSrcNode = (TGGRuleNode) componentElt2higherOrderElt.get(component.getComponentSpecificRuleElement(edge.getSrcNode()));
-		TGGRuleNode hoTrgNode = (TGGRuleNode) componentElt2higherOrderElt.get(component.getComponentSpecificRuleElement(edge.getTrgNode()));
+		TGGNode hoSrcNode = (TGGNode) componentElt2higherOrderElt.get(component.getComponentSpecificRuleElement(edge.getSource()));
+		TGGNode hoTrgNode = (TGGNode) componentElt2higherOrderElt.get(component.getComponentSpecificRuleElement(edge.getTarget()));
 
-		higherOrderEdge.setSrcNode(hoSrcNode);
-		higherOrderEdge.setTrgNode(hoTrgNode);
+		higherOrderEdge.setSource(hoSrcNode);
+		higherOrderEdge.setTarget(hoTrgNode);
 
-		if (hoSrcNode instanceof TGGRuleCorr hoCorrNode) {
+		if (hoSrcNode instanceof TGGCorrespondence hoCorrNode) {
 			switch (hoTrgNode.getDomainType()) {
-				case SRC -> hoCorrNode.setSource(hoTrgNode);
-				case TRG -> hoCorrNode.setTarget(hoTrgNode);
+				case SOURCE -> hoCorrNode.setSource(hoTrgNode);
+				case TARGET -> hoCorrNode.setTarget(hoTrgNode);
 				default -> throw new IllegalArgumentException("Unexpected value: " + hoTrgNode.getDomainType());
 			}
 		}
 
-		String newName = higherOrderEdge.getSrcNode().getName() + "__" + edge.getType().getName() + "__" + higherOrderEdge.getTrgNode().getName();
+		String newName = higherOrderEdge.getSource().getName() + "__" + edge.getType().getName() + "__" + higherOrderEdge.getTarget().getName();
 
 		higherOrderEdge.setName(newName);
 		higherOrderEdge.setBindingType(edge.getBindingType());
@@ -301,7 +306,7 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 		toBeDeletedInplAttrExpr.forEach(e -> EcoreUtil.delete(e));
 	}
 
-	private void createEqualityCSP(TGGRule rule, TGGRuleNode lhsNode, EAttribute lhsAttr, TGGAttributeExpression rhsAttrExpr) {
+	private void createEqualityCSP(TGGRule rule, TGGNode lhsNode, EAttribute lhsAttr, TGGAttributeExpression rhsAttrExpr) {
 		TGGAttributeExpression lhsAttrExpr = LanguageFactory.eINSTANCE.createTGGAttributeExpression();
 		lhsAttrExpr.setAttribute(lhsAttr);
 		lhsAttrExpr.setObjectVar(lhsNode);
@@ -374,10 +379,10 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 		Collection<NAC> copiedNacs = EcoreUtil.copyAll(rule.getNacs());
 		for (NAC nac : copiedNacs) {
 			// TODO check if this works
-			for (TGGRuleNode nacNode : nac.getNodes()) {
-				TGGRuleNode ruleNode = component.getNodeFromName(nacNode.getName());
+			for (TGGNode nacNode : nac.getNodes()) {
+				TGGNode ruleNode = component.getNodeFromName(nacNode.getName());
 				if (ruleNode != null) {
-					TGGRuleNode hoNode = HigherOrderSupport.getHigherOrderElement(component, ruleNode);
+					TGGNode hoNode = HigherOrderSupport.getHigherOrderElement(component, ruleNode);
 					nacNode.setName(hoNode.getName());
 				}
 			}
