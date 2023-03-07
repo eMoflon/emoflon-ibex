@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.OperationalShortcutRule;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.ShortcutRule;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.lambda.AttrCheck;
@@ -20,10 +21,10 @@ import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.lambda.Lookup;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.lambda.NACNodeCheck;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.lambda.NodeCheck;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.SCMatch;
-import org.emoflon.ibex.util.config.IbexOptions;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 
-import language.BindingType;
-import language.TGGRule;
 import language.TGGRuleNode;
 
 /**
@@ -74,7 +75,7 @@ public class LocalPatternSearch {
 			else
 				lastComponent.setNextComponent(lookupComp);
 
-			TGGRuleNode nodeForCheck = entry.getLeft().reverse ? //
+			TGGNode nodeForCheck = entry.getLeft().reverse ? //
 					entry.getLeft().sourceNode : entry.getLeft().targetNode;
 			Component nodeCheckComp = new NodeCheckComponent(searchPlan.key2nodeCheck.get(nodeForCheck), nodeForCheck);
 
@@ -115,7 +116,7 @@ public class LocalPatternSearch {
 			lastComponent = comp;
 		}
 
-		for (TGGRuleNode mergedNode : osr.getOperationalizedSCR().getMergedNodes()) {
+		for (TGGNode mergedNode : osr.getOperationalizedSCR().getMergedNodes()) {
 			if (!searchPlan.key2AttrCheck.containsKey(mergedNode) || skipAttrCheck(mergedNode))
 				continue;
 
@@ -131,11 +132,11 @@ public class LocalPatternSearch {
 		lastComponent = cspCheckComp;
 	}
 
-	private boolean skipAttrCheck(TGGRuleNode mergedNode) {
+	private boolean skipAttrCheck(TGGNode mergedNode) {
 		if (osr.getOperationalizedSCR().getPreservedNodes().contains(mergedNode)) {
 			return switch (mergedNode.getDomainType()) {
-				case SRC -> osr.getType() == PatternType.BWD;
-				case TRG -> osr.getType() == PatternType.FWD;
+				case SOURCE -> osr.getType() == PatternType.BWD;
+				case TARGET -> osr.getType() == PatternType.FWD;
 				default -> false;
 			};
 		}
@@ -173,11 +174,11 @@ public class LocalPatternSearch {
 		
 		ShortcutRule scRule = osr.getOperationalizedSCR();
 		TGGRule originalRule = scRule.getOriginalRule();
-		for(TGGRuleNode node : originalRule.getNodes()) {
+		for(TGGNode node : originalRule.getNodes()) {
 			if(node.getBindingType() == BindingType.CREATE) 
 				continue;
 			
-			TGGRuleNode scNode = scRule.mapOriginalNodeNameToSCNode(node.getName());
+			TGGNode scNode = scRule.mapOriginalNodeNameToSCNode(node.getName());
 			if(scNode == null)
 				continue;
 			
@@ -211,8 +212,8 @@ public class LocalPatternSearch {
 		public LookupComponent(Lookup lookup, SearchKey key) {
 			super();
 
-			TGGRuleNode sourceNode = key.reverse ? key.targetNode : key.sourceNode;
-			TGGRuleNode targetNode = key.reverse ? key.sourceNode : key.targetNode;
+			TGGNode sourceNode = key.reverse ? key.targetNode : key.sourceNode;
+			TGGNode targetNode = key.reverse ? key.sourceNode : key.targetNode;
 
 			this.key = key;
 			this.lookup = lookup;
@@ -290,7 +291,7 @@ public class LocalPatternSearch {
 		NodeCheck check;
 		String nodeName;
 
-		public NodeCheckComponent(NodeCheck check, TGGRuleNode node) {
+		public NodeCheckComponent(NodeCheck check, TGGNode node) {
 			super();
 			this.check = check;
 			this.nodeName = node.getName();
@@ -313,7 +314,7 @@ public class LocalPatternSearch {
 		AttrCheck check;
 		String nodeName;
 
-		public AttrCheckComponent(AttrCheck check, TGGRuleNode node) {
+		public AttrCheckComponent(AttrCheck check, TGGNode node) {
 			super();
 			this.check = check;
 			this.nodeName = node.getName();
@@ -391,7 +392,7 @@ public class LocalPatternSearch {
 		public NACNodeCheckComponent(NACNodeCheck check, SearchKey key) {
 			super();
 			this.check = check;
-			TGGRuleNode srcNode = key.reverse ? key.targetNode : key.sourceNode;
+			TGGNode srcNode = key.reverse ? key.targetNode : key.sourceNode;
 			this.sourceName = srcNode.getName();
 			this.isSrcRelaxed = srcNode.getBindingType() == BindingType.RELAXED;
 		}

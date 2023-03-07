@@ -13,8 +13,7 @@ import org.emoflon.ibex.tgg.runtime.strategies.integrate.classification.Deletion
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.classification.MatchClassifier;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.matchcontainer.PrecedenceGraph;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.matchcontainer.PrecedenceNode;
-
-import language.DomainType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 
 public class ShortcutApplicationPointFinder {
 
@@ -89,9 +88,9 @@ public class ShortcutApplicationPointFinder {
 
 	private PatternType calcPropagationType(ClassifiedMatch classifiedMatch) {
 		DeletionType deletionType = classifiedMatch.getDeletionType();
-		if (DeletionType.propFWDCandidates.contains(deletionType) || classifiedMatch.getFilterNacViolations().containsValue(DomainType.SRC))
+		if (DeletionType.propFWDCandidates.contains(deletionType) || classifiedMatch.getFilterNacViolations().containsValue(DomainType.SOURCE))
 			return PatternType.SRC;
-		else if (DeletionType.propBWDCandidates.contains(deletionType) || classifiedMatch.getFilterNacViolations().containsValue(DomainType.TRG))
+		else if (DeletionType.propBWDCandidates.contains(deletionType) || classifiedMatch.getFilterNacViolations().containsValue(DomainType.TARGET))
 			return PatternType.TRG;
 		return null;
 	}

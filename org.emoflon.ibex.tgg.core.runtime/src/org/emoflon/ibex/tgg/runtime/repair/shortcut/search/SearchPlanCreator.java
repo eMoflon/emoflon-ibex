@@ -15,8 +15,8 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
+import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.csp.IRuntimeTGGAttrConstrContainer;
-import org.emoflon.ibex.tgg.runtime.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.OperationalShortcutRule;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.lambda.AttrCheck;
@@ -26,12 +26,15 @@ import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.lambda.Lookup;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.lambda.NACNodeCheck;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.lambda.NodeCheck;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.SCMatch;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.util.EMFNavigationUtil;
 import org.emoflon.ibex.tgg.util.TGGInplaceAttrExprUtil;
-import org.emoflon.ibex.util.config.IbexOptions;
+import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 
-import language.BindingType;
 import language.TGGInplaceAttributeExpression;
 import language.TGGRuleCorr;
 import language.TGGRuleEdge;
@@ -44,8 +47,8 @@ public class SearchPlanCreator {
 	protected final OperationalShortcutRule opSCR;
 
 	protected Map<SearchKey, Lookup> key2lookup;
-	protected Map<TGGRuleNode, NodeCheck> elt2nodeCheck;
-	protected Map<TGGRuleNode, AttrCheck> elt2inplAttrCheck;
+	protected Map<TGGNode, NodeCheck> elt2nodeCheck;
+	protected Map<TGGNode, AttrCheck> elt2inplAttrCheck;
 	protected Map<SearchKey, EdgeCheck> key2edgeCheck;
 	protected Map<SearchKey, NACNodeCheck> key2nacNodeCheck;
 	protected CSPCheck cspCheck;
@@ -67,11 +70,11 @@ public class SearchPlanCreator {
 	}
 
 	protected void createConstraintChecks() {
-		for (TGGRuleNode node : opSCR.getOperationalizedSCR().getNodes()) {
+		for (TGGNode node : opSCR.getOperationalizedSCR().getNodes()) {
 			createNodeCheck(node);
 		}
 
-		for (TGGRuleEdge edge : opSCR.getOperationalizedSCR().getEdges()) {
+		for (TGGEdge edge : opSCR.getOperationalizedSCR().getEdges()) {
 			SearchKey forwardKey = new SearchKey(edge.getSrcNode(), edge.getTrgNode(), edge, false);
 			SearchKey backwardKey = new SearchKey(edge.getSrcNode(), edge.getTrgNode(), edge, true);
 
@@ -83,10 +86,10 @@ public class SearchPlanCreator {
 			if (edge.getBindingType() != BindingType.NEGATIVE)
 				continue;
 
-			if (edge.getSrcNode().getBindingType() == BindingType.NEGATIVE) {
+			if (((TGGNode) edge.getSource()).getBindingType() == BindingType.NEGATIVE) {
 				createNACNodeCheck(backwardKey);
 			}
-			if (edge.getTrgNode().getBindingType() == BindingType.NEGATIVE) {
+			if (((TGGNode) edge.getTarget()).getBindingType() == BindingType.NEGATIVE) {
 				createNACNodeCheck(forwardKey);
 			}
 		}
@@ -118,7 +121,7 @@ public class SearchPlanCreator {
 					return n.eGet(edgeRef.getEOpposite());
 				});
 			} else {
-				if (key.sourceNode instanceof TGGRuleCorr) {
+				if (key.sourceNode instanceof TGGCorrespondence) {
 					key2lookup.put(key, n -> {
 						// make sure that we only get the correct corrs with the right type
 						Collection<EObject> corrs = options.resourceHandler().getCorrCaching().getOrDefault(n, Collections.emptyList());
@@ -139,8 +142,8 @@ public class SearchPlanCreator {
 	private void createEdgeCheck(SearchKey key) {
 		boolean negative = key.edge.getBindingType() == BindingType.NEGATIVE;
 		if (negative) {
-			if (key.edge.getSrcNode().getBindingType().equals(BindingType.NEGATIVE)
-					|| key.edge.getTrgNode().getBindingType().equals(BindingType.NEGATIVE))
+			if (((TGGNode) key.edge.getSource()).getBindingType().equals(BindingType.NEGATIVE)
+					|| ((TGGNode) key.edge.getTarget()).getBindingType().equals(BindingType.NEGATIVE))
 				return;
 
 			key2edgeCheck.put(key, (s, t) -> {
@@ -193,7 +196,7 @@ public class SearchPlanCreator {
 		});
 	}
 
-	private void createNodeCheck(TGGRuleNode key) {
+	private void createNodeCheck(TGGNode key) {
 		elt2nodeCheck.put(key, n -> {
 			if (n == null)
 				return key.getBindingType() == BindingType.RELAXED;
@@ -215,8 +218,8 @@ public class SearchPlanCreator {
 	}
 
 	public SearchPlan createSearchPlan() {
-		Collection<TGGRuleNode> uncheckedNodes = new ArrayList<>();
-		Collection<TGGRuleNode> uncheckedRelaxedNodes = new ArrayList<>();
+		Collection<TGGNode> uncheckedNodes = new ArrayList<>();
+		Collection<TGGNode> uncheckedRelaxedNodes = new ArrayList<>();
 		opSCR.getOperationalizedSCR().getNodes().stream() //
 				.filter(n -> !opSCR.getOperationalizedSCR().getMergedNodes().contains(n)) //
 				.filter(n -> !opSCR.getOperationalizedSCR().getNewOriginalNodes().contains(n)) //
@@ -226,8 +229,8 @@ public class SearchPlanCreator {
 				.filter(n -> n.getBindingType() != BindingType.RELAXED) //
 				.forEach(n -> uncheckedNodes.add(n));
 
-		LinkedList<TGGRuleEdge> uncheckedEdges = new LinkedList<>();
-		for (TGGRuleEdge edge : opSCR.getOperationalizedSCR().getEdges()) {
+		LinkedList<TGGEdge> uncheckedEdges = new LinkedList<>();
+		for (TGGEdge edge : opSCR.getOperationalizedSCR().getEdges()) {
 			if (edge.getBindingType() == BindingType.NEGATIVE)
 				uncheckedEdges.addLast(edge);
 			else
@@ -259,24 +262,24 @@ public class SearchPlanCreator {
 
 		// now add edge checks to check all unchecked edges
 		Map<SearchKey, EdgeCheck> key2uncheckedEdgeCheck = new HashMap<>();
-		for (TGGRuleEdge edge : uncheckedEdges) {
+		for (TGGEdge edge : uncheckedEdges) {
 			if (edge.getBindingType() == BindingType.CREATE || edge.getBindingType() == BindingType.RELAXED)
 				continue;
 
 			if (edge.getBindingType() != BindingType.NEGATIVE)
-				if (edge.getSrcNode().getBindingType() == BindingType.RELAXED || edge.getTrgNode().getBindingType() == BindingType.RELAXED)
+				if (((TGGNode) edge.getSource()).getBindingType() == BindingType.RELAXED || ((TGGNode) edge.getTarget()).getBindingType() == BindingType.RELAXED)
 					continue;
 
-			if (edge.getSrcNode().getBindingType() == BindingType.NEGATIVE || edge.getTrgNode().getBindingType() == BindingType.NEGATIVE)
+			if (((TGGNode) edge.getSource()).getBindingType() == BindingType.NEGATIVE || ((TGGNode) edge.getTarget()).getBindingType() == BindingType.NEGATIVE)
 				continue;
 
-			SearchKey key = new SearchKey(edge.getSrcNode(), edge.getTrgNode(), edge, false);
+			SearchKey key = new SearchKey((TGGNode) edge.getSource(), (TGGNode) edge.getTarget(), edge, false);
 			key2uncheckedEdgeCheck.put(key, key2edgeCheck.get(key));
 		}
 
 		// add NAC checks as the last constraints that are evaluated
 		Map<SearchKey, NACNodeCheck> key2nacNodeCheck = new HashMap<>();
-		for (TGGRuleEdge edge : uncheckedEdges) {
+		for (TGGEdge edge : uncheckedEdges) {
 			if (edge.getBindingType() != BindingType.NEGATIVE)
 				continue;
 
@@ -291,7 +294,7 @@ public class SearchPlanCreator {
 		return new SearchPlan(searchPlan, elt2nodeCheck, elt2inplAttrCheck, key2uncheckedEdgeCheck, key2nacNodeCheck, cspCheck);
 	}
 
-	private List<SearchKey> filterKeys(List<SearchKey> keys, Collection<TGGRuleNode> uncheckedNodes, Collection<TGGRuleNode> uncheckedRelaxedNodes,
+	private List<SearchKey> filterKeys(List<SearchKey> keys, Collection<TGGNode> uncheckedNodes, Collection<TGGNode> uncheckedRelaxedNodes,
 			boolean relaxed) {
 		Collection<SearchKey> filteredKeys = keys.stream() //
 				.filter(k -> validLookupKey(uncheckedNodes, uncheckedRelaxedNodes, k, false)).collect(Collectors.toList());
@@ -324,7 +327,7 @@ public class SearchPlanCreator {
 
 	private Collection<SearchKey> optimizeNextEdges(Collection<SearchKey> keys) {
 		Collection<SearchKey> corrs = keys.stream().filter(k -> {
-			return k.sourceNode instanceof TGGRuleCorr;
+			return k.sourceNode instanceof TGGCorrespondence;
 		}).collect(Collectors.toList());
 
 		Collection<SearchKey> non_containment = keys.stream().filter(k -> {
@@ -340,14 +343,14 @@ public class SearchPlanCreator {
 	}
 
 	// a valid lookup key is a key where source xor target has already been checked
-	private boolean validLookupKey(Collection<TGGRuleNode> uncheckedNodes, Collection<TGGRuleNode> uncheckedRelaxedNodes, SearchKey key,
+	private boolean validLookupKey(Collection<TGGNode> uncheckedNodes, Collection<TGGNode> uncheckedRelaxedNodes, SearchKey key,
 			boolean allowBackNavigate) {
 		boolean srcChecked = !uncheckedNodes.contains(key.sourceNode) && !uncheckedRelaxedNodes.contains(key.sourceNode);
 		boolean trgChecked = !uncheckedNodes.contains(key.targetNode) && !uncheckedRelaxedNodes.contains(key.targetNode);
 
 		boolean notReverse = !key.reverse && srcChecked && !trgChecked;
 		boolean reverse = key.reverse && !srcChecked && trgChecked;
-		boolean backward = allowBackNavigate || key.edge.getType().getEOpposite() != null || key.sourceNode instanceof TGGRuleCorr;
+		boolean backward = allowBackNavigate || key.edge.getType().getEOpposite() != null || key.sourceNode instanceof TGGCorrespondence;
 
 		return notReverse || reverse && backward;
 	}

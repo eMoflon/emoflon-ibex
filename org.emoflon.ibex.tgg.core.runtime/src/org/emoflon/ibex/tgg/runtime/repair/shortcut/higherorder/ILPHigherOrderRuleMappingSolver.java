@@ -12,6 +12,9 @@ import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRuleFactory.MatchRelatedRuleElement;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRuleFactory.MatchRelatedRuleElementMap;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.util.ilp.BinaryILPProblem;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;
@@ -22,9 +25,6 @@ import org.emoflon.ibex.tgg.util.ilp.ILPProblem.Objective;
 import org.emoflon.ibex.tgg.util.ilp.ILPSolver;
 
 import com.google.common.collect.Sets;
-
-import language.TGGRuleCorr;
-import language.TGGRuleEdge;
 
 public class ILPHigherOrderRuleMappingSolver {
 
@@ -243,17 +243,17 @@ public class ILPHigherOrderRuleMappingSolver {
 
 			// if an edge is chosen, it's source and target nodes have to be chosen as well and all three have
 			// to be mapped to the same match:
-			if (element.ruleElement() instanceof TGGRuleEdge ruleEdge) {
-				MatchRelatedRuleElement srcNodeElement = new MatchRelatedRuleElement(ruleEdge.getSrcNode(), element.match());
-				MatchRelatedRuleElement trgNodeElement = new MatchRelatedRuleElement(ruleEdge.getTrgNode(), element.match());
+			if (element.ruleElement() instanceof TGGEdge ruleEdge) {
+				MatchRelatedRuleElement srcNodeElement = new MatchRelatedRuleElement((TGGNode) ruleEdge.getSource(), element.match());
+				MatchRelatedRuleElement trgNodeElement = new MatchRelatedRuleElement((TGGNode) ruleEdge.getTarget(), element.match());
 
 				for (Integer candidateID : candidates) {
 					ElementCandidate edgeCandidate = id2Candidate.get(candidateID);
-					TGGRuleEdge mappedRuleEdge = (TGGRuleEdge) edgeCandidate.target.ruleElement();
+					TGGEdge mappedRuleEdge = (TGGEdge) edgeCandidate.target.ruleElement();
 					MatchRelatedRuleElement mappedSrcNodeElement = new MatchRelatedRuleElement( //
-							mappedRuleEdge.getSrcNode(), edgeCandidate.target.match());
+							(TGGNode) mappedRuleEdge.getSource(), edgeCandidate.target.match());
 					MatchRelatedRuleElement mappedTrgNodeElement = new MatchRelatedRuleElement( //
-							mappedRuleEdge.getTrgNode(), edgeCandidate.target.match());
+							(TGGNode) mappedRuleEdge.getTarget(), edgeCandidate.target.match());
 					ElementCandidate srcNodeCandidate = new ElementCandidate(srcNodeElement, mappedSrcNodeElement);
 					ElementCandidate trgNodeCandidate = new ElementCandidate(trgNodeElement, mappedTrgNodeElement);
 					Integer srcNodeCandidateID = candidate2ID.get(srcNodeCandidate);
@@ -279,13 +279,13 @@ public class ILPHigherOrderRuleMappingSolver {
 		for (MatchRelatedRuleElement element : corrDomainElement2Candidates.keySet()) {
 			Set<Integer> candidates = corrDomainElement2Candidates.get(element);
 
-			TGGRuleCorr ruleCorr = (TGGRuleCorr) element.ruleElement();
+			TGGCorrespondence ruleCorr = (TGGCorrespondence) element.ruleElement();
 			MatchRelatedRuleElement srcNodeElement = new MatchRelatedRuleElement(ruleCorr.getSource(), element.match());
 			MatchRelatedRuleElement trgNodeElement = new MatchRelatedRuleElement(ruleCorr.getTarget(), element.match());
 
 			for (Integer candidateID : candidates) {
 				ElementCandidate corrCandidate = id2Candidate.get(candidateID);
-				TGGRuleCorr mappedRuleCorr = (TGGRuleCorr) corrCandidate.target.ruleElement();
+				TGGCorrespondence mappedRuleCorr = (TGGCorrespondence) corrCandidate.target.ruleElement();
 				MatchRelatedRuleElement mappedSrcNodeElement = new MatchRelatedRuleElement( //
 						mappedRuleCorr.getSource(), corrCandidate.target.match());
 				MatchRelatedRuleElement mappedTrgNodeElement = new MatchRelatedRuleElement( //

@@ -2,8 +2,8 @@ package org.emoflon.ibex.tgg.runtime.repair.shortcut.search;
 
 import java.util.Objects;
 
-import language.TGGRuleEdge;
-import language.TGGRuleNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 
 /**
  * A SearchKey represents an edge and consists of a sourceNode, a targetNode,
@@ -15,12 +15,12 @@ import language.TGGRuleNode;
  */
 public class SearchKey {
 
-	public TGGRuleNode sourceNode;
-	public TGGRuleNode targetNode;
-	public TGGRuleEdge edge;
+	public TGGNode sourceNode;
+	public TGGNode targetNode;
+	public TGGEdge edge;
 	public boolean reverse;
 
-	public SearchKey(TGGRuleNode sourceNode, TGGRuleNode targetNode, TGGRuleEdge edge, boolean reverse) {
+	public SearchKey(TGGNode sourceNode, TGGNode targetNode, TGGEdge edge, boolean reverse) {
 		this.sourceNode = sourceNode;
 		this.targetNode = targetNode;
 		this.edge = edge;

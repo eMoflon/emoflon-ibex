@@ -10,8 +10,7 @@ import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.lambda.EdgeCheck;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.lambda.Lookup;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.lambda.NACNodeCheck;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.lambda.NodeCheck;
-
-import language.TGGRuleNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 
 /**
  * This class is a container for a search plan consisting of an ordered list of
@@ -23,15 +22,15 @@ import language.TGGRuleNode;
 public class SearchPlan {
 
 	public List<Pair<SearchKey, Lookup>> lookUpPlan;
-	public Map<TGGRuleNode, NodeCheck> key2nodeCheck;
-	public Map<TGGRuleNode, AttrCheck> key2AttrCheck;
+	public Map<TGGNode, NodeCheck> key2nodeCheck;
+	public Map<TGGNode, AttrCheck> key2AttrCheck;
 	public Map<SearchKey, EdgeCheck> key2edgeCheck;
 	public Map<SearchKey, NACNodeCheck> key2nacNodeCheck;
 	public CSPCheck cspCheck;
 
 	public SearchPlan(List<Pair<SearchKey, Lookup>> lookUpPlan, 
-			Map<TGGRuleNode, NodeCheck> key2nodeCheck, 
-			Map<TGGRuleNode, AttrCheck> key2InplAttrCheck, 
+			Map<TGGNode, NodeCheck> key2nodeCheck, 
+			Map<TGGNode, AttrCheck> key2InplAttrCheck, 
 			Map<SearchKey, EdgeCheck> key2edgeCheck, 
 			Map<SearchKey, NACNodeCheck> key2nacNodeCheck,
 			CSPCheck cspCheck) {
