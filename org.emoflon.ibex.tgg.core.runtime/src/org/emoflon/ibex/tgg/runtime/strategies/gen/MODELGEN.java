@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
+import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.matches.SimpleTGGMatch;
 import org.emoflon.ibex.tgg.runtime.matches.container.ImmutableMatchContainer;
@@ -14,7 +15,6 @@ import org.emoflon.ibex.tgg.runtime.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.runtime.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.runtime.updatepolicy.RandomMatchUpdatePolicy;
 import org.emoflon.ibex.tgg.runtime.updatepolicy.UpdatePolicy;
-import org.emoflon.ibex.util.config.IbexOptions;
 
 /**
  * The TGG operation MODELGEN applies TGG rules as they are and thus generates

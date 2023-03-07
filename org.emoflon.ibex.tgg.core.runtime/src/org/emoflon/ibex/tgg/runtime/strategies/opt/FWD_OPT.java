@@ -11,12 +11,11 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.engine.IMatch;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.patterns.IGreenPattern;
-import org.emoflon.ibex.util.config.IbexOptions;
-
-import language.TGGRuleCorr;
-import language.TGGRuleNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 
 public class FWD_OPT extends OPT {
 
@@ -31,10 +30,10 @@ public class FWD_OPT extends OPT {
 			int id = v < 0 ? -v : v;
 			ITGGMatch comatch = idToMatch.get(id);
 			if (v < 0) {
-				for (TGGRuleCorr createdCorr : greenFactories.get(matchIdToRuleName.get(id)).getGreenCorrNodesInRule())
+				for (TGGCorrespondence createdCorr : greenFactories.get(matchIdToRuleName.get(id)).getGreenCorrNodesInRule())
 					objectsToDelete.add((EObject) comatch.get(createdCorr.getName()));
 
-				for (TGGRuleNode createdTrgNode : greenFactories.get(matchIdToRuleName.get(id)).getGreenTrgNodesInRule())
+				for (TGGNode createdTrgNode : greenFactories.get(matchIdToRuleName.get(id)).getGreenTrgNodesInRule())
 					objectsToDelete.add((EObject) comatch.get(createdTrgNode.getName()));
 
 				objectsToDelete.addAll(getRuleApplicationNodes(comatch));

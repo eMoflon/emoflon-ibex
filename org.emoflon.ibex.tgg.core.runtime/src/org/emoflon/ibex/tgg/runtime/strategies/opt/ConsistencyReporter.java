@@ -15,12 +15,10 @@ import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.runtime.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.TGGResourceHandler;
+import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuleApplication;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 import org.emoflon.smartemf.runtime.util.SmartEMFUtil;
-
-import language.BindingType;
-import language.DomainType;
-import language.TGGRuleEdge;
-import runtime.TGGRuleApplication;
 
 public class ConsistencyReporter {
 	private OperationalStrategy strategy;
@@ -40,26 +38,26 @@ public class ConsistencyReporter {
 	}
 
 	public void init(OperationalStrategy strategy) {
-		inconsistentSrcNodes = extractInconsistentNodes(resourceHandler.getSourceResource(), resourceHandler.getProtocolResource(), DomainType.SRC);
-		inconsistentTrgNodes = extractInconsistentNodes(resourceHandler.getTargetResource(), resourceHandler.getProtocolResource(), DomainType.TRG);
-		inconsistentSrcEdges = extractInconsistentEdges(resourceHandler.getSourceResource(), resourceHandler.getProtocolResource(), DomainType.SRC);
-		inconsistentTrgEdges = extractInconsistentEdges(resourceHandler.getTargetResource(), resourceHandler.getProtocolResource(), DomainType.TRG);
+		inconsistentSrcNodes = extractInconsistentNodes(resourceHandler.getSourceResource(), resourceHandler.getProtocolResource(), DomainType.SOURCE);
+		inconsistentTrgNodes = extractInconsistentNodes(resourceHandler.getTargetResource(), resourceHandler.getProtocolResource(), DomainType.TARGET);
+		inconsistentSrcEdges = extractInconsistentEdges(resourceHandler.getSourceResource(), resourceHandler.getProtocolResource(), DomainType.SOURCE);
+		inconsistentTrgEdges = extractInconsistentEdges(resourceHandler.getTargetResource(), resourceHandler.getProtocolResource(), DomainType.TARGET);
 	}
 
 	public void initWithCorr() {
 		init(strategy);
 		inconsistentCorrNodes = //
-				extractInconsistentNodes(resourceHandler.getCorrResource(), resourceHandler.getProtocolResource(), DomainType.CORR);
+				extractInconsistentNodes(resourceHandler.getCorrResource(), resourceHandler.getProtocolResource(), DomainType.CORRESPONDENCE);
 	}
 
 	public void initSrc() {
-		inconsistentSrcNodes = extractInconsistentNodes(resourceHandler.getSourceResource(), resourceHandler.getProtocolResource(), DomainType.SRC);
-		inconsistentSrcEdges = extractInconsistentEdges(resourceHandler.getSourceResource(), resourceHandler.getProtocolResource(), DomainType.SRC);
+		inconsistentSrcNodes = extractInconsistentNodes(resourceHandler.getSourceResource(), resourceHandler.getProtocolResource(), DomainType.SOURCE);
+		inconsistentSrcEdges = extractInconsistentEdges(resourceHandler.getSourceResource(), resourceHandler.getProtocolResource(), DomainType.SOURCE);
 	}
 
 	public void initTrg() {
-		inconsistentTrgNodes = extractInconsistentNodes(resourceHandler.getTargetResource(), resourceHandler.getProtocolResource(), DomainType.TRG);
-		inconsistentTrgEdges = extractInconsistentEdges(resourceHandler.getTargetResource(), resourceHandler.getProtocolResource(), DomainType.TRG);
+		inconsistentTrgNodes = extractInconsistentNodes(resourceHandler.getTargetResource(), resourceHandler.getProtocolResource(), DomainType.TARGET);
+		inconsistentTrgEdges = extractInconsistentEdges(resourceHandler.getTargetResource(), resourceHandler.getProtocolResource(), DomainType.TARGET);
 	}
 
 	public Collection<EObject> getInconsistentSrcNodes() {

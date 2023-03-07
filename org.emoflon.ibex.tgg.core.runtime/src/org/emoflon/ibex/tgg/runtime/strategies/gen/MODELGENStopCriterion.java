@@ -5,9 +5,8 @@ import java.util.HashSet;
 import java.util.Optional;
 
 import org.apache.log4j.Logger;
-
-import language.TGG;
-import language.TGGRule;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 
 public class MODELGENStopCriterion {
 	private static Logger logger = Logger.getLogger(MODELGENStopCriterion.class); 
@@ -16,7 +15,7 @@ public class MODELGENStopCriterion {
 	private long currentIntervalStart = startTime;
 	private final long INTERVAL_LENGTH = 5000; 
 
-	private TGG tgg;
+	private TGGModel tgg;
 
 	private long timeOutInMS = -1;
 
@@ -34,10 +33,10 @@ public class MODELGENStopCriterion {
 
 	private HashSet<String> abstractRules = new HashSet<>();
 
-	public MODELGENStopCriterion(TGG tgg) {
+	public MODELGENStopCriterion(TGGModel tgg) {
 		this.tgg = tgg;
 
-		for (TGGRule rule : tgg.getRules()) {
+		for (TGGRule rule : tgg.getRuleSet().getRules()) {
 			if (rule.isAbstract())
 				abstractRules.add(rule.getName());
 		}
@@ -60,7 +59,7 @@ public class MODELGENStopCriterion {
 	}
 
 	public void setMaxRuleCount(String ruleName, int maxNoOfApplications) {
-		Optional<TGGRule> ruleWithMaxCount = tgg.getRules().stream()//
+		Optional<TGGRule> ruleWithMaxCount = tgg.getRuleSet().getRules().stream()//
 				.filter(r -> r.getName().contentEquals(ruleName))//
 				.findAny();
 

@@ -36,8 +36,12 @@ import org.emoflon.ibex.tgg.runtime.strategies.opt.MetamodelRelaxer;
 import org.emoflon.ibex.tgg.runtime.strategies.sync.INITIAL_BWD;
 import org.emoflon.ibex.tgg.runtime.strategies.sync.INITIAL_FWD;
 import org.emoflon.ibex.tgg.runtime.strategies.sync.SYNC;
+import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuntimeModelPackage;
 import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TempContainer;
+import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl.TGGRuntimeModelPackageImpl;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.IBeXTGGModelPackageImpl;
 import org.emoflon.smartemf.runtime.SmartObject;
 import org.moflon.core.utilities.MoflonUtil;
 
@@ -517,8 +521,8 @@ public class TGGResourceHandler {
 
 	private void registerInternalMetamodels() {
 		// Register internals for Ibex
-		LanguagePackageImpl.init();
-		RuntimePackageImpl.init();
+		IBeXTGGModelPackageImpl.init();
+		TGGRuntimeModelPackageImpl.init();
 	}
 
 	protected void registerUserMetamodels() throws IOException {

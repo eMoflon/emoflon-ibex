@@ -4,13 +4,14 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.emoflon.ibex.common.engine.IMatch;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
+import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.matches.container.IMatchContainer;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.MatchConsumer;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.MatchDistributor;
-import org.emoflon.ibex.util.config.IbexOptions;
 
 /**
  * If we get notified about a new match that is the NAC of an axiom (i.e. a match for an
@@ -38,7 +39,7 @@ public class AxiomNACHandler extends MatchConsumer {
 	 * 
 	 * @param match the match of a NAC for an Axiom
 	 */
-	private void deleteAxiomMatchesForFoundNACs(org.emoflon.ibex.common.operational.IMatch match) {
+	private void deleteAxiomMatchesForFoundNACs(IMatch match) {
 		Set<ITGGMatch> matchesToRemove = new HashSet<>();
 
 		String axiomName = TGGPatternUtil.generateGENBlackPatternName( //

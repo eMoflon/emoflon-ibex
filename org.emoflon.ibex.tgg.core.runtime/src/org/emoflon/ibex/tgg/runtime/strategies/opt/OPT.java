@@ -15,21 +15,20 @@ import org.emoflon.ibex.common.collections.IntToObjectMap;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.engine.IMatch;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
-import org.emoflon.ibex.tgg.runtime.debug.LoggerConfig;
+import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.IWeightCalculationStrategy;
 import org.emoflon.ibex.tgg.runtime.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.runtime.updatepolicy.IUpdatePolicy;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
+import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.util.ilp.BinaryILPProblem;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPLinearExpression;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPSolution;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.Objective;
-import org.emoflon.ibex.util.config.IbexOptions;
 import org.emoflon.ibex.tgg.util.ilp.ILPSolver;
-
-import language.TGGRuleNode;
 
 public abstract class OPT extends OperationalStrategy {
 
@@ -222,7 +221,7 @@ public abstract class OPT extends OperationalStrategy {
 		return result;
 	}
 
-	protected Set<EObject> getNodes(final ITGGMatch comatch, final Collection<? extends TGGRuleNode> specNodes) {
+	protected Set<EObject> getNodes(final ITGGMatch comatch, final Collection<? extends TGGNode> specNodes) {
 		Set<EObject> result = cfactory.createObjectSet();
 		specNodes.forEach(n -> {
 			result.add((EObject) comatch.get(n.getName()));

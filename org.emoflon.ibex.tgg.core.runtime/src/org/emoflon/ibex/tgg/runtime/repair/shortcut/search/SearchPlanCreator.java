@@ -26,6 +26,7 @@ import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.lambda.Lookup;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.lambda.NACNodeCheck;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.lambda.NodeCheck;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.SCMatch;
+import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuntimeModelPackage;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
@@ -75,8 +76,8 @@ public class SearchPlanCreator {
 		}
 
 		for (TGGEdge edge : opSCR.getOperationalizedSCR().getEdges()) {
-			SearchKey forwardKey = new SearchKey(edge.getSrcNode(), edge.getTrgNode(), edge, false);
-			SearchKey backwardKey = new SearchKey(edge.getSrcNode(), edge.getTrgNode(), edge, true);
+			SearchKey forwardKey = new SearchKey((TGGNode) edge.getSource(), (TGGNode) edge.getTarget(), edge, false);
+			SearchKey backwardKey = new SearchKey((TGGNode) edge.getSource(), (TGGNode) edge.getTarget(), edge, true);
 
 			createEdgeCheck(forwardKey);
 
@@ -207,7 +208,7 @@ public class SearchPlanCreator {
 			elt2inplAttrCheck.put(key, (n, c) -> checkInplaceAttributes(key, n, c));
 	}
 
-	private boolean checkInplaceAttributes(TGGRuleNode key, EObject node, Map<String, EObject> candidates) {
+	private boolean checkInplaceAttributes(TGGNode key, EObject node, Map<String, EObject> candidates) {
 		for (TGGInplaceAttributeExpression inplAttrExpr : key.getAttrExpr()) {
 			Object subjectAttr = node.eGet(inplAttrExpr.getAttribute());
 
@@ -223,7 +224,7 @@ public class SearchPlanCreator {
 		opSCR.getOperationalizedSCR().getNodes().stream() //
 				.filter(n -> !opSCR.getOperationalizedSCR().getMergedNodes().contains(n)) //
 				.filter(n -> !opSCR.getOperationalizedSCR().getNewOriginalNodes().contains(n)) //
-				.filter(n -> !RuntimePackage.eINSTANCE.getTGGRuleApplication().isSuperTypeOf(n.getType())) //
+				.filter(n -> !TGGRuntimeModelPackage.eINSTANCE.getTGGRuleApplication().isSuperTypeOf(n.getType())) //
 				.filter(n -> n.getBindingType() != BindingType.NEGATIVE) //
 				.filter(n -> n.getBindingType() != BindingType.CREATE) //
 				.filter(n -> n.getBindingType() != BindingType.RELAXED) //
@@ -283,11 +284,11 @@ public class SearchPlanCreator {
 			if (edge.getBindingType() != BindingType.NEGATIVE)
 				continue;
 
-			if (edge.getSrcNode().getBindingType() != BindingType.NEGATIVE && edge.getTrgNode().getBindingType() != BindingType.NEGATIVE)
+			if (((TGGNode) edge.getSource()).getBindingType() != BindingType.NEGATIVE && ((TGGNode) edge.getTarget()).getBindingType() != BindingType.NEGATIVE)
 				continue;
 
-			boolean reverse = edge.getSrcNode().getBindingType() == BindingType.NEGATIVE;
-			SearchKey key = new SearchKey(edge.getSrcNode(), edge.getTrgNode(), edge, reverse);
+			boolean reverse = ((TGGNode) edge.getSource()).getBindingType() == BindingType.NEGATIVE;
+			SearchKey key = new SearchKey((TGGNode) edge.getSource(), (TGGNode) edge.getTarget(), edge, reverse);
 			key2nacNodeCheck.put(key, this.key2nacNodeCheck.get(key));
 		}
 

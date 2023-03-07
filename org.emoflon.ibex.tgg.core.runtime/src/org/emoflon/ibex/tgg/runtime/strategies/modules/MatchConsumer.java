@@ -3,7 +3,7 @@ package org.emoflon.ibex.tgg.runtime.strategies.modules;
 import java.util.Set;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.util.config.IbexOptions;
+import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 
 public abstract class MatchConsumer {
 

@@ -169,7 +169,7 @@ public class ShortcutApplicationTool implements TimeMeasurable {
 		for (String param : entryMatch.getParameterNames()) {
 			EObject mappedObject = (EObject) entryMatch.get(param);
 
-			TGGRuleNode scNode = shortcutRule.mapOriginalNodeNameToSCNode(param);
+			TGGNode scNode = shortcutRule.mapOriginalNodeNameToSCNode(param);
 			if (scNode == null) {
 				// special case is the rule application node which we want to add anyway:
 				if (!(mappedObject instanceof TGGRuleApplication))
@@ -251,9 +251,9 @@ public class ShortcutApplicationTool implements TimeMeasurable {
 		for (HigherOrderRuleComponent component : hoRule.getComponents()) {
 			ITGGMatch tempMatch = new SimpleTGGMatch(component.rule.getName() + PatternSuffixes.CONSISTENCY);
 
-			for (TGGRuleNode node : component.rule.getNodes()) {
-				TGGRuleNode hoNode = HigherOrderSupport.getHigherOrderElement(component, node);
-				TGGRuleNode scNode = shortcutRule.mapRuleNodeToSCNode(hoNode, SCInputRule.REPLACING);
+			for (TGGNode node : component.rule.getNodes()) {
+				TGGNode hoNode = HigherOrderSupport.getHigherOrderElement(component, node);
+				TGGNode scNode = shortcutRule.mapRuleNodeToSCNode(hoNode, SCInputRule.REPLACING);
 				tempMatch.put(node.getName(), scMatch.get(scNode.getName()));
 			}
 

@@ -1,6 +1,13 @@
 package org.emoflon.ibex.tgg.compiler.patterns;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.tgg.compiler.analysis.FilterNACCandidate;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 
 public class TGGPatternUtil {
@@ -144,5 +151,34 @@ public class TGGPatternUtil {
 	
 	public static String getFilterNACTRGPatternName(FilterNACCandidate candidate, TGGRule rule) {
 		return rule.getName() + "_" + candidate + PatternSuffixes.FILTER_NAC_TRG;  
+	}
+	
+	public static Collection<EObject> getNodes(EObject ruleAppNode, BindingType binding, DomainType type) {
+		TGGRuleApplication ra = (TGGRuleApplication) ruleAppNode;
+		Collection<EObject> nodes = new ArrayList<>();
+		String refNamePrefix = TGGModelUtils.getMarkerRefNamePrefix(binding, type);
+		for (EReference ref : ruleAppNode.eClass().getEAllReferences()) {
+			if(ref.getName().startsWith(refNamePrefix)) {							
+				nodes.add((EObject)ra.eGet(ref));			
+			}
+		}
+		return nodes;
+	}
+	
+	public static Collection<EObject> getAllNodes(EObject ruleAppNode){
+		Collection<EObject> allNodes = new ArrayList<>();
+		
+		allNodes.addAll(getNodes(ruleAppNode, BindingType.CREATE, DomainType.SOURCE));
+		allNodes.addAll(getNodes(ruleAppNode, BindingType.CONTEXT, DomainType.SOURCE));
+		allNodes.addAll(getNodes(ruleAppNode, BindingType.CREATE, DomainType.TARGET));
+		allNodes.addAll(getNodes(ruleAppNode, BindingType.CONTEXT, DomainType.TARGET));
+		
+		return allNodes;
+	}
+
+	public static EObject getNode(EObject ruleAppNode, BindingType binding, DomainType domain, String ovName) {
+		TGGRuleApplication ra = (TGGRuleApplication) ruleAppNode;
+		String refName = TGGModelUtils.getMarkerRefName(binding, domain, ovName);
+		return (EObject) ra.eGet(ruleAppNode.eClass().getEStructuralFeature(refName));	
 	}
 }
