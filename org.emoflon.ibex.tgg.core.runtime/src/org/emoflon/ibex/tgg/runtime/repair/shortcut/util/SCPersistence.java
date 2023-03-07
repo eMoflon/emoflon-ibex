@@ -7,13 +7,13 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import org.eclipse.emf.ecore.resource.Resource;
+import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRule;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.OperationalShortcutRule;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.ShortcutRule;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.TGGResourceHandler;
-import org.emoflon.ibex.util.config.IbexOptions;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
 
-import language.TGGRuleElement;
 import language.repair.ExternalShortcutRule;
 import language.repair.RepairFactory;
 import language.repair.TGGRuleElementMapping;

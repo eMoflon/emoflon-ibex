@@ -7,9 +7,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-
-import language.TGGRule;
-import language.TGGRuleElement;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
 
 /**
  * Container class that contains the overlap information between a original and

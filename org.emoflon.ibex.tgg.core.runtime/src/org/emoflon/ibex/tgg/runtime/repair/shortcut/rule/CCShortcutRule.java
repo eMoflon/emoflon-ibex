@@ -3,12 +3,11 @@ package org.emoflon.ibex.tgg.runtime.repair.shortcut.rule;
 import static org.emoflon.ibex.tgg.util.TGGFilterUtil.filterEdges;
 import static org.emoflon.ibex.tgg.util.TGGFilterUtil.filterNodes;
 
-import org.emoflon.ibex.tgg.compiler.patterns.ACAnalysis;
+import org.emoflon.ibex.tgg.compiler.analysis.ACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.util.config.IbexOptions;
-
-import language.BindingType;
-import language.DomainType;
+import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 
 public class CCShortcutRule extends OperationalShortcutRule {
 
@@ -18,23 +17,23 @@ public class CCShortcutRule extends OperationalShortcutRule {
 
 	@Override
 	protected void operationalize() {
-		createFilterNacs(operationalizedSCR.getReplacingRule(), DomainType.SRC);
-		createFilterNacs(operationalizedSCR.getReplacingRule(), DomainType.TRG);
+		createFilterNacs(operationalizedSCR.getReplacingRule(), DomainType.SOURCE);
+		createFilterNacs(operationalizedSCR.getReplacingRule(), DomainType.TARGET);
 
-		transformEdges(filterEdges(operationalizedSCR.getEdges(), DomainType.SRC, BindingType.CREATE), BindingType.CONTEXT);
-		transformEdges(filterEdges(operationalizedSCR.getEdges(), DomainType.TRG, BindingType.CREATE), BindingType.CONTEXT);
+		transformEdges(filterEdges(operationalizedSCR.getEdges(), DomainType.SOURCE, BindingType.CREATE), BindingType.CONTEXT);
+		transformEdges(filterEdges(operationalizedSCR.getEdges(), DomainType.TARGET, BindingType.CREATE), BindingType.CONTEXT);
 
-		transformInterfaceEdges(filterEdges(operationalizedSCR.getEdges(), DomainType.SRC, BindingType.DELETE), BindingType.NEGATIVE);
-		transformInterfaceEdges(filterEdges(operationalizedSCR.getEdges(), DomainType.TRG, BindingType.DELETE), BindingType.NEGATIVE);
+		transformInterfaceEdges(filterEdges(operationalizedSCR.getEdges(), DomainType.SOURCE, BindingType.DELETE), BindingType.NEGATIVE);
+		transformInterfaceEdges(filterEdges(operationalizedSCR.getEdges(), DomainType.TARGET, BindingType.DELETE), BindingType.NEGATIVE);
 
-		transformNodes(filterNodes(operationalizedSCR.getNodes(), DomainType.SRC, BindingType.CREATE), BindingType.CONTEXT);
-		transformNodes(filterNodes(operationalizedSCR.getNodes(), DomainType.TRG, BindingType.CREATE), BindingType.CONTEXT);
+		transformNodes(filterNodes(operationalizedSCR.getNodes(), DomainType.SOURCE, BindingType.CREATE), BindingType.CONTEXT);
+		transformNodes(filterNodes(operationalizedSCR.getNodes(), DomainType.TARGET, BindingType.CREATE), BindingType.CONTEXT);
 
-		removeEdges(filterEdges(operationalizedSCR.getEdges(), DomainType.SRC, BindingType.DELETE));
-		removeEdges(filterEdges(operationalizedSCR.getEdges(), DomainType.TRG, BindingType.DELETE));
+		removeEdges(filterEdges(operationalizedSCR.getEdges(), DomainType.SOURCE, BindingType.DELETE));
+		removeEdges(filterEdges(operationalizedSCR.getEdges(), DomainType.TARGET, BindingType.DELETE));
 
-		removeNodes(filterNodes(operationalizedSCR.getNodes(), DomainType.SRC, BindingType.DELETE));
-		removeNodes(filterNodes(operationalizedSCR.getNodes(), DomainType.TRG, BindingType.DELETE));
+		removeNodes(filterNodes(operationalizedSCR.getNodes(), DomainType.SOURCE, BindingType.DELETE));
+		removeNodes(filterNodes(operationalizedSCR.getNodes(), DomainType.TARGET, BindingType.DELETE));
 	}
 
 	@Override

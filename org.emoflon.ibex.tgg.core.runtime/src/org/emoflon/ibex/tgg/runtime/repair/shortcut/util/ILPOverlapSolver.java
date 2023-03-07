@@ -9,6 +9,8 @@ import java.util.Set;
 
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.OverlapUtil.EdgeCandidate;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.OverlapUtil.NodeCandidate;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.util.ilp.BinaryILPProblem;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;
@@ -16,9 +18,6 @@ import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPLinearExpression;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPSolution;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.Objective;
 import org.emoflon.ibex.tgg.util.ilp.ILPSolver;
-
-import language.TGGRuleEdge;
-import language.TGGRuleNode;
 
 public class ILPOverlapSolver {
 
@@ -34,8 +33,8 @@ public class ILPOverlapSolver {
 	protected Map<Integer, EdgeCandidate> id2edgeCdt = cfactory.createIntToObjectHashMap();
 	protected Map<NodeCandidate, Integer> nodeCdt2id = cfactory.createObjectToIntHashMap();
 	protected Map<EdgeCandidate, Integer> edgeCdt2id = cfactory.createObjectToIntHashMap();
-	protected Map<TGGRuleNode, Set<Integer>> node2cdts = cfactory.createObjectToObjectHashMap();
-	protected Map<TGGRuleEdge, Set<Integer>> edge2cdts = cfactory.createObjectToObjectHashMap();
+	protected Map<TGGNode, Set<Integer>> node2cdts = cfactory.createObjectToObjectHashMap();
+	protected Map<TGGEdge, Set<Integer>> edge2cdts = cfactory.createObjectToObjectHashMap();
 	protected int idCounter = 0;
 	protected int nameCounter = 0;
 
@@ -78,20 +77,20 @@ public class ILPOverlapSolver {
 		addNode2CdtMapping(cdt.replacingNode, cdt);
 	}
 
-	private void addNode2CdtMapping(TGGRuleNode node, NodeCandidate cdt) {
+	private void addNode2CdtMapping(TGGNode node, NodeCandidate cdt) {
 		Set<Integer> nodeCandidateIDs = node2cdts.getOrDefault(node, cfactory.createIntSet());
 		nodeCandidateIDs.add(nodeCdt2id.get(cdt));
 		node2cdts.put(node, nodeCandidateIDs);
 	}
 
 	private void registerEdgeCdt(EdgeCandidate cdt) {
-		if (!node2cdts.containsKey(cdt.originalEdge.getSrcNode()))
+		if (!node2cdts.containsKey(cdt.originalEdge.getSource()))
 			return;
-		if (!node2cdts.containsKey(cdt.originalEdge.getTrgNode()))
+		if (!node2cdts.containsKey(cdt.originalEdge.getTarget()))
 			return;
-		if (!node2cdts.containsKey(cdt.replacingEdge.getSrcNode()))
+		if (!node2cdts.containsKey(cdt.replacingEdge.getSource()))
 			return;
-		if (!node2cdts.containsKey(cdt.replacingEdge.getTrgNode()))
+		if (!node2cdts.containsKey(cdt.replacingEdge.getTarget()))
 			return;
 		edgeCdt2id.put(cdt, idCounter);
 		id2edgeCdt.put(idCounter, cdt);
@@ -100,7 +99,7 @@ public class ILPOverlapSolver {
 		addEdge2CdtMapping(cdt.replacingEdge, cdt);
 	}
 
-	private void addEdge2CdtMapping(TGGRuleEdge edge, EdgeCandidate cdt) {
+	private void addEdge2CdtMapping(TGGEdge edge, EdgeCandidate cdt) {
 		Set<Integer> edgeCandidateIDs = edge2cdts.getOrDefault(edge, cfactory.createIntSet());
 		edgeCandidateIDs.add(edgeCdt2id.get(cdt));
 		edge2cdts.put(edge, edgeCandidateIDs);
@@ -136,13 +135,13 @@ public class ILPOverlapSolver {
 	}
 
 	private void defineILPImplications(BinaryILPProblem ilpProblem) {
-		for (TGGRuleEdge edge : edge2cdts.keySet()) {
-			Set<Integer> srcNodeIDs = node2cdts.getOrDefault(edge.getSrcNode(), cfactory.createIntSet());
+		for (TGGEdge edge : edge2cdts.keySet()) {
+			Set<Integer> srcNodeIDs = node2cdts.getOrDefault(edge.getSource(), cfactory.createIntSet());
 			ilpProblem.addNegativeImplication(srcNodeIDs.stream().map(m -> "x" + m),
 					edge2cdts.get(edge).stream().map(m -> "x" + m),
 					"IMPL_" + edge.getType().getName() + nameCounter++);
 
-			Set<Integer> trgNodeIDs = node2cdts.getOrDefault(edge.getTrgNode(), cfactory.createIntSet());
+			Set<Integer> trgNodeIDs = node2cdts.getOrDefault(edge.getTarget(), cfactory.createIntSet());
 			ilpProblem.addNegativeImplication(trgNodeIDs.stream().map(m -> "x" + m),
 					edge2cdts.get(edge).stream().map(m -> "x" + m),
 					"IMPL_" + edge.getType().getName() + nameCounter++);
@@ -154,7 +153,7 @@ public class ILPOverlapSolver {
 		edge2cdts.keySet().forEach(edge -> defineILPExclusions(ilpProblem, edge));
 	}
 
-	private void defineILPExclusions(BinaryILPProblem ilpProblem, TGGRuleNode node) {
+	private void defineILPExclusions(BinaryILPProblem ilpProblem, TGGNode node) {
 		Set<Integer> candidates = node2cdts.get(node);
 		if (candidates.size() <= 1)
 			return;
@@ -163,7 +162,7 @@ public class ILPOverlapSolver {
 				"EXCL_nodeJustOnce_" + node.eClass().getName() + "_" + nameCounter++);
 	}
 
-	private void defineILPExclusions(BinaryILPProblem ilpProblem, TGGRuleEdge edge) {
+	private void defineILPExclusions(BinaryILPProblem ilpProblem, TGGEdge edge) {
 		Set<Integer> candidates = edge2cdts.get(edge);
 		if (candidates.size() <= 1)
 			return;

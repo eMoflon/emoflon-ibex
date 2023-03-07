@@ -5,15 +5,14 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import org.emoflon.ibex.tgg.compiler.patterns.ACAnalysis;
+import org.emoflon.ibex.tgg.compiler.analysis.ACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderSupport;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRule;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 import org.emoflon.ibex.tgg.util.TGGFilterUtil;
-import org.emoflon.ibex.util.config.IbexOptions;
-
-import language.BindingType;
-import language.TGGRule;
 
 public class OperationalSCFactory {
 
@@ -22,7 +21,7 @@ public class OperationalSCFactory {
 
 	public OperationalSCFactory(IbexOptions options) {
 		this.options = options;
-		this.filterNACAnalysis = new ACAnalysis(options.tgg.tgg(), options);
+		this.filterNACAnalysis = new ACAnalysis(options.tgg.tgg(), options.patterns.acStrategy());
 	}
 
 	public Map<String, Collection<OperationalShortcutRule>> createOperationalRules(Collection<ShortcutRule> scRules, PatternType type) {
