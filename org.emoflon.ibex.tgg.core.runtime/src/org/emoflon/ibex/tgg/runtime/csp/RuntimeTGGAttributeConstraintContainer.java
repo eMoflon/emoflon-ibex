@@ -143,19 +143,19 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 		return true;
 	}
 
-	private Collection<Pair<TGGAttributeExpression, Object>> getBoundAttributeExpValues() {
-		Collection<Pair<TGGAttributeExpression, Object>> col = constraints.stream()
+	private Collection<Pair<IBeXAttributeValue, Object>> getBoundAttributeExpValues() {
+		Collection<Pair<IBeXAttributeValue, Object>> col = constraints.stream()
 				.map(constraint -> constraint.getBoundAttrExprValues())
-				.reduce(new ArrayList<Pair<TGGAttributeExpression, Object>>(), (a, b) -> a.addAll(b) ? a : a);
-		return col == null ? new ArrayList<Pair<TGGAttributeExpression, Object>>() : col;
+				.reduce(new ArrayList<Pair<IBeXAttributeValue, Object>>(), (a, b) -> a.addAll(b) ? a : a);
+		return col == null ? new ArrayList<Pair<IBeXAttributeValue, Object>>() : col;
 	}
 
 	@Override
 	public void applyCSPValues(ITGGMatch comatch) {
-		Collection<Pair<TGGAttributeExpression, Object>> cspValues = getBoundAttributeExpValues();
+		Collection<Pair<IBeXAttributeValue, Object>> cspValues = getBoundAttributeExpValues();
 
-		for (Pair<TGGAttributeExpression, Object> cspVal : cspValues) {
-			EObject entry = (EObject) comatch.get(cspVal.getLeft().getObjectVar().getName());
+		for (Pair<IBeXAttributeValue, Object> cspVal : cspValues) {
+			EObject entry = (EObject) comatch.get(cspVal.getLeft().getNode().getName());
 			EAttribute attr = cspVal.getLeft().getAttribute();
 			EDataType type = attr.getEAttributeType();
 			Object value = cspVal.getRight();

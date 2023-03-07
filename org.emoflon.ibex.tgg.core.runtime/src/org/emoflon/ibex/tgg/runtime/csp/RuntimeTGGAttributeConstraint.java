@@ -8,11 +8,10 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeValue;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintBinding;
 import org.emoflon.ibex.tgg.util.LoremIpsum;
-
-import language.TGGAttributeExpression;
 
 public abstract class RuntimeTGGAttributeConstraint {
 	private static final char B = 'B';
@@ -59,11 +58,11 @@ public abstract class RuntimeTGGAttributeConstraint {
 
 	public abstract void solve();
 
-	public Collection<Pair<TGGAttributeExpression, Object>> getBoundAttrExprValues() {
-		Collection<Pair<TGGAttributeExpression, Object>> tuples = new ArrayList<Pair<TGGAttributeExpression, Object>>();
+	public Collection<Pair<IBeXAttributeValue, Object>> getBoundAttrExprValues() {
+		Collection<Pair<IBeXAttributeValue, Object>> tuples = new ArrayList<Pair<IBeXAttributeValue, Object>>();
 		for (int i = 0; i < constraint.getParameters().size(); i++) {
 			Object obj = constraint.getParameters().get(i);
-			if (obj instanceof TGGAttributeExpression attrExpr) {
+			if (obj instanceof IBeXAttributeValue attrExpr) {
 				tuples.add(Pair.of(attrExpr, variables.get(i).getValue()));
 			}
 		}
