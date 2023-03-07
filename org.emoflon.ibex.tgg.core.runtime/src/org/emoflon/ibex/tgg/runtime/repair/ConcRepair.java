@@ -11,11 +11,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.runtime.benchmark.TimeMeasurable;
-import org.emoflon.ibex.tgg.runtime.benchmark.TimeRegistry;
-import org.emoflon.ibex.tgg.runtime.benchmark.Timer;
-import org.emoflon.ibex.tgg.runtime.benchmark.Times;
-import org.emoflon.ibex.tgg.runtime.debug.LoggerConfig;
+import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.matches.container.BrokenMatchContainer;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.BasicShortcutPatternProvider;
@@ -35,11 +31,15 @@ import org.emoflon.ibex.tgg.runtime.strategies.integrate.classification.Deletion
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.classification.DomainModification;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.matchcontainer.PrecedenceNode;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.TGGMatchAnalyzer.ConstrainedAttributeChanges;
-import org.emoflon.ibex.util.config.IbexOptions;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
+import org.emoflon.ibex.tgg.util.benchmark.TimeMeasurable;
+import org.emoflon.ibex.tgg.util.benchmark.TimeRegistry;
+import org.emoflon.ibex.tgg.util.benchmark.Timer;
+import org.emoflon.ibex.tgg.util.benchmark.Times;
+import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 
-import language.BindingType;
-import language.DomainType;
-import language.TGGAttributeConstraint;
 import language.TGGAttributeExpression;
 
 public class ConcRepair implements TimeMeasurable {
@@ -177,8 +177,8 @@ public class ConcRepair implements TimeMeasurable {
 
 	private boolean filterRepairCandidates(ITGGMatch match) {
 		DeletionPattern pattern = opStrat.matchClassifier().get(match).getDeletionPattern();
-		DomainModification srcModType = pattern.getModType(DomainType.SRC, BindingType.CREATE);
-		DomainModification trgModType = pattern.getModType(DomainType.TRG, BindingType.CREATE);
+		DomainModification srcModType = pattern.getModType(DomainType.SOURCE, BindingType.CREATE);
+		DomainModification trgModType = pattern.getModType(DomainType.TARGET, BindingType.CREATE);
 		return !(srcModType == DomainModification.COMPL_DEL && trgModType == DomainModification.UNCHANGED || //
 				srcModType == DomainModification.UNCHANGED && trgModType == DomainModification.COMPL_DEL);
 	}

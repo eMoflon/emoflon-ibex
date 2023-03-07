@@ -139,7 +139,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 	protected abstract Set<PatternType> getRelevantOperationalPatterns();
 
-	public IGreenPattern revokes(ITGGMatch match) {
+	public TGGOperationalRule revokes(ITGGMatch match) {
 		throw new IllegalStateException("Not clear how to revoke a match of " + match.getPatternName());
 	}
 

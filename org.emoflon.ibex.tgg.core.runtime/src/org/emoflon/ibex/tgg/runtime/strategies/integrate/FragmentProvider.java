@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.emoflon.ibex.tgg.runtime.benchmark.Timer;
-import org.emoflon.ibex.tgg.runtime.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.modelchange.ModelChangeProtocol.ChangeKey;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.pattern.IntegrationFragment;
+import org.emoflon.ibex.tgg.util.benchmark.Timer;
+import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 
 public class FragmentProvider {
 

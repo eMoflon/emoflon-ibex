@@ -8,7 +8,9 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -19,6 +21,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXOperationType;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.emf.EMFManipulationUtils;
+import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.runtime.IGreenInterpreter;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.csp.IRuntimeTGGAttrConstrContainer;
@@ -26,6 +29,7 @@ import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.SCMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.TGGResourceHandler;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
@@ -367,5 +371,88 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	@Override
 	public int getNumOfCreatedCorrNodes() {
 		return numOfCreatedCorrNodes;
+	}
+	
+	@Override
+	public void createMarkers(String ruleName, ITGGMatch match) {
+		EPackage corrPackage = options.tgg.corrMetamodel();
+		EClass type = (EClass) corrPackage.getEClassifier(TGGModelUtils.getMarkerTypeName(ruleName));
+		
+		EObject ra = EcoreUtil.create(type);
+		
+		for (TGGNode n : factory.getGreenSrcNodesInRule()) {
+			EReference ref;
+			if(name2ref.containsKey(n))
+				ref = name2ref.get(n);
+			else {
+				String refName = TGGModelUtils.getMarkerRefName(BindingType.CREATE, DomainType.SOURCE, n.getName());
+				ref = (EReference) type.getEStructuralFeature(refName);		
+				name2ref.put(n, ref);
+			}
+			ra.eSet(ref, (EObject) match.get(n.getName()));			
+		}
+		
+		for (TGGNode n : factory.getBlackSrcNodesInRule()) {
+			EReference ref;
+			if(name2ref.containsKey(n))
+				ref = name2ref.get(n);
+			else {
+				String refName = TGGModelUtils.getMarkerRefName(BindingType.CONTEXT, DomainType.SOURCE, n.getName());
+				ref = (EReference) type.getEStructuralFeature(refName);		
+				name2ref.put(n, ref);
+			}		
+			ra.eSet(ref, (EObject) match.get(n.getName()));			
+		}
+
+		for (TGGNode n : factory.getGreenTrgNodesInRule()) {
+			EReference ref;
+			if(name2ref.containsKey(n))
+				ref = name2ref.get(n);
+			else {
+				String refName = TGGModelUtils.getMarkerRefName(BindingType.CREATE, DomainType.TARGET, n.getName());
+				ref = (EReference) type.getEStructuralFeature(refName);		
+				name2ref.put(n, ref);
+			}		
+			ra.eSet(ref, (EObject) match.get(n.getName()));			
+		}
+		
+		for (TGGNode n : factory.getBlackTrgNodesInRule()) {
+			EReference ref;
+			if(name2ref.containsKey(n))
+				ref = name2ref.get(n);
+			else {
+				String refName = TGGModelUtils.getMarkerRefName(BindingType.CONTEXT, DomainType.TARGET, n.getName());
+				ref = (EReference) type.getEStructuralFeature(refName);		
+				name2ref.put(n, ref);
+			}		
+			ra.eSet(ref, (EObject) match.get(n.getName()));			
+		}
+
+		for (TGGNode n : factory.getGreenCorrNodesInRule()) {
+			EReference ref;
+			if(name2ref.containsKey(n))
+				ref = name2ref.get(n);
+			else {
+				String refName = TGGModelUtils.getMarkerRefName(BindingType.CREATE, DomainType.CORRESPONDENCE, n.getName());
+				ref = (EReference) type.getEStructuralFeature(refName);		
+				name2ref.put(n, ref);
+			}		
+			ra.eSet(ref, (EObject) match.get(n.getName()));			
+		}
+		
+		for (TGGNode n : factory.getBlackCorrNodesInRule()) {
+			EReference ref;
+			if(name2ref.containsKey(n))
+				ref = name2ref.get(n);
+			else {
+				String refName = TGGModelUtils.getMarkerRefName(BindingType.CONTEXT, DomainType.CORRESPONDENCE, n.getName());
+				ref = (EReference) type.getEStructuralFeature(refName);		
+				name2ref.put(n, ref);
+			}	
+			ra.eSet(ref, (EObject) match.get(n.getName()));			
+		}
+		
+		resourceHandler.getProtocolResource().getContents().add(ra);
+		match.put(TGGPatternUtil.getProtocolNodeName(ruleName), ra);
 	}
 }

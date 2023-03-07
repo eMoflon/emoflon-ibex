@@ -6,11 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.runtime.benchmark.TimeMeasurable;
-import org.emoflon.ibex.tgg.runtime.benchmark.TimeRegistry;
-import org.emoflon.ibex.tgg.runtime.benchmark.Timer;
-import org.emoflon.ibex.tgg.runtime.benchmark.Times;
-import org.emoflon.ibex.tgg.runtime.debug.LoggerConfig;
+import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.matches.container.BrokenMatchContainer;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.BasicShortcutPatternProvider;
@@ -23,7 +19,11 @@ import org.emoflon.ibex.tgg.runtime.repair.strategies.ShortcutRepairStrategy;
 import org.emoflon.ibex.tgg.runtime.strategies.PropagatingOperationalStrategy;
 import org.emoflon.ibex.tgg.runtime.strategies.PropagationDirectionHolder;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.matchcontainer.PrecedenceNode;
-import org.emoflon.ibex.util.config.IbexOptions;
+import org.emoflon.ibex.tgg.util.benchmark.TimeMeasurable;
+import org.emoflon.ibex.tgg.util.benchmark.TimeRegistry;
+import org.emoflon.ibex.tgg.util.benchmark.Timer;
+import org.emoflon.ibex.tgg.util.benchmark.Times;
+import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 
 public class SeqRepair implements TimeMeasurable {
 

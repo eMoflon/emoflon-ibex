@@ -17,15 +17,13 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.matches.container.IMatchContainer;
-import org.emoflon.ibex.tgg.runtime.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuleApplication;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.util.debug.ConsoleUtil;
 import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 
 import com.google.common.collect.Sets;
-
-import language.TGG;
-import language.TGGRuleNode;
 
 public class MatchHandler {
 
@@ -62,8 +60,8 @@ public class MatchHandler {
 		if (initialized)
 			return;
 
-		TGG tgg = options.tgg.tgg();
-		this.domainsHaveNoSharedTypes = tgg.getSrc().stream().noneMatch(tgg.getTrg()::contains);
+		TGGModel tgg = options.tgg.tgg();
+		this.domainsHaveNoSharedTypes = tgg.getSource().stream().noneMatch(tgg.getTarget()::contains);
 
 		initialized = true;
 	}
@@ -291,7 +289,7 @@ public class MatchHandler {
 							greenPatternFactory.getGreenTrgNodesInRule(), match);
 	}
 
-	private boolean matchedNodesAreInCorrectResource(Resource r, Collection<TGGRuleNode> nodes, ITGGMatch match) {
+	private boolean matchedNodesAreInCorrectResource(Resource r, Collection<TGGNode> nodes, ITGGMatch match) {
 		return nodes.stream().noneMatch(n -> match.isInMatch(n.getName()) && !nodeIsInResource(match, n.getName(), r));
 	}
 

@@ -9,29 +9,28 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRule;
-import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRuleFactory;
-import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.ShortcutApplicationPoint;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRule.ComponentSpecificRuleElement;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRule.HigherOrderRuleComponent;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRuleFactory;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.ShortcutApplicationPoint;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.OperationalShortcutRule;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.ShortcutRule;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.LocalPatternSearch;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.OverlapCategory;
-import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.TGGOverlap;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.OverlapUtil.FixedMappings;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.TGGOverlap;
 import org.emoflon.ibex.tgg.runtime.repair.strategies.RepairApplicationPoint;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.matchcontainer.PrecedenceGraph;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.matchcontainer.PrecedenceNode;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.TGGMatchUtil;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.TGGMatchUtilProvider;
-import org.emoflon.ibex.util.config.IbexOptions;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
 
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
-
-import language.DomainType;
-import language.TGGRuleElement;
 
 public class HigherOrderShortcutPatternProvider extends BasicShortcutPatternProvider {
 

@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.runtime.debug.LoggerConfig;
+import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.OperationalSCFactory;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.OperationalShortcutRule;
@@ -20,7 +20,7 @@ import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.OverlapUtil;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.SCPersistence;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.TGGOverlap;
 import org.emoflon.ibex.tgg.runtime.repair.strategies.RepairApplicationPoint;
-import org.emoflon.ibex.util.config.IbexOptions;
+import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 
 public class BasicShortcutPatternProvider implements ShortcutPatternProvider {
 

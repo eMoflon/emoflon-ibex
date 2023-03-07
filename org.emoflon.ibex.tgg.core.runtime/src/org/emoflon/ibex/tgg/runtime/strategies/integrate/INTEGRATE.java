@@ -11,8 +11,7 @@ import java.util.function.BiConsumer;
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.delta.validation.InvalidDeltaException;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.runtime.benchmark.Timer;
-import org.emoflon.ibex.tgg.runtime.debug.LoggerConfig;
+import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.defaults.IbexRedInterpreter;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.matches.container.IMatchContainer;
@@ -25,8 +24,8 @@ import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.ConflictHandl
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.detection.MultiplicityCounter;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.matchcontainer.PrecedenceGraph;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.modelchange.ModelChangeProtocol;
-import org.emoflon.ibex.tgg.runtime.strategies.integrate.modelchange.ModelChanges;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.modelchange.ModelChangeProtocol.ChangeKey;
+import org.emoflon.ibex.tgg.runtime.strategies.integrate.modelchange.ModelChanges;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.pattern.IntegrationFragment;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.EltFilter;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.FilterNACMatchCollector;
@@ -34,7 +33,8 @@ import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.Revoker;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.TGGMatchUtilProvider;
 import org.emoflon.ibex.tgg.runtime.strategies.opt.CC;
 import org.emoflon.ibex.tgg.runtime.strategies.opt.LocalCC;
-import org.emoflon.ibex.util.config.IbexOptions;
+import org.emoflon.ibex.tgg.util.benchmark.Timer;
+import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 
 import com.google.common.collect.Sets;
 

@@ -1,7 +1,5 @@
 package org.emoflon.ibex.tgg.runtime.repair.shortcut;
 
-import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -20,11 +18,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.IGreenInterpreter;
 import org.emoflon.ibex.tgg.runtime.IRedInterpreter;
-import org.emoflon.ibex.tgg.runtime.benchmark.TimeMeasurable;
-import org.emoflon.ibex.tgg.runtime.benchmark.TimeRegistry;
-import org.emoflon.ibex.tgg.runtime.benchmark.Timer;
-import org.emoflon.ibex.tgg.runtime.benchmark.Times;
-import org.emoflon.ibex.tgg.runtime.debug.LoggerConfig;
+import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.matches.SimpleTGGMatch;
@@ -41,15 +35,21 @@ import org.emoflon.ibex.tgg.runtime.repair.shortcut.updatepolicy.IShortcutRuleUp
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.SCMatch;
 import org.emoflon.ibex.tgg.runtime.repair.strategies.RepairApplicationPoint;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.TGGResourceHandler;
+import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuleApplication;
+import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TempContainer;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.util.TGGFilterUtil;
-import org.emoflon.ibex.util.config.IbexOptions;
+import org.emoflon.ibex.tgg.util.benchmark.TimeMeasurable;
+import org.emoflon.ibex.tgg.util.benchmark.TimeRegistry;
+import org.emoflon.ibex.tgg.util.benchmark.Timer;
+import org.emoflon.ibex.tgg.util.benchmark.Times;
+import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 
-import language.BindingType;
-import language.DomainType;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
-import runtime.TGGRuleApplication;
-import runtime.TempContainer;
 
 /**
  * This class handles all operationalized shortcut rules and their application to fix a broken
@@ -190,7 +190,7 @@ public class ShortcutApplicationTool implements TimeMeasurable {
 				EObject mappedObject = (EObject) component.match.get(param);
 				String hoRuleNodeName = HigherOrderSupport.findHigherOrderNodeName(component, param);
 
-				TGGRuleNode scNode = null;
+				TGGNode scNode = null;
 				if (hoRuleNodeName != null)
 					scNode = shortcutRule.mapOriginalNodeNameToSCNode(hoRuleNodeName);
 
@@ -275,9 +275,9 @@ public class ShortcutApplicationTool implements TimeMeasurable {
 	private void processDeletions(OperationalShortcutRule osr, ITGGMatch brokenMatch) {
 		ShortcutRule shortcutRule = osr.getOperationalizedSCR();
 
-		Collection<TGGRuleNode> deletedRuleNodes = TGGFilterUtil.filterNodes(shortcutRule.getNodes(), BindingType.DELETE);
-		Collection<TGGRuleEdge> deletedRuleEdges = TGGFilterUtil.filterEdges(shortcutRule.getEdges(), BindingType.DELETE);
-		Collection<TGGRuleEdge> createdRuleEdges = TGGFilterUtil.filterEdges(shortcutRule.getEdges(), BindingType.CREATE);
+		Collection<TGGNode> deletedRuleNodes = TGGFilterUtil.filterNodes(shortcutRule.getNodes(), BindingType.DELETE);
+		Collection<TGGEdge> deletedRuleEdges = TGGFilterUtil.filterEdges(shortcutRule.getEdges(), BindingType.DELETE);
+		Collection<TGGEdge> createdRuleEdges = TGGFilterUtil.filterEdges(shortcutRule.getEdges(), BindingType.CREATE);
 
 		Set<EMFEdge> edgesToRevoke = new HashSet<>();
 		// Collect edges to revoke.

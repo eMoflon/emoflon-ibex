@@ -15,4 +15,6 @@ public interface IGreenInterpreter {
 	int getNumOfCreatedNodes();
 	
 	int getNumOfCreatedCorrNodes();
+
+	void createMarkers(String ruleName, ITGGMatch match);
 }

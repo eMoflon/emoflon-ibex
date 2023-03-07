@@ -54,7 +54,8 @@
     </genClasses>
     <genClasses ecoreClass="IBeXTGGModel.ecore#//TGGOperationalRule">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXTGGModel.ecore#//TGGOperationalRule/operationalisationMode"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGOperationalRule/marked"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGOperationalRule/toBeMarked"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGOperationalRule/alreadyMarked"/>
     </genClasses>
     <genClasses image="false" ecoreClass="IBeXTGGModel.ecore#//TGGRuleElement">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXTGGModel.ecore#//TGGRuleElement/domainType"/>
