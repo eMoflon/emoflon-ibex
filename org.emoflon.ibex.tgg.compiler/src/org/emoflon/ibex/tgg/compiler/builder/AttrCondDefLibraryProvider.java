@@ -1,9 +1,11 @@
 package org.emoflon.ibex.tgg.compiler.builder;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -24,7 +26,8 @@ public class AttrCondDefLibraryProvider {
 	private static final String USER_ATTR_COND_DEF_FACTORY_PATH = USER_ATTR_PATH + "factories/";
 	private static final String USER_ATTR_COND_DEF_FACTORY_NAME = "/UserDefinedRuntimeTGGAttrConstraintFactory.java";
 	private static final String USER_ATTR_CONDS_PATH = USER_ATTR_PATH + "custom/";
-	
+	private static final String ATTR_COND_DEF_LIBRARY_PATH = "src/org/emoflon/ibex/tgg/csp/lib/AttrCondDefLibrary.tgg";
+
 	
 	public static void userAttrCondDefFactory(IProject project, Collection<String> userDefConstraints) throws CoreException, IOException {
 		String path = USER_ATTR_COND_DEF_FACTORY_PATH + MoflonUtil.lastCapitalizedSegmentOf(project.getName()).toLowerCase() + USER_ATTR_COND_DEF_FACTORY_NAME ;
@@ -45,20 +48,16 @@ public class AttrCondDefLibraryProvider {
 		}
 	}
 	
+	
 	public void generateAttrCondLibsAndStubs(TGGModel model, IProject project) {
-		for(var definitionLibrary : model.getAttributeConstraintDefinitionLibraries()) {
-			for(var definition : definitionLibrary.getTggAttributeConstraintDefinitions()) {
-				
-			}
-		}
+		// TODO larsF, adrianM hier muss geschaut werden dass keine Stubs für die Standardlib generiert werden
 		Collection<TGGAttributeConstraintDefinition> userAttrCondDefs = model
-				.getAttributeConstraintDefinitionLibraries()
-				.stream()
-				.map(null)
-				.getTggAttributeConstraintDefinitions()
-				.stream()
-				.filter(ac -> ac.isUserDefined())
-				.collect(Collectors.toList());
+				.getAttributeConstraintDefinitionLibraries() //
+				.stream() //
+				.flatMap(lib -> lib.getTggAttributeConstraintDefinitions().stream())
+//				.filter(ac -> ac.isUserDefined()) //
+				.collect(Collectors.toList()); //
+		
 		Collection<String> userAttrCondNames = userAttrCondDefs.stream()
 				.map(udc -> udc.getName())
 				.collect(Collectors.toList());
@@ -67,6 +66,23 @@ public class AttrCondDefLibraryProvider {
 			AttrCondDefLibraryProvider.userAttrCondDefStubs(project, userAttrCondDefs);
 		} catch (CoreException | IOException e) {
 			LogUtils.error(logger, e);
+		}
+	}
+	
+
+	public static void syncAttrCondDefLibrary(IProject project) throws CoreException, IOException {
+		String path = ATTR_COND_DEF_LIBRARY_PATH;
+		String defaultLib = DefaultFilesHelper.generateDefaultAttrCondDefLibrary();
+		IPath pathToLib = new Path(path);
+		IFile attrLibFile = project.getFile(pathToLib);
+		if (attrLibFile.exists()) {
+			File file = new File(attrLibFile.getLocation().toString());
+			String contents = FileUtils.readFileToString(file, (String) null);
+			if (!contents.equals(defaultLib)) {
+				WorkspaceHelper.addAllFoldersAndFile(project, pathToLib, defaultLib, new NullProgressMonitor());
+			}
+		} else {
+			WorkspaceHelper.addAllFoldersAndFile(project, pathToLib, defaultLib, new NullProgressMonitor());
 		}
 	}
 }

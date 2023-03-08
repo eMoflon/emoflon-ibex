@@ -8,4 +8,6 @@ Automatic-Module-Name: org.emoflon.ibex.tgg.analysis
 Export-Package: org.emoflon.ibex.tgg.compiler.analysis,
  org.emoflon.ibex.tgg.compiler.patterns
 Require-Bundle: org.emoflon.ibex.tgg.tggmodel,
- org.emoflon.ibex.common.slimgt
+ org.emoflon.ibex.common.slimgt,
+ org.emoflon.ibex.tgg.runtimemodel,
+ org.emoflon.ibex.tgg.util

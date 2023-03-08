@@ -131,7 +131,7 @@ public class TGGPackageBuilder implements TGGBuilderExtension {
 	
 	private void generateAttrCondLib() {
 		try {
-			org.emoflon.ibex.tgg.editor.defaults.AttrCondDefLibraryProvider.syncAttrCondDefLibrary(project);
+			AttrCondDefLibraryProvider.syncAttrCondDefLibrary(project);
 		} catch (CoreException | IOException e) {
 			logError(e);
 		}
