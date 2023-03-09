@@ -15,10 +15,8 @@ import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.common.engine.IMatch;
-import org.emoflon.ibex.common.operational.IMatchObserver;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.BlackInterpreter;
-import org.emoflon.ibex.tgg.runtime.IBlackInterpreter;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.OperationalStrategy;
@@ -90,7 +88,7 @@ public class MatchDistributor implements IMatchObserver, TimeMeasurable {
 
 		Optional<RuntimeException> initExcep = Optional.empty();
 		try {
-			blackInterpreter.initialise(executable, options, rs.getPackageRegistry(), this);
+			blackInterpreter.initialize(executable, options, rs.getPackageRegistry(), this);
 		} catch (RuntimeException e) {
 			initExcep = Optional.of(e);
 		}
@@ -117,10 +115,10 @@ public class MatchDistributor implements IMatchObserver, TimeMeasurable {
 	 * @param newBlackInterpreter The black interpreter to replace the existing black
 	 *                            interpreter
 	 */
-	protected void reinitializeBlackInterpreter(IbexExecutable executable, IBlackInterpreter newBlackInterpreter) {
+	protected void reinitializeBlackInterpreter(IbexExecutable executable, BlackInterpreter newBlackInterpreter) {
 		this.removeBlackInterpreter();
 		this.blackInterpreter = newBlackInterpreter;
-		this.blackInterpreter.initialise(executable, options, rs.getPackageRegistry(), this);
+		this.blackInterpreter.initialize(executable, options, rs.getPackageRegistry(), this);
 
 		Collection<Resource> resources = new LinkedList<>();
 		resources.add(options.resourceHandler().source);

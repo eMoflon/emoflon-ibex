@@ -52,7 +52,7 @@ public abstract class BlackInterpreter<EM> extends PatternMatchingEngine<TGGMode
 	protected void initialize() {
 	}
 	
-	protected abstract void initialize(IbexExecutable executable, final IbexOptions options, Registry registry, IMatchObserver matchObserver);
+	public abstract void initialize(IbexExecutable executable, final IbexOptions options, Registry registry, IMatchObserver matchObserver);
 
 	@Override
 	protected void fetchMatches() {

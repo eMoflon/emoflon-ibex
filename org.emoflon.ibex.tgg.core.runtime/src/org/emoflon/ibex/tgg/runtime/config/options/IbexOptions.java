@@ -2,7 +2,7 @@ package org.emoflon.ibex.tgg.runtime.config.options;
 
 import java.io.IOException;
 
-import org.emoflon.ibex.tgg.runtime.IBlackInterpreter;
+import org.emoflon.ibex.tgg.runtime.BlackInterpreter;
 import org.emoflon.ibex.tgg.runtime.config.IRegistrationHelper;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.IbexExecutable;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.MatchDistributor;
@@ -18,7 +18,7 @@ public class IbexOptions {
 
 	private MatchDistributor matchDistributor;
 	private IRegistrationHelper registrationHelper;
-	private IBlackInterpreter blackInterpreter;
+	private BlackInterpreter<?> blackInterpreter;
 	private SupportedILPSolver ilpSolver;
 
 	public final PatternOptions patterns = new PatternOptions(this);
@@ -81,11 +81,11 @@ public class IbexOptions {
 		return registrationHelper;
 	}
 
-	public IBlackInterpreter blackInterpreter() {
+	public BlackInterpreter<?> blackInterpreter() {
 		return blackInterpreter;
 	}
 
-	public IbexOptions blackInterpreter(IBlackInterpreter blackInterpreter) {
+	public IbexOptions blackInterpreter(BlackInterpreter<?> blackInterpreter) {
 		this.blackInterpreter = blackInterpreter;
 		return this;
 	}
