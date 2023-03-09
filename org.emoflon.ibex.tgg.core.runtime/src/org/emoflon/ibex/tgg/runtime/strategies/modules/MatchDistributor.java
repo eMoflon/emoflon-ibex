@@ -17,6 +17,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.common.engine.IMatch;
 import org.emoflon.ibex.common.operational.IMatchObserver;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.runtime.BlackInterpreter;
 import org.emoflon.ibex.tgg.runtime.IBlackInterpreter;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
@@ -48,7 +49,7 @@ public class MatchDistributor implements IMatchObserver, TimeMeasurable {
 	private IbexOptions options;
 
 	private long matchCounter = 0;
-	private IBlackInterpreter blackInterpreter;
+	private BlackInterpreter<?> blackInterpreter;
 	private ResourceSet rs;
 
 	private boolean initialized = false;

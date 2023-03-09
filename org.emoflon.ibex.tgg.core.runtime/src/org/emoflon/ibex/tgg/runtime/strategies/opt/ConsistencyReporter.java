@@ -18,6 +18,8 @@ import org.emoflon.ibex.tgg.runtime.strategies.modules.TGGResourceHandler;
 import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuleApplication;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.smartemf.runtime.util.SmartEMFUtil;
 
 public class ConsistencyReporter {
@@ -123,13 +125,13 @@ public class ConsistencyReporter {
 		protocol.getContents().forEach(c -> {
 			if (c instanceof TGGRuleApplication ra) {
 				String ruleName = ra.eClass().getName().substring(0, ra.eClass().getName().length() - 8);
-				Collection<TGGRuleEdge> specificationEdges = domain == DomainType.SRC ? strategy.getGreenFactories().get(ruleName).getGreenSrcEdgesInRule()
+				Collection<TGGEdge> specificationEdges = domain == DomainType.SOURCE ? strategy.getGreenFactories().get(ruleName).getGreenSrcEdgesInRule()
 						: strategy.getGreenFactories().get(ruleName).getGreenTrgEdgesInRule();
-				for (TGGRuleEdge specificationEdge : specificationEdges) {
-					EObject srcOfEdge = TGGPatternUtil.getNode(ra, specificationEdge.getSrcNode().getBindingType(), domain,
-							specificationEdge.getSrcNode().getName());
-					EObject trgOfEdge = TGGPatternUtil.getNode(ra, specificationEdge.getTrgNode().getBindingType(), domain,
-							specificationEdge.getTrgNode().getName());
+				for (TGGEdge specificationEdge : specificationEdges) {
+					EObject srcOfEdge = TGGPatternUtil.getNode(ra, ((TGGNode) specificationEdge.getSource()).getBindingType(), domain,
+							specificationEdge.getSource().getName());
+					EObject trgOfEdge = TGGPatternUtil.getNode(ra, ((TGGNode) specificationEdge.getTarget()).getBindingType(), domain,
+							specificationEdge.getTarget().getName());
 					if (srcOfEdge == null || trgOfEdge == null)
 						throw new NullPointerException("Source and/or target of tggRuleEdge<" + specificationEdge + "> must not be null!");
 
