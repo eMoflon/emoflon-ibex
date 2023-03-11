@@ -115,7 +115,7 @@ public class MatchDistributor implements IMatchObserver, TimeMeasurable {
 	 * @param newBlackInterpreter The black interpreter to replace the existing black
 	 *                            interpreter
 	 */
-	protected void reinitializeBlackInterpreter(IbexExecutable executable, BlackInterpreter newBlackInterpreter) {
+	protected void reinitializeBlackInterpreter(IbexExecutable executable, BlackInterpreter<?> newBlackInterpreter) {
 		this.removeBlackInterpreter();
 		this.blackInterpreter = newBlackInterpreter;
 		this.blackInterpreter.initialize(executable, options, rs.getPackageRegistry(), this);
