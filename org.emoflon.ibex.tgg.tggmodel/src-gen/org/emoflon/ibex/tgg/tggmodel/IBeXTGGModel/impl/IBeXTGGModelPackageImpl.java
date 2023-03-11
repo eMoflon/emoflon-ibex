@@ -329,6 +329,96 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EReference getTGGRule_Context() {
+		return (EReference) tggRuleEClass.getEStructuralFeatures().get(6);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getTGGRule_ContextSource() {
+		return (EReference) tggRuleEClass.getEStructuralFeatures().get(7);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getTGGRule_ContextTarget() {
+		return (EReference) tggRuleEClass.getEStructuralFeatures().get(8);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getTGGRule_Create() {
+		return (EReference) tggRuleEClass.getEStructuralFeatures().get(9);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getTGGRule_CreateSource() {
+		return (EReference) tggRuleEClass.getEStructuralFeatures().get(10);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getTGGRule_CreateTarget() {
+		return (EReference) tggRuleEClass.getEStructuralFeatures().get(11);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getTGGRule_Axiom() {
+		return (EAttribute) tggRuleEClass.getEStructuralFeatures().get(12);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getTGGRule_Source() {
+		return (EReference) tggRuleEClass.getEStructuralFeatures().get(13);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getTGGRule_Correspondence() {
+		return (EReference) tggRuleEClass.getEStructuralFeatures().get(14);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getTGGRule_Target() {
+		return (EReference) tggRuleEClass.getEStructuralFeatures().get(15);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getTGGOperationalRule() {
 		return tggOperationalRuleEClass;
 	}
@@ -523,6 +613,16 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 		createEReference(tggRuleEClass, TGG_RULE__OPERATIONALISATIONS);
 		createEReference(tggRuleEClass, TGG_RULE__ATTRIBUTE_CONSTRAINTS);
 		createEAttribute(tggRuleEClass, TGG_RULE__ABSTRACT);
+		createEReference(tggRuleEClass, TGG_RULE__CONTEXT);
+		createEReference(tggRuleEClass, TGG_RULE__CONTEXT_SOURCE);
+		createEReference(tggRuleEClass, TGG_RULE__CONTEXT_TARGET);
+		createEReference(tggRuleEClass, TGG_RULE__CREATE);
+		createEReference(tggRuleEClass, TGG_RULE__CREATE_SOURCE);
+		createEReference(tggRuleEClass, TGG_RULE__CREATE_TARGET);
+		createEAttribute(tggRuleEClass, TGG_RULE__AXIOM);
+		createEReference(tggRuleEClass, TGG_RULE__SOURCE);
+		createEReference(tggRuleEClass, TGG_RULE__CORRESPONDENCE);
+		createEReference(tggRuleEClass, TGG_RULE__TARGET);
 
 		tggOperationalRuleEClass = createEClass(TGG_OPERATIONAL_RULE);
 		createEAttribute(tggOperationalRuleEClass, TGG_OPERATIONAL_RULE__OPERATIONALISATION_MODE);
@@ -639,6 +739,35 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 				IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getTGGRule_Abstract(), ecorePackage.getEBoolean(), "abstract", null, 0, 1, TGGRule.class,
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGGRule_Context(), theIBeXCoreModelPackage.getIBeXRuleDelta(), null, "context", null, 0, 1,
+				TGGRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGGRule_ContextSource(), theIBeXCoreModelPackage.getIBeXRuleDelta(), null, "contextSource",
+				null, 0, 1, TGGRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
+				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGGRule_ContextTarget(), theIBeXCoreModelPackage.getIBeXRuleDelta(), null, "contextTarget",
+				null, 0, 1, TGGRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
+				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGGRule_Create(), theIBeXCoreModelPackage.getIBeXRuleDelta(), null, "create", null, 0, 1,
+				TGGRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGGRule_CreateSource(), theIBeXCoreModelPackage.getIBeXRuleDelta(), null, "createSource",
+				null, 0, 1, TGGRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
+				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGGRule_CreateTarget(), theIBeXCoreModelPackage.getIBeXRuleDelta(), null, "createTarget",
+				null, 0, 1, TGGRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
+				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getTGGRule_Axiom(), ecorePackage.getEBoolean(), "axiom", null, 0, 1, TGGRule.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGGRule_Source(), theIBeXCoreModelPackage.getIBeXRuleDelta(), null, "source", null, 0, 1,
+				TGGRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGGRule_Correspondence(), theIBeXCoreModelPackage.getIBeXRuleDelta(), null, "correspondence",
+				null, 0, 1, TGGRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
+				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGGRule_Target(), theIBeXCoreModelPackage.getIBeXRuleDelta(), null, "target", null, 0, 1,
+				TGGRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
+				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(tggOperationalRuleEClass, TGGOperationalRule.class, "TGGOperationalRule", !IS_ABSTRACT,
 				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);

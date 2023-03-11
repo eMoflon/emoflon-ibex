@@ -16,6 +16,7 @@ import org.emoflon.ibex.tgg.runtime.strategies.modules.TGGResourceHandler;
 import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.Correspondence;
 import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuleApplication;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 
 public class IbexRedInterpreter implements IRedInterpreter {
 	private final OperationalStrategy strategy;
@@ -38,13 +39,13 @@ public class IbexRedInterpreter implements IRedInterpreter {
 	@Override
 	public void revokeOperationalRule(final ITGGMatch match) {
 		TGGRuleApplication ra = match.getRuleApplicationNode();
-		IGreenPattern pattern = strategy.revokes(match);
+		TGGOperationalRule operationalRule = options.tgg.ruleHandler().getOperationalRule(match.getRuleName());
 
 		// Revoke nodes and edges in the correspondence model.
-		revokeCorrs(match, pattern);
+		revokeCorrs(match, operationalRule);
 
 		// Revoke nodes and edges in the source and target model.
-		revoke(getNodesToRevoke(match, pattern), getEdgesToRevoke(match, pattern));
+		revoke(getNodesToRevoke(match, operationalRule), getEdgesToRevoke(match, operationalRule));
 
 		EMFManipulationUtils.delete(ra);
 	}
@@ -54,15 +55,15 @@ public class IbexRedInterpreter implements IRedInterpreter {
 	 * 
 	 * @param match
 	 *            the match
-	 * @param pattern
+	 * @param operationalRule
 	 *            the create pattern
 	 * @return the edges to revoke
 	 */
-	private Set<EMFEdge> getEdgesToRevoke(final ITGGMatch match, final IGreenPattern pattern) {
+	private Set<EMFEdge> getEdgesToRevoke(final ITGGMatch match, final TGGOperationalRule operationalRule) {
 		Set<EMFEdge> edgesToRevoke = new HashSet<EMFEdge>();
 
 		// Collect created edges to revoke.
-		pattern.getSrcTrgEdgesCreatedByPattern().forEach(e -> {
+		operationalRule.getSrcTrgEdgesCreatedByPattern().forEach(e -> {
 			EMFEdge runtimeEdge = getRuntimeEdge(match, e);
 			edgesToRevoke.add(new EMFEdge(runtimeEdge.getSource(), runtimeEdge.getTarget(), runtimeEdge.getType()));
 		});
@@ -75,14 +76,14 @@ public class IbexRedInterpreter implements IRedInterpreter {
 	 * 
 	 * @param match
 	 *            the match
-	 * @param pattern
+	 * @param operationalRule
 	 *            the create pattern
 	 * @return the nodes to revoke
 	 */
-	private Set<EObject> getNodesToRevoke(final ITGGMatch match, final IGreenPattern pattern) {
+	private Set<EObject> getNodesToRevoke(final ITGGMatch match, final TGGOperationalRule operationalRule) {
 		Set<EObject> nodesToRevoke = new HashSet<EObject>();
 
-		pattern.getSrcTrgNodesCreatedByPattern().stream() //
+		operationalRule.getSrcTrgNodesCreatedByPattern().stream() //
 				.map(TGGRuleNode::getName) //
 				.map(match::get) //
 				.map(EObject.class::cast) //
@@ -96,14 +97,14 @@ public class IbexRedInterpreter implements IRedInterpreter {
 	 * 
 	 * @param match
 	 *            the match
-	 * @param pattern
+	 * @param operationalRule
 	 *            the pattern
 	 */
-	private void revokeCorrs(final ITGGMatch match, final IGreenPattern pattern) {
+	private void revokeCorrs(final ITGGMatch match, final TGGOperationalRule operationalRule) {
 		Set<EObject> nodesToRevoke = new HashSet<EObject>();
 		Set<EMFEdge> edgesToRevoke = new HashSet<EMFEdge>();
 
-		pattern.getCorrNodes().stream() //
+		operationalRule.getCorrNodes().stream() //
 				.map(TGGNode::getName) //
 				.map(match::get) //
 				.map(EObject.class::cast) //

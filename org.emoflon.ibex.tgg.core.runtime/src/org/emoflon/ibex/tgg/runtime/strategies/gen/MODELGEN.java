@@ -11,10 +11,10 @@ import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.matches.SimpleTGGMatch;
 import org.emoflon.ibex.tgg.runtime.matches.container.ImmutableMatchContainer;
-import org.emoflon.ibex.tgg.runtime.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.runtime.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.runtime.updatepolicy.RandomMatchUpdatePolicy;
 import org.emoflon.ibex.tgg.runtime.updatepolicy.UpdatePolicy;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 
 /**
  * The TGG operation MODELGEN applies TGG rules as they are and thus generates
@@ -152,8 +152,8 @@ public class MODELGEN extends OperationalStrategy {
 	 * up the generation process).
 	 */
 	@Override
-	protected void handleSuccessfulRuleApplication(ITGGMatch cm, String ruleName, IGreenPattern greenPattern) {
-		createMarkers(greenPattern, cm, ruleName);
+	protected void handleSuccessfulRuleApplication(ITGGMatch cm, String ruleName, TGGOperationalRule operationalRule) {
+		createMarkers(operationalRule, cm, ruleName);
 	}
 
 	/**
@@ -163,11 +163,13 @@ public class MODELGEN extends OperationalStrategy {
 	 * @param ruleName
 	 */
 	private void updateStopCriterion(String ruleName) {
+		var operationalRule = options.tgg.ruleHandler().getOperationalRule(ruleName);
+		
 		stopCriterion.update(ruleName,
-				greenFactories.get(ruleName).getGreenSrcNodesInRule().size()
-						+ greenFactories.get(ruleName).getGreenSrcEdgesInRule().size(),
-						greenFactories.get(ruleName).getGreenTrgNodesInRule().size()
-						+ greenFactories.get(ruleName).getGreenTrgEdgesInRule().size());
+				operationalRule.getCreateSource().getNodes().size() +
+				operationalRule.getCreateSource().getEdges().size(), 
+				operationalRule.getCreateTarget().getNodes().size() + 
+				operationalRule.getCreateTarget().getEdges().size());
 	}
 
 	/**
@@ -177,7 +179,7 @@ public class MODELGEN extends OperationalStrategy {
 	 * the axiom is found (or the stop criterion blocks the rule).
 	 */
 	private void collectMatchesForAxioms() {
-		options.tgg.getFlattenedConcreteTGGRules().stream().filter(r -> greenFactories.get(r.getName()).isAxiom())
+		options.tgg.getFlattenedConcreteTGGRules().stream().filter(r -> r.isAxiom())
 				.forEach(r -> {
 					matchHandler.addOperationalMatch(new SimpleTGGMatch(TGGPatternUtil.generateGENBlackPatternName(r.getName())));
 				});

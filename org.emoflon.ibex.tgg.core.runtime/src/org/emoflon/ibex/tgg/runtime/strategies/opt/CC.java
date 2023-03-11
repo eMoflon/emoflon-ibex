@@ -14,12 +14,10 @@ import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 import org.emoflon.ibex.common.engine.IMatch;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.runtime.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.runtime.updatepolicy.IUpdatePolicy;
-import org.emoflon.ibex.util.config.IbexOptions;
-
-import language.TGGRuleCorr;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence;
 
 public class CC extends OPT {
 
@@ -33,10 +31,11 @@ public class CC extends OPT {
 
 	@Override
 	public double getDefaultWeightForMatch(IMatch comatch, String ruleName) {
-		return greenFactories.get(ruleName).getGreenSrcEdgesInRule().size()
-				+ greenFactories.get(ruleName).getGreenSrcNodesInRule().size()
-				+ greenFactories.get(ruleName).getGreenTrgEdgesInRule().size()
-				+ greenFactories.get(ruleName).getGreenTrgNodesInRule().size();
+		var operationalRule = options.tgg.ruleHandler().getOperationalRule(ruleName);
+		return operationalRule.getCreateSource().getNodes().size() + 
+				operationalRule.getCreateSource().getEdges().size() + 
+				operationalRule.getCreateTarget().getNodes().size() + 
+				operationalRule.getCreateTarget().getEdges().size();
 	}
 
 	@Override
@@ -66,7 +65,7 @@ public class CC extends OPT {
 			int id = v < 0 ? -v : v;
 			ITGGMatch comatch = idToMatch.get(id);
 			if (v < 0) {
-				for (TGGRuleCorr createdCorr : greenFactories.get(matchIdToRuleName.get(id)).getGreenCorrNodesInRule())
+				for (TGGCorrespondence createdCorr : greenFactories.get(matchIdToRuleName.get(id)).getGreenCorrNodesInRule())
 					objectsToDelete.add((EObject) comatch.get(createdCorr.getName()));
 
 				objectsToDelete.add(comatch.getRuleApplicationNode());

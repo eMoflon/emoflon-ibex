@@ -19,7 +19,7 @@ public class PatternOptions extends IbexSubOptions {
 	private boolean useGenPattern;
 	private boolean parallelizeMatchProcessing;
 	private boolean optimizeCSPs;
-
+	
 	public PatternOptions(IbexOptions options) {
 		super(options);
 

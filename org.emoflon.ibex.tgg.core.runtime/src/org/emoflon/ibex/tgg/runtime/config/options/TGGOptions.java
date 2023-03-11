@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EPackage;
+import org.emoflon.ibex.tgg.runtime.strategies.modules.RuleHandler;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 
@@ -12,7 +13,8 @@ public class TGGOptions extends IbexSubOptions {
 	private TGGModel tgg;
 	private TGGModel flattenedTGG;
 	private EPackage corrMetamodel;
-
+	private RuleHandler ruleHandler;
+	
 	public TGGOptions(IbexOptions options) {
 		super(options);
 	}
@@ -56,5 +58,12 @@ public class TGGOptions extends IbexSubOptions {
 	public EPackage corrMetamodel() {
 		return this.corrMetamodel;
 	}
+	
+	public void ruleHandler(RuleHandler ruleHandler) {
+		this.ruleHandler = ruleHandler;
+	}
 
+	public RuleHandler ruleHandler() {
+		return ruleHandler;
+	}
 }

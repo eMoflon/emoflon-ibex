@@ -360,13 +360,103 @@ public interface IBeXTGGModelPackage extends EPackage {
 	int TGG_RULE__ABSTRACT = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 5;
 
 	/**
+	 * The feature id for the '<em><b>Context</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_RULE__CONTEXT = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 6;
+
+	/**
+	 * The feature id for the '<em><b>Context Source</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_RULE__CONTEXT_SOURCE = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 7;
+
+	/**
+	 * The feature id for the '<em><b>Context Target</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_RULE__CONTEXT_TARGET = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 8;
+
+	/**
+	 * The feature id for the '<em><b>Create</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_RULE__CREATE = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 9;
+
+	/**
+	 * The feature id for the '<em><b>Create Source</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_RULE__CREATE_SOURCE = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 10;
+
+	/**
+	 * The feature id for the '<em><b>Create Target</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_RULE__CREATE_TARGET = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 11;
+
+	/**
+	 * The feature id for the '<em><b>Axiom</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_RULE__AXIOM = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 12;
+
+	/**
+	 * The feature id for the '<em><b>Source</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_RULE__SOURCE = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 13;
+
+	/**
+	 * The feature id for the '<em><b>Correspondence</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_RULE__CORRESPONDENCE = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 14;
+
+	/**
+	 * The feature id for the '<em><b>Target</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_RULE__TARGET = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 15;
+
+	/**
 	 * The number of structural features of the '<em>TGG Rule</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE_FEATURE_COUNT = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 6;
+	int TGG_RULE_FEATURE_COUNT = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 16;
 
 	/**
 	 * The number of operations of the '<em>TGG Rule</em>' class.
@@ -512,6 +602,96 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int TGG_OPERATIONAL_RULE__ABSTRACT = TGG_RULE__ABSTRACT;
+
+	/**
+	 * The feature id for the '<em><b>Context</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_OPERATIONAL_RULE__CONTEXT = TGG_RULE__CONTEXT;
+
+	/**
+	 * The feature id for the '<em><b>Context Source</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_OPERATIONAL_RULE__CONTEXT_SOURCE = TGG_RULE__CONTEXT_SOURCE;
+
+	/**
+	 * The feature id for the '<em><b>Context Target</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_OPERATIONAL_RULE__CONTEXT_TARGET = TGG_RULE__CONTEXT_TARGET;
+
+	/**
+	 * The feature id for the '<em><b>Create</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_OPERATIONAL_RULE__CREATE = TGG_RULE__CREATE;
+
+	/**
+	 * The feature id for the '<em><b>Create Source</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_OPERATIONAL_RULE__CREATE_SOURCE = TGG_RULE__CREATE_SOURCE;
+
+	/**
+	 * The feature id for the '<em><b>Create Target</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_OPERATIONAL_RULE__CREATE_TARGET = TGG_RULE__CREATE_TARGET;
+
+	/**
+	 * The feature id for the '<em><b>Axiom</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_OPERATIONAL_RULE__AXIOM = TGG_RULE__AXIOM;
+
+	/**
+	 * The feature id for the '<em><b>Source</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_OPERATIONAL_RULE__SOURCE = TGG_RULE__SOURCE;
+
+	/**
+	 * The feature id for the '<em><b>Correspondence</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_OPERATIONAL_RULE__CORRESPONDENCE = TGG_RULE__CORRESPONDENCE;
+
+	/**
+	 * The feature id for the '<em><b>Target</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_OPERATIONAL_RULE__TARGET = TGG_RULE__TARGET;
 
 	/**
 	 * The feature id for the '<em><b>Operationalisation Mode</b></em>' attribute.
@@ -1124,6 +1304,116 @@ public interface IBeXTGGModelPackage extends EPackage {
 	EAttribute getTGGRule_Abstract();
 
 	/**
+	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getContext <em>Context</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Context</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getContext()
+	 * @see #getTGGRule()
+	 * @generated
+	 */
+	EReference getTGGRule_Context();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getContextSource <em>Context Source</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Context Source</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getContextSource()
+	 * @see #getTGGRule()
+	 * @generated
+	 */
+	EReference getTGGRule_ContextSource();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getContextTarget <em>Context Target</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Context Target</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getContextTarget()
+	 * @see #getTGGRule()
+	 * @generated
+	 */
+	EReference getTGGRule_ContextTarget();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getCreate <em>Create</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Create</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getCreate()
+	 * @see #getTGGRule()
+	 * @generated
+	 */
+	EReference getTGGRule_Create();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getCreateSource <em>Create Source</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Create Source</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getCreateSource()
+	 * @see #getTGGRule()
+	 * @generated
+	 */
+	EReference getTGGRule_CreateSource();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getCreateTarget <em>Create Target</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Create Target</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getCreateTarget()
+	 * @see #getTGGRule()
+	 * @generated
+	 */
+	EReference getTGGRule_CreateTarget();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#isAxiom <em>Axiom</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Axiom</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#isAxiom()
+	 * @see #getTGGRule()
+	 * @generated
+	 */
+	EAttribute getTGGRule_Axiom();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getSource <em>Source</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Source</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getSource()
+	 * @see #getTGGRule()
+	 * @generated
+	 */
+	EReference getTGGRule_Source();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getCorrespondence <em>Correspondence</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Correspondence</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getCorrespondence()
+	 * @see #getTGGRule()
+	 * @generated
+	 */
+	EReference getTGGRule_Correspondence();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getTarget <em>Target</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Target</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getTarget()
+	 * @see #getTGGRule()
+	 * @generated
+	 */
+	EReference getTGGRule_Target();
+
+	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule <em>TGG Operational Rule</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1451,6 +1741,86 @@ public interface IBeXTGGModelPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute TGG_RULE__ABSTRACT = eINSTANCE.getTGGRule_Abstract();
+
+		/**
+		 * The meta object literal for the '<em><b>Context</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference TGG_RULE__CONTEXT = eINSTANCE.getTGGRule_Context();
+
+		/**
+		 * The meta object literal for the '<em><b>Context Source</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference TGG_RULE__CONTEXT_SOURCE = eINSTANCE.getTGGRule_ContextSource();
+
+		/**
+		 * The meta object literal for the '<em><b>Context Target</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference TGG_RULE__CONTEXT_TARGET = eINSTANCE.getTGGRule_ContextTarget();
+
+		/**
+		 * The meta object literal for the '<em><b>Create</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference TGG_RULE__CREATE = eINSTANCE.getTGGRule_Create();
+
+		/**
+		 * The meta object literal for the '<em><b>Create Source</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference TGG_RULE__CREATE_SOURCE = eINSTANCE.getTGGRule_CreateSource();
+
+		/**
+		 * The meta object literal for the '<em><b>Create Target</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference TGG_RULE__CREATE_TARGET = eINSTANCE.getTGGRule_CreateTarget();
+
+		/**
+		 * The meta object literal for the '<em><b>Axiom</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute TGG_RULE__AXIOM = eINSTANCE.getTGGRule_Axiom();
+
+		/**
+		 * The meta object literal for the '<em><b>Source</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference TGG_RULE__SOURCE = eINSTANCE.getTGGRule_Source();
+
+		/**
+		 * The meta object literal for the '<em><b>Correspondence</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference TGG_RULE__CORRESPONDENCE = eINSTANCE.getTGGRule_Correspondence();
+
+		/**
+		 * The meta object literal for the '<em><b>Target</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference TGG_RULE__TARGET = eINSTANCE.getTGGRule_Target();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGOperationalRuleImpl <em>TGG Operational Rule</em>}' class.

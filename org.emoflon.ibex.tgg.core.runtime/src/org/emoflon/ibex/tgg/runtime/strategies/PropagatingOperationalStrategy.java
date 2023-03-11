@@ -12,8 +12,8 @@ import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.matches.container.IMatchContainer;
 import org.emoflon.ibex.tgg.runtime.matches.container.MarkingMatchContainer;
 import org.emoflon.ibex.tgg.runtime.matches.container.PrecedenceMatchContainer;
-import org.emoflon.ibex.tgg.runtime.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuleApplication;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 import org.emoflon.ibex.tgg.util.benchmark.EmptyBenchmarkLogger;
 import org.emoflon.ibex.tgg.util.benchmark.Timer;
 import org.emoflon.ibex.tgg.util.debug.ConsoleUtil;
@@ -117,8 +117,8 @@ public abstract class PropagatingOperationalStrategy extends OperationalStrategy
 	 * process).
 	 */
 	@Override
-	protected void handleSuccessfulRuleApplication(ITGGMatch cm, String ruleName, IGreenPattern greenPattern) {
-		createMarkers(greenPattern, cm, ruleName);
+	protected void handleSuccessfulRuleApplication(ITGGMatch cm, String ruleName, TGGOperationalRule operationalRule) {
+		createMarkers(operationalRule, cm, ruleName);
 	}
 
 	/***** Match and pattern management *****/

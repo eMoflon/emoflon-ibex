@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
@@ -20,6 +21,7 @@ import org.emoflon.ibex.tgg.runtime.matches.container.IMatchContainer;
 import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuleApplication;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 import org.emoflon.ibex.tgg.util.debug.ConsoleUtil;
 import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 
@@ -265,31 +267,31 @@ public class MatchHandler {
 	}
 
 	private boolean matchIsDomainConform(ITGGMatch match) {
+		TGGOperationalRule operationalRule = options.tgg.ruleHandler().getOperationalRule(match.getRuleName());
 		if (domainsHaveNoSharedTypes || options.patterns.ignoreDomainConformity())
 			return true;
 
-		IGreenPatternFactory greenPatternFactory = options.patterns.greenPatternFactories().get(match.getRuleName());
 		if (options.patterns.relaxDomainConformity())
 			return (matchedNodesAreInCorrectResource(options.resourceHandler().getSourceResource(), //
-					greenPatternFactory.getBlackSrcNodesInRule(), match)
+					operationalRule.getContextSource().getNodes(), match)
 					|| matchedNodesAreInCorrectResource(options.resourceHandler().getSourceResource(), //
-							greenPatternFactory.getGreenSrcNodesInRule(), match))
+							operationalRule.getCreateSource().getNodes(), match))
 					&& (matchedNodesAreInCorrectResource(options.resourceHandler().getTargetResource(), //
-							greenPatternFactory.getBlackTrgNodesInRule(), match)
+							operationalRule.getContextTarget().getNodes(), match)
 							|| matchedNodesAreInCorrectResource(options.resourceHandler().getTargetResource(), //
-									greenPatternFactory.getGreenTrgNodesInRule(), match));
+									operationalRule.getCreateTarget().getNodes(), match));
 		else
 			return matchedNodesAreInCorrectResource(options.resourceHandler().getSourceResource(), //
-					greenPatternFactory.getBlackSrcNodesInRule(), match)
+					operationalRule.getContextSource().getNodes(), match)
 					&& matchedNodesAreInCorrectResource(options.resourceHandler().getSourceResource(), //
-							greenPatternFactory.getGreenSrcNodesInRule(), match)
+							operationalRule.getCreateSource().getNodes(), match)
 					&& matchedNodesAreInCorrectResource(options.resourceHandler().getTargetResource(), //
-							greenPatternFactory.getBlackTrgNodesInRule(), match)
+							operationalRule.getContextTarget().getNodes(), match)
 					&& matchedNodesAreInCorrectResource(options.resourceHandler().getTargetResource(), //
-							greenPatternFactory.getGreenTrgNodesInRule(), match);
+							operationalRule.getCreateTarget().getNodes(), match);
 	}
 
-	private boolean matchedNodesAreInCorrectResource(Resource r, Collection<TGGNode> nodes, ITGGMatch match) {
+	private boolean matchedNodesAreInCorrectResource(Resource r, Collection<IBeXNode> nodes, ITGGMatch match) {
 		return nodes.stream().noneMatch(n -> match.isInMatch(n.getName()) && !nodeIsInResource(match, n.getName(), r));
 	}
 

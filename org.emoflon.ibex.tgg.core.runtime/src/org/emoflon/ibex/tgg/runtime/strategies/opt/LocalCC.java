@@ -9,8 +9,8 @@ import org.emoflon.ibex.tgg.runtime.defaults.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.matches.container.IMatchContainer;
 import org.emoflon.ibex.tgg.runtime.matches.container.LocalCCMatchContainer;
-import org.emoflon.ibex.tgg.runtime.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.runtime.updatepolicy.IUpdatePolicy;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 
 public class LocalCC extends CC {
 
@@ -34,7 +34,7 @@ public class LocalCC extends CC {
 	}
 
 	@Override
-	protected void prepareMarkerCreation(IGreenPattern greenPattern, ITGGMatch comatch, String ruleName) {
+	protected void prepareMarkerCreation(TGGOperationalRule operationalRule, ITGGMatch comatch, String ruleName) {
 		LocalCCMatchContainer mContainer = (LocalCCMatchContainer) operationalMatchContainer;
 		idToMatch.put(idCounter, comatch);
 		matchToWeight.put(idCounter, this.getWeightForMatch(comatch, ruleName));

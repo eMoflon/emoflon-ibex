@@ -2,11 +2,10 @@ package org.emoflon.ibex.tgg.runtime;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EPackage.Registry;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.emoflon.ibex.common.engine.IMatch;
 import org.emoflon.ibex.common.engine.MatchFilter;
 import org.emoflon.ibex.common.engine.PatternMatchingEngine;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
@@ -25,6 +24,7 @@ public abstract class BlackInterpreter<EM> extends PatternMatchingEngine<TGGMode
 	protected IbexOptions options;
 	protected Registry registry;
 	protected IMatchObserver matchObserver;
+	protected Collection<Resource> observedResources = new LinkedList<>();
 	
 	public BlackInterpreter(TGGModel ibexModel, ResourceSet model) {
 		super(ibexModel, model);
@@ -65,5 +65,21 @@ public abstract class BlackInterpreter<EM> extends PatternMatchingEngine<TGGMode
 	protected MatchFilter<?, TGGModel, SimpleTGGMatch> createMatchFilter() {
 		return null;
 	}
+	
+	public void monitor(ResourceSet resourceSet) {
+		monitor(resourceSet.getResources());
+	}
 
+	public void monitor(Collection<Resource> resources) {
+		resources.forEach(this::monitor);
+	}
+	
+	public abstract void monitor(Resource r);
+	
+	@Override
+	public void terminate() {
+		observedResources.clear();
+	}
+	
+	public abstract ResourceSet createAndPrepareResourceSet(String path);
 }

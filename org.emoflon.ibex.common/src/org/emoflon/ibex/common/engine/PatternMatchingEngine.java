@@ -21,7 +21,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern;
 public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, EM, IM extends IMatch> {
 
 	final protected IBEX_MODEL ibexModel;
-	final protected ResourceSet model;
+	protected ResourceSet model;
 	protected Map<String, IBeXPattern> name2pattern = Collections.synchronizedMap(new LinkedHashMap<>());
 	protected MatchFilter<?, IBEX_MODEL, IM> matchFilter;
 	protected IBeXPMEngineInformation engineProperties;

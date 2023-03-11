@@ -42,7 +42,6 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	protected IMatchContainer operationalMatchContainer;
 	protected MatchHandler matchHandler;
 
-	private Map<String, TGGOperationalRule> name2operationalRule = cfactory.createObjectToObjectHashMap();
 	protected Map<ITGGMatch, String> blockedMatches = cfactory.createObjectToObjectHashMap();
 
 	// Configuration
@@ -100,18 +99,10 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 		TGGMatchParameterOrderProvider.init(options.tgg.flattenedTGG());
 
-		registerRules(options.tgg.flattenedTGG());
+		options.tgg.ruleHandler().registerRules(options.tgg.flattenedTGG());
 		
 		this.notifyDoneInit();
 		options.debug.benchmarkLogger().addToInitTime(Timer.stop());
-	}
-
-	private void registerRules(TGGModel flattenedTGG) {
-		for(var tggRule : flattenedTGG.getRuleSet().getRules()) {
-			for(var operationRule : tggRule.getOperationalisations()) {
-				name2operationalRule.put(operationRule.getName(), operationRule);				
-			}
-		}
 	}
 
 	protected abstract void initializeAdditionalModules(IbexOptions options) throws IOException;
@@ -138,10 +129,6 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	}
 
 	protected abstract Set<PatternType> getRelevantOperationalPatterns();
-
-	public TGGOperationalRule revokes(ITGGMatch match) {
-		throw new IllegalStateException("Not clear how to revoke a match of " + match.getPatternName());
-	}
 
 	public abstract void run() throws IOException;
 
@@ -193,7 +180,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 			return Optional.empty();
 		}
 
-		TGGOperationalRule operationRule = getOperationalRule(ruleName);
+		TGGOperationalRule operationRule = options.tgg.ruleHandler().getOperationalRule(ruleName);
 		
 		LoggerConfig.log(LoggerConfig.log_ruleApplication(),
 				() -> "Rule application: attempting to apply " + match.getPatternName() + "(" + match.hashCode() + ") with " //
@@ -261,10 +248,6 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		greenPattern.createMarkers(ruleName, comatch);
 	}
 	
-	public TGGOperationalRule getOperationalRule(String name) {
-		return name2operationalRule.get(name);
-	}
-
 	/***** Configuration *****/
 
 	public IbexOptions getOptions() {
