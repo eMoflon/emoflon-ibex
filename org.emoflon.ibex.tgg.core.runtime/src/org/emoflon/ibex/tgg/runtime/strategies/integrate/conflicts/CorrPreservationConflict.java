@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.runtime.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.runtime.repair.strategies.ShortcutRepairStrategy.RepairableMatch;
@@ -13,9 +12,9 @@ import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.resolution.CR
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.resolution.CRS_PreferTarget;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.matchcontainer.PrecedenceGraph;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.matchcontainer.PrecedenceNode;
-
-import language.DomainType;
-import language.TGGRuleNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
+import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 
 public class CorrPreservationConflict extends InconsistentChangesConflict implements CRS_PreferSource, CRS_PreferTarget {
 
@@ -44,10 +43,10 @@ public class CorrPreservationConflict extends InconsistentChangesConflict implem
 		ITGGMatch match = getMatch();
 		IGreenPatternFactory gFactory = integrate().getGreenFactories().get(match.getRuleName());
 
-		Collection<TGGRuleNode> greenRuleNodes = new HashSet<>();
+		Collection<TGGNode> greenRuleNodes = new HashSet<>();
 		greenRuleNodes.addAll(gFactory.getGreenSrcNodesInRule());
 		greenRuleNodes.addAll(gFactory.getGreenTrgNodesInRule());
-		for (TGGRuleNode ruleNode : greenRuleNodes) {
+		for (TGGNode ruleNode : greenRuleNodes) {
 			for (PrecedenceNode node : pg.getNodesTranslating(match.get(ruleNode.getName()))) {
 				if (node.getMatch().getType() == PatternType.CONSISTENCY)
 					continue;
@@ -67,7 +66,7 @@ public class CorrPreservationConflict extends InconsistentChangesConflict implem
 		for (ITGGMatch trgMatch : trgMatches) {
 			RepairableMatch repairableMatch = integrate().repair().isShortcutRepairable(getMatch(), trgMatch);
 			if (repairableMatch != null)
-				revertRepairable(repairableMatch, DomainType.TRG);
+				revertRepairable(repairableMatch, DomainType.TARGET);
 		}
 
 		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by PREFER_SOURCE");
@@ -83,7 +82,7 @@ public class CorrPreservationConflict extends InconsistentChangesConflict implem
 		for (ITGGMatch srcMatch : srcMatches) {
 			RepairableMatch repairableMatch = integrate().repair().isShortcutRepairable(getMatch(), srcMatch);
 			if (repairableMatch != null)
-				revertRepairable(repairableMatch, DomainType.SRC);
+				revertRepairable(repairableMatch, DomainType.SOURCE);
 		}
 
 		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Resolved conflict: " + printConflictIdentification() + " by PREFER_TARGET");

@@ -13,7 +13,6 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.runtime.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.ShortcutRule;
@@ -25,14 +24,15 @@ import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.resolution.ut
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.modelchange.ModelChangeUtil;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.EltFilter;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.TGGMatchUtil;
+import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuleApplication;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 import org.emoflon.ibex.tgg.util.TGGEdgeUtil;
 import org.emoflon.ibex.tgg.util.TGGFilterUtil;
+import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 
-import language.BindingType;
-import language.DomainType;
 import language.TGGRuleEdge;
 import language.TGGRuleNode;
-import runtime.TGGRuleApplication;
 
 public abstract class Conflict {
 

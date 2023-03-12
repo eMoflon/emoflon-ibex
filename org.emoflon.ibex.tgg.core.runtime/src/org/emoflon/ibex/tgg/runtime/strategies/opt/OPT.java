@@ -12,6 +12,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.collections.IntSet;
 import org.emoflon.ibex.common.collections.IntToDoubleMap;
 import org.emoflon.ibex.common.collections.IntToObjectMap;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.engine.IMatch;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
@@ -22,6 +23,7 @@ import org.emoflon.ibex.tgg.runtime.strategies.IWeightCalculationStrategy;
 import org.emoflon.ibex.tgg.runtime.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.runtime.updatepolicy.IUpdatePolicy;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.util.ilp.BinaryILPProblem;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory;
@@ -207,21 +209,19 @@ public abstract class OPT extends OperationalStrategy {
 
 	protected Set<EObject> getGreenNodes(final ITGGMatch comatch, final String ruleName) {
 		Set<EObject> result = cfactory.createObjectSet();
-		result.addAll(getNodes(comatch, greenFactories.get(ruleName).getGreenSrcNodesInRule()));
-		result.addAll(getNodes(comatch, greenFactories.get(ruleName).getGreenTrgNodesInRule()));
-		result.addAll(getNodes(comatch, greenFactories.get(ruleName).getGreenCorrNodesInRule()));
+		TGGOperationalRule operationalRule = options.tgg.ruleHandler().getOperationalRule(ruleName);
+		result.addAll(getNodes(comatch, operationalRule.getCreate().getNodes())); 
 		return result;
 	}
 
 	protected Set<EObject> getBlackNodes(final ITGGMatch comatch, final String ruleName) {
 		Set<EObject> result = cfactory.createObjectSet();
-		result.addAll(getNodes(comatch, greenFactories.get(ruleName).getBlackSrcNodesInRule()));
-		result.addAll(getNodes(comatch, greenFactories.get(ruleName).getBlackTrgNodesInRule()));
-		result.addAll(getNodes(comatch, greenFactories.get(ruleName).getBlackCorrNodesInRule()));
+		TGGOperationalRule operationalRule = options.tgg.ruleHandler().getOperationalRule(ruleName);
+		result.addAll(getNodes(comatch, operationalRule.getContext().getNodes()));
 		return result;
 	}
 
-	protected Set<EObject> getNodes(final ITGGMatch comatch, final Collection<? extends TGGNode> specNodes) {
+	protected Set<EObject> getNodes(final ITGGMatch comatch, final Collection<? extends IBeXNode> specNodes) {
 		Set<EObject> result = cfactory.createObjectSet();
 		specNodes.forEach(n -> {
 			result.add((EObject) comatch.get(n.getName()));
@@ -231,15 +231,17 @@ public abstract class OPT extends OperationalStrategy {
 
 	protected Set<EMFEdge> getGreenEdges(final ITGGMatch comatch, final String ruleName) {
 		Set<EMFEdge> result = cfactory.createEMFEdgeHashSet();
-		result.addAll(((IbexGreenInterpreter) greenInterpreter).createEdges(comatch, greenFactories.get(ruleName).getGreenSrcEdgesInRule(), false));
-		result.addAll(((IbexGreenInterpreter) greenInterpreter).createEdges(comatch, greenFactories.get(ruleName).getGreenTrgEdgesInRule(), false));
+		TGGOperationalRule operationalRule = options.tgg.ruleHandler().getOperationalRule(ruleName);
+		result.addAll(((IbexGreenInterpreter) greenInterpreter).createEdges(comatch, operationalRule.getCreateSource().getEdges(), false));
+		result.addAll(((IbexGreenInterpreter) greenInterpreter).createEdges(comatch, operationalRule.getCreateTarget().getEdges(), false));
 		return result;
 	}
 
 	protected Set<EMFEdge> getBlackEdges(final ITGGMatch comatch, final String ruleName) {
 		Set<EMFEdge> result = cfactory.createEMFEdgeHashSet();
-		result.addAll(((IbexGreenInterpreter) greenInterpreter).createEdges(comatch, greenFactories.get(ruleName).getBlackSrcEdgesInRule(), false));
-		result.addAll(((IbexGreenInterpreter) greenInterpreter).createEdges(comatch, greenFactories.get(ruleName).getBlackTrgEdgesInRule(), false));
+		TGGOperationalRule operationalRule = options.tgg.ruleHandler().getOperationalRule(ruleName);
+		result.addAll(((IbexGreenInterpreter) greenInterpreter).createEdges(comatch, operationalRule.getContextSource().getEdges(), false));
+		result.addAll(((IbexGreenInterpreter) greenInterpreter).createEdges(comatch, operationalRule.getContextTarget().getEdges(), false));
 		return result;
 	}
 

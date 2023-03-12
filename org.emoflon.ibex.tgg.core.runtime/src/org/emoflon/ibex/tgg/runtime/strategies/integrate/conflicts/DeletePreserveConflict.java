@@ -6,7 +6,6 @@ import java.util.ListIterator;
 import java.util.Set;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.runtime.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.resolution.CRS_DeleteCorrs;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.resolution.CRS_MergeAndPreserve;
@@ -15,8 +14,8 @@ import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.resolution.CR
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.resolution.CRS_RevokeAddition;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.resolution.CRS_RevokeDeletion;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.matchcontainer.PrecedenceGraph;
-
-import language.DomainType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
+import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 
 public abstract class DeletePreserveConflict extends Conflict
 		implements CRS_MergeAndPreserve, CRS_RevokeDeletion, CRS_RevokeAddition, CRS_PreferSource, CRS_PreferTarget, CRS_DeleteCorrs {
@@ -86,8 +85,8 @@ public abstract class DeletePreserveConflict extends Conflict
 	@Override
 	public void crs_preferSource() {
 		switch (domainToBePreserved) {
-			case SRC -> revokeDeletion();
-			case TRG -> revokeAddition();
+			case SOURCE -> revokeDeletion();
+			case TARGET -> revokeAddition();
 			default -> throw new IllegalArgumentException("Unexpected value: " + domainToBePreserved);
 		}
 
@@ -98,8 +97,8 @@ public abstract class DeletePreserveConflict extends Conflict
 	@Override
 	public void crs_preferTarget() {
 		switch (domainToBePreserved) {
-			case SRC -> revokeAddition();
-			case TRG -> revokeDeletion();
+			case SOURCE -> revokeAddition();
+			case TARGET -> revokeDeletion();
 			default -> throw new IllegalArgumentException("Unexpected value: " + domainToBePreserved);
 		}
 

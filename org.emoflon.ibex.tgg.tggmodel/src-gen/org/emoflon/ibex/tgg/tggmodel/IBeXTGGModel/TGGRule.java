@@ -29,6 +29,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintSet;
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getContextTarget <em>Context Target</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getCreate <em>Create</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getCreateSource <em>Create Source</em>}</li>
+ *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getCreateCorrespondence <em>Create Correspondence</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getCreateTarget <em>Create Target</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#isAxiom <em>Axiom</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getSource <em>Source</em>}</li>
@@ -242,6 +243,28 @@ public interface TGGRule extends IBeXRule {
 	 * @generated
 	 */
 	void setCreateSource(IBeXRuleDelta value);
+
+	/**
+	 * Returns the value of the '<em><b>Create Correspondence</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Create Correspondence</em>' containment reference.
+	 * @see #setCreateCorrespondence(IBeXRuleDelta)
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage#getTGGRule_CreateCorrespondence()
+	 * @model containment="true"
+	 * @generated
+	 */
+	IBeXRuleDelta getCreateCorrespondence();
+
+	/**
+	 * Sets the value of the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getCreateCorrespondence <em>Create Correspondence</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Create Correspondence</em>' containment reference.
+	 * @see #getCreateCorrespondence()
+	 * @generated
+	 */
+	void setCreateCorrespondence(IBeXRuleDelta value);
 
 	/**
 	 * Returns the value of the '<em><b>Create Target</b></em>' containment reference.

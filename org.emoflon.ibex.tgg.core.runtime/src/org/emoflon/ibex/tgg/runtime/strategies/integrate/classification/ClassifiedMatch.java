@@ -6,10 +6,9 @@ import java.util.Set;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.matchcontainer.PrecedenceNode;
-import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.TGGMatchUtil;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.TGGMatchAnalyzer.ConstrainedAttributeChanges;
-
-import language.DomainType;
+import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.TGGMatchUtil;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 
 public class ClassifiedMatch {
 

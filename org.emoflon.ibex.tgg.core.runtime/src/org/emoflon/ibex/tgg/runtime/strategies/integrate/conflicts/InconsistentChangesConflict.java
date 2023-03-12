@@ -8,11 +8,11 @@ import java.util.function.BiConsumer;
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.delta.validation.InvalidDeltaException;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.runtime.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.FragmentProvider;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.resolution.CRS_ActAndLetRepair;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.resolution.CRS_DeleteCorrs;
+import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 
 import delta.DeltaContainer;
 

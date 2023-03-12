@@ -6,8 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import language.BindingType;
-import language.DomainType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 
 public class DeletionPattern {
 
@@ -17,9 +17,9 @@ public class DeletionPattern {
 	private Map<DomainType, Map<BindingType, DomainModification>> pattern = new HashMap<>(initMapCapacity);
 
 	public DeletionPattern(DomainModification initialMod) {
-		pattern.put(DomainType.SRC, new HashMap<>(initMapCapacity));
-		pattern.put(DomainType.TRG, new HashMap<>(initMapCapacity));
-		pattern.put(DomainType.CORR, new HashMap<>(initMapCapacity));
+		pattern.put(DomainType.SOURCE, new HashMap<>(initMapCapacity));
+		pattern.put(DomainType.CORRESPONDENCE, new HashMap<>(initMapCapacity));
+		pattern.put(DomainType.TARGET, new HashMap<>(initMapCapacity));
 		pattern.forEach((domain, domainMap) -> {
 			domainMap.put(BindingType.CONTEXT, initialMod);
 			domainMap.put(BindingType.CREATE, initialMod);
@@ -48,9 +48,9 @@ public class DeletionPattern {
 		trg.put(BindingType.CREATE, trgCre);
 		trg.put(BindingType.CONTEXT, trgCon);
 
-		pattern.put(DomainType.SRC, src);
-		pattern.put(DomainType.CORR, corr);
-		pattern.put(DomainType.TRG, trg);
+		pattern.put(DomainType.SOURCE, src);
+		pattern.put(DomainType.CORRESPONDENCE, corr);
+		pattern.put(DomainType.TARGET, trg);
 	}
 
 	public void setModType(DomainType domain, BindingType binding, DomainModification mod) {
@@ -83,7 +83,7 @@ public class DeletionPattern {
 		
 		serialized = new LinkedList<>();
 
-		List<DomainType> domains = Arrays.asList(DomainType.SRC, DomainType.CORR, DomainType.TRG);
+		List<DomainType> domains = Arrays.asList(DomainType.SOURCE, DomainType.CORRESPONDENCE, DomainType.TARGET);
 		List<BindingType> bindings = Arrays.asList(BindingType.CREATE, BindingType.CONTEXT);
 		domains.forEach(domain -> {
 			bindings.forEach(binding -> {

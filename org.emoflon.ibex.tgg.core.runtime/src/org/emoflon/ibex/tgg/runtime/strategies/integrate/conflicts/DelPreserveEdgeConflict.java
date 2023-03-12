@@ -5,15 +5,15 @@ import java.util.Set;
 
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.runtime.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.modelchange.ModelChangeUtil;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.EltFilter;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.util.TGGEdgeUtil;
-
-import language.BindingType;
-import language.DomainType;
-import language.TGGRuleEdge;
+import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 
 public class DelPreserveEdgeConflict extends DeletePreserveConflict {
 
@@ -85,8 +85,8 @@ public class DelPreserveEdgeConflict extends DeletePreserveConflict {
 
 	@Override
 	protected void revokeAddition() {
-		for (TGGRuleEdge e : integrate().matchUtils().get(srcTrgMatch).getEdges(new EltFilter().create())) {
-			if (e.getSrcNode().getBindingType() != BindingType.CONTEXT && e.getTrgNode().getBindingType() != BindingType.CONTEXT)
+		for (TGGEdge e : integrate().matchUtils().get(srcTrgMatch).getEdges(new EltFilter().create())) {
+			if (((TGGNode) e.getSource()).getBindingType() != BindingType.CONTEXT && ((TGGNode) e.getTarget()).getBindingType() != BindingType.CONTEXT)
 				return;
 
 			EMFEdge emfEdge = TGGEdgeUtil.getRuntimeEdge(srcTrgMatch, e);
@@ -100,7 +100,7 @@ public class DelPreserveEdgeConflict extends DeletePreserveConflict {
 	protected void autoRepair() {
 		integrate().getOptions().matchDistributor().updateMatches();
 		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Auto-repair after resolution of " + printConflictIdentification() + ":");
-		PatternType repairDirection = domainToBePreserved == DomainType.SRC ? PatternType.FWD : PatternType.BWD;
+		PatternType repairDirection = domainToBePreserved == DomainType.SOURCE ? PatternType.FWD : PatternType.BWD;
 		integrate().repair().shortcutRepairOneMatch(matchToBeRepaired, repairDirection);
 	}
 

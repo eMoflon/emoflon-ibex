@@ -10,13 +10,13 @@ import java.util.Set;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.runtime.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.resolution.CRS_CustomizedOpMultiResolution;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.resolution.CRS_PreferSource;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.resolution.CRS_PreferTarget;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.resolution.util.OpMultiConflictSolution;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.matchcontainer.PrecedenceNode;
+import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 
 public class OperationalMultiplicityConflict extends Conflict implements CRS_PreferSource, CRS_PreferTarget, CRS_CustomizedOpMultiResolution {
 

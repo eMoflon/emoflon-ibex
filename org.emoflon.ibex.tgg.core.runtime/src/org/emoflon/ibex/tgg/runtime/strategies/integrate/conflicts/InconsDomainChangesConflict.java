@@ -3,11 +3,10 @@ package org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.emoflon.ibex.tgg.runtime.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.resolution.CRS_RevokeChanges;
-
-import language.DomainType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
+import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 
 public class InconsDomainChangesConflict extends InconsistentChangesConflict implements CRS_RevokeChanges {
 

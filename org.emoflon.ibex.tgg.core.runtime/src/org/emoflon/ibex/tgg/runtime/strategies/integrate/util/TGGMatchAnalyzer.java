@@ -21,12 +21,12 @@ import org.emoflon.ibex.tgg.runtime.strategies.integrate.classification.DomainMo
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.modelchange.AttributeChange;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.TGGResourceHandler;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
 
 import language.TGGAttributeExpression;
 import language.TGGParamValue;
-import language.TGGRuleEdge;
 
 public class TGGMatchAnalyzer {
 
@@ -63,8 +63,8 @@ public class TGGMatchAnalyzer {
 		return false;
 	}
 
-	private boolean isEdgeDeleted(TGGRuleEdge edge, EMFEdge emfEdge, Set<TGGRuleElement> deletedElements) {
-		if (deletedElements.contains(edge.getSrcNode()) || deletedElements.contains(edge.getTrgNode()))
+	private boolean isEdgeDeleted(TGGEdge edge, EMFEdge emfEdge, Set<TGGRuleElement> deletedElements) {
+		if (deletedElements.contains(edge.getSource()) || deletedElements.contains(edge.getTarget()))
 			return true;
 		Object value = emfEdge.getSource().eGet(emfEdge.getType());
 		if (value == null)
@@ -98,7 +98,7 @@ public class TGGMatchAnalyzer {
 		return util.integrate.filterNACMatchCollector().getFilterNACMatches(util.match).stream() //
 				.collect(Collectors.toMap( //
 						fnm -> fnm, //
-						fnm -> fnm.getType() == PatternType.FILTER_NAC_SRC ? DomainType.SRC : DomainType.TRG) //
+						fnm -> fnm.getType() == PatternType.FILTER_NAC_SRC ? DomainType.SOURCE : DomainType.TARGET) //
 				);
 	}
 

@@ -45,6 +45,8 @@ public interface TGGRuleValidator {
 
 	boolean validateCreateSource(IBeXRuleDelta value);
 
+	boolean validateCreateCorrespondence(IBeXRuleDelta value);
+
 	boolean validateCreateTarget(IBeXRuleDelta value);
 
 	boolean validateAxiom(boolean value);

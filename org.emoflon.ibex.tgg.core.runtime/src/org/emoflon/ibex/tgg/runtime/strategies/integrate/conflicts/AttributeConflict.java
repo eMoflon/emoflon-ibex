@@ -4,13 +4,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.runtime.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.resolution.CRS_PreferSource;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.resolution.CRS_PreferTarget;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.modelchange.AttributeChange;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.modelchange.ModelChangeUtil;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.TGGMatchAnalyzer.ConstrainedAttributeChanges;
+import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 
 public class AttributeConflict extends Conflict implements CRS_PreferSource, CRS_PreferTarget {
 

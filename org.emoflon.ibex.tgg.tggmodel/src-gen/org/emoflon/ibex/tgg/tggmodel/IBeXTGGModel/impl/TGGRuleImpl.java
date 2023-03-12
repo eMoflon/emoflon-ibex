@@ -49,6 +49,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getContextTarget <em>Context Target</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getCreate <em>Create</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getCreateSource <em>Create Source</em>}</li>
+ *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getCreateCorrespondence <em>Create Correspondence</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getCreateTarget <em>Create Target</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#isAxiom <em>Axiom</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getSource <em>Source</em>}</li>
@@ -178,6 +179,16 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 	 * @ordered
 	 */
 	protected IBeXRuleDelta createSource;
+
+	/**
+	 * The cached value of the '{@link #getCreateCorrespondence() <em>Create Correspondence</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getCreateCorrespondence()
+	 * @generated
+	 * @ordered
+	 */
+	protected IBeXRuleDelta createCorrespondence;
 
 	/**
 	 * The cached value of the '{@link #getCreateTarget() <em>Create Target</em>}' containment reference.
@@ -637,6 +648,58 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public IBeXRuleDelta getCreateCorrespondence() {
+		return createCorrespondence;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public NotificationChain basicSetCreateCorrespondence(IBeXRuleDelta newCreateCorrespondence,
+			NotificationChain msgs) {
+		IBeXRuleDelta oldCreateCorrespondence = createCorrespondence;
+		createCorrespondence = newCreateCorrespondence;
+		if (eNotificationRequired()) {
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
+					IBeXTGGModelPackage.TGG_RULE__CREATE_CORRESPONDENCE, oldCreateCorrespondence,
+					newCreateCorrespondence);
+			if (msgs == null)
+				msgs = notification;
+			else
+				msgs.add(notification);
+		}
+		return msgs;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setCreateCorrespondence(IBeXRuleDelta newCreateCorrespondence) {
+		if (newCreateCorrespondence != createCorrespondence) {
+			NotificationChain msgs = null;
+			if (createCorrespondence != null)
+				msgs = ((InternalEObject) createCorrespondence).eInverseRemove(this,
+						EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CREATE_CORRESPONDENCE, null, msgs);
+			if (newCreateCorrespondence != null)
+				msgs = ((InternalEObject) newCreateCorrespondence).eInverseAdd(this,
+						EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CREATE_CORRESPONDENCE, null, msgs);
+			msgs = basicSetCreateCorrespondence(newCreateCorrespondence, msgs);
+			if (msgs != null)
+				msgs.dispatch();
+		} else if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CREATE_CORRESPONDENCE,
+					newCreateCorrespondence, newCreateCorrespondence));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public IBeXRuleDelta getCreateTarget() {
 		return createTarget;
 	}
@@ -880,6 +943,8 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 			return basicSetCreate(null, msgs);
 		case IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE:
 			return basicSetCreateSource(null, msgs);
+		case IBeXTGGModelPackage.TGG_RULE__CREATE_CORRESPONDENCE:
+			return basicSetCreateCorrespondence(null, msgs);
 		case IBeXTGGModelPackage.TGG_RULE__CREATE_TARGET:
 			return basicSetCreateTarget(null, msgs);
 		case IBeXTGGModelPackage.TGG_RULE__SOURCE:
@@ -922,6 +987,8 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 			return getCreate();
 		case IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE:
 			return getCreateSource();
+		case IBeXTGGModelPackage.TGG_RULE__CREATE_CORRESPONDENCE:
+			return getCreateCorrespondence();
 		case IBeXTGGModelPackage.TGG_RULE__CREATE_TARGET:
 			return getCreateTarget();
 		case IBeXTGGModelPackage.TGG_RULE__AXIOM:
@@ -981,6 +1048,9 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 			return;
 		case IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE:
 			setCreateSource((IBeXRuleDelta) newValue);
+			return;
+		case IBeXTGGModelPackage.TGG_RULE__CREATE_CORRESPONDENCE:
+			setCreateCorrespondence((IBeXRuleDelta) newValue);
 			return;
 		case IBeXTGGModelPackage.TGG_RULE__CREATE_TARGET:
 			setCreateTarget((IBeXRuleDelta) newValue);
@@ -1042,6 +1112,9 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		case IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE:
 			setCreateSource((IBeXRuleDelta) null);
 			return;
+		case IBeXTGGModelPackage.TGG_RULE__CREATE_CORRESPONDENCE:
+			setCreateCorrespondence((IBeXRuleDelta) null);
+			return;
 		case IBeXTGGModelPackage.TGG_RULE__CREATE_TARGET:
 			setCreateTarget((IBeXRuleDelta) null);
 			return;
@@ -1091,6 +1164,8 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 			return create != null;
 		case IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE:
 			return createSource != null;
+		case IBeXTGGModelPackage.TGG_RULE__CREATE_CORRESPONDENCE:
+			return createCorrespondence != null;
 		case IBeXTGGModelPackage.TGG_RULE__CREATE_TARGET:
 			return createTarget != null;
 		case IBeXTGGModelPackage.TGG_RULE__AXIOM:
