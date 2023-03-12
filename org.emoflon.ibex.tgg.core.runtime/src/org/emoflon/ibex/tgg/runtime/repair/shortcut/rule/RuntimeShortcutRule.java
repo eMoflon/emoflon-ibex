@@ -21,6 +21,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGShortcutRule;
 import org.emoflon.ibex.tgg.util.TGGFilterUtil;
 
 /**
@@ -35,35 +36,34 @@ import org.emoflon.ibex.tgg.util.TGGFilterUtil;
  * @author lfritsche
  *
  */
-public class ShortcutRule {
+public class RuntimeShortcutRule {
 	private IbexOptions options;
 	
-	private TGGRule originalRule;
-	private TGGRule replacingRule;
+	private TGGShortcutRule shortcutRule;
+	private TGGOverlap overlap;
 
-	private Map<String, TGGNode> name2newNode;
+	private boolean relaxedPatternMatching;
 
-	private Collection<TGGNode> nodes;
-	private Collection<TGGEdge> edges;
 	private Collection<TGGNode> mergedNodes;
 	private Collection<TGGNode> preservedNodes;
-
-	private TGGOverlap overlap;
-	private boolean relaxedPatternMatching;
 
 	private Collection<String> nodeNames;
 	private Collection<String> edgeNames;
 
+	private Map<String, TGGNode> name2newNode;
+	
 	private Map<TGGNode, TGGNode> original2newNodes;
 	private Map<TGGNode, TGGNode> replacing2newNodes;
 
 	private Map<String, TGGNode> originalName2oldNodes;
 	private Map<String, TGGNode> replacingName2oldNodes;
 
-	public ShortcutRule(TGGOverlap overlap, IbexOptions options) {
+	public RuntimeShortcutRule(TGGOverlap overlap, IbexOptions options) {
 		this.options = options;
 		this.overlap = overlap;
 		this.relaxedPatternMatching = options.repair.relaxedSCPatternMatching();
+		
+		initShortcutRule(overlap);
 
 		original2newNodes = cfactory.createObjectToObjectHashMap();
 		replacing2newNodes = cfactory.createObjectToObjectHashMap();
@@ -74,19 +74,21 @@ public class ShortcutRule {
 		edgeNames = cfactory.createObjectSet();
 
 		name2newNode = cfactory.createObjectToObjectHashMap();
-		nodes = cfactory.createObjectSet();
-		edges = cfactory.createObjectSet();
 		mergedNodes = cfactory.createObjectSet();
 		preservedNodes = cfactory.createObjectSet();
-
-		originalRule = overlap.originalRule;
-		replacingRule = overlap.replacingRule;
 
 		initialize();
 	}
 
-	public ShortcutRule copy() {
-		return new ShortcutRule(overlap, options);
+	private void initShortcutRule(TGGOverlap overlap) {
+		shortcutRule = IBeXTGGModelFactory.eINSTANCE.createTGGShortcutRule();
+		shortcutRule.setOriginalRule(overlap.originalRule);
+		shortcutRule.setReplacingRule(overlap.replacingRule);
+		shortcutRule.setName(shortcutRule.getOriginalRule().getName() + "->" + shortcutRule.getReplacingRule().getName() + "_" + overlap.category);
+	}
+
+	public RuntimeShortcutRule copy() {
+		return new RuntimeShortcutRule(overlap, options);
 	}
 
 	private void initialize() {
@@ -141,7 +143,7 @@ public class ShortcutRule {
 	}
 
 	private void adaptInplaceAttrExprs() {
-		nodes.stream() //
+		shortcutRule.getNodes().stream() //
 				.flatMap(n -> n.getAttrExpr().stream()) //
 				.filter(e -> e.getValueExpr() instanceof TGGAttributeExpression) //
 				.map(e -> (TGGAttributeExpression) e.getValueExpr()) //
@@ -188,7 +190,7 @@ public class ShortcutRule {
 			replacing2newNodes.put(oldNode, newNode);
 			replacingName2oldNodes.put(oldNode.getName(), oldNode);
 		}
-		nodes.add(newNode);
+		shortcutRule.getNodes().add(newNode);
 		name2newNode.put(newNode.getName(), newNode);
 	}
 
@@ -198,7 +200,7 @@ public class ShortcutRule {
 		replacing2newNodes.put(replacingNode, newNode);
 		replacingName2oldNodes.put(replacingNode.getName(), replacingNode);
 
-		nodes.add(newNode);
+		shortcutRule.getNodes().add(newNode);
 		name2newNode.put(newNode.getName(), newNode);
 		mergedNodes.add(newNode);
 		if (originalNode.getBindingType() == BindingType.CREATE)
@@ -207,7 +209,7 @@ public class ShortcutRule {
 
 	private TGGNode createNode(EClass nodeType, String name, BindingType binding, DomainType domain, EClass type,
 			List<TGGInplaceAttributeExpression> attrExprs) {
-		TGGNode node = (TGGNode) LanguageFactory.eINSTANCE.create(nodeType);
+		TGGNode node = (TGGNode) IBeXTGGModelFactory.eINSTANCE.create(nodeType);
 
 		String adjustedName = name;
 		// don't change how name allocation is done here, other code depends on it!
@@ -229,7 +231,7 @@ public class ShortcutRule {
 	}
 
 	public Collection<TGGNode> getReplacingRuleMappings(DomainType dType, BindingType bType) {
-		Collection<TGGNode> nodes = replacingRule.getNodes().stream() //
+		Collection<TGGNode> nodes = shortcutRule.getReplacingRule().getNodes().stream() //
 				.filter(n -> replacing2newNodes.containsKey(n)) //
 				.map(n -> replacing2newNodes.get(n)) //
 				.collect(Collectors.toList());
@@ -280,7 +282,7 @@ public class ShortcutRule {
 		}
 		newEdge.setName(name);
 
-		edges.add(newEdge);
+		shortcutRule.getEdges().add(newEdge);
 		if (edgeNames.contains(newEdge.getName())) {
 			throw new RuntimeException("Shortcutrules are not allowed to have duplicate edges");
 		}
@@ -309,17 +311,21 @@ public class ShortcutRule {
 				.map(e -> (TGGEdge) e) //
 				.collect(Collectors.toList());
 	}
+	
+	public TGGShortcutRule getShortcutRule() {
+		return shortcutRule;
+	}
 
 	public TGGNode getNode(String name) {
 		return name2newNode.getOrDefault(name, null);
 	}
 
 	public Collection<TGGNode> getNodes() {
-		return nodes;
+		return shortcutRule.getNodes();
 	}
 
 	public Collection<TGGEdge> getEdges() {
-		return edges;
+		return shortcutRule.getEdges();
 	}
 
 	public Collection<TGGNode> getMergedNodes() {
@@ -331,15 +337,15 @@ public class ShortcutRule {
 	}
 
 	public TGGRule getOriginalRule() {
-		return originalRule;
+		return shortcutRule.getOriginalRule();
 	}
 
 	public TGGRule getReplacingRule() {
-		return replacingRule;
+		return shortcutRule.getReplacingRule();
 	}
 
 	public boolean isApplicable(String ruleName) {
-		return ruleName.equals(originalRule.getName());
+		return ruleName.equals(getOriginalRule().getName());
 	}
 
 	public TGGNode mapRuleNodeToSCNode(IBeXNode node, SCInputRule scInput) {
@@ -369,11 +375,15 @@ public class ShortcutRule {
 		return overlap;
 	}
 
+	public String getName() {
+		return shortcutRule.getName();
+	}
+
 	@Override
 	public String toString() {
 		String name = "Shortcut-Rule - " + getName() + "\n";
 		name += "Unbound Nodes: \n";
-		for (TGGNode node : nodes) {
+		for (TGGNode node : shortcutRule.getNodes()) {
 			if(mergedNodes.contains(node))
 				continue;
 			name += "    " + node.getName() + " : " + node.getType().getName() + " - " + node.getBindingType().getName() + "\n";
@@ -385,14 +395,10 @@ public class ShortcutRule {
 		}
 		
 		name += "Edges: \n";
-		for (TGGEdge edge : edges) {
+		for (TGGEdge edge : shortcutRule.getEdges()) {
 			name += "    " + edge.getName() + " : " + edge.getType().getName() + " - " + edge.getBindingType().getName() + "\n";
 		}
 		return name;
-	}
-
-	public String getName() {
-		return originalRule.getName() + "->" + replacingRule.getName() + "_" + overlap.category;
 	}
 
 	public enum SCInputRule {

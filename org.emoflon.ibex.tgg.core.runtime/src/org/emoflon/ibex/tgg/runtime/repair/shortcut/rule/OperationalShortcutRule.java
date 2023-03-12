@@ -22,7 +22,7 @@ import org.emoflon.ibex.tgg.runtime.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderSupport;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRule;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRule.HigherOrderRuleComponent;
-import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.ShortcutRule.SCInputRule;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.RuntimeShortcutRule.SCInputRule;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.SearchPlan;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.SearchPlanCreator;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
@@ -52,8 +52,8 @@ public abstract class OperationalShortcutRule {
 	protected final static Logger logger = Logger.getLogger(OperationalShortcutRule.class);
 
 	protected final IbexOptions options;
-	protected ShortcutRule rawShortcutRule;
-	protected ShortcutRule operationalizedSCR;
+	protected RuntimeShortcutRule rawShortcutRule;
+	protected RuntimeShortcutRule operationalizedSCR;
 	protected ACAnalysis filterNACAnalysis;
 
 	protected SearchPlanCreator searchPlanCreator;
@@ -62,7 +62,7 @@ public abstract class OperationalShortcutRule {
 
 	private IGreenPattern greenPattern;
 
-	public OperationalShortcutRule(IbexOptions options, ShortcutRule shortcutRule, ACAnalysis filterNACAnalysis) {
+	public OperationalShortcutRule(IbexOptions options, RuntimeShortcutRule shortcutRule, ACAnalysis filterNACAnalysis) {
 		this.options = options;
 		this.rawShortcutRule = shortcutRule;
 		this.operationalizedSCR = shortcutRule.copy();
@@ -270,11 +270,11 @@ public abstract class OperationalShortcutRule {
 		return searchPlanCreator.createSearchPlan();
 	}
 
-	public ShortcutRule getRawShortcutRule() {
+	public RuntimeShortcutRule getRawShortcutRule() {
 		return rawShortcutRule;
 	}
 
-	public ShortcutRule getOperationalizedSCR() {
+	public RuntimeShortcutRule getOperationalizedSCR() {
 		return operationalizedSCR;
 	}
 

@@ -14,7 +14,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.ShortcutRule;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.RuntimeShortcutRule;
 import org.emoflon.ibex.tgg.runtime.repair.strategies.ShortcutRepairStrategy.RepairableMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.classification.ClassifiedMatch;
@@ -219,7 +219,7 @@ public abstract class Conflict {
 	}
 
 	protected void revertRepairable(RepairableMatch repairableMatch, DomainType revertedDomain) {
-		ShortcutRule shortcutRule = repairableMatch.opSCR.getRawShortcutRule();
+		RuntimeShortcutRule shortcutRule = repairableMatch.opSCR.getRawShortcutRule();
 
 		Set<EObject> deletedNodes = TGGFilterUtil.filterNodes(shortcutRule.getNodes(), revertedDomain, BindingType.DELETE).stream() //
 				.map(n -> (EObject) getMatch().get(n.getName())) //

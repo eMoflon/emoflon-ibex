@@ -10,7 +10,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRule;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.OperationalShortcutRule;
-import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.ShortcutRule;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.RuntimeShortcutRule;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.TGGResourceHandler;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
 
@@ -71,7 +71,7 @@ public class SCPersistence {
 		oscBWDResource.getContents().add(esc);
 	}
 
-	public void saveSCRules(Collection<ShortcutRule> scRule) {
+	public void saveSCRules(Collection<RuntimeShortcutRule> scRule) {
 		scRule.forEach(this::save);
 		try {
 			scResource.save(null);
@@ -87,7 +87,7 @@ public class SCPersistence {
 		}
 	}
 
-	private void save(ShortcutRule scRule) {
+	private void save(RuntimeShortcutRule scRule) {
 		if (scRule.getOriginalRule() instanceof HigherOrderTGGRule hoOriginalRule)
 			save(hoOriginalRule);
 		if (scRule.getReplacingRule() instanceof HigherOrderTGGRule hoReplacingRule)
@@ -104,7 +104,7 @@ public class SCPersistence {
 		higherOrderResource.getContents().add(hoRule);
 	}
 
-	public ExternalShortcutRule convertToEMF(ShortcutRule scRule, String name) {
+	public ExternalShortcutRule convertToEMF(RuntimeShortcutRule scRule, String name) {
 		ExternalShortcutRule esc = createESCRule(name);
 
 		esc.setSourceRule(scRule.getOriginalRule());

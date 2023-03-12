@@ -14,7 +14,7 @@ import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.OperationalSCFactory;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.OperationalShortcutRule;
-import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.ShortcutRule;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.RuntimeShortcutRule;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.LocalPatternSearch;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.OverlapUtil;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.SCPersistence;
@@ -30,7 +30,7 @@ public class BasicShortcutPatternProvider implements ShortcutPatternProvider {
 
 	protected final Set<PatternType> types;
 
-	protected Collection<ShortcutRule> basicShortcutRules;
+	protected Collection<RuntimeShortcutRule> basicShortcutRules;
 	protected final Map<PatternType, Map<String, Collection<OperationalShortcutRule>>> basicShortcutPatterns;
 
 	protected final Map<OperationalShortcutRule, LocalPatternSearch> opShortcutRule2patternMatcher;
@@ -57,7 +57,7 @@ public class BasicShortcutPatternProvider implements ShortcutPatternProvider {
 		Collection<TGGOverlap> basicOverlaps = overlapUtil.calculateOverlaps(options.tgg.flattenedTGG());
 
 		basicShortcutRules = basicOverlaps.stream() //
-				.map(overlap -> new ShortcutRule(overlap, options)) //
+				.map(overlap -> new RuntimeShortcutRule(overlap, options)) //
 				.collect(Collectors.toList());
 
 		for (PatternType type : types) {

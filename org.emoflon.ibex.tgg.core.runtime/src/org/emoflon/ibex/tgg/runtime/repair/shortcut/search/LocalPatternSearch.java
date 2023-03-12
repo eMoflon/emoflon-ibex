@@ -175,7 +175,7 @@ public class LocalPatternSearch {
 		
 		filteredNames.addAll(name2entryNodeElem.keySet());
 		
-		ShortcutRule scRule = osr.getOperationalizedSCR();
+		RuntimeShortcutRule scRule = osr.getOperationalizedSCR();
 		TGGRule originalRule = scRule.getOriginalRule();
 		for(TGGRuleNode node : originalRule.getNodes()) {
 			if(node.getBindingType() == BindingType.CREATE) 

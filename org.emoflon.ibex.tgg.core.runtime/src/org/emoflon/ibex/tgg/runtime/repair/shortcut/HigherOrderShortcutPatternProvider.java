@@ -41,7 +41,7 @@ public class HigherOrderShortcutPatternProvider extends BasicShortcutPatternProv
 
 	// to reuse generated Short-cut Rules, we utilize a two stage hashing of the application point, here
 	// the original-nodes list is hashed first, and the replacing-nodes lists second:
-	private final Map<String, Map<String, Collection<ShortcutRule>>> higherOrderShortcutRules;
+	private final Map<String, Map<String, Collection<RuntimeShortcutRule>>> higherOrderShortcutRules;
 	private final Map<String, Map<String, Map<PatternType, Collection<OperationalShortcutRule>>>> higherOrderShortcutPatterns;
 
 	public HigherOrderShortcutPatternProvider(IbexOptions options, PrecedenceGraph pg, TGGMatchUtilProvider mup, //
@@ -72,11 +72,11 @@ public class HigherOrderShortcutPatternProvider extends BasicShortcutPatternProv
 		Set<String> replacingNodesIDs = applPoint.getID2replacingNodes().keySet();
 
 		// first, if not present, we generate the short-cut rules:
-		Map<String, Collection<ShortcutRule>> replacingID2shortcutRules = higherOrderShortcutRules //
+		Map<String, Collection<RuntimeShortcutRule>> replacingID2shortcutRules = higherOrderShortcutRules //
 				.computeIfAbsent(originalNodesID, k -> new HashMap<>());
 
 		SetView<String> missingReplacingNodeIDs = Sets.difference(replacingNodesIDs, replacingID2shortcutRules.keySet());
-		Map<String, Set<ShortcutRule>> missingReplacingID2shortcutRules = generateHigherOrderShortcutRules(applPoint, missingReplacingNodeIDs);
+		Map<String, Set<RuntimeShortcutRule>> missingReplacingID2shortcutRules = generateHigherOrderShortcutRules(applPoint, missingReplacingNodeIDs);
 		replacingID2shortcutRules.putAll(missingReplacingID2shortcutRules);
 
 		// second, we operationalize the short-cut rules:
@@ -88,7 +88,7 @@ public class HigherOrderShortcutPatternProvider extends BasicShortcutPatternProv
 			Map<PatternType, Collection<OperationalShortcutRule>> opRulesByPattern = replacingID2opRules //
 					.computeIfAbsent(replacingNodeID, k -> new HashMap<>());
 
-			Collection<ShortcutRule> shortcutRules = replacingID2shortcutRules.get(replacingNodeID);
+			Collection<RuntimeShortcutRule> shortcutRules = replacingID2shortcutRules.get(replacingNodeID);
 			Collection<OperationalShortcutRule> opRules = opRulesByPattern //
 					.computeIfAbsent(applPoint.getRepairType(), k -> generateHigherOrderShortcutPatterns(shortcutRules, k));
 			generatedOpRules.addAll(opRules);
@@ -99,14 +99,14 @@ public class HigherOrderShortcutPatternProvider extends BasicShortcutPatternProv
 		return generatedOpRules;
 	}
 
-	private Collection<OperationalShortcutRule> generateHigherOrderShortcutPatterns(Collection<ShortcutRule> shortcutRules, PatternType repairType) {
+	private Collection<OperationalShortcutRule> generateHigherOrderShortcutPatterns(Collection<RuntimeShortcutRule> shortcutRules, PatternType repairType) {
 		return opSCFactory.createOperationalRules(shortcutRules, repairType) //
 				.values().stream() //
 				.flatMap(c -> c.stream()) //
 				.collect(Collectors.toList());
 	}
 
-	private Map<String, Set<ShortcutRule>> generateHigherOrderShortcutRules(ShortcutApplicationPoint applPoint, Set<String> replacingNodesIDs) {
+	private Map<String, Set<RuntimeShortcutRule>> generateHigherOrderShortcutRules(ShortcutApplicationPoint applPoint, Set<String> replacingNodesIDs) {
 		DomainType propagationDomain = switch (applPoint.getPropagationMatchType()) {
 			case SRC -> DomainType.SRC;
 			case TRG -> DomainType.TRG;
@@ -124,10 +124,10 @@ public class HigherOrderShortcutPatternProvider extends BasicShortcutPatternProv
 			createHigherOrderTGGOverlaps(originalHigherOrderRule, replacingHigherOrderRule, applPoint, currentOverlaps);
 		});
 
-		Map<String, Set<ShortcutRule>> shortcutRules = new HashMap<>();
+		Map<String, Set<RuntimeShortcutRule>> shortcutRules = new HashMap<>();
 		id2overlaps.forEach((id, overlaps) -> shortcutRules.put(id, //
 				overlaps.stream() //
-						.map(overlap -> new ShortcutRule(overlap, options)) //
+						.map(overlap -> new RuntimeShortcutRule(overlap, options)) //
 						.collect(Collectors.toSet()) //
 		));
 
@@ -177,7 +177,7 @@ public class HigherOrderShortcutPatternProvider extends BasicShortcutPatternProv
 	public void persistShortcutRules() {
 		SCPersistence persistence = new SCPersistence(options);
 
-		LinkedList<ShortcutRule> allShortcutRules = new LinkedList<>(basicShortcutRules);
+		LinkedList<RuntimeShortcutRule> allShortcutRules = new LinkedList<>(basicShortcutRules);
 		allShortcutRules.addAll( //
 				higherOrderShortcutRules.values().stream() //
 				.flatMap(m -> m.values().stream()) //

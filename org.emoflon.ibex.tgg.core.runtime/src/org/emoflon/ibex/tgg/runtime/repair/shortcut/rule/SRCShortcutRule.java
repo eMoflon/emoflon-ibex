@@ -11,7 +11,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 
 public class SRCShortcutRule extends OperationalShortcutRule {
 
-	public SRCShortcutRule(IbexOptions options, ShortcutRule scRule, ACAnalysis filterNACAnalysis) {
+	public SRCShortcutRule(IbexOptions options, RuntimeShortcutRule scRule, ACAnalysis filterNACAnalysis) {
 		super(options, scRule, filterNACAnalysis);
 	}
 

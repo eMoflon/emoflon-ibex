@@ -24,10 +24,10 @@ public class OperationalSCFactory {
 		this.filterNACAnalysis = new ACAnalysis(options.tgg.tgg(), options.patterns.acStrategy());
 	}
 
-	public Map<String, Collection<OperationalShortcutRule>> createOperationalRules(Collection<ShortcutRule> scRules, PatternType type) {
+	public Map<String, Collection<OperationalShortcutRule>> createOperationalRules(Collection<RuntimeShortcutRule> scRules, PatternType type) {
 		Map<String, Collection<OperationalShortcutRule>> operationalRules = new HashMap<>();
 
-		for (ShortcutRule scRule : scRules) {
+		for (RuntimeShortcutRule scRule : scRules) {
 			TGGRule originalRule = scRule.getOriginalRule();
 			TGGRule replacingRule = scRule.getReplacingRule();
 
@@ -50,7 +50,7 @@ public class OperationalSCFactory {
 		return operationalRules;
 	}
 
-	private OperationalShortcutRule createOpShortcutRule(ShortcutRule scRule, ACAnalysis filterNACAnalysis, PatternType type) {
+	private OperationalShortcutRule createOpShortcutRule(RuntimeShortcutRule scRule, ACAnalysis filterNACAnalysis, PatternType type) {
 		return switch (type) {
 			case FWD -> new FWDShortcutRule(options, scRule, filterNACAnalysis);
 			case BWD -> new BWDShortcutRule(options, scRule, filterNACAnalysis);
