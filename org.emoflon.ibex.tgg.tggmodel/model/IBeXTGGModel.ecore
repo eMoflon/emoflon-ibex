@@ -29,6 +29,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="attributeConstraints" eType="#//CSP/TGGAttributeConstraintSet"
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="abstract" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="axiom" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="context" eType="ecore:EClass ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXRuleDelta"
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="contextSource" eType="ecore:EClass ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXRuleDelta"
@@ -43,7 +44,6 @@
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="createTarget" eType="ecore:EClass ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXRuleDelta"
         containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="axiom" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="source" eType="ecore:EClass ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXRuleDelta"
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="correspondence" eType="ecore:EClass ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXRuleDelta"

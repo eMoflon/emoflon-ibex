@@ -13,22 +13,21 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
-import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintContainer;
-import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DeletionPattern;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DomainModification;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.AttributeChange;
-import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
+import org.emoflon.ibex.tgg.runtime.csp.IRuntimeTGGAttrConstrContainer;
+import org.emoflon.ibex.tgg.runtime.csp.RuntimeTGGAttributeConstraintContainer;
+import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
+import org.emoflon.ibex.tgg.runtime.strategies.integrate.classification.DeletionPattern;
+import org.emoflon.ibex.tgg.runtime.strategies.integrate.classification.DomainModification;
+import org.emoflon.ibex.tgg.runtime.strategies.modules.TGGResourceHandler;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
 import org.emoflon.ibex.tgg.util.TGGInplaceAttrExprUtil;
 
-import language.DomainType;
-import language.TGGAttributeConstraint;
 import language.TGGAttributeExpression;
 import language.TGGInplaceAttributeExpression;
 import language.TGGParamValue;
 import language.TGGRuleEdge;
-import language.TGGRuleElement;
 import language.TGGRuleNode;
 
 public class TGGMatchAnalyzer {

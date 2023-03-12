@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.runtime.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.runtime.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.RuleHandler;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
@@ -81,10 +80,8 @@ public class MarkingMatchContainer implements IMatchContainer, TimeMeasurable {
 		Iterator<ITGGMatch> it = matches.iterator();
 		while (it.hasNext()) {
 			ITGGMatch nextMatch = it.next();
-			TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(nextMatch.getRuleName());
-			
-			if (checkPositiveRAs(nextMatch, operationalRule)) {
-				if (checkNegativeRAs(nextMatch, operationalRule)) {
+			if (checkPositiveRAs(nextMatch)) {
+				if (checkNegativeRAs(nextMatch)) {
 					match = nextMatch;
 					break;
 				} else {
@@ -108,9 +105,9 @@ public class MarkingMatchContainer implements IMatchContainer, TimeMeasurable {
 		Collection<ITGGMatch> neverApplicable = new LinkedList<>();
 
 		Set<ITGGMatch> nextMatches = matches.stream() //
-				.filter(m -> checkPositiveRAs(m, strategy.getGreenFactories().get(m.getRuleName()))) //
+				.filter(m -> checkPositiveRAs(m)) //
 				.filter(m -> {
-					if (checkNegativeRAs(m, strategy.getGreenFactories().get(m.getRuleName())))
+					if (checkNegativeRAs(m))
 						return true;
 					else {
 						neverApplicable.add(m);
@@ -146,12 +143,12 @@ public class MarkingMatchContainer implements IMatchContainer, TimeMeasurable {
 	}
 
 	private boolean removeConsistencyMatch(ITGGMatch match) {
-		IGreenPatternFactory gFactory = strategy.getGreenFactories().get(match.getRuleName());
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getRuleName());
 
-		gFactory.getGreenSrcNodesInRule().stream() //
+		operationalRule.getCreateSource().getNodes().stream() //
 				.map(n -> (EObject) match.get(n.getName())) //
 				.forEach(obj -> markedElements.remove(obj));
-		gFactory.getGreenTrgNodesInRule().stream() //
+		operationalRule.getCreateTarget().getNodes().stream() //
 				.map(n -> (EObject) match.get(n.getName())) //
 				.forEach(obj -> markedElements.remove(obj));
 
@@ -159,33 +156,37 @@ public class MarkingMatchContainer implements IMatchContainer, TimeMeasurable {
 	}
 
 	private void consistencyMatchApplied(ITGGMatch match) {
-		IGreenPatternFactory gFactory = strategy.getGreenFactories().get(match.getRuleName());
-
-		gFactory.getGreenSrcNodesInRule().stream() //
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getRuleName());
+		
+		operationalRule.getCreateSource().getNodes().stream() //
 				.map(n -> (EObject) match.get(n.getName())) //
 				.forEach(obj -> markedElements.add(obj));
-		gFactory.getGreenTrgNodesInRule().stream() //
+		operationalRule.getCreateTarget().getNodes().stream() //
 				.map(n -> (EObject) match.get(n.getName())) //
 				.forEach(obj -> markedElements.add(obj));
 	}
 
-	private boolean checkPositiveRAs(ITGGMatch match, IGreenPatternFactory gFactory) {
-		boolean srcRAsExist = gFactory.getBlackSrcNodesInRule().stream() //
+	private boolean checkPositiveRAs(ITGGMatch match) {
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getRuleName());
+
+		boolean srcRAsExist = operationalRule.getContextSource().getNodes().stream() //
 				.map(n -> (EObject) match.get(n.getName())) //
 				.allMatch(obj -> markedElements.contains(obj));
-		boolean trgRAsExist = gFactory.getBlackTrgNodesInRule().stream() //
+		boolean trgRAsExist = operationalRule.getContextTarget().getNodes().stream() //
 				.map(n -> (EObject) match.get(n.getName())) //
 				.allMatch(obj -> markedElements.contains(obj));
 		return srcRAsExist && trgRAsExist;
 	}
 
-	private boolean checkNegativeRAs(ITGGMatch match, IGreenPatternFactory gFactory) {
+	private boolean checkNegativeRAs(ITGGMatch match) {
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getRuleName());
+
 		if (match.getType() == PatternType.FWD)
-			return gFactory.getGreenSrcNodesInRule().stream() //
+			return operationalRule. getCreateSource().getNodes().stream() //
 					.map(n -> (EObject) match.get(n.getName())) //
 					.noneMatch(obj -> markedElements.contains(obj));
 		if (match.getType() == PatternType.BWD)
-			return gFactory.getGreenTrgNodesInRule().stream() //
+			return operationalRule.getCreateTarget().getNodes().stream() //
 					.map(n -> (EObject) match.get(n.getName())) //
 					.noneMatch(obj -> markedElements.contains(obj));
 		return false;

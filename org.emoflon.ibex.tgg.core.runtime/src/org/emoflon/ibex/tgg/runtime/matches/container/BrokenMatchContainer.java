@@ -14,6 +14,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.PropagatingOperationalStrategy;
+import org.emoflon.ibex.tgg.runtime.strategies.modules.RuleHandler;
 import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuleApplication;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
@@ -29,6 +30,7 @@ public class BrokenMatchContainer implements IMatchContainer, TimeMeasurable {
 	protected final Times times = new Times();
 
 	protected PropagatingOperationalStrategy strategy;
+	protected RuleHandler ruleHandler;
 
 	protected Collection<Object> translated = cfactory.createObjectSet();
 	protected Collection<Object> pendingElts = cfactory.createObjectSet();
@@ -47,6 +49,7 @@ public class BrokenMatchContainer implements IMatchContainer, TimeMeasurable {
 	public BrokenMatchContainer(PropagatingOperationalStrategy strategy) {
 		this.strategy = strategy;
 		TimeRegistry.register(this);
+		ruleHandler = strategy.getOptions().tgg.ruleHandler();
 	}
 	
 	public void reset() {
@@ -103,7 +106,7 @@ public class BrokenMatchContainer implements IMatchContainer, TimeMeasurable {
 	}
 
 	private void handleMatch(ITGGMatch m) {
-		TGGOperationalRule operationalRule = strategy.getOperationalRule(m.getRuleName());
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(m.getRuleName());
 		
 		if (anElementHasAlreadyBeenTranslated(m, operationalRule))
 			return;
@@ -185,7 +188,7 @@ public class BrokenMatchContainer implements IMatchContainer, TimeMeasurable {
 	}
 	
 	private boolean noElementIsPending(ITGGMatch m) {
-		TGGOperationalRule operationalRule = strategy.getOperationalRule(m.getRuleName());
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(m.getRuleName());
 		
 		for (IBeXNode createdNode : operationalRule.getToBeMarked().getNodes()) {
 			Object createdObj = m.get(createdNode.getName());
