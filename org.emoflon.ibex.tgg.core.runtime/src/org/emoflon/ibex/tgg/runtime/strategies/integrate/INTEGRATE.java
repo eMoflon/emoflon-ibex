@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.strategies.integrate;
+package org.emoflon.ibex.tgg.runtime.strategies.integrate;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -33,6 +33,7 @@ import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.Revoker;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.TGGMatchUtilProvider;
 import org.emoflon.ibex.tgg.runtime.strategies.opt.CC;
 import org.emoflon.ibex.tgg.runtime.strategies.opt.LocalCC;
+import org.emoflon.ibex.tgg.util.benchmark.Timer;
 import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 
 import com.google.common.collect.Sets;

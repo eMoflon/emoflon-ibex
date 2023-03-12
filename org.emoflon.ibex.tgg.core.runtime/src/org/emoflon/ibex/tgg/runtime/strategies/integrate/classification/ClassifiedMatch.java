@@ -1,16 +1,15 @@
-package org.emoflon.ibex.tgg.operational.strategies.integrate.classification;
+package org.emoflon.ibex.tgg.runtime.strategies.integrate.classification;
 
 import java.util.Map;
 import java.util.Set;
 
-import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceNode;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchAnalyzer.ConstrainedAttributeChanges;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchAnalyzer.InplAttributeChange;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil;
-
-import language.DomainType;
+import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
+import org.emoflon.ibex.tgg.runtime.strategies.integrate.INTEGRATE;
+import org.emoflon.ibex.tgg.runtime.strategies.integrate.matchcontainer.PrecedenceNode;
+import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.TGGMatchAnalyzer.ConstrainedAttributeChanges;
+import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.TGGMatchAnalyzer.InplAttributeChange;
+import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.TGGMatchUtil;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 
 public class ClassifiedMatch {
 
