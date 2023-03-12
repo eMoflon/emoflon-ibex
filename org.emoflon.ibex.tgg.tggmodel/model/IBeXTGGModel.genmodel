@@ -51,14 +51,15 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGRule/operationalisations"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGRule/attributeConstraints"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXTGGModel.ecore#//TGGRule/abstract"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXTGGModel.ecore#//TGGRule/axiom"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGRule/context"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGRule/contextSource"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGRule/contextCorrespondence"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGRule/contextTarget"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGRule/create"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGRule/createSource"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGRule/createCorrespondence"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGRule/createTarget"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXTGGModel.ecore#//TGGRule/axiom"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGRule/source"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGRule/correspondence"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGRule/target"/>

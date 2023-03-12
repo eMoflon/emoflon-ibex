@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.function.BiPredicate;
 
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.util.ConsoleUtil;
+import org.emoflon.ibex.tgg.util.debug.ConsoleUtil;
 
 public class PrecedenceNode {
 
@@ -26,7 +26,7 @@ public class PrecedenceNode {
 	}
 
 	public boolean isBroken() {
-		return broken;
+		return broken;	
 	}
 
 	public void setBroken(boolean broken) {

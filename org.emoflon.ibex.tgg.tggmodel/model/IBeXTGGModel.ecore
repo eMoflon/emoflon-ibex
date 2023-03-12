@@ -34,6 +34,9 @@
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="contextSource" eType="ecore:EClass ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXRuleDelta"
         containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="contextCorrespondence"
+        eType="ecore:EClass ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXRuleDelta"
+        containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="contextTarget" eType="ecore:EClass ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXRuleDelta"
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="create" eType="ecore:EClass ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXRuleDelta"

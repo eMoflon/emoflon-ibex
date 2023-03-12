@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.runtime.strategies.integrate.matchcontainer;
 
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
+import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Arrays;
@@ -16,11 +17,11 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.matches.SimpleTGGMatch;
 import org.emoflon.ibex.tgg.runtime.matches.TGGMatchParameterOrderProvider;
-import org.emoflon.ibex.tgg.runtime.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.runtime.strategies.PropagatingOperationalStrategy;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.MatchConsumer;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.MatchDistributor;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 import org.emoflon.ibex.tgg.util.benchmark.TimeMeasurable;
 import org.emoflon.ibex.tgg.util.benchmark.TimeRegistry;
@@ -28,14 +29,12 @@ import org.emoflon.ibex.tgg.util.benchmark.Timer;
 import org.emoflon.ibex.tgg.util.benchmark.Times;
 import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 
-import language.TGGRuleNode;
-
 public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 
 	protected final Times times = new Times();
 
 	protected final PropagatingOperationalStrategy strategy;
-
+	
 	protected Map<PrecedenceNode, Collection<Object>> requires = Collections.synchronizedMap(cfactory.createObjectToObjectHashMap());
 	protected Map<Object, LockedSet<PrecedenceNode>> requiredBy = Collections.synchronizedMap(cfactory.createObjectToObjectHashMap());
 	protected Map<PrecedenceNode, Collection<Object>> translates = Collections.synchronizedMap(cfactory.createObjectToObjectHashMap());
@@ -218,13 +217,13 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 	 */
 	public boolean hasConsistencyMatchOverlap(PrecedenceNode srcTrgNode) {
 		ITGGMatch srcTrgMatch = srcTrgNode.getMatch();
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(srcTrgMatch.getRuleName());
 
-		IGreenPatternFactory gFactory = strategy.getGreenFactories().get(srcTrgMatch.getRuleName());
 		Set<Object> translatedElts = cfactory.createObjectSet();
 		if (srcTrgMatch.getType() == PatternType.SRC) {
-			getGreenSrcElements(srcTrgMatch, gFactory, translatedElts);
+			getGreenSrcElements(srcTrgMatch, operationalRule, translatedElts);
 		} else if (srcTrgMatch.getType() == PatternType.TRG) {
-			getGreenTrgElements(srcTrgMatch, gFactory, translatedElts);
+			getGreenTrgElements(srcTrgMatch, operationalRule, translatedElts);
 		} else {
 			throw new RuntimeException("The pattern type of the specified node can only to be source or target!");
 		}
@@ -248,13 +247,13 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 		Map<PrecedenceNode, Set<Object>> overlaps;
 
 		ITGGMatch match = node.getMatch();
-		IGreenPatternFactory gFactory = strategy.getGreenFactories().get(match.getRuleName());
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getRuleName());
+		
 		Set<Object> translatedElts = cfactory.createObjectSet();
-
 		if (match.getType() == PatternType.CONSISTENCY) {
 			switch (overlapType) {
-				case SRC -> getGreenSrcElements(match, gFactory, translatedElts);
-				case TRG -> getGreenTrgElements(match, gFactory, translatedElts);
+				case SRC -> getGreenSrcElements(match, operationalRule, translatedElts);
+				case TRG -> getGreenTrgElements(match, operationalRule, translatedElts);
 				default -> throw new RuntimeException(
 						"For consistency matches, the pattern type of overlapping matches can only be source or target!");
 			}
@@ -270,8 +269,8 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 					.collect(Collectors.groupingBy(e -> e.getKey(), Collectors.mapping(e -> e.getValue(), Collectors.toSet())));
 		} else {
 			switch (match.getType()) {
-				case SRC -> getGreenSrcElements(match, gFactory, translatedElts);
-				case TRG -> getGreenTrgElements(match, gFactory, translatedElts);
+				case SRC -> getGreenSrcElements(match, operationalRule, translatedElts);
+				case TRG -> getGreenTrgElements(match, operationalRule, translatedElts);
 				default -> throw new RuntimeException("The pattern type of the specified node can only to be consistency, source or target!");
 			}
 
@@ -286,39 +285,39 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 		return overlaps;
 	}
 
-	private void getGreenTrgElements(ITGGMatch match, IGreenPatternFactory gFactory, Set<Object> elements) {
-		gFactory.getGreenTrgNodesInRule().forEach(n -> elements.add(match.get(n.getName())));
-		gFactory.getGreenTrgEdgesInRule().forEach(e -> elements.add(getRuntimeEdge(match, e)));
+	private void getGreenTrgElements(ITGGMatch match, TGGOperationalRule operationalRule, Set<Object> elements) {
+		operationalRule.getCreateTarget().getNodes().forEach(n -> elements.add(match.get(n.getName())));
+		operationalRule.getCreateTarget().getEdges().forEach(e -> elements.add(getRuntimeEdge(match, e)));
 	}
 
-	private void getGreenSrcElements(ITGGMatch match, IGreenPatternFactory gFactory, Set<Object> elements) {
-		gFactory.getGreenSrcNodesInRule().forEach(n -> elements.add(match.get(n.getName())));
-		gFactory.getGreenSrcEdgesInRule().forEach(e -> elements.add(getRuntimeEdge(match, e)));
+	private void getGreenSrcElements(ITGGMatch match, TGGOperationalRule operationalRule, Set<Object> elements) {
+		operationalRule.getCreateSource().getNodes().forEach(n -> elements.add(match.get(n.getName())));
+		operationalRule.getCreateSource().getEdges().forEach(e -> elements.add(getRuntimeEdge(match, e)));
 	}
 
 	private void addMatch(ITGGMatch match) {
-		IGreenPatternFactory gFactory = strategy.getGreenFactories().get(match.getRuleName());
-
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getRuleName());
+		
 		Collection<Object> requiredElts = cfactory.createObjectSet();
 		Collection<Object> translatedElts = cfactory.createObjectSet();
 
 		if (match.getType() != PatternType.TRG) {
-			gFactory.getBlackSrcNodesInRule().forEach(n -> requiredElts.add(match.get(n.getName())));
-			gFactory.getBlackSrcEdgesInRule().forEach(e -> requiredElts.add(getRuntimeEdge(match, e)));
-			gFactory.getGreenSrcNodesInRule().forEach(n -> translatedElts.add(match.get(n.getName())));
-			gFactory.getGreenSrcEdgesInRule().forEach(e -> translatedElts.add(getRuntimeEdge(match, e)));
+			operationalRule.getContextSource().getNodes().forEach(n -> requiredElts.add(match.get(n.getName())));
+			operationalRule.getContextSource().getEdges().forEach(e -> requiredElts.add(getRuntimeEdge(match, e)));
+			operationalRule.getCreateSource().getNodes().forEach(n -> translatedElts.add(match.get(n.getName())));
+			operationalRule.getCreateSource().getEdges().forEach(e -> translatedElts.add(getRuntimeEdge(match, e)));
 		}
 		if (match.getType() != PatternType.SRC) {
-			gFactory.getBlackTrgNodesInRule().forEach(n -> requiredElts.add(match.get(n.getName())));
-			gFactory.getBlackTrgEdgesInRule().forEach(e -> requiredElts.add(getRuntimeEdge(match, e)));
-			gFactory.getGreenTrgNodesInRule().forEach(n -> translatedElts.add(match.get(n.getName())));
-			gFactory.getGreenTrgEdgesInRule().forEach(e -> translatedElts.add(getRuntimeEdge(match, e)));
+			operationalRule.getContextTarget().getNodes().forEach(n -> requiredElts.add(match.get(n.getName())));
+			operationalRule.getContextTarget().getEdges().forEach(e -> requiredElts.add(getRuntimeEdge(match, e)));
+			operationalRule.getCreateTarget().getNodes().forEach(n -> translatedElts.add(match.get(n.getName())));
+			operationalRule.getCreateTarget().getEdges().forEach(e -> translatedElts.add(getRuntimeEdge(match, e)));
 		}
 		if (match.getType() == PatternType.CONSISTENCY) {
-			gFactory.getBlackCorrNodesInRule().forEach(n -> requiredElts.add(match.get(n.getName())));
-			gFactory.getBlackCorrEdgesInRule().forEach(e -> requiredElts.add(getRuntimeEdge(match, e)));
-			gFactory.getGreenCorrNodesInRule().forEach(n -> translatedElts.add(match.get(n.getName())));
-			gFactory.getGreenCorrEdgesInRule().forEach(e -> translatedElts.add(getRuntimeEdge(match, e)));
+			operationalRule.getContextCorrespondence().getNodes().forEach(n -> requiredElts.add(match.get(n.getName())));
+			operationalRule.getContextCorrespondence().getEdges().forEach(e -> requiredElts.add(getRuntimeEdge(match, e)));
+			operationalRule.getCreateCorrespondence().getNodes().forEach(n -> translatedElts.add(match.get(n.getName())));
+			operationalRule.getCreateCorrespondence().getEdges().forEach(e -> translatedElts.add(getRuntimeEdge(match, e)));
 		}
 
 		// Create node
@@ -530,15 +529,15 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 			throw new RuntimeException("PrecedenceGraph: TGGMatchParameterOrderProvider must be initialized!");
 
 		String ruleName = PatternSuffixes.removeSuffix(consMatch.getPatternName());
-		Map<String, TGGRuleNode> param2node = TGGMatchParameterOrderProvider.getParam2NodeMap(ruleName);
+		Map<String, TGGNode> param2node = TGGMatchParameterOrderProvider.getParam2NodeMap(ruleName);
 
 		ITGGMatch srcMatch = new SimpleTGGMatch(ruleName + PatternSuffixes.SRC);
 		if (srcMatch.getType() == null) {
 			srcMatch = null;
 		} else {
 			for (String p : consMatch.getParameterNames()) {
-				TGGRuleNode node = param2node.get(p);
-				if (node != null && node.getDomainType() == DomainType.SRC)
+				TGGNode node = param2node.get(p);
+				if (node != null && node.getDomainType() == DomainType.SOURCE)
 					srcMatch.put(p, consMatch.get(p));
 			}
 		}
@@ -548,8 +547,8 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 			trgMatch = null;
 		} else {
 			for (String p : consMatch.getParameterNames()) {
-				TGGRuleNode node = param2node.get(p);
-				if (node != null && node.getDomainType() == DomainType.TRG)
+				TGGNode node = param2node.get(p);
+				if (node != null && node.getDomainType() == DomainType.TARGET)
 					trgMatch.put(p, consMatch.get(p));
 			}
 		}

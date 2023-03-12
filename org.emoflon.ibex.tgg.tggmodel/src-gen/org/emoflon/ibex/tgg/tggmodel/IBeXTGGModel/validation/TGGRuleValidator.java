@@ -39,6 +39,8 @@ public interface TGGRuleValidator {
 
 	boolean validateContextSource(IBeXRuleDelta value);
 
+	boolean validateContextCorrespondence(IBeXRuleDelta value);
+
 	boolean validateContextTarget(IBeXRuleDelta value);
 
 	boolean validateCreate(IBeXRuleDelta value);

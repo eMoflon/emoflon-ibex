@@ -44,7 +44,7 @@ import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
  * Util class for creating EObjects, Edges, and Correspondences for a given set
  * of green TGGRuleElement
  * 
- * @author leblebici
+ * @author leblebici, lfritsche
  */
 public class IbexGreenInterpreter implements IGreenInterpreter {
 	private static final Logger logger = Logger.getLogger(IbexGreenInterpreter.class);

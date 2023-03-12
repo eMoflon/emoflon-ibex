@@ -44,14 +44,15 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getOperationalisations <em>Operationalisations</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getAttributeConstraints <em>Attribute Constraints</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#isAbstract <em>Abstract</em>}</li>
+ *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#isAxiom <em>Axiom</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getContext <em>Context</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getContextSource <em>Context Source</em>}</li>
+ *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getContextCorrespondence <em>Context Correspondence</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getContextTarget <em>Context Target</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getCreate <em>Create</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getCreateSource <em>Create Source</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getCreateCorrespondence <em>Create Correspondence</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getCreateTarget <em>Create Target</em>}</li>
- *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#isAxiom <em>Axiom</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getSource <em>Source</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getCorrespondence <em>Correspondence</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getTarget <em>Target</em>}</li>
@@ -131,6 +132,26 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 	protected boolean abstract_ = ABSTRACT_EDEFAULT;
 
 	/**
+	 * The default value of the '{@link #isAxiom() <em>Axiom</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isAxiom()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final boolean AXIOM_EDEFAULT = false;
+
+	/**
+	 * The cached value of the '{@link #isAxiom() <em>Axiom</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isAxiom()
+	 * @generated
+	 * @ordered
+	 */
+	protected boolean axiom = AXIOM_EDEFAULT;
+
+	/**
 	 * The cached value of the '{@link #getContext() <em>Context</em>}' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -149,6 +170,16 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 	 * @ordered
 	 */
 	protected IBeXRuleDelta contextSource;
+
+	/**
+	 * The cached value of the '{@link #getContextCorrespondence() <em>Context Correspondence</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getContextCorrespondence()
+	 * @generated
+	 * @ordered
+	 */
+	protected IBeXRuleDelta contextCorrespondence;
 
 	/**
 	 * The cached value of the '{@link #getContextTarget() <em>Context Target</em>}' containment reference.
@@ -199,26 +230,6 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 	 * @ordered
 	 */
 	protected IBeXRuleDelta createTarget;
-
-	/**
-	 * The default value of the '{@link #isAxiom() <em>Axiom</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #isAxiom()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final boolean AXIOM_EDEFAULT = false;
-
-	/**
-	 * The cached value of the '{@link #isAxiom() <em>Axiom</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #isAxiom()
-	 * @generated
-	 * @ordered
-	 */
-	protected boolean axiom = AXIOM_EDEFAULT;
 
 	/**
 	 * The cached value of the '{@link #getSource() <em>Source</em>}' containment reference.
@@ -491,6 +502,58 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		} else if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CONTEXT_SOURCE,
 					newContextSource, newContextSource));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public IBeXRuleDelta getContextCorrespondence() {
+		return contextCorrespondence;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public NotificationChain basicSetContextCorrespondence(IBeXRuleDelta newContextCorrespondence,
+			NotificationChain msgs) {
+		IBeXRuleDelta oldContextCorrespondence = contextCorrespondence;
+		contextCorrespondence = newContextCorrespondence;
+		if (eNotificationRequired()) {
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
+					IBeXTGGModelPackage.TGG_RULE__CONTEXT_CORRESPONDENCE, oldContextCorrespondence,
+					newContextCorrespondence);
+			if (msgs == null)
+				msgs = notification;
+			else
+				msgs.add(notification);
+		}
+		return msgs;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setContextCorrespondence(IBeXRuleDelta newContextCorrespondence) {
+		if (newContextCorrespondence != contextCorrespondence) {
+			NotificationChain msgs = null;
+			if (contextCorrespondence != null)
+				msgs = ((InternalEObject) contextCorrespondence).eInverseRemove(this,
+						EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CONTEXT_CORRESPONDENCE, null, msgs);
+			if (newContextCorrespondence != null)
+				msgs = ((InternalEObject) newContextCorrespondence).eInverseAdd(this,
+						EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CONTEXT_CORRESPONDENCE, null, msgs);
+			msgs = basicSetContextCorrespondence(newContextCorrespondence, msgs);
+			if (msgs != null)
+				msgs.dispatch();
+		} else if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CONTEXT_CORRESPONDENCE,
+					newContextCorrespondence, newContextCorrespondence));
 	}
 
 	/**
@@ -937,6 +1000,8 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 			return basicSetContext(null, msgs);
 		case IBeXTGGModelPackage.TGG_RULE__CONTEXT_SOURCE:
 			return basicSetContextSource(null, msgs);
+		case IBeXTGGModelPackage.TGG_RULE__CONTEXT_CORRESPONDENCE:
+			return basicSetContextCorrespondence(null, msgs);
 		case IBeXTGGModelPackage.TGG_RULE__CONTEXT_TARGET:
 			return basicSetContextTarget(null, msgs);
 		case IBeXTGGModelPackage.TGG_RULE__CREATE:
@@ -977,10 +1042,14 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 			return getAttributeConstraints();
 		case IBeXTGGModelPackage.TGG_RULE__ABSTRACT:
 			return isAbstract();
+		case IBeXTGGModelPackage.TGG_RULE__AXIOM:
+			return isAxiom();
 		case IBeXTGGModelPackage.TGG_RULE__CONTEXT:
 			return getContext();
 		case IBeXTGGModelPackage.TGG_RULE__CONTEXT_SOURCE:
 			return getContextSource();
+		case IBeXTGGModelPackage.TGG_RULE__CONTEXT_CORRESPONDENCE:
+			return getContextCorrespondence();
 		case IBeXTGGModelPackage.TGG_RULE__CONTEXT_TARGET:
 			return getContextTarget();
 		case IBeXTGGModelPackage.TGG_RULE__CREATE:
@@ -991,8 +1060,6 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 			return getCreateCorrespondence();
 		case IBeXTGGModelPackage.TGG_RULE__CREATE_TARGET:
 			return getCreateTarget();
-		case IBeXTGGModelPackage.TGG_RULE__AXIOM:
-			return isAxiom();
 		case IBeXTGGModelPackage.TGG_RULE__SOURCE:
 			return getSource();
 		case IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE:
@@ -1034,11 +1101,17 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		case IBeXTGGModelPackage.TGG_RULE__ABSTRACT:
 			setAbstract((Boolean) newValue);
 			return;
+		case IBeXTGGModelPackage.TGG_RULE__AXIOM:
+			setAxiom((Boolean) newValue);
+			return;
 		case IBeXTGGModelPackage.TGG_RULE__CONTEXT:
 			setContext((IBeXRuleDelta) newValue);
 			return;
 		case IBeXTGGModelPackage.TGG_RULE__CONTEXT_SOURCE:
 			setContextSource((IBeXRuleDelta) newValue);
+			return;
+		case IBeXTGGModelPackage.TGG_RULE__CONTEXT_CORRESPONDENCE:
+			setContextCorrespondence((IBeXRuleDelta) newValue);
 			return;
 		case IBeXTGGModelPackage.TGG_RULE__CONTEXT_TARGET:
 			setContextTarget((IBeXRuleDelta) newValue);
@@ -1054,9 +1127,6 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 			return;
 		case IBeXTGGModelPackage.TGG_RULE__CREATE_TARGET:
 			setCreateTarget((IBeXRuleDelta) newValue);
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__AXIOM:
-			setAxiom((Boolean) newValue);
 			return;
 		case IBeXTGGModelPackage.TGG_RULE__SOURCE:
 			setSource((IBeXRuleDelta) newValue);
@@ -1097,11 +1167,17 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		case IBeXTGGModelPackage.TGG_RULE__ABSTRACT:
 			setAbstract(ABSTRACT_EDEFAULT);
 			return;
+		case IBeXTGGModelPackage.TGG_RULE__AXIOM:
+			setAxiom(AXIOM_EDEFAULT);
+			return;
 		case IBeXTGGModelPackage.TGG_RULE__CONTEXT:
 			setContext((IBeXRuleDelta) null);
 			return;
 		case IBeXTGGModelPackage.TGG_RULE__CONTEXT_SOURCE:
 			setContextSource((IBeXRuleDelta) null);
+			return;
+		case IBeXTGGModelPackage.TGG_RULE__CONTEXT_CORRESPONDENCE:
+			setContextCorrespondence((IBeXRuleDelta) null);
 			return;
 		case IBeXTGGModelPackage.TGG_RULE__CONTEXT_TARGET:
 			setContextTarget((IBeXRuleDelta) null);
@@ -1117,9 +1193,6 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 			return;
 		case IBeXTGGModelPackage.TGG_RULE__CREATE_TARGET:
 			setCreateTarget((IBeXRuleDelta) null);
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__AXIOM:
-			setAxiom(AXIOM_EDEFAULT);
 			return;
 		case IBeXTGGModelPackage.TGG_RULE__SOURCE:
 			setSource((IBeXRuleDelta) null);
@@ -1154,10 +1227,14 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 			return attributeConstraints != null;
 		case IBeXTGGModelPackage.TGG_RULE__ABSTRACT:
 			return abstract_ != ABSTRACT_EDEFAULT;
+		case IBeXTGGModelPackage.TGG_RULE__AXIOM:
+			return axiom != AXIOM_EDEFAULT;
 		case IBeXTGGModelPackage.TGG_RULE__CONTEXT:
 			return context != null;
 		case IBeXTGGModelPackage.TGG_RULE__CONTEXT_SOURCE:
 			return contextSource != null;
+		case IBeXTGGModelPackage.TGG_RULE__CONTEXT_CORRESPONDENCE:
+			return contextCorrespondence != null;
 		case IBeXTGGModelPackage.TGG_RULE__CONTEXT_TARGET:
 			return contextTarget != null;
 		case IBeXTGGModelPackage.TGG_RULE__CREATE:
@@ -1168,8 +1245,6 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 			return createCorrespondence != null;
 		case IBeXTGGModelPackage.TGG_RULE__CREATE_TARGET:
 			return createTarget != null;
-		case IBeXTGGModelPackage.TGG_RULE__AXIOM:
-			return axiom != AXIOM_EDEFAULT;
 		case IBeXTGGModelPackage.TGG_RULE__SOURCE:
 			return source != null;
 		case IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE:

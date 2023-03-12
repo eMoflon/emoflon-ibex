@@ -360,13 +360,22 @@ public interface IBeXTGGModelPackage extends EPackage {
 	int TGG_RULE__ABSTRACT = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 5;
 
 	/**
+	 * The feature id for the '<em><b>Axiom</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_RULE__AXIOM = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 6;
+
+	/**
 	 * The feature id for the '<em><b>Context</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE__CONTEXT = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 6;
+	int TGG_RULE__CONTEXT = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 7;
 
 	/**
 	 * The feature id for the '<em><b>Context Source</b></em>' containment reference.
@@ -375,7 +384,16 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE__CONTEXT_SOURCE = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 7;
+	int TGG_RULE__CONTEXT_SOURCE = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 8;
+
+	/**
+	 * The feature id for the '<em><b>Context Correspondence</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_RULE__CONTEXT_CORRESPONDENCE = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 9;
 
 	/**
 	 * The feature id for the '<em><b>Context Target</b></em>' containment reference.
@@ -384,7 +402,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE__CONTEXT_TARGET = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 8;
+	int TGG_RULE__CONTEXT_TARGET = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 10;
 
 	/**
 	 * The feature id for the '<em><b>Create</b></em>' containment reference.
@@ -393,7 +411,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE__CREATE = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 9;
+	int TGG_RULE__CREATE = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 11;
 
 	/**
 	 * The feature id for the '<em><b>Create Source</b></em>' containment reference.
@@ -402,7 +420,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE__CREATE_SOURCE = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 10;
+	int TGG_RULE__CREATE_SOURCE = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 12;
 
 	/**
 	 * The feature id for the '<em><b>Create Correspondence</b></em>' containment reference.
@@ -411,7 +429,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE__CREATE_CORRESPONDENCE = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 11;
+	int TGG_RULE__CREATE_CORRESPONDENCE = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 13;
 
 	/**
 	 * The feature id for the '<em><b>Create Target</b></em>' containment reference.
@@ -420,16 +438,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE__CREATE_TARGET = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 12;
-
-	/**
-	 * The feature id for the '<em><b>Axiom</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int TGG_RULE__AXIOM = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 13;
+	int TGG_RULE__CREATE_TARGET = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 14;
 
 	/**
 	 * The feature id for the '<em><b>Source</b></em>' containment reference.
@@ -438,7 +447,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE__SOURCE = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 14;
+	int TGG_RULE__SOURCE = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 15;
 
 	/**
 	 * The feature id for the '<em><b>Correspondence</b></em>' containment reference.
@@ -447,7 +456,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE__CORRESPONDENCE = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 15;
+	int TGG_RULE__CORRESPONDENCE = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 16;
 
 	/**
 	 * The feature id for the '<em><b>Target</b></em>' containment reference.
@@ -456,7 +465,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE__TARGET = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 16;
+	int TGG_RULE__TARGET = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 17;
 
 	/**
 	 * The number of structural features of the '<em>TGG Rule</em>' class.
@@ -465,7 +474,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE_FEATURE_COUNT = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 17;
+	int TGG_RULE_FEATURE_COUNT = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 18;
 
 	/**
 	 * The number of operations of the '<em>TGG Rule</em>' class.
@@ -613,6 +622,15 @@ public interface IBeXTGGModelPackage extends EPackage {
 	int TGG_OPERATIONAL_RULE__ABSTRACT = TGG_RULE__ABSTRACT;
 
 	/**
+	 * The feature id for the '<em><b>Axiom</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_OPERATIONAL_RULE__AXIOM = TGG_RULE__AXIOM;
+
+	/**
 	 * The feature id for the '<em><b>Context</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -629,6 +647,15 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int TGG_OPERATIONAL_RULE__CONTEXT_SOURCE = TGG_RULE__CONTEXT_SOURCE;
+
+	/**
+	 * The feature id for the '<em><b>Context Correspondence</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_OPERATIONAL_RULE__CONTEXT_CORRESPONDENCE = TGG_RULE__CONTEXT_CORRESPONDENCE;
 
 	/**
 	 * The feature id for the '<em><b>Context Target</b></em>' containment reference.
@@ -674,15 +701,6 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int TGG_OPERATIONAL_RULE__CREATE_TARGET = TGG_RULE__CREATE_TARGET;
-
-	/**
-	 * The feature id for the '<em><b>Axiom</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int TGG_OPERATIONAL_RULE__AXIOM = TGG_RULE__AXIOM;
 
 	/**
 	 * The feature id for the '<em><b>Source</b></em>' containment reference.
@@ -1344,6 +1362,17 @@ public interface IBeXTGGModelPackage extends EPackage {
 	EReference getTGGRule_ContextSource();
 
 	/**
+	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getContextCorrespondence <em>Context Correspondence</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Context Correspondence</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getContextCorrespondence()
+	 * @see #getTGGRule()
+	 * @generated
+	 */
+	EReference getTGGRule_ContextCorrespondence();
+
+	/**
 	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getContextTarget <em>Context Target</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1786,6 +1815,14 @@ public interface IBeXTGGModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference TGG_RULE__CONTEXT_SOURCE = eINSTANCE.getTGGRule_ContextSource();
+
+		/**
+		 * The meta object literal for the '<em><b>Context Correspondence</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference TGG_RULE__CONTEXT_CORRESPONDENCE = eINSTANCE.getTGGRule_ContextCorrespondence();
 
 		/**
 		 * The meta object literal for the '<em><b>Context Target</b></em>' containment reference feature.
