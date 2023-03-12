@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.detection;
+package org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.detection;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -13,33 +13,35 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.runtime.strategies.integrate.INTEGRATE;
-import org.emoflon.ibex.tgg.runtime.strategies.integrate.classification.ClassifiedMatch;
-import org.emoflon.ibex.tgg.runtime.strategies.integrate.classification.DeletionType;
-import org.emoflon.ibex.tgg.runtime.strategies.integrate.classification.DomainModification;
-import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.AttributeConflict;
-import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.Conflict;
-import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.ConflictContainer;
-import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.CorrPreservationConflict;
-import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.DelPreserveAttrConflict;
-import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.DelPreserveEdgeConflict;
-import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.DeletePreserveConflict;
-import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.InconsDomainChangesConflict;
-import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.InconsistentChangesConflict;
-import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.OperationalMultiplicityConflict;
-import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.detection.MultiplicityCounter.OutgoingEdge;
-import org.emoflon.ibex.tgg.runtime.strategies.integrate.matchcontainer.PrecedenceNode;
-import org.emoflon.ibex.tgg.runtime.strategies.integrate.modelchange.AttributeChange;
-import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.TGGMatchAnalyzer.ConstrainedAttributeChanges;
-import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.TGGMatchUtil;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinition;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.ClassifiedMatch;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DeletionType;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DomainModification;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.AttributeConflict;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.Conflict;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.ConflictContainer;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.CorrPreservationConflict;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.DelPreserveAttrConflict;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.DelPreserveEdgeConflict;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.DeletePreserveConflict;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.InconsDomainChangesConflict;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.InconsistentChangesConflict;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.OperationalMultiplicityConflict;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.detection.MultiplicityCounter.OutgoingEdge;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceNode;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.AttributeChange;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchAnalyzer.ConstrainedAttributeChanges;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil;
 import org.emoflon.ibex.tgg.util.TGGModelUtils;
 
 import com.google.common.collect.Sets;
+
+import language.BindingType;
+import language.DomainType;
+import language.TGGAttributeConstraintDefinition;
+import language.TGGAttributeExpression;
+import language.TGGRuleNode;
 
 public class ConflictDetector {
 
@@ -102,7 +104,7 @@ public class ConflictDetector {
 	 */
 	private boolean detectDeletePreserveEdgeConflict(PrecedenceNode srcTrgNode, ITGGMatch matchToBeRepaired) {
 		boolean anyConflictDetected = false;
-		DomainType domainToBePreserved = srcTrgNode.getMatch().getType() == PatternType.SRC ? DomainType.SOURCE : DomainType.TARGET;
+		DomainType domainToBePreserved = srcTrgNode.getMatch().getType() == PatternType.SRC ? DomainType.SRC : DomainType.TRG;
 
 		Set<PrecedenceNode> directRollBackCauses = new HashSet<>();
 		srcTrgNode.forAllToBeRolledBackBy((act, pre) -> {
@@ -142,7 +144,7 @@ public class ConflictDetector {
 					continue;
 
 				TGGMatchUtil matchUtil = integrate.matchUtils().get(node.getMatch());
-				TGGNode ruleNode = matchUtil.getNode(change.getElement());
+				TGGRuleNode ruleNode = matchUtil.getNode(change.getElement());
 
 				ConflictContainer container = match2conflictContainer.computeIfAbsent(node.getMatch(), //
 						key -> new ConflictContainer(integrate, node.getMatch()));
@@ -233,22 +235,19 @@ public class ConflictDetector {
 	private boolean hasDomainSpecificViolations(ITGGMatch match, DomainType domain) {
 		ClassifiedMatch classifiedMatch = integrate.matchClassifier().get(match);
 
-		switch (domain) {
-			case SOURCE -> {
-				if (DeletionType.srcDelCandidates.contains(classifiedMatch.getDeletionType()))
-					return true;
-			}
-			case TARGET -> {
-				if (DeletionType.trgDelCandidates.contains(classifiedMatch.getDeletionType()))
-					return true;
-			}
+		Set<DeletionType> expectedDeletionTypes = switch (domain) {
+			case SRC -> DeletionType.srcDelCandidates;
+			case TRG -> DeletionType.trgDelCandidates;
 			default -> throw new IllegalArgumentException("Unexpected value: " + domain);
-		}
+		};
+		if (expectedDeletionTypes.contains(classifiedMatch.getDeletionType()))
+			return true;
 
 		if (classifiedMatch.getFilterNacViolations().containsValue(domain))
 			return true;
 
-		// TODO adrianm: check attributes
+		if (classifiedMatch.getInplaceAttrChanges().containsValue(domain))
+			return true;
 
 		return false;
 	}
@@ -290,8 +289,8 @@ public class ConflictDetector {
 
 				for (TGGAttributeExpression param : constrAttrChanges.affectedParams.keySet()) {
 					switch (param.getObjectVar().getDomainType()) {
-						case SOURCE -> srcChange = constrAttrChanges.affectedParams.get(param);
-						case TARGET -> trgChange = constrAttrChanges.affectedParams.get(param);
+						case SRC -> srcChange = constrAttrChanges.affectedParams.get(param);
+						case TRG -> trgChange = constrAttrChanges.affectedParams.get(param);
 						default -> {
 						}
 					}
@@ -306,11 +305,11 @@ public class ConflictDetector {
 	}
 
 	private boolean detectConflictsCausedByContradictoryChanges(ConflictContainer container, ClassifiedMatch brokenMatch) {
-		DomainModification domainModSrc = brokenMatch.getDeletionPattern().getModType(DomainType.SOURCE, BindingType.CREATE);
-		DomainModification domainModTrg = brokenMatch.getDeletionPattern().getModType(DomainType.TARGET, BindingType.CREATE);
+		DomainModification domainModSrc = brokenMatch.getDeletionPattern().getModType(DomainType.SRC, BindingType.CREATE);
+		DomainModification domainModTrg = brokenMatch.getDeletionPattern().getModType(DomainType.TRG, BindingType.CREATE);
 
-		boolean nacAtSrc = brokenMatch.getFilterNacViolations().containsValue(DomainType.SOURCE);
-		boolean nacAtTrg = brokenMatch.getFilterNacViolations().containsValue(DomainType.TARGET);
+		boolean nacAtSrc = brokenMatch.getFilterNacViolations().containsValue(DomainType.SRC);
+		boolean nacAtTrg = brokenMatch.getFilterNacViolations().containsValue(DomainType.TRG);
 
 		boolean partlyModSrc = domainModSrc == DomainModification.PART_DEL || nacAtSrc;
 		boolean partlyModTrg = domainModTrg == DomainModification.PART_DEL || nacAtTrg;
@@ -343,7 +342,7 @@ public class ConflictDetector {
 				// In case the conflicting match is also the reparable match, we simply can create the conflict.
 				if (domainModTrg == DomainModification.COMPL_DEL) {
 					for (PrecedenceNode srcNode : srcNodes) {
-						createDelPresEdgeConflict(container, srcNode.getMatch(), DomainType.SOURCE, brokenMatch.getMatch(), brokenMatch.getMatch());
+						createDelPresEdgeConflict(container, srcNode.getMatch(), DomainType.SRC, brokenMatch.getMatch(), brokenMatch.getMatch());
 						anyConflictsDetected = true;
 					}
 				}
@@ -352,7 +351,7 @@ public class ConflictDetector {
 			// If there are changes at source domain which are inconsistent w.r.t. the specified TGG rules,
 			// an appropriate conflict is created.
 			if (!anyConflictsDetected) {
-				createInconsDomainChangesConflict(container, DomainType.SOURCE);
+				createInconsDomainChangesConflict(container, DomainType.SRC);
 				return true;
 			}
 		} else {
@@ -372,7 +371,7 @@ public class ConflictDetector {
 				// In case the conflicting match is also the reparable match, we simply can create the conflict.
 				if (domainModSrc == DomainModification.COMPL_DEL) {
 					for (PrecedenceNode trgNode : trgNodes) {
-						createDelPresEdgeConflict(container, trgNode.getMatch(), DomainType.TARGET, brokenMatch.getMatch(), brokenMatch.getMatch());
+						createDelPresEdgeConflict(container, trgNode.getMatch(), DomainType.TRG, brokenMatch.getMatch(), brokenMatch.getMatch());
 						anyConflictsDetected = true;
 					}
 				}
@@ -381,7 +380,7 @@ public class ConflictDetector {
 			// If there are changes at target domain which are inconsistent w.r.t. the specified TGG rules,
 			// an appropriate conflict is created.
 			if (!anyConflictsDetected) {
-				createInconsDomainChangesConflict(container, DomainType.TARGET);
+				createInconsDomainChangesConflict(container, DomainType.TRG);
 				return true;
 			}
 		}

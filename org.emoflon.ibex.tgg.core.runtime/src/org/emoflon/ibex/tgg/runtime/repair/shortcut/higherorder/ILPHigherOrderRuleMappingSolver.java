@@ -265,8 +265,10 @@ public class ILPHigherOrderRuleMappingSolver {
 						ilpProblem.addConstraint(expression, Comparator.eq, 0, //
 								"CONSTR_doNotChooseEdge_" + element.ruleElement().eClass().getName() + "_" + constraintNameCounter++);
 					} else {
-						ilpProblem.addImplication("e" + candidateID, Stream.of("e" + srcNodeCandidateID, "e" + trgNodeCandidateID), //
-								"IMPL_edgePlusSrcTrgNodes_" + element.ruleElement().eClass().getName() + "_" + constraintNameCounter++);
+						ilpProblem.addImplication("e" + candidateID, Stream.of("e" + srcNodeCandidateID), //
+								"IMPL_edgePlusSrcNode_" + element.ruleElement().eClass().getName() + "_" + constraintNameCounter++);
+						ilpProblem.addImplication("e" + candidateID, Stream.of("e" + trgNodeCandidateID), //
+								"IMPL_edgePlusTrgNode_" + element.ruleElement().eClass().getName() + "_" + constraintNameCounter++);
 					}
 				}
 			}

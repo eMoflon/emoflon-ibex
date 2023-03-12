@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.runtime.repair.shortcut.util;
+package org.emoflon.ibex.tgg.operational.repair.shortcut.util;
 
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 import static org.emoflon.ibex.tgg.util.TGGFilterUtil.isAxiomatic;
@@ -6,6 +6,7 @@ import static org.emoflon.ibex.tgg.util.TGGFilterUtil.isAxiomatic;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,20 +15,21 @@ import java.util.stream.Collectors;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
+import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
+import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.util.TGGFilterUtil;
-import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.util.ilp.BinaryILPProblem;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPLinearExpression;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.Objective;
+
+import language.BindingType;
+import language.DomainType;
+import language.TGG;
+import language.TGGRule;
+import language.TGGRuleCorr;
+import language.TGGRuleEdge;
+import language.TGGRuleElement;
+import language.TGGRuleNode;
 
 /**
  * 
@@ -48,15 +50,15 @@ public class OverlapUtil {
 		this.options = options;
 	}
 
-	public Collection<TGGOverlap> calculateOverlaps(TGGModel tgg) {
+	public Collection<TGGOverlap> calculateOverlaps(TGG tgg) {
 		LoggerConfig.log(LoggerConfig.log_repair(), () -> "Creating ILP problems for ShortCut-Rules");
 
 		Collection<TGGOverlap> overlaps = cfactory.createObjectSet();
 		// overlap all rules (also with themselves)
-		for (int i = 0; i < tgg.getRuleSet().getRules().size(); i++) {
-			for (int j = i; j < tgg.getRuleSet().getRules().size(); j++) {
-				TGGRule originalRule = tgg.getRuleSet().getRules().get(i);
-				TGGRule replacingRule = tgg.getRuleSet().getRules().get(j);
+		for (int i = 0; i < tgg.getRules().size(); i++) {
+			for (int j = i; j < tgg.getRules().size(); j++) {
+				TGGRule originalRule = tgg.getRules().get(i);
+				TGGRule replacingRule = tgg.getRules().get(j);
 
 				if (originalRule.isAbstract() || replacingRule.isAbstract())
 					continue;
@@ -103,8 +105,8 @@ public class OverlapUtil {
 
 	private List<NodeCandidate> calculateNodeCandidates(TGGRule originalRule, TGGRule replacingRule, boolean mapContext) {
 		List<NodeCandidate> candidates = new ArrayList<>();
-		for (TGGNode originalNode : originalRule.getNodes()) {
-			for (TGGNode replacingNode : replacingRule.getNodes()) {
+		for (TGGRuleNode originalNode : originalRule.getNodes()) {
+			for (TGGRuleNode replacingNode : replacingRule.getNodes()) {
 				if (nodesMatch(originalNode, replacingNode, mapContext))
 					candidates.add(new NodeCandidate(originalNode, replacingNode));
 			}
@@ -114,8 +116,8 @@ public class OverlapUtil {
 
 	private Collection<EdgeCandidate> calculateEdgeCandidates(TGGRule originalRule, TGGRule replacingRule, boolean mapContext) {
 		Collection<EdgeCandidate> candidates = new ArrayList<>();
-		for (TGGEdge originalEdge : originalRule.getEdges()) {
-			for (TGGEdge replacingEdge : replacingRule.getEdges()) {
+		for (TGGRuleEdge originalEdge : originalRule.getEdges()) {
+			for (TGGRuleEdge replacingEdge : replacingRule.getEdges()) {
 				if (edgesMatch(originalEdge, replacingEdge, mapContext))
 					candidates.add(new EdgeCandidate(originalEdge, replacingEdge));
 			}
@@ -129,7 +131,7 @@ public class OverlapUtil {
 		originalRuleClasses.addAll(TGGFilterUtil.filterNodes(originalRule.getNodes(), BindingType.CREATE).stream() //
 				.map(c -> c.getType()) //
 				.collect(Collectors.toSet()));
-		for (TGGNode replacingNode : TGGFilterUtil.filterNodes(replacingRule.getNodes(), BindingType.CREATE)) {
+		for (TGGRuleNode replacingNode : TGGFilterUtil.filterNodes(replacingRule.getNodes(), BindingType.CREATE)) {
 			for (EClass eClass : originalRuleClasses)
 				if (typesMatch(eClass, replacingNode.getType(), false))
 					return true;
@@ -137,7 +139,7 @@ public class OverlapUtil {
 		return false;
 	}
 
-	private boolean nodesMatch(TGGNode originalNode, TGGNode replacingNode, boolean mapContext) {
+	private boolean nodesMatch(TGGRuleNode originalNode, TGGRuleNode replacingNode, boolean mapContext) {
 		if (!originalNode.getDomainType().equals(replacingNode.getDomainType())) // domain matches
 			return false;
 		if (!originalNode.getBindingType().equals(replacingNode.getBindingType())) // binding matches
@@ -150,7 +152,7 @@ public class OverlapUtil {
 		return true;
 	}
 
-	private boolean edgesMatch(TGGEdge originalEdge, TGGEdge replacingEdge, boolean mapContext) {
+	private boolean edgesMatch(TGGRuleEdge originalEdge, TGGRuleEdge replacingEdge, boolean mapContext) {
 		boolean domainMatches = originalEdge.getDomainType().equals(replacingEdge.getDomainType());
 		boolean typeMatches = originalEdge.getType().equals(replacingEdge.getType());
 		boolean bindingMatches = originalEdge.getBindingType().equals(replacingEdge.getBindingType()) //
@@ -180,8 +182,8 @@ public class OverlapUtil {
 		overlap.unboundReplacingContext.addAll(TGGFilterUtil.filterNodes(replacingRule.getNodes(), BindingType.CONTEXT));
 		overlap.unboundReplacingContext.addAll(TGGFilterUtil.filterEdges(replacingRule.getEdges(), BindingType.CONTEXT));
 
-		solvedNodeCandidates.forEach(cdt -> processOverlapCandidate(overlap, cdt.originalNode, cdt.replacingNode));
-		solvedEdgeCandidates.forEach(cdt -> processOverlapCandidate(overlap, cdt.originalEdge, cdt.replacingEdge));
+		solvedNodeCandidates.forEach(cdt -> processOverlapCandidate(overlap, cdt.originalNode(), cdt.replacingNode()));
+		solvedEdgeCandidates.forEach(cdt -> processOverlapCandidate(overlap, cdt.originalEdge(), cdt.replacingEdge()));
 
 		overlap.category = category;
 
@@ -219,9 +221,9 @@ public class OverlapUtil {
 		for (TGGRuleElement elt : overlap.mappings.keySet())
 			if (elt.getBindingType() == BindingType.CREATE) {
 				switch (elt.getDomainType()) {
-					case SOURCE -> containsSrc = true;
-					case TARGET -> containsTrg = true;
-					case CORRESPONDENCE -> containsCorr = true;
+					case SRC -> containsSrc = true;
+					case TRG -> containsTrg = true;
+					case CORR -> containsCorr = true;
 				}
 			}
 
@@ -244,12 +246,12 @@ public class OverlapUtil {
 	private Collection<TGGOverlap> createAdvancedOverlaps(TGGRule rule) {
 		Set<TGGOverlap> overlaps = new HashSet<>();
 		Collection<Implication> implications = new HashSet<>();
-		Collection<TGGNode> flexibleNodes = new HashSet<>(rule.getNodes());
+		Collection<TGGRuleNode> flexibleNodes = new HashSet<>(rule.getNodes());
 
 		addCorrUnionImplications(implications, rule, flexibleNodes);
 		addEdgeMultiplicityImplications(implications, rule);
 
-		for (TGGNode flexNode : flexibleNodes) {
+		for (TGGRuleNode flexNode : flexibleNodes) {
 			if (flexNode.getBindingType() == BindingType.CREATE)
 				continue;
 
@@ -262,7 +264,7 @@ public class OverlapUtil {
 		return overlaps;
 	}
 
-	private ILPOverlapSolver configureAndSolveILP(TGGRule rule, Collection<Implication> implications, TGGNode flexNode) {
+	private ILPOverlapSolver configureAndSolveILP(TGGRule rule, Collection<Implication> implications, TGGRuleNode flexNode) {
 		return new ILPOverlapSolver( //
 				rule.getNodes().stream().map(n -> new NodeCandidate(n, n)).collect(Collectors.toList()), //
 				rule.getEdges().stream().map(e -> new EdgeCandidate(e, e)).collect(Collectors.toList()), //
@@ -278,7 +280,7 @@ public class OverlapUtil {
 				for (int i = 0; i < idCounter; i++) {
 					double coefficient = 0;
 					if (id2nodeCdt.containsKey(i)) {
-						TGGNode currentNode = id2nodeCdt.get(i).originalNode;
+						TGGRuleNode currentNode = id2nodeCdt.get(i).originalNode();
 						if (flexNode.equals(currentNode) || currentNode.getBindingType() != flexNode.getBindingType())
 							coefficient = 1;
 						else
@@ -293,10 +295,10 @@ public class OverlapUtil {
 		};
 	}
 
-	private void addCorrUnionImplications(Collection<Implication> implications, TGGRule rule, Collection<TGGNode> flexibleNodes) {
-		Collection<TGGCorrespondence> corrNodes = rule.getNodes().stream() //
-				.filter(n -> n instanceof TGGCorrespondence) //
-				.map(n -> (TGGCorrespondence) n) //
+	private void addCorrUnionImplications(Collection<Implication> implications, TGGRule rule, Collection<TGGRuleNode> flexibleNodes) {
+		Collection<TGGRuleCorr> corrNodes = rule.getNodes().stream() //
+				.filter(n -> n instanceof TGGRuleCorr) //
+				.map(n -> (TGGRuleCorr) n) //
 				.collect(Collectors.toSet());
 
 		corrNodes.forEach(corr -> {
@@ -318,14 +320,14 @@ public class OverlapUtil {
 
 	private void addEdgeMultiplicityImplications(Collection<Implication> implications, TGGRule rule) {
 		rule.getEdges().stream() //
-				.filter(e -> e.getDomainType() == DomainType.SOURCE || e.getDomainType() == DomainType.TARGET) //
+				.filter(e -> e.getDomainType() == DomainType.SRC || e.getDomainType() == DomainType.TRG) //
 				.filter(e -> !isInterfaceEdge(e)) //
 				.forEach(edge -> {
 					EReference ref = edge.getType();
 					if (!ref.isMany() || ref.isContainment())
 						implications.add((problem, counter, node2cdts) -> {
-							Set<Integer> srcCdts = node2cdts.get(edge.getSource());
-							Set<Integer> trgCdts = node2cdts.get(edge.getTarget());
+							Set<Integer> srcCdts = node2cdts.get(edge.getSrcNode());
+							Set<Integer> trgCdts = node2cdts.get(edge.getTrgNode());
 							if (!ref.isMany())
 								for (int srcCdt : srcCdts) {
 									problem.addImplication("x" + srcCdt, trgCdts.stream().map(v -> "x" + v), //
@@ -340,35 +342,15 @@ public class OverlapUtil {
 				});
 	}
 
-	private boolean isInterfaceEdge(TGGEdge edge) {
+	private boolean isInterfaceEdge(TGGRuleEdge edge) {
 		if (edge.getBindingType() == BindingType.CREATE)
-			return ((TGGNode) edge.getSource()).getBindingType() == BindingType.CONTEXT || ((TGGNode) edge.getTarget()).getBindingType() == BindingType.CONTEXT;
+			return edge.getSrcNode().getBindingType() == BindingType.CONTEXT || edge.getTrgNode().getBindingType() == BindingType.CONTEXT;
 		return false;
 	}
 
 	@FunctionalInterface
 	private interface Implication {
-		void add(BinaryILPProblem ilpProblem, int nameCounter, Map<TGGNode, Set<Integer>> node2cdts);
-	}
-
-	class NodeCandidate {
-		public TGGNode originalNode;
-		public TGGNode replacingNode;
-
-		public NodeCandidate(TGGNode originalNode, TGGNode replacingNode) {
-			this.originalNode = originalNode;
-			this.replacingNode = replacingNode;
-		}
-	}
-
-	class EdgeCandidate {
-		public TGGEdge originalEdge;
-		public TGGEdge replacingEdge;
-
-		public EdgeCandidate(TGGEdge originalEdge, TGGEdge replacingEdge) {
-			this.originalEdge = originalEdge;
-			this.replacingEdge = replacingEdge;
-		}
+		void add(BinaryILPProblem ilpProblem, int nameCounter, Map<TGGRuleNode, Set<Integer>> node2cdts);
 	}
 
 	//// HIGHER ORDER ////
@@ -382,24 +364,26 @@ public class OverlapUtil {
 
 	private TGGOverlap createOverlap(TGGRule originalRule, TGGRule replacingRule, FixedMappings fixedMappings, boolean mapContext,
 			OverlapCategory category) {
-		ILPOverlapSolver overlapSolver = new ILPOverlapSolver( //
-				calculateNodeCandidates(originalRule, replacingRule, fixedMappings, mapContext), //
-				calculateEdgeCandidates(originalRule, replacingRule, fixedMappings, mapContext), //
-				options.ilpSolver());
+		Collection<OverlapCandidate> fixedCandidates = new LinkedList<>();
+		Collection<NodeCandidate> nodeCandidates = calculateNodeCandidates(originalRule, replacingRule, fixedMappings, mapContext, fixedCandidates);
+		Collection<EdgeCandidate> edgeCandidates = calculateEdgeCandidates(originalRule, replacingRule, fixedMappings, mapContext, fixedCandidates);
+		ILPOverlapSolver overlapSolver = new ILPOverlapSolver(nodeCandidates, edgeCandidates, fixedCandidates, options.ilpSolver());
 
 		return createOverlapFromILPSolution(originalRule, replacingRule, //
 				overlapSolver.solvedNodeCandidates(), overlapSolver.solvedEdgeCandidates(), category);
 	}
 
 	private List<NodeCandidate> calculateNodeCandidates(TGGRule originalRule, TGGRule replacingRule, FixedMappings fixedMappings,
-			boolean mapContext) {
+			boolean mapContext, Collection<OverlapCandidate> fixedCandidates) {
 		List<NodeCandidate> candidates = new ArrayList<>();
-		for (TGGNode originalNode : originalRule.getNodes()) {
+		for (TGGRuleNode originalNode : originalRule.getNodes()) {
 			if (fixedMappings.originalElts.contains(originalNode)) {
-				candidates.add(new NodeCandidate(originalNode, (TGGNode) fixedMappings.mappings.get(originalNode)));
+				NodeCandidate nodeCdt = new NodeCandidate(originalNode, (TGGRuleNode) fixedMappings.mappings.get(originalNode));
+				candidates.add(nodeCdt);
+				fixedCandidates.add(nodeCdt);
 				continue;
 			}
-			for (TGGNode replacingNode : replacingRule.getNodes()) {
+			for (TGGRuleNode replacingNode : replacingRule.getNodes()) {
 				if (fixedMappings.replacingElts.contains(replacingNode))
 					continue;
 				if (nodesMatch(originalNode, replacingNode, mapContext))
@@ -410,14 +394,16 @@ public class OverlapUtil {
 	}
 
 	private Collection<EdgeCandidate> calculateEdgeCandidates(TGGRule originalRule, TGGRule replacingRule, FixedMappings fixedMappings,
-			boolean mapContext) {
+			boolean mapContext, Collection<OverlapCandidate> fixedCandidates) {
 		Collection<EdgeCandidate> candidates = new ArrayList<>();
-		for (TGGEdge originalEdge : originalRule.getEdges()) {
+		for (TGGRuleEdge originalEdge : originalRule.getEdges()) {
 			if (fixedMappings.originalElts.contains(originalEdge)) {
-				candidates.add(new EdgeCandidate(originalEdge, (TGGEdge) fixedMappings.mappings.get(originalEdge)));
+				EdgeCandidate edgeCdt = new EdgeCandidate(originalEdge, (TGGRuleEdge) fixedMappings.mappings.get(originalEdge));
+				candidates.add(edgeCdt);
+				fixedCandidates.add(edgeCdt);
 				continue;
 			}
-			for (TGGEdge replacingEdge : replacingRule.getEdges()) {
+			for (TGGRuleEdge replacingEdge : replacingRule.getEdges()) {
 				if (fixedMappings.replacingElts.contains(replacingEdge))
 					continue;
 				if (edgesMatch(originalEdge, replacingEdge, mapContext))

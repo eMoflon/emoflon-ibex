@@ -53,6 +53,7 @@ public class ConcRepair implements TimeMeasurable {
 	protected AttributeRepairStrategy attributeRepairStrat;
 
 	protected boolean strategiesInitialized;
+	protected Runnable patternPersister = () -> {};
 
 	protected static final PatternType[] shortcutPatternTypes = //
 			{ PatternType.FWD, PatternType.BWD, PatternType.CC, PatternType.SRC, PatternType.TRG };
@@ -88,8 +89,10 @@ public class ConcRepair implements TimeMeasurable {
 
 	private ShortcutPatternProvider initShortcutPatternProvider(IbexOptions options) {
 		if (options.repair.usePGbasedSCruleCreation()) {
-			return new HigherOrderShortcutPatternProvider(options, //
-					opStrat.precedenceGraph(), opStrat.matchUtils(), shortcutPatternTypes, true);
+			ShortcutPatternProvider scpp = new HigherOrderShortcutPatternProvider(options, //
+					opStrat.precedenceGraph(), opStrat.matchUtils(), shortcutPatternTypes, false);
+			patternPersister = () -> scpp.persistShortcutRules();
+			return scpp;
 		} else {
 			return new BasicShortcutPatternProvider(options, shortcutPatternTypes, true);
 		}
@@ -176,6 +179,8 @@ public class ConcRepair implements TimeMeasurable {
 	}
 
 	private boolean filterRepairCandidates(ITGGMatch match) {
+		// we do not need to consider matches which are completely broken at one domain since these are not
+		// meant to be repaired but to be rolled back:
 		DeletionPattern pattern = opStrat.matchClassifier().get(match).getDeletionPattern();
 		DomainModification srcModType = pattern.getModType(DomainType.SOURCE, BindingType.CREATE);
 		DomainModification trgModType = pattern.getModType(DomainType.TARGET, BindingType.CREATE);
@@ -223,6 +228,7 @@ public class ConcRepair implements TimeMeasurable {
 			applPoint = new RepairApplicationPoint(classifiedMatch.getMatch(), PatternType.CC);
 			repairedMatches = shortcutRepairStrat.repair(applPoint);
 		} else if (DeletionType.shortcutPropCandidates.contains(delType)) {
+			// FIXME inplace attributes and filter NACS are not considered here!
 			PatternType type = delType == DeletionType.SRC_PARTLY_TRG_NOT ? PatternType.FWD : PatternType.BWD;
 			applPoint = new RepairApplicationPoint(classifiedMatch.getMatch(), type);
 			repairedMatches = shortcutRepairStrat.repair(applPoint);
@@ -288,6 +294,10 @@ public class ConcRepair implements TimeMeasurable {
 			opStrat.precedenceGraph().notifyAddedMatch(repairedMatch);
 			opStrat.precedenceGraph().notifyRemovedMatch(repairedMatch);
 		}
+	}
+	
+	public void terminate() {
+		patternPersister.run();
 	}
 
 	@Override

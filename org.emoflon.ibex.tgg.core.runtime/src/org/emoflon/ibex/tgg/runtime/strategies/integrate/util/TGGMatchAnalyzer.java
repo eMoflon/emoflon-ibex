@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.runtime.strategies.integrate.util;
+package org.emoflon.ibex.tgg.operational.strategies.integrate.util;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,20 +13,23 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.runtime.csp.IRuntimeTGGAttrConstrContainer;
-import org.emoflon.ibex.tgg.runtime.csp.RuntimeTGGAttributeConstraintContainer;
-import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.runtime.strategies.integrate.classification.DeletionPattern;
-import org.emoflon.ibex.tgg.runtime.strategies.integrate.classification.DomainModification;
-import org.emoflon.ibex.tgg.runtime.strategies.integrate.modelchange.AttributeChange;
-import org.emoflon.ibex.tgg.runtime.strategies.modules.TGGResourceHandler;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
+import org.emoflon.ibex.tgg.operational.csp.IRuntimeTGGAttrConstrContainer;
+import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintContainer;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DeletionPattern;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DomainModification;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.modelchange.AttributeChange;
+import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
+import org.emoflon.ibex.tgg.util.TGGInplaceAttrExprUtil;
 
+import language.DomainType;
+import language.TGGAttributeConstraint;
 import language.TGGAttributeExpression;
+import language.TGGInplaceAttributeExpression;
 import language.TGGParamValue;
+import language.TGGRuleEdge;
+import language.TGGRuleElement;
+import language.TGGRuleNode;
 
 public class TGGMatchAnalyzer {
 
@@ -63,8 +66,8 @@ public class TGGMatchAnalyzer {
 		return false;
 	}
 
-	private boolean isEdgeDeleted(TGGEdge edge, EMFEdge emfEdge, Set<TGGRuleElement> deletedElements) {
-		if (deletedElements.contains(edge.getSource()) || deletedElements.contains(edge.getTarget()))
+	private boolean isEdgeDeleted(TGGRuleEdge edge, EMFEdge emfEdge, Set<TGGRuleElement> deletedElements) {
+		if (deletedElements.contains(edge.getSrcNode()) || deletedElements.contains(edge.getTrgNode()))
 			return true;
 		Object value = emfEdge.getSource().eGet(emfEdge.getType());
 		if (value == null)
@@ -98,11 +101,11 @@ public class TGGMatchAnalyzer {
 		return util.integrate.filterNACMatchCollector().getFilterNACMatches(util.match).stream() //
 				.collect(Collectors.toMap( //
 						fnm -> fnm, //
-						fnm -> fnm.getType() == PatternType.FILTER_NAC_SRC ? DomainType.SOURCE : DomainType.TARGET) //
+						fnm -> fnm.getType() == PatternType.FILTER_NAC_SRC ? DomainType.SRC : DomainType.TRG) //
 				);
 	}
 
-	public Set<ConstrainedAttributeChanges> analyzeAttributeChanges() {
+	public Set<ConstrainedAttributeChanges> analyzeConstrainedAttributeChanges() {
 		Set<ConstrainedAttributeChanges> constrainedAttrChanges = new HashSet<>();
 
 		for (TGGAttributeConstraint constr : util.rule.getAttributeConditionLibrary().getTggAttributeConstraints()) {
@@ -130,6 +133,33 @@ public class TGGMatchAnalyzer {
 		}
 
 		return constrainedAttrChanges;
+	}
+
+	public Map<InplAttributeChange, DomainType> analyzeInplaceAttributeChanges() {
+		Set<InplAttributeChange> inplAttrChanges = new HashSet<>();
+
+		Map<String, EObject> nodeName2eObject = util.getNodeToEObject().entrySet().stream() //
+				.collect(Collectors.toMap(e -> e.getKey().getName(), e -> e.getValue()));
+		for (TGGRuleNode node : util.rule.getNodes()) {
+			EObject eObject = util.getEObject(node);
+			for (TGGInplaceAttributeExpression attrExpr : node.getAttrExpr()) {
+				if (!TGGInplaceAttrExprUtil.checkInplaceAttributeCondition(attrExpr, eObject, nodeName2eObject)) {
+					Set<AttributeChange> attrChanges = util.integrate.generalModelChanges().getAttributeChanges(eObject);
+					for (AttributeChange attrChange : attrChanges) {
+						if (attrChange.getAttribute().equals(attrExpr.getAttribute())) {
+							inplAttrChanges.add(new InplAttributeChange(node, attrExpr, attrChange));
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		return inplAttrChanges.stream() //
+				.collect(Collectors.toMap( //
+						ac -> ac, //
+						ac -> ac.node.getDomainType() //
+				));
 	}
 
 	private IRuntimeTGGAttrConstrContainer getRuntimeAttrConstraint(TGGAttributeConstraint constraint, ITGGMatch match) {
@@ -166,6 +196,34 @@ public class TGGMatchAnalyzer {
 				b.append(ac.getNewValue());
 				b.append("') ");
 			});
+			return b.toString();
+		}
+	}
+
+	public class InplAttributeChange {
+		public final TGGRuleNode node;
+		public final TGGInplaceAttributeExpression attrExpr;
+		public final AttributeChange attrChange;
+
+		public InplAttributeChange(TGGRuleNode node, TGGInplaceAttributeExpression attrExpr, AttributeChange attrChange) {
+			this.node = node;
+			this.attrExpr = attrExpr;
+			this.attrChange = attrChange;
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder b = new StringBuilder();
+			b.append(node.getName());
+			b.append(":");
+			b.append(node.getType().getName());
+			b.append("#");
+			b.append(attrExpr.getAttribute().getName());
+			b.append(", '");
+			b.append(attrChange.getOldValue());
+			b.append("'->'");
+			b.append(attrChange.getNewValue());
+			b.append("'");
 			return b.toString();
 		}
 	}

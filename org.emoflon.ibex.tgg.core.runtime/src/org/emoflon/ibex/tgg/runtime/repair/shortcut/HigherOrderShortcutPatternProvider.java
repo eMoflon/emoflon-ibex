@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.runtime.repair.shortcut;
+package org.emoflon.ibex.tgg.operational.repair.shortcut;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -9,28 +9,30 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
-import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRule;
-import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRule.ComponentSpecificRuleElement;
-import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRule.HigherOrderRuleComponent;
-import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRuleFactory;
-import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.ShortcutApplicationPoint;
-import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.OperationalShortcutRule;
-import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.ShortcutRule;
-import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.LocalPatternSearch;
-import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.OverlapCategory;
-import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.OverlapUtil.FixedMappings;
-import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.TGGOverlap;
-import org.emoflon.ibex.tgg.runtime.repair.strategies.RepairApplicationPoint;
-import org.emoflon.ibex.tgg.runtime.strategies.integrate.matchcontainer.PrecedenceGraph;
-import org.emoflon.ibex.tgg.runtime.strategies.integrate.matchcontainer.PrecedenceNode;
-import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.TGGMatchUtil;
-import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.TGGMatchUtilProvider;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
+import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRule;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRule.ComponentSpecificRuleElement;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRule.HigherOrderRuleComponent;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRuleFactory;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.ShortcutApplicationPoint;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.OperationalShortcutRule;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.search.LocalPatternSearch;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.util.OverlapCategory;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCPersistence;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.util.OverlapUtil.FixedMappings;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.util.TGGOverlap;
+import org.emoflon.ibex.tgg.operational.repair.strategies.RepairApplicationPoint;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceGraph;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceNode;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtilProvider;
 
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
+
+import language.DomainType;
+import language.TGGRuleElement;
 
 public class HigherOrderShortcutPatternProvider extends BasicShortcutPatternProvider {
 
@@ -43,8 +45,8 @@ public class HigherOrderShortcutPatternProvider extends BasicShortcutPatternProv
 	private final Map<String, Map<String, Map<PatternType, Collection<OperationalShortcutRule>>>> higherOrderShortcutPatterns;
 
 	public HigherOrderShortcutPatternProvider(IbexOptions options, PrecedenceGraph pg, TGGMatchUtilProvider mup, //
-			PatternType[] types, boolean persistShortcutRules) {
-		super(options, types, persistShortcutRules);
+			PatternType[] types, boolean initiallyPersistShortcutRules) {
+		super(options, types, initiallyPersistShortcutRules);
 
 		this.mup = mup;
 		this.ruleFactory = new HigherOrderTGGRuleFactory(options, pg, mup);
@@ -169,6 +171,31 @@ public class HigherOrderShortcutPatternProvider extends BasicShortcutPatternProv
 		TGGRuleElement element = mu.getElement(sharingObject);
 		ComponentSpecificRuleElement componentSpecRuleElt = component.getComponentSpecificRuleElement(element);
 		return componentSpecRuleElt.getRespectiveHigherOrderElement();
+	}
+
+	@Override
+	public void persistShortcutRules() {
+		SCPersistence persistence = new SCPersistence(options);
+
+		LinkedList<ShortcutRule> allShortcutRules = new LinkedList<>(basicShortcutRules);
+		allShortcutRules.addAll( //
+				higherOrderShortcutRules.values().stream() //
+				.flatMap(m -> m.values().stream()) //
+				.flatMap(c -> c.stream()) //
+				.toList() //
+		);
+
+		persistence.saveSCRules(allShortcutRules);
+		Map<String, Collection<OperationalShortcutRule>> fwdOpSCRs = basicShortcutPatterns.get(PatternType.FWD);
+		if (fwdOpSCRs != null) {
+			persistence.saveOperationalFWDSCRules(fwdOpSCRs.values().stream() //
+					.flatMap(c -> c.stream()).collect(Collectors.toList()));
+		}
+		Map<String, Collection<OperationalShortcutRule>> bwdOpSCRs = basicShortcutPatterns.get(PatternType.BWD);
+		if (bwdOpSCRs != null) {
+			persistence.saveOperationalBWDSCRules(bwdOpSCRs.values().stream() //
+					.flatMap(c -> c.stream()).collect(Collectors.toList()));
+		}
 	}
 
 }

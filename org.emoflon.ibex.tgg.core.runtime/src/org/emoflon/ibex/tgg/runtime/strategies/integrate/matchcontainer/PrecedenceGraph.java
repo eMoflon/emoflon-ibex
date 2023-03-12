@@ -314,6 +314,12 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 			gFactory.getGreenTrgNodesInRule().forEach(n -> translatedElts.add(match.get(n.getName())));
 			gFactory.getGreenTrgEdgesInRule().forEach(e -> translatedElts.add(getRuntimeEdge(match, e)));
 		}
+		if (match.getType() == PatternType.CONSISTENCY) {
+			gFactory.getBlackCorrNodesInRule().forEach(n -> requiredElts.add(match.get(n.getName())));
+			gFactory.getBlackCorrEdgesInRule().forEach(e -> requiredElts.add(getRuntimeEdge(match, e)));
+			gFactory.getGreenCorrNodesInRule().forEach(n -> translatedElts.add(match.get(n.getName())));
+			gFactory.getGreenCorrEdgesInRule().forEach(e -> translatedElts.add(getRuntimeEdge(match, e)));
+		}
 
 		// Create node
 		PrecedenceNode node = createNode(match);
