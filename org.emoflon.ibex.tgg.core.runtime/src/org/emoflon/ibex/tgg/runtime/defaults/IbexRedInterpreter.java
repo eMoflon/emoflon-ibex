@@ -4,8 +4,11 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
+
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 import org.emoflon.ibex.tgg.runtime.IRedInterpreter;
@@ -63,7 +66,12 @@ public class IbexRedInterpreter implements IRedInterpreter {
 		Set<EMFEdge> edgesToRevoke = new HashSet<EMFEdge>();
 
 		// Collect created edges to revoke.
-		operationalRule.getSrcTrgEdgesCreatedByPattern().forEach(e -> {
+		operationalRule.getCreateSource().getEdges().forEach(e -> {
+			EMFEdge runtimeEdge = getRuntimeEdge(match, e);
+			edgesToRevoke.add(new EMFEdge(runtimeEdge.getSource(), runtimeEdge.getTarget(), runtimeEdge.getType()));
+		});
+		
+		operationalRule.getCreateTarget().getEdges().forEach(e -> {
 			EMFEdge runtimeEdge = getRuntimeEdge(match, e);
 			edgesToRevoke.add(new EMFEdge(runtimeEdge.getSource(), runtimeEdge.getTarget(), runtimeEdge.getType()));
 		});
@@ -83,11 +91,17 @@ public class IbexRedInterpreter implements IRedInterpreter {
 	private Set<EObject> getNodesToRevoke(final ITGGMatch match, final TGGOperationalRule operationalRule) {
 		Set<EObject> nodesToRevoke = new HashSet<EObject>();
 
-		operationalRule.getSrcTrgNodesCreatedByPattern().stream() //
-				.map(TGGRuleNode::getName) //
-				.map(match::get) //
-				.map(EObject.class::cast) //
-				.forEach(n -> nodesToRevoke.add(n));
+		operationalRule.getCreateSource().getNodes().stream() //
+			.map(IBeXNode::getName) //
+			.map(match::get) //
+			.map(EObject.class::cast) //
+			.forEach(n -> nodesToRevoke.add(n));
+		
+		operationalRule.getCreateTarget().getNodes().stream() //
+			.map(IBeXNode::getName) //
+			.map(match::get) //
+			.map(EObject.class::cast) //
+			.forEach(n -> nodesToRevoke.add(n));
 
 		return nodesToRevoke;
 	}
@@ -104,8 +118,8 @@ public class IbexRedInterpreter implements IRedInterpreter {
 		Set<EObject> nodesToRevoke = new HashSet<EObject>();
 		Set<EMFEdge> edgesToRevoke = new HashSet<EMFEdge>();
 
-		operationalRule.getCorrNodes().stream() //
-				.map(TGGNode::getName) //
+		operationalRule.getCreateCorrespondence().getNodes().stream() //
+				.map(IBeXNode::getName) //
 				.map(match::get) //
 				.map(EObject.class::cast) //
 				.forEach(corr -> revokeCorr(corr, nodesToRevoke, edgesToRevoke));

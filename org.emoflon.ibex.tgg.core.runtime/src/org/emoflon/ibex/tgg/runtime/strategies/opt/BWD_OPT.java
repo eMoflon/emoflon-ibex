@@ -9,14 +9,12 @@ import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
 import org.emoflon.ibex.common.engine.IMatch;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.runtime.patterns.IGreenPattern;
-import org.emoflon.ibex.util.config.IbexOptions;
-
-import language.TGGRuleCorr;
-import language.TGGRuleNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 
 public class BWD_OPT extends OPT {
 
@@ -30,11 +28,13 @@ public class BWD_OPT extends OPT {
 		for (int v : chooseTGGRuleApplications()) {
 			int id = v < 0 ? -v : v;
 			ITGGMatch comatch = idToMatch.get(id);
+			TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(matchIdToRuleName.get(id));
+
 			if (v < 0) {
-				for (TGGRuleCorr createdCorr : greenFactories.get(matchIdToRuleName.get(id)).getGreenCorrNodesInRule())
+				for (IBeXNode createdCorr : operationalRule.getCreateCorrespondence().getNodes())
 					objectsToDelete.add((EObject) comatch.get(createdCorr.getName()));
 
-				for (TGGRuleNode createdSrcNode : greenFactories.get(matchIdToRuleName.get(id)).getGreenSrcNodesInRule())
+				for (IBeXNode createdSrcNode : operationalRule.getCreateSource().getNodes())
 					objectsToDelete.add((EObject) comatch.get(createdSrcNode.getName()));
 
 				objectsToDelete.addAll(getRuleApplicationNodes(comatch));
@@ -46,7 +46,7 @@ public class BWD_OPT extends OPT {
 	}
 
 	@Override
-	protected void prepareMarkerCreation(IGreenPattern greenPattern, ITGGMatch comatch, String ruleName) {
+	protected void prepareMarkerCreation(TGGOperationalRule operationalRule, ITGGMatch comatch, String ruleName) {
 		idToMatch.put(idCounter, comatch);
 		matchIdToRuleName.put(idCounter, ruleName);
 		matchToWeight.put(idCounter, this.getWeightForMatch(comatch, ruleName));
@@ -88,7 +88,10 @@ public class BWD_OPT extends OPT {
 
 	@Override
 	public double getDefaultWeightForMatch(IMatch comatch, String ruleName) {
-		return greenFactories.get(ruleName).getGreenTrgEdgesInRule().size() + greenFactories.get(ruleName).getGreenTrgNodesInRule().size();
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(ruleName);
+
+		return operationalRule.getCreateTarget().getNodes().size() +
+				operationalRule.getCreateTarget().getEdges().size();
 	}
 
 	public void backward() throws IOException {

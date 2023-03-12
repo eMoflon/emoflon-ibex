@@ -21,6 +21,7 @@ import org.emoflon.ibex.tgg.runtime.monitoring.AbstractIbexObservable;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.IbexExecutable;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.MatchDistributor;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.MatchHandler;
+import org.emoflon.ibex.tgg.runtime.strategies.modules.RuleHandler;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.TGGResourceHandler;
 import org.emoflon.ibex.tgg.runtime.updatepolicy.IUpdatePolicy;
 import org.emoflon.ibex.tgg.runtime.updatepolicy.NextMatchUpdatePolicy;
@@ -53,6 +54,8 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	protected TGGResourceHandler resourceHandler;
 
 	protected MatchDistributor matchDistributor;
+	
+	protected RuleHandler ruleHandler;
 
 	/***** Constructors *****/
 
@@ -66,6 +69,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		initializeAdditionalModules(options);
 
 		TimeRegistry.register(this);
+		this.ruleHandler = options.tgg.ruleHandler();
 	}
 
 	private void initializeBasicModules(IbexOptions options, IUpdatePolicy policy) {
@@ -180,7 +184,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 			return Optional.empty();
 		}
 
-		TGGOperationalRule operationRule = options.tgg.ruleHandler().getOperationalRule(ruleName);
+		TGGOperationalRule operationRule = ruleHandler.getOperationalRule(ruleName);
 		
 		LoggerConfig.log(LoggerConfig.log_ruleApplication(),
 				() -> "Rule application: attempting to apply " + match.getPatternName() + "(" + match.hashCode() + ") with " //

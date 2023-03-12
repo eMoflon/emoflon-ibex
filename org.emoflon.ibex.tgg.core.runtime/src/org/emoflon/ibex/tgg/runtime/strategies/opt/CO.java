@@ -11,9 +11,10 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.engine.IMatch;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.updatepolicy.NextMatchUpdatePolicy;
-import org.emoflon.ibex.util.config.IbexOptions;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 
 public class CO extends CC {
 
@@ -45,8 +46,10 @@ public class CO extends CC {
 	 */
 	@Override
 	public double getDefaultWeightForMatch(IMatch comatch, String ruleName) {
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(ruleName);
+
 		return super.getDefaultWeightForMatch(comatch, ruleName)
-				+ greenFactories.get(ruleName).getGreenCorrNodesInRule().size();
+				+operationalRule.getCreateCorrespondence().getNodes().size();
 	}
 
 	@Override

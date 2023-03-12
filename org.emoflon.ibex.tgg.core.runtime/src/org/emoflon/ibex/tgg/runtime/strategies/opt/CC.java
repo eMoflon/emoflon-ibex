@@ -18,7 +18,6 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.updatepolicy.IUpdatePolicy;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 
 public class CC extends OPT {
@@ -33,7 +32,7 @@ public class CC extends OPT {
 
 	@Override
 	public double getDefaultWeightForMatch(IMatch comatch, String ruleName) {
-		var operationalRule = options.tgg.ruleHandler().getOperationalRule(ruleName);
+		var operationalRule = ruleHandler.getOperationalRule(ruleName);
 		return operationalRule.getCreateSource().getNodes().size() + 
 				operationalRule.getCreateSource().getEdges().size() + 
 				operationalRule.getCreateTarget().getNodes().size() + 
@@ -66,7 +65,7 @@ public class CC extends OPT {
 		for (int v : chooseTGGRuleApplications()) {
 			int id = v < 0 ? -v : v;
 			ITGGMatch comatch = idToMatch.get(id);
-			TGGOperationalRule operationalRule = options.tgg.ruleHandler().getOperationalRule(matchIdToRuleName.get(id));
+			TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(matchIdToRuleName.get(id));
 			if (v < 0) {
 				for (IBeXNode createdCorr : operationalRule.getCreateCorrespondence().getNodes())
 					objectsToDelete.add((EObject) comatch.get(createdCorr.getName()));

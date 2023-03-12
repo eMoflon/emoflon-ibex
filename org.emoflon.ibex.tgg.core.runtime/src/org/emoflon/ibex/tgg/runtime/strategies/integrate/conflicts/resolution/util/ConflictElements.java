@@ -12,8 +12,7 @@ import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.Conflict;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.EltFilter;
-
-import language.DomainType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 
 public class ConflictElements {
 

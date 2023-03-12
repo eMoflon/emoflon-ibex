@@ -14,6 +14,8 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.runtime.strategies.OperationalStrategy;
+import org.emoflon.ibex.tgg.runtime.strategies.modules.RuleHandler;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 import org.emoflon.ibex.tgg.util.benchmark.TimeMeasurable;
 import org.emoflon.ibex.tgg.util.benchmark.TimeRegistry;
 import org.emoflon.ibex.tgg.util.benchmark.Timer;
@@ -23,13 +25,15 @@ public class MarkingMatchContainer implements IMatchContainer, TimeMeasurable {
 
 	protected final Times times = new Times();
 
-	protected OperationalStrategy opStrat;
+	protected OperationalStrategy strategy;
+	protected RuleHandler ruleHandler;
 
 	protected Set<EObject> markedElements = cfactory.createObjectSet();
 	protected Set<ITGGMatch> matches = cfactory.createLinkedObjectSet();
 
 	public MarkingMatchContainer(OperationalStrategy opStrat) {
-		this.opStrat = opStrat;
+		this.strategy = opStrat;
+		this.ruleHandler = opStrat.getOptions().tgg.ruleHandler();
 		TimeRegistry.register(this);
 	}
 
@@ -77,9 +81,10 @@ public class MarkingMatchContainer implements IMatchContainer, TimeMeasurable {
 		Iterator<ITGGMatch> it = matches.iterator();
 		while (it.hasNext()) {
 			ITGGMatch nextMatch = it.next();
-			IGreenPatternFactory gFactory = opStrat.getGreenFactories().get(nextMatch.getRuleName());
-			if (checkPositiveRAs(nextMatch, gFactory)) {
-				if (checkNegativeRAs(nextMatch, gFactory)) {
+			TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(nextMatch.getRuleName());
+			
+			if (checkPositiveRAs(nextMatch, operationalRule)) {
+				if (checkNegativeRAs(nextMatch, operationalRule)) {
 					match = nextMatch;
 					break;
 				} else {
@@ -103,9 +108,9 @@ public class MarkingMatchContainer implements IMatchContainer, TimeMeasurable {
 		Collection<ITGGMatch> neverApplicable = new LinkedList<>();
 
 		Set<ITGGMatch> nextMatches = matches.stream() //
-				.filter(m -> checkPositiveRAs(m, opStrat.getGreenFactories().get(m.getRuleName()))) //
+				.filter(m -> checkPositiveRAs(m, strategy.getGreenFactories().get(m.getRuleName()))) //
 				.filter(m -> {
-					if (checkNegativeRAs(m, opStrat.getGreenFactories().get(m.getRuleName())))
+					if (checkNegativeRAs(m, strategy.getGreenFactories().get(m.getRuleName())))
 						return true;
 					else {
 						neverApplicable.add(m);
@@ -141,7 +146,7 @@ public class MarkingMatchContainer implements IMatchContainer, TimeMeasurable {
 	}
 
 	private boolean removeConsistencyMatch(ITGGMatch match) {
-		IGreenPatternFactory gFactory = opStrat.getGreenFactories().get(match.getRuleName());
+		IGreenPatternFactory gFactory = strategy.getGreenFactories().get(match.getRuleName());
 
 		gFactory.getGreenSrcNodesInRule().stream() //
 				.map(n -> (EObject) match.get(n.getName())) //
@@ -154,7 +159,7 @@ public class MarkingMatchContainer implements IMatchContainer, TimeMeasurable {
 	}
 
 	private void consistencyMatchApplied(ITGGMatch match) {
-		IGreenPatternFactory gFactory = opStrat.getGreenFactories().get(match.getRuleName());
+		IGreenPatternFactory gFactory = strategy.getGreenFactories().get(match.getRuleName());
 
 		gFactory.getGreenSrcNodesInRule().stream() //
 				.map(n -> (EObject) match.get(n.getName())) //

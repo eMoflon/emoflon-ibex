@@ -14,7 +14,6 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.runtime.patterns.IGreenPattern;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.ShortcutRule;
 import org.emoflon.ibex.tgg.runtime.repair.strategies.ShortcutRepairStrategy.RepairableMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.INTEGRATE;
@@ -24,15 +23,15 @@ import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.resolution.ut
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.modelchange.ModelChangeUtil;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.EltFilter;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.TGGMatchUtil;
+import org.emoflon.ibex.tgg.runtime.strategies.modules.RuleHandler;
 import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuleApplication;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.util.TGGEdgeUtil;
 import org.emoflon.ibex.tgg.util.TGGFilterUtil;
 import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
-
-import language.TGGRuleEdge;
-import language.TGGRuleNode;
 
 public abstract class Conflict {
 
@@ -41,6 +40,8 @@ public abstract class Conflict {
 
 	protected Set<ITGGMatch> conflictMatches;
 	protected Set<ITGGMatch> scopeMatches;
+	
+	protected RuleHandler ruleHandler;
 
 	public Conflict(ConflictContainer container) {
 		this.container = container;
@@ -49,6 +50,8 @@ public abstract class Conflict {
 		conflictMatches = null;
 		scopeMatches = null;
 
+		ruleHandler = container.integrate.getOptions().tgg.ruleHandler();
+		
 		LoggerConfig.log(LoggerConfig.log_conflicts(), () -> "Detected conflict: " + printConflictIdentification());
 	}
 
@@ -129,7 +132,7 @@ public abstract class Conflict {
 		Set<EMFEdge> deletedCrossEdges = new HashSet<>();
 
 		// Collect elements to restore
-		EltFilter filter = new EltFilter().create().domains(domain, DomainType.CORR);
+		EltFilter filter = new EltFilter().create().domains(domain, DomainType.CORRESPONDENCE);
 		TGGMatchUtil matchUtil = integrate().matchUtils().get(classifiedMatch.getMatch());
 		matchUtil.getEMFEdges(filter).forEach(edge -> {
 			if (!integrate().generalModelChanges().isDeleted(edge))
@@ -137,9 +140,9 @@ public abstract class Conflict {
 			if (edge.getType().isContainment()) {
 				deletedContainmentEdges.add(edge);
 			} else {
-				TGGRuleEdge tggEdge = classifiedMatch.util().getEdge(edge);
+				TGGEdge tggEdge = classifiedMatch.util().getEdge(edge);
 				// Restore only those corr edges that point to the restored domain
-				if (tggEdge.getDomainType() != DomainType.CORR || tggEdge.getTrgNode().getDomainType() == domain)
+				if (tggEdge.getDomainType() != DomainType.CORRESPONDENCE || ((TGGNode) tggEdge.getTarget()).getDomainType() == domain)
 					deletedCrossEdges.add(edge);
 			}
 		});
@@ -150,7 +153,7 @@ public abstract class Conflict {
 		TGGRuleApplication ruleApplication = classifiedMatch.getMatch().getRuleApplicationNode();
 		integrate().generalModelChanges().getDeletedEdges(ruleApplication).stream() //
 				.filter(edge -> {
-					TGGRuleNode trgNode = classifiedMatch.util().getNode(edge.getTarget());
+					TGGNode trgNode = classifiedMatch.util().getNode(edge.getTarget());
 					return trgNode.getDomainType() == domain;
 				}) //
 				.forEach(edge -> deletedCrossEdges.add(edge));

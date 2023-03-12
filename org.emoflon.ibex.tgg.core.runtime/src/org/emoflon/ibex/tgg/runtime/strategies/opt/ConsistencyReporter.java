@@ -11,15 +11,18 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.runtime.strategies.OperationalStrategy;
+import org.emoflon.ibex.tgg.runtime.strategies.modules.RuleHandler;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.TGGResourceHandler;
 import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuleApplication;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 import org.emoflon.smartemf.runtime.util.SmartEMFUtil;
 
 public class ConsistencyReporter {
@@ -33,10 +36,12 @@ public class ConsistencyReporter {
 	private Collection<EMFEdge> inconsistentTrgEdges;
 
 	private TGGResourceHandler resourceHandler;
+	private RuleHandler ruleHandler;
 
 	public ConsistencyReporter(OperationalStrategy strategy) {
 		this.strategy = strategy;
 		resourceHandler = strategy.getOptions().resourceHandler();
+		ruleHandler = strategy.getOptions().tgg.ruleHandler();
 	}
 
 	public void init(OperationalStrategy strategy) {
@@ -124,10 +129,14 @@ public class ConsistencyReporter {
 
 		protocol.getContents().forEach(c -> {
 			if (c instanceof TGGRuleApplication ra) {
+
 				String ruleName = ra.eClass().getName().substring(0, ra.eClass().getName().length() - 8);
-				Collection<TGGEdge> specificationEdges = domain == DomainType.SOURCE ? strategy.getGreenFactories().get(ruleName).getGreenSrcEdgesInRule()
-						: strategy.getGreenFactories().get(ruleName).getGreenTrgEdgesInRule();
-				for (TGGEdge specificationEdge : specificationEdges) {
+				TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(ruleName);
+
+				Collection<IBeXEdge> specificationEdges = domain == DomainType.SOURCE ? operationalRule.getCreateSource().getEdges()
+						: operationalRule.getCreateTarget().getEdges();
+				
+				for (IBeXEdge specificationEdge : specificationEdges) {
 					EObject srcOfEdge = TGGPatternUtil.getNode(ra, ((TGGNode) specificationEdge.getSource()).getBindingType(), domain,
 							specificationEdge.getSource().getName());
 					EObject trgOfEdge = TGGPatternUtil.getNode(ra, ((TGGNode) specificationEdge.getTarget()).getBindingType(), domain,

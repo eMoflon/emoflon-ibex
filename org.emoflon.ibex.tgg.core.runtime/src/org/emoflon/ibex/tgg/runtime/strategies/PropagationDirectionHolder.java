@@ -7,8 +7,7 @@ import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.patterns.BWDGreenPattern;
 import org.emoflon.ibex.tgg.runtime.patterns.FWDGreenPattern;
 import org.emoflon.ibex.tgg.runtime.patterns.IGreenPattern;
-
-import language.TGGRuleNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 
 public class PropagationDirectionHolder {
 
@@ -18,10 +17,10 @@ public class PropagationDirectionHolder {
 
 		private final PatternType patternType;
 		private final Class<? extends IGreenPattern> greenPatternClass;
-		private final Function<IGreenPattern, Collection<TGGRuleNode>> nodesInOutputDomain;
+		private final Function<IGreenPattern, Collection<TGGNode>> nodesInOutputDomain;
 
 		private PropagationDirection(PatternType patternType, Class<? extends IGreenPattern> greenPatternClass,
-				Function<IGreenPattern, Collection<TGGRuleNode>> nodesInOutputDomain) {
+				Function<IGreenPattern, Collection<TGGNode>> nodesInOutputDomain) {
 			this.patternType = patternType;
 			this.greenPatternClass = greenPatternClass;
 			this.nodesInOutputDomain = nodesInOutputDomain;
@@ -35,7 +34,7 @@ public class PropagationDirectionHolder {
 			return greenPatternClass;
 		}
 
-		public Collection<TGGRuleNode> getNodesInOutputDomain(IGreenPattern greenPattern) {
+		public Collection<TGGNode> getNodesInOutputDomain(IGreenPattern greenPattern) {
 			return nodesInOutputDomain.apply(greenPattern);
 		}
 

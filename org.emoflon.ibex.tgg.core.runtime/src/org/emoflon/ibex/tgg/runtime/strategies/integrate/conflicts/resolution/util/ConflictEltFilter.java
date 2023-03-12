@@ -1,8 +1,5 @@
 package org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.resolution.util;
 
-import static language.DomainType.CORR;
-import static language.DomainType.SRC;
-import static language.DomainType.TRG;
 import static org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.resolution.util.ConflictEltModification.CREATED;
 import static org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.resolution.util.ConflictEltModification.DELETED;
 import static org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.resolution.util.ConflictEltModification.INTACT;
@@ -14,8 +11,7 @@ import java.util.Set;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.Conflict;
-
-import language.DomainType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 
 /**
  * This class provides a configurable filter used to retrieve the elements involved in a
@@ -33,7 +29,7 @@ import language.DomainType;
 public class ConflictEltFilter {
 
 	//// DEFAULTS ////
-	static final Set<DomainType> default_domainTypes = new HashSet<>(Arrays.asList(SRC, CORR, TRG));
+	static final Set<DomainType> default_domainTypes = new HashSet<>(Arrays.asList(DomainType.SOURCE, DomainType.CORRESPONDENCE, DomainType.TARGET));
 	static final Set<ConflictEltModification> default_modifications = new HashSet<>(Arrays.asList(CREATED, DELETED, INTACT));
 
 	Set<DomainType> domainTypes;
@@ -79,7 +75,7 @@ public class ConflictEltFilter {
 	 * @return the filter object itself
 	 */
 	public ConflictEltFilter src() {
-		this.domainTypes.add(SRC);
+		this.domainTypes.add(DomainType.SOURCE);
 		return this;
 	}
 
@@ -89,7 +85,7 @@ public class ConflictEltFilter {
 	 * @return the filter object itself
 	 */
 	public ConflictEltFilter trg() {
-		this.domainTypes.add(TRG);
+		this.domainTypes.add(DomainType.TARGET);
 		return this;
 	}
 
@@ -99,7 +95,7 @@ public class ConflictEltFilter {
 	 * @return the filter object itself
 	 */
 	public ConflictEltFilter corr() {
-		this.domainTypes.add(CORR);
+		this.domainTypes.add(DomainType.CORRESPONDENCE);
 		return this;
 	}
 

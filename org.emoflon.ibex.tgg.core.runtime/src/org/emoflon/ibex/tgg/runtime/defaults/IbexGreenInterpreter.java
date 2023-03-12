@@ -28,6 +28,7 @@ import org.emoflon.ibex.tgg.runtime.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.SCMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.OperationalStrategy;
+import org.emoflon.ibex.tgg.runtime.strategies.modules.RuleHandler;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.TGGResourceHandler;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
@@ -36,6 +37,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
+import org.emoflon.ibex.tgg.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 
 /**
@@ -53,12 +55,14 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	private int numOfCreatedNodes = 0;
 	private int numOfCreatedCorrNodes = 0;
 	private IbexOptions options;
+	private RuleHandler ruleHandler;
 	
 	private TGGResourceHandler resourceHandler;
 
 	public IbexGreenInterpreter(OperationalStrategy operationalStrategy) {
 		options = operationalStrategy.getOptions();
 		resourceHandler = options.resourceHandler();
+		ruleHandler = options.tgg.ruleHandler();
 	}
 
 	public void createNonCorrNode(ITGGMatch comatch, TGGNode node, Resource nodeResource) {
@@ -379,6 +383,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		EClass type = (EClass) corrPackage.getEClassifier(TGGModelUtils.getMarkerTypeName(ruleName));
 		
 		EObject ra = EcoreUtil.create(type);
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(ruleName);
 		
 		for (TGGNode n : factory.getGreenSrcNodesInRule()) {
 			EReference ref;

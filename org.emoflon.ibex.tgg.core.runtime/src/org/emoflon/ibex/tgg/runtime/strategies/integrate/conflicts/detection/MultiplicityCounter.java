@@ -9,19 +9,19 @@ import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.EltFilter;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.MatchConsumer;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.MatchDistributor;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 import org.emoflon.ibex.tgg.util.TGGFilterUtil;
-
-import language.BindingType;
-import language.DomainType;
-import language.TGGRule;
-import language.TGGRuleEdge;
-import language.TGGRuleNode;
 
 public class MultiplicityCounter extends MatchConsumer {
 
@@ -51,13 +51,13 @@ public class MultiplicityCounter extends MatchConsumer {
 		outgoingEdge2removedMatches2numOfEdges = new HashMap<>();
 
 		for (TGGRule rule : options.tgg.getFlattenedConcreteTGGRules()) {
-			for (TGGRuleEdge greenEdge : TGGFilterUtil.filterEdges(rule.getEdges(), BindingType.CREATE)) {
-				if (greenEdge.getDomainType() == DomainType.CORR)
+			for (TGGEdge greenEdge : TGGFilterUtil.filterEdges(rule.getEdges(), BindingType.CREATE)) {
+				if (greenEdge.getDomainType() == DomainType.CORRESPONDENCE)
 					continue;
 
-				if (greenEdge.getSrcNode().getBindingType() == BindingType.CONTEXT) {
+				if (((TGGNode) greenEdge.getSource()).getBindingType() == BindingType.CONTEXT) {
 					if (isViolableReference(greenEdge.getType()))
-						storeReference(rule, greenEdge.getSrcNode(), greenEdge.getType());
+						storeReference(rule, greenEdge.getSource(), greenEdge.getType());
 				}
 
 				// only needed, if in the future TGG rules may contain no opposite edges anymore
@@ -182,7 +182,7 @@ public class MultiplicityCounter extends MatchConsumer {
 		return reference.getLowerBound() != 0 || reference.getUpperBound() != -1;
 	}
 
-	private void storeReference(TGGRule rule, TGGRuleNode contextNode, EReference reference) {
+	private void storeReference(TGGRule rule, IBeXNode contextNode, EReference reference) {
 		Map<String, Map<EReference, Integer>> contextNodeName2refs2numOfEdges = ruleName2contextNodeName2refs2numOfEdges.computeIfAbsent( //
 				rule.getName(), k -> new HashMap<>());
 		Map<EReference, Integer> refs2numOfEdges = contextNodeName2refs2numOfEdges.computeIfAbsent(contextNode.getName(), k -> new HashMap<>());

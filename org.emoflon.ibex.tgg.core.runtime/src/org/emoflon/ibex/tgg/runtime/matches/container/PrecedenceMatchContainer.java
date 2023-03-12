@@ -12,14 +12,10 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.runtime.patterns.IGreenPattern;
-import org.emoflon.ibex.tgg.runtime.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.runtime.strategies.PropagatingOperationalStrategy;
+import org.emoflon.ibex.tgg.runtime.strategies.modules.RuleHandler;
 import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuleApplication;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 import org.emoflon.ibex.tgg.util.benchmark.TimeMeasurable;
 import org.emoflon.ibex.tgg.util.benchmark.TimeRegistry;
 import org.emoflon.ibex.tgg.util.benchmark.Timer;
@@ -30,7 +26,8 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 	protected final Times times = new Times();
 
 	protected PropagatingOperationalStrategy strategy;
-
+	protected RuleHandler ruleHandler;
+	
 	protected Collection<Object> translated = cfactory.createObjectSet();
 	protected Collection<ITGGMatch> pending = cfactory.createObjectSet();
 
@@ -52,6 +49,7 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 
 	public PrecedenceMatchContainer(PropagatingOperationalStrategy strategy) {
 		this.strategy = strategy;
+		ruleHandler = strategy.getOptions().tgg.ruleHandler();
 		TimeRegistry.register(this);
 	}
 
@@ -69,7 +67,7 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 	}
 
 	private void handleMatch(ITGGMatch m) {
-		TGGOperationalRule operationalRule = strategy.getOperationalRule(m.getRuleName());
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(m.getRuleName());
 		
 		if (anElementHasAlreadyBeenTranslated(m, operationalRule))
 			return;
@@ -139,7 +137,7 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 	}
 
 	private boolean noElementIsPending(ITGGMatch m) {
-		TGGOperationalRule operationalRule = strategy.getOperationalRule(m.getRuleName());
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(m.getRuleName());
 		
 		for (IBeXNode createdNode : operationalRule.getToBeMarked().getNodes()) {
 			Object createdObj = m.get(createdNode.getName());
@@ -199,17 +197,17 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 		if (raToTranslated.containsKey(ra))
 			return;
 
-		TGGOperationalRule operationalRule = strategy.getOperationalRule(m.getRuleName());
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(m.getRuleName());
 
 		// Add translated elements
 		Collection<Object> translatedElts = cfactory.createObjectSet();
 
-		operationalRule.
 		
-		gFactory.getGreenSrcNodesInRule().forEach(n -> translatedElts.add(m.get(n.getName())));
-		gFactory.getGreenTrgNodesInRule().forEach(n -> translatedElts.add(m.get(n.getName())));
-		gFactory.getGreenSrcEdgesInRule().forEach(e -> translatedElts.add(getRuntimeEdge(m, e)));
-		gFactory.getGreenTrgEdgesInRule().forEach(e -> translatedElts.add(getRuntimeEdge(m, e)));
+		
+		operationalRule.getCreateSource().getNodes().forEach(n -> translatedElts.add(m.get(n.getName())));
+		operationalRule.getCreateTarget().getNodes().forEach(n -> translatedElts.add(m.get(n.getName())));
+		operationalRule.getCreateSource().getEdges().forEach(e -> translatedElts.add(getRuntimeEdge(m, e)));
+		operationalRule.getCreateTarget().getEdges().forEach(e -> translatedElts.add(getRuntimeEdge(m, e)));
 
 		raToTranslated.put(ra, translatedElts);
 		raToMatch.put(ra, m);
