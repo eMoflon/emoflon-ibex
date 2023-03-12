@@ -4,16 +4,16 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.runtime.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.runtime.repair.strategies.ShortcutRepairStrategy.RepairableMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.resolution.CRS_PreferSource;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.resolution.CRS_PreferTarget;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.matchcontainer.PrecedenceGraph;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.matchcontainer.PrecedenceNode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 
 public class CorrPreservationConflict extends InconsistentChangesConflict implements CRS_PreferSource, CRS_PreferTarget {
@@ -41,12 +41,12 @@ public class CorrPreservationConflict extends InconsistentChangesConflict implem
 
 		PrecedenceGraph pg = integrate().precedenceGraph();
 		ITGGMatch match = getMatch();
-		IGreenPatternFactory gFactory = integrate().getGreenFactories().get(match.getRuleName());
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getRuleName());
 
-		Collection<TGGNode> greenRuleNodes = new HashSet<>();
-		greenRuleNodes.addAll(gFactory.getGreenSrcNodesInRule());
-		greenRuleNodes.addAll(gFactory.getGreenTrgNodesInRule());
-		for (TGGNode ruleNode : greenRuleNodes) {
+		Collection<IBeXNode> greenRuleNodes = new HashSet<>();
+		greenRuleNodes.addAll(operationalRule.getCreateSource().getNodes());
+		greenRuleNodes.addAll(operationalRule.getCreateTarget().getNodes());
+		for (IBeXNode ruleNode : greenRuleNodes) {
 			for (PrecedenceNode node : pg.getNodesTranslating(match.get(ruleNode.getName()))) {
 				if (node.getMatch().getType() == PatternType.CONSISTENCY)
 					continue;
