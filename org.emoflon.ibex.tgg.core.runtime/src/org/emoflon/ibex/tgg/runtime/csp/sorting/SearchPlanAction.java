@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXBooleanValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEnumValue;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXStringValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.DoubleLiteral;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.IntegerLiteral;
@@ -39,11 +40,11 @@ public class SearchPlanAction extends Algorithm<SimpleCombiner, TGGAttributeCons
 	 *            Nodes from which bound values for parameters are taken.
 	 */
 	public SearchPlanAction(List<TGGAttributeConstraintParameterValue> variables, List<TGGAttributeConstraint> constraints,
-			boolean useGenAdornments, Collection<TGGNode> availableNodes) {
+			boolean useGenAdornments, Collection<IBeXNode> availableNodes) {
 		this.variables.addAll(variables);
 		this.constraints.addAll(constraints);
 		this.useGenAdornments = useGenAdornments;
-		this.nodesCreatedByPattern.addAll(availableNodes.stream().map(TGGNode::getName).collect(Collectors.toList()));
+		this.nodesCreatedByPattern.addAll(availableNodes.stream().map(IBeXNode::getName).collect(Collectors.toList()));
 	}
 
 	// Unsorted list of our constraints => return a new List where constraints are

@@ -405,13 +405,22 @@ public interface IBeXTGGModelPackage extends EPackage {
 	int TGG_RULE__CONTEXT_TARGET = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 10;
 
 	/**
+	 * The feature id for the '<em><b>Create Source And Target</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_RULE__CREATE_SOURCE_AND_TARGET = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 11;
+
+	/**
 	 * The feature id for the '<em><b>Create</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE__CREATE = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 11;
+	int TGG_RULE__CREATE = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 12;
 
 	/**
 	 * The feature id for the '<em><b>Create Source</b></em>' containment reference.
@@ -420,7 +429,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE__CREATE_SOURCE = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 12;
+	int TGG_RULE__CREATE_SOURCE = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 13;
 
 	/**
 	 * The feature id for the '<em><b>Create Correspondence</b></em>' containment reference.
@@ -429,7 +438,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE__CREATE_CORRESPONDENCE = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 13;
+	int TGG_RULE__CREATE_CORRESPONDENCE = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 14;
 
 	/**
 	 * The feature id for the '<em><b>Create Target</b></em>' containment reference.
@@ -438,7 +447,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE__CREATE_TARGET = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 14;
+	int TGG_RULE__CREATE_TARGET = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 15;
 
 	/**
 	 * The feature id for the '<em><b>Source</b></em>' containment reference.
@@ -447,7 +456,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE__SOURCE = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 15;
+	int TGG_RULE__SOURCE = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 16;
 
 	/**
 	 * The feature id for the '<em><b>Correspondence</b></em>' containment reference.
@@ -456,7 +465,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE__CORRESPONDENCE = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 16;
+	int TGG_RULE__CORRESPONDENCE = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 17;
 
 	/**
 	 * The feature id for the '<em><b>Target</b></em>' containment reference.
@@ -465,7 +474,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE__TARGET = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 17;
+	int TGG_RULE__TARGET = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 18;
 
 	/**
 	 * The number of structural features of the '<em>TGG Rule</em>' class.
@@ -474,7 +483,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE_FEATURE_COUNT = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 18;
+	int TGG_RULE_FEATURE_COUNT = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 19;
 
 	/**
 	 * The number of operations of the '<em>TGG Rule</em>' class.
@@ -665,6 +674,15 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int TGG_OPERATIONAL_RULE__CONTEXT_TARGET = TGG_RULE__CONTEXT_TARGET;
+
+	/**
+	 * The feature id for the '<em><b>Create Source And Target</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_OPERATIONAL_RULE__CREATE_SOURCE_AND_TARGET = TGG_RULE__CREATE_SOURCE_AND_TARGET;
 
 	/**
 	 * The feature id for the '<em><b>Create</b></em>' containment reference.
@@ -1402,6 +1420,17 @@ public interface IBeXTGGModelPackage extends EPackage {
 	EReference getTGGRule_ContextTarget();
 
 	/**
+	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getCreateSourceAndTarget <em>Create Source And Target</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Create Source And Target</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getCreateSourceAndTarget()
+	 * @see #getTGGRule()
+	 * @generated
+	 */
+	EReference getTGGRule_CreateSourceAndTarget();
+
+	/**
 	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getCreate <em>Create</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1860,6 +1889,14 @@ public interface IBeXTGGModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference TGG_RULE__CONTEXT_TARGET = eINSTANCE.getTGGRule_ContextTarget();
+
+		/**
+		 * The meta object literal for the '<em><b>Create Source And Target</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference TGG_RULE__CREATE_SOURCE_AND_TARGET = eINSTANCE.getTGGRule_CreateSourceAndTarget();
 
 		/**
 		 * The meta object literal for the '<em><b>Create</b></em>' containment reference feature.

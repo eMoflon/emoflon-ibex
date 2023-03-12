@@ -18,6 +18,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
 
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.CSPPackage;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintParameterValue;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintSet;
 
 /**
@@ -29,6 +30,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintSet;
  * </p>
  * <ul>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.impl.TGGAttributeConstraintSetImpl#getTggAttributeConstraints <em>Tgg Attribute Constraints</em>}</li>
+ *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.impl.TGGAttributeConstraintSetImpl#getParameters <em>Parameters</em>}</li>
  * </ul>
  *
  * @generated
@@ -43,6 +45,16 @@ public class TGGAttributeConstraintSetImpl extends MinimalEObjectImpl.Container 
 	 * @ordered
 	 */
 	protected EList<TGGAttributeConstraint> tggAttributeConstraints;
+
+	/**
+	 * The cached value of the '{@link #getParameters() <em>Parameters</em>}' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getParameters()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<TGGAttributeConstraintParameterValue> parameters;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -81,11 +93,27 @@ public class TGGAttributeConstraintSetImpl extends MinimalEObjectImpl.Container 
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EList<TGGAttributeConstraintParameterValue> getParameters() {
+		if (parameters == null) {
+			parameters = new EObjectContainmentEList<TGGAttributeConstraintParameterValue>(
+					TGGAttributeConstraintParameterValue.class, this,
+					CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_SET__PARAMETERS);
+		}
+		return parameters;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_SET__TGG_ATTRIBUTE_CONSTRAINTS:
 			return ((InternalEList<?>) getTggAttributeConstraints()).basicRemove(otherEnd, msgs);
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_SET__PARAMETERS:
+			return ((InternalEList<?>) getParameters()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -100,6 +128,8 @@ public class TGGAttributeConstraintSetImpl extends MinimalEObjectImpl.Container 
 		switch (featureID) {
 		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_SET__TGG_ATTRIBUTE_CONSTRAINTS:
 			return getTggAttributeConstraints();
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_SET__PARAMETERS:
+			return getParameters();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -117,6 +147,10 @@ public class TGGAttributeConstraintSetImpl extends MinimalEObjectImpl.Container 
 			getTggAttributeConstraints().clear();
 			getTggAttributeConstraints().addAll((Collection<? extends TGGAttributeConstraint>) newValue);
 			return;
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_SET__PARAMETERS:
+			getParameters().clear();
+			getParameters().addAll((Collection<? extends TGGAttributeConstraintParameterValue>) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -132,6 +166,9 @@ public class TGGAttributeConstraintSetImpl extends MinimalEObjectImpl.Container 
 		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_SET__TGG_ATTRIBUTE_CONSTRAINTS:
 			getTggAttributeConstraints().clear();
 			return;
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_SET__PARAMETERS:
+			getParameters().clear();
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -146,6 +183,8 @@ public class TGGAttributeConstraintSetImpl extends MinimalEObjectImpl.Container 
 		switch (featureID) {
 		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_SET__TGG_ATTRIBUTE_CONSTRAINTS:
 			return tggAttributeConstraints != null && !tggAttributeConstraints.isEmpty();
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_SET__PARAMETERS:
+			return parameters != null && !parameters.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

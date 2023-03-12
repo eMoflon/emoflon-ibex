@@ -29,6 +29,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintSet;
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getContextSource <em>Context Source</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getContextCorrespondence <em>Context Correspondence</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getContextTarget <em>Context Target</em>}</li>
+ *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getCreateSourceAndTarget <em>Create Source And Target</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getCreate <em>Create</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getCreateSource <em>Create Source</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getCreateCorrespondence <em>Create Correspondence</em>}</li>
@@ -222,6 +223,28 @@ public interface TGGRule extends IBeXRule {
 	 * @generated
 	 */
 	void setContextTarget(IBeXRuleDelta value);
+
+	/**
+	 * Returns the value of the '<em><b>Create Source And Target</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Create Source And Target</em>' containment reference.
+	 * @see #setCreateSourceAndTarget(IBeXRuleDelta)
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage#getTGGRule_CreateSourceAndTarget()
+	 * @model containment="true"
+	 * @generated
+	 */
+	IBeXRuleDelta getCreateSourceAndTarget();
+
+	/**
+	 * Sets the value of the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getCreateSourceAndTarget <em>Create Source And Target</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Create Source And Target</em>' containment reference.
+	 * @see #getCreateSourceAndTarget()
+	 * @generated
+	 */
+	void setCreateSourceAndTarget(IBeXRuleDelta value);
 
 	/**
 	 * Returns the value of the '<em><b>Create</b></em>' containment reference.

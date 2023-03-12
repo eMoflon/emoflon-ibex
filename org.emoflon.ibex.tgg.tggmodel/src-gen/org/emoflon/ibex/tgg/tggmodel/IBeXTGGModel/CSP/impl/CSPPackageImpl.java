@@ -303,6 +303,15 @@ public class CSPPackageImpl extends EPackageImpl implements CSPPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EReference getTGGAttributeConstraintSet_Parameters() {
+		return (EReference) tggAttributeConstraintSetEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getTGGAttributeConstraint() {
 		return tggAttributeConstraintEClass;
 	}
@@ -456,6 +465,7 @@ public class CSPPackageImpl extends EPackageImpl implements CSPPackage {
 
 		tggAttributeConstraintSetEClass = createEClass(TGG_ATTRIBUTE_CONSTRAINT_SET);
 		createEReference(tggAttributeConstraintSetEClass, TGG_ATTRIBUTE_CONSTRAINT_SET__TGG_ATTRIBUTE_CONSTRAINTS);
+		createEReference(tggAttributeConstraintSetEClass, TGG_ATTRIBUTE_CONSTRAINT_SET__PARAMETERS);
 
 		tggAttributeConstraintEClass = createEClass(TGG_ATTRIBUTE_CONSTRAINT);
 		createEReference(tggAttributeConstraintEClass, TGG_ATTRIBUTE_CONSTRAINT__DEFINITION);
@@ -559,6 +569,9 @@ public class CSPPackageImpl extends EPackageImpl implements CSPPackage {
 		initEReference(getTGGAttributeConstraintSet_TggAttributeConstraints(), this.getTGGAttributeConstraint(), null,
 				"tggAttributeConstraints", null, 0, -1, TGGAttributeConstraintSet.class, !IS_TRANSIENT, !IS_VOLATILE,
 				IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGGAttributeConstraintSet_Parameters(), this.getTGGAttributeConstraintParameterValue(), null,
+				"parameters", null, 0, -1, TGGAttributeConstraintSet.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(tggAttributeConstraintEClass, TGGAttributeConstraint.class, "TGGAttributeConstraint", !IS_ABSTRACT,
 				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);

@@ -7,6 +7,7 @@ package org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.validation;
 import org.eclipse.emf.common.util.EList;
 
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintParameterValue;
 
 /**
  * A sample validator interface for {@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintSet}.
@@ -18,4 +19,6 @@ public interface TGGAttributeConstraintSetValidator {
 	boolean validate();
 
 	boolean validateTggAttributeConstraints(EList<TGGAttributeConstraint> value);
+
+	boolean validateParameters(EList<TGGAttributeConstraintParameterValue> value);
 }

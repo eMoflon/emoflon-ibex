@@ -365,7 +365,7 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getTGGRule_Create() {
+	public EReference getTGGRule_CreateSourceAndTarget() {
 		return (EReference) tggRuleEClass.getEStructuralFeatures().get(11);
 	}
 
@@ -374,7 +374,7 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getTGGRule_CreateSource() {
+	public EReference getTGGRule_Create() {
 		return (EReference) tggRuleEClass.getEStructuralFeatures().get(12);
 	}
 
@@ -383,7 +383,7 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getTGGRule_CreateCorrespondence() {
+	public EReference getTGGRule_CreateSource() {
 		return (EReference) tggRuleEClass.getEStructuralFeatures().get(13);
 	}
 
@@ -392,8 +392,17 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getTGGRule_CreateTarget() {
+	public EReference getTGGRule_CreateCorrespondence() {
 		return (EReference) tggRuleEClass.getEStructuralFeatures().get(14);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getTGGRule_CreateTarget() {
+		return (EReference) tggRuleEClass.getEStructuralFeatures().get(15);
 	}
 
 	/**
@@ -411,15 +420,6 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 	 * @generated
 	 */
 	public EReference getTGGRule_Source() {
-		return (EReference) tggRuleEClass.getEStructuralFeatures().get(15);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EReference getTGGRule_Correspondence() {
 		return (EReference) tggRuleEClass.getEStructuralFeatures().get(16);
 	}
 
@@ -428,8 +428,17 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getTGGRule_Target() {
+	public EReference getTGGRule_Correspondence() {
 		return (EReference) tggRuleEClass.getEStructuralFeatures().get(17);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getTGGRule_Target() {
+		return (EReference) tggRuleEClass.getEStructuralFeatures().get(18);
 	}
 
 	/**
@@ -645,6 +654,7 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 		createEReference(tggRuleEClass, TGG_RULE__CONTEXT_SOURCE);
 		createEReference(tggRuleEClass, TGG_RULE__CONTEXT_CORRESPONDENCE);
 		createEReference(tggRuleEClass, TGG_RULE__CONTEXT_TARGET);
+		createEReference(tggRuleEClass, TGG_RULE__CREATE_SOURCE_AND_TARGET);
 		createEReference(tggRuleEClass, TGG_RULE__CREATE);
 		createEReference(tggRuleEClass, TGG_RULE__CREATE_SOURCE);
 		createEReference(tggRuleEClass, TGG_RULE__CREATE_CORRESPONDENCE);
@@ -783,6 +793,9 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 		initEReference(getTGGRule_ContextTarget(), theIBeXCoreModelPackage.getIBeXRuleDelta(), null, "contextTarget",
 				null, 0, 1, TGGRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
 				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGGRule_CreateSourceAndTarget(), theIBeXCoreModelPackage.getIBeXRuleDelta(), null,
+				"createSourceAndTarget", null, 0, 1, TGGRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getTGGRule_Create(), theIBeXCoreModelPackage.getIBeXRuleDelta(), null, "create", null, 0, 1,
 				TGGRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

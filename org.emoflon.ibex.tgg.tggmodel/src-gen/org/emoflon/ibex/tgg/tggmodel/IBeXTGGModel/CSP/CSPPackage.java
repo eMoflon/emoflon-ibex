@@ -266,13 +266,22 @@ public interface CSPPackage extends EPackage {
 	int TGG_ATTRIBUTE_CONSTRAINT_SET__TGG_ATTRIBUTE_CONSTRAINTS = 0;
 
 	/**
+	 * The feature id for the '<em><b>Parameters</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_ATTRIBUTE_CONSTRAINT_SET__PARAMETERS = 1;
+
+	/**
 	 * The number of structural features of the '<em>TGG Attribute Constraint Set</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_ATTRIBUTE_CONSTRAINT_SET_FEATURE_COUNT = 1;
+	int TGG_ATTRIBUTE_CONSTRAINT_SET_FEATURE_COUNT = 2;
 
 	/**
 	 * The number of operations of the '<em>TGG Attribute Constraint Set</em>' class.
@@ -662,6 +671,17 @@ public interface CSPPackage extends EPackage {
 	EReference getTGGAttributeConstraintSet_TggAttributeConstraints();
 
 	/**
+	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintSet#getParameters <em>Parameters</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Parameters</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintSet#getParameters()
+	 * @see #getTGGAttributeConstraintSet()
+	 * @generated
+	 */
+	EReference getTGGAttributeConstraintSet_Parameters();
+
+	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint <em>TGG Attribute Constraint</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -931,6 +951,14 @@ public interface CSPPackage extends EPackage {
 		 */
 		EReference TGG_ATTRIBUTE_CONSTRAINT_SET__TGG_ATTRIBUTE_CONSTRAINTS = eINSTANCE
 				.getTGGAttributeConstraintSet_TggAttributeConstraints();
+
+		/**
+		 * The meta object literal for the '<em><b>Parameters</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference TGG_ATTRIBUTE_CONSTRAINT_SET__PARAMETERS = eINSTANCE.getTGGAttributeConstraintSet_Parameters();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.impl.TGGAttributeConstraintImpl <em>TGG Attribute Constraint</em>}' class.

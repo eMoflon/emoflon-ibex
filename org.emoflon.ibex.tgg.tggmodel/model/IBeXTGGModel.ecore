@@ -39,6 +39,9 @@
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="contextTarget" eType="ecore:EClass ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXRuleDelta"
         containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="createSourceAndTarget"
+        eType="ecore:EClass ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXRuleDelta"
+        containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="create" eType="ecore:EClass ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXRuleDelta"
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="createSource" eType="ecore:EClass ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXRuleDelta"
@@ -131,6 +134,8 @@
     <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraintSet">
       <eStructuralFeatures xsi:type="ecore:EReference" name="tggAttributeConstraints"
           upperBound="-1" eType="#//CSP/TGGAttributeConstraint" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="parameters" upperBound="-1"
+          eType="#//CSP/TGGAttributeConstraintParameterValue" containment="true"/>
     </eClassifiers>
     <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraint">
       <eStructuralFeatures xsi:type="ecore:EReference" name="definition" eType="#//CSP/TGGAttributeConstraintDefinition"/>

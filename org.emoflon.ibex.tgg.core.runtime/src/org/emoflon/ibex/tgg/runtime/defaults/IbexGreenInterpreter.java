@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,7 +27,6 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXOperationType;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXStringValue;
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.DoubleLiteral;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.IntegerLiteral;
 import org.emoflon.ibex.common.emf.EMFEdge;
@@ -36,6 +36,7 @@ import org.emoflon.ibex.tgg.runtime.IGreenInterpreter;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.runtime.csp.RuntimeTGGAttributeConstraintContainer;
+import org.emoflon.ibex.tgg.runtime.csp.sorting.SearchPlanAction;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.SCMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.OperationalStrategy;
@@ -48,6 +49,8 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintParameterValue;
 import org.emoflon.ibex.tgg.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 
@@ -71,11 +74,32 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	private Map<IBeXNode, EReference> node2reference = new HashMap<>();
 
 	private TGGResourceHandler resourceHandler;
+	
+	protected Map<String, List<TGGAttributeConstraint>> rule2sortedAttributeConstraints = new HashMap<>();
+	protected Map<String, List<TGGAttributeConstraintParameterValue>> rule2parameters = new HashMap<>();
 
 	public IbexGreenInterpreter(OperationalStrategy operationalStrategy) {
 		options = operationalStrategy.getOptions();
 		resourceHandler = options.resourceHandler();
 		ruleHandler = options.tgg.ruleHandler();
+		initializeSortedConstraints();
+	}
+
+	private void initializeSortedConstraints() {
+		for(var rule : options.tgg.flattenedTGG().getRuleSet().getRules()) {
+			for(var operationalRule : rule.getOperationalisations()) {
+				try {
+					rule2sortedAttributeConstraints.put(operationalRule.getName(), //
+							sortConstraints(
+									operationalRule.getName(), //
+									operationalRule.getAttributeConstraints().getParameters(), //
+									operationalRule.getAttributeConstraints().getTggAttributeConstraints()));
+					rule2parameters.put(operationalRule.getName(), operationalRule.getAttributeConstraints().getParameters());
+				} catch (Exception e) {
+					throw new IllegalStateException("Unable to sort attribute constraints, " + e.getMessage(), e);
+				}
+			}
+		}
 	}
 
 	public void createNonCorrNode(ITGGMatch comatch, TGGNode node, Resource nodeResource) {
@@ -210,7 +234,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		}
 
 		// Check if all attribute values provided match are as expected
-		IRuntimeTGGAttrConstrContainer cspContainer = operationRule.getAttributeConstraintContainer(match);
+		IRuntimeTGGAttrConstrContainer cspContainer = getAttributeConstraintContainer(match);
 		if (!cspContainer.solve()) {
 			LoggerConfig.log(LoggerConfig.log_ruleApplication(), () -> "Blocking application as attribute conditions don't hold.");
 			return Optional.empty();
@@ -243,13 +267,18 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	
 	public IRuntimeTGGAttrConstrContainer getAttributeConstraintContainer(ITGGMatch match) {
 		return new RuntimeTGGAttributeConstraintContainer(
-				factory.getAttributeCSPVariables(), 
-				sortedAttributeConstraints,
+				rule2parameters.get(match.getRuleName()), 
+				rule2sortedAttributeConstraints.get(match.getRuleName()),
 				match,
 				options.csp.constraintProvider());
-		
 	}
 
+	protected List<TGGAttributeConstraint> sortConstraints(String ruleName, List<TGGAttributeConstraintParameterValue> variables, List<TGGAttributeConstraint> constraints) {
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(ruleName);
+		SearchPlanAction spa = new SearchPlanAction(variables, constraints, false,  operationalRule.getCreateSourceAndTarget().getNodes());
+		return spa.sortConstraints();
+	}
+	
 	private boolean matchIsInvalid(String ruleName, TGGOperationalRule operationalRule, ITGGMatch match) {
 		return violatesConformTypesOfGreenNodes(match, operationalRule, ruleName)
 				|| violatesUpperBounds(ruleName, operationalRule, match)
