@@ -20,6 +20,8 @@ import org.emoflon.ibex.tgg.runtime.strategies.integrate.classification.Deletion
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.classification.DomainModification;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.TGGResourceHandler;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
 import org.emoflon.ibex.tgg.util.TGGInplaceAttrExprUtil;
@@ -27,7 +29,6 @@ import org.emoflon.ibex.tgg.util.TGGInplaceAttrExprUtil;
 import language.TGGAttributeExpression;
 import language.TGGInplaceAttributeExpression;
 import language.TGGParamValue;
-import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
 public class TGGMatchAnalyzer {
@@ -65,8 +66,8 @@ public class TGGMatchAnalyzer {
 		return false;
 	}
 
-	private boolean isEdgeDeleted(TGGRuleEdge edge, EMFEdge emfEdge, Set<TGGRuleElement> deletedElements) {
-		if (deletedElements.contains(edge.getSrcNode()) || deletedElements.contains(edge.getTrgNode()))
+	private boolean isEdgeDeleted(TGGEdge edge, EMFEdge emfEdge, Set<TGGRuleElement> deletedElements) {
+		if (deletedElements.contains(edge.getSource()) || deletedElements.contains(edge.getTarget()))
 			return true;
 		Object value = emfEdge.getSource().eGet(emfEdge.getType());
 		if (value == null)
@@ -100,7 +101,7 @@ public class TGGMatchAnalyzer {
 		return util.integrate.filterNACMatchCollector().getFilterNACMatches(util.match).stream() //
 				.collect(Collectors.toMap( //
 						fnm -> fnm, //
-						fnm -> fnm.getType() == PatternType.FILTER_NAC_SRC ? DomainType.SRC : DomainType.TRG) //
+						fnm -> fnm.getType() == PatternType.FILTER_NAC_SRC ? DomainType.SOURCE : DomainType.TARGET) //
 				);
 	}
 
@@ -139,7 +140,7 @@ public class TGGMatchAnalyzer {
 
 		Map<String, EObject> nodeName2eObject = util.getNodeToEObject().entrySet().stream() //
 				.collect(Collectors.toMap(e -> e.getKey().getName(), e -> e.getValue()));
-		for (TGGRuleNode node : util.rule.getNodes()) {
+		for (TGGNode node : util.rule.getNodes()) {
 			EObject eObject = util.getEObject(node);
 			for (TGGInplaceAttributeExpression attrExpr : node.getAttrExpr()) {
 				if (!TGGInplaceAttrExprUtil.checkInplaceAttributeCondition(attrExpr, eObject, nodeName2eObject)) {
@@ -200,7 +201,7 @@ public class TGGMatchAnalyzer {
 	}
 
 	public class InplAttributeChange {
-		public final TGGRuleNode node;
+		public final TGGNode node;
 		public final TGGInplaceAttributeExpression attrExpr;
 		public final AttributeChange attrChange;
 
