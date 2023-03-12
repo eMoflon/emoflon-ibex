@@ -14,9 +14,11 @@ import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
+import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 import org.eclipse.emf.ecore.util.EObjectWithInverseResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeAssignment;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXNodeImpl;
 
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
@@ -38,6 +40,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGNodeImpl#getBindingType <em>Binding Type</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGNodeImpl#getIncomingCorrespondence <em>Incoming Correspondence</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGNodeImpl#getOutgoingCorrespondence <em>Outgoing Correspondence</em>}</li>
+ *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGNodeImpl#getAttributeAssignments <em>Attribute Assignments</em>}</li>
  * </ul>
  *
  * @generated
@@ -102,6 +105,16 @@ public class TGGNodeImpl extends IBeXNodeImpl implements TGGNode {
 	 * @ordered
 	 */
 	protected EList<TGGCorrespondence> outgoingCorrespondence;
+
+	/**
+	 * The cached value of the '{@link #getAttributeAssignments() <em>Attribute Assignments</em>}' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getAttributeAssignments()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<IBeXAttributeAssignment> attributeAssignments;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -199,6 +212,19 @@ public class TGGNodeImpl extends IBeXNodeImpl implements TGGNode {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EList<IBeXAttributeAssignment> getAttributeAssignments() {
+		if (attributeAssignments == null) {
+			attributeAssignments = new EObjectResolvingEList<IBeXAttributeAssignment>(IBeXAttributeAssignment.class,
+					this, IBeXTGGModelPackage.TGG_NODE__ATTRIBUTE_ASSIGNMENTS);
+		}
+		return attributeAssignments;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
@@ -245,6 +271,8 @@ public class TGGNodeImpl extends IBeXNodeImpl implements TGGNode {
 			return getIncomingCorrespondence();
 		case IBeXTGGModelPackage.TGG_NODE__OUTGOING_CORRESPONDENCE:
 			return getOutgoingCorrespondence();
+		case IBeXTGGModelPackage.TGG_NODE__ATTRIBUTE_ASSIGNMENTS:
+			return getAttributeAssignments();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -272,6 +300,10 @@ public class TGGNodeImpl extends IBeXNodeImpl implements TGGNode {
 			getOutgoingCorrespondence().clear();
 			getOutgoingCorrespondence().addAll((Collection<? extends TGGCorrespondence>) newValue);
 			return;
+		case IBeXTGGModelPackage.TGG_NODE__ATTRIBUTE_ASSIGNMENTS:
+			getAttributeAssignments().clear();
+			getAttributeAssignments().addAll((Collection<? extends IBeXAttributeAssignment>) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -296,6 +328,9 @@ public class TGGNodeImpl extends IBeXNodeImpl implements TGGNode {
 		case IBeXTGGModelPackage.TGG_NODE__OUTGOING_CORRESPONDENCE:
 			getOutgoingCorrespondence().clear();
 			return;
+		case IBeXTGGModelPackage.TGG_NODE__ATTRIBUTE_ASSIGNMENTS:
+			getAttributeAssignments().clear();
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -316,6 +351,8 @@ public class TGGNodeImpl extends IBeXNodeImpl implements TGGNode {
 			return incomingCorrespondence != null && !incomingCorrespondence.isEmpty();
 		case IBeXTGGModelPackage.TGG_NODE__OUTGOING_CORRESPONDENCE:
 			return outgoingCorrespondence != null && !outgoingCorrespondence.isEmpty();
+		case IBeXTGGModelPackage.TGG_NODE__ATTRIBUTE_ASSIGNMENTS:
+			return attributeAssignments != null && !attributeAssignments.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

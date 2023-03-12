@@ -527,6 +527,15 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EReference getTGGNode_AttributeAssignments() {
+		return (EReference) tggNodeEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getTGGCorrespondence() {
 		return tggCorrespondenceEClass;
 	}
@@ -656,6 +665,7 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 		tggNodeEClass = createEClass(TGG_NODE);
 		createEReference(tggNodeEClass, TGG_NODE__INCOMING_CORRESPONDENCE);
 		createEReference(tggNodeEClass, TGG_NODE__OUTGOING_CORRESPONDENCE);
+		createEReference(tggNodeEClass, TGG_NODE__ATTRIBUTE_ASSIGNMENTS);
 
 		tggCorrespondenceEClass = createEClass(TGG_CORRESPONDENCE);
 		createEReference(tggCorrespondenceEClass, TGG_CORRESPONDENCE__SOURCE);
@@ -825,6 +835,9 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 				this.getTGGCorrespondence_Source(), "outgoingCorrespondence", null, 0, -1, TGGNode.class, !IS_TRANSIENT,
 				!IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
 				IS_ORDERED);
+		initEReference(getTGGNode_AttributeAssignments(), theIBeXCoreModelPackage.getIBeXAttributeAssignment(), null,
+				"attributeAssignments", null, 0, -1, TGGNode.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				!IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(tggCorrespondenceEClass, TGGCorrespondence.class, "TGGCorrespondence", !IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);

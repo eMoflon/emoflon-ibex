@@ -71,6 +71,8 @@
         upperBound="-1" eType="#//TGGCorrespondence" eOpposite="#//TGGCorrespondence/target"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="outgoingCorrespondence"
         upperBound="-1" eType="#//TGGCorrespondence" eOpposite="#//TGGCorrespondence/source"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="attributeAssignments" upperBound="-1"
+        eType="ecore:EClass ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXAttributeAssignment"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="TGGCorrespondence" eSuperTypes="#//TGGNode">
     <eStructuralFeatures xsi:type="ecore:EReference" name="source" lowerBound="1"

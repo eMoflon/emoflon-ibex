@@ -17,16 +17,25 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeAssignment;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeValue;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXBooleanValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEnumValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXOperationType;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXStringValue;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanValue;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.DoubleLiteral;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.IntegerLiteral;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.runtime.IGreenInterpreter;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.csp.IRuntimeTGGAttrConstrContainer;
+import org.emoflon.ibex.tgg.runtime.csp.RuntimeTGGAttributeConstraintContainer;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.SCMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.OperationalStrategy;
@@ -39,7 +48,6 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
-import org.emoflon.ibex.tgg.util.String2EPrimitive;
 import org.emoflon.ibex.tgg.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 
@@ -143,21 +151,34 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	}
 
 	public void applyInPlaceAttributeAssignments(ITGGMatch match, TGGNode node, EObject newObj) {
-		for (TGGInplaceAttributeExpression attrExpr : node.getAttrExpr()) {
-			if (attrExpr.getOperator().equals(TGGAttributeConstraintOperators.EQUAL)) {
-				if (attrExpr.getValueExpr() instanceof TGGLiteralExpression tle) {
-					newObj.eSet(attrExpr.getAttribute(), String2EPrimitive.convertLiteral(tle.getValue(), attrExpr.getAttribute().getEAttributeType()));
-					continue;
-				}
-				if (attrExpr.getValueExpr() instanceof TGGEnumExpression tee) {
-					newObj.eSet(attrExpr.getAttribute(), tee.getLiteral().getInstance());
-					continue;
-				}
-				if (attrExpr.getValueExpr() instanceof TGGAttributeExpression tae) {
-					EObject obj = (EObject) match.get(tae.getObjectVar().getName());
-					newObj.eSet(attrExpr.getAttribute(), obj.eGet(tae.getAttribute()));
-					continue;
-				}
+		for (IBeXAttributeAssignment attributeAssignment : node.getAttributeAssignments()) {
+			// Literal Values
+			if (attributeAssignment.getValue() instanceof IBeXStringValue stringValue) {
+				newObj.eSet(attributeAssignment.getAttribute(), stringValue.getValue());
+				continue;
+			}
+			if (attributeAssignment.getValue() instanceof IBeXBooleanValue boolValue) {
+				newObj.eSet(attributeAssignment.getAttribute(), boolValue.isValue());
+				continue;
+			}
+			if (attributeAssignment.getValue() instanceof DoubleLiteral doubleLiteral) {
+				newObj.eSet(attributeAssignment.getAttribute(), doubleLiteral.getValue());
+				continue;
+			}
+			if (attributeAssignment.getValue() instanceof IntegerLiteral integerLiteral) {
+				newObj.eSet(attributeAssignment.getAttribute(), integerLiteral.getValue());
+				continue;
+			}
+			
+			// enums and attributes
+			if (attributeAssignment.getValue() instanceof IBeXEnumValue tee) {
+				newObj.eSet(attributeAssignment.getAttribute(), tee.getLiteral().getInstance());
+				continue;
+			}
+			if (attributeAssignment.getValue() instanceof IBeXAttributeValue tae) {
+				EObject obj = (EObject) match.get(tae.getNode().getName());
+				newObj.eSet(attributeAssignment.getAttribute(), obj.eGet(tae.getAttribute()));
+				continue;
 			}
 		}
 	}
@@ -218,6 +239,15 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		}
 
 		return Optional.of(comatch);
+	}
+	
+	public IRuntimeTGGAttrConstrContainer getAttributeConstraintContainer(ITGGMatch match) {
+		return new RuntimeTGGAttributeConstraintContainer(
+				factory.getAttributeCSPVariables(), 
+				sortedAttributeConstraints,
+				match,
+				options.csp.constraintProvider());
+		
 	}
 
 	private boolean matchIsInvalid(String ruleName, TGGOperationalRule operationalRule, ITGGMatch match) {

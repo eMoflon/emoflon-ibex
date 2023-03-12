@@ -4,6 +4,7 @@ package org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel;
 
 import org.eclipse.emf.common.util.EList;
 
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeAssignment;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
 
 /**
@@ -17,6 +18,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
  * <ul>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode#getIncomingCorrespondence <em>Incoming Correspondence</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode#getOutgoingCorrespondence <em>Outgoing Correspondence</em>}</li>
+ *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode#getAttributeAssignments <em>Attribute Assignments</em>}</li>
  * </ul>
  *
  * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage#getTGGNode()
@@ -51,5 +53,17 @@ public interface TGGNode extends IBeXNode, TGGRuleElement {
 	 * @generated
 	 */
 	EList<TGGCorrespondence> getOutgoingCorrespondence();
+
+	/**
+	 * Returns the value of the '<em><b>Attribute Assignments</b></em>' reference list.
+	 * The list contents are of type {@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeAssignment}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Attribute Assignments</em>' reference list.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage#getTGGNode_AttributeAssignments()
+	 * @model
+	 * @generated
+	 */
+	EList<IBeXAttributeAssignment> getAttributeAssignments();
 
 } // TGGNode

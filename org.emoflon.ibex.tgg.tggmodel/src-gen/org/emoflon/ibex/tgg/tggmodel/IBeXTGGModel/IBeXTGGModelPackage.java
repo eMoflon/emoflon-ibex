@@ -912,13 +912,22 @@ public interface IBeXTGGModelPackage extends EPackage {
 	int TGG_NODE__OUTGOING_CORRESPONDENCE = IBeXCoreModelPackage.IBE_XNODE_FEATURE_COUNT + 3;
 
 	/**
+	 * The feature id for the '<em><b>Attribute Assignments</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_NODE__ATTRIBUTE_ASSIGNMENTS = IBeXCoreModelPackage.IBE_XNODE_FEATURE_COUNT + 4;
+
+	/**
 	 * The number of structural features of the '<em>TGG Node</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_NODE_FEATURE_COUNT = IBeXCoreModelPackage.IBE_XNODE_FEATURE_COUNT + 4;
+	int TGG_NODE_FEATURE_COUNT = IBeXCoreModelPackage.IBE_XNODE_FEATURE_COUNT + 5;
 
 	/**
 	 * The number of operations of the '<em>TGG Node</em>' class.
@@ -1019,6 +1028,15 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int TGG_CORRESPONDENCE__OUTGOING_CORRESPONDENCE = TGG_NODE__OUTGOING_CORRESPONDENCE;
+
+	/**
+	 * The feature id for the '<em><b>Attribute Assignments</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_CORRESPONDENCE__ATTRIBUTE_ASSIGNMENTS = TGG_NODE__ATTRIBUTE_ASSIGNMENTS;
 
 	/**
 	 * The feature id for the '<em><b>Source</b></em>' reference.
@@ -1579,6 +1597,17 @@ public interface IBeXTGGModelPackage extends EPackage {
 	EReference getTGGNode_OutgoingCorrespondence();
 
 	/**
+	 * Returns the meta object for the reference list '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode#getAttributeAssignments <em>Attribute Assignments</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference list '<em>Attribute Assignments</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode#getAttributeAssignments()
+	 * @see #getTGGNode()
+	 * @generated
+	 */
+	EReference getTGGNode_AttributeAssignments();
+
+	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence <em>TGG Correspondence</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1982,6 +2011,14 @@ public interface IBeXTGGModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference TGG_NODE__OUTGOING_CORRESPONDENCE = eINSTANCE.getTGGNode_OutgoingCorrespondence();
+
+		/**
+		 * The meta object literal for the '<em><b>Attribute Assignments</b></em>' reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference TGG_NODE__ATTRIBUTE_ASSIGNMENTS = eINSTANCE.getTGGNode_AttributeAssignments();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGCorrespondenceImpl <em>TGG Correspondence</em>}' class.

@@ -6,6 +6,7 @@ package org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.validation;
 
 import org.eclipse.emf.common.util.EList;
 
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeAssignment;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence;
 
 /**
@@ -20,4 +21,6 @@ public interface TGGNodeValidator {
 	boolean validateIncomingCorrespondence(EList<TGGCorrespondence> value);
 
 	boolean validateOutgoingCorrespondence(EList<TGGCorrespondence> value);
+
+	boolean validateAttributeAssignments(EList<IBeXAttributeAssignment> value);
 }
