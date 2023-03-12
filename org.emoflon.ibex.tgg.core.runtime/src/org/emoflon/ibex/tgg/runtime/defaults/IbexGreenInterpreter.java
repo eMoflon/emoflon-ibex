@@ -2,7 +2,9 @@ package org.emoflon.ibex.tgg.runtime.defaults;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -36,6 +38,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 import org.emoflon.ibex.tgg.util.String2EPrimitive;
 import org.emoflon.ibex.tgg.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
@@ -57,6 +60,8 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	private IbexOptions options;
 	private RuleHandler ruleHandler;
 	
+	private Map<IBeXNode, EReference> node2reference = new HashMap<>();
+
 	private TGGResourceHandler resourceHandler;
 
 	public IbexGreenInterpreter(OperationalStrategy operationalStrategy) {
@@ -383,76 +388,76 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		EClass type = (EClass) corrPackage.getEClassifier(TGGModelUtils.getMarkerTypeName(ruleName));
 		
 		EObject ra = EcoreUtil.create(type);
-		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(ruleName);
+		TGGRule operationalRule = ruleHandler.getRule(ruleName);
 		
-		for (TGGNode n : factory.getGreenSrcNodesInRule()) {
+		for (IBeXNode n : operationalRule.getCreateSource().getNodes()) {
 			EReference ref;
-			if(name2ref.containsKey(n))
-				ref = name2ref.get(n);
+			if(node2reference.containsKey(n))
+				ref = node2reference.get(n);
 			else {
 				String refName = TGGModelUtils.getMarkerRefName(BindingType.CREATE, DomainType.SOURCE, n.getName());
 				ref = (EReference) type.getEStructuralFeature(refName);		
-				name2ref.put(n, ref);
+				node2reference.put(n, ref);
 			}
 			ra.eSet(ref, (EObject) match.get(n.getName()));			
 		}
 		
-		for (TGGNode n : factory.getBlackSrcNodesInRule()) {
+		for (IBeXNode n : operationalRule.getContextSource().getNodes()) {
 			EReference ref;
-			if(name2ref.containsKey(n))
-				ref = name2ref.get(n);
+			if(node2reference.containsKey(n))
+				ref = node2reference.get(n);
 			else {
 				String refName = TGGModelUtils.getMarkerRefName(BindingType.CONTEXT, DomainType.SOURCE, n.getName());
 				ref = (EReference) type.getEStructuralFeature(refName);		
-				name2ref.put(n, ref);
+				node2reference.put(n, ref);
 			}		
 			ra.eSet(ref, (EObject) match.get(n.getName()));			
 		}
 
-		for (TGGNode n : factory.getGreenTrgNodesInRule()) {
+		for (IBeXNode n : operationalRule.getCreateTarget().getNodes()) {
 			EReference ref;
-			if(name2ref.containsKey(n))
-				ref = name2ref.get(n);
+			if(node2reference.containsKey(n))
+				ref = node2reference.get(n);
 			else {
 				String refName = TGGModelUtils.getMarkerRefName(BindingType.CREATE, DomainType.TARGET, n.getName());
 				ref = (EReference) type.getEStructuralFeature(refName);		
-				name2ref.put(n, ref);
+				node2reference.put(n, ref);
 			}		
 			ra.eSet(ref, (EObject) match.get(n.getName()));			
 		}
 		
-		for (TGGNode n : factory.getBlackTrgNodesInRule()) {
+		for (IBeXNode n : operationalRule.getContextTarget().getNodes()) {
 			EReference ref;
-			if(name2ref.containsKey(n))
-				ref = name2ref.get(n);
+			if(node2reference.containsKey(n))
+				ref = node2reference.get(n);
 			else {
 				String refName = TGGModelUtils.getMarkerRefName(BindingType.CONTEXT, DomainType.TARGET, n.getName());
 				ref = (EReference) type.getEStructuralFeature(refName);		
-				name2ref.put(n, ref);
+				node2reference.put(n, ref);
 			}		
 			ra.eSet(ref, (EObject) match.get(n.getName()));			
 		}
 
-		for (TGGNode n : factory.getGreenCorrNodesInRule()) {
+		for (IBeXNode n : operationalRule.getCreateCorrespondence().getNodes()) {
 			EReference ref;
-			if(name2ref.containsKey(n))
-				ref = name2ref.get(n);
+			if(node2reference.containsKey(n))
+				ref = node2reference.get(n);
 			else {
 				String refName = TGGModelUtils.getMarkerRefName(BindingType.CREATE, DomainType.CORRESPONDENCE, n.getName());
 				ref = (EReference) type.getEStructuralFeature(refName);		
-				name2ref.put(n, ref);
+				node2reference.put(n, ref);
 			}		
 			ra.eSet(ref, (EObject) match.get(n.getName()));			
 		}
 		
-		for (TGGNode n : factory.getBlackCorrNodesInRule()) {
+		for (IBeXNode n : operationalRule.getContextCorrespondence().getNodes()) {
 			EReference ref;
-			if(name2ref.containsKey(n))
-				ref = name2ref.get(n);
+			if(node2reference.containsKey(n))
+				ref = node2reference.get(n);
 			else {
 				String refName = TGGModelUtils.getMarkerRefName(BindingType.CONTEXT, DomainType.CORRESPONDENCE, n.getName());
 				ref = (EReference) type.getEStructuralFeature(refName);		
-				name2ref.put(n, ref);
+				node2reference.put(n, ref);
 			}	
 			ra.eSet(ref, (EObject) match.get(n.getName()));			
 		}
