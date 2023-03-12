@@ -83,6 +83,18 @@
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGCorrespondence/target"/>
     </genClasses>
     <genClasses ecoreClass="IBeXTGGModel.ecore#//TGGEdge"/>
+    <genClasses ecoreClass="IBeXTGGModel.ecore#//TGGShortcutRule">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGShortcutRule/originalRule"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGShortcutRule/replacingRule"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGShortcutRule/mappings"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGShortcutRule/unmappedOriginalElements"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGShortcutRule/unmappedReplacingElements"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXTGGModel.ecore#//TGGOperationalShortcutRule"/>
+    <genClasses ecoreClass="IBeXTGGModel.ecore#//TGGShortcutRuleElementMapping">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGShortcutRuleElementMapping/original"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGShortcutRuleElementMapping/replacing"/>
+    </genClasses>
     <nestedGenPackages prefix="CSP" disposableProviderFactory="true" ecorePackage="IBeXTGGModel.ecore#//CSP">
       <genClasses ecoreClass="IBeXTGGModel.ecore#//CSP/TGGAttributeConstraintDefinition">
         <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//CSP/TGGAttributeConstraintDefinition/parameterDefinitions"/>

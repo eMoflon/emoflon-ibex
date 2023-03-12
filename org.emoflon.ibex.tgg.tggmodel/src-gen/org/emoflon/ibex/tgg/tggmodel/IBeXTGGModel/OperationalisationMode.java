@@ -169,8 +169,8 @@ public enum OperationalisationMode implements Enumerator {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private static final OperationalisationMode[] VALUES_ARRAY = new OperationalisationMode[] { GENERATE, FORWARD,
-			BACKWARD, CONSISTENCY_CHECK, CHECK_ONLY, SOURCE, TARGET, };
+	private static final OperationalisationMode[] VALUES_ARRAY = new OperationalisationMode[] { GENERATE, FORWARD, BACKWARD, CONSISTENCY_CHECK, CHECK_ONLY,
+			SOURCE, TARGET, };
 
 	/**
 	 * A public read-only list of all the '<em><b>Operationalisation Mode</b></em>' enumerators.
@@ -226,20 +226,20 @@ public enum OperationalisationMode implements Enumerator {
 	 */
 	public static OperationalisationMode get(int value) {
 		switch (value) {
-		case GENERATE_VALUE:
-			return GENERATE;
-		case FORWARD_VALUE:
-			return FORWARD;
-		case BACKWARD_VALUE:
-			return BACKWARD;
-		case CONSISTENCY_CHECK_VALUE:
-			return CONSISTENCY_CHECK;
-		case CHECK_ONLY_VALUE:
-			return CHECK_ONLY;
-		case SOURCE_VALUE:
-			return SOURCE;
-		case TARGET_VALUE:
-			return TARGET;
+			case GENERATE_VALUE:
+				return GENERATE;
+			case FORWARD_VALUE:
+				return FORWARD;
+			case BACKWARD_VALUE:
+				return BACKWARD;
+			case CONSISTENCY_CHECK_VALUE:
+				return CONSISTENCY_CHECK;
+			case CHECK_ONLY_VALUE:
+				return CHECK_ONLY;
+			case SOURCE_VALUE:
+				return SOURCE;
+			case TARGET_VALUE:
+				return TARGET;
 		}
 		return null;
 	}

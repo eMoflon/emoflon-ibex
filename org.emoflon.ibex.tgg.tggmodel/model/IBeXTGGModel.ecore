@@ -84,6 +84,21 @@
         eType="#//TGGNode" eOpposite="#//TGGNode/incomingCorrespondence"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="TGGEdge" eSuperTypes="../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXEdge #//TGGRuleElement"/>
+  <eClassifiers xsi:type="ecore:EClass" name="TGGShortcutRule" eSuperTypes="#//TGGRule">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="originalRule" eType="#//TGGRule"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="replacingRule" eType="#//TGGRule"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="mappings" upperBound="-1"
+        eType="#//TGGShortcutRuleElementMapping"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="unmappedOriginalElements"
+        ordered="false" upperBound="-1" eType="#//TGGRuleElement"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="unmappedReplacingElements"
+        ordered="false" upperBound="-1" eType="#//TGGRuleElement"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="TGGOperationalShortcutRule" eSuperTypes="#//TGGShortcutRule #//TGGOperationalRule"/>
+  <eClassifiers xsi:type="ecore:EClass" name="TGGShortcutRuleElementMapping">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="original" eType="#//TGGRuleElement"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="replacing" eType="#//TGGRuleElement"/>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="OperationalisationMode">
     <eLiterals name="GENERATE"/>
     <eLiterals name="FORWARD" value="1"/>

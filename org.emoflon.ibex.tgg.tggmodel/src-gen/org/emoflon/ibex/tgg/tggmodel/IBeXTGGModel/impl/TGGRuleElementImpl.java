@@ -106,8 +106,7 @@ public abstract class TGGRuleElementImpl extends MinimalEObjectImpl.Container im
 		DomainType oldDomainType = domainType;
 		domainType = newDomainType == null ? DOMAIN_TYPE_EDEFAULT : newDomainType;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE_ELEMENT__DOMAIN_TYPE,
-					oldDomainType, domainType));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE_ELEMENT__DOMAIN_TYPE, oldDomainType, domainType));
 	}
 
 	/**
@@ -128,8 +127,7 @@ public abstract class TGGRuleElementImpl extends MinimalEObjectImpl.Container im
 		BindingType oldBindingType = bindingType;
 		bindingType = newBindingType == null ? BINDING_TYPE_EDEFAULT : newBindingType;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE_ELEMENT__BINDING_TYPE,
-					oldBindingType, bindingType));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE_ELEMENT__BINDING_TYPE, oldBindingType, bindingType));
 	}
 
 	/**
@@ -140,10 +138,10 @@ public abstract class TGGRuleElementImpl extends MinimalEObjectImpl.Container im
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case IBeXTGGModelPackage.TGG_RULE_ELEMENT__DOMAIN_TYPE:
-			return getDomainType();
-		case IBeXTGGModelPackage.TGG_RULE_ELEMENT__BINDING_TYPE:
-			return getBindingType();
+			case IBeXTGGModelPackage.TGG_RULE_ELEMENT__DOMAIN_TYPE:
+				return getDomainType();
+			case IBeXTGGModelPackage.TGG_RULE_ELEMENT__BINDING_TYPE:
+				return getBindingType();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -156,12 +154,12 @@ public abstract class TGGRuleElementImpl extends MinimalEObjectImpl.Container im
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case IBeXTGGModelPackage.TGG_RULE_ELEMENT__DOMAIN_TYPE:
-			setDomainType((DomainType) newValue);
-			return;
-		case IBeXTGGModelPackage.TGG_RULE_ELEMENT__BINDING_TYPE:
-			setBindingType((BindingType) newValue);
-			return;
+			case IBeXTGGModelPackage.TGG_RULE_ELEMENT__DOMAIN_TYPE:
+				setDomainType((DomainType) newValue);
+				return;
+			case IBeXTGGModelPackage.TGG_RULE_ELEMENT__BINDING_TYPE:
+				setBindingType((BindingType) newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -174,12 +172,12 @@ public abstract class TGGRuleElementImpl extends MinimalEObjectImpl.Container im
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case IBeXTGGModelPackage.TGG_RULE_ELEMENT__DOMAIN_TYPE:
-			setDomainType(DOMAIN_TYPE_EDEFAULT);
-			return;
-		case IBeXTGGModelPackage.TGG_RULE_ELEMENT__BINDING_TYPE:
-			setBindingType(BINDING_TYPE_EDEFAULT);
-			return;
+			case IBeXTGGModelPackage.TGG_RULE_ELEMENT__DOMAIN_TYPE:
+				setDomainType(DOMAIN_TYPE_EDEFAULT);
+				return;
+			case IBeXTGGModelPackage.TGG_RULE_ELEMENT__BINDING_TYPE:
+				setBindingType(BINDING_TYPE_EDEFAULT);
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -192,10 +190,10 @@ public abstract class TGGRuleElementImpl extends MinimalEObjectImpl.Container im
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case IBeXTGGModelPackage.TGG_RULE_ELEMENT__DOMAIN_TYPE:
-			return domainType != DOMAIN_TYPE_EDEFAULT;
-		case IBeXTGGModelPackage.TGG_RULE_ELEMENT__BINDING_TYPE:
-			return bindingType != BINDING_TYPE_EDEFAULT;
+			case IBeXTGGModelPackage.TGG_RULE_ELEMENT__DOMAIN_TYPE:
+				return domainType != DOMAIN_TYPE_EDEFAULT;
+			case IBeXTGGModelPackage.TGG_RULE_ELEMENT__BINDING_TYPE:
+				return bindingType != BINDING_TYPE_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
 	}

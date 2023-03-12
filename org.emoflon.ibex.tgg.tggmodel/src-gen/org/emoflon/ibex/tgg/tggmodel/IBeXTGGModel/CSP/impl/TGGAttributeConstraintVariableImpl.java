@@ -84,8 +84,7 @@ public class TGGAttributeConstraintVariableImpl extends ValueExpressionImpl impl
 		String oldName = name;
 		name = newName;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_VARIABLE__NAME,
-					oldName, name));
+			eNotify(new ENotificationImpl(this, Notification.SET, CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_VARIABLE__NAME, oldName, name));
 	}
 
 	/**
@@ -96,8 +95,8 @@ public class TGGAttributeConstraintVariableImpl extends ValueExpressionImpl impl
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_VARIABLE__NAME:
-			return getName();
+			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_VARIABLE__NAME:
+				return getName();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -110,9 +109,9 @@ public class TGGAttributeConstraintVariableImpl extends ValueExpressionImpl impl
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_VARIABLE__NAME:
-			setName((String) newValue);
-			return;
+			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_VARIABLE__NAME:
+				setName((String) newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -125,9 +124,9 @@ public class TGGAttributeConstraintVariableImpl extends ValueExpressionImpl impl
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_VARIABLE__NAME:
-			setName(NAME_EDEFAULT);
-			return;
+			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_VARIABLE__NAME:
+				setName(NAME_EDEFAULT);
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -140,8 +139,8 @@ public class TGGAttributeConstraintVariableImpl extends ValueExpressionImpl impl
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_VARIABLE__NAME:
-			return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
+			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_VARIABLE__NAME:
+				return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
 		}
 		return super.eIsSet(featureID);
 	}
