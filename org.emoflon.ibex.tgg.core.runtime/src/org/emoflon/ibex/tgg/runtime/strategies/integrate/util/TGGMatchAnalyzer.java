@@ -24,7 +24,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
-import org.emoflon.ibex.tgg.util.TGGInplaceAttrExprUtil;
+import org.emoflon.ibex.tgg.util.TGGAttrExprUtil;
 
 import language.TGGAttributeExpression;
 import language.TGGInplaceAttributeExpression;
@@ -143,7 +143,7 @@ public class TGGMatchAnalyzer {
 		for (TGGNode node : util.rule.getNodes()) {
 			EObject eObject = util.getEObject(node);
 			for (TGGInplaceAttributeExpression attrExpr : node.getAttrExpr()) {
-				if (!TGGInplaceAttrExprUtil.checkInplaceAttributeCondition(attrExpr, eObject, nodeName2eObject)) {
+				if (!TGGAttrExprUtil.checkInplaceAttributeCondition(attrExpr, eObject, nodeName2eObject)) {
 					Set<AttributeChange> attrChanges = util.integrate.generalModelChanges().getAttributeChanges(eObject);
 					for (AttributeChange attrChange : attrChanges) {
 						if (attrChange.getAttribute().equals(attrExpr.getAttribute())) {

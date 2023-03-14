@@ -32,7 +32,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.util.EMFNavigationUtil;
-import org.emoflon.ibex.tgg.util.TGGInplaceAttrExprUtil;
+import org.emoflon.ibex.tgg.util.TGGAttrExprUtil;
 import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 
@@ -212,7 +212,7 @@ public class SearchPlanCreator {
 		for (TGGInplaceAttributeExpression inplAttrExpr : key.getAttrExpr()) {
 			Object subjectAttr = node.eGet(inplAttrExpr.getAttribute());
 
-			if (!TGGInplaceAttrExprUtil.checkInplaceAttributeCondition(inplAttrExpr, subjectAttr, candidates))
+			if (!TGGAttrExprUtil.checkInplaceAttributeCondition(inplAttrExpr, subjectAttr, candidates))
 				return false;
 		}
 		return true;
