@@ -28,8 +28,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintBind
  *
  * @generated
  */
-public class TGGAttributeConstraintBindingImpl extends MinimalEObjectImpl.Container
-		implements TGGAttributeConstraintBinding {
+public class TGGAttributeConstraintBindingImpl extends MinimalEObjectImpl.Container implements TGGAttributeConstraintBinding {
 	/**
 	 * The cached value of the '{@link #getValue() <em>Value</em>}' attribute list.
 	 * <!-- begin-user-doc -->
@@ -79,8 +78,8 @@ public class TGGAttributeConstraintBindingImpl extends MinimalEObjectImpl.Contai
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_BINDING__VALUE:
-			return getValue();
+			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_BINDING__VALUE:
+				return getValue();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -94,10 +93,10 @@ public class TGGAttributeConstraintBindingImpl extends MinimalEObjectImpl.Contai
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_BINDING__VALUE:
-			getValue().clear();
-			getValue().addAll((Collection<? extends String>) newValue);
-			return;
+			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_BINDING__VALUE:
+				getValue().clear();
+				getValue().addAll((Collection<? extends String>) newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -110,9 +109,9 @@ public class TGGAttributeConstraintBindingImpl extends MinimalEObjectImpl.Contai
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_BINDING__VALUE:
-			getValue().clear();
-			return;
+			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_BINDING__VALUE:
+				getValue().clear();
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -125,8 +124,8 @@ public class TGGAttributeConstraintBindingImpl extends MinimalEObjectImpl.Contai
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_BINDING__VALUE:
-			return value != null && !value.isEmpty();
+			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_BINDING__VALUE:
+				return value != null && !value.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

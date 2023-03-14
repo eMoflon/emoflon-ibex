@@ -149,8 +149,8 @@ public class TGGModelImpl extends IBeXModelImpl implements TGGModel {
 			correspondence = (EPackage) eResolveProxy(oldCorrespondence);
 			if (correspondence != oldCorrespondence) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
-							IBeXTGGModelPackage.TGG_MODEL__CORRESPONDENCE, oldCorrespondence, correspondence));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, IBeXTGGModelPackage.TGG_MODEL__CORRESPONDENCE, oldCorrespondence,
+							correspondence));
 			}
 		}
 		return correspondence;
@@ -174,8 +174,7 @@ public class TGGModelImpl extends IBeXModelImpl implements TGGModel {
 		EPackage oldCorrespondence = correspondence;
 		correspondence = newCorrespondence;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_MODEL__CORRESPONDENCE,
-					oldCorrespondence, correspondence));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_MODEL__CORRESPONDENCE, oldCorrespondence, correspondence));
 	}
 
 	/**
@@ -196,8 +195,8 @@ public class TGGModelImpl extends IBeXModelImpl implements TGGModel {
 		TGGRuleSet oldRuleSet = ruleSet;
 		ruleSet = newRuleSet;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
-					IBeXTGGModelPackage.TGG_MODEL__RULE_SET, oldRuleSet, newRuleSet);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_MODEL__RULE_SET, oldRuleSet,
+					newRuleSet);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -215,17 +214,14 @@ public class TGGModelImpl extends IBeXModelImpl implements TGGModel {
 		if (newRuleSet != ruleSet) {
 			NotificationChain msgs = null;
 			if (ruleSet != null)
-				msgs = ((InternalEObject) ruleSet).eInverseRemove(this,
-						EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_MODEL__RULE_SET, null, msgs);
+				msgs = ((InternalEObject) ruleSet).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_MODEL__RULE_SET, null, msgs);
 			if (newRuleSet != null)
-				msgs = ((InternalEObject) newRuleSet).eInverseAdd(this,
-						EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_MODEL__RULE_SET, null, msgs);
+				msgs = ((InternalEObject) newRuleSet).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_MODEL__RULE_SET, null, msgs);
 			msgs = basicSetRuleSet(newRuleSet, msgs);
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_MODEL__RULE_SET, newRuleSet,
-					newRuleSet));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_MODEL__RULE_SET, newRuleSet, newRuleSet));
 	}
 
 	/**
@@ -236,8 +232,7 @@ public class TGGModelImpl extends IBeXModelImpl implements TGGModel {
 	public EList<TGGAttributeConstraintDefinitionLibrary> getAttributeConstraintDefinitionLibraries() {
 		if (attributeConstraintDefinitionLibraries == null) {
 			attributeConstraintDefinitionLibraries = new EObjectContainmentEList<TGGAttributeConstraintDefinitionLibrary>(
-					TGGAttributeConstraintDefinitionLibrary.class, this,
-					IBeXTGGModelPackage.TGG_MODEL__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARIES);
+					TGGAttributeConstraintDefinitionLibrary.class, this, IBeXTGGModelPackage.TGG_MODEL__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARIES);
 		}
 		return attributeConstraintDefinitionLibraries;
 	}
@@ -250,10 +245,10 @@ public class TGGModelImpl extends IBeXModelImpl implements TGGModel {
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-		case IBeXTGGModelPackage.TGG_MODEL__RULE_SET:
-			return basicSetRuleSet(null, msgs);
-		case IBeXTGGModelPackage.TGG_MODEL__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARIES:
-			return ((InternalEList<?>) getAttributeConstraintDefinitionLibraries()).basicRemove(otherEnd, msgs);
+			case IBeXTGGModelPackage.TGG_MODEL__RULE_SET:
+				return basicSetRuleSet(null, msgs);
+			case IBeXTGGModelPackage.TGG_MODEL__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARIES:
+				return ((InternalEList<?>) getAttributeConstraintDefinitionLibraries()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -266,18 +261,18 @@ public class TGGModelImpl extends IBeXModelImpl implements TGGModel {
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case IBeXTGGModelPackage.TGG_MODEL__SOURCE:
-			return getSource();
-		case IBeXTGGModelPackage.TGG_MODEL__TARGET:
-			return getTarget();
-		case IBeXTGGModelPackage.TGG_MODEL__CORRESPONDENCE:
-			if (resolve)
-				return getCorrespondence();
-			return basicGetCorrespondence();
-		case IBeXTGGModelPackage.TGG_MODEL__RULE_SET:
-			return getRuleSet();
-		case IBeXTGGModelPackage.TGG_MODEL__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARIES:
-			return getAttributeConstraintDefinitionLibraries();
+			case IBeXTGGModelPackage.TGG_MODEL__SOURCE:
+				return getSource();
+			case IBeXTGGModelPackage.TGG_MODEL__TARGET:
+				return getTarget();
+			case IBeXTGGModelPackage.TGG_MODEL__CORRESPONDENCE:
+				if (resolve)
+					return getCorrespondence();
+				return basicGetCorrespondence();
+			case IBeXTGGModelPackage.TGG_MODEL__RULE_SET:
+				return getRuleSet();
+			case IBeXTGGModelPackage.TGG_MODEL__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARIES:
+				return getAttributeConstraintDefinitionLibraries();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -291,25 +286,24 @@ public class TGGModelImpl extends IBeXModelImpl implements TGGModel {
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case IBeXTGGModelPackage.TGG_MODEL__SOURCE:
-			getSource().clear();
-			getSource().addAll((Collection<? extends EPackage>) newValue);
-			return;
-		case IBeXTGGModelPackage.TGG_MODEL__TARGET:
-			getTarget().clear();
-			getTarget().addAll((Collection<? extends EPackage>) newValue);
-			return;
-		case IBeXTGGModelPackage.TGG_MODEL__CORRESPONDENCE:
-			setCorrespondence((EPackage) newValue);
-			return;
-		case IBeXTGGModelPackage.TGG_MODEL__RULE_SET:
-			setRuleSet((TGGRuleSet) newValue);
-			return;
-		case IBeXTGGModelPackage.TGG_MODEL__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARIES:
-			getAttributeConstraintDefinitionLibraries().clear();
-			getAttributeConstraintDefinitionLibraries()
-					.addAll((Collection<? extends TGGAttributeConstraintDefinitionLibrary>) newValue);
-			return;
+			case IBeXTGGModelPackage.TGG_MODEL__SOURCE:
+				getSource().clear();
+				getSource().addAll((Collection<? extends EPackage>) newValue);
+				return;
+			case IBeXTGGModelPackage.TGG_MODEL__TARGET:
+				getTarget().clear();
+				getTarget().addAll((Collection<? extends EPackage>) newValue);
+				return;
+			case IBeXTGGModelPackage.TGG_MODEL__CORRESPONDENCE:
+				setCorrespondence((EPackage) newValue);
+				return;
+			case IBeXTGGModelPackage.TGG_MODEL__RULE_SET:
+				setRuleSet((TGGRuleSet) newValue);
+				return;
+			case IBeXTGGModelPackage.TGG_MODEL__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARIES:
+				getAttributeConstraintDefinitionLibraries().clear();
+				getAttributeConstraintDefinitionLibraries().addAll((Collection<? extends TGGAttributeConstraintDefinitionLibrary>) newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -322,21 +316,21 @@ public class TGGModelImpl extends IBeXModelImpl implements TGGModel {
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case IBeXTGGModelPackage.TGG_MODEL__SOURCE:
-			getSource().clear();
-			return;
-		case IBeXTGGModelPackage.TGG_MODEL__TARGET:
-			getTarget().clear();
-			return;
-		case IBeXTGGModelPackage.TGG_MODEL__CORRESPONDENCE:
-			setCorrespondence((EPackage) null);
-			return;
-		case IBeXTGGModelPackage.TGG_MODEL__RULE_SET:
-			setRuleSet((TGGRuleSet) null);
-			return;
-		case IBeXTGGModelPackage.TGG_MODEL__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARIES:
-			getAttributeConstraintDefinitionLibraries().clear();
-			return;
+			case IBeXTGGModelPackage.TGG_MODEL__SOURCE:
+				getSource().clear();
+				return;
+			case IBeXTGGModelPackage.TGG_MODEL__TARGET:
+				getTarget().clear();
+				return;
+			case IBeXTGGModelPackage.TGG_MODEL__CORRESPONDENCE:
+				setCorrespondence((EPackage) null);
+				return;
+			case IBeXTGGModelPackage.TGG_MODEL__RULE_SET:
+				setRuleSet((TGGRuleSet) null);
+				return;
+			case IBeXTGGModelPackage.TGG_MODEL__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARIES:
+				getAttributeConstraintDefinitionLibraries().clear();
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -349,16 +343,16 @@ public class TGGModelImpl extends IBeXModelImpl implements TGGModel {
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case IBeXTGGModelPackage.TGG_MODEL__SOURCE:
-			return source != null && !source.isEmpty();
-		case IBeXTGGModelPackage.TGG_MODEL__TARGET:
-			return target != null && !target.isEmpty();
-		case IBeXTGGModelPackage.TGG_MODEL__CORRESPONDENCE:
-			return correspondence != null;
-		case IBeXTGGModelPackage.TGG_MODEL__RULE_SET:
-			return ruleSet != null;
-		case IBeXTGGModelPackage.TGG_MODEL__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARIES:
-			return attributeConstraintDefinitionLibraries != null && !attributeConstraintDefinitionLibraries.isEmpty();
+			case IBeXTGGModelPackage.TGG_MODEL__SOURCE:
+				return source != null && !source.isEmpty();
+			case IBeXTGGModelPackage.TGG_MODEL__TARGET:
+				return target != null && !target.isEmpty();
+			case IBeXTGGModelPackage.TGG_MODEL__CORRESPONDENCE:
+				return correspondence != null;
+			case IBeXTGGModelPackage.TGG_MODEL__RULE_SET:
+				return ruleSet != null;
+			case IBeXTGGModelPackage.TGG_MODEL__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARIES:
+				return attributeConstraintDefinitionLibraries != null && !attributeConstraintDefinitionLibraries.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

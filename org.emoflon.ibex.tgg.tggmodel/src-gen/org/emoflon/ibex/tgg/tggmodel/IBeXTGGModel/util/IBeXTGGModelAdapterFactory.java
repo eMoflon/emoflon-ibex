@@ -113,6 +113,16 @@ public class IBeXTGGModelAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
+		public Adapter caseTGGShortcutRule(TGGShortcutRule object) {
+			return createTGGShortcutRuleAdapter();
+		}
+
+		@Override
+		public Adapter caseTGGShortcutRuleElementMapping(TGGShortcutRuleElementMapping object) {
+			return createTGGShortcutRuleElementMappingAdapter();
+		}
+
+		@Override
 		public Adapter caseIBeXNamedElement(IBeXNamedElement object) {
 			return createIBeXNamedElementAdapter();
 		}
@@ -265,6 +275,34 @@ public class IBeXTGGModelAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createTGGEdgeAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGShortcutRule <em>TGG Shortcut Rule</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGShortcutRule
+	 * @generated
+	 */
+	public Adapter createTGGShortcutRuleAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGShortcutRuleElementMapping <em>TGG Shortcut Rule Element Mapping</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGShortcutRuleElementMapping
+	 * @generated
+	 */
+	public Adapter createTGGShortcutRuleElementMappingAdapter() {
 		return null;
 	}
 

@@ -5,24 +5,22 @@ import static org.emoflon.ibex.tgg.util.TGGModelUtils.getMarkerRefName;
 import static org.emoflon.ibex.tgg.util.TGGModelUtils.getMarkerTypeName;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelFactory;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta;
 import org.emoflon.ibex.tgg.compiler.analysis.ACAnalysis;
 import org.emoflon.ibex.tgg.compiler.analysis.FilterNACCandidate;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
-import org.emoflon.ibex.tgg.runtime.patterns.GreenPatternFactory;
-import org.emoflon.ibex.tgg.runtime.patterns.IGreenPattern;
-import org.emoflon.ibex.tgg.runtime.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderSupport;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRule;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRule.HigherOrderRuleComponent;
-import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.ShortcutRule.SCInputRule;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.RuntimeShortcutRule.SCInputRule;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.SearchPlan;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.SearchPlanCreator;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
@@ -31,9 +29,6 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelFactory;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
-
-import language.LanguageFactory;
 
 /**
  * 
@@ -52,22 +47,18 @@ public abstract class OperationalShortcutRule {
 	protected final static Logger logger = Logger.getLogger(OperationalShortcutRule.class);
 
 	protected final IbexOptions options;
-	protected ShortcutRule rawShortcutRule;
-	protected ShortcutRule operationalizedSCR;
+	protected RuntimeShortcutRule rawShortcutRule;
+	protected RuntimeShortcutRule operationalizedSCR;
 	protected ACAnalysis filterNACAnalysis;
 
 	protected SearchPlanCreator searchPlanCreator;
 
-	protected Collection<TGGRuleElement> markedElements;
-
-	private IGreenPattern greenPattern;
-
-	public OperationalShortcutRule(IbexOptions options, ShortcutRule shortcutRule, ACAnalysis filterNACAnalysis) {
+	public OperationalShortcutRule(IbexOptions options, RuntimeShortcutRule shortcutRule, ACAnalysis filterNACAnalysis) {
 		this.options = options;
 		this.rawShortcutRule = shortcutRule;
 		this.operationalizedSCR = shortcutRule.copy();
+		initMarkerSets();
 		this.filterNACAnalysis = filterNACAnalysis;
-		this.markedElements = new HashSet<>();
 
 		operationalize();
 		if (operationalizedSCR.getOriginalRule() instanceof HigherOrderTGGRule hoRule)
@@ -76,6 +67,13 @@ public abstract class OperationalShortcutRule {
 			createOldRuleApplicationNode();
 
 		this.searchPlanCreator = new SearchPlanCreator(options, this);
+	}
+
+	private void initMarkerSets() {
+		IBeXRuleDelta toBeMarkedDelta = IBeXCoreModelFactory.eINSTANCE.createIBeXRuleDelta();
+		operationalizedSCR.getShortcutRule().setToBeMarked(toBeMarkedDelta);
+		IBeXRuleDelta alreadyMarkedDelta = IBeXCoreModelFactory.eINSTANCE.createIBeXRuleDelta();
+		operationalizedSCR.getShortcutRule().setAlreadyMarked(alreadyMarkedDelta);
 	}
 
 	abstract protected void operationalize();
@@ -208,7 +206,7 @@ public abstract class OperationalShortcutRule {
 	}
 
 	protected void transformInterfaceEdges(Collection<TGGEdge> filteredEdges, BindingType target) {
-		markedElements.addAll(filteredEdges.stream()
+		operationalizedSCR.getShortcutRule().getToBeMarked().getEdges().addAll(filteredEdges.stream()
 				.filter(e -> operationalizedSCR.getPreservedNodes().contains(e.getSource()) ^ operationalizedSCR.getPreservedNodes().contains(e.getTarget()))
 				.collect(Collectors.toList()));
 
@@ -270,33 +268,16 @@ public abstract class OperationalShortcutRule {
 		return searchPlanCreator.createSearchPlan();
 	}
 
-	public ShortcutRule getRawShortcutRule() {
+	public RuntimeShortcutRule getRawShortcutRule() {
 		return rawShortcutRule;
 	}
 
-	public ShortcutRule getOperationalizedSCR() {
+	public RuntimeShortcutRule getOperationalizedSCR() {
 		return operationalizedSCR;
 	}
 
 	public String getName() {
 		return getType() + "_" + operationalizedSCR.getName();
-	}
-
-	public IGreenPattern getGreenPattern() {
-		if (greenPattern == null) {
-			greenPattern = createGreenPattern();
-		}
-		return greenPattern;
-	}
-
-	private IGreenPattern createGreenPattern() {
-		IGreenPatternFactory greenPatternFactory;
-		if (operationalizedSCR.getReplacingRule() instanceof HigherOrderTGGRule hoRule)
-			greenPatternFactory = new GreenPatternFactory(options, hoRule);
-		else
-			greenPatternFactory = options.patterns.greenPatternFactories().get(operationalizedSCR.getReplacingRule().getName());
-
-		return new GreenSCPattern(greenPatternFactory, this);
 	}
 
 	@Override

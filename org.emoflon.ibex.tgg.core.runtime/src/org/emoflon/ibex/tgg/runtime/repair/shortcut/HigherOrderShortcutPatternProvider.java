@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.repair.shortcut;
+package org.emoflon.ibex.tgg.runtime.repair.shortcut;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -9,30 +9,29 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRule;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRule.ComponentSpecificRuleElement;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRule.HigherOrderRuleComponent;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRuleFactory;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.ShortcutApplicationPoint;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.OperationalShortcutRule;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.search.LocalPatternSearch;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.util.OverlapCategory;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCPersistence;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.util.OverlapUtil.FixedMappings;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.util.TGGOverlap;
-import org.emoflon.ibex.tgg.operational.repair.strategies.RepairApplicationPoint;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceGraph;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceNode;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtilProvider;
+import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRule;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRule.ComponentSpecificRuleElement;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRule.HigherOrderRuleComponent;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRuleFactory;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.ShortcutApplicationPoint;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.OperationalShortcutRule;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.RuntimeShortcutRule;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.LocalPatternSearch;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.OverlapCategory;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.OverlapUtil.FixedMappings;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.SCPersistence;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.TGGOverlap;
+import org.emoflon.ibex.tgg.runtime.repair.strategies.RepairApplicationPoint;
+import org.emoflon.ibex.tgg.runtime.strategies.integrate.matchcontainer.PrecedenceGraph;
+import org.emoflon.ibex.tgg.runtime.strategies.integrate.matchcontainer.PrecedenceNode;
+import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.TGGMatchUtil;
+import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.TGGMatchUtilProvider;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
 
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
-
-import language.DomainType;
-import language.TGGRuleElement;
 
 public class HigherOrderShortcutPatternProvider extends BasicShortcutPatternProvider {
 
@@ -41,7 +40,7 @@ public class HigherOrderShortcutPatternProvider extends BasicShortcutPatternProv
 
 	// to reuse generated Short-cut Rules, we utilize a two stage hashing of the application point, here
 	// the original-nodes list is hashed first, and the replacing-nodes lists second:
-	private final Map<String, Map<String, Collection<ShortcutRule>>> higherOrderShortcutRules;
+	private final Map<String, Map<String, Collection<RuntimeShortcutRule>>> higherOrderShortcutRules;
 	private final Map<String, Map<String, Map<PatternType, Collection<OperationalShortcutRule>>>> higherOrderShortcutPatterns;
 
 	public HigherOrderShortcutPatternProvider(IbexOptions options, PrecedenceGraph pg, TGGMatchUtilProvider mup, //
@@ -72,11 +71,11 @@ public class HigherOrderShortcutPatternProvider extends BasicShortcutPatternProv
 		Set<String> replacingNodesIDs = applPoint.getID2replacingNodes().keySet();
 
 		// first, if not present, we generate the short-cut rules:
-		Map<String, Collection<ShortcutRule>> replacingID2shortcutRules = higherOrderShortcutRules //
+		Map<String, Collection<RuntimeShortcutRule>> replacingID2shortcutRules = higherOrderShortcutRules //
 				.computeIfAbsent(originalNodesID, k -> new HashMap<>());
 
 		SetView<String> missingReplacingNodeIDs = Sets.difference(replacingNodesIDs, replacingID2shortcutRules.keySet());
-		Map<String, Set<ShortcutRule>> missingReplacingID2shortcutRules = generateHigherOrderShortcutRules(applPoint, missingReplacingNodeIDs);
+		Map<String, Set<RuntimeShortcutRule>> missingReplacingID2shortcutRules = generateHigherOrderShortcutRules(applPoint, missingReplacingNodeIDs);
 		replacingID2shortcutRules.putAll(missingReplacingID2shortcutRules);
 
 		// second, we operationalize the short-cut rules:
@@ -88,7 +87,7 @@ public class HigherOrderShortcutPatternProvider extends BasicShortcutPatternProv
 			Map<PatternType, Collection<OperationalShortcutRule>> opRulesByPattern = replacingID2opRules //
 					.computeIfAbsent(replacingNodeID, k -> new HashMap<>());
 
-			Collection<ShortcutRule> shortcutRules = replacingID2shortcutRules.get(replacingNodeID);
+			Collection<RuntimeShortcutRule> shortcutRules = replacingID2shortcutRules.get(replacingNodeID);
 			Collection<OperationalShortcutRule> opRules = opRulesByPattern //
 					.computeIfAbsent(applPoint.getRepairType(), k -> generateHigherOrderShortcutPatterns(shortcutRules, k));
 			generatedOpRules.addAll(opRules);
@@ -99,17 +98,17 @@ public class HigherOrderShortcutPatternProvider extends BasicShortcutPatternProv
 		return generatedOpRules;
 	}
 
-	private Collection<OperationalShortcutRule> generateHigherOrderShortcutPatterns(Collection<ShortcutRule> shortcutRules, PatternType repairType) {
+	private Collection<OperationalShortcutRule> generateHigherOrderShortcutPatterns(Collection<RuntimeShortcutRule> shortcutRules, PatternType repairType) {
 		return opSCFactory.createOperationalRules(shortcutRules, repairType) //
 				.values().stream() //
 				.flatMap(c -> c.stream()) //
 				.collect(Collectors.toList());
 	}
 
-	private Map<String, Set<ShortcutRule>> generateHigherOrderShortcutRules(ShortcutApplicationPoint applPoint, Set<String> replacingNodesIDs) {
+	private Map<String, Set<RuntimeShortcutRule>> generateHigherOrderShortcutRules(ShortcutApplicationPoint applPoint, Set<String> replacingNodesIDs) {
 		DomainType propagationDomain = switch (applPoint.getPropagationMatchType()) {
-			case SRC -> DomainType.SRC;
-			case TRG -> DomainType.TRG;
+			case SRC -> DomainType.SOURCE;
+			case TRG -> DomainType.TARGET;
 			default -> throw new RuntimeException("Unexpected propagation type: " + applPoint.getRepairType());
 		};
 
@@ -124,10 +123,10 @@ public class HigherOrderShortcutPatternProvider extends BasicShortcutPatternProv
 			createHigherOrderTGGOverlaps(originalHigherOrderRule, replacingHigherOrderRule, applPoint, currentOverlaps);
 		});
 
-		Map<String, Set<ShortcutRule>> shortcutRules = new HashMap<>();
+		Map<String, Set<RuntimeShortcutRule>> shortcutRules = new HashMap<>();
 		id2overlaps.forEach((id, overlaps) -> shortcutRules.put(id, //
 				overlaps.stream() //
-						.map(overlap -> new ShortcutRule(overlap, options)) //
+						.map(overlap -> new RuntimeShortcutRule(overlap, options)) //
 						.collect(Collectors.toSet()) //
 		));
 
@@ -177,7 +176,7 @@ public class HigherOrderShortcutPatternProvider extends BasicShortcutPatternProv
 	public void persistShortcutRules() {
 		SCPersistence persistence = new SCPersistence(options);
 
-		LinkedList<ShortcutRule> allShortcutRules = new LinkedList<>(basicShortcutRules);
+		LinkedList<RuntimeShortcutRule> allShortcutRules = new LinkedList<>(basicShortcutRules);
 		allShortcutRules.addAll( //
 				higherOrderShortcutRules.values().stream() //
 				.flatMap(m -> m.values().stream()) //

@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder;
 
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNamedElement;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRule.ComponentSpecificRuleElement;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRule.HigherOrderRuleComponent;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
@@ -22,7 +23,7 @@ public class HigherOrderSupport {
 		ComponentSpecificRuleElement componentSpecRuleElt = component.getComponentSpecificRuleElement(ruleNode);
 		if (componentSpecRuleElt == null)
 			return null;
-		return componentSpecRuleElt.getRespectiveHigherOrderElement().getName();
+		return ((IBeXNamedElement) componentSpecRuleElt.getRespectiveHigherOrderElement()).getName();
 	}
 
 	public static String getKeyRuleName(HigherOrderTGGRule higherOrderRule) {

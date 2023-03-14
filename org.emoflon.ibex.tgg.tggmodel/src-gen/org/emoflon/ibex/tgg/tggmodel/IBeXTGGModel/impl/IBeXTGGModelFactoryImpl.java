@@ -28,8 +28,7 @@ public class IBeXTGGModelFactoryImpl extends EFactoryImpl implements IBeXTGGMode
 	 */
 	public static IBeXTGGModelFactory init() {
 		try {
-			IBeXTGGModelFactory theIBeXTGGModelFactory = (IBeXTGGModelFactory) EPackage.Registry.INSTANCE
-					.getEFactory(IBeXTGGModelPackage.eNS_URI);
+			IBeXTGGModelFactory theIBeXTGGModelFactory = (IBeXTGGModelFactory) EPackage.Registry.INSTANCE.getEFactory(IBeXTGGModelPackage.eNS_URI);
 			if (theIBeXTGGModelFactory != null) {
 				return theIBeXTGGModelFactory;
 			}
@@ -57,22 +56,26 @@ public class IBeXTGGModelFactoryImpl extends EFactoryImpl implements IBeXTGGMode
 	@Override
 	public EObject create(EClass eClass) {
 		switch (eClass.getClassifierID()) {
-		case IBeXTGGModelPackage.TGG_MODEL:
-			return createTGGModel();
-		case IBeXTGGModelPackage.TGG_RULE_SET:
-			return createTGGRuleSet();
-		case IBeXTGGModelPackage.TGG_RULE:
-			return createTGGRule();
-		case IBeXTGGModelPackage.TGG_OPERATIONAL_RULE:
-			return createTGGOperationalRule();
-		case IBeXTGGModelPackage.TGG_NODE:
-			return createTGGNode();
-		case IBeXTGGModelPackage.TGG_CORRESPONDENCE:
-			return createTGGCorrespondence();
-		case IBeXTGGModelPackage.TGG_EDGE:
-			return createTGGEdge();
-		default:
-			throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
+			case IBeXTGGModelPackage.TGG_MODEL:
+				return createTGGModel();
+			case IBeXTGGModelPackage.TGG_RULE_SET:
+				return createTGGRuleSet();
+			case IBeXTGGModelPackage.TGG_RULE:
+				return createTGGRule();
+			case IBeXTGGModelPackage.TGG_OPERATIONAL_RULE:
+				return createTGGOperationalRule();
+			case IBeXTGGModelPackage.TGG_NODE:
+				return createTGGNode();
+			case IBeXTGGModelPackage.TGG_CORRESPONDENCE:
+				return createTGGCorrespondence();
+			case IBeXTGGModelPackage.TGG_EDGE:
+				return createTGGEdge();
+			case IBeXTGGModelPackage.TGG_SHORTCUT_RULE:
+				return createTGGShortcutRule();
+			case IBeXTGGModelPackage.TGG_SHORTCUT_RULE_ELEMENT_MAPPING:
+				return createTGGShortcutRuleElementMapping();
+			default:
+				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
 	}
 
@@ -84,14 +87,14 @@ public class IBeXTGGModelFactoryImpl extends EFactoryImpl implements IBeXTGGMode
 	@Override
 	public Object createFromString(EDataType eDataType, String initialValue) {
 		switch (eDataType.getClassifierID()) {
-		case IBeXTGGModelPackage.OPERATIONALISATION_MODE:
-			return createOperationalisationModeFromString(eDataType, initialValue);
-		case IBeXTGGModelPackage.DOMAIN_TYPE:
-			return createDomainTypeFromString(eDataType, initialValue);
-		case IBeXTGGModelPackage.BINDING_TYPE:
-			return createBindingTypeFromString(eDataType, initialValue);
-		default:
-			throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
+			case IBeXTGGModelPackage.OPERATIONALISATION_MODE:
+				return createOperationalisationModeFromString(eDataType, initialValue);
+			case IBeXTGGModelPackage.DOMAIN_TYPE:
+				return createDomainTypeFromString(eDataType, initialValue);
+			case IBeXTGGModelPackage.BINDING_TYPE:
+				return createBindingTypeFromString(eDataType, initialValue);
+			default:
+				throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
 		}
 	}
 
@@ -103,14 +106,14 @@ public class IBeXTGGModelFactoryImpl extends EFactoryImpl implements IBeXTGGMode
 	@Override
 	public String convertToString(EDataType eDataType, Object instanceValue) {
 		switch (eDataType.getClassifierID()) {
-		case IBeXTGGModelPackage.OPERATIONALISATION_MODE:
-			return convertOperationalisationModeToString(eDataType, instanceValue);
-		case IBeXTGGModelPackage.DOMAIN_TYPE:
-			return convertDomainTypeToString(eDataType, instanceValue);
-		case IBeXTGGModelPackage.BINDING_TYPE:
-			return convertBindingTypeToString(eDataType, instanceValue);
-		default:
-			throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
+			case IBeXTGGModelPackage.OPERATIONALISATION_MODE:
+				return convertOperationalisationModeToString(eDataType, instanceValue);
+			case IBeXTGGModelPackage.DOMAIN_TYPE:
+				return convertDomainTypeToString(eDataType, instanceValue);
+			case IBeXTGGModelPackage.BINDING_TYPE:
+				return convertBindingTypeToString(eDataType, instanceValue);
+			default:
+				throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
 		}
 	}
 
@@ -189,11 +192,30 @@ public class IBeXTGGModelFactoryImpl extends EFactoryImpl implements IBeXTGGMode
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public TGGShortcutRule createTGGShortcutRule() {
+		TGGShortcutRuleImpl tggShortcutRule = new TGGShortcutRuleImpl();
+		return tggShortcutRule;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public TGGShortcutRuleElementMapping createTGGShortcutRuleElementMapping() {
+		TGGShortcutRuleElementMappingImpl tggShortcutRuleElementMapping = new TGGShortcutRuleElementMappingImpl();
+		return tggShortcutRuleElementMapping;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public OperationalisationMode createOperationalisationModeFromString(EDataType eDataType, String initialValue) {
 		OperationalisationMode result = OperationalisationMode.get(initialValue);
 		if (result == null)
-			throw new IllegalArgumentException(
-					"The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
+			throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
 		return result;
 	}
 
@@ -214,8 +236,7 @@ public class IBeXTGGModelFactoryImpl extends EFactoryImpl implements IBeXTGGMode
 	public DomainType createDomainTypeFromString(EDataType eDataType, String initialValue) {
 		DomainType result = DomainType.get(initialValue);
 		if (result == null)
-			throw new IllegalArgumentException(
-					"The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
+			throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
 		return result;
 	}
 
@@ -236,8 +257,7 @@ public class IBeXTGGModelFactoryImpl extends EFactoryImpl implements IBeXTGGMode
 	public BindingType createBindingTypeFromString(EDataType eDataType, String initialValue) {
 		BindingType result = BindingType.get(initialValue);
 		if (result == null)
-			throw new IllegalArgumentException(
-					"The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
+			throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
 		return result;
 	}
 

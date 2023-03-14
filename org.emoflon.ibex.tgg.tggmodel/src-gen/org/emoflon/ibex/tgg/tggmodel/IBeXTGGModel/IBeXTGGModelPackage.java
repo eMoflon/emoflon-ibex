@@ -1184,6 +1184,395 @@ public interface IBeXTGGModelPackage extends EPackage {
 	int TGG_EDGE_OPERATION_COUNT = IBeXCoreModelPackage.IBE_XEDGE_OPERATION_COUNT + 0;
 
 	/**
+	 * The meta object id for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGShortcutRuleImpl <em>TGG Shortcut Rule</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGShortcutRuleImpl
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.IBeXTGGModelPackageImpl#getTGGShortcutRule()
+	 * @generated
+	 */
+	int TGG_SHORTCUT_RULE = 8;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__NAME = TGG_OPERATIONAL_RULE__NAME;
+
+	/**
+	 * The feature id for the '<em><b>Precondition</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__PRECONDITION = TGG_OPERATIONAL_RULE__PRECONDITION;
+
+	/**
+	 * The feature id for the '<em><b>Postcondition</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__POSTCONDITION = TGG_OPERATIONAL_RULE__POSTCONDITION;
+
+	/**
+	 * The feature id for the '<em><b>Creation</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__CREATION = TGG_OPERATIONAL_RULE__CREATION;
+
+	/**
+	 * The feature id for the '<em><b>Deletion</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__DELETION = TGG_OPERATIONAL_RULE__DELETION;
+
+	/**
+	 * The feature id for the '<em><b>Attribute Assignments</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__ATTRIBUTE_ASSIGNMENTS = TGG_OPERATIONAL_RULE__ATTRIBUTE_ASSIGNMENTS;
+
+	/**
+	 * The feature id for the '<em><b>All Nodes</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__ALL_NODES = TGG_OPERATIONAL_RULE__ALL_NODES;
+
+	/**
+	 * The feature id for the '<em><b>All Edges</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__ALL_EDGES = TGG_OPERATIONAL_RULE__ALL_EDGES;
+
+	/**
+	 * The feature id for the '<em><b>Nodes</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__NODES = TGG_OPERATIONAL_RULE__NODES;
+
+	/**
+	 * The feature id for the '<em><b>Edges</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__EDGES = TGG_OPERATIONAL_RULE__EDGES;
+
+	/**
+	 * The feature id for the '<em><b>Correspondence Nodes</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__CORRESPONDENCE_NODES = TGG_OPERATIONAL_RULE__CORRESPONDENCE_NODES;
+
+	/**
+	 * The feature id for the '<em><b>Operationalisations</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__OPERATIONALISATIONS = TGG_OPERATIONAL_RULE__OPERATIONALISATIONS;
+
+	/**
+	 * The feature id for the '<em><b>Attribute Constraints</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__ATTRIBUTE_CONSTRAINTS = TGG_OPERATIONAL_RULE__ATTRIBUTE_CONSTRAINTS;
+
+	/**
+	 * The feature id for the '<em><b>Abstract</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__ABSTRACT = TGG_OPERATIONAL_RULE__ABSTRACT;
+
+	/**
+	 * The feature id for the '<em><b>Axiom</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__AXIOM = TGG_OPERATIONAL_RULE__AXIOM;
+
+	/**
+	 * The feature id for the '<em><b>Context</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__CONTEXT = TGG_OPERATIONAL_RULE__CONTEXT;
+
+	/**
+	 * The feature id for the '<em><b>Context Source</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__CONTEXT_SOURCE = TGG_OPERATIONAL_RULE__CONTEXT_SOURCE;
+
+	/**
+	 * The feature id for the '<em><b>Context Correspondence</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__CONTEXT_CORRESPONDENCE = TGG_OPERATIONAL_RULE__CONTEXT_CORRESPONDENCE;
+
+	/**
+	 * The feature id for the '<em><b>Context Target</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__CONTEXT_TARGET = TGG_OPERATIONAL_RULE__CONTEXT_TARGET;
+
+	/**
+	 * The feature id for the '<em><b>Create Source And Target</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__CREATE_SOURCE_AND_TARGET = TGG_OPERATIONAL_RULE__CREATE_SOURCE_AND_TARGET;
+
+	/**
+	 * The feature id for the '<em><b>Create</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__CREATE = TGG_OPERATIONAL_RULE__CREATE;
+
+	/**
+	 * The feature id for the '<em><b>Create Source</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__CREATE_SOURCE = TGG_OPERATIONAL_RULE__CREATE_SOURCE;
+
+	/**
+	 * The feature id for the '<em><b>Create Correspondence</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__CREATE_CORRESPONDENCE = TGG_OPERATIONAL_RULE__CREATE_CORRESPONDENCE;
+
+	/**
+	 * The feature id for the '<em><b>Create Target</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__CREATE_TARGET = TGG_OPERATIONAL_RULE__CREATE_TARGET;
+
+	/**
+	 * The feature id for the '<em><b>Source</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__SOURCE = TGG_OPERATIONAL_RULE__SOURCE;
+
+	/**
+	 * The feature id for the '<em><b>Correspondence</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__CORRESPONDENCE = TGG_OPERATIONAL_RULE__CORRESPONDENCE;
+
+	/**
+	 * The feature id for the '<em><b>Target</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__TARGET = TGG_OPERATIONAL_RULE__TARGET;
+
+	/**
+	 * The feature id for the '<em><b>Operationalisation Mode</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__OPERATIONALISATION_MODE = TGG_OPERATIONAL_RULE__OPERATIONALISATION_MODE;
+
+	/**
+	 * The feature id for the '<em><b>To Be Marked</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__TO_BE_MARKED = TGG_OPERATIONAL_RULE__TO_BE_MARKED;
+
+	/**
+	 * The feature id for the '<em><b>Already Marked</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__ALREADY_MARKED = TGG_OPERATIONAL_RULE__ALREADY_MARKED;
+
+	/**
+	 * The feature id for the '<em><b>Original Rule</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__ORIGINAL_RULE = TGG_OPERATIONAL_RULE_FEATURE_COUNT + 0;
+
+	/**
+	 * The feature id for the '<em><b>Replacing Rule</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__REPLACING_RULE = TGG_OPERATIONAL_RULE_FEATURE_COUNT + 1;
+
+	/**
+	 * The feature id for the '<em><b>Mappings</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__MAPPINGS = TGG_OPERATIONAL_RULE_FEATURE_COUNT + 2;
+
+	/**
+	 * The feature id for the '<em><b>Unmapped Original Elements</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__UNMAPPED_ORIGINAL_ELEMENTS = TGG_OPERATIONAL_RULE_FEATURE_COUNT + 3;
+
+	/**
+	 * The feature id for the '<em><b>Unmapped Replacing Elements</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__UNMAPPED_REPLACING_ELEMENTS = TGG_OPERATIONAL_RULE_FEATURE_COUNT + 4;
+
+	/**
+	 * The number of structural features of the '<em>TGG Shortcut Rule</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE_FEATURE_COUNT = TGG_OPERATIONAL_RULE_FEATURE_COUNT + 5;
+
+	/**
+	 * The number of operations of the '<em>TGG Shortcut Rule</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE_OPERATION_COUNT = TGG_OPERATIONAL_RULE_OPERATION_COUNT + 0;
+
+	/**
+	 * The meta object id for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGShortcutRuleElementMappingImpl <em>TGG Shortcut Rule Element Mapping</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGShortcutRuleElementMappingImpl
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.IBeXTGGModelPackageImpl#getTGGShortcutRuleElementMapping()
+	 * @generated
+	 */
+	int TGG_SHORTCUT_RULE_ELEMENT_MAPPING = 9;
+
+	/**
+	 * The feature id for the '<em><b>Original</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE_ELEMENT_MAPPING__ORIGINAL = 0;
+
+	/**
+	 * The feature id for the '<em><b>Replacing</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE_ELEMENT_MAPPING__REPLACING = 1;
+
+	/**
+	 * The number of structural features of the '<em>TGG Shortcut Rule Element Mapping</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE_ELEMENT_MAPPING_FEATURE_COUNT = 2;
+
+	/**
+	 * The number of operations of the '<em>TGG Shortcut Rule Element Mapping</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE_ELEMENT_MAPPING_OPERATION_COUNT = 0;
+
+	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalisationMode <em>Operationalisation Mode</em>}' enum.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1191,7 +1580,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.IBeXTGGModelPackageImpl#getOperationalisationMode()
 	 * @generated
 	 */
-	int OPERATIONALISATION_MODE = 8;
+	int OPERATIONALISATION_MODE = 10;
 
 	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType <em>Domain Type</em>}' enum.
@@ -1201,7 +1590,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.IBeXTGGModelPackageImpl#getDomainType()
 	 * @generated
 	 */
-	int DOMAIN_TYPE = 9;
+	int DOMAIN_TYPE = 11;
 
 	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType <em>Binding Type</em>}' enum.
@@ -1211,7 +1600,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.IBeXTGGModelPackageImpl#getBindingType()
 	 * @generated
 	 */
-	int BINDING_TYPE = 10;
+	int BINDING_TYPE = 12;
 
 	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel <em>TGG Model</em>}'.
@@ -1679,6 +2068,103 @@ public interface IBeXTGGModelPackage extends EPackage {
 	EClass getTGGEdge();
 
 	/**
+	 * Returns the meta object for class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGShortcutRule <em>TGG Shortcut Rule</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>TGG Shortcut Rule</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGShortcutRule
+	 * @generated
+	 */
+	EClass getTGGShortcutRule();
+
+	/**
+	 * Returns the meta object for the reference '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGShortcutRule#getOriginalRule <em>Original Rule</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Original Rule</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGShortcutRule#getOriginalRule()
+	 * @see #getTGGShortcutRule()
+	 * @generated
+	 */
+	EReference getTGGShortcutRule_OriginalRule();
+
+	/**
+	 * Returns the meta object for the reference '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGShortcutRule#getReplacingRule <em>Replacing Rule</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Replacing Rule</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGShortcutRule#getReplacingRule()
+	 * @see #getTGGShortcutRule()
+	 * @generated
+	 */
+	EReference getTGGShortcutRule_ReplacingRule();
+
+	/**
+	 * Returns the meta object for the reference list '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGShortcutRule#getMappings <em>Mappings</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference list '<em>Mappings</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGShortcutRule#getMappings()
+	 * @see #getTGGShortcutRule()
+	 * @generated
+	 */
+	EReference getTGGShortcutRule_Mappings();
+
+	/**
+	 * Returns the meta object for the reference list '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGShortcutRule#getUnmappedOriginalElements <em>Unmapped Original Elements</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference list '<em>Unmapped Original Elements</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGShortcutRule#getUnmappedOriginalElements()
+	 * @see #getTGGShortcutRule()
+	 * @generated
+	 */
+	EReference getTGGShortcutRule_UnmappedOriginalElements();
+
+	/**
+	 * Returns the meta object for the reference list '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGShortcutRule#getUnmappedReplacingElements <em>Unmapped Replacing Elements</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference list '<em>Unmapped Replacing Elements</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGShortcutRule#getUnmappedReplacingElements()
+	 * @see #getTGGShortcutRule()
+	 * @generated
+	 */
+	EReference getTGGShortcutRule_UnmappedReplacingElements();
+
+	/**
+	 * Returns the meta object for class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGShortcutRuleElementMapping <em>TGG Shortcut Rule Element Mapping</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>TGG Shortcut Rule Element Mapping</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGShortcutRuleElementMapping
+	 * @generated
+	 */
+	EClass getTGGShortcutRuleElementMapping();
+
+	/**
+	 * Returns the meta object for the reference '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGShortcutRuleElementMapping#getOriginal <em>Original</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Original</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGShortcutRuleElementMapping#getOriginal()
+	 * @see #getTGGShortcutRuleElementMapping()
+	 * @generated
+	 */
+	EReference getTGGShortcutRuleElementMapping_Original();
+
+	/**
+	 * Returns the meta object for the reference '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGShortcutRuleElementMapping#getReplacing <em>Replacing</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Replacing</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGShortcutRuleElementMapping#getReplacing()
+	 * @see #getTGGShortcutRuleElementMapping()
+	 * @generated
+	 */
+	EReference getTGGShortcutRuleElementMapping_Replacing();
+
+	/**
 	 * Returns the meta object for enum '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalisationMode <em>Operationalisation Mode</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1779,8 +2265,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_MODEL__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARIES = eINSTANCE
-				.getTGGModel_AttributeConstraintDefinitionLibraries();
+		EReference TGG_MODEL__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARIES = eINSTANCE.getTGGModel_AttributeConstraintDefinitionLibraries();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleSetImpl <em>TGG Rule Set</em>}' class.
@@ -1978,8 +2463,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute TGG_OPERATIONAL_RULE__OPERATIONALISATION_MODE = eINSTANCE
-				.getTGGOperationalRule_OperationalisationMode();
+		EAttribute TGG_OPERATIONAL_RULE__OPERATIONALISATION_MODE = eINSTANCE.getTGGOperationalRule_OperationalisationMode();
 
 		/**
 		 * The meta object literal for the '<em><b>To Be Marked</b></em>' containment reference feature.
@@ -2092,6 +2576,82 @@ public interface IBeXTGGModelPackage extends EPackage {
 		 * @generated
 		 */
 		EClass TGG_EDGE = eINSTANCE.getTGGEdge();
+
+		/**
+		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGShortcutRuleImpl <em>TGG Shortcut Rule</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGShortcutRuleImpl
+		 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.IBeXTGGModelPackageImpl#getTGGShortcutRule()
+		 * @generated
+		 */
+		EClass TGG_SHORTCUT_RULE = eINSTANCE.getTGGShortcutRule();
+
+		/**
+		 * The meta object literal for the '<em><b>Original Rule</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference TGG_SHORTCUT_RULE__ORIGINAL_RULE = eINSTANCE.getTGGShortcutRule_OriginalRule();
+
+		/**
+		 * The meta object literal for the '<em><b>Replacing Rule</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference TGG_SHORTCUT_RULE__REPLACING_RULE = eINSTANCE.getTGGShortcutRule_ReplacingRule();
+
+		/**
+		 * The meta object literal for the '<em><b>Mappings</b></em>' reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference TGG_SHORTCUT_RULE__MAPPINGS = eINSTANCE.getTGGShortcutRule_Mappings();
+
+		/**
+		 * The meta object literal for the '<em><b>Unmapped Original Elements</b></em>' reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference TGG_SHORTCUT_RULE__UNMAPPED_ORIGINAL_ELEMENTS = eINSTANCE.getTGGShortcutRule_UnmappedOriginalElements();
+
+		/**
+		 * The meta object literal for the '<em><b>Unmapped Replacing Elements</b></em>' reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference TGG_SHORTCUT_RULE__UNMAPPED_REPLACING_ELEMENTS = eINSTANCE.getTGGShortcutRule_UnmappedReplacingElements();
+
+		/**
+		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGShortcutRuleElementMappingImpl <em>TGG Shortcut Rule Element Mapping</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGShortcutRuleElementMappingImpl
+		 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.IBeXTGGModelPackageImpl#getTGGShortcutRuleElementMapping()
+		 * @generated
+		 */
+		EClass TGG_SHORTCUT_RULE_ELEMENT_MAPPING = eINSTANCE.getTGGShortcutRuleElementMapping();
+
+		/**
+		 * The meta object literal for the '<em><b>Original</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference TGG_SHORTCUT_RULE_ELEMENT_MAPPING__ORIGINAL = eINSTANCE.getTGGShortcutRuleElementMapping_Original();
+
+		/**
+		 * The meta object literal for the '<em><b>Replacing</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference TGG_SHORTCUT_RULE_ELEMENT_MAPPING__REPLACING = eINSTANCE.getTGGShortcutRuleElementMapping_Replacing();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalisationMode <em>Operationalisation Mode</em>}' enum.

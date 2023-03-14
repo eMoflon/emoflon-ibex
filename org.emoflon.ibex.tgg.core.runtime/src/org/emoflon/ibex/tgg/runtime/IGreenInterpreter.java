@@ -10,7 +10,7 @@ public interface IGreenInterpreter {
 	/**
 	 * Rule application can fail due to invalid attribute values (the provided match is not as expected).
 	 */
-	Optional<ITGGMatch> apply(TGGOperationalRule operationalRule, String ruleName, ITGGMatch match);
+	Optional<ITGGMatch> apply(TGGOperationalRule operationalRule, ITGGMatch match);
 	
 	int getNumOfCreatedNodes();
 	

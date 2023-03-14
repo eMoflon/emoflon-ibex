@@ -72,98 +72,120 @@ public class IBeXTGGModelSwitch<T> extends Switch<T> {
 	@Override
 	protected T doSwitch(int classifierID, EObject theEObject) {
 		switch (classifierID) {
-		case IBeXTGGModelPackage.TGG_MODEL: {
-			TGGModel tggModel = (TGGModel) theEObject;
-			T result = caseTGGModel(tggModel);
-			if (result == null)
-				result = caseIBeXModel(tggModel);
-			if (result == null)
-				result = caseIBeXNamedElement(tggModel);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
-		case IBeXTGGModelPackage.TGG_RULE_SET: {
-			TGGRuleSet tggRuleSet = (TGGRuleSet) theEObject;
-			T result = caseTGGRuleSet(tggRuleSet);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
-		case IBeXTGGModelPackage.TGG_RULE: {
-			TGGRule tggRule = (TGGRule) theEObject;
-			T result = caseTGGRule(tggRule);
-			if (result == null)
-				result = caseIBeXRule(tggRule);
-			if (result == null)
-				result = caseIBeXNamedElement(tggRule);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
-		case IBeXTGGModelPackage.TGG_OPERATIONAL_RULE: {
-			TGGOperationalRule tggOperationalRule = (TGGOperationalRule) theEObject;
-			T result = caseTGGOperationalRule(tggOperationalRule);
-			if (result == null)
-				result = caseTGGRule(tggOperationalRule);
-			if (result == null)
-				result = caseIBeXRule(tggOperationalRule);
-			if (result == null)
-				result = caseIBeXNamedElement(tggOperationalRule);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
-		case IBeXTGGModelPackage.TGG_RULE_ELEMENT: {
-			TGGRuleElement tggRuleElement = (TGGRuleElement) theEObject;
-			T result = caseTGGRuleElement(tggRuleElement);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
-		case IBeXTGGModelPackage.TGG_NODE: {
-			TGGNode tggNode = (TGGNode) theEObject;
-			T result = caseTGGNode(tggNode);
-			if (result == null)
-				result = caseIBeXNode(tggNode);
-			if (result == null)
-				result = caseTGGRuleElement(tggNode);
-			if (result == null)
-				result = caseIBeXNamedElement(tggNode);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
-		case IBeXTGGModelPackage.TGG_CORRESPONDENCE: {
-			TGGCorrespondence tggCorrespondence = (TGGCorrespondence) theEObject;
-			T result = caseTGGCorrespondence(tggCorrespondence);
-			if (result == null)
-				result = caseTGGNode(tggCorrespondence);
-			if (result == null)
-				result = caseIBeXNode(tggCorrespondence);
-			if (result == null)
-				result = caseTGGRuleElement(tggCorrespondence);
-			if (result == null)
-				result = caseIBeXNamedElement(tggCorrespondence);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
-		case IBeXTGGModelPackage.TGG_EDGE: {
-			TGGEdge tggEdge = (TGGEdge) theEObject;
-			T result = caseTGGEdge(tggEdge);
-			if (result == null)
-				result = caseIBeXEdge(tggEdge);
-			if (result == null)
-				result = caseTGGRuleElement(tggEdge);
-			if (result == null)
-				result = caseIBeXNamedElement(tggEdge);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
-		default:
-			return defaultCase(theEObject);
+			case IBeXTGGModelPackage.TGG_MODEL: {
+				TGGModel tggModel = (TGGModel) theEObject;
+				T result = caseTGGModel(tggModel);
+				if (result == null)
+					result = caseIBeXModel(tggModel);
+				if (result == null)
+					result = caseIBeXNamedElement(tggModel);
+				if (result == null)
+					result = defaultCase(theEObject);
+				return result;
+			}
+			case IBeXTGGModelPackage.TGG_RULE_SET: {
+				TGGRuleSet tggRuleSet = (TGGRuleSet) theEObject;
+				T result = caseTGGRuleSet(tggRuleSet);
+				if (result == null)
+					result = defaultCase(theEObject);
+				return result;
+			}
+			case IBeXTGGModelPackage.TGG_RULE: {
+				TGGRule tggRule = (TGGRule) theEObject;
+				T result = caseTGGRule(tggRule);
+				if (result == null)
+					result = caseIBeXRule(tggRule);
+				if (result == null)
+					result = caseIBeXNamedElement(tggRule);
+				if (result == null)
+					result = defaultCase(theEObject);
+				return result;
+			}
+			case IBeXTGGModelPackage.TGG_OPERATIONAL_RULE: {
+				TGGOperationalRule tggOperationalRule = (TGGOperationalRule) theEObject;
+				T result = caseTGGOperationalRule(tggOperationalRule);
+				if (result == null)
+					result = caseTGGRule(tggOperationalRule);
+				if (result == null)
+					result = caseIBeXRule(tggOperationalRule);
+				if (result == null)
+					result = caseIBeXNamedElement(tggOperationalRule);
+				if (result == null)
+					result = defaultCase(theEObject);
+				return result;
+			}
+			case IBeXTGGModelPackage.TGG_RULE_ELEMENT: {
+				TGGRuleElement tggRuleElement = (TGGRuleElement) theEObject;
+				T result = caseTGGRuleElement(tggRuleElement);
+				if (result == null)
+					result = defaultCase(theEObject);
+				return result;
+			}
+			case IBeXTGGModelPackage.TGG_NODE: {
+				TGGNode tggNode = (TGGNode) theEObject;
+				T result = caseTGGNode(tggNode);
+				if (result == null)
+					result = caseIBeXNode(tggNode);
+				if (result == null)
+					result = caseTGGRuleElement(tggNode);
+				if (result == null)
+					result = caseIBeXNamedElement(tggNode);
+				if (result == null)
+					result = defaultCase(theEObject);
+				return result;
+			}
+			case IBeXTGGModelPackage.TGG_CORRESPONDENCE: {
+				TGGCorrespondence tggCorrespondence = (TGGCorrespondence) theEObject;
+				T result = caseTGGCorrespondence(tggCorrespondence);
+				if (result == null)
+					result = caseTGGNode(tggCorrespondence);
+				if (result == null)
+					result = caseIBeXNode(tggCorrespondence);
+				if (result == null)
+					result = caseTGGRuleElement(tggCorrespondence);
+				if (result == null)
+					result = caseIBeXNamedElement(tggCorrespondence);
+				if (result == null)
+					result = defaultCase(theEObject);
+				return result;
+			}
+			case IBeXTGGModelPackage.TGG_EDGE: {
+				TGGEdge tggEdge = (TGGEdge) theEObject;
+				T result = caseTGGEdge(tggEdge);
+				if (result == null)
+					result = caseIBeXEdge(tggEdge);
+				if (result == null)
+					result = caseTGGRuleElement(tggEdge);
+				if (result == null)
+					result = caseIBeXNamedElement(tggEdge);
+				if (result == null)
+					result = defaultCase(theEObject);
+				return result;
+			}
+			case IBeXTGGModelPackage.TGG_SHORTCUT_RULE: {
+				TGGShortcutRule tggShortcutRule = (TGGShortcutRule) theEObject;
+				T result = caseTGGShortcutRule(tggShortcutRule);
+				if (result == null)
+					result = caseTGGOperationalRule(tggShortcutRule);
+				if (result == null)
+					result = caseTGGRule(tggShortcutRule);
+				if (result == null)
+					result = caseIBeXRule(tggShortcutRule);
+				if (result == null)
+					result = caseIBeXNamedElement(tggShortcutRule);
+				if (result == null)
+					result = defaultCase(theEObject);
+				return result;
+			}
+			case IBeXTGGModelPackage.TGG_SHORTCUT_RULE_ELEMENT_MAPPING: {
+				TGGShortcutRuleElementMapping tggShortcutRuleElementMapping = (TGGShortcutRuleElementMapping) theEObject;
+				T result = caseTGGShortcutRuleElementMapping(tggShortcutRuleElementMapping);
+				if (result == null)
+					result = defaultCase(theEObject);
+				return result;
+			}
+			default:
+				return defaultCase(theEObject);
 		}
 	}
 
@@ -284,6 +306,36 @@ public class IBeXTGGModelSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseTGGEdge(TGGEdge object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>TGG Shortcut Rule</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>TGG Shortcut Rule</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseTGGShortcutRule(TGGShortcutRule object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>TGG Shortcut Rule Element Mapping</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>TGG Shortcut Rule Element Mapping</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseTGGShortcutRuleElementMapping(TGGShortcutRuleElementMapping object) {
 		return null;
 	}
 

@@ -199,8 +199,8 @@ public class ConcRepair implements TimeMeasurable {
 			boolean trgChange = false;
 			for (TGGAttributeExpression param : attrCh.affectedParams.keySet()) {
 				switch (param.getObjectVar().getDomainType()) {
-					case SRC -> srcChange = true;
-					case TRG -> trgChange = true;
+					case SOURCE -> srcChange = true;
+					case TARGET -> trgChange = true;
 					default -> {
 					}
 				}

@@ -55,28 +55,28 @@ public class CSPFactoryImpl extends EFactoryImpl implements CSPFactory {
 	@Override
 	public EObject create(EClass eClass) {
 		switch (eClass.getClassifierID()) {
-		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION:
-			return createTGGAttributeConstraintDefinition();
-		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY:
-			return createTGGAttributeConstraintDefinitionLibrary();
-		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION:
-			return createTGGAttributeConstraintParameterDefinition();
-		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_BINDING:
-			return createTGGAttributeConstraintBinding();
-		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_SET:
-			return createTGGAttributeConstraintSet();
-		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT:
-			return createTGGAttributeConstraint();
-		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_VARIABLE:
-			return createTGGAttributeConstraintVariable();
-		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE:
-			return createTGGAttributeConstraintParameterValue();
-		case CSPPackage.TGGCSP:
-			return createTGGCSP();
-		case CSPPackage.TGG_LOCAL_VARIABLE:
-			return createTGGLocalVariable();
-		default:
-			throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
+			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION:
+				return createTGGAttributeConstraintDefinition();
+			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY:
+				return createTGGAttributeConstraintDefinitionLibrary();
+			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION:
+				return createTGGAttributeConstraintParameterDefinition();
+			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_BINDING:
+				return createTGGAttributeConstraintBinding();
+			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_SET:
+				return createTGGAttributeConstraintSet();
+			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT:
+				return createTGGAttributeConstraint();
+			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_VARIABLE:
+				return createTGGAttributeConstraintVariable();
+			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE:
+				return createTGGAttributeConstraintParameterValue();
+			case CSPPackage.TGGCSP:
+				return createTGGCSP();
+			case CSPPackage.TGG_LOCAL_VARIABLE:
+				return createTGGLocalVariable();
+			default:
+				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
 	}
 

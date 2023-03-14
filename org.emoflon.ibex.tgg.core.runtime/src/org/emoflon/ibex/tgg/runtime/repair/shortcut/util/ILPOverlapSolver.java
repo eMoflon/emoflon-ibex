@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.repair.shortcut.util;
+package org.emoflon.ibex.tgg.runtime.repair.shortcut.util;
 
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 
@@ -10,6 +10,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
 import org.emoflon.ibex.tgg.util.ilp.BinaryILPProblem;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;
@@ -18,11 +24,6 @@ import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPLinearExpression;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPSolution;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.Objective;
 import org.emoflon.ibex.tgg.util.ilp.ILPSolver;
-
-import language.DomainType;
-import language.TGGRuleCorr;
-import language.TGGRuleEdge;
-import language.TGGRuleNode;
 
 public class ILPOverlapSolver {
 
@@ -39,8 +40,8 @@ public class ILPOverlapSolver {
 	protected Map<Integer, EdgeCandidate> id2edgeCdt = cfactory.createIntToObjectHashMap();
 	protected Map<NodeCandidate, Integer> nodeCdt2id = cfactory.createObjectToIntHashMap();
 	protected Map<EdgeCandidate, Integer> edgeCdt2id = cfactory.createObjectToIntHashMap();
-	protected Map<TGGRuleNode, Set<Integer>> node2cdts = cfactory.createObjectToObjectHashMap();
-	protected Map<TGGRuleEdge, Set<Integer>> edge2cdts = cfactory.createObjectToObjectHashMap();
+	protected Map<TGGNode, Set<Integer>> node2cdts = cfactory.createObjectToObjectHashMap();
+	protected Map<TGGEdge, Set<Integer>> edge2cdts = cfactory.createObjectToObjectHashMap();
 	protected int idCounter = 0;
 	protected int nameCounter = 0;
 	protected int tmpVarIdCounter = 0;
@@ -90,20 +91,20 @@ public class ILPOverlapSolver {
 		addNode2CdtMapping(cdt.replacingNode(), cdt);
 	}
 
-	private void addNode2CdtMapping(TGGRuleNode node, NodeCandidate cdt) {
+	private void addNode2CdtMapping(TGGNode node, NodeCandidate cdt) {
 		Set<Integer> nodeCandidateIDs = node2cdts.getOrDefault(node, cfactory.createIntSet());
 		nodeCandidateIDs.add(nodeCdt2id.get(cdt));
 		node2cdts.put(node, nodeCandidateIDs);
 	}
 
 	private void registerEdgeCdt(EdgeCandidate cdt) {
-		if (!node2cdts.containsKey(cdt.originalEdge().getSrcNode()))
+		if (!node2cdts.containsKey(cdt.originalEdge().getSource()))
 			return;
-		if (!node2cdts.containsKey(cdt.originalEdge().getTrgNode()))
+		if (!node2cdts.containsKey(cdt.originalEdge().getTarget()))
 			return;
-		if (!node2cdts.containsKey(cdt.replacingEdge().getSrcNode()))
+		if (!node2cdts.containsKey(cdt.replacingEdge().getSource()))
 			return;
-		if (!node2cdts.containsKey(cdt.replacingEdge().getTrgNode()))
+		if (!node2cdts.containsKey(cdt.replacingEdge().getTarget()))
 			return;
 		edgeCdt2id.put(cdt, idCounter);
 		id2edgeCdt.put(idCounter, cdt);
@@ -112,7 +113,7 @@ public class ILPOverlapSolver {
 		addEdge2CdtMapping(cdt.replacingEdge(), cdt);
 	}
 
-	private void addEdge2CdtMapping(TGGRuleEdge edge, EdgeCandidate cdt) {
+	private void addEdge2CdtMapping(TGGEdge edge, EdgeCandidate cdt) {
 		Set<Integer> edgeCandidateIDs = edge2cdts.getOrDefault(edge, cfactory.createIntSet());
 		edgeCandidateIDs.add(edgeCdt2id.get(cdt));
 		edge2cdts.put(edge, edgeCandidateIDs);
@@ -173,8 +174,8 @@ public class ILPOverlapSolver {
 		for (EdgeCandidate edgeCdt : edgeCdt2id.keySet()) {
 			Integer edgeCdtID = edgeCdt2id.get(edgeCdt);
 			
-			NodeCandidate srcNodeCdt = new NodeCandidate(edgeCdt.originalEdge().getSrcNode(), edgeCdt.replacingEdge().getSrcNode());
-			NodeCandidate trgNodeCdt = new NodeCandidate(edgeCdt.originalEdge().getTrgNode(), edgeCdt.replacingEdge().getTrgNode());
+			NodeCandidate srcNodeCdt = new NodeCandidate((TGGNode) edgeCdt.originalEdge().getSource(), (TGGNode) edgeCdt.replacingEdge().getSource());
+			NodeCandidate trgNodeCdt = new NodeCandidate((TGGNode) edgeCdt.originalEdge().getTarget(), (TGGNode) edgeCdt.replacingEdge().getTarget());
 			Integer srcNodeCdtID = nodeCdt2id.get(srcNodeCdt);
 			Integer trgNodeCdtID = nodeCdt2id.get(trgNodeCdt);
 			
@@ -194,25 +195,27 @@ public class ILPOverlapSolver {
 
 	private void defineCorrNodeSrcTrgEdgeImplications(BinaryILPProblem ilpProblem) {
 		for (NodeCandidate nodeCdt : nodeCdt2id.keySet()) {
-			if (!(nodeCdt.originalNode() instanceof TGGRuleCorr origCorr && nodeCdt.replacingNode() instanceof TGGRuleCorr replCorr ))
+			if (!(nodeCdt.originalNode() instanceof TGGCorrespondence origCorr && nodeCdt.replacingNode() instanceof TGGCorrespondence replCorr ))
 				continue;
 			
-			TGGRuleEdge origSrcEdge = null;
-			TGGRuleEdge origTrgEdge = null;
-			for (TGGRuleEdge edgeOrigCorr : origCorr.getOutgoingEdges()) {
-				if (edgeOrigCorr.getTrgNode().getDomainType() == DomainType.SRC)
-					origSrcEdge = edgeOrigCorr;
-				else if (edgeOrigCorr.getTrgNode().getDomainType() == DomainType.TRG)
-					origTrgEdge = edgeOrigCorr;
+			TGGEdge origSrcEdge = null;
+			TGGEdge origTrgEdge = null;
+			for (IBeXEdge edgeOrigCorr : origCorr.getOutgoingEdges()) {
+				TGGEdge tggEdgeOrigCorr = (TGGEdge) edgeOrigCorr;
+				if (((TGGNode) edgeOrigCorr.getTarget()).getDomainType() == DomainType.SOURCE)
+					origSrcEdge = tggEdgeOrigCorr;
+				else if (((TGGRuleElement) edgeOrigCorr.getTarget()).getDomainType() == DomainType.TARGET)
+					origTrgEdge = tggEdgeOrigCorr;
 			}
 			
-			TGGRuleEdge replSrcEdge = null;
-			TGGRuleEdge replTrgEdge = null;
-			for (TGGRuleEdge edgeReplCorr : replCorr.getOutgoingEdges()) {
-				if (edgeReplCorr.getTrgNode().getDomainType() == DomainType.SRC)
-					replSrcEdge = edgeReplCorr;
-				else if (edgeReplCorr.getTrgNode().getDomainType() == DomainType.TRG)
-					replTrgEdge = edgeReplCorr;
+			TGGEdge replSrcEdge = null;
+			TGGEdge replTrgEdge = null;
+			for (IBeXEdge edgeReplCorr : replCorr.getOutgoingEdges()) {
+				TGGEdge tggEdgeReplCorr = (TGGEdge) edgeReplCorr;
+				if (((TGGRuleElement) edgeReplCorr.getTarget()).getDomainType() == DomainType.SOURCE)
+					replSrcEdge = tggEdgeReplCorr;
+				else if (((TGGRuleElement) edgeReplCorr.getTarget()).getDomainType() == DomainType.TARGET)
+					replTrgEdge = tggEdgeReplCorr;
 			}
 			
 			EdgeCandidate srcEdgeCdt = new EdgeCandidate(origSrcEdge, replSrcEdge);
@@ -236,13 +239,13 @@ public class ILPOverlapSolver {
 	}
 
 	private void defineCorrNodeSrcTrgNodeImplications(BinaryILPProblem ilpProblem) {
-		Set<TGGRuleCorr> replCorrs = nodeCdt2id.keySet().stream() //
+		Set<TGGCorrespondence> replCorrs = nodeCdt2id.keySet().stream() //
 				.map(cdt -> cdt.replacingNode()) //
-				.filter(n -> n instanceof TGGRuleCorr) //
-				.map(n -> (TGGRuleCorr) n) //
+				.filter(n -> n instanceof TGGCorrespondence) //
+				.map(n -> (TGGCorrespondence) n) //
 				.collect(Collectors.toSet());
 		
-		for (TGGRuleCorr corr : replCorrs) {
+		for (TGGCorrespondence corr : replCorrs) {
 			Set<Integer> corrCdtIDs = node2cdts.get(corr);
 			if (corrCdtIDs == null || corrCdtIDs.isEmpty())
 				continue;
@@ -307,7 +310,7 @@ public class ILPOverlapSolver {
 		edge2cdts.keySet().forEach(edge -> defineILPExclusions(ilpProblem, edge));
 	}
 
-	private void defineILPExclusions(BinaryILPProblem ilpProblem, TGGRuleNode node) {
+	private void defineILPExclusions(BinaryILPProblem ilpProblem, TGGNode node) {
 		Set<Integer> candidates = node2cdts.get(node);
 		if (candidates.size() <= 1)
 			return;
@@ -316,7 +319,7 @@ public class ILPOverlapSolver {
 				"EXCL_nodeJustOnce_" + node.eClass().getName() + "_" + nameCounter++);
 	}
 
-	private void defineILPExclusions(BinaryILPProblem ilpProblem, TGGRuleEdge edge) {
+	private void defineILPExclusions(BinaryILPProblem ilpProblem, TGGEdge edge) {
 		Set<Integer> candidates = edge2cdts.get(edge);
 		if (candidates.size() <= 1)
 			return;

@@ -192,7 +192,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		times.addTo("ruleApplication:init", Timer.stop());
 
 		Timer.start();
-		Optional<ITGGMatch> comatch = greenInterpreter.apply(operationRule, ruleName, match);
+		Optional<ITGGMatch> comatch = greenInterpreter.apply(operationRule, match);
 		times.addTo("ruleApplication:createElements", Timer.stop());
 
 		comatch.ifPresent(cm -> {
