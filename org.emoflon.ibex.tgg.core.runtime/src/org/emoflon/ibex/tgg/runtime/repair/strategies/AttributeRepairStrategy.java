@@ -9,14 +9,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
+import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.runtime.csp.RuntimeTGGAttributeConstraintContainer;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.runtime.patterns.IGreenPattern;
-import org.emoflon.ibex.tgg.runtime.patterns.IGreenPatternFactory;
-import org.emoflon.ibex.tgg.runtime.strategies.PropagatingOperationalStrategy;
 import org.emoflon.ibex.tgg.runtime.strategies.PropagationDirectionHolder.PropagationDirection;
+import org.emoflon.ibex.tgg.runtime.strategies.modules.RuleHandler;
 import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuleApplication;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
 import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 
@@ -24,10 +24,12 @@ import language.TGGParamValue;
 
 public class AttributeRepairStrategy implements RepairStrategy {
 
-	protected PropagatingOperationalStrategy opStrat;
+	protected final IbexOptions options;
+	protected final RuleHandler ruleHandler;
 
-	public AttributeRepairStrategy(PropagatingOperationalStrategy opStrat) {
-		this.opStrat = opStrat;
+	public AttributeRepairStrategy(IbexOptions options) {
+		this.options = options;
+		this.ruleHandler = options.tgg.ruleHandler();
 	}
 
 	@Override
@@ -37,7 +39,7 @@ public class AttributeRepairStrategy implements RepairStrategy {
 			return null;
 
 		ITGGMatch applMatch = applPoint.getApplicationMatch();
-		return Collections.singletonList(repair(applMatch, determineCSP(propDir, opStrat.getGreenFactories().get(applMatch), applMatch)));
+		return Collections.singletonList(repair(applMatch, determineCSP(propDir, applMatch)));
 	}
 
 	public Collection<ITGGMatch> repair(List<TGGAttributeConstraint> constraints, RepairApplicationPoint applPoint) {
@@ -66,13 +68,13 @@ public class AttributeRepairStrategy implements RepairStrategy {
 		return TGGPatternUtil.getAllNodes(ra).stream().noneMatch(n -> n == null);
 	}
 
-	protected IRuntimeTGGAttrConstrContainer determineCSP(PropagationDirection propDir, IGreenPatternFactory greenFactory, ITGGMatch match) {
+	protected IRuntimeTGGAttrConstrContainer determineCSP(PropagationDirection propDir, ITGGMatch match) {
 		ITGGMatch matchCopy = match.copy();
 
-		IGreenPattern greenPattern = greenFactory.create(propDir.getPatternType());
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getRuleName(), propDir.getOperationalisationMode());
 
 		matchCopy.getParameterNames().removeAll( //
-				propDir.getNodesInOutputDomain(greenPattern).stream() //
+				propDir.getNodesInOutputDomain(operationalRule).stream() //
 						.map(n -> n.getName()) //
 						.collect(Collectors.toList()) //
 		);
@@ -83,10 +85,10 @@ public class AttributeRepairStrategy implements RepairStrategy {
 	protected IRuntimeTGGAttrConstrContainer determineCSP(PropagationDirection propDir, List<TGGAttributeConstraint> constraints, ITGGMatch match) {
 		ITGGMatch matchCopy = match.copy();
 
-		IGreenPattern greenPattern = opStrat.getGreenFactories().get(matchCopy).create(propDir.getPatternType());
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getRuleName(), propDir.getOperationalisationMode());
 
 		matchCopy.getParameterNames().removeAll( //
-				propDir.getNodesInOutputDomain(greenPattern).stream() //
+				propDir.getNodesInOutputDomain(operationalRule).stream() //
 						.map(n -> n.getName()) //
 						.collect(Collectors.toList()) //
 		);
@@ -96,7 +98,7 @@ public class AttributeRepairStrategy implements RepairStrategy {
 			params.addAll(new HashSet<>(constraint.getParameters()));
 
 		IRuntimeTGGAttrConstrContainer csp = new RuntimeTGGAttributeConstraintContainer(new LinkedList<>(params), //
-				constraints, matchCopy, opStrat.getOptions().csp.constraintProvider());
+				constraints, matchCopy, options.csp.constraintProvider());
 
 		return csp;
 	}

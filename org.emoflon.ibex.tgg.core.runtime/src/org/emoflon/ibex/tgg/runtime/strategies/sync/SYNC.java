@@ -6,14 +6,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
-import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.repair.SeqRepair;
 import org.emoflon.ibex.tgg.runtime.strategies.PropagatingOperationalStrategy;
 import org.emoflon.ibex.tgg.runtime.strategies.PropagationDirectionHolder;
 import org.emoflon.ibex.tgg.runtime.strategies.PropagationDirectionHolder.PropagationDirection;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 import org.emoflon.ibex.tgg.util.benchmark.Timer;
 
 public class SYNC extends PropagatingOperationalStrategy {
