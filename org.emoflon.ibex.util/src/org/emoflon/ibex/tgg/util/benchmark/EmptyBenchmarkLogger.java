@@ -16,26 +16,6 @@ public class EmptyBenchmarkLogger extends BenchmarkLogger {
 	}
 
 	@Override
-	public long getInitTime() {
-		return -1;
-	}
-
-	@Override
-	public void addToInitTime(long time) {
-		// Intentionally left blank
-	}
-
-	@Override
-	public long getTotalExecutionTime() {
-		return -1;
-	}
-
-	@Override
-	public void addToExecutionTime(long time) {
-		// Intentionally left blank
-	}
-
-	@Override
 	public long getTotalElementsCreated() {
 		return -1;
 	}

@@ -179,6 +179,9 @@ public class ShortcutApplicationTool implements TimeMeasurable {
 	}
 
 	private Map<String, EObject> getEntryNodeElts(RuntimeShortcutRule shortcutRule, HigherOrderTGGRule hoRule) {
+		// FIXME if we store the matches together with the cached HO-SC-rule, we cannot reuse HO-SC-rules, 
+		// since the match mapping does only work for this particular application point!
+		
 		Map<String, EObject> name2entryNodeElt = new HashMap<>();
 
 		for (HigherOrderRuleComponent component : hoRule.getComponents()) {

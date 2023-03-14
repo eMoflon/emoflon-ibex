@@ -21,30 +21,6 @@ public class FullBenchmarkLogger extends BenchmarkLogger {
 	}
 
 	@Override
-	public long getInitTime() {
-		return initTime;
-	}
-
-	@Override
-	public void addToInitTime(long time) {
-		initTime += time;
-	}
-
-	@Override
-	public long getTotalExecutionTime() {
-		long totalTime = 0;
-		for (BenchmarkRunLog runLog : runLogs) {
-			totalTime += runLog.getExecutionTime();
-		}
-		return totalTime;
-	}
-
-	@Override
-	public void addToExecutionTime(long time) {
-		runLogs.get(runCount).addToExecutionTime(time);
-	}
-
-	@Override
 	public long getTotalElementsCreated() {
 		long totalElem = 0;
 		for (BenchmarkRunLog runLog : runLogs) {
@@ -140,10 +116,6 @@ public class FullBenchmarkLogger extends BenchmarkLogger {
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("BenchmarkLogger\n[");
-		builder.append("\n  Initialisation time ..... ");
-		builder.append(initTime + "ms");
-		builder.append("\n  Total execution time .... ");
-		builder.append(getTotalExecutionTime() + "ms");
 		builder.append("\n  Total elements created .. ");
 		builder.append(getTotalElementsCreated());
 		builder.append("\n  Total elements deleted .. ");

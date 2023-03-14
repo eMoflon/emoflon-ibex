@@ -94,6 +94,11 @@ public class HigherOrderShortcutPatternProvider extends BasicShortcutPatternProv
 		}
 
 		generatedOpRules.forEach(r -> opShortcutRule2patternMatcher.put(r, new LocalPatternSearch(r, options)));
+		
+		// FIXME start
+		higherOrderShortcutRules.clear();
+		higherOrderShortcutPatterns.clear();
+		// FIXME end: deactivated caching HO-SC-rules, reason: see FIXME comment at ShortcutApplicationTool#getEntryNodeElts
 
 		return generatedOpRules;
 	}
