@@ -1365,6 +1365,15 @@ public interface IBeXTGGModelPackage extends EPackage {
 	int TGG_SHORTCUT_RULE__CONTEXT_TARGET = TGG_OPERATIONAL_RULE__CONTEXT_TARGET;
 
 	/**
+	 * The feature id for the '<em><b>Create Source And Target</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__CREATE_SOURCE_AND_TARGET = TGG_OPERATIONAL_RULE__CREATE_SOURCE_AND_TARGET;
+
+	/**
 	 * The feature id for the '<em><b>Create</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
