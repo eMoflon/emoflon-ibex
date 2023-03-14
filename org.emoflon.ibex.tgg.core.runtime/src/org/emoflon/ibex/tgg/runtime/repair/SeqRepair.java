@@ -63,7 +63,7 @@ public class SeqRepair implements TimeMeasurable {
 						opStrat.getGreenInterpreter(), opStrat.getRedInterpreter(), shortcutPatternProvider));
 			}
 			if (opStrat.getOptions().repair.repairAttributes()) {
-				repairStrategies.add(new AttributeRepairStrategy(opStrat));
+				repairStrategies.add(new AttributeRepairStrategy(opStrat.getOptions()));
 			}
 
 			times.addTo("initializeStrategies", Timer.stop());

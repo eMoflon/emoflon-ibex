@@ -12,7 +12,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.common.emf.EMFEdge;
-import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.RuntimeShortcutRule;
 import org.emoflon.ibex.tgg.runtime.repair.strategies.ShortcutRepairStrategy.RepairableMatch;
@@ -27,8 +26,10 @@ import org.emoflon.ibex.tgg.runtime.strategies.modules.RuleHandler;
 import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuleApplication;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalisationMode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 import org.emoflon.ibex.tgg.util.TGGEdgeUtil;
 import org.emoflon.ibex.tgg.util.TGGFilterUtil;
 import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
@@ -173,23 +174,23 @@ public abstract class Conflict {
 		TGGMatchUtil matchUtil = integrate().matchUtils().get(match);
 		switch (match.getType()) {
 			case FWD, SRC -> {
-				IGreenPattern fwdPattern = integrate().getGreenFactories().get(match.getRuleName()).create(PatternType.FWD);
-				deletedNodes = fwdPattern.getNodesMarkedByPattern().stream() //
+				TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getRuleName(), OperationalisationMode.FORWARD);
+				deletedNodes = operationalRule.getToBeMarked().getNodes().stream() //
 						.map(n -> (EObject) match.get(n.getName())) //
 						.collect(Collectors.toSet());
 				deletedContainmentEdges = Collections.emptySet(); // do we need containment edges here?
-				deletedCrossEdges = fwdPattern.getEdgesMarkedByPattern().stream() //
+				deletedCrossEdges = operationalRule.getToBeMarked().getEdges().stream() //
 						.filter(e -> !e.getType().isContainment()) //
 						.map(e -> TGGEdgeUtil.getRuntimeEdge(match, e)) //
 						.collect(Collectors.toSet());
 			}
 			case BWD, TRG -> {
-				IGreenPattern bwdPattern = integrate().getGreenFactories().get(match.getRuleName()).create(PatternType.BWD);
-				deletedNodes = bwdPattern.getNodesMarkedByPattern().stream() //
+				TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getRuleName(), OperationalisationMode.BACKWARD);
+				deletedNodes = operationalRule.getToBeMarked().getNodes().stream() //
 						.map(n -> (EObject) match.get(n.getName())) //
 						.collect(Collectors.toSet());
 				deletedContainmentEdges = Collections.emptySet(); // do we need containment edges here?
-				deletedCrossEdges = bwdPattern.getEdgesMarkedByPattern().stream() //
+				deletedCrossEdges = operationalRule.getToBeMarked().getEdges().stream() //
 						.filter(e -> !e.getType().isContainment()) //
 						.map(e -> TGGEdgeUtil.getRuntimeEdge(match, e)) //
 						.collect(Collectors.toSet());

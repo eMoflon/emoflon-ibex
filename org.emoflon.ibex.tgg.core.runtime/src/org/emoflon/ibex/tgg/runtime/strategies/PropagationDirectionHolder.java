@@ -3,38 +3,43 @@ package org.emoflon.ibex.tgg.runtime.strategies;
 import java.util.Collection;
 import java.util.function.Function;
 
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.runtime.patterns.BWDGreenPattern;
-import org.emoflon.ibex.tgg.runtime.patterns.FWDGreenPattern;
-import org.emoflon.ibex.tgg.runtime.patterns.IGreenPattern;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalisationMode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 
+/**
+ * A container to hold the current propagation direction for sequential synchronization.
+ * 
+ * @author adrian moeller
+ *
+ */
 public class PropagationDirectionHolder {
 
 	public enum PropagationDirection {
-		FORWARD(PatternType.FWD, FWDGreenPattern.class, gp -> gp.getTrgNodes()), //
-		BACKWARD(PatternType.BWD, BWDGreenPattern.class, gp -> gp.getSrcNodes());
+		FORWARD(OperationalisationMode.FORWARD, PatternType.FWD, opr -> opr.getTarget().getNodes()), //
+		BACKWARD(OperationalisationMode.BACKWARD, PatternType.BWD, opr -> opr.getSource().getNodes());
 
+		private final OperationalisationMode operationalisationMode;
 		private final PatternType patternType;
-		private final Class<? extends IGreenPattern> greenPatternClass;
-		private final Function<IGreenPattern, Collection<TGGNode>> nodesInOutputDomain;
+		private final Function<TGGOperationalRule, Collection<IBeXNode>> nodesInOutputDomain;
 
-		private PropagationDirection(PatternType patternType, Class<? extends IGreenPattern> greenPatternClass,
-				Function<IGreenPattern, Collection<TGGNode>> nodesInOutputDomain) {
+		private PropagationDirection(OperationalisationMode operationalisationMode, PatternType patternType, //
+				Function<TGGOperationalRule, Collection<IBeXNode>> nodesInOutputDomain) {
+			this.operationalisationMode = operationalisationMode;
 			this.patternType = patternType;
-			this.greenPatternClass = greenPatternClass;
 			this.nodesInOutputDomain = nodesInOutputDomain;
 		}
 
+		public OperationalisationMode getOperationalisationMode() {
+			return operationalisationMode;
+		}
+		
 		public PatternType getPatternType() {
 			return patternType;
 		}
 
-		public Class<? extends IGreenPattern> getGreenPatternClass() {
-			return greenPatternClass;
-		}
-
-		public Collection<TGGNode> getNodesInOutputDomain(IGreenPattern greenPattern) {
+		public Collection<IBeXNode> getNodesInOutputDomain(TGGOperationalRule greenPattern) {
 			return nodesInOutputDomain.apply(greenPattern);
 		}
 
