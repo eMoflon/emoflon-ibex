@@ -10,6 +10,9 @@ import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeAssignment;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeValue;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.TGGOverlap;
@@ -100,7 +103,9 @@ public class RuntimeShortcutRule {
 		initializeContextEdges();
 		initializeCreateEdges();
 		
-		adaptInplaceAttrExprs();
+		adaptAttributeAssignments();
+		
+		// TODO REWORK: fill pre- & postconditions
 		
 		shortcutRule.getAllNodes().addAll(shortcutRule.getNodes());
 		shortcutRule.getAllEdges().addAll(shortcutRule.getEdges());
@@ -145,18 +150,19 @@ public class RuntimeShortcutRule {
 			createNewEdge(edge, BindingType.CONTEXT);
 	}
 
-	private void adaptInplaceAttrExprs() {
-		shortcutRule.getNodes().stream() //
-				.flatMap(n -> n.getAttrExpr().stream()) //
-				.filter(e -> e.getValueExpr() instanceof TGGAttributeExpression) //
-				.map(e -> (TGGAttributeExpression) e.getValueExpr()) //
-				.forEach(attrExpr -> attrExpr.setObjectVar(replacing2newNodes.get(attrExpr.getObjectVar())));
+	private void adaptAttributeAssignments() {
+		shortcutRule.getAttributeAssignments().stream() //
+				.filter(a -> a.getValue() instanceof IBeXAttributeValue) //
+				.map(a -> (IBeXAttributeValue) a.getValue()) //
+				.forEach(v -> v.setNode(replacing2newNodes.get(v.getNode())));
 	}
 	
 	private void createNewNodeIfNecessary(TGGNode oldNode, BindingType binding, SCInputRule scInput) {
 		if(options.repair.omitUnnecessaryContext()) {
 			if(scInput == SCInputRule.ORIGINAL) {
 				boolean isNecessary = overlap.deletions.stream() //
+						.filter(e -> e instanceof IBeXEdge) //
+						.map(e -> (IBeXEdge) e) //
 						.anyMatch(e -> oldNode.getIncomingEdges().contains(e) || oldNode.getOutgoingEdges().contains(e));
 				if(isNecessary)
 					createNewNode(oldNode, binding, scInput);
@@ -173,7 +179,7 @@ public class RuntimeShortcutRule {
 
 	private void createNewNode(TGGNode oldNode, BindingType binding, SCInputRule scInput) {
 		TGGNode newNode = createNode(oldNode.eClass(), oldNode.getName(), binding, oldNode.getDomainType(),
-				oldNode.getType(), scInput == SCInputRule.REPLACING ? oldNode.getAttrExpr() : Collections.emptyList());
+				oldNode.getType(), scInput == SCInputRule.REPLACING ? oldNode.getAttributeAssignments() : Collections.emptyList());
 		registerNewNode(oldNode, newNode, scInput);
 	}
 
@@ -181,7 +187,7 @@ public class RuntimeShortcutRule {
 		EClass newType = originalNode.getType().isSuperTypeOf(replacingNode.getType()) ? //
 				replacingNode.getType() : originalNode.getType();
 		TGGNode newNode = createNode(originalNode.eClass(), originalNode.getName(), BindingType.CONTEXT,
-				originalNode.getDomainType(), newType, replacingNode.getAttrExpr());
+				originalNode.getDomainType(), newType, replacingNode.getAttributeAssignments());
 		registerNewMergedNode(originalNode, replacingNode, newNode);
 	}
 
@@ -211,7 +217,7 @@ public class RuntimeShortcutRule {
 	}
 
 	private TGGNode createNode(EClass nodeType, String name, BindingType binding, DomainType domain, EClass type,
-			List<TGGInplaceAttributeExpression> attrExprs) {
+			List<IBeXAttributeAssignment> attrAssignments) {
 		TGGNode node = (TGGNode) IBeXTGGModelFactory.eINSTANCE.create(nodeType);
 
 		String adjustedName = name;
@@ -228,7 +234,9 @@ public class RuntimeShortcutRule {
 		node.setBindingType(binding);
 		node.setDomainType(domain);
 		node.setType(type);
-		node.getAttrExpr().addAll(EcoreUtil.copyAll(attrExprs));
+		var copiedAttributeAssignments = EcoreUtil.copyAll(attrAssignments);
+		node.getAttributeAssignments().addAll(copiedAttributeAssignments);
+		shortcutRule.getAttributeAssignments().addAll(copiedAttributeAssignments);
 
 		return node;
 	}
