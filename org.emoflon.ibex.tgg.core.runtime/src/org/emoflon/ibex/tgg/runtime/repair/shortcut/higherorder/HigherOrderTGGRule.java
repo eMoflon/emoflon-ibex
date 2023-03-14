@@ -35,10 +35,7 @@ import language.TGGAttributeConstraintLibrary;
 import language.TGGAttributeExpression;
 import language.TGGInplaceAttributeExpression;
 import language.TGGParamValue;
-import language.TGGRuleCorr;
-import language.TGGRuleEdge;
 import language.TGGRuleNode;
-import language.impl.LanguageFactoryImpl;
 
 public class HigherOrderTGGRule extends TGGRuleImpl {
 
@@ -216,8 +213,8 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 		// TODO transfer inplace attributes!
 	}
 
-	private void transformHigherOrderEdge(HigherOrderRuleComponent component, TGGRuleEdge edge, ComponentSpecificRuleElement mappedComponentNode) {
-		TGGRuleEdge higherOrderEdge = (TGGRuleEdge) componentElt2higherOrderElt.get(mappedComponentNode);
+	private void transformHigherOrderEdge(HigherOrderRuleComponent component, TGGEdge edge, ComponentSpecificRuleElement mappedComponentNode) {
+		TGGEdge higherOrderEdge = (TGGEdge) componentElt2higherOrderElt.get(mappedComponentNode);
 		if (higherOrderEdge == null)
 			throw new RuntimeException("Inconsistent context mapping!");
 
@@ -250,8 +247,8 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 	private void createNewHigherOrderEdge(HigherOrderRuleComponent component, TGGEdge edge) {
 		TGGEdge higherOrderEdge = IBeXTGGModelFactory.eINSTANCE.createTGGEdge();
 
-		TGGNode hoSrcNode = (TGGNode) componentElt2higherOrderElt.get(component.getComponentSpecificRuleElement(edge.getSource()));
-		TGGNode hoTrgNode = (TGGNode) componentElt2higherOrderElt.get(component.getComponentSpecificRuleElement(edge.getTarget()));
+		TGGNode hoSrcNode = (TGGNode) componentElt2higherOrderElt.get(component.getComponentSpecificRuleElement((TGGNode) edge.getSource()));
+		TGGNode hoTrgNode = (TGGNode) componentElt2higherOrderElt.get(component.getComponentSpecificRuleElement((TGGNode) edge.getTarget()));
 
 		higherOrderEdge.setSource(hoSrcNode);
 		higherOrderEdge.setTarget(hoTrgNode);
@@ -282,7 +279,7 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 				.filter(n -> n.getBindingType() == BindingType.CREATE) //
 				.map(n -> {
 					ComponentSpecificRuleElement compSpecRuleElt = component.getComponentSpecificRuleElement(n);
-					return (TGGRuleNode) componentElt2higherOrderElt.get(compSpecRuleElt);
+					return (TGGNode) componentElt2higherOrderElt.get(compSpecRuleElt);
 				}) //
 				.flatMap(n -> n.getAttrExpr().stream()) //
 				.filter(e -> e.getValueExpr() instanceof TGGAttributeExpression) //
@@ -302,7 +299,7 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 		// properly:
 
 		Collection<TGGInplaceAttributeExpression> toBeDeletedInplAttrExpr = new LinkedList<>();
-		for (TGGRuleNode node : TGGFilterUtil.filterNodes(nodes, BindingType.CREATE)) {
+		for (TGGNode node : TGGFilterUtil.filterNodes(nodes, BindingType.CREATE)) {
 			for (TGGInplaceAttributeExpression inplAttrExpr : node.getAttrExpr()) {
 				if (inplAttrExpr.getValueExpr() instanceof TGGAttributeExpression attrExpr) {
 					if (attrExpr.getObjectVar().getBindingType() == BindingType.CREATE) {
@@ -366,7 +363,7 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 		for (TGGParamValue paramValue : copiedLib.getParameterValues()) {
 			if (paramValue instanceof TGGAttributeExpression attrExpr) {
 				ComponentSpecificRuleElement componentNode = component.getComponentSpecificRuleElement(attrExpr.getObjectVar());
-				TGGRuleNode higherOrderObjVar = (TGGRuleNode) componentElt2higherOrderElt.get(componentNode);
+				TGGNode higherOrderObjVar = (TGGNode) componentElt2higherOrderElt.get(componentNode);
 				if (higherOrderObjVar == null)
 					throw new RuntimeException("Inconsistent higher-order rule construction! Cannot find rule element.");
 				attrExpr.setObjectVar(higherOrderObjVar);

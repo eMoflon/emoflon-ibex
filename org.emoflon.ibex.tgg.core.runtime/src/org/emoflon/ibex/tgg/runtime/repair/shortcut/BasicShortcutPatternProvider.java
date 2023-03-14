@@ -54,7 +54,7 @@ public class BasicShortcutPatternProvider implements ShortcutPatternProvider {
 	private void createBasicShortcutPatterns() {
 		LoggerConfig.log(LoggerConfig.log_repair(), () -> "Generate basic Short-cut Rules:");
 
-		Collection<TGGOverlap> basicOverlaps = overlapUtil.calculateOverlaps(options.tgg.flattenedTGG());
+		Collection<TGGOverlap> basicOverlaps = overlapUtil.calculateOverlaps(options.tgg.flattenedTGG().getRuleSet());
 
 		basicShortcutRules = basicOverlaps.stream() //
 				.map(overlap -> new RuntimeShortcutRule(overlap, options)) //

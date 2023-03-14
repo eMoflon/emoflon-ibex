@@ -225,10 +225,10 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	}
 
 	@Override
-	public Optional<ITGGMatch> apply(TGGOperationalRule operationRule, String ruleName, ITGGMatch match) {
+	public Optional<ITGGMatch> apply(TGGOperationalRule operationRule, ITGGMatch match) {
 		// Check if match is valid
 		// TODO lfritsche, amoeller: this can maybe make problems? here the problem is that we create before deleting 
-		if (matchIsInvalid(ruleName, operationRule, match) && !(options.repair.disableInjectivity() && match instanceof SCMatch)) {
+		if (matchIsInvalid(operationRule, match) && !(options.repair.disableInjectivity() && match instanceof SCMatch)) {
 			LoggerConfig.log(LoggerConfig.log_ruleApplication(), () -> "Blocking application as match is invalid.");
 			return Optional.empty();
 		}
@@ -279,15 +279,15 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		return spa.sortConstraints();
 	}
 	
-	private boolean matchIsInvalid(String ruleName, TGGOperationalRule operationalRule, ITGGMatch match) {
-		return violatesConformTypesOfGreenNodes(match, operationalRule, ruleName)
-				|| violatesUpperBounds(ruleName, operationalRule, match)
-				|| violatesContainerSemantics(ruleName, operationalRule, match)
-				|| createsDoubleEdge(ruleName, operationalRule, match)
-				|| createsCyclicContainment(ruleName, operationalRule, match);
+	private boolean matchIsInvalid(TGGOperationalRule operationalRule, ITGGMatch match) {
+		return violatesConformTypesOfGreenNodes(match, operationalRule)
+				|| violatesUpperBounds(operationalRule, match)
+				|| violatesContainerSemantics(operationalRule, match)
+				|| createsDoubleEdge(operationalRule, match)
+				|| createsCyclicContainment(operationalRule, match);
 	}
 
-	private boolean createsCyclicContainment(String ruleName, TGGOperationalRule operationalRule, ITGGMatch match) {
+	private boolean createsCyclicContainment(TGGOperationalRule operationalRule, ITGGMatch match) {
 		for (IBeXEdge edge : operationalRule.getCreation().getEdges()) {
 			TGGEdge tggEdge = (TGGEdge) edge;
 
@@ -315,7 +315,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 				&& edge.getType().isContainment();
 	}
 
-	private boolean createsDoubleEdge(String ruleName, TGGOperationalRule operationRule, ITGGMatch match) {
+	private boolean createsDoubleEdge(TGGOperationalRule operationRule, ITGGMatch match) {
 		for (IBeXEdge edge : operationRule.getCreation().getEdges()) {
 			if (canCreateDoubleEdge(edge)) {
 				EObject src = (EObject) match.get(edge.getSource().getName());
@@ -345,7 +345,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		return srcNode.getOperationType() == IBeXOperationType.CONTEXT;
 	}
 
-	private boolean violatesContainerSemantics(String ruleName, TGGOperationalRule operationalRule, ITGGMatch match) {
+	private boolean violatesContainerSemantics(TGGOperationalRule operationalRule, ITGGMatch match) {
 		// TODO larsF, adrianM: fix für short cut framework
 		// GreenSCPattern do not need this check since it is allowed in order to repair a model
 //		if (greenPattern instanceof GreenSCPattern)
@@ -366,10 +366,10 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		return greenEdge.getType().isContainment() && isBlackNode(greenEdge.getTarget());
 	}
 
-	private boolean violatesUpperBounds(String ruleName, TGGOperationalRule operationalRule, ITGGMatch match) {
+	private boolean violatesUpperBounds(TGGOperationalRule operationalRule, ITGGMatch match) {
 		for (IBeXEdge greenEdge : operationalRule.getCreation().getEdges()) {
 			if (violationIsPossible(greenEdge)) {
-				if (violatesUpperBounds(ruleName, greenEdge, match, operationalRule))
+				if (violatesUpperBounds(greenEdge, match, operationalRule))
 					return true;
 			}
 		}
@@ -390,7 +390,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 				&& isBlackNode(greenEdge.getSource());
 	}
 
-	private boolean violatesUpperBounds(String ruleName, IBeXEdge greenEdge, ITGGMatch match, TGGOperationalRule operationalRule) {
+	private boolean violatesUpperBounds(IBeXEdge greenEdge, ITGGMatch match, TGGOperationalRule operationalRule) {
 		EObject matchedSrcNode = (EObject) match.get(greenEdge.getSource().getName());
 		int upperBound = greenEdge.getType().getUpperBound();
 
@@ -422,7 +422,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	 * @param ruleName
 	 * @return
 	 */
-	protected boolean violatesConformTypesOfGreenNodes(ITGGMatch match, TGGOperationalRule operationalRule, String ruleName) {
+	protected boolean violatesConformTypesOfGreenNodes(ITGGMatch match, TGGOperationalRule operationalRule) {
 		for (IBeXNode markedNode : operationalRule.getToBeMarked().getNodes()) {
 			if (markedNode.getType() != ((EObject) match.get(markedNode.getName())).eClass())
 				return true;

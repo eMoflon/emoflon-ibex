@@ -35,9 +35,6 @@ import language.TGGEnumExpression;
 import language.TGGExpression;
 import language.TGGInplaceAttributeExpression;
 import language.TGGLiteralExpression;
-import language.TGGRuleCorr;
-import language.TGGRuleEdge;
-import language.TGGRuleNode;
 
 public class HigherOrderTGGRuleFactory {
 
@@ -194,7 +191,7 @@ public class HigherOrderTGGRuleFactory {
 					DomainType corrEdgePointDomain = ((TGGNode) corrEdge.getTarget()).getDomainType();
 					for (IBeXEdge mappedCorrEdge : mappedCorr.getOutgoingEdges()) {
 						if (((TGGNode) mappedCorrEdge.getTarget()).getDomainType() == corrEdgePointDomain) {
-							contextMapping.put(corrEdge, mappedCompSpecCorr.component.getComponentSpecificRuleElement(mappedCorrEdge));
+							contextMapping.put((TGGEdge) corrEdge, mappedCompSpecCorr.component.getComponentSpecificRuleElement((TGGEdge) mappedCorrEdge));
 							break;
 						}
 					}

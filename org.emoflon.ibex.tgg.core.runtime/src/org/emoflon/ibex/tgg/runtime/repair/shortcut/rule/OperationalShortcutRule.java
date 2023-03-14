@@ -5,7 +5,6 @@ import static org.emoflon.ibex.tgg.util.TGGModelUtils.getMarkerRefName;
 import static org.emoflon.ibex.tgg.util.TGGModelUtils.getMarkerTypeName;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
@@ -18,9 +17,6 @@ import org.emoflon.ibex.tgg.compiler.analysis.ACAnalysis;
 import org.emoflon.ibex.tgg.compiler.analysis.FilterNACCandidate;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
-import org.emoflon.ibex.tgg.runtime.patterns.GreenPatternFactory;
-import org.emoflon.ibex.tgg.runtime.patterns.IGreenPattern;
-import org.emoflon.ibex.tgg.runtime.patterns.IGreenPatternFactory;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderSupport;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRule;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRule.HigherOrderRuleComponent;
@@ -33,9 +29,6 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelFactory;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
-
-import language.LanguageFactory;
 
 /**
  * 
@@ -64,7 +57,7 @@ public abstract class OperationalShortcutRule {
 		this.options = options;
 		this.rawShortcutRule = shortcutRule;
 		this.operationalizedSCR = shortcutRule.copy();
-		initMarkers();
+		initMarkerSets();
 		this.filterNACAnalysis = filterNACAnalysis;
 
 		operationalize();
@@ -76,7 +69,7 @@ public abstract class OperationalShortcutRule {
 		this.searchPlanCreator = new SearchPlanCreator(options, this);
 	}
 
-	private void initMarkers() {
+	private void initMarkerSets() {
 		IBeXRuleDelta toBeMarkedDelta = IBeXCoreModelFactory.eINSTANCE.createIBeXRuleDelta();
 		operationalizedSCR.getShortcutRule().setToBeMarked(toBeMarkedDelta);
 		IBeXRuleDelta alreadyMarkedDelta = IBeXCoreModelFactory.eINSTANCE.createIBeXRuleDelta();
@@ -285,23 +278,6 @@ public abstract class OperationalShortcutRule {
 
 	public String getName() {
 		return getType() + "_" + operationalizedSCR.getName();
-	}
-
-	public IGreenPattern getGreenPattern() {
-		if (greenPattern == null) {
-			greenPattern = createGreenPattern();
-		}
-		return greenPattern;
-	}
-
-	private IGreenPattern createGreenPattern() {
-		IGreenPatternFactory greenPatternFactory;
-		if (operationalizedSCR.getReplacingRule() instanceof HigherOrderTGGRule hoRule)
-			greenPatternFactory = new GreenPatternFactory(options, hoRule);
-		else
-			greenPatternFactory = options.patterns.greenPatternFactories().get(operationalizedSCR.getReplacingRule().getName());
-
-		return new GreenSCPattern(greenPatternFactory, this);
 	}
 
 	@Override
