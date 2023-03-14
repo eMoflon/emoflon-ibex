@@ -86,7 +86,8 @@ public class TGGAttributeConstraintImpl extends MinimalEObjectImpl.Container imp
 			definition = (TGGAttributeConstraintDefinition) eResolveProxy(oldDefinition);
 			if (definition != oldDefinition) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, CSPPackage.TGG_ATTRIBUTE_CONSTRAINT__DEFINITION, oldDefinition, definition));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, CSPPackage.TGG_ATTRIBUTE_CONSTRAINT__DEFINITION, oldDefinition,
+							definition));
 			}
 		}
 		return definition;

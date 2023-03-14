@@ -12,6 +12,8 @@ import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelFactory;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta;
 import org.emoflon.ibex.tgg.compiler.analysis.ACAnalysis;
 import org.emoflon.ibex.tgg.compiler.analysis.FilterNACCandidate;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
@@ -58,16 +60,12 @@ public abstract class OperationalShortcutRule {
 
 	protected SearchPlanCreator searchPlanCreator;
 
-	protected Collection<TGGRuleElement> markedElements;
-
-	private IGreenPattern greenPattern;
-
 	public OperationalShortcutRule(IbexOptions options, RuntimeShortcutRule shortcutRule, ACAnalysis filterNACAnalysis) {
 		this.options = options;
 		this.rawShortcutRule = shortcutRule;
 		this.operationalizedSCR = shortcutRule.copy();
+		initMarkers();
 		this.filterNACAnalysis = filterNACAnalysis;
-		this.markedElements = new HashSet<>();
 
 		operationalize();
 		if (operationalizedSCR.getOriginalRule() instanceof HigherOrderTGGRule hoRule)
@@ -76,6 +74,13 @@ public abstract class OperationalShortcutRule {
 			createOldRuleApplicationNode();
 
 		this.searchPlanCreator = new SearchPlanCreator(options, this);
+	}
+
+	private void initMarkers() {
+		IBeXRuleDelta toBeMarkedDelta = IBeXCoreModelFactory.eINSTANCE.createIBeXRuleDelta();
+		operationalizedSCR.getShortcutRule().setToBeMarked(toBeMarkedDelta);
+		IBeXRuleDelta alreadyMarkedDelta = IBeXCoreModelFactory.eINSTANCE.createIBeXRuleDelta();
+		operationalizedSCR.getShortcutRule().setAlreadyMarked(alreadyMarkedDelta);
 	}
 
 	abstract protected void operationalize();
@@ -208,7 +213,7 @@ public abstract class OperationalShortcutRule {
 	}
 
 	protected void transformInterfaceEdges(Collection<TGGEdge> filteredEdges, BindingType target) {
-		markedElements.addAll(filteredEdges.stream()
+		operationalizedSCR.getShortcutRule().getToBeMarked().getEdges().addAll(filteredEdges.stream()
 				.filter(e -> operationalizedSCR.getPreservedNodes().contains(e.getSource()) ^ operationalizedSCR.getPreservedNodes().contains(e.getTarget()))
 				.collect(Collectors.toList()));
 

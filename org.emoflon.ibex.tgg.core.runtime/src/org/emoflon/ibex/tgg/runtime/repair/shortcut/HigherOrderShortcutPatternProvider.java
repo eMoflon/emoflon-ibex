@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.repair.shortcut;
+package org.emoflon.ibex.tgg.runtime.repair.shortcut;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -9,30 +9,29 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRule;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRule.ComponentSpecificRuleElement;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRule.HigherOrderRuleComponent;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRuleFactory;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.ShortcutApplicationPoint;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.OperationalShortcutRule;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.search.LocalPatternSearch;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.util.OverlapCategory;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCPersistence;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.util.OverlapUtil.FixedMappings;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.util.TGGOverlap;
-import org.emoflon.ibex.tgg.operational.repair.strategies.RepairApplicationPoint;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceGraph;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceNode;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtilProvider;
+import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRule;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRule.ComponentSpecificRuleElement;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRule.HigherOrderRuleComponent;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRuleFactory;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.ShortcutApplicationPoint;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.OperationalShortcutRule;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.RuntimeShortcutRule;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.LocalPatternSearch;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.OverlapCategory;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.OverlapUtil.FixedMappings;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.SCPersistence;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.TGGOverlap;
+import org.emoflon.ibex.tgg.runtime.repair.strategies.RepairApplicationPoint;
+import org.emoflon.ibex.tgg.runtime.strategies.integrate.matchcontainer.PrecedenceGraph;
+import org.emoflon.ibex.tgg.runtime.strategies.integrate.matchcontainer.PrecedenceNode;
+import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.TGGMatchUtil;
+import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.TGGMatchUtilProvider;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
 
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
-
-import language.DomainType;
-import language.TGGRuleElement;
 
 public class HigherOrderShortcutPatternProvider extends BasicShortcutPatternProvider {
 
@@ -108,8 +107,8 @@ public class HigherOrderShortcutPatternProvider extends BasicShortcutPatternProv
 
 	private Map<String, Set<RuntimeShortcutRule>> generateHigherOrderShortcutRules(ShortcutApplicationPoint applPoint, Set<String> replacingNodesIDs) {
 		DomainType propagationDomain = switch (applPoint.getPropagationMatchType()) {
-			case SRC -> DomainType.SRC;
-			case TRG -> DomainType.TRG;
+			case SRC -> DomainType.SOURCE;
+			case TRG -> DomainType.TARGET;
 			default -> throw new RuntimeException("Unexpected propagation type: " + applPoint.getRepairType());
 		};
 

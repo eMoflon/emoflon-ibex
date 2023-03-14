@@ -90,7 +90,6 @@
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGShortcutRule/unmappedOriginalElements"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGShortcutRule/unmappedReplacingElements"/>
     </genClasses>
-    <genClasses ecoreClass="IBeXTGGModel.ecore#//TGGOperationalShortcutRule"/>
     <genClasses ecoreClass="IBeXTGGModel.ecore#//TGGShortcutRuleElementMapping">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGShortcutRuleElementMapping/original"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//TGGShortcutRuleElementMapping/replacing"/>

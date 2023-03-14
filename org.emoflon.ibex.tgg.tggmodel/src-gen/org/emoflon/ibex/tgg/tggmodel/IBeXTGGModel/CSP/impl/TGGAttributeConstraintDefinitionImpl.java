@@ -93,8 +93,8 @@ public class TGGAttributeConstraintDefinitionImpl extends IBeXNamedElementImpl i
 	 */
 	public EList<TGGAttributeConstraintParameterDefinition> getParameterDefinitions() {
 		if (parameterDefinitions == null) {
-			parameterDefinitions = new EObjectContainmentEList<TGGAttributeConstraintParameterDefinition>(TGGAttributeConstraintParameterDefinition.class,
-					this, CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__PARAMETER_DEFINITIONS);
+			parameterDefinitions = new EObjectContainmentEList<TGGAttributeConstraintParameterDefinition>(
+					TGGAttributeConstraintParameterDefinition.class, this, CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__PARAMETER_DEFINITIONS);
 		}
 		return parameterDefinitions;
 	}

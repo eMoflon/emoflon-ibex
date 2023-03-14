@@ -34,6 +34,7 @@ import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.RuntimeShortcutRule.SCI
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.updatepolicy.IShortcutRuleUpdatePolicy;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.SCMatch;
 import org.emoflon.ibex.tgg.runtime.repair.strategies.RepairApplicationPoint;
+import org.emoflon.ibex.tgg.runtime.strategies.modules.RuleHandler;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.TGGResourceHandler;
 import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuleApplication;
 import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TempContainer;
@@ -67,6 +68,7 @@ public class ShortcutApplicationTool implements TimeMeasurable {
 	protected final Times times = new Times();
 
 	private final IbexOptions options;
+	private final RuleHandler ruleHandler;
 	private final IGreenInterpreter greenInterpreter;
 	private final IRedInterpreter redInterpreter;
 	private final ShortcutPatternProvider shortcutPatternProvider;
@@ -78,6 +80,7 @@ public class ShortcutApplicationTool implements TimeMeasurable {
 		TimeRegistry.register(this);
 
 		this.options = options;
+		this.ruleHandler = options.tgg.ruleHandler();
 		this.greenInterpreter = greenInterpreter;
 		this.redInterpreter = redInterpreter;
 		this.shortcutPatternProvider = shortcutPatternProvider;

@@ -63,7 +63,7 @@ public class RuntimeShortcutRule {
 		this.overlap = overlap;
 		this.relaxedPatternMatching = options.repair.relaxedSCPatternMatching();
 		
-		initShortcutRule(overlap);
+		createShortcutRule(overlap);
 
 		original2newNodes = cfactory.createObjectToObjectHashMap();
 		replacing2newNodes = cfactory.createObjectToObjectHashMap();
@@ -80,7 +80,7 @@ public class RuntimeShortcutRule {
 		initialize();
 	}
 
-	private void initShortcutRule(TGGOverlap overlap) {
+	private void createShortcutRule(TGGOverlap overlap) {
 		shortcutRule = IBeXTGGModelFactory.eINSTANCE.createTGGShortcutRule();
 		shortcutRule.setOriginalRule(overlap.originalRule);
 		shortcutRule.setReplacingRule(overlap.replacingRule);
@@ -101,6 +101,9 @@ public class RuntimeShortcutRule {
 		initializeCreateEdges();
 		
 		adaptInplaceAttrExprs();
+		
+		shortcutRule.getAllNodes().addAll(shortcutRule.getNodes());
+		shortcutRule.getAllEdges().addAll(shortcutRule.getEdges());
 	}
 
 	private void initializeDeleteNodes() {

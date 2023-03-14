@@ -430,7 +430,8 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		IBeXRuleDelta oldContext = context;
 		context = newContext;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CONTEXT, oldContext, newContext);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CONTEXT, oldContext,
+					newContext);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -476,8 +477,8 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		IBeXRuleDelta oldContextSource = contextSource;
 		contextSource = newContextSource;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CONTEXT_SOURCE, oldContextSource,
-					newContextSource);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CONTEXT_SOURCE,
+					oldContextSource, newContextSource);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -495,11 +496,11 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		if (newContextSource != contextSource) {
 			NotificationChain msgs = null;
 			if (contextSource != null)
-				msgs = ((InternalEObject) contextSource).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CONTEXT_SOURCE, null,
-						msgs);
+				msgs = ((InternalEObject) contextSource).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CONTEXT_SOURCE,
+						null, msgs);
 			if (newContextSource != null)
-				msgs = ((InternalEObject) newContextSource).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CONTEXT_SOURCE, null,
-						msgs);
+				msgs = ((InternalEObject) newContextSource).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CONTEXT_SOURCE,
+						null, msgs);
 			msgs = basicSetContextSource(newContextSource, msgs);
 			if (msgs != null)
 				msgs.dispatch();
@@ -575,8 +576,8 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		IBeXRuleDelta oldContextTarget = contextTarget;
 		contextTarget = newContextTarget;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CONTEXT_TARGET, oldContextTarget,
-					newContextTarget);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CONTEXT_TARGET,
+					oldContextTarget, newContextTarget);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -594,11 +595,11 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		if (newContextTarget != contextTarget) {
 			NotificationChain msgs = null;
 			if (contextTarget != null)
-				msgs = ((InternalEObject) contextTarget).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CONTEXT_TARGET, null,
-						msgs);
+				msgs = ((InternalEObject) contextTarget).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CONTEXT_TARGET,
+						null, msgs);
 			if (newContextTarget != null)
-				msgs = ((InternalEObject) newContextTarget).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CONTEXT_TARGET, null,
-						msgs);
+				msgs = ((InternalEObject) newContextTarget).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CONTEXT_TARGET,
+						null, msgs);
 			msgs = basicSetContextTarget(newContextTarget, msgs);
 			if (msgs != null)
 				msgs.dispatch();
@@ -677,7 +678,8 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		IBeXRuleDelta oldCreate = create;
 		create = newCreate;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CREATE, oldCreate, newCreate);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CREATE, oldCreate,
+					newCreate);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -723,8 +725,8 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		IBeXRuleDelta oldCreateSource = createSource;
 		createSource = newCreateSource;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE, oldCreateSource,
-					newCreateSource);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE,
+					oldCreateSource, newCreateSource);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -742,11 +744,11 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		if (newCreateSource != createSource) {
 			NotificationChain msgs = null;
 			if (createSource != null)
-				msgs = ((InternalEObject) createSource).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE, null,
-						msgs);
+				msgs = ((InternalEObject) createSource).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE,
+						null, msgs);
 			if (newCreateSource != null)
-				msgs = ((InternalEObject) newCreateSource).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE, null,
-						msgs);
+				msgs = ((InternalEObject) newCreateSource).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE,
+						null, msgs);
 			msgs = basicSetCreateSource(newCreateSource, msgs);
 			if (msgs != null)
 				msgs.dispatch();
@@ -822,8 +824,8 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		IBeXRuleDelta oldCreateTarget = createTarget;
 		createTarget = newCreateTarget;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CREATE_TARGET, oldCreateTarget,
-					newCreateTarget);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CREATE_TARGET,
+					oldCreateTarget, newCreateTarget);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -841,11 +843,11 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		if (newCreateTarget != createTarget) {
 			NotificationChain msgs = null;
 			if (createTarget != null)
-				msgs = ((InternalEObject) createTarget).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CREATE_TARGET, null,
-						msgs);
+				msgs = ((InternalEObject) createTarget).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CREATE_TARGET,
+						null, msgs);
 			if (newCreateTarget != null)
-				msgs = ((InternalEObject) newCreateTarget).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CREATE_TARGET, null,
-						msgs);
+				msgs = ((InternalEObject) newCreateTarget).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CREATE_TARGET,
+						null, msgs);
 			msgs = basicSetCreateTarget(newCreateTarget, msgs);
 			if (msgs != null)
 				msgs.dispatch();
@@ -892,7 +894,8 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		IBeXRuleDelta oldSource = source;
 		source = newSource;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__SOURCE, oldSource, newSource);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__SOURCE, oldSource,
+					newSource);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -938,8 +941,8 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		IBeXRuleDelta oldCorrespondence = correspondence;
 		correspondence = newCorrespondence;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE, oldCorrespondence,
-					newCorrespondence);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE,
+					oldCorrespondence, newCorrespondence);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -957,16 +960,17 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		if (newCorrespondence != correspondence) {
 			NotificationChain msgs = null;
 			if (correspondence != null)
-				msgs = ((InternalEObject) correspondence).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE, null,
-						msgs);
+				msgs = ((InternalEObject) correspondence).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE,
+						null, msgs);
 			if (newCorrespondence != null)
-				msgs = ((InternalEObject) newCorrespondence).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE, null,
-						msgs);
+				msgs = ((InternalEObject) newCorrespondence).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE,
+						null, msgs);
 			msgs = basicSetCorrespondence(newCorrespondence, msgs);
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE, newCorrespondence, newCorrespondence));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE, newCorrespondence,
+					newCorrespondence));
 	}
 
 	/**
@@ -987,7 +991,8 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		IBeXRuleDelta oldTarget = target;
 		target = newTarget;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__TARGET, oldTarget, newTarget);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__TARGET, oldTarget,
+					newTarget);
 			if (msgs == null)
 				msgs = notification;
 			else

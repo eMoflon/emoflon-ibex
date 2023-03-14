@@ -70,8 +70,8 @@ public class TGGAttributeConstraintDefinitionLibraryImpl extends MinimalEObjectI
 	 */
 	public EList<TGGAttributeConstraintDefinition> getTggAttributeConstraintDefinitions() {
 		if (tggAttributeConstraintDefinitions == null) {
-			tggAttributeConstraintDefinitions = new EObjectContainmentEList<TGGAttributeConstraintDefinition>(TGGAttributeConstraintDefinition.class, this,
-					CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS);
+			tggAttributeConstraintDefinitions = new EObjectContainmentEList<TGGAttributeConstraintDefinition>(TGGAttributeConstraintDefinition.class,
+					this, CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS);
 		}
 		return tggAttributeConstraintDefinitions;
 	}

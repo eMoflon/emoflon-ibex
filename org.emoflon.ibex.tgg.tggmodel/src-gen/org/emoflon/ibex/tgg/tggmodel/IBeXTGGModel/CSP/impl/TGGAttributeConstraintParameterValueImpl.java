@@ -82,8 +82,8 @@ public class TGGAttributeConstraintParameterValueImpl extends MinimalEObjectImpl
 			parameterDefinition = (TGGAttributeConstraintParameterDefinition) eResolveProxy(oldParameterDefinition);
 			if (parameterDefinition != oldParameterDefinition) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__PARAMETER_DEFINITION,
-							oldParameterDefinition, parameterDefinition));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__PARAMETER_DEFINITION, oldParameterDefinition, parameterDefinition));
 			}
 		}
 		return parameterDefinition;
@@ -129,8 +129,8 @@ public class TGGAttributeConstraintParameterValueImpl extends MinimalEObjectImpl
 		ValueExpression oldExpression = expression;
 		expression = newExpression;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__EXPRESSION,
-					oldExpression, newExpression);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
+					CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__EXPRESSION, oldExpression, newExpression);
 			if (msgs == null)
 				msgs = notification;
 			else

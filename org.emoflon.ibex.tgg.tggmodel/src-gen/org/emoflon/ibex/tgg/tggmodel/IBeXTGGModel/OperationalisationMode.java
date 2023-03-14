@@ -169,8 +169,8 @@ public enum OperationalisationMode implements Enumerator {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private static final OperationalisationMode[] VALUES_ARRAY = new OperationalisationMode[] { GENERATE, FORWARD, BACKWARD, CONSISTENCY_CHECK, CHECK_ONLY,
-			SOURCE, TARGET, };
+	private static final OperationalisationMode[] VALUES_ARRAY = new OperationalisationMode[] { GENERATE, FORWARD, BACKWARD, CONSISTENCY_CHECK,
+			CHECK_ONLY, SOURCE, TARGET, };
 
 	/**
 	 * A public read-only list of all the '<em><b>Operationalisation Mode</b></em>' enumerators.

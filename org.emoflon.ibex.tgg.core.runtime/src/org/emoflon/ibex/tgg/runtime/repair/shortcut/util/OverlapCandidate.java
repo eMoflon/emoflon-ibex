@@ -1,10 +1,10 @@
-package org.emoflon.ibex.tgg.operational.repair.shortcut.util;
+package org.emoflon.ibex.tgg.runtime.repair.shortcut.util;
 
 import java.util.Objects;
 
-import language.TGGRuleEdge;
-import language.TGGRuleElement;
-import language.TGGRuleNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
 
 abstract class OverlapCandidate {
 	TGGRuleElement originalElt;
@@ -34,16 +34,16 @@ abstract class OverlapCandidate {
 }
 
 class NodeCandidate extends OverlapCandidate {
-	NodeCandidate(TGGRuleNode originalNode, TGGRuleNode replacingNode) {
+	NodeCandidate(TGGNode originalNode, TGGNode replacingNode) {
 		super(originalNode, replacingNode);
 	}
 	
-	TGGRuleNode originalNode() {
-		return (TGGRuleNode) originalElt;
+	TGGNode originalNode() {
+		return (TGGNode) originalElt;
 	}
 	
-	TGGRuleNode replacingNode() {
-		return (TGGRuleNode) replacingElt;
+	TGGNode replacingNode() {
+		return (TGGNode) replacingElt;
 	}
 	
 	@Override
@@ -60,16 +60,16 @@ class NodeCandidate extends OverlapCandidate {
 }
 
 class EdgeCandidate extends OverlapCandidate {
-	EdgeCandidate(TGGRuleEdge originalEdge, TGGRuleEdge replacingEdge) {
+	EdgeCandidate(TGGEdge originalEdge, TGGEdge replacingEdge) {
 		super(originalEdge, replacingEdge);
 	}
 	
-	TGGRuleEdge originalEdge() {
-		return (TGGRuleEdge) originalElt;
+	TGGEdge originalEdge() {
+		return (TGGEdge) originalElt;
 	}
 	
-	TGGRuleEdge replacingEdge() {
-		return (TGGRuleEdge) replacingElt;
+	TGGEdge replacingEdge() {
+		return (TGGEdge) replacingElt;
 	}
 	
 	@Override

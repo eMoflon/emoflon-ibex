@@ -79,8 +79,8 @@ public class TGGShortcutRuleElementMappingImpl extends MinimalEObjectImpl.Contai
 			original = (TGGRuleElement) eResolveProxy(oldOriginal);
 			if (original != oldOriginal) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, IBeXTGGModelPackage.TGG_SHORTCUT_RULE_ELEMENT_MAPPING__ORIGINAL, oldOriginal,
-							original));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, IBeXTGGModelPackage.TGG_SHORTCUT_RULE_ELEMENT_MAPPING__ORIGINAL,
+							oldOriginal, original));
 			}
 		}
 		return original;
@@ -104,7 +104,8 @@ public class TGGShortcutRuleElementMappingImpl extends MinimalEObjectImpl.Contai
 		TGGRuleElement oldOriginal = original;
 		original = newOriginal;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_SHORTCUT_RULE_ELEMENT_MAPPING__ORIGINAL, oldOriginal, original));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_SHORTCUT_RULE_ELEMENT_MAPPING__ORIGINAL, oldOriginal,
+					original));
 	}
 
 	/**

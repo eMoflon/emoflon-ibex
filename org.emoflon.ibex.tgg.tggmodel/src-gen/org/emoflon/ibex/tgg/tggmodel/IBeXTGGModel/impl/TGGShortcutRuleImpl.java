@@ -38,7 +38,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGShortcutRuleElementMapping;
  *
  * @generated
  */
-public class TGGShortcutRuleImpl extends TGGRuleImpl implements TGGShortcutRule {
+public class TGGShortcutRuleImpl extends TGGOperationalRuleImpl implements TGGShortcutRule {
 	/**
 	 * The cached value of the '{@link #getOriginalRule() <em>Original Rule</em>}' reference.
 	 * <!-- begin-user-doc -->
@@ -144,7 +144,8 @@ public class TGGShortcutRuleImpl extends TGGRuleImpl implements TGGShortcutRule 
 		TGGRule oldOriginalRule = originalRule;
 		originalRule = newOriginalRule;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_SHORTCUT_RULE__ORIGINAL_RULE, oldOriginalRule, originalRule));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_SHORTCUT_RULE__ORIGINAL_RULE, oldOriginalRule,
+					originalRule));
 	}
 
 	/**
@@ -183,7 +184,8 @@ public class TGGShortcutRuleImpl extends TGGRuleImpl implements TGGShortcutRule 
 		TGGRule oldReplacingRule = replacingRule;
 		replacingRule = newReplacingRule;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_SHORTCUT_RULE__REPLACING_RULE, oldReplacingRule, replacingRule));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_SHORTCUT_RULE__REPLACING_RULE, oldReplacingRule,
+					replacingRule));
 	}
 
 	/**

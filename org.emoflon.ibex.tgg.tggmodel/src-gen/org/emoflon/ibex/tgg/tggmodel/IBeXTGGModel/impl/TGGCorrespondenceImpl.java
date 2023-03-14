@@ -206,11 +206,13 @@ public class TGGCorrespondenceImpl extends TGGNodeImpl implements TGGCorresponde
 		switch (featureID) {
 			case IBeXTGGModelPackage.TGG_CORRESPONDENCE__SOURCE:
 				if (source != null)
-					msgs = ((InternalEObject) source).eInverseRemove(this, IBeXTGGModelPackage.TGG_NODE__OUTGOING_CORRESPONDENCE, TGGNode.class, msgs);
+					msgs = ((InternalEObject) source).eInverseRemove(this, IBeXTGGModelPackage.TGG_NODE__OUTGOING_CORRESPONDENCE, TGGNode.class,
+							msgs);
 				return basicSetSource((TGGNode) otherEnd, msgs);
 			case IBeXTGGModelPackage.TGG_CORRESPONDENCE__TARGET:
 				if (target != null)
-					msgs = ((InternalEObject) target).eInverseRemove(this, IBeXTGGModelPackage.TGG_NODE__INCOMING_CORRESPONDENCE, TGGNode.class, msgs);
+					msgs = ((InternalEObject) target).eInverseRemove(this, IBeXTGGModelPackage.TGG_NODE__INCOMING_CORRESPONDENCE, TGGNode.class,
+							msgs);
 				return basicSetTarget((TGGNode) otherEnd, msgs);
 		}
 		return super.eInverseAdd(otherEnd, featureID, msgs);

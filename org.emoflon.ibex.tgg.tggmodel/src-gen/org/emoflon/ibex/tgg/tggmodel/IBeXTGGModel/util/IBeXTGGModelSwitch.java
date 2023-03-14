@@ -166,28 +166,13 @@ public class IBeXTGGModelSwitch<T> extends Switch<T> {
 				TGGShortcutRule tggShortcutRule = (TGGShortcutRule) theEObject;
 				T result = caseTGGShortcutRule(tggShortcutRule);
 				if (result == null)
+					result = caseTGGOperationalRule(tggShortcutRule);
+				if (result == null)
 					result = caseTGGRule(tggShortcutRule);
 				if (result == null)
 					result = caseIBeXRule(tggShortcutRule);
 				if (result == null)
 					result = caseIBeXNamedElement(tggShortcutRule);
-				if (result == null)
-					result = defaultCase(theEObject);
-				return result;
-			}
-			case IBeXTGGModelPackage.TGG_OPERATIONAL_SHORTCUT_RULE: {
-				TGGOperationalShortcutRule tggOperationalShortcutRule = (TGGOperationalShortcutRule) theEObject;
-				T result = caseTGGOperationalShortcutRule(tggOperationalShortcutRule);
-				if (result == null)
-					result = caseTGGShortcutRule(tggOperationalShortcutRule);
-				if (result == null)
-					result = caseTGGOperationalRule(tggOperationalShortcutRule);
-				if (result == null)
-					result = caseTGGRule(tggOperationalShortcutRule);
-				if (result == null)
-					result = caseIBeXRule(tggOperationalShortcutRule);
-				if (result == null)
-					result = caseIBeXNamedElement(tggOperationalShortcutRule);
 				if (result == null)
 					result = defaultCase(theEObject);
 				return result;
@@ -336,21 +321,6 @@ public class IBeXTGGModelSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseTGGShortcutRule(TGGShortcutRule object) {
-		return null;
-	}
-
-	/**
-	 * Returns the result of interpreting the object as an instance of '<em>TGG Operational Shortcut Rule</em>'.
-	 * <!-- begin-user-doc -->
-	 * This implementation returns null;
-	 * returning a non-null result will terminate the switch.
-	 * <!-- end-user-doc -->
-	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>TGG Operational Shortcut Rule</em>'.
-	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-	 * @generated
-	 */
-	public T caseTGGOperationalShortcutRule(TGGOperationalShortcutRule object) {
 		return null;
 	}
 

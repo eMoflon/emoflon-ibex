@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder;
+package org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -8,13 +8,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.ClassifiedMatch;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DeletionType;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.MatchClassifier;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceGraph;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceNode;
-
-import language.DomainType;
+import org.emoflon.ibex.tgg.runtime.strategies.integrate.classification.ClassifiedMatch;
+import org.emoflon.ibex.tgg.runtime.strategies.integrate.classification.DeletionType;
+import org.emoflon.ibex.tgg.runtime.strategies.integrate.classification.MatchClassifier;
+import org.emoflon.ibex.tgg.runtime.strategies.integrate.matchcontainer.PrecedenceGraph;
+import org.emoflon.ibex.tgg.runtime.strategies.integrate.matchcontainer.PrecedenceNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 
 public class ShortcutApplicationPointFinder {
 
@@ -104,14 +103,14 @@ public class ShortcutApplicationPointFinder {
 			return null;
 
 		// filter NACs & inplace attributes:
-		if (classifiedMatch.getFilterNacViolations().containsValue(DomainType.SRC)
-				|| classifiedMatch.getInplaceAttrChanges().containsValue(DomainType.SRC)) {
+		if (classifiedMatch.getFilterNacViolations().containsValue(DomainType.SOURCE)
+				|| classifiedMatch.getInplaceAttrChanges().containsValue(DomainType.SOURCE)) {
 			if (trgViolations)
 				return null;
 			srcViolations = true;
 		}
-		if (classifiedMatch.getFilterNacViolations().containsValue(DomainType.TRG)
-				|| classifiedMatch.getInplaceAttrChanges().containsValue(DomainType.TRG)) {
+		if (classifiedMatch.getFilterNacViolations().containsValue(DomainType.TARGET)
+				|| classifiedMatch.getInplaceAttrChanges().containsValue(DomainType.TARGET)) {
 			if (srcViolations)
 				return null;
 			trgViolations = true;

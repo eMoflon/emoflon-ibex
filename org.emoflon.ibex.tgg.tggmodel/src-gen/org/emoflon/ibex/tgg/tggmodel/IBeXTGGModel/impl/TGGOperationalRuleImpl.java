@@ -149,16 +149,17 @@ public class TGGOperationalRuleImpl extends TGGRuleImpl implements TGGOperationa
 		if (newToBeMarked != toBeMarked) {
 			NotificationChain msgs = null;
 			if (toBeMarked != null)
-				msgs = ((InternalEObject) toBeMarked).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_OPERATIONAL_RULE__TO_BE_MARKED,
-						null, msgs);
+				msgs = ((InternalEObject) toBeMarked).eInverseRemove(this,
+						EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_OPERATIONAL_RULE__TO_BE_MARKED, null, msgs);
 			if (newToBeMarked != null)
-				msgs = ((InternalEObject) newToBeMarked).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_OPERATIONAL_RULE__TO_BE_MARKED,
-						null, msgs);
+				msgs = ((InternalEObject) newToBeMarked).eInverseAdd(this,
+						EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_OPERATIONAL_RULE__TO_BE_MARKED, null, msgs);
 			msgs = basicSetToBeMarked(newToBeMarked, msgs);
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_OPERATIONAL_RULE__TO_BE_MARKED, newToBeMarked, newToBeMarked));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_OPERATIONAL_RULE__TO_BE_MARKED, newToBeMarked,
+					newToBeMarked));
 	}
 
 	/**

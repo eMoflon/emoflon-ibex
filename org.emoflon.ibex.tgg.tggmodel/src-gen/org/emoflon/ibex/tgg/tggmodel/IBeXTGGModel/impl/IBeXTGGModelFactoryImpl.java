@@ -72,8 +72,6 @@ public class IBeXTGGModelFactoryImpl extends EFactoryImpl implements IBeXTGGMode
 				return createTGGEdge();
 			case IBeXTGGModelPackage.TGG_SHORTCUT_RULE:
 				return createTGGShortcutRule();
-			case IBeXTGGModelPackage.TGG_OPERATIONAL_SHORTCUT_RULE:
-				return createTGGOperationalShortcutRule();
 			case IBeXTGGModelPackage.TGG_SHORTCUT_RULE_ELEMENT_MAPPING:
 				return createTGGShortcutRuleElementMapping();
 			default:
@@ -197,16 +195,6 @@ public class IBeXTGGModelFactoryImpl extends EFactoryImpl implements IBeXTGGMode
 	public TGGShortcutRule createTGGShortcutRule() {
 		TGGShortcutRuleImpl tggShortcutRule = new TGGShortcutRuleImpl();
 		return tggShortcutRule;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public TGGOperationalShortcutRule createTGGOperationalShortcutRule() {
-		TGGOperationalShortcutRuleImpl tggOperationalShortcutRule = new TGGOperationalShortcutRuleImpl();
-		return tggOperationalShortcutRule;
 	}
 
 	/**

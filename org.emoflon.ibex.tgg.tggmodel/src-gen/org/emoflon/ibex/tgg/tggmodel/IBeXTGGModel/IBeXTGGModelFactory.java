@@ -94,15 +94,6 @@ public interface IBeXTGGModelFactory extends EFactory {
 	TGGShortcutRule createTGGShortcutRule();
 
 	/**
-	 * Returns a new object of class '<em>TGG Operational Shortcut Rule</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>TGG Operational Shortcut Rule</em>'.
-	 * @generated
-	 */
-	TGGOperationalShortcutRule createTGGOperationalShortcutRule();
-
-	/**
 	 * Returns a new object of class '<em>TGG Shortcut Rule Element Mapping</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

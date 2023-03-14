@@ -24,7 +24,7 @@ import org.eclipse.emf.common.util.EList;
  * @model
  * @generated
  */
-public interface TGGShortcutRule extends TGGRule {
+public interface TGGShortcutRule extends TGGOperationalRule {
 	/**
 	 * Returns the value of the '<em><b>Original Rule</b></em>' reference.
 	 * <!-- begin-user-doc -->
