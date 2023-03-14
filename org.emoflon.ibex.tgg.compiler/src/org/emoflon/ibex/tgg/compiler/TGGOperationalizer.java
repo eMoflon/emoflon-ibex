@@ -28,6 +28,8 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
 
+import static org.emoflon.ibex.tgg.compiler.TGGRuleDerivedFieldsTool.fillDerivedTGGOperationalRuleFields;
+
 public class TGGOperationalizer {
 
 	private IBeXCoreModelFactory superFactory = IBeXCoreModelFactory.eINSTANCE;
@@ -58,7 +60,9 @@ public class TGGOperationalizer {
 		op.setOperationalisationMode(OperationalisationMode.SOURCE);
 		
 		removeDomainInformation(op, DomainType.TARGET);
+		fillDerivedTGGOperationalRuleFields(op);
 	}
+	
 	
 	private void constructTarget(TGGRule rule) {
 		var op = createOperationalizedTGGRule(rule);
