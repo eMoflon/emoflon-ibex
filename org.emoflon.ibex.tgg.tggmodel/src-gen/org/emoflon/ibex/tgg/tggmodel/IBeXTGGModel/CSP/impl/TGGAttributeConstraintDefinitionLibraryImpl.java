@@ -33,7 +33,8 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefi
  *
  * @generated
  */
-public class TGGAttributeConstraintDefinitionLibraryImpl extends MinimalEObjectImpl.Container implements TGGAttributeConstraintDefinitionLibrary {
+public class TGGAttributeConstraintDefinitionLibraryImpl extends MinimalEObjectImpl.Container
+		implements TGGAttributeConstraintDefinitionLibrary {
 	/**
 	 * The cached value of the '{@link #getTggAttributeConstraintDefinitions() <em>Tgg Attribute Constraint Definitions</em>}' containment reference list.
 	 * <!-- begin-user-doc -->
@@ -70,8 +71,9 @@ public class TGGAttributeConstraintDefinitionLibraryImpl extends MinimalEObjectI
 	 */
 	public EList<TGGAttributeConstraintDefinition> getTggAttributeConstraintDefinitions() {
 		if (tggAttributeConstraintDefinitions == null) {
-			tggAttributeConstraintDefinitions = new EObjectContainmentEList<TGGAttributeConstraintDefinition>(TGGAttributeConstraintDefinition.class,
-					this, CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS);
+			tggAttributeConstraintDefinitions = new EObjectContainmentEList<TGGAttributeConstraintDefinition>(
+					TGGAttributeConstraintDefinition.class, this,
+					CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS);
 		}
 		return tggAttributeConstraintDefinitions;
 	}
@@ -84,8 +86,8 @@ public class TGGAttributeConstraintDefinitionLibraryImpl extends MinimalEObjectI
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS:
-				return ((InternalEList<?>) getTggAttributeConstraintDefinitions()).basicRemove(otherEnd, msgs);
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS:
+			return ((InternalEList<?>) getTggAttributeConstraintDefinitions()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -98,8 +100,8 @@ public class TGGAttributeConstraintDefinitionLibraryImpl extends MinimalEObjectI
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS:
-				return getTggAttributeConstraintDefinitions();
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS:
+			return getTggAttributeConstraintDefinitions();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -113,10 +115,11 @@ public class TGGAttributeConstraintDefinitionLibraryImpl extends MinimalEObjectI
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS:
-				getTggAttributeConstraintDefinitions().clear();
-				getTggAttributeConstraintDefinitions().addAll((Collection<? extends TGGAttributeConstraintDefinition>) newValue);
-				return;
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS:
+			getTggAttributeConstraintDefinitions().clear();
+			getTggAttributeConstraintDefinitions()
+					.addAll((Collection<? extends TGGAttributeConstraintDefinition>) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -129,9 +132,9 @@ public class TGGAttributeConstraintDefinitionLibraryImpl extends MinimalEObjectI
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS:
-				getTggAttributeConstraintDefinitions().clear();
-				return;
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS:
+			getTggAttributeConstraintDefinitions().clear();
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -144,8 +147,8 @@ public class TGGAttributeConstraintDefinitionLibraryImpl extends MinimalEObjectI
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS:
-				return tggAttributeConstraintDefinitions != null && !tggAttributeConstraintDefinitions.isEmpty();
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS:
+			return tggAttributeConstraintDefinitions != null && !tggAttributeConstraintDefinitions.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

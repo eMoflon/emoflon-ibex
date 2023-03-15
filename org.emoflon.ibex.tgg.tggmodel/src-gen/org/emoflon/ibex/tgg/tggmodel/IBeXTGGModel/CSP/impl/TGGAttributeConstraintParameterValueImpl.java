@@ -31,7 +31,8 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintPara
  *
  * @generated
  */
-public class TGGAttributeConstraintParameterValueImpl extends MinimalEObjectImpl.Container implements TGGAttributeConstraintParameterValue {
+public class TGGAttributeConstraintParameterValueImpl extends MinimalEObjectImpl.Container
+		implements TGGAttributeConstraintParameterValue {
 	/**
 	 * The cached value of the '{@link #getParameterDefinition() <em>Parameter Definition</em>}' reference.
 	 * <!-- begin-user-doc -->
@@ -83,7 +84,8 @@ public class TGGAttributeConstraintParameterValueImpl extends MinimalEObjectImpl
 			if (parameterDefinition != oldParameterDefinition) {
 				if (eNotificationRequired())
 					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
-							CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__PARAMETER_DEFINITION, oldParameterDefinition, parameterDefinition));
+							CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__PARAMETER_DEFINITION,
+							oldParameterDefinition, parameterDefinition));
 			}
 		}
 		return parameterDefinition;
@@ -107,8 +109,9 @@ public class TGGAttributeConstraintParameterValueImpl extends MinimalEObjectImpl
 		TGGAttributeConstraintParameterDefinition oldParameterDefinition = parameterDefinition;
 		parameterDefinition = newParameterDefinition;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__PARAMETER_DEFINITION,
-					oldParameterDefinition, parameterDefinition));
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__PARAMETER_DEFINITION, oldParameterDefinition,
+					parameterDefinition));
 	}
 
 	/**
@@ -149,16 +152,18 @@ public class TGGAttributeConstraintParameterValueImpl extends MinimalEObjectImpl
 			NotificationChain msgs = null;
 			if (expression != null)
 				msgs = ((InternalEObject) expression).eInverseRemove(this,
-						EOPPOSITE_FEATURE_BASE - CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__EXPRESSION, null, msgs);
+						EOPPOSITE_FEATURE_BASE - CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__EXPRESSION, null,
+						msgs);
 			if (newExpression != null)
 				msgs = ((InternalEObject) newExpression).eInverseAdd(this,
-						EOPPOSITE_FEATURE_BASE - CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__EXPRESSION, null, msgs);
+						EOPPOSITE_FEATURE_BASE - CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__EXPRESSION, null,
+						msgs);
 			msgs = basicSetExpression(newExpression, msgs);
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__EXPRESSION, newExpression,
-					newExpression));
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__EXPRESSION, newExpression, newExpression));
 	}
 
 	/**
@@ -169,8 +174,8 @@ public class TGGAttributeConstraintParameterValueImpl extends MinimalEObjectImpl
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__EXPRESSION:
-				return basicSetExpression(null, msgs);
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__EXPRESSION:
+			return basicSetExpression(null, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -183,12 +188,12 @@ public class TGGAttributeConstraintParameterValueImpl extends MinimalEObjectImpl
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__PARAMETER_DEFINITION:
-				if (resolve)
-					return getParameterDefinition();
-				return basicGetParameterDefinition();
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__EXPRESSION:
-				return getExpression();
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__PARAMETER_DEFINITION:
+			if (resolve)
+				return getParameterDefinition();
+			return basicGetParameterDefinition();
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__EXPRESSION:
+			return getExpression();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -201,12 +206,12 @@ public class TGGAttributeConstraintParameterValueImpl extends MinimalEObjectImpl
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__PARAMETER_DEFINITION:
-				setParameterDefinition((TGGAttributeConstraintParameterDefinition) newValue);
-				return;
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__EXPRESSION:
-				setExpression((ValueExpression) newValue);
-				return;
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__PARAMETER_DEFINITION:
+			setParameterDefinition((TGGAttributeConstraintParameterDefinition) newValue);
+			return;
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__EXPRESSION:
+			setExpression((ValueExpression) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -219,12 +224,12 @@ public class TGGAttributeConstraintParameterValueImpl extends MinimalEObjectImpl
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__PARAMETER_DEFINITION:
-				setParameterDefinition((TGGAttributeConstraintParameterDefinition) null);
-				return;
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__EXPRESSION:
-				setExpression((ValueExpression) null);
-				return;
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__PARAMETER_DEFINITION:
+			setParameterDefinition((TGGAttributeConstraintParameterDefinition) null);
+			return;
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__EXPRESSION:
+			setExpression((ValueExpression) null);
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -237,10 +242,10 @@ public class TGGAttributeConstraintParameterValueImpl extends MinimalEObjectImpl
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__PARAMETER_DEFINITION:
-				return parameterDefinition != null;
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__EXPRESSION:
-				return expression != null;
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__PARAMETER_DEFINITION:
+			return parameterDefinition != null;
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__EXPRESSION:
+			return expression != null;
 		}
 		return super.eIsSet(featureID);
 	}

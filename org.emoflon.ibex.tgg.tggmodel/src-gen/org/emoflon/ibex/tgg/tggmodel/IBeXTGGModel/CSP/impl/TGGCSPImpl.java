@@ -116,7 +116,8 @@ public class TGGCSPImpl extends IBeXNamedElementImpl implements TGGCSP {
 	 */
 	public EList<ValueExpression> getValues() {
 		if (values == null) {
-			values = new EObjectContainmentEList<ValueExpression>(ValueExpression.class, this, CSPPackage.TGGCSP__VALUES);
+			values = new EObjectContainmentEList<ValueExpression>(ValueExpression.class, this,
+					CSPPackage.TGGCSP__VALUES);
 		}
 		return values;
 	}
@@ -129,8 +130,8 @@ public class TGGCSPImpl extends IBeXNamedElementImpl implements TGGCSP {
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-			case CSPPackage.TGGCSP__VALUES:
-				return ((InternalEList<?>) getValues()).basicRemove(otherEnd, msgs);
+		case CSPPackage.TGGCSP__VALUES:
+			return ((InternalEList<?>) getValues()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -143,10 +144,10 @@ public class TGGCSPImpl extends IBeXNamedElementImpl implements TGGCSP {
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case CSPPackage.TGGCSP__PACKAGE:
-				return getPackage();
-			case CSPPackage.TGGCSP__VALUES:
-				return getValues();
+		case CSPPackage.TGGCSP__PACKAGE:
+			return getPackage();
+		case CSPPackage.TGGCSP__VALUES:
+			return getValues();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -160,13 +161,13 @@ public class TGGCSPImpl extends IBeXNamedElementImpl implements TGGCSP {
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case CSPPackage.TGGCSP__PACKAGE:
-				setPackage((String) newValue);
-				return;
-			case CSPPackage.TGGCSP__VALUES:
-				getValues().clear();
-				getValues().addAll((Collection<? extends ValueExpression>) newValue);
-				return;
+		case CSPPackage.TGGCSP__PACKAGE:
+			setPackage((String) newValue);
+			return;
+		case CSPPackage.TGGCSP__VALUES:
+			getValues().clear();
+			getValues().addAll((Collection<? extends ValueExpression>) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -179,12 +180,12 @@ public class TGGCSPImpl extends IBeXNamedElementImpl implements TGGCSP {
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case CSPPackage.TGGCSP__PACKAGE:
-				setPackage(PACKAGE_EDEFAULT);
-				return;
-			case CSPPackage.TGGCSP__VALUES:
-				getValues().clear();
-				return;
+		case CSPPackage.TGGCSP__PACKAGE:
+			setPackage(PACKAGE_EDEFAULT);
+			return;
+		case CSPPackage.TGGCSP__VALUES:
+			getValues().clear();
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -197,10 +198,10 @@ public class TGGCSPImpl extends IBeXNamedElementImpl implements TGGCSP {
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case CSPPackage.TGGCSP__PACKAGE:
-				return PACKAGE_EDEFAULT == null ? package_ != null : !PACKAGE_EDEFAULT.equals(package_);
-			case CSPPackage.TGGCSP__VALUES:
-				return values != null && !values.isEmpty();
+		case CSPPackage.TGGCSP__PACKAGE:
+			return PACKAGE_EDEFAULT == null ? package_ != null : !PACKAGE_EDEFAULT.equals(package_);
+		case CSPPackage.TGGCSP__VALUES:
+			return values != null && !values.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

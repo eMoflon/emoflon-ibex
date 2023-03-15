@@ -73,7 +73,8 @@ public class TGGLocalVariableImpl extends IBeXNamedElementImpl implements TGGLoc
 			type = (EClassifier) eResolveProxy(oldType);
 			if (type != oldType) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, CSPPackage.TGG_LOCAL_VARIABLE__TYPE, oldType, type));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, CSPPackage.TGG_LOCAL_VARIABLE__TYPE,
+							oldType, type));
 			}
 		}
 		return type;
@@ -108,10 +109,10 @@ public class TGGLocalVariableImpl extends IBeXNamedElementImpl implements TGGLoc
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case CSPPackage.TGG_LOCAL_VARIABLE__TYPE:
-				if (resolve)
-					return getType();
-				return basicGetType();
+		case CSPPackage.TGG_LOCAL_VARIABLE__TYPE:
+			if (resolve)
+				return getType();
+			return basicGetType();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -124,9 +125,9 @@ public class TGGLocalVariableImpl extends IBeXNamedElementImpl implements TGGLoc
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case CSPPackage.TGG_LOCAL_VARIABLE__TYPE:
-				setType((EClassifier) newValue);
-				return;
+		case CSPPackage.TGG_LOCAL_VARIABLE__TYPE:
+			setType((EClassifier) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -139,9 +140,9 @@ public class TGGLocalVariableImpl extends IBeXNamedElementImpl implements TGGLoc
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case CSPPackage.TGG_LOCAL_VARIABLE__TYPE:
-				setType((EClassifier) null);
-				return;
+		case CSPPackage.TGG_LOCAL_VARIABLE__TYPE:
+			setType((EClassifier) null);
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -154,8 +155,8 @@ public class TGGLocalVariableImpl extends IBeXNamedElementImpl implements TGGLoc
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case CSPPackage.TGG_LOCAL_VARIABLE__TYPE:
-				return type != null;
+		case CSPPackage.TGG_LOCAL_VARIABLE__TYPE:
+			return type != null;
 		}
 		return super.eIsSet(featureID);
 	}
@@ -169,16 +170,16 @@ public class TGGLocalVariableImpl extends IBeXNamedElementImpl implements TGGLoc
 	public int eBaseStructuralFeatureID(int derivedFeatureID, Class<?> baseClass) {
 		if (baseClass == ValueExpression.class) {
 			switch (derivedFeatureID) {
-				case CSPPackage.TGG_LOCAL_VARIABLE__TYPE:
-					return IBeXCoreArithmeticPackage.VALUE_EXPRESSION__TYPE;
-				default:
-					return -1;
+			case CSPPackage.TGG_LOCAL_VARIABLE__TYPE:
+				return IBeXCoreArithmeticPackage.VALUE_EXPRESSION__TYPE;
+			default:
+				return -1;
 			}
 		}
 		if (baseClass == ArithmeticExpression.class) {
 			switch (derivedFeatureID) {
-				default:
-					return -1;
+			default:
+				return -1;
 			}
 		}
 		return super.eBaseStructuralFeatureID(derivedFeatureID, baseClass);
@@ -193,16 +194,16 @@ public class TGGLocalVariableImpl extends IBeXNamedElementImpl implements TGGLoc
 	public int eDerivedStructuralFeatureID(int baseFeatureID, Class<?> baseClass) {
 		if (baseClass == ValueExpression.class) {
 			switch (baseFeatureID) {
-				case IBeXCoreArithmeticPackage.VALUE_EXPRESSION__TYPE:
-					return CSPPackage.TGG_LOCAL_VARIABLE__TYPE;
-				default:
-					return -1;
+			case IBeXCoreArithmeticPackage.VALUE_EXPRESSION__TYPE:
+				return CSPPackage.TGG_LOCAL_VARIABLE__TYPE;
+			default:
+				return -1;
 			}
 		}
 		if (baseClass == ArithmeticExpression.class) {
 			switch (baseFeatureID) {
-				default:
-					return -1;
+			default:
+				return -1;
 			}
 		}
 		return super.eDerivedStructuralFeatureID(baseFeatureID, baseClass);

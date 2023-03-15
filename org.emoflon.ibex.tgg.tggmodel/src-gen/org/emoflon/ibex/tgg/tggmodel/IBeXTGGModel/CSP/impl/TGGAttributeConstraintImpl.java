@@ -86,8 +86,8 @@ public class TGGAttributeConstraintImpl extends MinimalEObjectImpl.Container imp
 			definition = (TGGAttributeConstraintDefinition) eResolveProxy(oldDefinition);
 			if (definition != oldDefinition) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, CSPPackage.TGG_ATTRIBUTE_CONSTRAINT__DEFINITION, oldDefinition,
-							definition));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							CSPPackage.TGG_ATTRIBUTE_CONSTRAINT__DEFINITION, oldDefinition, definition));
 			}
 		}
 		return definition;
@@ -111,7 +111,8 @@ public class TGGAttributeConstraintImpl extends MinimalEObjectImpl.Container imp
 		TGGAttributeConstraintDefinition oldDefinition = definition;
 		definition = newDefinition;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, CSPPackage.TGG_ATTRIBUTE_CONSTRAINT__DEFINITION, oldDefinition, definition));
+			eNotify(new ENotificationImpl(this, Notification.SET, CSPPackage.TGG_ATTRIBUTE_CONSTRAINT__DEFINITION,
+					oldDefinition, definition));
 	}
 
 	/**
@@ -121,8 +122,8 @@ public class TGGAttributeConstraintImpl extends MinimalEObjectImpl.Container imp
 	 */
 	public EList<TGGAttributeConstraintParameterValue> getParameters() {
 		if (parameters == null) {
-			parameters = new EObjectResolvingEList<TGGAttributeConstraintParameterValue>(TGGAttributeConstraintParameterValue.class, this,
-					CSPPackage.TGG_ATTRIBUTE_CONSTRAINT__PARAMETERS);
+			parameters = new EObjectResolvingEList<TGGAttributeConstraintParameterValue>(
+					TGGAttributeConstraintParameterValue.class, this, CSPPackage.TGG_ATTRIBUTE_CONSTRAINT__PARAMETERS);
 		}
 		return parameters;
 	}
@@ -135,12 +136,12 @@ public class TGGAttributeConstraintImpl extends MinimalEObjectImpl.Container imp
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT__DEFINITION:
-				if (resolve)
-					return getDefinition();
-				return basicGetDefinition();
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT__PARAMETERS:
-				return getParameters();
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT__DEFINITION:
+			if (resolve)
+				return getDefinition();
+			return basicGetDefinition();
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT__PARAMETERS:
+			return getParameters();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -154,13 +155,13 @@ public class TGGAttributeConstraintImpl extends MinimalEObjectImpl.Container imp
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT__DEFINITION:
-				setDefinition((TGGAttributeConstraintDefinition) newValue);
-				return;
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT__PARAMETERS:
-				getParameters().clear();
-				getParameters().addAll((Collection<? extends TGGAttributeConstraintParameterValue>) newValue);
-				return;
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT__DEFINITION:
+			setDefinition((TGGAttributeConstraintDefinition) newValue);
+			return;
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT__PARAMETERS:
+			getParameters().clear();
+			getParameters().addAll((Collection<? extends TGGAttributeConstraintParameterValue>) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -173,12 +174,12 @@ public class TGGAttributeConstraintImpl extends MinimalEObjectImpl.Container imp
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT__DEFINITION:
-				setDefinition((TGGAttributeConstraintDefinition) null);
-				return;
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT__PARAMETERS:
-				getParameters().clear();
-				return;
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT__DEFINITION:
+			setDefinition((TGGAttributeConstraintDefinition) null);
+			return;
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT__PARAMETERS:
+			getParameters().clear();
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -191,10 +192,10 @@ public class TGGAttributeConstraintImpl extends MinimalEObjectImpl.Container imp
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT__DEFINITION:
-				return definition != null;
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT__PARAMETERS:
-				return parameters != null && !parameters.isEmpty();
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT__DEFINITION:
+			return definition != null;
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT__PARAMETERS:
+			return parameters != null && !parameters.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

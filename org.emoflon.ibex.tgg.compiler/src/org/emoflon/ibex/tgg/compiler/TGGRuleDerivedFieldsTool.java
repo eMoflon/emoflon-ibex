@@ -32,6 +32,8 @@ public class TGGRuleDerivedFieldsTool {
 		rule.setContextSource(createRuleDelta(rule, new DomainBinding(SOURCE, CONTEXT)));
 		rule.setContextCorrespondence(createRuleDelta(rule, new DomainBinding(CORRESPONDENCE, CONTEXT)));
 		rule.setContextTarget(createRuleDelta(rule, new DomainBinding(TARGET, CONTEXT)));
+		
+		rule.setAxiom(ruleIsAxiom(rule));
 	}
 
 	public static void fillDerivedTGGOperationalRuleFields(TGGOperationalRule op) {
