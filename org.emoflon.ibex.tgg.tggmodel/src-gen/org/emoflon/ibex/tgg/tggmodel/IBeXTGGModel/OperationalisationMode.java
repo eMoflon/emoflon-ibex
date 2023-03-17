@@ -84,7 +84,16 @@ public enum OperationalisationMode implements Enumerator {
 	 * @generated
 	 * @ordered
 	 */
-	TARGET(6, "TARGET", "TARGET");
+	TARGET(6, "TARGET", "TARGET"),
+	/**
+	* The '<em><b>CONSISTENCY</b></em>' literal object.
+	* <!-- begin-user-doc -->
+	* <!-- end-user-doc -->
+	* @see #CONSISTENCY_VALUE
+	* @generated
+	* @ordered
+	*/
+	CONSISTENCY(7, "CONSISTENCY", "CONSISTENCY");
 
 	/**
 	 * The '<em><b>GENERATE</b></em>' literal value.
@@ -164,13 +173,24 @@ public enum OperationalisationMode implements Enumerator {
 	public static final int TARGET_VALUE = 6;
 
 	/**
+	 * The '<em><b>CONSISTENCY</b></em>' literal value.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #CONSISTENCY
+	 * @model
+	 * @generated
+	 * @ordered
+	 */
+	public static final int CONSISTENCY_VALUE = 7;
+
+	/**
 	 * An array of all the '<em><b>Operationalisation Mode</b></em>' enumerators.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	private static final OperationalisationMode[] VALUES_ARRAY = new OperationalisationMode[] { GENERATE, FORWARD,
-			BACKWARD, CONSISTENCY_CHECK, CHECK_ONLY, SOURCE, TARGET, };
+			BACKWARD, CONSISTENCY_CHECK, CHECK_ONLY, SOURCE, TARGET, CONSISTENCY, };
 
 	/**
 	 * A public read-only list of all the '<em><b>Operationalisation Mode</b></em>' enumerators.
@@ -240,6 +260,8 @@ public enum OperationalisationMode implements Enumerator {
 			return SOURCE;
 		case TARGET_VALUE:
 			return TARGET;
+		case CONSISTENCY_VALUE:
+			return CONSISTENCY;
 		}
 		return null;
 	}

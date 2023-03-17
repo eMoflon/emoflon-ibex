@@ -2,8 +2,8 @@ package org.emoflon.ibex.tgg.runtime.config.options;
 
 import java.io.IOException;
 
-import org.emoflon.ibex.tgg.runtime.BlackInterpreter;
 import org.emoflon.ibex.tgg.runtime.config.IRegistrationHelper;
+import org.emoflon.ibex.tgg.runtime.interpreter.BlackInterpreter;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.IbexExecutable;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.MatchDistributor;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.MatchHandler;

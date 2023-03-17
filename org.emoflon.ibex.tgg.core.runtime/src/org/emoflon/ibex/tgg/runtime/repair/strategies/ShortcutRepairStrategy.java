@@ -4,9 +4,9 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.emoflon.ibex.tgg.runtime.IGreenInterpreter;
-import org.emoflon.ibex.tgg.runtime.IRedInterpreter;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
+import org.emoflon.ibex.tgg.runtime.interpreter.IGreenInterpreter;
+import org.emoflon.ibex.tgg.runtime.interpreter.IRedInterpreter;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.ShortcutApplicationTool;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.ShortcutPatternProvider;

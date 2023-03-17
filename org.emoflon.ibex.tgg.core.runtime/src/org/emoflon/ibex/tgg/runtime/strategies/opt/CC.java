@@ -17,6 +17,7 @@ import org.emoflon.ibex.common.engine.IMatch;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
+import org.emoflon.ibex.tgg.runtime.strategies.StrategyMode;
 import org.emoflon.ibex.tgg.runtime.updatepolicy.IUpdatePolicy;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 
@@ -179,5 +180,10 @@ public class CC extends OPT {
 	@Override
 	protected Set<PatternType> getRelevantOperationalPatterns() {
 		return new HashSet<>(Arrays.asList(PatternType.CC, PatternType.GENForCC));
+	}
+	
+	@Override
+	public StrategyMode getStrategyMode() {
+		return StrategyMode.CC;
 	}
 }

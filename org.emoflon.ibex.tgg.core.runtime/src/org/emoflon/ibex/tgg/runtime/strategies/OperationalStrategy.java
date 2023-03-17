@@ -9,9 +9,9 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.runtime.IGreenInterpreter;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
-import org.emoflon.ibex.tgg.runtime.defaults.IbexGreenInterpreter;
+import org.emoflon.ibex.tgg.runtime.interpreter.IGreenInterpreter;
+import org.emoflon.ibex.tgg.runtime.interpreter.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.matches.TGGMatchParameterOrderProvider;
 import org.emoflon.ibex.tgg.runtime.matches.container.DefaultMatchContainer;
@@ -280,4 +280,6 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	public Times getTimes() {
 		return times;
 	}
+	
+	public abstract StrategyMode getStrategyMode();
 }

@@ -12,7 +12,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.runtime.defaults.IbexRedInterpreter;
+import org.emoflon.ibex.tgg.runtime.interpreter.IbexRedInterpreter;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.matches.container.PrecedenceMatchContainer;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.INTEGRATE;

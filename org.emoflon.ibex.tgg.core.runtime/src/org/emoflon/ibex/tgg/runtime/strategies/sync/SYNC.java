@@ -10,6 +10,7 @@ import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.repair.SeqRepair;
 import org.emoflon.ibex.tgg.runtime.strategies.PropagatingOperationalStrategy;
 import org.emoflon.ibex.tgg.runtime.strategies.PropagationDirectionHolder;
+import org.emoflon.ibex.tgg.runtime.strategies.StrategyMode;
 import org.emoflon.ibex.tgg.runtime.strategies.PropagationDirectionHolder.PropagationDirection;
 
 public class SYNC extends PropagatingOperationalStrategy {
@@ -78,5 +79,10 @@ public class SYNC extends PropagatingOperationalStrategy {
 			logger.info("Created elements: " + greenInterpreter.getNumOfCreatedNodes());
 			logger.info("Deleted elements: " + redInterpreter.getNumOfDeletedNodes());
 		}
+	}
+	
+	@Override
+	public StrategyMode getStrategyMode() {
+		return StrategyMode.SYNC;
 	}
 }

@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.runtime.defaults;
+package org.emoflon.ibex.tgg.runtime.interpreter;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -11,7 +11,6 @@ import org.eclipse.emf.ecore.EReference;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.emf.EMFManipulationUtils;
-import org.emoflon.ibex.tgg.runtime.IRedInterpreter;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.OperationalStrategy;

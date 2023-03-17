@@ -1031,6 +1031,7 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 		addEEnumLiteral(operationalisationModeEEnum, OperationalisationMode.CHECK_ONLY);
 		addEEnumLiteral(operationalisationModeEEnum, OperationalisationMode.SOURCE);
 		addEEnumLiteral(operationalisationModeEEnum, OperationalisationMode.TARGET);
+		addEEnumLiteral(operationalisationModeEEnum, OperationalisationMode.CONSISTENCY);
 
 		initEEnum(domainTypeEEnum, DomainType.class, "DomainType");
 		addEEnumLiteral(domainTypeEEnum, DomainType.SOURCE);

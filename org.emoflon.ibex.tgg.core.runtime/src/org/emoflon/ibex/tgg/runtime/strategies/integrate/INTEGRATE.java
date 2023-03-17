@@ -12,13 +12,14 @@ import org.eclipse.emf.ecore.EObject;
 import org.emoflon.delta.validation.InvalidDeltaException;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
-import org.emoflon.ibex.tgg.runtime.defaults.IbexRedInterpreter;
+import org.emoflon.ibex.tgg.runtime.interpreter.IbexRedInterpreter;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.matches.container.IMatchContainer;
 import org.emoflon.ibex.tgg.runtime.matches.container.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.runtime.matches.container.PrecedenceMatchContainer;
 import org.emoflon.ibex.tgg.runtime.repair.ConcRepair;
 import org.emoflon.ibex.tgg.runtime.strategies.PropagatingOperationalStrategy;
+import org.emoflon.ibex.tgg.runtime.strategies.StrategyMode;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.classification.MatchClassifier;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.ConflictHandler;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.detection.MultiplicityCounter;
@@ -312,6 +313,11 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 	private void logDeltaApplication() {
 		LoggerConfig.log(LoggerConfig.log_executionStructure(), () -> "Delta Application:\n");
+	}
+	
+	@Override
+	public StrategyMode getStrategyMode() {
+		return StrategyMode.INTEGRATE;
 	}
 
 }

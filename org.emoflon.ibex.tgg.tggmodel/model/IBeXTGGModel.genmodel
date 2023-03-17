@@ -19,6 +19,7 @@
       <genEnumLiterals ecoreEnumLiteral="IBeXTGGModel.ecore#//OperationalisationMode/CHECK_ONLY"/>
       <genEnumLiterals ecoreEnumLiteral="IBeXTGGModel.ecore#//OperationalisationMode/SOURCE"/>
       <genEnumLiterals ecoreEnumLiteral="IBeXTGGModel.ecore#//OperationalisationMode/TARGET"/>
+      <genEnumLiterals ecoreEnumLiteral="IBeXTGGModel.ecore#//OperationalisationMode/CONSISTENCY"/>
     </genEnums>
     <genEnums typeSafeEnumCompatible="false" ecoreEnum="IBeXTGGModel.ecore#//DomainType">
       <genEnumLiterals ecoreEnumLiteral="IBeXTGGModel.ecore#//DomainType/SOURCE"/>

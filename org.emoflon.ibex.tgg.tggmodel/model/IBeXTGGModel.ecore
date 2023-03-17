@@ -108,6 +108,7 @@
     <eLiterals name="CHECK_ONLY" value="4"/>
     <eLiterals name="SOURCE" value="5" literal="SOURCE"/>
     <eLiterals name="TARGET" value="6"/>
+    <eLiterals name="CONSISTENCY" value="7"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="DomainType">
     <eLiterals name="SOURCE" literal="SOURCE"/>

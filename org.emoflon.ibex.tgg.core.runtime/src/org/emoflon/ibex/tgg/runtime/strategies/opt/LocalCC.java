@@ -5,7 +5,7 @@ import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 import java.io.IOException;
 
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
-import org.emoflon.ibex.tgg.runtime.defaults.IbexGreenInterpreter;
+import org.emoflon.ibex.tgg.runtime.interpreter.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.matches.container.IMatchContainer;
 import org.emoflon.ibex.tgg.runtime.matches.container.LocalCCMatchContainer;

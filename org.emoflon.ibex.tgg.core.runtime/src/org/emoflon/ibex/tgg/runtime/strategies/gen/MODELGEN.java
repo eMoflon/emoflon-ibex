@@ -12,6 +12,7 @@ import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.matches.SimpleTGGMatch;
 import org.emoflon.ibex.tgg.runtime.matches.container.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.runtime.strategies.OperationalStrategy;
+import org.emoflon.ibex.tgg.runtime.strategies.StrategyMode;
 import org.emoflon.ibex.tgg.runtime.updatepolicy.RandomMatchUpdatePolicy;
 import org.emoflon.ibex.tgg.runtime.updatepolicy.UpdatePolicy;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
@@ -190,4 +191,8 @@ public class MODELGEN extends OperationalStrategy {
 		return Collections.singleton(PatternType.GEN);
 	}
 
+	@Override
+	public StrategyMode getStrategyMode() {
+		return StrategyMode.MODELGEN;
+	}
 }

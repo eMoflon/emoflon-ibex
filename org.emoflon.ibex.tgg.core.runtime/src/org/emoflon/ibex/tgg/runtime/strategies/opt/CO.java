@@ -13,6 +13,7 @@ import org.emoflon.ibex.common.engine.IMatch;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
+import org.emoflon.ibex.tgg.runtime.strategies.StrategyMode;
 import org.emoflon.ibex.tgg.runtime.updatepolicy.NextMatchUpdatePolicy;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 
@@ -67,4 +68,8 @@ public class CO extends CC {
 		return new HashSet<>(Arrays.asList(PatternType.CC, PatternType.GENForCO));
 	}
 
+	@Override
+	public StrategyMode getStrategyMode() {
+		return StrategyMode.CHECK_ONLY;
+	}
 }

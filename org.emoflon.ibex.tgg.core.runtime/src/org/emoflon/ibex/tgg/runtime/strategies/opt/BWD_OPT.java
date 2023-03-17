@@ -14,6 +14,7 @@ import org.emoflon.ibex.common.engine.IMatch;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
+import org.emoflon.ibex.tgg.runtime.strategies.StrategyMode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 
 public class BWD_OPT extends OPT {
@@ -101,5 +102,10 @@ public class BWD_OPT extends OPT {
 	@Override
 	protected Set<PatternType> getRelevantOperationalPatterns() {
 		return Collections.singleton(PatternType.BWD_OPT);
+	}
+	
+	@Override
+	public StrategyMode getStrategyMode() {
+		return StrategyMode.BWD_OPT;
 	}
 }

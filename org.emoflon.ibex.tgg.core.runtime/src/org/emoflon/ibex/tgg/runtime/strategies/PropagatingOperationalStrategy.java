@@ -5,9 +5,9 @@ import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 import java.io.IOException;
 import java.util.Set;
 
-import org.emoflon.ibex.tgg.runtime.IRedInterpreter;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
-import org.emoflon.ibex.tgg.runtime.defaults.IbexRedInterpreter;
+import org.emoflon.ibex.tgg.runtime.interpreter.IRedInterpreter;
+import org.emoflon.ibex.tgg.runtime.interpreter.IbexRedInterpreter;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.matches.container.IMatchContainer;
 import org.emoflon.ibex.tgg.runtime.matches.container.MarkingMatchContainer;
