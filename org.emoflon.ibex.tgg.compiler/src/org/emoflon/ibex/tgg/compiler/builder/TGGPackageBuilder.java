@@ -36,7 +36,7 @@ public class TGGPackageBuilder implements TGGBuilderExtension {
 	private IProject project;
 
 	@Override
-	public void run(IProject project, Resource schemaResource) {
+	public void run(IProject project, EditorFile editorFile) {
 		this.project = project;
 		
 		logInfo("Generating Attribute Condition Libraries..");
@@ -46,7 +46,7 @@ public class TGGPackageBuilder implements TGGBuilderExtension {
 		logInfo("Creating editor model..");
 		TGGModel tggModel = null;
 		try {
-			tggModel = generateInternalModel(schemaResource);
+			tggModel = generateInternalModel(editorFile);
 		}catch(RuntimeException e) {
 //			logError(e);
 			return;
@@ -69,12 +69,9 @@ public class TGGPackageBuilder implements TGGBuilderExtension {
 		updateManifest(manifest -> processManifestForProject(manifest));
 	}
 	
-	private TGGModel generateInternalModel(Resource schemaResource) throws RuntimeException {
-		if(schemaResource.getContents().get(0) instanceof EditorFile editorFile) {
-			var transformer = new TGGLToTGGModelTransformer(editorFile, project);
-			return transformer.transform();
-		}
-		throw new RuntimeException("Could not find and transform any schema");
+	private TGGModel generateInternalModel(EditorFile editorFile) throws RuntimeException {
+		var transformer = new TGGLToTGGModelTransformer(editorFile, project);
+		return transformer.transform();
 	}
 	
 	private void generatePMEngineCode(TGGModel editorModel) {
