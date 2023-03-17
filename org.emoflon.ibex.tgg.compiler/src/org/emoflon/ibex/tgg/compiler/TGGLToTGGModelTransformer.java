@@ -104,6 +104,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGPattern;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.CSPFactory;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
@@ -339,7 +340,7 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		}
 		
 		for(var attributeCondition : rule.getAttrConditions()) {
-			internalRule.getAttributeConstraints().getTggAttributeConstraints().add(transformAttributeCondition(attributeCondition));
+			((TGGPattern) internalRule.getPrecondition()).getAttributeConstraints().getTggAttributeConstraints().add(transformAttributeCondition(attributeCondition));
 		}
 		
 		internalRule.getAllNodes().addAll(internalRule.getNodes());
