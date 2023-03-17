@@ -23,7 +23,8 @@ Require-Bundle: com.google.guava,
  org.eclipse.xtext,
  org.moflon.core.plugins,
  org.apache.commons.commons-io;bundle-version="2.11.0",
- org.emoflon.ibex.tgg.tggl
+ org.emoflon.ibex.tgg.tggl,
+ org.emoflon.ibex.tgg.tggmodel
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-Vendor: eMoflon::IBeX Developers
 Bundle-ManifestVersion: 2
