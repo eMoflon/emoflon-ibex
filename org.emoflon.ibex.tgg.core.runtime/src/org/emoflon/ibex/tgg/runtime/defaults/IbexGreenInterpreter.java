@@ -48,6 +48,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGPattern;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintParameterValue;
@@ -92,9 +93,9 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 					rule2sortedAttributeConstraints.put(operationalRule.getName(), //
 							sortConstraints(
 									operationalRule.getName(), //
-									operationalRule.getAttributeConstraints().getParameters(), //
-									operationalRule.getAttributeConstraints().getTggAttributeConstraints()));
-					rule2parameters.put(operationalRule.getName(), operationalRule.getAttributeConstraints().getParameters());
+									((TGGPattern) operationalRule.getPrecondition()).getAttributeConstraints().getParameters(), //
+									((TGGPattern) operationalRule.getPrecondition()).getAttributeConstraints().getTggAttributeConstraints()));
+					rule2parameters.put(operationalRule.getName(), ((TGGPattern) operationalRule.getPrecondition()).getAttributeConstraints().getParameters());
 				} catch (Exception e) {
 					throw new IllegalStateException("Unable to sort attribute constraints, " + e.getMessage(), e);
 				}
