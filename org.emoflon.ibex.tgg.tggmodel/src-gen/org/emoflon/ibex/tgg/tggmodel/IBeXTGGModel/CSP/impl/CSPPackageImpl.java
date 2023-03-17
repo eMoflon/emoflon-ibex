@@ -222,6 +222,15 @@ public class CSPPackageImpl extends EPackageImpl implements CSPPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EReference getTGGAttributeConstraintDefinition_Library() {
+		return (EReference) tggAttributeConstraintDefinitionEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getTGGAttributeConstraintDefinitionLibrary() {
 		return tggAttributeConstraintDefinitionLibraryEClass;
 	}
@@ -232,7 +241,16 @@ public class CSPPackageImpl extends EPackageImpl implements CSPPackage {
 	 * @generated
 	 */
 	public EReference getTGGAttributeConstraintDefinitionLibrary_TggAttributeConstraintDefinitions() {
-		return (EReference) tggAttributeConstraintDefinitionLibraryEClass.getEStructuralFeatures().get(0);
+		return (EReference) tggAttributeConstraintDefinitionLibraryEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getTGGAttributeConstraintDefinitionLibrary_PackageName() {
+		return (EAttribute) tggAttributeConstraintDefinitionLibraryEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -449,8 +467,11 @@ public class CSPPackageImpl extends EPackageImpl implements CSPPackage {
 				TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__PARAMETER_DEFINITIONS);
 		createEReference(tggAttributeConstraintDefinitionEClass, TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__SYNC_BINDINGS);
 		createEReference(tggAttributeConstraintDefinitionEClass, TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__GEN_BINDINGS);
+		createEReference(tggAttributeConstraintDefinitionEClass, TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__LIBRARY);
 
 		tggAttributeConstraintDefinitionLibraryEClass = createEClass(TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY);
+		createEAttribute(tggAttributeConstraintDefinitionLibraryEClass,
+				TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__PACKAGE_NAME);
 		createEReference(tggAttributeConstraintDefinitionLibraryEClass,
 				TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS);
 
@@ -523,6 +544,8 @@ public class CSPPackageImpl extends EPackageImpl implements CSPPackage {
 
 		// Add supertypes to classes
 		tggAttributeConstraintDefinitionEClass.getESuperTypes().add(theIBeXCoreModelPackage.getIBeXNamedElement());
+		tggAttributeConstraintDefinitionLibraryEClass.getESuperTypes()
+				.add(theIBeXCoreModelPackage.getIBeXNamedElement());
 		tggAttributeConstraintVariableEClass.getESuperTypes().add(theIBeXCoreArithmeticPackage.getValueExpression());
 		tggcspEClass.getESuperTypes().add(theIBeXCoreModelPackage.getIBeXNamedElement());
 		tggLocalVariableEClass.getESuperTypes().add(theIBeXCoreModelPackage.getIBeXNamedElement());
@@ -541,13 +564,21 @@ public class CSPPackageImpl extends EPackageImpl implements CSPPackage {
 		initEReference(getTGGAttributeConstraintDefinition_GenBindings(), this.getTGGAttributeConstraintBinding(), null,
 				"genBindings", null, 0, -1, TGGAttributeConstraintDefinition.class, !IS_TRANSIENT, !IS_VOLATILE,
 				IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGGAttributeConstraintDefinition_Library(), this.getTGGAttributeConstraintDefinitionLibrary(),
+				this.getTGGAttributeConstraintDefinitionLibrary_TggAttributeConstraintDefinitions(), "library", null, 0,
+				1, TGGAttributeConstraintDefinition.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
+				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(tggAttributeConstraintDefinitionLibraryEClass, TGGAttributeConstraintDefinitionLibrary.class,
 				"TGGAttributeConstraintDefinitionLibrary", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getTGGAttributeConstraintDefinitionLibrary_PackageName(), ecorePackage.getEString(),
+				"packageName", null, 0, 1, TGGAttributeConstraintDefinitionLibrary.class, !IS_TRANSIENT, !IS_VOLATILE,
+				IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getTGGAttributeConstraintDefinitionLibrary_TggAttributeConstraintDefinitions(),
-				this.getTGGAttributeConstraintDefinition(), null, "tggAttributeConstraintDefinitions", null, 0, -1,
-				TGGAttributeConstraintDefinitionLibrary.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
-				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+				this.getTGGAttributeConstraintDefinition(), this.getTGGAttributeConstraintDefinition_Library(),
+				"tggAttributeConstraintDefinitions", null, 0, -1, TGGAttributeConstraintDefinitionLibrary.class,
+				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE,
+				IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(tggAttributeConstraintParameterDefinitionEClass, TGGAttributeConstraintParameterDefinition.class,
 				"TGGAttributeConstraintParameterDefinition", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);

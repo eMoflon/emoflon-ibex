@@ -26,8 +26,6 @@
         eType="#//TGGCorrespondence"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="operationalisations" upperBound="-1"
         eType="#//TGGOperationalRule" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="attributeConstraints" eType="#//CSP/TGGAttributeConstraintSet"
-        containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="abstract" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="axiom" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="context" eType="ecore:EClass ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXRuleDelta"
@@ -63,6 +61,10 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="toBeMarked" eType="ecore:EClass ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXRuleDelta"
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="alreadyMarked" eType="ecore:EClass ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXRuleDelta"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="TGGPattern" eSuperTypes="../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXPattern">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="attributeConstraints" eType="#//CSP/TGGAttributeConstraintSet"
         containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="TGGRuleElement" abstract="true">
@@ -132,10 +134,15 @@
           eType="#//CSP/TGGAttributeConstraintBinding" containment="true"/>
       <eStructuralFeatures xsi:type="ecore:EReference" name="genBindings" upperBound="-1"
           eType="#//CSP/TGGAttributeConstraintBinding" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="library" eType="#//CSP/TGGAttributeConstraintDefinitionLibrary"
+          eOpposite="#//CSP/TGGAttributeConstraintDefinitionLibrary/tggAttributeConstraintDefinitions"/>
     </eClassifiers>
-    <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraintDefinitionLibrary">
+    <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraintDefinitionLibrary"
+        eSuperTypes="../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXNamedElement">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="packageName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
       <eStructuralFeatures xsi:type="ecore:EReference" name="tggAttributeConstraintDefinitions"
-          upperBound="-1" eType="#//CSP/TGGAttributeConstraintDefinition" containment="true"/>
+          upperBound="-1" eType="#//CSP/TGGAttributeConstraintDefinition" containment="true"
+          eOpposite="#//CSP/TGGAttributeConstraintDefinition/library"/>
     </eClassifiers>
     <eClassifiers xsi:type="ecore:EClass" name="TGGAttributeConstraintParameterDefinition">
       <eStructuralFeatures xsi:type="ecore:EReference" name="type" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EDataType"/>

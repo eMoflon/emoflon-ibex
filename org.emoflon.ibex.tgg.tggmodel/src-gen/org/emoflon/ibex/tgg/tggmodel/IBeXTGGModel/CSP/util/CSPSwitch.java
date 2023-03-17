@@ -84,6 +84,8 @@ public class CSPSwitch<T> extends Switch<T> {
 			TGGAttributeConstraintDefinitionLibrary tggAttributeConstraintDefinitionLibrary = (TGGAttributeConstraintDefinitionLibrary) theEObject;
 			T result = caseTGGAttributeConstraintDefinitionLibrary(tggAttributeConstraintDefinitionLibrary);
 			if (result == null)
+				result = caseIBeXNamedElement(tggAttributeConstraintDefinitionLibrary);
+			if (result == null)
 				result = defaultCase(theEObject);
 			return result;
 		}

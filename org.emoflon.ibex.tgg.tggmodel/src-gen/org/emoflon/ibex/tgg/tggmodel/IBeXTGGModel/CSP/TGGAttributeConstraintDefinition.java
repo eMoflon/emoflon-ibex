@@ -18,6 +18,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNamedElement;
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinition#getParameterDefinitions <em>Parameter Definitions</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinition#getSyncBindings <em>Sync Bindings</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinition#getGenBindings <em>Gen Bindings</em>}</li>
+ *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinition#getLibrary <em>Library</em>}</li>
  * </ul>
  *
  * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.CSPPackage#getTGGAttributeConstraintDefinition()
@@ -60,5 +61,29 @@ public interface TGGAttributeConstraintDefinition extends IBeXNamedElement {
 	 * @generated
 	 */
 	EList<TGGAttributeConstraintBinding> getGenBindings();
+
+	/**
+	 * Returns the value of the '<em><b>Library</b></em>' container reference.
+	 * It is bidirectional and its opposite is '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinitionLibrary#getTggAttributeConstraintDefinitions <em>Tgg Attribute Constraint Definitions</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Library</em>' container reference.
+	 * @see #setLibrary(TGGAttributeConstraintDefinitionLibrary)
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.CSPPackage#getTGGAttributeConstraintDefinition_Library()
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinitionLibrary#getTggAttributeConstraintDefinitions
+	 * @model opposite="tggAttributeConstraintDefinitions" transient="false"
+	 * @generated
+	 */
+	TGGAttributeConstraintDefinitionLibrary getLibrary();
+
+	/**
+	 * Sets the value of the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinition#getLibrary <em>Library</em>}' container reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Library</em>' container reference.
+	 * @see #getLibrary()
+	 * @generated
+	 */
+	void setLibrary(TGGAttributeConstraintDefinitionLibrary value);
 
 } // TGGAttributeConstraintDefinition

@@ -13,6 +13,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNamedElement;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRule;
 
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.*;
@@ -93,6 +94,11 @@ public class IBeXTGGModelAdapterFactory extends AdapterFactoryImpl {
 		}
 
 		@Override
+		public Adapter caseTGGPattern(TGGPattern object) {
+			return createTGGPatternAdapter();
+		}
+
+		@Override
 		public Adapter caseTGGRuleElement(TGGRuleElement object) {
 			return createTGGRuleElementAdapter();
 		}
@@ -135,6 +141,11 @@ public class IBeXTGGModelAdapterFactory extends AdapterFactoryImpl {
 		@Override
 		public Adapter caseIBeXRule(IBeXRule object) {
 			return createIBeXRuleAdapter();
+		}
+
+		@Override
+		public Adapter caseIBeXPattern(IBeXPattern object) {
+			return createIBeXPatternAdapter();
 		}
 
 		@Override
@@ -219,6 +230,20 @@ public class IBeXTGGModelAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createTGGOperationalRuleAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGPattern <em>TGG Pattern</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGPattern
+	 * @generated
+	 */
+	public Adapter createTGGPatternAdapter() {
 		return null;
 	}
 
@@ -345,6 +370,20 @@ public class IBeXTGGModelAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createIBeXRuleAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern <em>IBe XPattern</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern
+	 * @generated
+	 */
+	public Adapter createIBeXPatternAdapter() {
 		return null;
 	}
 

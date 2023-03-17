@@ -18,4 +18,6 @@ public interface TGGAttributeConstraintDefinitionLibraryValidator {
 	boolean validate();
 
 	boolean validateTggAttributeConstraintDefinitions(EList<TGGAttributeConstraintDefinition> value);
+
+	boolean validatePackageName(String value);
 }

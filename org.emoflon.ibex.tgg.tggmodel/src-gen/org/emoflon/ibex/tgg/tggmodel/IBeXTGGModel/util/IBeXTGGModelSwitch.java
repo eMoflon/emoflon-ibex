@@ -11,6 +11,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXModel;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNamedElement;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRule;
 
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.*;
@@ -110,6 +111,17 @@ public class IBeXTGGModelSwitch<T> extends Switch<T> {
 				result = caseIBeXRule(tggOperationalRule);
 			if (result == null)
 				result = caseIBeXNamedElement(tggOperationalRule);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case IBeXTGGModelPackage.TGG_PATTERN: {
+			TGGPattern tggPattern = (TGGPattern) theEObject;
+			T result = caseTGGPattern(tggPattern);
+			if (result == null)
+				result = caseIBeXPattern(tggPattern);
+			if (result == null)
+				result = caseIBeXNamedElement(tggPattern);
 			if (result == null)
 				result = defaultCase(theEObject);
 			return result;
@@ -250,6 +262,21 @@ public class IBeXTGGModelSwitch<T> extends Switch<T> {
 	}
 
 	/**
+	 * Returns the result of interpreting the object as an instance of '<em>TGG Pattern</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>TGG Pattern</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseTGGPattern(TGGPattern object) {
+		return null;
+	}
+
+	/**
 	 * Returns the result of interpreting the object as an instance of '<em>TGG Rule Element</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
@@ -381,6 +408,21 @@ public class IBeXTGGModelSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseIBeXRule(IBeXRule object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>IBe XPattern</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>IBe XPattern</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseIBeXPattern(IBeXPattern object) {
 		return null;
 	}
 

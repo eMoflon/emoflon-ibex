@@ -65,6 +65,8 @@ public class IBeXTGGModelFactoryImpl extends EFactoryImpl implements IBeXTGGMode
 			return createTGGRule();
 		case IBeXTGGModelPackage.TGG_OPERATIONAL_RULE:
 			return createTGGOperationalRule();
+		case IBeXTGGModelPackage.TGG_PATTERN:
+			return createTGGPattern();
 		case IBeXTGGModelPackage.TGG_NODE:
 			return createTGGNode();
 		case IBeXTGGModelPackage.TGG_CORRESPONDENCE:
@@ -156,6 +158,16 @@ public class IBeXTGGModelFactoryImpl extends EFactoryImpl implements IBeXTGGMode
 	public TGGOperationalRule createTGGOperationalRule() {
 		TGGOperationalRuleImpl tggOperationalRule = new TGGOperationalRuleImpl();
 		return tggOperationalRule;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public TGGPattern createTGGPattern() {
+		TGGPatternImpl tggPattern = new TGGPatternImpl();
+		return tggPattern;
 	}
 
 	/**

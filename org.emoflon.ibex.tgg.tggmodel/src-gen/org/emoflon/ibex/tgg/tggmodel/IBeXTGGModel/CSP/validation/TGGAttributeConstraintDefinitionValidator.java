@@ -7,6 +7,7 @@ package org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.validation;
 import org.eclipse.emf.common.util.EList;
 
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintBinding;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinitionLibrary;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintParameterDefinition;
 
 /**
@@ -23,4 +24,6 @@ public interface TGGAttributeConstraintDefinitionValidator {
 	boolean validateSyncBindings(EList<TGGAttributeConstraintBinding> value);
 
 	boolean validateGenBindings(EList<TGGAttributeConstraintBinding> value);
+
+	boolean validateLibrary(TGGAttributeConstraintDefinitionLibrary value);
 }

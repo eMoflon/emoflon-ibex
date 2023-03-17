@@ -4,6 +4,7 @@ package org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.impl;
 
 import java.util.Collection;
 
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 
 import org.eclipse.emf.common.util.EList;
@@ -11,7 +12,9 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 
+import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.util.InternalEList;
 
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXNamedElementImpl;
@@ -19,6 +22,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXNamedElementImpl
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.CSPPackage;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintBinding;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinition;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinitionLibrary;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintParameterDefinition;
 
 /**
@@ -32,6 +36,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintPara
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.impl.TGGAttributeConstraintDefinitionImpl#getParameterDefinitions <em>Parameter Definitions</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.impl.TGGAttributeConstraintDefinitionImpl#getSyncBindings <em>Sync Bindings</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.impl.TGGAttributeConstraintDefinitionImpl#getGenBindings <em>Gen Bindings</em>}</li>
+ *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.impl.TGGAttributeConstraintDefinitionImpl#getLibrary <em>Library</em>}</li>
  * </ul>
  *
  * @generated
@@ -134,6 +139,71 @@ public class TGGAttributeConstraintDefinitionImpl extends IBeXNamedElementImpl
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public TGGAttributeConstraintDefinitionLibrary getLibrary() {
+		if (eContainerFeatureID() != CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__LIBRARY)
+			return null;
+		return (TGGAttributeConstraintDefinitionLibrary) eInternalContainer();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public NotificationChain basicSetLibrary(TGGAttributeConstraintDefinitionLibrary newLibrary,
+			NotificationChain msgs) {
+		msgs = eBasicSetContainer((InternalEObject) newLibrary, CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__LIBRARY,
+				msgs);
+		return msgs;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setLibrary(TGGAttributeConstraintDefinitionLibrary newLibrary) {
+		if (newLibrary != eInternalContainer()
+				|| (eContainerFeatureID() != CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__LIBRARY
+						&& newLibrary != null)) {
+			if (EcoreUtil.isAncestor(this, newLibrary))
+				throw new IllegalArgumentException("Recursive containment not allowed for " + toString());
+			NotificationChain msgs = null;
+			if (eInternalContainer() != null)
+				msgs = eBasicRemoveFromContainer(msgs);
+			if (newLibrary != null)
+				msgs = ((InternalEObject) newLibrary).eInverseAdd(this,
+						CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS,
+						TGGAttributeConstraintDefinitionLibrary.class, msgs);
+			msgs = basicSetLibrary(newLibrary, msgs);
+			if (msgs != null)
+				msgs.dispatch();
+		} else if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__LIBRARY, newLibrary, newLibrary));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
+		switch (featureID) {
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__LIBRARY:
+			if (eInternalContainer() != null)
+				msgs = eBasicRemoveFromContainer(msgs);
+			return basicSetLibrary((TGGAttributeConstraintDefinitionLibrary) otherEnd, msgs);
+		}
+		return super.eInverseAdd(otherEnd, featureID, msgs);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
@@ -143,8 +213,26 @@ public class TGGAttributeConstraintDefinitionImpl extends IBeXNamedElementImpl
 			return ((InternalEList<?>) getSyncBindings()).basicRemove(otherEnd, msgs);
 		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__GEN_BINDINGS:
 			return ((InternalEList<?>) getGenBindings()).basicRemove(otherEnd, msgs);
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__LIBRARY:
+			return basicSetLibrary(null, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public NotificationChain eBasicRemoveFromContainerFeature(NotificationChain msgs) {
+		switch (eContainerFeatureID()) {
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__LIBRARY:
+			return eInternalContainer().eInverseRemove(this,
+					CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS,
+					TGGAttributeConstraintDefinitionLibrary.class, msgs);
+		}
+		return super.eBasicRemoveFromContainerFeature(msgs);
 	}
 
 	/**
@@ -161,6 +249,8 @@ public class TGGAttributeConstraintDefinitionImpl extends IBeXNamedElementImpl
 			return getSyncBindings();
 		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__GEN_BINDINGS:
 			return getGenBindings();
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__LIBRARY:
+			return getLibrary();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -187,6 +277,9 @@ public class TGGAttributeConstraintDefinitionImpl extends IBeXNamedElementImpl
 			getGenBindings().clear();
 			getGenBindings().addAll((Collection<? extends TGGAttributeConstraintBinding>) newValue);
 			return;
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__LIBRARY:
+			setLibrary((TGGAttributeConstraintDefinitionLibrary) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -208,6 +301,9 @@ public class TGGAttributeConstraintDefinitionImpl extends IBeXNamedElementImpl
 		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__GEN_BINDINGS:
 			getGenBindings().clear();
 			return;
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__LIBRARY:
+			setLibrary((TGGAttributeConstraintDefinitionLibrary) null);
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -226,6 +322,8 @@ public class TGGAttributeConstraintDefinitionImpl extends IBeXNamedElementImpl
 			return syncBindings != null && !syncBindings.isEmpty();
 		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__GEN_BINDINGS:
 			return genBindings != null && !genBindings.isEmpty();
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__LIBRARY:
+			return getLibrary() != null;
 		}
 		return super.eIsSet(featureID);
 	}

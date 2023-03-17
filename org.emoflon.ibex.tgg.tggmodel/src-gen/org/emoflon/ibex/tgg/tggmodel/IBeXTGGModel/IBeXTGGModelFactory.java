@@ -58,6 +58,15 @@ public interface IBeXTGGModelFactory extends EFactory {
 	TGGOperationalRule createTGGOperationalRule();
 
 	/**
+	 * Returns a new object of class '<em>TGG Pattern</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>TGG Pattern</em>'.
+	 * @generated
+	 */
+	TGGPattern createTGGPattern();
+
+	/**
 	 * Returns a new object of class '<em>TGG Node</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

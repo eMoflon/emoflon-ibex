@@ -20,9 +20,6 @@ import org.eclipse.emf.ecore.util.InternalEList;
 
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXRuleImpl;
-
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintSet;
-
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
@@ -42,7 +39,6 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getEdges <em>Edges</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getCorrespondenceNodes <em>Correspondence Nodes</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getOperationalisations <em>Operationalisations</em>}</li>
- *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getAttributeConstraints <em>Attribute Constraints</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#isAbstract <em>Abstract</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#isAxiom <em>Axiom</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getContext <em>Context</em>}</li>
@@ -101,16 +97,6 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 	 * @ordered
 	 */
 	protected EList<TGGOperationalRule> operationalisations;
-
-	/**
-	 * The cached value of the '{@link #getAttributeConstraints() <em>Attribute Constraints</em>}' containment reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getAttributeConstraints()
-	 * @generated
-	 * @ordered
-	 */
-	protected TGGAttributeConstraintSet attributeConstraints;
 
 	/**
 	 * The default value of the '{@link #isAbstract() <em>Abstract</em>}' attribute.
@@ -339,58 +325,6 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 					IBeXTGGModelPackage.TGG_RULE__OPERATIONALISATIONS);
 		}
 		return operationalisations;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public TGGAttributeConstraintSet getAttributeConstraints() {
-		return attributeConstraints;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public NotificationChain basicSetAttributeConstraints(TGGAttributeConstraintSet newAttributeConstraints,
-			NotificationChain msgs) {
-		TGGAttributeConstraintSet oldAttributeConstraints = attributeConstraints;
-		attributeConstraints = newAttributeConstraints;
-		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
-					IBeXTGGModelPackage.TGG_RULE__ATTRIBUTE_CONSTRAINTS, oldAttributeConstraints,
-					newAttributeConstraints);
-			if (msgs == null)
-				msgs = notification;
-			else
-				msgs.add(notification);
-		}
-		return msgs;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public void setAttributeConstraints(TGGAttributeConstraintSet newAttributeConstraints) {
-		if (newAttributeConstraints != attributeConstraints) {
-			NotificationChain msgs = null;
-			if (attributeConstraints != null)
-				msgs = ((InternalEObject) attributeConstraints).eInverseRemove(this,
-						EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__ATTRIBUTE_CONSTRAINTS, null, msgs);
-			if (newAttributeConstraints != null)
-				msgs = ((InternalEObject) newAttributeConstraints).eInverseAdd(this,
-						EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__ATTRIBUTE_CONSTRAINTS, null, msgs);
-			msgs = basicSetAttributeConstraints(newAttributeConstraints, msgs);
-			if (msgs != null)
-				msgs.dispatch();
-		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__ATTRIBUTE_CONSTRAINTS,
-					newAttributeConstraints, newAttributeConstraints));
 	}
 
 	/**
@@ -1058,8 +992,6 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 			return ((InternalEList<?>) getEdges()).basicRemove(otherEnd, msgs);
 		case IBeXTGGModelPackage.TGG_RULE__OPERATIONALISATIONS:
 			return ((InternalEList<?>) getOperationalisations()).basicRemove(otherEnd, msgs);
-		case IBeXTGGModelPackage.TGG_RULE__ATTRIBUTE_CONSTRAINTS:
-			return basicSetAttributeConstraints(null, msgs);
 		case IBeXTGGModelPackage.TGG_RULE__CONTEXT:
 			return basicSetContext(null, msgs);
 		case IBeXTGGModelPackage.TGG_RULE__CONTEXT_SOURCE:
@@ -1104,8 +1036,6 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 			return getCorrespondenceNodes();
 		case IBeXTGGModelPackage.TGG_RULE__OPERATIONALISATIONS:
 			return getOperationalisations();
-		case IBeXTGGModelPackage.TGG_RULE__ATTRIBUTE_CONSTRAINTS:
-			return getAttributeConstraints();
 		case IBeXTGGModelPackage.TGG_RULE__ABSTRACT:
 			return isAbstract();
 		case IBeXTGGModelPackage.TGG_RULE__AXIOM:
@@ -1162,9 +1092,6 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		case IBeXTGGModelPackage.TGG_RULE__OPERATIONALISATIONS:
 			getOperationalisations().clear();
 			getOperationalisations().addAll((Collection<? extends TGGOperationalRule>) newValue);
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__ATTRIBUTE_CONSTRAINTS:
-			setAttributeConstraints((TGGAttributeConstraintSet) newValue);
 			return;
 		case IBeXTGGModelPackage.TGG_RULE__ABSTRACT:
 			setAbstract((Boolean) newValue);
@@ -1232,9 +1159,6 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		case IBeXTGGModelPackage.TGG_RULE__OPERATIONALISATIONS:
 			getOperationalisations().clear();
 			return;
-		case IBeXTGGModelPackage.TGG_RULE__ATTRIBUTE_CONSTRAINTS:
-			setAttributeConstraints((TGGAttributeConstraintSet) null);
-			return;
 		case IBeXTGGModelPackage.TGG_RULE__ABSTRACT:
 			setAbstract(ABSTRACT_EDEFAULT);
 			return;
@@ -1297,8 +1221,6 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 			return correspondenceNodes != null && !correspondenceNodes.isEmpty();
 		case IBeXTGGModelPackage.TGG_RULE__OPERATIONALISATIONS:
 			return operationalisations != null && !operationalisations.isEmpty();
-		case IBeXTGGModelPackage.TGG_RULE__ATTRIBUTE_CONSTRAINTS:
-			return attributeConstraints != null;
 		case IBeXTGGModelPackage.TGG_RULE__ABSTRACT:
 			return abstract_ != ABSTRACT_EDEFAULT;
 		case IBeXTGGModelPackage.TGG_RULE__AXIOM:

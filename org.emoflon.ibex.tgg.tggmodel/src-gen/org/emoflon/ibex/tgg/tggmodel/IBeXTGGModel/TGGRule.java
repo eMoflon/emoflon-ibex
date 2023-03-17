@@ -7,7 +7,6 @@ import org.eclipse.emf.common.util.EList;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRule;
 
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintSet;
 
 /**
  * <!-- begin-user-doc -->
@@ -22,7 +21,6 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintSet;
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getEdges <em>Edges</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getCorrespondenceNodes <em>Correspondence Nodes</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getOperationalisations <em>Operationalisations</em>}</li>
- *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getAttributeConstraints <em>Attribute Constraints</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#isAbstract <em>Abstract</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#isAxiom <em>Axiom</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getContext <em>Context</em>}</li>
@@ -91,28 +89,6 @@ public interface TGGRule extends IBeXRule {
 	 * @generated
 	 */
 	EList<TGGOperationalRule> getOperationalisations();
-
-	/**
-	 * Returns the value of the '<em><b>Attribute Constraints</b></em>' containment reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Attribute Constraints</em>' containment reference.
-	 * @see #setAttributeConstraints(TGGAttributeConstraintSet)
-	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage#getTGGRule_AttributeConstraints()
-	 * @model containment="true"
-	 * @generated
-	 */
-	TGGAttributeConstraintSet getAttributeConstraints();
-
-	/**
-	 * Sets the value of the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getAttributeConstraints <em>Attribute Constraints</em>}' containment reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Attribute Constraints</em>' containment reference.
-	 * @see #getAttributeConstraints()
-	 * @generated
-	 */
-	void setAttributeConstraints(TGGAttributeConstraintSet value);
 
 	/**
 	 * Returns the value of the '<em><b>Abstract</b></em>' attribute.
