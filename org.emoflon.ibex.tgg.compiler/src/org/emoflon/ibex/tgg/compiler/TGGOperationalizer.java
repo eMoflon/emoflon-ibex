@@ -81,7 +81,7 @@ public class TGGOperationalizer {
 		removeInvocations(op.getPostcondition().getInvocations(), type);
 
 		removeAttributeAssignments(op.getAttributeAssignments(), type);
-		removeAttributeConstraints(((TGGPattern) op.getPrecondition())	.getAttributeConstraints().getTggAttributeConstraints(), type);
+		removeAttributeConstraints(((TGGPattern) op.getPrecondition()).getAttributeConstraints().getTggAttributeConstraints(), type);
 		
 		removeAttributeConditions(op.getPrecondition().getConditions(), type);
 		removeAttributeConditions(op.getPostcondition().getConditions(), type);
@@ -321,8 +321,9 @@ public class TGGOperationalizer {
 		op.getAllNodes().addAll(ruleCopy.getCorrespondenceNodes());
 		
 		op.getAttributeAssignments().addAll(ruleCopy.getAttributeAssignments());
-		((TGGPattern) op.getPrecondition()).getAttributeConstraints().getTggAttributeConstraints().addAll(((TGGPattern) rule.getPrecondition()).getAttributeConstraints().getTggAttributeConstraints());
-	
+		var tggAttributeConstraints = ((TGGPattern) ruleCopy.getPrecondition()).getAttributeConstraints().getTggAttributeConstraints();
+		((TGGPattern) op.getPrecondition()).getAttributeConstraints().getTggAttributeConstraints().addAll(tggAttributeConstraints);
+
 		rule.getOperationalisations().add(op);
 		
 		return op;

@@ -10,7 +10,13 @@ import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeAssignment;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeValue;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanExpression;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalExpression;
+import org.emoflon.ibex.tgg.compiler.TGGRuleDerivedFieldsTool;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.TGGOverlap;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
@@ -19,6 +25,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelFactory;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGPattern;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGShortcutRule;
@@ -100,10 +107,17 @@ public class RuntimeShortcutRule {
 		initializeContextEdges();
 		initializeCreateEdges();
 		
-		adaptInplaceAttrExprs();
+		adaptAttributeAssignments();
+		var attributeConditions = initializeAttributeConditions();
 		
 		shortcutRule.getAllNodes().addAll(shortcutRule.getNodes());
 		shortcutRule.getAllEdges().addAll(shortcutRule.getEdges());
+		
+		TGGRuleDerivedFieldsTool.fillDerivedTGGRuleFields(shortcutRule);
+		TGGRuleDerivedFieldsTool.fillDerivedTGGRulePreCondition( //
+				shortcutRule, attributeConditions, //
+				EcoreUtil.copy(((TGGPattern) getReplacingRule().getPrecondition()).getAttributeConstraints()) //
+		);
 	}
 
 	private void initializeDeleteNodes() {
@@ -145,18 +159,34 @@ public class RuntimeShortcutRule {
 			createNewEdge(edge, BindingType.CONTEXT);
 	}
 
-	private void adaptInplaceAttrExprs() {
-		shortcutRule.getNodes().stream() //
-				.flatMap(n -> n.getAttrExpr().stream()) //
-				.filter(e -> e.getValueExpr() instanceof TGGAttributeExpression) //
-				.map(e -> (TGGAttributeExpression) e.getValueExpr()) //
-				.forEach(attrExpr -> attrExpr.setObjectVar(replacing2newNodes.get(attrExpr.getObjectVar())));
+	private void adaptAttributeAssignments() {
+		shortcutRule.getAttributeAssignments().stream() //
+				.filter(a -> a.getValue() instanceof IBeXAttributeValue) //
+				.map(a -> (IBeXAttributeValue) a.getValue()) //
+				.forEach(v -> v.setNode(replacing2newNodes.get(v.getNode())));
 	}
 	
+	private Collection<BooleanExpression> initializeAttributeConditions() {
+		var attributeConditions = EcoreUtil.copyAll(getReplacingRule().getPrecondition().getConditions());
+		
+		for (var attributeCondition : attributeConditions) {
+			if (!(attributeCondition instanceof RelationalExpression relationalExpression))
+				throw new RuntimeException("Attribute conditions must be relational expressions!");
+			if (relationalExpression.getLhs() instanceof IBeXAttributeValue attributeValue)
+				attributeValue.setNode(replacing2newNodes.get(attributeValue.getNode()));
+			if (relationalExpression.getRhs() instanceof IBeXAttributeValue attributeValue)
+				attributeValue.setNode(replacing2newNodes.get(attributeValue.getNode()));
+		}
+		
+		return attributeConditions;
+	}
+
 	private void createNewNodeIfNecessary(TGGNode oldNode, BindingType binding, SCInputRule scInput) {
 		if(options.repair.omitUnnecessaryContext()) {
 			if(scInput == SCInputRule.ORIGINAL) {
 				boolean isNecessary = overlap.deletions.stream() //
+						.filter(e -> e instanceof IBeXEdge) //
+						.map(e -> (IBeXEdge) e) //
 						.anyMatch(e -> oldNode.getIncomingEdges().contains(e) || oldNode.getOutgoingEdges().contains(e));
 				if(isNecessary)
 					createNewNode(oldNode, binding, scInput);
@@ -173,7 +203,7 @@ public class RuntimeShortcutRule {
 
 	private void createNewNode(TGGNode oldNode, BindingType binding, SCInputRule scInput) {
 		TGGNode newNode = createNode(oldNode.eClass(), oldNode.getName(), binding, oldNode.getDomainType(),
-				oldNode.getType(), scInput == SCInputRule.REPLACING ? oldNode.getAttrExpr() : Collections.emptyList());
+				oldNode.getType(), scInput == SCInputRule.REPLACING ? oldNode.getAttributeAssignments() : Collections.emptyList());
 		registerNewNode(oldNode, newNode, scInput);
 	}
 
@@ -181,7 +211,7 @@ public class RuntimeShortcutRule {
 		EClass newType = originalNode.getType().isSuperTypeOf(replacingNode.getType()) ? //
 				replacingNode.getType() : originalNode.getType();
 		TGGNode newNode = createNode(originalNode.eClass(), originalNode.getName(), BindingType.CONTEXT,
-				originalNode.getDomainType(), newType, replacingNode.getAttrExpr());
+				originalNode.getDomainType(), newType, replacingNode.getAttributeAssignments());
 		registerNewMergedNode(originalNode, replacingNode, newNode);
 	}
 
@@ -211,7 +241,7 @@ public class RuntimeShortcutRule {
 	}
 
 	private TGGNode createNode(EClass nodeType, String name, BindingType binding, DomainType domain, EClass type,
-			List<TGGInplaceAttributeExpression> attrExprs) {
+			List<IBeXAttributeAssignment> attrAssignments) {
 		TGGNode node = (TGGNode) IBeXTGGModelFactory.eINSTANCE.create(nodeType);
 
 		String adjustedName = name;
@@ -228,7 +258,9 @@ public class RuntimeShortcutRule {
 		node.setBindingType(binding);
 		node.setDomainType(domain);
 		node.setType(type);
-		node.getAttrExpr().addAll(EcoreUtil.copyAll(attrExprs));
+		var copiedAttributeAssignments = EcoreUtil.copyAll(attrAssignments);
+		node.getAttributeAssignments().addAll(copiedAttributeAssignments);
+		shortcutRule.getAttributeAssignments().addAll(copiedAttributeAssignments);
 
 		return node;
 	}

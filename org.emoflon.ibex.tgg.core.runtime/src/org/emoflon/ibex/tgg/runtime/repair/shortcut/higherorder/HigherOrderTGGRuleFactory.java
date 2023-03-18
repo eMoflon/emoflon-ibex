@@ -28,7 +28,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
 import org.emoflon.ibex.tgg.util.TGGFilterUtil;
-import org.emoflon.ibex.tgg.util.TGGInplaceAttrExprUtil;
+import org.emoflon.ibex.tgg.util.TGGAttrExprUtil;
 import org.emoflon.ibex.tgg.util.TGGModelUtils;
 
 import language.TGGEnumExpression;
@@ -362,7 +362,7 @@ public class HigherOrderTGGRuleFactory {
 				else
 					continue;
 
-				if (!TGGInplaceAttrExprUtil.checkInplaceAttributeCondition(contextAttrExpr, candidateAttrValue, null))
+				if (!TGGAttrExprUtil.checkInplaceAttributeCondition(contextAttrExpr, candidateAttrValue, null))
 					return false;
 			}
 		}
