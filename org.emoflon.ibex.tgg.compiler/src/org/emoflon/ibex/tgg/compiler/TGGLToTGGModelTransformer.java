@@ -160,14 +160,14 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		}
 
 		// Add the ecore package if not present
-		if (!metadata.getName2package().containsKey("ecore")) {
-			try {
-				EPackageDependency dependency = transformPackage(EcorePackage.eINSTANCE);
-				metadata.getDependencies().add(dependency);
-				metadata.getName2package().put(dependency.getSimpleName(), dependency);
-			} catch (IOException e) {
-			}
-		}
+//		if (!metadata.getName2package().containsKey("ecore")) {
+//			try {
+//				EPackageDependency dependency = transformPackage(EcorePackage.eINSTANCE);
+//				metadata.getDependencies().add(dependency);
+//				metadata.getName2package().put(dependency.getSimpleName(), dependency);
+//			} catch (IOException e) {
+//			}
+//		}
 
 		return metadata;
 	}
@@ -343,6 +343,8 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		internalRule.getAllEdges().addAll(internalRule.getEdges());
 		
 		var precondition = factory.createTGGPattern();
+		precondition.setAttributeConstraints(cspFactory.createTGGAttributeConstraintSet());
+		
 		model.getPatternSet().getPatterns().add(precondition);
 		internalRule.setPrecondition(precondition);
 		populatePrecondition(rule, internalRule, precondition);

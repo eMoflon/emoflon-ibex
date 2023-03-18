@@ -22,21 +22,22 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.xmi.XMIResource;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.URIHandlerImpl;
+import org.emoflon.ibex.common.slimgt.build.SlimGTBuilderExtension;
 import org.emoflon.ibex.tgg.compiler.TGGLToTGGModelTransformer;
 import org.emoflon.ibex.tgg.compiler.defaults.TGGBuildUtil;
-import org.emoflon.ibex.tgg.tggl.generator.TGGBuilderExtension;
 import org.emoflon.ibex.tgg.tggl.tGGL.EditorFile;
+import org.emoflon.ibex.tgg.tggl.ui.builder.TGGLNature;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel;
 import org.moflon.core.plugins.manifest.ManifestFileUpdater;
 import org.moflon.core.utilities.ExtensionsUtil;
 import org.moflon.core.utilities.MoflonUtil;
 
-public class TGGPackageBuilder implements TGGBuilderExtension {
+public class TGGPackageBuilder implements SlimGTBuilderExtension<EditorFile> {
 	
 	private IProject project;
 
 	@Override
-	public void run(IProject project, EditorFile editorFile) {
+	public void build(IProject project, EditorFile editorFile) {
 		this.project = project;
 		
 		logInfo("Generating Attribute Condition Libraries..");
@@ -48,7 +49,7 @@ public class TGGPackageBuilder implements TGGBuilderExtension {
 		try {
 			tggModel = generateInternalModel(editorFile);
 		}catch(RuntimeException e) {
-//			logError(e);
+			logError(e);
 			return;
 		}
 		
@@ -178,5 +179,16 @@ public class TGGPackageBuilder implements TGGBuilderExtension {
 	private boolean processManifestForProject(final Manifest manifest) {
 		boolean changedBasics = ManifestFileUpdater.setBasicProperties(manifest, project.getName());
 		return changedBasics;
+	}
+
+
+	@Override
+	public boolean hasProperNature(IProject project) {
+		try {
+			return null != project.getNature(TGGLNature.NATURE_ID);
+		} catch (CoreException e) {
+			logInfo(e.getLocalizedMessage());
+			return false;
+		}
 	}
 }
