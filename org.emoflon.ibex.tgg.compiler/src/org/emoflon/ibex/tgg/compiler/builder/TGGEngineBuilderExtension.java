@@ -5,7 +5,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel;
 
 public interface TGGEngineBuilderExtension {
 	
-	static final String BUILDER_EXTENSON_ID = "org.emoflon.ibex.tgg.language.TGGEngineBuilderExtension";
+	static final String BUILDER_EXTENSON_ID = "org.emoflon.ibex.tgg.compiler.builder.TGGEngineBuilderExtension";
 
 	void run(IProject project, TGGModel editorModel);
 }

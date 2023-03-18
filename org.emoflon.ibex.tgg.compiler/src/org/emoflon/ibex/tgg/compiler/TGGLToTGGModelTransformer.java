@@ -23,6 +23,7 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EcoreFactory;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeAssignment;
@@ -109,6 +110,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.CSPFactory;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinition;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintSet;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGLocalVariable;
 import org.moflon.core.utilities.LogUtils;
 import org.moflon.core.utilities.MoflonUtil;
@@ -184,21 +186,26 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 	public TGGModel transform() {
 		featureConfig = superFactory.createIBeXFeatureConfig();
 		model.setFeatureConfig(featureConfig);
-		
-		createCorrespondenceModel();
-		createAttributeConstraintLibraries();
-		
+		model.setName(editorFile.getSchema().getName());
 		model.setRuleSet(factory.createTGGRuleSet());
 		
+		createCorrespondenceModel();
+		model.getSource().addAll(TGGLScopeProvider.getReferencedPackages(editorFile.getSchema().getSourceTypes()));
+		model.getTarget().addAll(TGGLScopeProvider.getReferencedPackages(editorFile.getSchema().getTargetTypes()));
+
+		createAttributeConstraintLibraries();
+		
 		// Pattern are only transformed if actually called by a tgg rule
-		editorFile.getRules().parallelStream().filter(rule -> !rule.isAbstract()).forEach(this::transformRule);
+		var rules = editorFile.getRules().parallelStream().filter(rule -> !rule.isAbstract()).map(this::transformRule).toList();
+		model.getRuleSet().getRules().addAll(rules);
 		
 		ProtocolGenerator protocolGenerator = new ProtocolGenerator();
 		var protocolInformation = protocolGenerator.createProtocol(model);
 		
-		var operationalizer = new TGGOperationalizer();
-		operationalizer.operationalizeTGGRules(model, protocolInformation);
+//		var operationalizer = new TGGOperationalizer();
+//		operationalizer.operationalizeTGGRules(model, protocolInformation);
 		
+	
 		// merge both corr and protocol metamodel together to make imports easier
 		var corrModel = model.getCorrespondence();
 		corrModel.getEClassifiers().addAll(protocolInformation.metamodel().getEClassifiers());
@@ -213,8 +220,9 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 	private void saveModels(TGGModel model) {
 		
 		try {
-			ResourceSet rs = editorFile.eResource().getResourceSet();
-			EcoreUtil.resolveAll(rs);
+//			ResourceSet rs = editorFile.eResource().getResourceSet();
+//			EcoreUtil.resolveAll(rs);
+			ResourceSet rs = new ResourceSetImpl();
 			IFile corrFile = project.getFolder(TGGBuildUtil.MODEL_FOLDER)//
 					.getFile(getNameOfGeneratedFile(project) + TGGBuildUtil.ECORE_FILE_EXTENSION);
 			TGGBuildUtil.saveModelInProject(corrFile, rs, model.getCorrespondence());
@@ -349,9 +357,9 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		internalRule.setPrecondition(precondition);
 		populatePrecondition(rule, internalRule, precondition);
 		
+		var attributeConstraints = ((TGGPattern) internalRule.getPrecondition()).getAttributeConstraints();
 		for(var attributeCondition : rule.getAttrConditions()) {
-			((TGGPattern) internalRule.getPrecondition()).getAttributeConstraints().getTggAttributeConstraints() //
-					.add(transformAttributeCondition(attributeCondition));
+			attributeConstraints.getTggAttributeConstraints().add(transformAttributeCondition(attributeCondition, attributeConstraints));
 		}
 		
 		for(var invocation : rule.getSourceRule().getInvocations()) {
@@ -403,7 +411,7 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		return transformBoolExpression(condition.getExpression());
 	}
 	
-	private TGGAttributeConstraint transformAttributeCondition(AttributeCondition attributeCondition) {
+	private TGGAttributeConstraint transformAttributeCondition(AttributeCondition attributeCondition, TGGAttributeConstraintSet attributeConstraints) {
 		if(tggl2tggModel.containsKey(attributeCondition))
 			return (TGGAttributeConstraint) tggl2tggModel.get(attributeCondition);
 		
@@ -414,9 +422,37 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		
 		for(var value : attributeCondition.getValues()) {
 			var paramValue = cspFactory.createTGGAttributeConstraintParameterValue();
-			attributeConstraint.getParameters().add(paramValue);
 			if(value instanceof org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression aritExpr) {
-				paramValue.setExpression(transformArithmeticExpression(aritExpr));
+				var valueExpression = transformArithmeticExpression(aritExpr);
+				
+				// look in the attribute constraint set for equivalent parameters and take them instead
+				if(valueExpression instanceof IBeXAttributeValue attributeValue) {
+					for(var containerParamValue : attributeConstraints.getParameters()) {
+						if(containerParamValue.getExpression() instanceof IBeXAttributeValue containerAttributeValue) {
+							if(attributeValue.getNode().equals(containerAttributeValue.getNode())) {
+								if(attributeValue.getAttribute().equals(containerAttributeValue.getAttribute())) {
+									attributeConstraint.getParameters().add(containerParamValue);
+									continue;
+								}
+							}
+						}
+					}
+				}
+				if(valueExpression instanceof TGGLocalVariable localVariable) {
+					for(var containerParamValue : attributeConstraints.getParameters()) {
+						if(containerParamValue.getExpression() instanceof TGGLocalVariable containerLocalVariable) {
+							if(localVariable.getName().equals(containerLocalVariable.getName())) {
+								attributeConstraint.getParameters().add(containerParamValue);
+								continue;
+							}
+						}
+					}
+				}
+				
+				// if this param value is new or a constant then we add it to both the constraint and the set of constraints
+				paramValue.setExpression(valueExpression);
+				attributeConstraint.getParameters().add(paramValue);
+				attributeConstraints.getParameters().add(paramValue);
 			} else {
 				throw new RuntimeException(value + " could not be converted to an internal model element");
 			}
@@ -431,7 +467,8 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		
 		var corrNode = factory.createTGGCorrespondence();
 		tggl2tggModel.put(node, corrNode);
-		
+		model.getNodeSet().getNodes().add(corrNode);
+
 		corrNode.setBindingType(binding);
 		corrNode.setDomainType(domain);
 		corrNode.setOperationType(
@@ -460,6 +497,7 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 			return (TGGEdge) tggl2tggModel.get(edgeSignature);
 		
 		var edge = factory.createTGGEdge();
+		model.getEdgeSet().getEdges().add(edge);
 		
 		edge.setOperationType(switch(binding) {
 				case CREATE -> IBeXOperationType.CREATION;
@@ -470,6 +508,7 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		edge.setType(edgeSignature.type());
 		edge.setBindingType(binding);
 		edge.setDomainType(domain);
+		
 		
 		var source = transformNode(edgeSignature.source(), getBindingType(edgeSignature.source()), getDomainType(edgeSignature.source()));
 		var target = transformNode(edgeSignature.target(), getBindingType(edgeSignature.target()), getDomainType(edgeSignature.target()));
@@ -550,7 +589,8 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		
 		var tggNode = factory.createTGGNode();
 		tggl2tggModel.put(node, tggNode);
-		
+		model.getNodeSet().getNodes().add(tggNode);
+
 		tggNode.setBindingType(binding);
 		tggNode.setDomainType(domain);
 		tggNode.setName(node.getName());
@@ -925,24 +965,24 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 				atrValue.setAttribute(nae.getFeature());
 				return atrValue;
 			} else if (op.getOperand() instanceof ArithmeticLiteral lit) {
-				if (lit instanceof DoubleLiteral d) {
+				if (lit.getValue() instanceof DoubleLiteral d) {
 					org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.DoubleLiteral gtD = arithmeticFactory
 							.createDoubleLiteral();
 					gtD.setValue(d.getValue());
 					gtD.setType(EcorePackage.Literals.EDOUBLE);
 					return gtD;
-				} else if (lit instanceof IntegerLiteral i) {
+				} else if (lit.getValue() instanceof IntegerLiteral i) {
 					org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.IntegerLiteral gtI = arithmeticFactory
 							.createIntegerLiteral();
 					gtI.setValue(i.getValue());
 					gtI.setType(EcorePackage.Literals.EINT);
 					return gtI;
-				} else if (lit instanceof StringLiteral s) {
+				} else if (lit.getValue() instanceof StringLiteral s) {
 					IBeXStringValue gtS = superFactory.createIBeXStringValue();
 					gtS.setValue(s.getValue());
 					gtS.setType(EcorePackage.Literals.ESTRING);
 					return (ArithmeticExpression) gtS;
-				} else if (lit instanceof BooleanLiteral b) {
+				} else if (lit.getValue() instanceof BooleanLiteral b) {
 					IBeXBooleanValue gtB = superFactory.createIBeXBooleanValue();
 					gtB.setValue(b.isValue());
 					gtB.setType(EcorePackage.Literals.EBOOLEAN);
@@ -960,7 +1000,9 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 				localVariable.setName(lo.getName());
 				
 				var condition = (AttributeCondition) expression.eContainer();
-				TGGAttributeConstraint constraint = transformAttributeCondition(condition);
+				
+				// this condition must have already been created to giving null for the constraint set will not be a problem
+				TGGAttributeConstraint constraint = transformAttributeCondition(condition, null);
 				var index = condition.getValues().indexOf(expression);
 				localVariable.setType(constraint.getDefinition().getParameterDefinitions().get(index).getType());
 				return (ArithmeticExpression) localVariable;
