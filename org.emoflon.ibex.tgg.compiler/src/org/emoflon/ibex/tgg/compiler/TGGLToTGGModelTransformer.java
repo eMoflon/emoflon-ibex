@@ -348,10 +348,13 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		}
 		
 		internalRule.getAllNodes().addAll(internalRule.getNodes());
+		// now we have to extract the edges and add them to the rule
+		internalRule.getAllNodes().forEach(n -> internalRule.getEdges().addAll(n.getOutgoingEdges().stream().map(TGGEdge.class::cast).toList()));
 		internalRule.getAllEdges().addAll(internalRule.getEdges());
 		
 		var precondition = factory.createTGGPattern();
 		precondition.setAttributeConstraints(cspFactory.createTGGAttributeConstraintSet());
+		precondition.setName(rule.getName() + "_precondition");
 		
 		model.getPatternSet().getPatterns().add(precondition);
 		internalRule.setPrecondition(precondition);
@@ -469,6 +472,7 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		tggl2tggModel.put(node, corrNode);
 		model.getNodeSet().getNodes().add(corrNode);
 
+		corrNode.setName(node.getName());
 		corrNode.setBindingType(binding);
 		corrNode.setDomainType(domain);
 		corrNode.setOperationType(
