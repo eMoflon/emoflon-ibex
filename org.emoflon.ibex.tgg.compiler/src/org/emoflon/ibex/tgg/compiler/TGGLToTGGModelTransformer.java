@@ -104,6 +104,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGPattern;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.CSPFactory;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
@@ -338,30 +339,25 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 			internalRule.getNodes().add(transformTGGNode((SlimRuleNode) node.getCreation(), BindingType.CREATE, DomainType.TARGET));
 		}
 		
-		for(var attributeCondition : rule.getAttrConditions()) {
-			internalRule.getAttributeConstraints().getTggAttributeConstraints().add(transformAttributeCondition(attributeCondition));
-		}
-		
 		internalRule.getAllNodes().addAll(internalRule.getNodes());
 		internalRule.getAllEdges().addAll(internalRule.getEdges());
 		
-		var precondition = internalRule.getPrecondition();
-		var postcondition = internalRule.getPostcondition();
-		
+		var precondition = factory.createTGGPattern();
 		model.getPatternSet().getPatterns().add(precondition);
-		model.getPatternSet().getPatterns().add(postcondition);
-		
+		internalRule.setPrecondition(precondition);
 		populatePrecondition(rule, internalRule, precondition);
-		populatePostcondition(rule, internalRule, precondition);
+		
+		for(var attributeCondition : rule.getAttrConditions()) {
+			((TGGPattern) internalRule.getPrecondition()).getAttributeConstraints().getTggAttributeConstraints() //
+					.add(transformAttributeCondition(attributeCondition));
+		}
 		
 		for(var invocation : rule.getSourceRule().getInvocations()) {
 			precondition.getInvocations().add(transformInvocation(precondition, invocation));
-			postcondition.getInvocations().add(transformInvocation(postcondition, invocation));
 		}
 		
 		for(var invocation : rule.getTargetRule().getInvocations()) {
 			precondition.getInvocations().add(transformInvocation(precondition, invocation));
-			postcondition.getInvocations().add(transformInvocation(postcondition, invocation));
 		}
 		
 		var creation = superFactory.createIBeXRuleDelta();
@@ -380,7 +376,7 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 			precondition.getConditions().add(transformSlimRuleCondition(sourceCondition));
 		}
 		
-		for(var targetCondition : tggRule.getSourceRule().getConditions()) {
+		for(var targetCondition : tggRule.getTargetRule().getConditions()) {
 			precondition.getConditions().add(transformSlimRuleCondition(targetCondition));
 		}
 		
@@ -390,19 +386,6 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		
 		for(var invocation : tggRule.getTargetRule().getInvocations()) {
 			precondition.getInvocations().add(transformInvocation(precondition, invocation));
-		}
-	}
-
-	private void populatePostcondition(org.emoflon.ibex.tgg.tggl.tGGL.TGGRule tggRule, TGGRule internalRule, IBeXPattern postcondition) {
-		postcondition.getSignatureNodes().addAll(internalRule.getNodes());
-		postcondition.getEdges().addAll(internalRule.getEdges());
-		
-		for(var invocation : tggRule.getSourceRule().getInvocations()) {
-			postcondition.getInvocations().add(transformInvocation(postcondition, invocation));
-		}
-		
-		for(var invocation : tggRule.getTargetRule().getInvocations()) {
-			postcondition.getInvocations().add(transformInvocation(postcondition, invocation));
 		}
 	}
 	

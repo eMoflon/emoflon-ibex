@@ -1,5 +1,7 @@
 package org.emoflon.ibex.tgg.compiler;
 
+import static org.emoflon.ibex.tgg.compiler.TGGRuleDerivedFieldsTool.fillDerivedTGGOperationalRuleFields;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -24,11 +26,10 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalisationMode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGPattern;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
-
-import static org.emoflon.ibex.tgg.compiler.TGGRuleDerivedFieldsTool.fillDerivedTGGOperationalRuleFields;
 
 public class TGGOperationalizer {
 
@@ -80,7 +81,7 @@ public class TGGOperationalizer {
 		removeInvocations(op.getPostcondition().getInvocations(), type);
 
 		removeAttributeAssignments(op.getAttributeAssignments(), type);
-		removeAttributeConstraints(op.getAttributeConstraints().getTggAttributeConstraints(), type);
+		removeAttributeConstraints(((TGGPattern) op.getPrecondition()).getAttributeConstraints().getTggAttributeConstraints(), type);
 		
 		removeAttributeConditions(op.getPrecondition().getConditions(), type);
 		removeAttributeConditions(op.getPostcondition().getConditions(), type);
@@ -320,8 +321,9 @@ public class TGGOperationalizer {
 		op.getAllNodes().addAll(ruleCopy.getCorrespondenceNodes());
 		
 		op.getAttributeAssignments().addAll(ruleCopy.getAttributeAssignments());
-		op.getAttributeConstraints().getTggAttributeConstraints().addAll(rule.getAttributeConstraints().getTggAttributeConstraints());
-	
+		var tggAttributeConstraints = ((TGGPattern) ruleCopy.getPrecondition()).getAttributeConstraints().getTggAttributeConstraints();
+		((TGGPattern) op.getPrecondition()).getAttributeConstraints().getTggAttributeConstraints().addAll(tggAttributeConstraints);
+
 		rule.getOperationalisations().add(op);
 		
 		return op;

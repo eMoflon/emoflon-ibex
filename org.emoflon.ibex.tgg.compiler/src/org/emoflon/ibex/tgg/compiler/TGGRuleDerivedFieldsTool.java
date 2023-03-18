@@ -1,23 +1,33 @@
 package org.emoflon.ibex.tgg.compiler;
 
-import java.util.Collection;
-
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelFactory;
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
 import static org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType.CONTEXT;
 import static org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType.CREATE;
-import static org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType.DELETE;
-import static org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType.NEGATIVE;
-import static org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType.RELAXED;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
-import static org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType.SOURCE;
 import static org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType.CORRESPONDENCE;
+import static org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType.SOURCE;
 import static org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType.TARGET;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
+import static org.emoflon.ibex.tgg.util.TGGModelUtils.getEdgesByOperatorAndDomain;
+import static org.emoflon.ibex.tgg.util.TGGModelUtils.getNodesByOperatorAndDomain;
+import static org.emoflon.ibex.tgg.util.TGGModelUtils.ruleIsAxiom;
 
-import static org.emoflon.ibex.tgg.util.TGGModelUtils.*;
+import java.util.Collection;
+
+import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeAssignment;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeValue;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelFactory;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanExpression;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.IBeXCoreArithmeticFactory;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ValueExpression;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelFactory;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGPattern;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintSet;
+import org.emoflon.ibex.tgg.util.TGGModelUtils;
 
 public class TGGRuleDerivedFieldsTool {
 	public static void fillDerivedTGGRuleFields(TGGRule rule) {
@@ -80,8 +90,39 @@ public class TGGRuleDerivedFieldsTool {
 		delta.setEmpty(delta.getNodes().isEmpty());
 		return delta;
 	}
+	
+	public static void fillDerivedTGGRulePreCondition(TGGRule rule, Collection<BooleanExpression> attributeConditions,
+			TGGAttributeConstraintSet attributeConstraints) {
+		TGGPattern precondition = IBeXTGGModelFactory.eINSTANCE.createTGGPattern();
+		precondition.getSignatureNodes().addAll(TGGModelUtils.getNodesByOperator(rule, CONTEXT));
+		precondition.getEdges().addAll(TGGModelUtils.getEdgesByOperator(rule, CONTEXT));
+
+		precondition.getConditions().addAll(attributeConditions);
+		precondition.setAttributeConstraints(attributeConstraints);
+
+		for (var node : TGGModelUtils.getNodesByOperator(rule, CONTEXT)) {
+			precondition.getConditions().addAll( //
+					node.getAttributeAssignments().stream().map(a -> transformAttributeAssignmentToAttributeCondition(a)).toList() //
+			);
+		}
+	}
+
+	private static BooleanExpression transformAttributeAssignmentToAttributeCondition(IBeXAttributeAssignment attributeAssignment) {
+		var attributeExpression = IBeXCoreArithmeticFactory.eINSTANCE.createRelationalExpression();
+
+		IBeXAttributeValue lhsValue = IBeXCoreModelFactory.eINSTANCE.createIBeXAttributeValue();
+		lhsValue.setNode(attributeAssignment.getNode());
+		lhsValue.setAttribute(attributeAssignment.getAttribute());
+
+		ValueExpression rhsValue = EcoreUtil.copy(attributeAssignment.getValue());
+
+		attributeExpression.setLhs(lhsValue);
+		attributeExpression.setOperator(RelationalOperator.EQUAL);
+		attributeExpression.setRhs(rhsValue);
+
+		return attributeExpression;
+	}
 }
 
-record DomainBinding(DomainType domain, BindingType binding) {
-	
+record DomainBinding(DomainType domain, BindingType binding) {	
 }

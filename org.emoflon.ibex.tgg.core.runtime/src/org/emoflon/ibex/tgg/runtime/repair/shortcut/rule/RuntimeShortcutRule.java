@@ -14,6 +14,9 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeAssignment;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanExpression;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalExpression;
+import org.emoflon.ibex.tgg.compiler.TGGRuleDerivedFieldsTool;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.TGGOverlap;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
@@ -22,6 +25,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelFactory;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGPattern;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGShortcutRule;
@@ -104,11 +108,16 @@ public class RuntimeShortcutRule {
 		initializeCreateEdges();
 		
 		adaptAttributeAssignments();
-		
-		// TODO REWORK: fill pre- & postconditions
+		var attributeConditions = initializeAttributeConditions();
 		
 		shortcutRule.getAllNodes().addAll(shortcutRule.getNodes());
 		shortcutRule.getAllEdges().addAll(shortcutRule.getEdges());
+		
+		TGGRuleDerivedFieldsTool.fillDerivedTGGRuleFields(shortcutRule);
+		TGGRuleDerivedFieldsTool.fillDerivedTGGRulePreCondition( //
+				shortcutRule, attributeConditions, //
+				EcoreUtil.copy(((TGGPattern) getReplacingRule().getPrecondition()).getAttributeConstraints()) //
+		);
 	}
 
 	private void initializeDeleteNodes() {
@@ -157,6 +166,21 @@ public class RuntimeShortcutRule {
 				.forEach(v -> v.setNode(replacing2newNodes.get(v.getNode())));
 	}
 	
+	private Collection<BooleanExpression> initializeAttributeConditions() {
+		var attributeConditions = EcoreUtil.copyAll(getReplacingRule().getPrecondition().getConditions());
+		
+		for (var attributeCondition : attributeConditions) {
+			if (!(attributeCondition instanceof RelationalExpression relationalExpression))
+				throw new RuntimeException("Attribute conditions must be relational expressions!");
+			if (relationalExpression.getLhs() instanceof IBeXAttributeValue attributeValue)
+				attributeValue.setNode(replacing2newNodes.get(attributeValue.getNode()));
+			if (relationalExpression.getRhs() instanceof IBeXAttributeValue attributeValue)
+				attributeValue.setNode(replacing2newNodes.get(attributeValue.getNode()));
+		}
+		
+		return attributeConditions;
+	}
+
 	private void createNewNodeIfNecessary(TGGNode oldNode, BindingType binding, SCInputRule scInput) {
 		if(options.repair.omitUnnecessaryContext()) {
 			if(scInput == SCInputRule.ORIGINAL) {

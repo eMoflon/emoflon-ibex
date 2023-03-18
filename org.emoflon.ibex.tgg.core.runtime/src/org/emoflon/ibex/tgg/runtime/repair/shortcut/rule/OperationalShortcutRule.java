@@ -13,6 +13,7 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelFactory;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta;
+import org.emoflon.ibex.tgg.compiler.TGGRuleDerivedFieldsTool;
 import org.emoflon.ibex.tgg.compiler.analysis.ACAnalysis;
 import org.emoflon.ibex.tgg.compiler.analysis.FilterNACCandidate;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
@@ -28,6 +29,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelFactory;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGPattern;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 
 /**
@@ -61,6 +63,13 @@ public abstract class OperationalShortcutRule {
 		this.filterNACAnalysis = filterNACAnalysis;
 
 		operationalize();
+		TGGRuleDerivedFieldsTool.fillDerivedTGGRuleFields(operationalizedSCR.getShortcutRule());
+		TGGRuleDerivedFieldsTool.fillDerivedTGGRulePreCondition( //
+				operationalizedSCR.getShortcutRule(), //
+				operationalizedSCR.getShortcutRule().getPrecondition().getConditions(), //
+				((TGGPattern) operationalizedSCR.getShortcutRule().getPrecondition()).getAttributeConstraints() //
+		);
+
 		if (operationalizedSCR.getOriginalRule() instanceof HigherOrderTGGRule hoRule)
 			createOldRuleApplicationNodes(hoRule);
 		else
@@ -206,8 +215,9 @@ public abstract class OperationalShortcutRule {
 	}
 
 	protected void transformInterfaceEdges(Collection<TGGEdge> filteredEdges, BindingType target) {
-		operationalizedSCR.getShortcutRule().getToBeMarked().getEdges().addAll(filteredEdges.stream()
-				.filter(e -> operationalizedSCR.getPreservedNodes().contains(e.getSource()) ^ operationalizedSCR.getPreservedNodes().contains(e.getTarget()))
+		operationalizedSCR.getShortcutRule().getToBeMarked().getEdges().addAll(filteredEdges.stream() //
+				.filter(e -> operationalizedSCR.getPreservedNodes().contains(e.getSource()) //
+						^ operationalizedSCR.getPreservedNodes().contains(e.getTarget())) //
 				.collect(Collectors.toList()));
 
 		for (TGGEdge edge : filteredEdges) {
