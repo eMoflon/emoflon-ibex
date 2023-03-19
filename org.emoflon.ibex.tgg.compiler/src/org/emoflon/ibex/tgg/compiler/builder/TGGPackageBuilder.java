@@ -75,7 +75,7 @@ public class TGGPackageBuilder implements SlimGTBuilderExtension<EditorFile> {
 		return transformer.transform();
 	}
 	
-	private void generatePMEngineCode(TGGModel editorModel) {
+	private void generatePMEngineCode(TGGModel model) {
 		ISafeRunnable runnable = new ISafeRunnable() {
 			@Override
 			public void handleException(Throwable e) {
@@ -84,9 +84,9 @@ public class TGGPackageBuilder implements SlimGTBuilderExtension<EditorFile> {
 
 			@Override
 			public void run() throws Exception {
-				Collection<TGGEngineBuilderExtension> extensions = ExtensionsUtil.collectExtensions(TGGEngineBuilderExtension.BUILDER_EXTENSON_ID, "class", TGGEngineBuilderExtension.class);
+				Collection<TGGEngineBuilderExtension> extensions = ExtensionsUtil.collectExtensions(TGGEngineBuilderExtension.BUILDER_EXTENSON_ID, "builder", TGGEngineBuilderExtension.class);
 				extensions.forEach(builderExt -> {
-					builderExt.run(project, editorModel);
+					builderExt.run(project, model);
 				});
 			}
 		};
