@@ -6,21 +6,26 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeValue;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanExpression;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalExpression;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.OperationalShortcutRule;
-import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.lambda.AttrCheck;
-import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.lambda.CSPCheck;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.lambda.AttributeCheck;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.lambda.EdgeCheck;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.lambda.Lookup;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.lambda.NACNodeCheck;
@@ -36,12 +41,6 @@ import org.emoflon.ibex.tgg.util.TGGAttrExprUtil;
 import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 
-import language.TGGInplaceAttributeExpression;
-import language.TGGRuleCorr;
-import language.TGGRuleEdge;
-import language.TGGRuleNode;
-import runtime.RuntimePackage;
-
 public class SearchPlanCreator {
 
 	protected final IbexOptions options;
@@ -49,10 +48,9 @@ public class SearchPlanCreator {
 
 	protected Map<SearchKey, Lookup> key2lookup;
 	protected Map<TGGNode, NodeCheck> elt2nodeCheck;
-	protected Map<TGGNode, AttrCheck> elt2inplAttrCheck;
 	protected Map<SearchKey, EdgeCheck> key2edgeCheck;
 	protected Map<SearchKey, NACNodeCheck> key2nacNodeCheck;
-	protected CSPCheck cspCheck;
+	protected AttributeCheck attributeCheck;
 
 	public SearchPlanCreator(IbexOptions options, OperationalShortcutRule opScRule) {
 		this.options = options;
@@ -63,7 +61,6 @@ public class SearchPlanCreator {
 	protected void initialize() {
 		this.key2lookup = cfactory.createObjectToObjectHashMap();
 		this.elt2nodeCheck = cfactory.createObjectToObjectHashMap();
-		this.elt2inplAttrCheck = cfactory.createObjectToObjectHashMap();
 		this.key2edgeCheck = cfactory.createObjectToObjectHashMap();
 		this.key2nacNodeCheck = cfactory.createObjectToObjectHashMap();
 
@@ -95,10 +92,8 @@ public class SearchPlanCreator {
 			}
 		}
 
-		cspCheck = (name2candidates) -> {
-			ITGGMatch match = new SCMatch(opSCR.getOperationalizedSCR().getName(), name2candidates);
-			IRuntimeTGGAttrConstrContainer cspContainer = opSCR.getGreenPattern().getAttributeConstraintContainer(match);
-			return cspContainer.solve();
+		attributeCheck = (name2candidates) -> {
+			return checkAttributeConditions(name2candidates) && checkCSPs(name2candidates);
 		};
 	}
 
@@ -203,19 +198,21 @@ public class SearchPlanCreator {
 				return key.getBindingType() == BindingType.RELAXED;
 			return key.getType().isSuperTypeOf(n.eClass());
 		});
-
-		if (!key.getAttrExpr().isEmpty())
-			elt2inplAttrCheck.put(key, (n, c) -> checkInplaceAttributes(key, n, c));
 	}
 
-	private boolean checkInplaceAttributes(TGGNode key, EObject node, Map<String, EObject> candidates) {
-		for (TGGInplaceAttributeExpression inplAttrExpr : key.getAttrExpr()) {
-			Object subjectAttr = node.eGet(inplAttrExpr.getAttribute());
-
-			if (!TGGAttrExprUtil.checkInplaceAttributeCondition(inplAttrExpr, subjectAttr, candidates))
+	private boolean checkAttributeConditions(Map<String, EObject> name2candidates) {
+		var attributeConditions = opSCR.getOperationalizedSCR().getShortcutRule().getPrecondition().getConditions();
+		for (var expression : attributeConditions) {
+			if (!TGGAttrExprUtil.checkAttributeCondition(expression, name2candidates))
 				return false;
 		}
 		return true;
+	}
+
+	private boolean checkCSPs(Map<String, EObject> name2candidates) {
+		ITGGMatch match = new SCMatch(opSCR.getOperationalizedSCR().getName(), name2candidates);
+		IRuntimeTGGAttrConstrContainer cspContainer = opSCR.getGreenPattern().getAttributeConstraintContainer(match);
+		return cspContainer.solve();
 	}
 
 	public SearchPlan createSearchPlan() {
@@ -292,7 +289,7 @@ public class SearchPlanCreator {
 			key2nacNodeCheck.put(key, this.key2nacNodeCheck.get(key));
 		}
 
-		return new SearchPlan(searchPlan, elt2nodeCheck, elt2inplAttrCheck, key2uncheckedEdgeCheck, key2nacNodeCheck, cspCheck);
+		return new SearchPlan(searchPlan, elt2nodeCheck, key2uncheckedEdgeCheck, key2nacNodeCheck, attributeCheck);
 	}
 
 	private List<SearchKey> filterKeys(List<SearchKey> keys, Collection<TGGNode> uncheckedNodes, Collection<TGGNode> uncheckedRelaxedNodes,

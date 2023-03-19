@@ -10,12 +10,10 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.ecore.EObject;
-import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.OperationalShortcutRule;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.RuntimeShortcutRule;
-import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.lambda.AttrCheck;
-import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.lambda.CSPCheck;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.lambda.AttributeCheck;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.lambda.EdgeCheck;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.lambda.Lookup;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.lambda.NACNodeCheck;
@@ -63,8 +61,6 @@ public class LocalPatternSearch {
 	private void buildComponents() {
 		Component lastComponent = null;
 
-		Set<Component> attrCheckComponents = new HashSet<>();
-
 		for (Pair<SearchKey, Lookup> entry : searchPlan.lookUpPlan) {
 			Component lookupComp = new LookupComponent(entry.getRight(), entry.getLeft());
 
@@ -76,10 +72,6 @@ public class LocalPatternSearch {
 			TGGNode nodeForCheck = entry.getLeft().reverse ? //
 					entry.getLeft().sourceNode : entry.getLeft().targetNode;
 			Component nodeCheckComp = new NodeCheckComponent(searchPlan.key2nodeCheck.get(nodeForCheck), nodeForCheck);
-
-			if (searchPlan.key2AttrCheck.containsKey(nodeForCheck))
-				attrCheckComponents.add( //
-						new AttrCheckComponent(searchPlan.key2AttrCheck.get(nodeForCheck), nodeForCheck));
 
 			lookupComp.setNextComponent(nodeCheckComp);
 			lastComponent = nodeCheckComp;
@@ -110,39 +102,9 @@ public class LocalPatternSearch {
 			lastComponent = edgeNodeCheckComp;
 		}
 
-		for (Component comp : attrCheckComponents) {
-			if (firstComponent == null)
-				firstComponent = comp;
-			else
-				lastComponent.setNextComponent(comp);
-			lastComponent = comp;
-		}
-
-		for (TGGNode mergedNode : osr.getOperationalizedSCR().getMergedNodes()) {
-			if (!searchPlan.key2AttrCheck.containsKey(mergedNode) || skipAttrCheck(mergedNode))
-				continue;
-
-			Component accessNodeAttrCheckComp = new AttrCheckComponent( //
-					searchPlan.key2AttrCheck.get(mergedNode), mergedNode);
-
-			lastComponent.setNextComponent(accessNodeAttrCheckComp);
-			lastComponent = accessNodeAttrCheckComp;
-		}
-
-		Component cspCheckComp = new CSPCheckComponent(searchPlan.cspCheck);
-		lastComponent.setNextComponent(cspCheckComp);
-		lastComponent = cspCheckComp;
-	}
-
-	private boolean skipAttrCheck(TGGNode mergedNode) {
-		if (osr.getOperationalizedSCR().getPreservedNodes().contains(mergedNode)) {
-			return switch (mergedNode.getDomainType()) {
-				case SOURCE -> osr.getType() == PatternType.BWD;
-				case TARGET -> osr.getType() == PatternType.FWD;
-				default -> false;
-			};
-		}
-		return false;
+		Component attributeCheckComp = new AttributeCheckComponent(searchPlan.attributeCheck);
+		lastComponent.setNextComponent(attributeCheckComp);
+		lastComponent = attributeCheckComp;
 	}
 
 	public SCMatch findMatch(Map<String, EObject> name2entryNodeElem) {
@@ -312,27 +274,6 @@ public class LocalPatternSearch {
 
 	}
 
-	private class AttrCheckComponent extends Component {
-		AttrCheck check;
-		String nodeName;
-
-		public AttrCheckComponent(AttrCheck check, TGGNode node) {
-			super();
-			this.check = check;
-			this.nodeName = node.getName();
-		}
-
-		@Override
-		public ReturnState apply() {
-			if (check.checkAttributes(name2candidates.get(nodeName), name2candidates)) {
-				if (nextComponent == null)
-					return ReturnState.SUCCESS;
-				return nextComponent.apply();
-			}
-			return ReturnState.FAILURE;
-		}
-	}
-
 	private class EdgeCheckComponent extends Component {
 		SearchKey key;
 		EdgeCheck check;
@@ -417,16 +358,16 @@ public class LocalPatternSearch {
 		}
 	}
 
-	private class CSPCheckComponent extends Component {
-		CSPCheck cspCheck;
+	private class AttributeCheckComponent extends Component {
+		AttributeCheck attributeCheck;
 
-		public CSPCheckComponent(CSPCheck cspCheck) {
-			this.cspCheck = cspCheck;
+		public AttributeCheckComponent(AttributeCheck attributeCheck) {
+			this.attributeCheck = attributeCheck;
 		}
 
 		@Override
 		public ReturnState apply() {
-			if (cspCheck.checkConstraint(name2candidates))
+			if (attributeCheck.checkAttributes(name2candidates))
 				return ReturnState.SUCCESS;
 			return ReturnState.FAILURE;
 		}

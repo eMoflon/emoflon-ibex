@@ -11,15 +11,9 @@ import static org.emoflon.ibex.tgg.util.TGGModelUtils.ruleIsAxiom;
 
 import java.util.Collection;
 
-import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeAssignment;
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelFactory;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanExpression;
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.IBeXCoreArithmeticFactory;
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator;
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ValueExpression;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelFactory;
@@ -99,28 +93,6 @@ public class TGGRuleDerivedFieldsTool {
 
 		precondition.getConditions().addAll(attributeConditions);
 		precondition.setAttributeConstraints(attributeConstraints);
-
-		for (var node : TGGModelUtils.getNodesByOperator(rule, CONTEXT)) {
-			precondition.getConditions().addAll( //
-					node.getAttributeAssignments().stream().map(a -> transformAttributeAssignmentToAttributeCondition(a)).toList() //
-			);
-		}
-	}
-
-	private static BooleanExpression transformAttributeAssignmentToAttributeCondition(IBeXAttributeAssignment attributeAssignment) {
-		var attributeExpression = IBeXCoreArithmeticFactory.eINSTANCE.createRelationalExpression();
-
-		IBeXAttributeValue lhsValue = IBeXCoreModelFactory.eINSTANCE.createIBeXAttributeValue();
-		lhsValue.setNode(attributeAssignment.getNode());
-		lhsValue.setAttribute(attributeAssignment.getAttribute());
-
-		ValueExpression rhsValue = EcoreUtil.copy(attributeAssignment.getValue());
-
-		attributeExpression.setLhs(lhsValue);
-		attributeExpression.setOperator(RelationalOperator.EQUAL);
-		attributeExpression.setRhs(rhsValue);
-
-		return attributeExpression;
 	}
 }
 

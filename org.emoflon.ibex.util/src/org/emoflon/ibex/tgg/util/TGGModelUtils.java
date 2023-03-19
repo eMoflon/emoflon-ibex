@@ -6,6 +6,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeAssignment;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeValue;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelFactory;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanExpression;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.IBeXCoreArithmeticFactory;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ValueExpression;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
@@ -95,4 +103,21 @@ public class TGGModelUtils {
 			return null;
 		}
 	}
+
+	public static BooleanExpression transformAttributeAssignmentToAttributeCondition(IBeXAttributeAssignment attributeAssignment) {
+		var attributeExpression = IBeXCoreArithmeticFactory.eINSTANCE.createRelationalExpression();
+
+		IBeXAttributeValue lhsValue = IBeXCoreModelFactory.eINSTANCE.createIBeXAttributeValue();
+		lhsValue.setNode(attributeAssignment.getNode());
+		lhsValue.setAttribute(attributeAssignment.getAttribute());
+
+		ValueExpression rhsValue = EcoreUtil.copy(attributeAssignment.getValue());
+
+		attributeExpression.setLhs(lhsValue);
+		attributeExpression.setOperator(RelationalOperator.EQUAL);
+		attributeExpression.setRhs(rhsValue);
+
+		return attributeExpression;
+	}
+
 }

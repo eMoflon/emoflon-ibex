@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.runtime.repair.shortcut.rule;
 
 import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getProtocolNodeName;
+import static org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType.CONTEXT;
 import static org.emoflon.ibex.tgg.util.TGGModelUtils.getMarkerRefName;
 import static org.emoflon.ibex.tgg.util.TGGModelUtils.getMarkerTypeName;
 
@@ -29,8 +30,8 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelFactory;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGPattern;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
+import org.emoflon.ibex.tgg.util.TGGModelUtils;
 
 /**
  * 
@@ -64,11 +65,7 @@ public abstract class OperationalShortcutRule {
 
 		operationalize();
 		TGGRuleDerivedFieldsTool.fillDerivedTGGRuleFields(operationalizedSCR.getShortcutRule());
-		TGGRuleDerivedFieldsTool.fillDerivedTGGRulePreCondition( //
-				operationalizedSCR.getShortcutRule(), //
-				operationalizedSCR.getShortcutRule().getPrecondition().getConditions(), //
-				((TGGPattern) operationalizedSCR.getShortcutRule().getPrecondition()).getAttributeConstraints() //
-		);
+		convertAttributeAssignments();
 
 		if (operationalizedSCR.getOriginalRule() instanceof HigherOrderTGGRule hoRule)
 			createOldRuleApplicationNodes(hoRule);
@@ -88,6 +85,30 @@ public abstract class OperationalShortcutRule {
 	abstract protected void operationalize();
 
 	abstract public PatternType getType();
+
+	private void convertAttributeAssignments() {
+		for (var contextNode : TGGModelUtils.getNodesByOperator(operationalizedSCR.getShortcutRule(), CONTEXT)) {
+			if (skipConversion(contextNode))
+				continue;
+
+			operationalizedSCR.getShortcutRule().getPrecondition().getConditions().addAll( //
+					contextNode.getAttributeAssignments().stream() //
+							.map(a -> TGGModelUtils.transformAttributeAssignmentToAttributeCondition(a)) //
+							.toList() //
+			);
+		}
+	}
+
+	private boolean skipConversion(TGGNode node) {
+		if (operationalizedSCR.getPreservedNodes().contains(node)) {
+			return switch (node.getDomainType()) {
+				case SOURCE -> getType() == PatternType.BWD;
+				case TARGET -> getType() == PatternType.FWD;
+				default -> false;
+			};
+		}
+		return false;
+	}
 
 	private void createOldRuleApplicationNode() {
 		String originalRuleName = operationalizedSCR.getOriginalRule().getName();
