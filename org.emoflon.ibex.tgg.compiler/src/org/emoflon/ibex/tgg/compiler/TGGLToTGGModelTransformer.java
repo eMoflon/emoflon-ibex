@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -24,7 +25,6 @@ import org.eclipse.emf.ecore.EcoreFactory;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeAssignment;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeValue;
@@ -196,16 +196,15 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		createAttributeConstraintLibraries();
 		
 		// Pattern are only transformed if actually called by a tgg rule
-		var rules = editorFile.getRules().parallelStream().filter(rule -> !rule.isAbstract()).map(this::transformRule).toList();
+		var rules = editorFile.getRules().stream().filter(rule -> !rule.isAbstract()).map(this::transformRule).toList();
 		model.getRuleSet().getRules().addAll(rules);
 		
 		ProtocolGenerator protocolGenerator = new ProtocolGenerator();
 		var protocolInformation = protocolGenerator.createProtocol(model);
 		
-//		var operationalizer = new TGGOperationalizer();
-//		operationalizer.operationalizeTGGRules(model, protocolInformation);
-		
-	
+		var operationalizer = new TGGOperationalizer();
+		operationalizer.operationalizeTGGRules(model, protocolInformation);
+	 
 		// merge both corr and protocol metamodel together to make imports easier
 		var corrModel = model.getCorrespondence();
 		corrModel.getEClassifiers().addAll(protocolInformation.metamodel().getEClassifiers());
@@ -349,7 +348,9 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		
 		internalRule.getAllNodes().addAll(internalRule.getNodes());
 		// now we have to extract the edges and add them to the rule
-		internalRule.getAllNodes().forEach(n -> internalRule.getEdges().addAll(n.getOutgoingEdges().stream().map(TGGEdge.class::cast).toList()));
+		Collection<TGGEdge> transferredEdges = new LinkedList<>();
+		internalRule.getAllNodes().forEach(n -> transferredEdges.addAll(n.getOutgoingEdges().stream().map(TGGEdge.class::cast).toList()));
+		internalRule.getEdges().addAll(transferredEdges);
 		internalRule.getAllEdges().addAll(internalRule.getEdges());
 		
 		var precondition = factory.createTGGPattern();
@@ -593,7 +594,6 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		
 		var tggNode = factory.createTGGNode();
 		tggl2tggModel.put(node, tggNode);
-		model.getNodeSet().getNodes().add(tggNode);
 
 		tggNode.setBindingType(binding);
 		tggNode.setDomainType(domain);
@@ -639,6 +639,7 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 			internPattern.getInvocations().add(transformInvocation(internPattern, invocation));
 		}
 		
+		model.getNodeSet().getNodes().addAll(internPattern.getSignatureNodes());
 		internPattern.setEmpty(!internPattern.getSignatureNodes().isEmpty() && !internPattern.getLocalNodes().isEmpty());
 		return internPattern;
 	}

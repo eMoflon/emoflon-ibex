@@ -78,13 +78,13 @@ public class TGGOperationalizer {
 		removeElements(op, DomainType.CORRESPONDENCE);
 
 		removeInvocations(op.getPrecondition().getInvocations(), type);
-		removeInvocations(op.getPostcondition().getInvocations(), type);
+//		removeInvocations(op.getPostcondition().getInvocations(), type);
 
 		removeAttributeAssignments(op.getAttributeAssignments(), type);
 		removeAttributeConstraints(((TGGPattern) op.getPrecondition()).getAttributeConstraints().getTggAttributeConstraints(), type);
 		
 		removeAttributeConditions(op.getPrecondition().getConditions(), type);
-		removeAttributeConditions(op.getPostcondition().getConditions(), type);
+//		removeAttributeConditions(op.getPostcondition().getConditions(), type);
 	}
 	
 	private void removeElements(TGGOperationalRule op, DomainType domainType) {
@@ -186,6 +186,7 @@ public class TGGOperationalizer {
 
 	private void constructModelGen(TGGRule rule) {
 		var op = createOperationalizedTGGRule(rule);
+		setRuleName(op, OperationalisationMode.GENERATE);
 		op.setOperationalisationMode(OperationalisationMode.GENERATE);
 		
 		createProtocolNode(op, BindingType.CREATE);
@@ -194,6 +195,7 @@ public class TGGOperationalizer {
 
 	private void constructForward(TGGRule rule) {
 		var op = createOperationalizedTGGRule(rule);
+		setRuleName(op, OperationalisationMode.FORWARD);
 		op.setOperationalisationMode(OperationalisationMode.FORWARD);
 		
 		transformBindings(op, DomainType.SOURCE, BindingType.CREATE, BindingType.CONTEXT);
@@ -205,7 +207,8 @@ public class TGGOperationalizer {
 
 	private void constructBackward(TGGRule rule) {
 		var op = createOperationalizedTGGRule(rule);
-		op.setOperationalisationMode(OperationalisationMode.FORWARD);
+		setRuleName(op, OperationalisationMode.BACKWARD);
+		op.setOperationalisationMode(OperationalisationMode.BACKWARD);
 		
 		transformBindings(op, DomainType.TARGET, BindingType.CREATE, BindingType.CONTEXT);
 		transformAssignments(op);
@@ -216,6 +219,7 @@ public class TGGOperationalizer {
 	
 	private void constructConsistencyCheck(TGGRule rule) {
 		var op = createOperationalizedTGGRule(rule);
+		setRuleName(op, OperationalisationMode.CONSISTENCY_CHECK);
 		op.setOperationalisationMode(OperationalisationMode.CONSISTENCY_CHECK);
 		
 		transformBindings(op, DomainType.SOURCE, BindingType.CREATE, BindingType.CONTEXT);
@@ -228,6 +232,7 @@ public class TGGOperationalizer {
 	
 	private void constructCheckOnly(TGGRule rule) {
 		var op = createOperationalizedTGGRule(rule);
+		setRuleName(op, OperationalisationMode.CHECK_ONLY);
 		op.setOperationalisationMode(OperationalisationMode.CHECK_ONLY);
 		
 		transformBindings(op, DomainType.SOURCE, BindingType.CREATE, BindingType.CONTEXT);
@@ -237,6 +242,11 @@ public class TGGOperationalizer {
 		
 		createProtocolNode(op, BindingType.CREATE);
 		rule.getOperationalisations().add(op);
+	}
+	
+	private void setRuleName(TGGRule rule, OperationalisationMode mode) {
+		rule.setName(rule.getName() + "_" + mode.getName());
+		rule.getPrecondition().setName(rule.getPrecondition().getName() + "_" + mode.getName());
 	}
 	
 	private void transformBindings(TGGOperationalRule op, DomainType domain, BindingType formerBinding, BindingType newBinding) {
@@ -311,8 +321,11 @@ public class TGGOperationalizer {
 		op.setName(rule.getName());
 		
 		var ruleCopy = EcoreUtil.copy(rule);
+		var preconditionCopy = EcoreUtil.copy(rule.getPrecondition());
 		op.getNodes().addAll(ruleCopy.getNodes());
 		op.getAllNodes().addAll(ruleCopy.getNodes());
+		
+		op.setPrecondition(preconditionCopy);
 		
 		op.getEdges().addAll(ruleCopy.getEdges());
 		op.getAllEdges().addAll(ruleCopy.getEdges());
@@ -321,16 +334,16 @@ public class TGGOperationalizer {
 		op.getAllNodes().addAll(ruleCopy.getCorrespondenceNodes());
 		
 		op.getAttributeAssignments().addAll(ruleCopy.getAttributeAssignments());
-		var tggAttributeConstraints = ((TGGPattern) ruleCopy.getPrecondition()).getAttributeConstraints().getTggAttributeConstraints();
-		((TGGPattern) op.getPrecondition()).getAttributeConstraints().getTggAttributeConstraints().addAll(tggAttributeConstraints);
+//		var tggAttributeConstraints = ((TGGPattern) ruleCopy.getPrecondition()).getAttributeConstraints().getTggAttributeConstraints();
+//		((TGGPattern) op.getPrecondition()).getAttributeConstraints().getTggAttributeConstraints().addAll(tggAttributeConstraints);
 
 		rule.getOperationalisations().add(op);
 		
 		return op;
 	}
 	
-	private TGGNode createProtocolNode(TGGRule rule, BindingType binding) {
-		ProtocolNodeInformation protocolNodeInformation = protocolInformation.ruleToInformation().get(rule);
+	private TGGNode createProtocolNode(TGGOperationalRule rule, BindingType binding) {
+		ProtocolNodeInformation protocolNodeInformation = protocolInformation.ruleToInformation().get((TGGRule) rule.eContainer());
 
 		var protocolNode = factory.createTGGNode();
 		
@@ -369,14 +382,14 @@ public class TGGOperationalizer {
 			rule.getAllEdges().add(edge);
 			rule.getEdges().add(edge);
 			
-			if(binding == BindingType.CREATE) 
-				rule.getCreation().getEdges().add(edge);
+//			if(binding == BindingType.CREATE) 
+//				rule.getCreation().getEdges().add(edge);
 		}
 		
 		rule.getAllNodes().add(protocolNode);
 		rule.getNodes().add(protocolNode);
-		if(binding == BindingType.CREATE)
-			rule.getCreation().getNodes().add(protocolNode);
+//		if(binding == BindingType.CREATE)
+//			rule.getCreation().getNodes().add(protocolNode);
 		
 		return protocolNode;
 	}
