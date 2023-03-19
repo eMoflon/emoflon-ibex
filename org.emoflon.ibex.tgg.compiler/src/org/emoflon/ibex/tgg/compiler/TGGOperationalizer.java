@@ -33,12 +33,14 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
 
 public class TGGOperationalizer {
 
+	private TGGModel model;
 	private IBeXCoreModelFactory superFactory = IBeXCoreModelFactory.eINSTANCE;
 	private IBeXTGGModelFactory factory = IBeXTGGModelFactory.eINSTANCE;
 	private IBeXCoreArithmeticFactory arithmeticFactory = IBeXCoreArithmeticFactory.eINSTANCE;
 	private ProtocolInformation protocolInformation;
 	
 	public TGGModel operationalizeTGGRules(TGGModel model, ProtocolInformation protocolInformation) {
+		this.model = model;
 		this.protocolInformation = protocolInformation;
 		for(var rule : model.getRuleSet().getRules()) {
 			operationalizeRule(rule);
@@ -56,10 +58,78 @@ public class TGGOperationalizer {
 		constructCheckOnly(rule);
 	}
 
+	private void constructModelGen(TGGRule rule) {
+		var op = createOperationalizedTGGRule(rule);
+		setRuleName(op, OperationalisationMode.GENERATE);
+		op.setOperationalisationMode(OperationalisationMode.GENERATE);
+		
+		createProtocolNode(op, BindingType.CREATE);
+		rule.getOperationalisations().add(op);
+		fillDerivedTGGOperationalRuleFields(op);
+	}
+
+	private void constructForward(TGGRule rule) {
+		var op = createOperationalizedTGGRule(rule);
+		setRuleName(op, OperationalisationMode.FORWARD);
+		op.setOperationalisationMode(OperationalisationMode.FORWARD);
+		
+		transformBindings(op, DomainType.SOURCE, BindingType.CREATE, BindingType.CONTEXT);
+		transformAssignments(op);
+		
+		createProtocolNode(op, BindingType.CREATE);
+		rule.getOperationalisations().add(op);
+		fillDerivedTGGOperationalRuleFields(op);
+	}
+
+	private void constructBackward(TGGRule rule) {
+		var op = createOperationalizedTGGRule(rule);
+		setRuleName(op, OperationalisationMode.BACKWARD);
+		op.setOperationalisationMode(OperationalisationMode.BACKWARD);
+		
+		transformBindings(op, DomainType.TARGET, BindingType.CREATE, BindingType.CONTEXT);
+		transformAssignments(op);
+		
+		createProtocolNode(op, BindingType.CREATE);
+		rule.getOperationalisations().add(op);
+		fillDerivedTGGOperationalRuleFields(op);
+	}
+
+	private void constructConsistencyCheck(TGGRule rule) {
+		var op = createOperationalizedTGGRule(rule);
+		setRuleName(op, OperationalisationMode.CONSISTENCY_CHECK);
+		op.setOperationalisationMode(OperationalisationMode.CONSISTENCY_CHECK);
+		
+		transformBindings(op, DomainType.SOURCE, BindingType.CREATE, BindingType.CONTEXT);
+		transformBindings(op, DomainType.TARGET, BindingType.CREATE, BindingType.CONTEXT);
+		transformAssignments(op);
+		
+		createProtocolNode(op, BindingType.CREATE);
+		rule.getOperationalisations().add(op);
+		fillDerivedTGGOperationalRuleFields(op);
+	}
+
+	private void constructCheckOnly(TGGRule rule) {
+		var op = createOperationalizedTGGRule(rule);
+		setRuleName(op, OperationalisationMode.CHECK_ONLY);
+		op.setOperationalisationMode(OperationalisationMode.CHECK_ONLY);
+		
+		transformBindings(op, DomainType.SOURCE, BindingType.CREATE, BindingType.CONTEXT);
+		transformBindings(op,  DomainType.CORRESPONDENCE, BindingType.CREATE, BindingType.CONTEXT);
+		transformBindings(op, DomainType.TARGET, BindingType.CREATE, BindingType.CONTEXT);
+		transformAssignments(op);
+		
+		createProtocolNode(op, BindingType.CREATE);
+		rule.getOperationalisations().add(op);
+		fillDerivedTGGOperationalRuleFields(op);
+	}
+
 	private void constructSource(TGGRule rule) {
 		var op = createOperationalizedTGGRule(rule);
+		setRuleName(op, OperationalisationMode.SOURCE);
 		op.setOperationalisationMode(OperationalisationMode.SOURCE);
 		
+		transformBindings(op, DomainType.SOURCE, BindingType.CREATE, BindingType.CONTEXT);
+		removeDomainInformation(op, DomainType.CORRESPONDENCE);
 		removeDomainInformation(op, DomainType.TARGET);
 		fillDerivedTGGOperationalRuleFields(op);
 	}
@@ -67,9 +137,13 @@ public class TGGOperationalizer {
 	
 	private void constructTarget(TGGRule rule) {
 		var op = createOperationalizedTGGRule(rule);
+		setRuleName(op, OperationalisationMode.TARGET);
 		op.setOperationalisationMode(OperationalisationMode.TARGET);
 		
+		transformBindings(op, DomainType.TARGET, BindingType.CREATE, BindingType.CONTEXT);
+		removeDomainInformation(op, DomainType.CORRESPONDENCE);
 		removeDomainInformation(op, DomainType.SOURCE);
+		fillDerivedTGGOperationalRuleFields(op);
 	}
 	
 	private void removeDomainInformation(TGGOperationalRule op, DomainType type) {
@@ -184,66 +258,6 @@ public class TGGOperationalizer {
 		invocations.removeAll(deletedInvocations);
 	}
 
-	private void constructModelGen(TGGRule rule) {
-		var op = createOperationalizedTGGRule(rule);
-		setRuleName(op, OperationalisationMode.GENERATE);
-		op.setOperationalisationMode(OperationalisationMode.GENERATE);
-		
-		createProtocolNode(op, BindingType.CREATE);
-		rule.getOperationalisations().add(op);
-	}
-
-	private void constructForward(TGGRule rule) {
-		var op = createOperationalizedTGGRule(rule);
-		setRuleName(op, OperationalisationMode.FORWARD);
-		op.setOperationalisationMode(OperationalisationMode.FORWARD);
-		
-		transformBindings(op, DomainType.SOURCE, BindingType.CREATE, BindingType.CONTEXT);
-		transformAssignments(op);
-		
-		createProtocolNode(op, BindingType.CREATE);
-		rule.getOperationalisations().add(op);
-	}
-
-	private void constructBackward(TGGRule rule) {
-		var op = createOperationalizedTGGRule(rule);
-		setRuleName(op, OperationalisationMode.BACKWARD);
-		op.setOperationalisationMode(OperationalisationMode.BACKWARD);
-		
-		transformBindings(op, DomainType.TARGET, BindingType.CREATE, BindingType.CONTEXT);
-		transformAssignments(op);
-		
-		createProtocolNode(op, BindingType.CREATE);
-		rule.getOperationalisations().add(op);
-	}
-	
-	private void constructConsistencyCheck(TGGRule rule) {
-		var op = createOperationalizedTGGRule(rule);
-		setRuleName(op, OperationalisationMode.CONSISTENCY_CHECK);
-		op.setOperationalisationMode(OperationalisationMode.CONSISTENCY_CHECK);
-		
-		transformBindings(op, DomainType.SOURCE, BindingType.CREATE, BindingType.CONTEXT);
-		transformBindings(op, DomainType.TARGET, BindingType.CREATE, BindingType.CONTEXT);
-		transformAssignments(op);
-		
-		createProtocolNode(op, BindingType.CREATE);
-		rule.getOperationalisations().add(op);
-	}
-	
-	private void constructCheckOnly(TGGRule rule) {
-		var op = createOperationalizedTGGRule(rule);
-		setRuleName(op, OperationalisationMode.CHECK_ONLY);
-		op.setOperationalisationMode(OperationalisationMode.CHECK_ONLY);
-		
-		transformBindings(op, DomainType.SOURCE, BindingType.CREATE, BindingType.CONTEXT);
-		transformBindings(op,  DomainType.CORRESPONDENCE, BindingType.CREATE, BindingType.CONTEXT);
-		transformBindings(op, DomainType.TARGET, BindingType.CREATE, BindingType.CONTEXT);
-		transformAssignments(op);
-		
-		createProtocolNode(op, BindingType.CREATE);
-		rule.getOperationalisations().add(op);
-	}
-	
 	private void setRuleName(TGGRule rule, OperationalisationMode mode) {
 		rule.setName(rule.getName() + "_" + mode.getName());
 		rule.getPrecondition().setName(rule.getPrecondition().getName() + "_" + mode.getName());
@@ -322,10 +336,12 @@ public class TGGOperationalizer {
 		
 		var ruleCopy = EcoreUtil.copy(rule);
 		var preconditionCopy = EcoreUtil.copy(rule.getPrecondition());
+		op.setPrecondition(preconditionCopy);
+		model.getPatternSet().getPatterns().add(preconditionCopy);
+
 		op.getNodes().addAll(ruleCopy.getNodes());
 		op.getAllNodes().addAll(ruleCopy.getNodes());
 		
-		op.setPrecondition(preconditionCopy);
 		
 		op.getEdges().addAll(ruleCopy.getEdges());
 		op.getAllEdges().addAll(ruleCopy.getEdges());

@@ -594,7 +594,8 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		
 		var tggNode = factory.createTGGNode();
 		tggl2tggModel.put(node, tggNode);
-
+		model.getNodeSet().getNodes().add(tggNode);
+		
 		tggNode.setBindingType(binding);
 		tggNode.setDomainType(domain);
 		tggNode.setName(node.getName());
