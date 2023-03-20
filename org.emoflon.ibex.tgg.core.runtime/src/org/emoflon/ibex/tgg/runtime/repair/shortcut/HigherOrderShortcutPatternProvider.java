@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
+import org.emoflon.ibex.tgg.runtime.interpreter.IGreenInterpreter;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRule;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRule.ComponentSpecificRuleElement;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRule.HigherOrderRuleComponent;
@@ -35,6 +36,7 @@ import com.google.common.collect.Sets.SetView;
 
 public class HigherOrderShortcutPatternProvider extends BasicShortcutPatternProvider {
 
+	private final IGreenInterpreter greenInterpreter;
 	private final TGGMatchUtilProvider mup;
 	private final HigherOrderTGGRuleFactory ruleFactory;
 
@@ -43,10 +45,11 @@ public class HigherOrderShortcutPatternProvider extends BasicShortcutPatternProv
 	private final Map<String, Map<String, Collection<RuntimeShortcutRule>>> higherOrderShortcutRules;
 	private final Map<String, Map<String, Map<PatternType, Collection<OperationalShortcutRule>>>> higherOrderShortcutPatterns;
 
-	public HigherOrderShortcutPatternProvider(IbexOptions options, PrecedenceGraph pg, TGGMatchUtilProvider mup, //
+	public HigherOrderShortcutPatternProvider(IbexOptions options, IGreenInterpreter greenInterpreter, PrecedenceGraph pg, TGGMatchUtilProvider mup, //
 			PatternType[] types, boolean initiallyPersistShortcutRules) {
-		super(options, types, initiallyPersistShortcutRules);
+		super(options, greenInterpreter, types, initiallyPersistShortcutRules);
 
+		this.greenInterpreter = greenInterpreter;
 		this.mup = mup;
 		this.ruleFactory = new HigherOrderTGGRuleFactory(options, pg, mup);
 
@@ -94,17 +97,18 @@ public class HigherOrderShortcutPatternProvider extends BasicShortcutPatternProv
 		}
 
 		generatedOpRules.forEach(r -> opShortcutRule2patternMatcher.put(r, new LocalPatternSearch(r, options)));
-		
+
 		// FIXME start
 		higherOrderShortcutRules.clear();
 		higherOrderShortcutPatterns.clear();
-		// FIXME end: deactivated caching HO-SC-rules, reason: see FIXME comment at ShortcutApplicationTool#getEntryNodeElts
+		// FIXME end: deactivated caching HO-SC-rules, reason: see FIXME comment at
+		// ShortcutApplicationTool#getEntryNodeElts
 
 		return generatedOpRules;
 	}
 
 	private Collection<OperationalShortcutRule> generateHigherOrderShortcutPatterns(Collection<RuntimeShortcutRule> shortcutRules, PatternType repairType) {
-		return opSCFactory.createOperationalRules(shortcutRules, repairType) //
+		return opSCFactory.createOperationalRules(greenInterpreter, shortcutRules, repairType) //
 				.values().stream() //
 				.flatMap(c -> c.stream()) //
 				.collect(Collectors.toList());
@@ -184,9 +188,9 @@ public class HigherOrderShortcutPatternProvider extends BasicShortcutPatternProv
 		LinkedList<RuntimeShortcutRule> allShortcutRules = new LinkedList<>(basicShortcutRules);
 		allShortcutRules.addAll( //
 				higherOrderShortcutRules.values().stream() //
-				.flatMap(m -> m.values().stream()) //
-				.flatMap(c -> c.stream()) //
-				.toList() //
+						.flatMap(m -> m.values().stream()) //
+						.flatMap(c -> c.stream()) //
+						.toList() //
 		);
 
 		persistence.saveSCRules(allShortcutRules);

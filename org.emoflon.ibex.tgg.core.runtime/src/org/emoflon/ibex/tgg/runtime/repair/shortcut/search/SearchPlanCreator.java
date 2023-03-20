@@ -6,23 +6,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeValue;
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanExpression;
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalExpression;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.csp.IRuntimeTGGAttrConstrContainer;
+import org.emoflon.ibex.tgg.runtime.interpreter.IGreenInterpreter;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.OperationalShortcutRule;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.lambda.AttributeCheck;
@@ -44,6 +39,7 @@ import org.moflon.core.utilities.eMoflonEMFUtil;
 public class SearchPlanCreator {
 
 	protected final IbexOptions options;
+	protected final IGreenInterpreter greenInterpreter;
 	protected final OperationalShortcutRule opSCR;
 
 	protected Map<SearchKey, Lookup> key2lookup;
@@ -52,8 +48,9 @@ public class SearchPlanCreator {
 	protected Map<SearchKey, NACNodeCheck> key2nacNodeCheck;
 	protected AttributeCheck attributeCheck;
 
-	public SearchPlanCreator(IbexOptions options, OperationalShortcutRule opScRule) {
+	public SearchPlanCreator(IbexOptions options, IGreenInterpreter greenInterpreter, OperationalShortcutRule opScRule) {
 		this.options = options;
+		this.greenInterpreter = greenInterpreter;
 		this.opSCR = opScRule;
 		initialize();
 	}
@@ -211,7 +208,7 @@ public class SearchPlanCreator {
 
 	private boolean checkCSPs(Map<String, EObject> name2candidates) {
 		ITGGMatch match = new SCMatch(opSCR.getOperationalizedSCR().getName(), name2candidates);
-		IRuntimeTGGAttrConstrContainer cspContainer = opSCR.getGreenPattern().getAttributeConstraintContainer(match);
+		IRuntimeTGGAttrConstrContainer cspContainer = greenInterpreter.getAttributeConstraintContainer(match);
 		return cspContainer.solve();
 	}
 

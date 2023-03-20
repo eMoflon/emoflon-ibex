@@ -6,13 +6,15 @@ import static org.emoflon.ibex.tgg.util.TGGFilterUtil.filterNodes;
 import org.emoflon.ibex.tgg.compiler.analysis.ACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
+import org.emoflon.ibex.tgg.runtime.interpreter.IGreenInterpreter;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalisationMode;
 
 public class BWDShortcutRule extends OperationalShortcutRule {
 
-	public BWDShortcutRule(IbexOptions options, RuntimeShortcutRule scRule, ACAnalysis filterNACAnalysis) {
-		super(options, scRule, filterNACAnalysis);
+	public BWDShortcutRule(IbexOptions options, IGreenInterpreter greenInterpreter, RuntimeShortcutRule scRule, ACAnalysis filterNACAnalysis) {
+		super(options, greenInterpreter, scRule, filterNACAnalysis);
 	}
 
 	@Override
@@ -36,6 +38,11 @@ public class BWDShortcutRule extends OperationalShortcutRule {
 	@Override
 	public PatternType getType() {
 		return PatternType.BWD;
+	}
+
+	@Override
+	protected OperationalisationMode getOperationalisationMode() {
+		return OperationalisationMode.BACKWARD;
 	}
 
 }

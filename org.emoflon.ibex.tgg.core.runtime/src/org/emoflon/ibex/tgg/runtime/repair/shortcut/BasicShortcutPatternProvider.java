@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
+import org.emoflon.ibex.tgg.runtime.interpreter.IGreenInterpreter;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.OperationalSCFactory;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.OperationalShortcutRule;
@@ -35,7 +36,7 @@ public class BasicShortcutPatternProvider implements ShortcutPatternProvider {
 
 	protected final Map<OperationalShortcutRule, LocalPatternSearch> opShortcutRule2patternMatcher;
 
-	public BasicShortcutPatternProvider(IbexOptions options, PatternType[] types, boolean initiallyPersistShortcutRules) {
+	public BasicShortcutPatternProvider(IbexOptions options, IGreenInterpreter greenInterpreter, PatternType[] types, boolean initiallyPersistShortcutRules) {
 		this.options = options;
 		this.overlapUtil = new OverlapUtil(options);
 		this.opSCFactory = new OperationalSCFactory(options);
@@ -45,13 +46,13 @@ public class BasicShortcutPatternProvider implements ShortcutPatternProvider {
 		this.basicShortcutPatterns = new HashMap<>();
 		this.opShortcutRule2patternMatcher = new HashMap<>();
 
-		createBasicShortcutPatterns();
+		createBasicShortcutPatterns(greenInterpreter);
 
 		if (initiallyPersistShortcutRules)
 			persistShortcutRules();
 	}
 
-	private void createBasicShortcutPatterns() {
+	private void createBasicShortcutPatterns(IGreenInterpreter greenInterpreter) {
 		LoggerConfig.log(LoggerConfig.log_repair(), () -> "Generate basic Short-cut Rules:");
 
 		Collection<TGGOverlap> basicOverlaps = overlapUtil.calculateOverlaps(options.tgg.flattenedTGG().getRuleSet());
@@ -61,7 +62,7 @@ public class BasicShortcutPatternProvider implements ShortcutPatternProvider {
 				.collect(Collectors.toList());
 
 		for (PatternType type : types) {
-			Map<String, Collection<OperationalShortcutRule>> opShortcutRules = opSCFactory.createOperationalRules(basicShortcutRules, type);
+			Map<String, Collection<OperationalShortcutRule>> opShortcutRules = opSCFactory.createOperationalRules(greenInterpreter, basicShortcutRules, type);
 			basicShortcutPatterns.put(type, opShortcutRules);
 
 			LoggerConfig.log(LoggerConfig.log_repair(), //

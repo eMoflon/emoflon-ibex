@@ -12,8 +12,9 @@ import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeAssignment;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeValue;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRule.ComponentSpecificRuleElement;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelFactory;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence;
@@ -35,7 +36,6 @@ import language.TGGAttributeConstraintLibrary;
 import language.TGGAttributeExpression;
 import language.TGGInplaceAttributeExpression;
 import language.TGGParamValue;
-import language.TGGRuleNode;
 
 public class HigherOrderTGGRule extends TGGRuleImpl {
 
@@ -181,7 +181,7 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 
 		populateElts(rule, component, contextMapping);
 		transferAttrCondLibrary(rule, component);
-		adaptInplaceAttrExpr(rule, component);
+		adaptAttributeAssignments(rule, component);
 		transferNACs(rule, component);
 	}
 
@@ -236,7 +236,7 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 		higherOrderNode.setBindingType(node.getBindingType());
 		higherOrderNode.setDomainType(node.getDomainType());
 		higherOrderNode.setType(node.getType());
-		higherOrderNode.getAttrExpr().addAll(EcoreUtil.copyAll(node.getAttrExpr()));
+		higherOrderNode.getAttributeAssignments().addAll(EcoreUtil.copyAll(node.getAttributeAssignments()));
 
 		super.getNodes().add(higherOrderNode);
 
@@ -274,21 +274,21 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 		componentElt2higherOrderElt.put(componentEdge, higherOrderEdge);
 	}
 
-	private void adaptInplaceAttrExpr(TGGRule rule, HigherOrderRuleComponent component) {
+	private void adaptAttributeAssignments(TGGRule rule, HigherOrderRuleComponent component) {
 		rule.getNodes().stream() //
 				.filter(n -> n.getBindingType() == BindingType.CREATE) //
 				.map(n -> {
-					ComponentSpecificRuleElement compSpecRuleElt = component.getComponentSpecificRuleElement(n);
+					ComponentSpecificRuleElement compSpecRuleElt = component.getComponentSpecificRuleElement((TGGNode) n);
 					return (TGGNode) componentElt2higherOrderElt.get(compSpecRuleElt);
 				}) //
-				.flatMap(n -> n.getAttrExpr().stream()) //
-				.filter(e -> e.getValueExpr() instanceof TGGAttributeExpression) //
-				.map(e -> (TGGAttributeExpression) e.getValueExpr()) //
-				.forEach(attrExpr -> {
-					ComponentSpecificRuleElement compSpecRuleElt = component.getComponentSpecificRuleElement(attrExpr.getObjectVar());
-					TGGRuleNode newValue = (TGGRuleNode) componentElt2higherOrderElt.get(compSpecRuleElt);
-					if (newValue != null)
-						attrExpr.setObjectVar(newValue);
+				.flatMap(n -> n.getAttributeAssignments().stream()) //
+				.filter(e -> e.getValue() instanceof IBeXAttributeValue) //
+				.map(e -> (IBeXAttributeValue) e.getValue()) //
+				.forEach(attrValue -> {
+					ComponentSpecificRuleElement compSpecRuleElt = component.getComponentSpecificRuleElement((TGGNode) attrValue.getNode());
+					TGGNode newNode = (TGGNode) componentElt2higherOrderElt.get(compSpecRuleElt);
+					if (newNode != null)
+						attrValue.setNode(newNode);
 				});
 
 		// Edge case: higher-order rules are able to create multiple rule applications at once. This causes
@@ -298,21 +298,21 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 		// where the in-place attribute assignment expression has to be converted to a CSP to be applied
 		// properly:
 
-		Collection<TGGInplaceAttributeExpression> toBeDeletedInplAttrExpr = new LinkedList<>();
+		Collection<IBeXAttributeAssignment> toBeDeletedAttrAssignments = new LinkedList<>();
 		for (TGGNode node : TGGFilterUtil.filterNodes(nodes, BindingType.CREATE)) {
-			for (TGGInplaceAttributeExpression inplAttrExpr : node.getAttrExpr()) {
-				if (inplAttrExpr.getValueExpr() instanceof TGGAttributeExpression attrExpr) {
-					if (attrExpr.getObjectVar().getBindingType() == BindingType.CREATE) {
-						toBeDeletedInplAttrExpr.add(inplAttrExpr);
-						createEqualityCSP(rule, node, inplAttrExpr.getAttribute(), EcoreUtil.copy(attrExpr));
+			for (var attributeAssignment : node.getAttributeAssignments()) {
+				if (attributeAssignment.getValue() instanceof IBeXAttributeValue attrValue) {
+					if (((TGGNode) attrValue.getNode()).getBindingType() == BindingType.CREATE) {
+						toBeDeletedAttrAssignments.add(attributeAssignment);
+						createEqualityCSP(rule, node, attributeAssignment.getAttribute(), EcoreUtil.copy(attrValue));
 					}
 				}
 			}
 		}
-		toBeDeletedInplAttrExpr.forEach(e -> EcoreUtil.delete(e));
+		toBeDeletedAttrAssignments.forEach(e -> EcoreUtil.delete(e));
 	}
 
-	private void createEqualityCSP(TGGRule rule, TGGNode lhsNode, EAttribute lhsAttr, TGGAttributeExpression rhsAttrExpr) {
+	private void createEqualityCSP(TGGRule rule, TGGNode lhsNode, EAttribute lhsAttr, IBeXAttributeAssignment rhsAttrAssignment) {
 		TGGAttributeExpression lhsAttrExpr = LanguageFactory.eINSTANCE.createTGGAttributeExpression();
 		lhsAttrExpr.setAttribute(lhsAttr);
 		lhsAttrExpr.setObjectVar(lhsNode);
@@ -327,15 +327,15 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 			throw new RuntimeException("This attribute constraint definition must have two parameter definitions!", e);
 		}
 		lhsAttrExpr.setParameterDefinition(lhsParamDef);
-		rhsAttrExpr.setParameterDefinition(rhsParamDef);
+		rhsAttrAssignment.setParameterDefinition(rhsParamDef);
 
 		TGGAttributeConstraint attrConstraint = LanguageFactory.eINSTANCE.createTGGAttributeConstraint();
 		attrConstraint.getParameters().add(lhsAttrExpr);
-		attrConstraint.getParameters().add(rhsAttrExpr);
+		attrConstraint.getParameters().add(rhsAttrAssignment);
 		attrConstraint.setDefinition(attrConstraintDef);
 
 		this.getAttributeConditionLibrary().getParameterValues().add(lhsAttrExpr);
-		this.getAttributeConditionLibrary().getParameterValues().add(rhsAttrExpr);
+		this.getAttributeConditionLibrary().getParameterValues().add(rhsAttrAssignment);
 		this.getAttributeConditionLibrary().getTggAttributeConstraints().add(attrConstraint);
 	}
 

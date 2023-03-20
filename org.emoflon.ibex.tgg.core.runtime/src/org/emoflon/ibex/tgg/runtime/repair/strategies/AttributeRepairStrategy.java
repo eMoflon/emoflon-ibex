@@ -12,23 +12,25 @@ import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.runtime.csp.RuntimeTGGAttributeConstraintContainer;
+import org.emoflon.ibex.tgg.runtime.interpreter.IGreenInterpreter;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.PropagationDirectionHolder.PropagationDirection;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.RuleHandler;
 import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuleApplication;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintParameterValue;
 import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
-
-import language.TGGParamValue;
 
 public class AttributeRepairStrategy implements RepairStrategy {
 
 	protected final IbexOptions options;
+	protected final IGreenInterpreter greenInterpreter;
 	protected final RuleHandler ruleHandler;
 
-	public AttributeRepairStrategy(IbexOptions options) {
+	public AttributeRepairStrategy(IbexOptions options, IGreenInterpreter greenInterpreter) {
 		this.options = options;
+		this.greenInterpreter = greenInterpreter;
 		this.ruleHandler = options.tgg.ruleHandler();
 	}
 
@@ -79,7 +81,7 @@ public class AttributeRepairStrategy implements RepairStrategy {
 						.collect(Collectors.toList()) //
 		);
 
-		return greenPattern.getAttributeConstraintContainer(matchCopy);
+		return greenInterpreter.getAttributeConstraintContainer(matchCopy);
 	}
 
 	protected IRuntimeTGGAttrConstrContainer determineCSP(PropagationDirection propDir, List<TGGAttributeConstraint> constraints, ITGGMatch match) {
@@ -93,7 +95,7 @@ public class AttributeRepairStrategy implements RepairStrategy {
 						.collect(Collectors.toList()) //
 		);
 
-		Set<TGGParamValue> params = new HashSet<>();
+		Set<TGGAttributeConstraintParameterValue> params = new HashSet<>();
 		for (TGGAttributeConstraint constraint : constraints)
 			params.addAll(new HashSet<>(constraint.getParameters()));
 

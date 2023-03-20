@@ -19,6 +19,7 @@ import org.emoflon.ibex.tgg.compiler.analysis.ACAnalysis;
 import org.emoflon.ibex.tgg.compiler.analysis.FilterNACCandidate;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
+import org.emoflon.ibex.tgg.runtime.interpreter.IGreenInterpreter;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderSupport;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRule;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRule.HigherOrderRuleComponent;
@@ -28,6 +29,7 @@ import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.SearchPlanCreator;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelFactory;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalisationMode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
@@ -56,7 +58,7 @@ public abstract class OperationalShortcutRule {
 
 	protected SearchPlanCreator searchPlanCreator;
 
-	public OperationalShortcutRule(IbexOptions options, RuntimeShortcutRule shortcutRule, ACAnalysis filterNACAnalysis) {
+	public OperationalShortcutRule(IbexOptions options, IGreenInterpreter greenInterpreter, RuntimeShortcutRule shortcutRule, ACAnalysis filterNACAnalysis) {
 		this.options = options;
 		this.rawShortcutRule = shortcutRule;
 		this.operationalizedSCR = shortcutRule.copy();
@@ -66,13 +68,15 @@ public abstract class OperationalShortcutRule {
 		operationalize();
 		TGGRuleDerivedFieldsTool.fillDerivedTGGRuleFields(operationalizedSCR.getShortcutRule());
 		convertAttributeAssignments();
+		rawShortcutRule.getShortcutRule().getOperationalisations().add(operationalizedSCR.getShortcutRule());
+		operationalizedSCR.getShortcutRule().setOperationalisationMode(getOperationalisationMode());
 
 		if (operationalizedSCR.getOriginalRule() instanceof HigherOrderTGGRule hoRule)
 			createOldRuleApplicationNodes(hoRule);
 		else
 			createOldRuleApplicationNode();
 
-		this.searchPlanCreator = new SearchPlanCreator(options, this);
+		this.searchPlanCreator = new SearchPlanCreator(options, greenInterpreter, this);
 	}
 
 	private void initMarkerSets() {
@@ -85,6 +89,8 @@ public abstract class OperationalShortcutRule {
 	abstract protected void operationalize();
 
 	abstract public PatternType getType();
+	
+	abstract protected OperationalisationMode getOperationalisationMode();
 
 	private void convertAttributeAssignments() {
 		for (var contextNode : TGGModelUtils.getNodesByOperator(operationalizedSCR.getShortcutRule(), CONTEXT)) {

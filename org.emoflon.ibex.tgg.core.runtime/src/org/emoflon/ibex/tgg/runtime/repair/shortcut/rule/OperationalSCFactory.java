@@ -8,6 +8,7 @@ import java.util.Map;
 import org.emoflon.ibex.tgg.compiler.analysis.ACAnalysis;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
+import org.emoflon.ibex.tgg.runtime.interpreter.IGreenInterpreter;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderSupport;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRule;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
@@ -24,7 +25,8 @@ public class OperationalSCFactory {
 		this.filterNACAnalysis = new ACAnalysis(options.tgg.tgg(), options.patterns.acStrategy());
 	}
 
-	public Map<String, Collection<OperationalShortcutRule>> createOperationalRules(Collection<RuntimeShortcutRule> scRules, PatternType type) {
+	public Map<String, Collection<OperationalShortcutRule>> createOperationalRules(IGreenInterpreter greenInterpreter,
+			Collection<RuntimeShortcutRule> scRules, PatternType type) {
 		Map<String, Collection<OperationalShortcutRule>> operationalRules = new HashMap<>();
 
 		for (RuntimeShortcutRule scRule : scRules) {
@@ -40,23 +42,26 @@ public class OperationalSCFactory {
 					+ TGGFilterUtil.filterEdges(replacingRule.getEdges(), BindingType.CREATE).size() == 0)
 				continue;
 
-			OperationalShortcutRule opSCR = createOpShortcutRule(scRule, filterNACAnalysis, type);
+			OperationalShortcutRule opSCR = createOpShortcutRule(greenInterpreter, scRule, filterNACAnalysis, type);
 			String keyRuleName = originalRule instanceof HigherOrderTGGRule hoRule //
 					? HigherOrderSupport.getKeyRuleName(hoRule)
 					: originalRule.getName();
 			operationalRules.computeIfAbsent(keyRuleName, k -> new LinkedList<>()).add(opSCR);
+
+			greenInterpreter.registerOperationalRule(opSCR.getOperationalizedSCR().getShortcutRule());
 		}
 
 		return operationalRules;
 	}
 
-	private OperationalShortcutRule createOpShortcutRule(RuntimeShortcutRule scRule, ACAnalysis filterNACAnalysis, PatternType type) {
+	private OperationalShortcutRule createOpShortcutRule(IGreenInterpreter greenInterpreter, RuntimeShortcutRule scRule, ACAnalysis filterNACAnalysis,
+			PatternType type) {
 		return switch (type) {
-			case FWD -> new FWDShortcutRule(options, scRule, filterNACAnalysis);
-			case BWD -> new BWDShortcutRule(options, scRule, filterNACAnalysis);
-			case CC -> new CCShortcutRule(options, scRule, filterNACAnalysis);
-			case SRC -> new SRCShortcutRule(options, scRule, filterNACAnalysis);
-			case TRG -> new TRGShortcutRule(options, scRule, filterNACAnalysis);
+			case FWD -> new FWDShortcutRule(options, greenInterpreter, scRule, filterNACAnalysis);
+			case BWD -> new BWDShortcutRule(options, greenInterpreter, scRule, filterNACAnalysis);
+			case CC -> new CCShortcutRule(options, greenInterpreter, scRule, filterNACAnalysis);
+			case SRC -> new SRCShortcutRule(options, greenInterpreter, scRule, filterNACAnalysis);
+			case TRG -> new TRGShortcutRule(options, greenInterpreter, scRule, filterNACAnalysis);
 			default -> throw new RuntimeException("Shortcut Rules cannot be operationalized for " + type.toString() + " operations");
 		};
 	}

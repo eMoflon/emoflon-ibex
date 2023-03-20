@@ -63,7 +63,7 @@ public class SeqRepair implements TimeMeasurable {
 						opStrat.getGreenInterpreter(), opStrat.getRedInterpreter(), shortcutPatternProvider));
 			}
 			if (opStrat.getOptions().repair.repairAttributes()) {
-				repairStrategies.add(new AttributeRepairStrategy(opStrat.getOptions()));
+				repairStrategies.add(new AttributeRepairStrategy(opStrat.getOptions(), opStrat.getGreenInterpreter()));
 			}
 
 			times.addTo("initializeStrategies", Timer.stop());
@@ -72,7 +72,7 @@ public class SeqRepair implements TimeMeasurable {
 	}
 
 	private ShortcutPatternProvider initShortcutPatternProvider(IbexOptions options) {
-		return new BasicShortcutPatternProvider(options, shortcutPatternTypes, true);
+		return new BasicShortcutPatternProvider(options, opStrat.getGreenInterpreter(), shortcutPatternTypes, true);
 	}
 
 	public boolean repairBrokenMatches() {

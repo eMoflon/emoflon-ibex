@@ -10,7 +10,12 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.eclipse.emf.ecore.EAttribute;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalExpression;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ValueExpression;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
@@ -28,14 +33,9 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
-import org.emoflon.ibex.tgg.util.TGGFilterUtil;
 import org.emoflon.ibex.tgg.util.TGGAttrExprUtil;
+import org.emoflon.ibex.tgg.util.TGGFilterUtil;
 import org.emoflon.ibex.tgg.util.TGGModelUtils;
-
-import language.TGGEnumExpression;
-import language.TGGExpression;
-import language.TGGInplaceAttributeExpression;
-import language.TGGLiteralExpression;
 
 public class HigherOrderTGGRuleFactory {
 
@@ -140,8 +140,7 @@ public class HigherOrderTGGRuleFactory {
 			totalPropDomainMappings.putAll(propDomainMapping);
 
 			Map<TGGRule, Set<ITGGMatch>> rule2matches = collectRules(pgNode, pgNodes);
-			MatchRelatedRuleElementMap oppositeDomainMapping = createMappingForOppositeDomain(pgNode, matchUtil, propagationDomain, pgNodes,
-					rule2matches);
+			MatchRelatedRuleElementMap oppositeDomainMapping = createMappingForOppositeDomain(pgNode, matchUtil, propagationDomain, pgNodes, rule2matches);
 			matchRelatedRuleElements.addAll(oppositeDomainMapping.keySet());
 			totalOppositeDomainMappings.putAll(oppositeDomainMapping);
 
@@ -348,25 +347,67 @@ public class HigherOrderTGGRuleFactory {
 	private boolean matchesContext(TGGNode context, TGGNode matchCandidate) {
 		if (Objects.equals(context, matchCandidate))
 			return true;
-		
+
 		if (!context.getType().isSuperTypeOf(matchCandidate.getType()))
 			return false;
 
-		for (TGGInplaceAttributeExpression contextAttrExpr : context.getAttrExpr()) {
-			for (TGGInplaceAttributeExpression candidateAttrExpr : matchCandidate.getAttrExpr()) {
-				if (!contextAttrExpr.getAttribute().equals(candidateAttrExpr.getAttribute()))
+		for (var contextAttributeCondition : context.getReferencedByConditions()) {
+			if (!(contextAttributeCondition instanceof RelationalExpression contextRelExpr))
+				continue;
+
+			ValueExpression lhsValue = null;
+			EAttribute contextAttribute;
+			ValueExpression rhsValue = null;
+			if (contextRelExpr.getLhs() instanceof IBeXAttributeValue contextAttrVal && context.equals(contextAttrVal.getNode())) {
+				rhsValue = contextRelExpr.getRhs();
+				contextAttribute = contextAttrVal.getAttribute();
+			} else if (contextRelExpr.getRhs() instanceof IBeXAttributeValue contextAttrVal) {
+				lhsValue = contextRelExpr.getLhs();
+				contextAttribute = contextAttrVal.getAttribute();
+			} else {
+				continue;
+			}
+
+			for (var candidateAttributeAssignment : matchCandidate.getAttributeAssignments()) {
+				if (!contextAttribute.equals(candidateAttributeAssignment.getAttribute()))
 					continue;
 
-				Object candidateAttrValue;
-				TGGExpression candidateAttrValueExpr = candidateAttrExpr.getValueExpr();
-				if (candidateAttrValueExpr instanceof TGGLiteralExpression literalExpr)
-					candidateAttrValue = literalExpr.getValue();
-				else if (candidateAttrValueExpr instanceof TGGEnumExpression enumExpr)
-					candidateAttrValue = enumExpr.getLiteral().getInstance();
+				if (lhsValue == null)
+					lhsValue = candidateAttributeAssignment.getValue();
 				else
+					rhsValue = candidateAttributeAssignment.getValue();
+
+				if (!TGGAttrExprUtil.checkRelation(lhsValue, contextRelExpr.getOperator(), rhsValue))
+					return false;
+			}
+
+			for (var candidateAttributeCondition : matchCandidate.getReferencedByConditions()) {
+				if (!(candidateAttributeCondition instanceof RelationalExpression candidateRelExpr))
 					continue;
 
-				if (!TGGAttrExprUtil.checkInplaceAttributeCondition(contextAttrExpr, candidateAttrValue, null))
+				if (candidateRelExpr.getOperator() != RelationalOperator.EQUAL)
+					continue;
+
+				// TODO We currently skip the attribute check if the operator of candidate attribute condition is
+				// not EQUAL. For future work: include non-EQUAL operators for the checks. How to check two
+				// conditions with both non-EQUAL operators: If the set of valid values for the context condition is
+				// a subset of the set of valid values for the candidate condition, the conditions match. If the set
+				// of valid values for the context condition intersects with the set of valid values for the
+				// candidate condition, the conditions may potentially match. In all other cases, the conditions do
+				// not match.
+
+				ValueExpression candidateValue;
+				if (candidateRelExpr.getLhs() instanceof IBeXAttributeValue candidateAttrVal && matchCandidate.equals(candidateAttrVal.getNode()))
+					candidateValue = candidateRelExpr.getRhs();
+				else
+					candidateValue = candidateRelExpr.getLhs();
+
+				if (lhsValue == null)
+					lhsValue = candidateValue;
+				else
+					rhsValue = candidateValue;
+
+				if (!TGGAttrExprUtil.checkRelation(lhsValue, contextRelExpr.getOperator(), rhsValue))
 					return false;
 			}
 		}

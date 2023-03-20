@@ -88,17 +88,21 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	private void initializeSortedConstraints() {
 		for(var rule : options.tgg.flattenedTGG().getRuleSet().getRules()) {
 			for(var operationalRule : rule.getOperationalisations()) {
-				try {
-					rule2sortedAttributeConstraints.put(operationalRule.getName(), //
-							sortConstraints(
-									operationalRule.getName(), //
-									((TGGPattern) operationalRule.getPrecondition()).getAttributeConstraints().getParameters(), //
-									((TGGPattern) operationalRule.getPrecondition()).getAttributeConstraints().getTggAttributeConstraints()));
-					rule2parameters.put(operationalRule.getName(), ((TGGPattern) operationalRule.getPrecondition()).getAttributeConstraints().getParameters());
-				} catch (Exception e) {
-					throw new IllegalStateException("Unable to sort attribute constraints, " + e.getMessage(), e);
-				}
+				registerOperationalRule(operationalRule);
 			}
+		}
+	}
+
+	public void registerOperationalRule(TGGOperationalRule operationalRule) {
+		try {
+			rule2sortedAttributeConstraints.put(operationalRule.getName(), //
+					sortConstraints(
+							operationalRule.getName(), //
+							((TGGPattern) operationalRule.getPrecondition()).getAttributeConstraints().getParameters(), //
+							((TGGPattern) operationalRule.getPrecondition()).getAttributeConstraints().getTggAttributeConstraints()));
+			rule2parameters.put(operationalRule.getName(), ((TGGPattern) operationalRule.getPrecondition()).getAttributeConstraints().getParameters());
+		} catch (Exception e) {
+			throw new IllegalStateException("Unable to sort attribute constraints, " + e.getMessage(), e);
 		}
 	}
 

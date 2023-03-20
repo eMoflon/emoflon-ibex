@@ -81,7 +81,7 @@ public class ConcRepair implements TimeMeasurable {
 			ShortcutPatternProvider shortcutPatternProvider = initShortcutPatternProvider(opStrat.getOptions());
 			this.shortcutRepairStrat = new ShortcutRepairStrategy(opStrat.getOptions(), //
 					opStrat.getGreenInterpreter(), opStrat.getRedInterpreter(), shortcutPatternProvider);
-			this.attributeRepairStrat = new AttributeRepairStrategy(opStrat.getOptions());
+			this.attributeRepairStrat = new AttributeRepairStrategy(opStrat.getOptions(), opStrat.getGreenInterpreter());
 
 			times.addTo("initializeStrategies", Timer.stop());
 			LoggerConfig.log(LoggerConfig.log_repair(), () -> "Repair: init strategies - done\n");
@@ -91,11 +91,11 @@ public class ConcRepair implements TimeMeasurable {
 	private ShortcutPatternProvider initShortcutPatternProvider(IbexOptions options) {
 		if (options.repair.usePGbasedSCruleCreation()) {
 			ShortcutPatternProvider scpp = new HigherOrderShortcutPatternProvider(options, //
-					opStrat.precedenceGraph(), opStrat.matchUtils(), shortcutPatternTypes, false);
+					opStrat.getGreenInterpreter(), opStrat.precedenceGraph(), opStrat.matchUtils(), shortcutPatternTypes, false);
 			patternPersister = () -> scpp.persistShortcutRules();
 			return scpp;
 		} else {
-			return new BasicShortcutPatternProvider(options, shortcutPatternTypes, true);
+			return new BasicShortcutPatternProvider(options, opStrat.getGreenInterpreter(), shortcutPatternTypes, true);
 		}
 	}
 
