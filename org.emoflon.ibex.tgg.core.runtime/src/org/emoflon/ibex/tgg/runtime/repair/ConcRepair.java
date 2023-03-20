@@ -34,14 +34,13 @@ import org.emoflon.ibex.tgg.runtime.strategies.integrate.matchcontainer.Preceden
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.TGGMatchAnalyzer.ConstrainedAttributeChanges;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
 import org.emoflon.ibex.tgg.util.benchmark.TimeMeasurable;
 import org.emoflon.ibex.tgg.util.benchmark.TimeRegistry;
 import org.emoflon.ibex.tgg.util.benchmark.Timer;
 import org.emoflon.ibex.tgg.util.benchmark.Times;
 import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
-
-import language.TGGAttributeExpression;
 
 public class ConcRepair implements TimeMeasurable {
 
@@ -226,8 +225,8 @@ public class ConcRepair implements TimeMeasurable {
 		for (ConstrainedAttributeChanges attrCh : attrChanges) {
 			boolean srcChange = false;
 			boolean trgChange = false;
-			for (TGGAttributeExpression param : attrCh.affectedParams.keySet()) {
-				switch (param.getObjectVar().getDomainType()) {
+			for (var param : attrCh.affectedParams.keySet()) {
+				switch (((TGGNode) param.getNode()).getDomainType()) {
 					case SOURCE -> srcChange = true;
 					case TARGET -> trgChange = true;
 					default -> {

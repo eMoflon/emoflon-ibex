@@ -32,7 +32,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.util.EMFNavigationUtil;
-import org.emoflon.ibex.tgg.util.TGGAttrExprUtil;
+import org.emoflon.ibex.tgg.util.TGGAttributeCheckUtil;
 import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 import org.moflon.core.utilities.eMoflonEMFUtil;
 
@@ -200,7 +200,7 @@ public class SearchPlanCreator {
 	private boolean checkAttributeConditions(Map<String, EObject> name2candidates) {
 		var attributeConditions = opSCR.getOperationalizedSCR().getShortcutRule().getPrecondition().getConditions();
 		for (var expression : attributeConditions) {
-			if (!TGGAttrExprUtil.checkAttributeCondition(expression, name2candidates))
+			if (!TGGAttributeCheckUtil.checkAttributeCondition(expression, name2candidates))
 				return false;
 		}
 		return true;

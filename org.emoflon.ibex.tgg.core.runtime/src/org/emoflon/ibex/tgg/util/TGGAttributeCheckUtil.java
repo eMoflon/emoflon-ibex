@@ -16,7 +16,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.Relati
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ValueExpression;
 
-public class TGGAttrExprUtil {
+public class TGGAttributeCheckUtil {
 
 	/**
 	 * Checks if the the given {@code expression} evaluates to {@code true} To check attribute

@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.strategies.integrate.util;
+package org.emoflon.ibex.tgg.runtime.strategies.integrate.util;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeValue;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalExpression;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.csp.IRuntimeTGGAttrConstrContainer;
@@ -18,18 +20,16 @@ import org.emoflon.ibex.tgg.runtime.csp.RuntimeTGGAttributeConstraintContainer;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.classification.DeletionPattern;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.classification.DomainModification;
+import org.emoflon.ibex.tgg.runtime.strategies.integrate.modelchange.AttributeChange;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.TGGResourceHandler;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGPattern;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
-import org.emoflon.ibex.tgg.util.TGGAttrExprUtil;
-
-import language.TGGAttributeExpression;
-import language.TGGInplaceAttributeExpression;
-import language.TGGParamValue;
-import language.TGGRuleNode;
+import org.emoflon.ibex.tgg.util.TGGAttributeCheckUtil;
+import org.emoflon.ibex.tgg.util.TGGModelUtils;
 
 public class TGGMatchAnalyzer {
 
@@ -67,7 +67,7 @@ public class TGGMatchAnalyzer {
 	}
 
 	private boolean isEdgeDeleted(TGGEdge edge, EMFEdge emfEdge, Set<TGGRuleElement> deletedElements) {
-		if (deletedElements.contains(edge.getSource()) || deletedElements.contains(edge.getTarget()))
+		if (deletedElements.contains((TGGNode) edge.getSource()) || deletedElements.contains((TGGNode) edge.getTarget()))
 			return true;
 		Object value = emfEdge.getSource().eGet(emfEdge.getType());
 		if (value == null)
@@ -108,20 +108,20 @@ public class TGGMatchAnalyzer {
 	public Set<ConstrainedAttributeChanges> analyzeConstrainedAttributeChanges() {
 		Set<ConstrainedAttributeChanges> constrainedAttrChanges = new HashSet<>();
 
-		for (TGGAttributeConstraint constr : util.rule.getAttributeConditionLibrary().getTggAttributeConstraints()) {
+		for (TGGAttributeConstraint constr : ((TGGPattern) util.rule.getPrecondition()).getAttributeConstraints().getTggAttributeConstraints()) {
 			IRuntimeTGGAttrConstrContainer runtimeAttrConstr = getRuntimeAttrConstraint(constr, util.match);
 			if (runtimeAttrConstr.solve())
 				continue;
 
-			Map<TGGAttributeExpression, AttributeChange> affectedParams = new HashMap<>();
+			Map<IBeXAttributeValue, AttributeChange> affectedParams = new HashMap<>();
 
-			for (TGGParamValue param : constr.getParameters()) {
-				if (param instanceof TGGAttributeExpression attrExpr) {
-					EObject obj = util.getEObject(attrExpr.getObjectVar());
+			for (var param : constr.getParameters()) {
+				if (param.getExpression() instanceof IBeXAttributeValue attributeValue) {
+					EObject obj = util.getEObject((TGGNode) attributeValue.getNode());
 					Set<AttributeChange> attrChanges = util.integrate.generalModelChanges().getAttributeChanges(obj);
 					for (AttributeChange attrChange : attrChanges) {
-						if (attrChange.getAttribute().equals(attrExpr.getAttribute())) {
-							affectedParams.put(attrExpr, attrChange);
+						if (attrChange.getAttribute().equals(attributeValue.getAttribute())) {
+							affectedParams.put(attributeValue, attrChange);
 							break;
 						}
 					}
@@ -142,12 +142,17 @@ public class TGGMatchAnalyzer {
 				.collect(Collectors.toMap(e -> e.getKey().getName(), e -> e.getValue()));
 		for (TGGNode node : util.rule.getNodes()) {
 			EObject eObject = util.getEObject(node);
-			for (TGGInplaceAttributeExpression attrExpr : node.getAttrExpr()) {
-				if (!TGGAttrExprUtil.checkInplaceAttributeCondition(attrExpr, eObject, nodeName2eObject)) {
+			for (var attributeCondition : node.getReferencedByConditions()) {
+				if (!(attributeCondition instanceof RelationalExpression relationalExpression))
+					continue;
+				
+				if (!TGGAttributeCheckUtil.checkAttributeCondition(attributeCondition, nodeName2eObject)) {
 					Set<AttributeChange> attrChanges = util.integrate.generalModelChanges().getAttributeChanges(eObject);
 					for (AttributeChange attrChange : attrChanges) {
-						if (attrChange.getAttribute().equals(attrExpr.getAttribute())) {
-							inplAttrChanges.add(new InplAttributeChange(node, attrExpr, attrChange));
+						IBeXAttributeValue attributeValue = TGGModelUtils.getOperandWithAttributeValue(attributeCondition, node);
+						
+						if (attrChange.getAttribute().equals(attributeValue.getAttribute())) {
+							inplAttrChanges.add(new InplAttributeChange(node, relationalExpression, attributeValue, attrChange));
 							break;
 						}
 					}
@@ -171,9 +176,9 @@ public class TGGMatchAnalyzer {
 
 	public class ConstrainedAttributeChanges {
 		public final TGGAttributeConstraint constraint;
-		public final Map<TGGAttributeExpression, AttributeChange> affectedParams;
+		public final Map<IBeXAttributeValue, AttributeChange> affectedParams;
 
-		public ConstrainedAttributeChanges(TGGAttributeConstraint constraint, Map<TGGAttributeExpression, AttributeChange> affectedParams) {
+		public ConstrainedAttributeChanges(TGGAttributeConstraint constraint, Map<IBeXAttributeValue, AttributeChange> affectedParams) {
 			this.constraint = constraint;
 			this.affectedParams = affectedParams;
 		}
@@ -185,9 +190,9 @@ public class TGGMatchAnalyzer {
 			b.append(" ");
 			affectedParams.forEach((p, ac) -> {
 				b.append("(");
-				b.append(p.getObjectVar().getName());
+				b.append(p.getNode().getName());
 				b.append(":");
-				b.append(p.getObjectVar().getType().getName());
+				b.append(p.getNode().getType().getName());
 				b.append("#");
 				b.append(p.getAttribute().getName());
 				b.append(", '");
@@ -202,13 +207,16 @@ public class TGGMatchAnalyzer {
 
 	public class InplAttributeChange {
 		public final TGGNode node;
-		public final TGGInplaceAttributeExpression attrExpr;
-		public final AttributeChange attrChange;
+		public final RelationalExpression attributeCondition;
+		public final IBeXAttributeValue affectedSide;
+		public final AttributeChange attributeChange;
 
-		public InplAttributeChange(TGGRuleNode node, TGGInplaceAttributeExpression attrExpr, AttributeChange attrChange) {
+		public InplAttributeChange(TGGNode node, RelationalExpression attributeCondition, IBeXAttributeValue affectedSide,
+				AttributeChange attributeChange) {
 			this.node = node;
-			this.attrExpr = attrExpr;
-			this.attrChange = attrChange;
+			this.attributeCondition = attributeCondition;
+			this.affectedSide = affectedSide;
+			this.attributeChange = attributeChange;
 		}
 
 		@Override
@@ -218,11 +226,11 @@ public class TGGMatchAnalyzer {
 			b.append(":");
 			b.append(node.getType().getName());
 			b.append("#");
-			b.append(attrExpr.getAttribute().getName());
+			b.append(affectedSide.getAttribute().getName());
 			b.append(", '");
-			b.append(attrChange.getOldValue());
+			b.append(attributeChange.getOldValue());
 			b.append("'->'");
-			b.append(attrChange.getNewValue());
+			b.append(attributeChange.getNewValue());
 			b.append("'");
 			return b.toString();
 		}

@@ -33,7 +33,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
-import org.emoflon.ibex.tgg.util.TGGAttrExprUtil;
+import org.emoflon.ibex.tgg.util.TGGAttributeCheckUtil;
 import org.emoflon.ibex.tgg.util.TGGFilterUtil;
 import org.emoflon.ibex.tgg.util.TGGModelUtils;
 
@@ -377,7 +377,7 @@ public class HigherOrderTGGRuleFactory {
 				else
 					rhsValue = candidateAttributeAssignment.getValue();
 
-				if (!TGGAttrExprUtil.checkRelation(lhsValue, contextRelExpr.getOperator(), rhsValue))
+				if (!TGGAttributeCheckUtil.checkRelation(lhsValue, contextRelExpr.getOperator(), rhsValue))
 					return false;
 			}
 
@@ -407,7 +407,7 @@ public class HigherOrderTGGRuleFactory {
 				else
 					rhsValue = candidateValue;
 
-				if (!TGGAttrExprUtil.checkRelation(lhsValue, contextRelExpr.getOperator(), rhsValue))
+				if (!TGGAttributeCheckUtil.checkRelation(lhsValue, contextRelExpr.getOperator(), rhsValue))
 					return false;
 			}
 		}

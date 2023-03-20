@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.detection;
+package org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.detection;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,8 +40,6 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefi
 import org.emoflon.ibex.tgg.util.TGGModelUtils;
 
 import com.google.common.collect.Sets;
-
-import language.TGGAttributeExpression;
 
 public class ConflictDetector {
 
@@ -287,10 +285,10 @@ public class ConflictDetector {
 				AttributeChange srcChange = null;
 				AttributeChange trgChange = null;
 
-				for (TGGAttributeExpression param : constrAttrChanges.affectedParams.keySet()) {
-					switch (param.getObjectVar().getDomainType()) {
-						case SRC -> srcChange = constrAttrChanges.affectedParams.get(param);
-						case TRG -> trgChange = constrAttrChanges.affectedParams.get(param);
+				for (var param : constrAttrChanges.affectedParams.keySet()) {
+					switch (((TGGNode) param.getNode()).getDomainType()) {
+						case SOURCE -> srcChange = constrAttrChanges.affectedParams.get(param);
+						case TARGET -> trgChange = constrAttrChanges.affectedParams.get(param);
 						default -> {
 						}
 					}

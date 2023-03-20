@@ -12,6 +12,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelFactory;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanExpression;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.IBeXCoreArithmeticFactory;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalExpression;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ValueExpression;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
@@ -122,6 +123,16 @@ public class TGGModelUtils {
 			((TGGNode) attributeValue.getNode()).getReferencedByConditions().add(attributeExpression);
 
 		return attributeExpression;
+	}
+	
+	public static IBeXAttributeValue getOperandWithAttributeValue(BooleanExpression expression, TGGNode referencedNode) {
+		if (!(expression instanceof RelationalExpression relationalExpression))
+			return null;
+		if (relationalExpression.getLhs() instanceof IBeXAttributeValue leftAttrValue && leftAttrValue.getNode().equals(referencedNode))
+			return leftAttrValue;
+		if (relationalExpression.getRhs() instanceof IBeXAttributeValue rightAttrValue && rightAttrValue.getNode().equals(referencedNode))
+			return rightAttrValue;
+		return null;
 	}
 
 }
