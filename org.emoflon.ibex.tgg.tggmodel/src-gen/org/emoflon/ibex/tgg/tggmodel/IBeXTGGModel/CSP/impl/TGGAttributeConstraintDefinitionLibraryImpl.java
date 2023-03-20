@@ -35,8 +35,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefi
  *
  * @generated
  */
-public class TGGAttributeConstraintDefinitionLibraryImpl extends IBeXNamedElementImpl
-		implements TGGAttributeConstraintDefinitionLibrary {
+public class TGGAttributeConstraintDefinitionLibraryImpl extends IBeXNamedElementImpl implements TGGAttributeConstraintDefinitionLibrary {
 	/**
 	 * The default value of the '{@link #getPackageName() <em>Package Name</em>}' attribute.
 	 * <!-- begin-user-doc -->
@@ -109,9 +108,8 @@ public class TGGAttributeConstraintDefinitionLibraryImpl extends IBeXNamedElemen
 	@Override
 	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS:
-			return ((InternalEList<InternalEObject>) (InternalEList<?>) getTggAttributeConstraintDefinitions())
-					.basicAdd(otherEnd, msgs);
+			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS:
+				return ((InternalEList<InternalEObject>) (InternalEList<?>) getTggAttributeConstraintDefinitions()).basicAdd(otherEnd, msgs);
 		}
 		return super.eInverseAdd(otherEnd, featureID, msgs);
 	}
@@ -134,8 +132,8 @@ public class TGGAttributeConstraintDefinitionLibraryImpl extends IBeXNamedElemen
 		String oldPackageName = packageName;
 		packageName = newPackageName;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__PACKAGE_NAME, oldPackageName, packageName));
+			eNotify(new ENotificationImpl(this, Notification.SET, CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__PACKAGE_NAME, oldPackageName,
+					packageName));
 	}
 
 	/**
@@ -146,8 +144,8 @@ public class TGGAttributeConstraintDefinitionLibraryImpl extends IBeXNamedElemen
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS:
-			return ((InternalEList<?>) getTggAttributeConstraintDefinitions()).basicRemove(otherEnd, msgs);
+			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS:
+				return ((InternalEList<?>) getTggAttributeConstraintDefinitions()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -160,10 +158,10 @@ public class TGGAttributeConstraintDefinitionLibraryImpl extends IBeXNamedElemen
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__PACKAGE_NAME:
-			return getPackageName();
-		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS:
-			return getTggAttributeConstraintDefinitions();
+			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__PACKAGE_NAME:
+				return getPackageName();
+			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS:
+				return getTggAttributeConstraintDefinitions();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -177,14 +175,13 @@ public class TGGAttributeConstraintDefinitionLibraryImpl extends IBeXNamedElemen
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__PACKAGE_NAME:
-			setPackageName((String) newValue);
-			return;
-		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS:
-			getTggAttributeConstraintDefinitions().clear();
-			getTggAttributeConstraintDefinitions()
-					.addAll((Collection<? extends TGGAttributeConstraintDefinition>) newValue);
-			return;
+			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__PACKAGE_NAME:
+				setPackageName((String) newValue);
+				return;
+			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS:
+				getTggAttributeConstraintDefinitions().clear();
+				getTggAttributeConstraintDefinitions().addAll((Collection<? extends TGGAttributeConstraintDefinition>) newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -197,12 +194,12 @@ public class TGGAttributeConstraintDefinitionLibraryImpl extends IBeXNamedElemen
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__PACKAGE_NAME:
-			setPackageName(PACKAGE_NAME_EDEFAULT);
-			return;
-		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS:
-			getTggAttributeConstraintDefinitions().clear();
-			return;
+			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__PACKAGE_NAME:
+				setPackageName(PACKAGE_NAME_EDEFAULT);
+				return;
+			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS:
+				getTggAttributeConstraintDefinitions().clear();
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -215,10 +212,10 @@ public class TGGAttributeConstraintDefinitionLibraryImpl extends IBeXNamedElemen
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__PACKAGE_NAME:
-			return PACKAGE_NAME_EDEFAULT == null ? packageName != null : !PACKAGE_NAME_EDEFAULT.equals(packageName);
-		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS:
-			return tggAttributeConstraintDefinitions != null && !tggAttributeConstraintDefinitions.isEmpty();
+			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__PACKAGE_NAME:
+				return PACKAGE_NAME_EDEFAULT == null ? packageName != null : !PACKAGE_NAME_EDEFAULT.equals(packageName);
+			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS:
+				return tggAttributeConstraintDefinitions != null && !tggAttributeConstraintDefinitions.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

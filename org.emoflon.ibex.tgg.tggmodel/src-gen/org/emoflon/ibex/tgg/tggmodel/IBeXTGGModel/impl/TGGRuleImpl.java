@@ -10,6 +10,7 @@ import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
@@ -53,6 +54,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getSource <em>Source</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getCorrespondence <em>Correspondence</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getTarget <em>Target</em>}</li>
+ *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getGenericContents <em>Generic Contents</em>}</li>
  * </ul>
  *
  * @generated
@@ -259,6 +261,16 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 	protected IBeXRuleDelta target;
 
 	/**
+	 * The cached value of the '{@link #getGenericContents() <em>Generic Contents</em>}' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getGenericContents()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<EObject> genericContents;
+
+	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -345,8 +357,7 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		boolean oldAbstract = abstract_;
 		abstract_ = newAbstract;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__ABSTRACT, oldAbstract,
-					abstract_));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__ABSTRACT, oldAbstract, abstract_));
 	}
 
 	/**
@@ -367,8 +378,7 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		IBeXRuleDelta oldContext = context;
 		context = newContext;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
-					IBeXTGGModelPackage.TGG_RULE__CONTEXT, oldContext, newContext);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CONTEXT, oldContext, newContext);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -386,17 +396,14 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		if (newContext != context) {
 			NotificationChain msgs = null;
 			if (context != null)
-				msgs = ((InternalEObject) context).eInverseRemove(this,
-						EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CONTEXT, null, msgs);
+				msgs = ((InternalEObject) context).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CONTEXT, null, msgs);
 			if (newContext != null)
-				msgs = ((InternalEObject) newContext).eInverseAdd(this,
-						EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CONTEXT, null, msgs);
+				msgs = ((InternalEObject) newContext).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CONTEXT, null, msgs);
 			msgs = basicSetContext(newContext, msgs);
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CONTEXT, newContext,
-					newContext));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CONTEXT, newContext, newContext));
 	}
 
 	/**
@@ -417,8 +424,8 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		IBeXRuleDelta oldContextSource = contextSource;
 		contextSource = newContextSource;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
-					IBeXTGGModelPackage.TGG_RULE__CONTEXT_SOURCE, oldContextSource, newContextSource);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CONTEXT_SOURCE, oldContextSource,
+					newContextSource);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -436,17 +443,16 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		if (newContextSource != contextSource) {
 			NotificationChain msgs = null;
 			if (contextSource != null)
-				msgs = ((InternalEObject) contextSource).eInverseRemove(this,
-						EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CONTEXT_SOURCE, null, msgs);
+				msgs = ((InternalEObject) contextSource).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CONTEXT_SOURCE, null,
+						msgs);
 			if (newContextSource != null)
-				msgs = ((InternalEObject) newContextSource).eInverseAdd(this,
-						EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CONTEXT_SOURCE, null, msgs);
+				msgs = ((InternalEObject) newContextSource).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CONTEXT_SOURCE, null,
+						msgs);
 			msgs = basicSetContextSource(newContextSource, msgs);
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CONTEXT_SOURCE,
-					newContextSource, newContextSource));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CONTEXT_SOURCE, newContextSource, newContextSource));
 	}
 
 	/**
@@ -463,14 +469,12 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public NotificationChain basicSetContextCorrespondence(IBeXRuleDelta newContextCorrespondence,
-			NotificationChain msgs) {
+	public NotificationChain basicSetContextCorrespondence(IBeXRuleDelta newContextCorrespondence, NotificationChain msgs) {
 		IBeXRuleDelta oldContextCorrespondence = contextCorrespondence;
 		contextCorrespondence = newContextCorrespondence;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
-					IBeXTGGModelPackage.TGG_RULE__CONTEXT_CORRESPONDENCE, oldContextCorrespondence,
-					newContextCorrespondence);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CONTEXT_CORRESPONDENCE,
+					oldContextCorrespondence, newContextCorrespondence);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -497,8 +501,8 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CONTEXT_CORRESPONDENCE,
-					newContextCorrespondence, newContextCorrespondence));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CONTEXT_CORRESPONDENCE, newContextCorrespondence,
+					newContextCorrespondence));
 	}
 
 	/**
@@ -519,8 +523,8 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		IBeXRuleDelta oldContextTarget = contextTarget;
 		contextTarget = newContextTarget;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
-					IBeXTGGModelPackage.TGG_RULE__CONTEXT_TARGET, oldContextTarget, newContextTarget);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CONTEXT_TARGET, oldContextTarget,
+					newContextTarget);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -538,17 +542,16 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		if (newContextTarget != contextTarget) {
 			NotificationChain msgs = null;
 			if (contextTarget != null)
-				msgs = ((InternalEObject) contextTarget).eInverseRemove(this,
-						EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CONTEXT_TARGET, null, msgs);
+				msgs = ((InternalEObject) contextTarget).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CONTEXT_TARGET, null,
+						msgs);
 			if (newContextTarget != null)
-				msgs = ((InternalEObject) newContextTarget).eInverseAdd(this,
-						EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CONTEXT_TARGET, null, msgs);
+				msgs = ((InternalEObject) newContextTarget).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CONTEXT_TARGET, null,
+						msgs);
 			msgs = basicSetContextTarget(newContextTarget, msgs);
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CONTEXT_TARGET,
-					newContextTarget, newContextTarget));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CONTEXT_TARGET, newContextTarget, newContextTarget));
 	}
 
 	/**
@@ -565,14 +568,12 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public NotificationChain basicSetCreateSourceAndTarget(IBeXRuleDelta newCreateSourceAndTarget,
-			NotificationChain msgs) {
+	public NotificationChain basicSetCreateSourceAndTarget(IBeXRuleDelta newCreateSourceAndTarget, NotificationChain msgs) {
 		IBeXRuleDelta oldCreateSourceAndTarget = createSourceAndTarget;
 		createSourceAndTarget = newCreateSourceAndTarget;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
-					IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE_AND_TARGET, oldCreateSourceAndTarget,
-					newCreateSourceAndTarget);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE_AND_TARGET,
+					oldCreateSourceAndTarget, newCreateSourceAndTarget);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -599,8 +600,7 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE_AND_TARGET, newCreateSourceAndTarget,
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE_AND_TARGET, newCreateSourceAndTarget,
 					newCreateSourceAndTarget));
 	}
 
@@ -622,8 +622,7 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		IBeXRuleDelta oldCreate = create;
 		create = newCreate;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
-					IBeXTGGModelPackage.TGG_RULE__CREATE, oldCreate, newCreate);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CREATE, oldCreate, newCreate);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -641,17 +640,14 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		if (newCreate != create) {
 			NotificationChain msgs = null;
 			if (create != null)
-				msgs = ((InternalEObject) create).eInverseRemove(this,
-						EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CREATE, null, msgs);
+				msgs = ((InternalEObject) create).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CREATE, null, msgs);
 			if (newCreate != null)
-				msgs = ((InternalEObject) newCreate).eInverseAdd(this,
-						EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CREATE, null, msgs);
+				msgs = ((InternalEObject) newCreate).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CREATE, null, msgs);
 			msgs = basicSetCreate(newCreate, msgs);
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CREATE, newCreate,
-					newCreate));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CREATE, newCreate, newCreate));
 	}
 
 	/**
@@ -672,8 +668,8 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		IBeXRuleDelta oldCreateSource = createSource;
 		createSource = newCreateSource;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
-					IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE, oldCreateSource, newCreateSource);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE, oldCreateSource,
+					newCreateSource);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -691,17 +687,16 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		if (newCreateSource != createSource) {
 			NotificationChain msgs = null;
 			if (createSource != null)
-				msgs = ((InternalEObject) createSource).eInverseRemove(this,
-						EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE, null, msgs);
+				msgs = ((InternalEObject) createSource).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE, null,
+						msgs);
 			if (newCreateSource != null)
-				msgs = ((InternalEObject) newCreateSource).eInverseAdd(this,
-						EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE, null, msgs);
+				msgs = ((InternalEObject) newCreateSource).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE, null,
+						msgs);
 			msgs = basicSetCreateSource(newCreateSource, msgs);
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE,
-					newCreateSource, newCreateSource));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE, newCreateSource, newCreateSource));
 	}
 
 	/**
@@ -718,14 +713,12 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public NotificationChain basicSetCreateCorrespondence(IBeXRuleDelta newCreateCorrespondence,
-			NotificationChain msgs) {
+	public NotificationChain basicSetCreateCorrespondence(IBeXRuleDelta newCreateCorrespondence, NotificationChain msgs) {
 		IBeXRuleDelta oldCreateCorrespondence = createCorrespondence;
 		createCorrespondence = newCreateCorrespondence;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
-					IBeXTGGModelPackage.TGG_RULE__CREATE_CORRESPONDENCE, oldCreateCorrespondence,
-					newCreateCorrespondence);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CREATE_CORRESPONDENCE,
+					oldCreateCorrespondence, newCreateCorrespondence);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -752,8 +745,8 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CREATE_CORRESPONDENCE,
-					newCreateCorrespondence, newCreateCorrespondence));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CREATE_CORRESPONDENCE, newCreateCorrespondence,
+					newCreateCorrespondence));
 	}
 
 	/**
@@ -774,8 +767,8 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		IBeXRuleDelta oldCreateTarget = createTarget;
 		createTarget = newCreateTarget;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
-					IBeXTGGModelPackage.TGG_RULE__CREATE_TARGET, oldCreateTarget, newCreateTarget);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CREATE_TARGET, oldCreateTarget,
+					newCreateTarget);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -793,17 +786,16 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		if (newCreateTarget != createTarget) {
 			NotificationChain msgs = null;
 			if (createTarget != null)
-				msgs = ((InternalEObject) createTarget).eInverseRemove(this,
-						EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CREATE_TARGET, null, msgs);
+				msgs = ((InternalEObject) createTarget).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CREATE_TARGET, null,
+						msgs);
 			if (newCreateTarget != null)
-				msgs = ((InternalEObject) newCreateTarget).eInverseAdd(this,
-						EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CREATE_TARGET, null, msgs);
+				msgs = ((InternalEObject) newCreateTarget).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CREATE_TARGET, null,
+						msgs);
 			msgs = basicSetCreateTarget(newCreateTarget, msgs);
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CREATE_TARGET,
-					newCreateTarget, newCreateTarget));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CREATE_TARGET, newCreateTarget, newCreateTarget));
 	}
 
 	/**
@@ -824,8 +816,7 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		boolean oldAxiom = axiom;
 		axiom = newAxiom;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__AXIOM, oldAxiom,
-					axiom));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__AXIOM, oldAxiom, axiom));
 	}
 
 	/**
@@ -846,8 +837,7 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		IBeXRuleDelta oldSource = source;
 		source = newSource;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
-					IBeXTGGModelPackage.TGG_RULE__SOURCE, oldSource, newSource);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__SOURCE, oldSource, newSource);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -865,17 +855,14 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		if (newSource != source) {
 			NotificationChain msgs = null;
 			if (source != null)
-				msgs = ((InternalEObject) source).eInverseRemove(this,
-						EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__SOURCE, null, msgs);
+				msgs = ((InternalEObject) source).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__SOURCE, null, msgs);
 			if (newSource != null)
-				msgs = ((InternalEObject) newSource).eInverseAdd(this,
-						EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__SOURCE, null, msgs);
+				msgs = ((InternalEObject) newSource).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__SOURCE, null, msgs);
 			msgs = basicSetSource(newSource, msgs);
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__SOURCE, newSource,
-					newSource));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__SOURCE, newSource, newSource));
 	}
 
 	/**
@@ -896,8 +883,8 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		IBeXRuleDelta oldCorrespondence = correspondence;
 		correspondence = newCorrespondence;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
-					IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE, oldCorrespondence, newCorrespondence);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE, oldCorrespondence,
+					newCorrespondence);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -915,17 +902,16 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		if (newCorrespondence != correspondence) {
 			NotificationChain msgs = null;
 			if (correspondence != null)
-				msgs = ((InternalEObject) correspondence).eInverseRemove(this,
-						EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE, null, msgs);
+				msgs = ((InternalEObject) correspondence).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE, null,
+						msgs);
 			if (newCorrespondence != null)
-				msgs = ((InternalEObject) newCorrespondence).eInverseAdd(this,
-						EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE, null, msgs);
+				msgs = ((InternalEObject) newCorrespondence).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE, null,
+						msgs);
 			msgs = basicSetCorrespondence(newCorrespondence, msgs);
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE,
-					newCorrespondence, newCorrespondence));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE, newCorrespondence, newCorrespondence));
 	}
 
 	/**
@@ -946,8 +932,7 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		IBeXRuleDelta oldTarget = target;
 		target = newTarget;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET,
-					IBeXTGGModelPackage.TGG_RULE__TARGET, oldTarget, newTarget);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__TARGET, oldTarget, newTarget);
 			if (msgs == null)
 				msgs = notification;
 			else
@@ -965,17 +950,26 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		if (newTarget != target) {
 			NotificationChain msgs = null;
 			if (target != null)
-				msgs = ((InternalEObject) target).eInverseRemove(this,
-						EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__TARGET, null, msgs);
+				msgs = ((InternalEObject) target).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__TARGET, null, msgs);
 			if (newTarget != null)
-				msgs = ((InternalEObject) newTarget).eInverseAdd(this,
-						EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__TARGET, null, msgs);
+				msgs = ((InternalEObject) newTarget).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - IBeXTGGModelPackage.TGG_RULE__TARGET, null, msgs);
 			msgs = basicSetTarget(newTarget, msgs);
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__TARGET, newTarget,
-					newTarget));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__TARGET, newTarget, newTarget));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EList<EObject> getGenericContents() {
+		if (genericContents == null) {
+			genericContents = new EObjectContainmentEList<EObject>(EObject.class, this, IBeXTGGModelPackage.TGG_RULE__GENERIC_CONTENTS);
+		}
+		return genericContents;
 	}
 
 	/**
@@ -986,36 +980,38 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-		case IBeXTGGModelPackage.TGG_RULE__NODES:
-			return ((InternalEList<?>) getNodes()).basicRemove(otherEnd, msgs);
-		case IBeXTGGModelPackage.TGG_RULE__EDGES:
-			return ((InternalEList<?>) getEdges()).basicRemove(otherEnd, msgs);
-		case IBeXTGGModelPackage.TGG_RULE__OPERATIONALISATIONS:
-			return ((InternalEList<?>) getOperationalisations()).basicRemove(otherEnd, msgs);
-		case IBeXTGGModelPackage.TGG_RULE__CONTEXT:
-			return basicSetContext(null, msgs);
-		case IBeXTGGModelPackage.TGG_RULE__CONTEXT_SOURCE:
-			return basicSetContextSource(null, msgs);
-		case IBeXTGGModelPackage.TGG_RULE__CONTEXT_CORRESPONDENCE:
-			return basicSetContextCorrespondence(null, msgs);
-		case IBeXTGGModelPackage.TGG_RULE__CONTEXT_TARGET:
-			return basicSetContextTarget(null, msgs);
-		case IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE_AND_TARGET:
-			return basicSetCreateSourceAndTarget(null, msgs);
-		case IBeXTGGModelPackage.TGG_RULE__CREATE:
-			return basicSetCreate(null, msgs);
-		case IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE:
-			return basicSetCreateSource(null, msgs);
-		case IBeXTGGModelPackage.TGG_RULE__CREATE_CORRESPONDENCE:
-			return basicSetCreateCorrespondence(null, msgs);
-		case IBeXTGGModelPackage.TGG_RULE__CREATE_TARGET:
-			return basicSetCreateTarget(null, msgs);
-		case IBeXTGGModelPackage.TGG_RULE__SOURCE:
-			return basicSetSource(null, msgs);
-		case IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE:
-			return basicSetCorrespondence(null, msgs);
-		case IBeXTGGModelPackage.TGG_RULE__TARGET:
-			return basicSetTarget(null, msgs);
+			case IBeXTGGModelPackage.TGG_RULE__NODES:
+				return ((InternalEList<?>) getNodes()).basicRemove(otherEnd, msgs);
+			case IBeXTGGModelPackage.TGG_RULE__EDGES:
+				return ((InternalEList<?>) getEdges()).basicRemove(otherEnd, msgs);
+			case IBeXTGGModelPackage.TGG_RULE__OPERATIONALISATIONS:
+				return ((InternalEList<?>) getOperationalisations()).basicRemove(otherEnd, msgs);
+			case IBeXTGGModelPackage.TGG_RULE__CONTEXT:
+				return basicSetContext(null, msgs);
+			case IBeXTGGModelPackage.TGG_RULE__CONTEXT_SOURCE:
+				return basicSetContextSource(null, msgs);
+			case IBeXTGGModelPackage.TGG_RULE__CONTEXT_CORRESPONDENCE:
+				return basicSetContextCorrespondence(null, msgs);
+			case IBeXTGGModelPackage.TGG_RULE__CONTEXT_TARGET:
+				return basicSetContextTarget(null, msgs);
+			case IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE_AND_TARGET:
+				return basicSetCreateSourceAndTarget(null, msgs);
+			case IBeXTGGModelPackage.TGG_RULE__CREATE:
+				return basicSetCreate(null, msgs);
+			case IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE:
+				return basicSetCreateSource(null, msgs);
+			case IBeXTGGModelPackage.TGG_RULE__CREATE_CORRESPONDENCE:
+				return basicSetCreateCorrespondence(null, msgs);
+			case IBeXTGGModelPackage.TGG_RULE__CREATE_TARGET:
+				return basicSetCreateTarget(null, msgs);
+			case IBeXTGGModelPackage.TGG_RULE__SOURCE:
+				return basicSetSource(null, msgs);
+			case IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE:
+				return basicSetCorrespondence(null, msgs);
+			case IBeXTGGModelPackage.TGG_RULE__TARGET:
+				return basicSetTarget(null, msgs);
+			case IBeXTGGModelPackage.TGG_RULE__GENERIC_CONTENTS:
+				return ((InternalEList<?>) getGenericContents()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -1028,42 +1024,44 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case IBeXTGGModelPackage.TGG_RULE__NODES:
-			return getNodes();
-		case IBeXTGGModelPackage.TGG_RULE__EDGES:
-			return getEdges();
-		case IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE_NODES:
-			return getCorrespondenceNodes();
-		case IBeXTGGModelPackage.TGG_RULE__OPERATIONALISATIONS:
-			return getOperationalisations();
-		case IBeXTGGModelPackage.TGG_RULE__ABSTRACT:
-			return isAbstract();
-		case IBeXTGGModelPackage.TGG_RULE__AXIOM:
-			return isAxiom();
-		case IBeXTGGModelPackage.TGG_RULE__CONTEXT:
-			return getContext();
-		case IBeXTGGModelPackage.TGG_RULE__CONTEXT_SOURCE:
-			return getContextSource();
-		case IBeXTGGModelPackage.TGG_RULE__CONTEXT_CORRESPONDENCE:
-			return getContextCorrespondence();
-		case IBeXTGGModelPackage.TGG_RULE__CONTEXT_TARGET:
-			return getContextTarget();
-		case IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE_AND_TARGET:
-			return getCreateSourceAndTarget();
-		case IBeXTGGModelPackage.TGG_RULE__CREATE:
-			return getCreate();
-		case IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE:
-			return getCreateSource();
-		case IBeXTGGModelPackage.TGG_RULE__CREATE_CORRESPONDENCE:
-			return getCreateCorrespondence();
-		case IBeXTGGModelPackage.TGG_RULE__CREATE_TARGET:
-			return getCreateTarget();
-		case IBeXTGGModelPackage.TGG_RULE__SOURCE:
-			return getSource();
-		case IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE:
-			return getCorrespondence();
-		case IBeXTGGModelPackage.TGG_RULE__TARGET:
-			return getTarget();
+			case IBeXTGGModelPackage.TGG_RULE__NODES:
+				return getNodes();
+			case IBeXTGGModelPackage.TGG_RULE__EDGES:
+				return getEdges();
+			case IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE_NODES:
+				return getCorrespondenceNodes();
+			case IBeXTGGModelPackage.TGG_RULE__OPERATIONALISATIONS:
+				return getOperationalisations();
+			case IBeXTGGModelPackage.TGG_RULE__ABSTRACT:
+				return isAbstract();
+			case IBeXTGGModelPackage.TGG_RULE__AXIOM:
+				return isAxiom();
+			case IBeXTGGModelPackage.TGG_RULE__CONTEXT:
+				return getContext();
+			case IBeXTGGModelPackage.TGG_RULE__CONTEXT_SOURCE:
+				return getContextSource();
+			case IBeXTGGModelPackage.TGG_RULE__CONTEXT_CORRESPONDENCE:
+				return getContextCorrespondence();
+			case IBeXTGGModelPackage.TGG_RULE__CONTEXT_TARGET:
+				return getContextTarget();
+			case IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE_AND_TARGET:
+				return getCreateSourceAndTarget();
+			case IBeXTGGModelPackage.TGG_RULE__CREATE:
+				return getCreate();
+			case IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE:
+				return getCreateSource();
+			case IBeXTGGModelPackage.TGG_RULE__CREATE_CORRESPONDENCE:
+				return getCreateCorrespondence();
+			case IBeXTGGModelPackage.TGG_RULE__CREATE_TARGET:
+				return getCreateTarget();
+			case IBeXTGGModelPackage.TGG_RULE__SOURCE:
+				return getSource();
+			case IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE:
+				return getCorrespondence();
+			case IBeXTGGModelPackage.TGG_RULE__TARGET:
+				return getTarget();
+			case IBeXTGGModelPackage.TGG_RULE__GENERIC_CONTENTS:
+				return getGenericContents();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -1077,64 +1075,68 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case IBeXTGGModelPackage.TGG_RULE__NODES:
-			getNodes().clear();
-			getNodes().addAll((Collection<? extends TGGNode>) newValue);
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__EDGES:
-			getEdges().clear();
-			getEdges().addAll((Collection<? extends TGGEdge>) newValue);
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE_NODES:
-			getCorrespondenceNodes().clear();
-			getCorrespondenceNodes().addAll((Collection<? extends TGGCorrespondence>) newValue);
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__OPERATIONALISATIONS:
-			getOperationalisations().clear();
-			getOperationalisations().addAll((Collection<? extends TGGOperationalRule>) newValue);
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__ABSTRACT:
-			setAbstract((Boolean) newValue);
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__AXIOM:
-			setAxiom((Boolean) newValue);
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__CONTEXT:
-			setContext((IBeXRuleDelta) newValue);
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__CONTEXT_SOURCE:
-			setContextSource((IBeXRuleDelta) newValue);
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__CONTEXT_CORRESPONDENCE:
-			setContextCorrespondence((IBeXRuleDelta) newValue);
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__CONTEXT_TARGET:
-			setContextTarget((IBeXRuleDelta) newValue);
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE_AND_TARGET:
-			setCreateSourceAndTarget((IBeXRuleDelta) newValue);
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__CREATE:
-			setCreate((IBeXRuleDelta) newValue);
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE:
-			setCreateSource((IBeXRuleDelta) newValue);
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__CREATE_CORRESPONDENCE:
-			setCreateCorrespondence((IBeXRuleDelta) newValue);
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__CREATE_TARGET:
-			setCreateTarget((IBeXRuleDelta) newValue);
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__SOURCE:
-			setSource((IBeXRuleDelta) newValue);
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE:
-			setCorrespondence((IBeXRuleDelta) newValue);
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__TARGET:
-			setTarget((IBeXRuleDelta) newValue);
-			return;
+			case IBeXTGGModelPackage.TGG_RULE__NODES:
+				getNodes().clear();
+				getNodes().addAll((Collection<? extends TGGNode>) newValue);
+				return;
+			case IBeXTGGModelPackage.TGG_RULE__EDGES:
+				getEdges().clear();
+				getEdges().addAll((Collection<? extends TGGEdge>) newValue);
+				return;
+			case IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE_NODES:
+				getCorrespondenceNodes().clear();
+				getCorrespondenceNodes().addAll((Collection<? extends TGGCorrespondence>) newValue);
+				return;
+			case IBeXTGGModelPackage.TGG_RULE__OPERATIONALISATIONS:
+				getOperationalisations().clear();
+				getOperationalisations().addAll((Collection<? extends TGGOperationalRule>) newValue);
+				return;
+			case IBeXTGGModelPackage.TGG_RULE__ABSTRACT:
+				setAbstract((Boolean) newValue);
+				return;
+			case IBeXTGGModelPackage.TGG_RULE__AXIOM:
+				setAxiom((Boolean) newValue);
+				return;
+			case IBeXTGGModelPackage.TGG_RULE__CONTEXT:
+				setContext((IBeXRuleDelta) newValue);
+				return;
+			case IBeXTGGModelPackage.TGG_RULE__CONTEXT_SOURCE:
+				setContextSource((IBeXRuleDelta) newValue);
+				return;
+			case IBeXTGGModelPackage.TGG_RULE__CONTEXT_CORRESPONDENCE:
+				setContextCorrespondence((IBeXRuleDelta) newValue);
+				return;
+			case IBeXTGGModelPackage.TGG_RULE__CONTEXT_TARGET:
+				setContextTarget((IBeXRuleDelta) newValue);
+				return;
+			case IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE_AND_TARGET:
+				setCreateSourceAndTarget((IBeXRuleDelta) newValue);
+				return;
+			case IBeXTGGModelPackage.TGG_RULE__CREATE:
+				setCreate((IBeXRuleDelta) newValue);
+				return;
+			case IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE:
+				setCreateSource((IBeXRuleDelta) newValue);
+				return;
+			case IBeXTGGModelPackage.TGG_RULE__CREATE_CORRESPONDENCE:
+				setCreateCorrespondence((IBeXRuleDelta) newValue);
+				return;
+			case IBeXTGGModelPackage.TGG_RULE__CREATE_TARGET:
+				setCreateTarget((IBeXRuleDelta) newValue);
+				return;
+			case IBeXTGGModelPackage.TGG_RULE__SOURCE:
+				setSource((IBeXRuleDelta) newValue);
+				return;
+			case IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE:
+				setCorrespondence((IBeXRuleDelta) newValue);
+				return;
+			case IBeXTGGModelPackage.TGG_RULE__TARGET:
+				setTarget((IBeXRuleDelta) newValue);
+				return;
+			case IBeXTGGModelPackage.TGG_RULE__GENERIC_CONTENTS:
+				getGenericContents().clear();
+				getGenericContents().addAll((Collection<? extends EObject>) newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -1147,60 +1149,63 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case IBeXTGGModelPackage.TGG_RULE__NODES:
-			getNodes().clear();
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__EDGES:
-			getEdges().clear();
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE_NODES:
-			getCorrespondenceNodes().clear();
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__OPERATIONALISATIONS:
-			getOperationalisations().clear();
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__ABSTRACT:
-			setAbstract(ABSTRACT_EDEFAULT);
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__AXIOM:
-			setAxiom(AXIOM_EDEFAULT);
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__CONTEXT:
-			setContext((IBeXRuleDelta) null);
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__CONTEXT_SOURCE:
-			setContextSource((IBeXRuleDelta) null);
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__CONTEXT_CORRESPONDENCE:
-			setContextCorrespondence((IBeXRuleDelta) null);
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__CONTEXT_TARGET:
-			setContextTarget((IBeXRuleDelta) null);
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE_AND_TARGET:
-			setCreateSourceAndTarget((IBeXRuleDelta) null);
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__CREATE:
-			setCreate((IBeXRuleDelta) null);
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE:
-			setCreateSource((IBeXRuleDelta) null);
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__CREATE_CORRESPONDENCE:
-			setCreateCorrespondence((IBeXRuleDelta) null);
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__CREATE_TARGET:
-			setCreateTarget((IBeXRuleDelta) null);
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__SOURCE:
-			setSource((IBeXRuleDelta) null);
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE:
-			setCorrespondence((IBeXRuleDelta) null);
-			return;
-		case IBeXTGGModelPackage.TGG_RULE__TARGET:
-			setTarget((IBeXRuleDelta) null);
-			return;
+			case IBeXTGGModelPackage.TGG_RULE__NODES:
+				getNodes().clear();
+				return;
+			case IBeXTGGModelPackage.TGG_RULE__EDGES:
+				getEdges().clear();
+				return;
+			case IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE_NODES:
+				getCorrespondenceNodes().clear();
+				return;
+			case IBeXTGGModelPackage.TGG_RULE__OPERATIONALISATIONS:
+				getOperationalisations().clear();
+				return;
+			case IBeXTGGModelPackage.TGG_RULE__ABSTRACT:
+				setAbstract(ABSTRACT_EDEFAULT);
+				return;
+			case IBeXTGGModelPackage.TGG_RULE__AXIOM:
+				setAxiom(AXIOM_EDEFAULT);
+				return;
+			case IBeXTGGModelPackage.TGG_RULE__CONTEXT:
+				setContext((IBeXRuleDelta) null);
+				return;
+			case IBeXTGGModelPackage.TGG_RULE__CONTEXT_SOURCE:
+				setContextSource((IBeXRuleDelta) null);
+				return;
+			case IBeXTGGModelPackage.TGG_RULE__CONTEXT_CORRESPONDENCE:
+				setContextCorrespondence((IBeXRuleDelta) null);
+				return;
+			case IBeXTGGModelPackage.TGG_RULE__CONTEXT_TARGET:
+				setContextTarget((IBeXRuleDelta) null);
+				return;
+			case IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE_AND_TARGET:
+				setCreateSourceAndTarget((IBeXRuleDelta) null);
+				return;
+			case IBeXTGGModelPackage.TGG_RULE__CREATE:
+				setCreate((IBeXRuleDelta) null);
+				return;
+			case IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE:
+				setCreateSource((IBeXRuleDelta) null);
+				return;
+			case IBeXTGGModelPackage.TGG_RULE__CREATE_CORRESPONDENCE:
+				setCreateCorrespondence((IBeXRuleDelta) null);
+				return;
+			case IBeXTGGModelPackage.TGG_RULE__CREATE_TARGET:
+				setCreateTarget((IBeXRuleDelta) null);
+				return;
+			case IBeXTGGModelPackage.TGG_RULE__SOURCE:
+				setSource((IBeXRuleDelta) null);
+				return;
+			case IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE:
+				setCorrespondence((IBeXRuleDelta) null);
+				return;
+			case IBeXTGGModelPackage.TGG_RULE__TARGET:
+				setTarget((IBeXRuleDelta) null);
+				return;
+			case IBeXTGGModelPackage.TGG_RULE__GENERIC_CONTENTS:
+				getGenericContents().clear();
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -1213,42 +1218,44 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case IBeXTGGModelPackage.TGG_RULE__NODES:
-			return nodes != null && !nodes.isEmpty();
-		case IBeXTGGModelPackage.TGG_RULE__EDGES:
-			return edges != null && !edges.isEmpty();
-		case IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE_NODES:
-			return correspondenceNodes != null && !correspondenceNodes.isEmpty();
-		case IBeXTGGModelPackage.TGG_RULE__OPERATIONALISATIONS:
-			return operationalisations != null && !operationalisations.isEmpty();
-		case IBeXTGGModelPackage.TGG_RULE__ABSTRACT:
-			return abstract_ != ABSTRACT_EDEFAULT;
-		case IBeXTGGModelPackage.TGG_RULE__AXIOM:
-			return axiom != AXIOM_EDEFAULT;
-		case IBeXTGGModelPackage.TGG_RULE__CONTEXT:
-			return context != null;
-		case IBeXTGGModelPackage.TGG_RULE__CONTEXT_SOURCE:
-			return contextSource != null;
-		case IBeXTGGModelPackage.TGG_RULE__CONTEXT_CORRESPONDENCE:
-			return contextCorrespondence != null;
-		case IBeXTGGModelPackage.TGG_RULE__CONTEXT_TARGET:
-			return contextTarget != null;
-		case IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE_AND_TARGET:
-			return createSourceAndTarget != null;
-		case IBeXTGGModelPackage.TGG_RULE__CREATE:
-			return create != null;
-		case IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE:
-			return createSource != null;
-		case IBeXTGGModelPackage.TGG_RULE__CREATE_CORRESPONDENCE:
-			return createCorrespondence != null;
-		case IBeXTGGModelPackage.TGG_RULE__CREATE_TARGET:
-			return createTarget != null;
-		case IBeXTGGModelPackage.TGG_RULE__SOURCE:
-			return source != null;
-		case IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE:
-			return correspondence != null;
-		case IBeXTGGModelPackage.TGG_RULE__TARGET:
-			return target != null;
+			case IBeXTGGModelPackage.TGG_RULE__NODES:
+				return nodes != null && !nodes.isEmpty();
+			case IBeXTGGModelPackage.TGG_RULE__EDGES:
+				return edges != null && !edges.isEmpty();
+			case IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE_NODES:
+				return correspondenceNodes != null && !correspondenceNodes.isEmpty();
+			case IBeXTGGModelPackage.TGG_RULE__OPERATIONALISATIONS:
+				return operationalisations != null && !operationalisations.isEmpty();
+			case IBeXTGGModelPackage.TGG_RULE__ABSTRACT:
+				return abstract_ != ABSTRACT_EDEFAULT;
+			case IBeXTGGModelPackage.TGG_RULE__AXIOM:
+				return axiom != AXIOM_EDEFAULT;
+			case IBeXTGGModelPackage.TGG_RULE__CONTEXT:
+				return context != null;
+			case IBeXTGGModelPackage.TGG_RULE__CONTEXT_SOURCE:
+				return contextSource != null;
+			case IBeXTGGModelPackage.TGG_RULE__CONTEXT_CORRESPONDENCE:
+				return contextCorrespondence != null;
+			case IBeXTGGModelPackage.TGG_RULE__CONTEXT_TARGET:
+				return contextTarget != null;
+			case IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE_AND_TARGET:
+				return createSourceAndTarget != null;
+			case IBeXTGGModelPackage.TGG_RULE__CREATE:
+				return create != null;
+			case IBeXTGGModelPackage.TGG_RULE__CREATE_SOURCE:
+				return createSource != null;
+			case IBeXTGGModelPackage.TGG_RULE__CREATE_CORRESPONDENCE:
+				return createCorrespondence != null;
+			case IBeXTGGModelPackage.TGG_RULE__CREATE_TARGET:
+				return createTarget != null;
+			case IBeXTGGModelPackage.TGG_RULE__SOURCE:
+				return source != null;
+			case IBeXTGGModelPackage.TGG_RULE__CORRESPONDENCE:
+				return correspondence != null;
+			case IBeXTGGModelPackage.TGG_RULE__TARGET:
+				return target != null;
+			case IBeXTGGModelPackage.TGG_RULE__GENERIC_CONTENTS:
+				return genericContents != null && !genericContents.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

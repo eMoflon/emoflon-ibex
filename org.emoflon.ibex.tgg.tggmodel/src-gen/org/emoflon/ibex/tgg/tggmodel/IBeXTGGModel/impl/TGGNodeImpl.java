@@ -19,6 +19,7 @@ import org.eclipse.emf.ecore.util.EObjectWithInverseResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeAssignment;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanExpression;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXNodeImpl;
 
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
@@ -41,6 +42,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGNodeImpl#getIncomingCorrespondence <em>Incoming Correspondence</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGNodeImpl#getOutgoingCorrespondence <em>Outgoing Correspondence</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGNodeImpl#getAttributeAssignments <em>Attribute Assignments</em>}</li>
+ *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGNodeImpl#getReferencedByConditions <em>Referenced By Conditions</em>}</li>
  * </ul>
  *
  * @generated
@@ -117,6 +119,16 @@ public class TGGNodeImpl extends IBeXNodeImpl implements TGGNode {
 	protected EList<IBeXAttributeAssignment> attributeAssignments;
 
 	/**
+	 * The cached value of the '{@link #getReferencedByConditions() <em>Referenced By Conditions</em>}' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getReferencedByConditions()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<BooleanExpression> referencedByConditions;
+
+	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -153,8 +165,7 @@ public class TGGNodeImpl extends IBeXNodeImpl implements TGGNode {
 		DomainType oldDomainType = domainType;
 		domainType = newDomainType == null ? DOMAIN_TYPE_EDEFAULT : newDomainType;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_NODE__DOMAIN_TYPE,
-					oldDomainType, domainType));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_NODE__DOMAIN_TYPE, oldDomainType, domainType));
 	}
 
 	/**
@@ -175,8 +186,7 @@ public class TGGNodeImpl extends IBeXNodeImpl implements TGGNode {
 		BindingType oldBindingType = bindingType;
 		bindingType = newBindingType == null ? BINDING_TYPE_EDEFAULT : newBindingType;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_NODE__BINDING_TYPE,
-					oldBindingType, bindingType));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_NODE__BINDING_TYPE, oldBindingType, bindingType));
 	}
 
 	/**
@@ -186,9 +196,8 @@ public class TGGNodeImpl extends IBeXNodeImpl implements TGGNode {
 	 */
 	public EList<TGGCorrespondence> getIncomingCorrespondence() {
 		if (incomingCorrespondence == null) {
-			incomingCorrespondence = new EObjectWithInverseResolvingEList<TGGCorrespondence>(TGGCorrespondence.class,
-					this, IBeXTGGModelPackage.TGG_NODE__INCOMING_CORRESPONDENCE,
-					IBeXTGGModelPackage.TGG_CORRESPONDENCE__TARGET);
+			incomingCorrespondence = new EObjectWithInverseResolvingEList<TGGCorrespondence>(TGGCorrespondence.class, this,
+					IBeXTGGModelPackage.TGG_NODE__INCOMING_CORRESPONDENCE, IBeXTGGModelPackage.TGG_CORRESPONDENCE__TARGET);
 		}
 		return incomingCorrespondence;
 	}
@@ -200,9 +209,8 @@ public class TGGNodeImpl extends IBeXNodeImpl implements TGGNode {
 	 */
 	public EList<TGGCorrespondence> getOutgoingCorrespondence() {
 		if (outgoingCorrespondence == null) {
-			outgoingCorrespondence = new EObjectWithInverseResolvingEList<TGGCorrespondence>(TGGCorrespondence.class,
-					this, IBeXTGGModelPackage.TGG_NODE__OUTGOING_CORRESPONDENCE,
-					IBeXTGGModelPackage.TGG_CORRESPONDENCE__SOURCE);
+			outgoingCorrespondence = new EObjectWithInverseResolvingEList<TGGCorrespondence>(TGGCorrespondence.class, this,
+					IBeXTGGModelPackage.TGG_NODE__OUTGOING_CORRESPONDENCE, IBeXTGGModelPackage.TGG_CORRESPONDENCE__SOURCE);
 		}
 		return outgoingCorrespondence;
 	}
@@ -214,10 +222,23 @@ public class TGGNodeImpl extends IBeXNodeImpl implements TGGNode {
 	 */
 	public EList<IBeXAttributeAssignment> getAttributeAssignments() {
 		if (attributeAssignments == null) {
-			attributeAssignments = new EObjectResolvingEList<IBeXAttributeAssignment>(IBeXAttributeAssignment.class,
-					this, IBeXTGGModelPackage.TGG_NODE__ATTRIBUTE_ASSIGNMENTS);
+			attributeAssignments = new EObjectResolvingEList<IBeXAttributeAssignment>(IBeXAttributeAssignment.class, this,
+					IBeXTGGModelPackage.TGG_NODE__ATTRIBUTE_ASSIGNMENTS);
 		}
 		return attributeAssignments;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EList<BooleanExpression> getReferencedByConditions() {
+		if (referencedByConditions == null) {
+			referencedByConditions = new EObjectResolvingEList<BooleanExpression>(BooleanExpression.class, this,
+					IBeXTGGModelPackage.TGG_NODE__REFERENCED_BY_CONDITIONS);
+		}
+		return referencedByConditions;
 	}
 
 	/**
@@ -229,12 +250,10 @@ public class TGGNodeImpl extends IBeXNodeImpl implements TGGNode {
 	@Override
 	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-		case IBeXTGGModelPackage.TGG_NODE__INCOMING_CORRESPONDENCE:
-			return ((InternalEList<InternalEObject>) (InternalEList<?>) getIncomingCorrespondence()).basicAdd(otherEnd,
-					msgs);
-		case IBeXTGGModelPackage.TGG_NODE__OUTGOING_CORRESPONDENCE:
-			return ((InternalEList<InternalEObject>) (InternalEList<?>) getOutgoingCorrespondence()).basicAdd(otherEnd,
-					msgs);
+			case IBeXTGGModelPackage.TGG_NODE__INCOMING_CORRESPONDENCE:
+				return ((InternalEList<InternalEObject>) (InternalEList<?>) getIncomingCorrespondence()).basicAdd(otherEnd, msgs);
+			case IBeXTGGModelPackage.TGG_NODE__OUTGOING_CORRESPONDENCE:
+				return ((InternalEList<InternalEObject>) (InternalEList<?>) getOutgoingCorrespondence()).basicAdd(otherEnd, msgs);
 		}
 		return super.eInverseAdd(otherEnd, featureID, msgs);
 	}
@@ -247,10 +266,10 @@ public class TGGNodeImpl extends IBeXNodeImpl implements TGGNode {
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-		case IBeXTGGModelPackage.TGG_NODE__INCOMING_CORRESPONDENCE:
-			return ((InternalEList<?>) getIncomingCorrespondence()).basicRemove(otherEnd, msgs);
-		case IBeXTGGModelPackage.TGG_NODE__OUTGOING_CORRESPONDENCE:
-			return ((InternalEList<?>) getOutgoingCorrespondence()).basicRemove(otherEnd, msgs);
+			case IBeXTGGModelPackage.TGG_NODE__INCOMING_CORRESPONDENCE:
+				return ((InternalEList<?>) getIncomingCorrespondence()).basicRemove(otherEnd, msgs);
+			case IBeXTGGModelPackage.TGG_NODE__OUTGOING_CORRESPONDENCE:
+				return ((InternalEList<?>) getOutgoingCorrespondence()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -263,16 +282,18 @@ public class TGGNodeImpl extends IBeXNodeImpl implements TGGNode {
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case IBeXTGGModelPackage.TGG_NODE__DOMAIN_TYPE:
-			return getDomainType();
-		case IBeXTGGModelPackage.TGG_NODE__BINDING_TYPE:
-			return getBindingType();
-		case IBeXTGGModelPackage.TGG_NODE__INCOMING_CORRESPONDENCE:
-			return getIncomingCorrespondence();
-		case IBeXTGGModelPackage.TGG_NODE__OUTGOING_CORRESPONDENCE:
-			return getOutgoingCorrespondence();
-		case IBeXTGGModelPackage.TGG_NODE__ATTRIBUTE_ASSIGNMENTS:
-			return getAttributeAssignments();
+			case IBeXTGGModelPackage.TGG_NODE__DOMAIN_TYPE:
+				return getDomainType();
+			case IBeXTGGModelPackage.TGG_NODE__BINDING_TYPE:
+				return getBindingType();
+			case IBeXTGGModelPackage.TGG_NODE__INCOMING_CORRESPONDENCE:
+				return getIncomingCorrespondence();
+			case IBeXTGGModelPackage.TGG_NODE__OUTGOING_CORRESPONDENCE:
+				return getOutgoingCorrespondence();
+			case IBeXTGGModelPackage.TGG_NODE__ATTRIBUTE_ASSIGNMENTS:
+				return getAttributeAssignments();
+			case IBeXTGGModelPackage.TGG_NODE__REFERENCED_BY_CONDITIONS:
+				return getReferencedByConditions();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -286,24 +307,28 @@ public class TGGNodeImpl extends IBeXNodeImpl implements TGGNode {
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case IBeXTGGModelPackage.TGG_NODE__DOMAIN_TYPE:
-			setDomainType((DomainType) newValue);
-			return;
-		case IBeXTGGModelPackage.TGG_NODE__BINDING_TYPE:
-			setBindingType((BindingType) newValue);
-			return;
-		case IBeXTGGModelPackage.TGG_NODE__INCOMING_CORRESPONDENCE:
-			getIncomingCorrespondence().clear();
-			getIncomingCorrespondence().addAll((Collection<? extends TGGCorrespondence>) newValue);
-			return;
-		case IBeXTGGModelPackage.TGG_NODE__OUTGOING_CORRESPONDENCE:
-			getOutgoingCorrespondence().clear();
-			getOutgoingCorrespondence().addAll((Collection<? extends TGGCorrespondence>) newValue);
-			return;
-		case IBeXTGGModelPackage.TGG_NODE__ATTRIBUTE_ASSIGNMENTS:
-			getAttributeAssignments().clear();
-			getAttributeAssignments().addAll((Collection<? extends IBeXAttributeAssignment>) newValue);
-			return;
+			case IBeXTGGModelPackage.TGG_NODE__DOMAIN_TYPE:
+				setDomainType((DomainType) newValue);
+				return;
+			case IBeXTGGModelPackage.TGG_NODE__BINDING_TYPE:
+				setBindingType((BindingType) newValue);
+				return;
+			case IBeXTGGModelPackage.TGG_NODE__INCOMING_CORRESPONDENCE:
+				getIncomingCorrespondence().clear();
+				getIncomingCorrespondence().addAll((Collection<? extends TGGCorrespondence>) newValue);
+				return;
+			case IBeXTGGModelPackage.TGG_NODE__OUTGOING_CORRESPONDENCE:
+				getOutgoingCorrespondence().clear();
+				getOutgoingCorrespondence().addAll((Collection<? extends TGGCorrespondence>) newValue);
+				return;
+			case IBeXTGGModelPackage.TGG_NODE__ATTRIBUTE_ASSIGNMENTS:
+				getAttributeAssignments().clear();
+				getAttributeAssignments().addAll((Collection<? extends IBeXAttributeAssignment>) newValue);
+				return;
+			case IBeXTGGModelPackage.TGG_NODE__REFERENCED_BY_CONDITIONS:
+				getReferencedByConditions().clear();
+				getReferencedByConditions().addAll((Collection<? extends BooleanExpression>) newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -316,21 +341,24 @@ public class TGGNodeImpl extends IBeXNodeImpl implements TGGNode {
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case IBeXTGGModelPackage.TGG_NODE__DOMAIN_TYPE:
-			setDomainType(DOMAIN_TYPE_EDEFAULT);
-			return;
-		case IBeXTGGModelPackage.TGG_NODE__BINDING_TYPE:
-			setBindingType(BINDING_TYPE_EDEFAULT);
-			return;
-		case IBeXTGGModelPackage.TGG_NODE__INCOMING_CORRESPONDENCE:
-			getIncomingCorrespondence().clear();
-			return;
-		case IBeXTGGModelPackage.TGG_NODE__OUTGOING_CORRESPONDENCE:
-			getOutgoingCorrespondence().clear();
-			return;
-		case IBeXTGGModelPackage.TGG_NODE__ATTRIBUTE_ASSIGNMENTS:
-			getAttributeAssignments().clear();
-			return;
+			case IBeXTGGModelPackage.TGG_NODE__DOMAIN_TYPE:
+				setDomainType(DOMAIN_TYPE_EDEFAULT);
+				return;
+			case IBeXTGGModelPackage.TGG_NODE__BINDING_TYPE:
+				setBindingType(BINDING_TYPE_EDEFAULT);
+				return;
+			case IBeXTGGModelPackage.TGG_NODE__INCOMING_CORRESPONDENCE:
+				getIncomingCorrespondence().clear();
+				return;
+			case IBeXTGGModelPackage.TGG_NODE__OUTGOING_CORRESPONDENCE:
+				getOutgoingCorrespondence().clear();
+				return;
+			case IBeXTGGModelPackage.TGG_NODE__ATTRIBUTE_ASSIGNMENTS:
+				getAttributeAssignments().clear();
+				return;
+			case IBeXTGGModelPackage.TGG_NODE__REFERENCED_BY_CONDITIONS:
+				getReferencedByConditions().clear();
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -343,16 +371,18 @@ public class TGGNodeImpl extends IBeXNodeImpl implements TGGNode {
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case IBeXTGGModelPackage.TGG_NODE__DOMAIN_TYPE:
-			return domainType != DOMAIN_TYPE_EDEFAULT;
-		case IBeXTGGModelPackage.TGG_NODE__BINDING_TYPE:
-			return bindingType != BINDING_TYPE_EDEFAULT;
-		case IBeXTGGModelPackage.TGG_NODE__INCOMING_CORRESPONDENCE:
-			return incomingCorrespondence != null && !incomingCorrespondence.isEmpty();
-		case IBeXTGGModelPackage.TGG_NODE__OUTGOING_CORRESPONDENCE:
-			return outgoingCorrespondence != null && !outgoingCorrespondence.isEmpty();
-		case IBeXTGGModelPackage.TGG_NODE__ATTRIBUTE_ASSIGNMENTS:
-			return attributeAssignments != null && !attributeAssignments.isEmpty();
+			case IBeXTGGModelPackage.TGG_NODE__DOMAIN_TYPE:
+				return domainType != DOMAIN_TYPE_EDEFAULT;
+			case IBeXTGGModelPackage.TGG_NODE__BINDING_TYPE:
+				return bindingType != BINDING_TYPE_EDEFAULT;
+			case IBeXTGGModelPackage.TGG_NODE__INCOMING_CORRESPONDENCE:
+				return incomingCorrespondence != null && !incomingCorrespondence.isEmpty();
+			case IBeXTGGModelPackage.TGG_NODE__OUTGOING_CORRESPONDENCE:
+				return outgoingCorrespondence != null && !outgoingCorrespondence.isEmpty();
+			case IBeXTGGModelPackage.TGG_NODE__ATTRIBUTE_ASSIGNMENTS:
+				return attributeAssignments != null && !attributeAssignments.isEmpty();
+			case IBeXTGGModelPackage.TGG_NODE__REFERENCED_BY_CONDITIONS:
+				return referencedByConditions != null && !referencedByConditions.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}
@@ -366,12 +396,12 @@ public class TGGNodeImpl extends IBeXNodeImpl implements TGGNode {
 	public int eBaseStructuralFeatureID(int derivedFeatureID, Class<?> baseClass) {
 		if (baseClass == TGGRuleElement.class) {
 			switch (derivedFeatureID) {
-			case IBeXTGGModelPackage.TGG_NODE__DOMAIN_TYPE:
-				return IBeXTGGModelPackage.TGG_RULE_ELEMENT__DOMAIN_TYPE;
-			case IBeXTGGModelPackage.TGG_NODE__BINDING_TYPE:
-				return IBeXTGGModelPackage.TGG_RULE_ELEMENT__BINDING_TYPE;
-			default:
-				return -1;
+				case IBeXTGGModelPackage.TGG_NODE__DOMAIN_TYPE:
+					return IBeXTGGModelPackage.TGG_RULE_ELEMENT__DOMAIN_TYPE;
+				case IBeXTGGModelPackage.TGG_NODE__BINDING_TYPE:
+					return IBeXTGGModelPackage.TGG_RULE_ELEMENT__BINDING_TYPE;
+				default:
+					return -1;
 			}
 		}
 		return super.eBaseStructuralFeatureID(derivedFeatureID, baseClass);
@@ -386,12 +416,12 @@ public class TGGNodeImpl extends IBeXNodeImpl implements TGGNode {
 	public int eDerivedStructuralFeatureID(int baseFeatureID, Class<?> baseClass) {
 		if (baseClass == TGGRuleElement.class) {
 			switch (baseFeatureID) {
-			case IBeXTGGModelPackage.TGG_RULE_ELEMENT__DOMAIN_TYPE:
-				return IBeXTGGModelPackage.TGG_NODE__DOMAIN_TYPE;
-			case IBeXTGGModelPackage.TGG_RULE_ELEMENT__BINDING_TYPE:
-				return IBeXTGGModelPackage.TGG_NODE__BINDING_TYPE;
-			default:
-				return -1;
+				case IBeXTGGModelPackage.TGG_RULE_ELEMENT__DOMAIN_TYPE:
+					return IBeXTGGModelPackage.TGG_NODE__DOMAIN_TYPE;
+				case IBeXTGGModelPackage.TGG_RULE_ELEMENT__BINDING_TYPE:
+					return IBeXTGGModelPackage.TGG_NODE__BINDING_TYPE;
+				default:
+					return -1;
 			}
 		}
 		return super.eDerivedStructuralFeatureID(baseFeatureID, baseClass);

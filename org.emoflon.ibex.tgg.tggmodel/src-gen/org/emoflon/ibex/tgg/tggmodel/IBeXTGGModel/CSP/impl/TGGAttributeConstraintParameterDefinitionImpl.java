@@ -28,8 +28,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintPara
  *
  * @generated
  */
-public class TGGAttributeConstraintParameterDefinitionImpl extends MinimalEObjectImpl.Container
-		implements TGGAttributeConstraintParameterDefinition {
+public class TGGAttributeConstraintParameterDefinitionImpl extends MinimalEObjectImpl.Container implements TGGAttributeConstraintParameterDefinition {
 	/**
 	 * The cached value of the '{@link #getType() <em>Type</em>}' reference.
 	 * <!-- begin-user-doc -->
@@ -90,8 +89,8 @@ public class TGGAttributeConstraintParameterDefinitionImpl extends MinimalEObjec
 			type = (EDataType) eResolveProxy(oldType);
 			if (type != oldType) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
-							CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__TYPE, oldType, type));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__TYPE, oldType,
+							type));
 			}
 		}
 		return type;
@@ -115,8 +114,7 @@ public class TGGAttributeConstraintParameterDefinitionImpl extends MinimalEObjec
 		EDataType oldType = type;
 		type = newType;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__TYPE, oldType, type));
+			eNotify(new ENotificationImpl(this, Notification.SET, CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__TYPE, oldType, type));
 	}
 
 	/**
@@ -137,8 +135,7 @@ public class TGGAttributeConstraintParameterDefinitionImpl extends MinimalEObjec
 		String oldName = name;
 		name = newName;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET,
-					CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__NAME, oldName, name));
+			eNotify(new ENotificationImpl(this, Notification.SET, CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__NAME, oldName, name));
 	}
 
 	/**
@@ -149,12 +146,12 @@ public class TGGAttributeConstraintParameterDefinitionImpl extends MinimalEObjec
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__TYPE:
-			if (resolve)
-				return getType();
-			return basicGetType();
-		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__NAME:
-			return getName();
+			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__TYPE:
+				if (resolve)
+					return getType();
+				return basicGetType();
+			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__NAME:
+				return getName();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -167,12 +164,12 @@ public class TGGAttributeConstraintParameterDefinitionImpl extends MinimalEObjec
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__TYPE:
-			setType((EDataType) newValue);
-			return;
-		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__NAME:
-			setName((String) newValue);
-			return;
+			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__TYPE:
+				setType((EDataType) newValue);
+				return;
+			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__NAME:
+				setName((String) newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -185,12 +182,12 @@ public class TGGAttributeConstraintParameterDefinitionImpl extends MinimalEObjec
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__TYPE:
-			setType((EDataType) null);
-			return;
-		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__NAME:
-			setName(NAME_EDEFAULT);
-			return;
+			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__TYPE:
+				setType((EDataType) null);
+				return;
+			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__NAME:
+				setName(NAME_EDEFAULT);
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -203,10 +200,10 @@ public class TGGAttributeConstraintParameterDefinitionImpl extends MinimalEObjec
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__TYPE:
-			return type != null;
-		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__NAME:
-			return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
+			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__TYPE:
+				return type != null;
+			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__NAME:
+				return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
 		}
 		return super.eIsSet(featureID);
 	}

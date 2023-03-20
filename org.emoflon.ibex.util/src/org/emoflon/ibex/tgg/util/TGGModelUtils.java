@@ -116,6 +116,10 @@ public class TGGModelUtils {
 		attributeExpression.setLhs(lhsValue);
 		attributeExpression.setOperator(RelationalOperator.EQUAL);
 		attributeExpression.setRhs(rhsValue);
+		
+		((TGGNode) attributeAssignment.getNode()).getReferencedByConditions().add(attributeExpression);
+		if (rhsValue instanceof IBeXAttributeValue attributeValue)
+			((TGGNode) attributeValue.getNode()).getReferencedByConditions().add(attributeExpression);
 
 		return attributeExpression;
 	}

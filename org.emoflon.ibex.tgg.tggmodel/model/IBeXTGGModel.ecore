@@ -54,6 +54,8 @@
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="target" eType="ecore:EClass ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXRuleDelta"
         containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="genericContents" upperBound="-1"
+        eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="TGGOperationalRule" eSuperTypes="#//TGGRule">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="operationalisationMode"
@@ -78,6 +80,8 @@
         upperBound="-1" eType="#//TGGCorrespondence" eOpposite="#//TGGCorrespondence/source"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="attributeAssignments" upperBound="-1"
         eType="ecore:EClass ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXAttributeAssignment"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="referencedByConditions"
+        upperBound="-1" eType="ecore:EClass ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXCoreArithmetic/BooleanExpression"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="TGGCorrespondence" eSuperTypes="#//TGGNode">
     <eStructuralFeatures xsi:type="ecore:EReference" name="source" lowerBound="1"

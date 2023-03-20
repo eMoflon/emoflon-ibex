@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -345,6 +346,9 @@ public class HigherOrderTGGRuleFactory {
 	}
 
 	private boolean matchesContext(TGGNode context, TGGNode matchCandidate) {
+		if (Objects.equals(context, matchCandidate))
+			return true;
+		
 		if (!context.getType().isSuperTypeOf(matchCandidate.getType()))
 			return false;
 

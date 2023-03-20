@@ -86,8 +86,7 @@ public interface CSPPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__PARAMETER_DEFINITIONS = IBeXCoreModelPackage.IBE_XNAMED_ELEMENT_FEATURE_COUNT
-			+ 0;
+	int TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__PARAMETER_DEFINITIONS = IBeXCoreModelPackage.IBE_XNAMED_ELEMENT_FEATURE_COUNT + 0;
 
 	/**
 	 * The feature id for the '<em><b>Sync Bindings</b></em>' containment reference list.
@@ -132,8 +131,7 @@ public interface CSPPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_OPERATION_COUNT = IBeXCoreModelPackage.IBE_XNAMED_ELEMENT_OPERATION_COUNT
-			+ 0;
+	int TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_OPERATION_COUNT = IBeXCoreModelPackage.IBE_XNAMED_ELEMENT_OPERATION_COUNT + 0;
 
 	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.impl.TGGAttributeConstraintDefinitionLibraryImpl <em>TGG Attribute Constraint Definition Library</em>}' class.
@@ -161,8 +159,7 @@ public interface CSPPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__PACKAGE_NAME = IBeXCoreModelPackage.IBE_XNAMED_ELEMENT_FEATURE_COUNT
-			+ 0;
+	int TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__PACKAGE_NAME = IBeXCoreModelPackage.IBE_XNAMED_ELEMENT_FEATURE_COUNT + 0;
 
 	/**
 	 * The feature id for the '<em><b>Tgg Attribute Constraint Definitions</b></em>' containment reference list.
@@ -171,8 +168,7 @@ public interface CSPPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS = IBeXCoreModelPackage.IBE_XNAMED_ELEMENT_FEATURE_COUNT
-			+ 1;
+	int TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS = IBeXCoreModelPackage.IBE_XNAMED_ELEMENT_FEATURE_COUNT + 1;
 
 	/**
 	 * The number of structural features of the '<em>TGG Attribute Constraint Definition Library</em>' class.
@@ -181,8 +177,7 @@ public interface CSPPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY_FEATURE_COUNT = IBeXCoreModelPackage.IBE_XNAMED_ELEMENT_FEATURE_COUNT
-			+ 2;
+	int TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY_FEATURE_COUNT = IBeXCoreModelPackage.IBE_XNAMED_ELEMENT_FEATURE_COUNT + 2;
 
 	/**
 	 * The number of operations of the '<em>TGG Attribute Constraint Definition Library</em>' class.
@@ -191,8 +186,7 @@ public interface CSPPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY_OPERATION_COUNT = IBeXCoreModelPackage.IBE_XNAMED_ELEMENT_OPERATION_COUNT
-			+ 0;
+	int TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY_OPERATION_COUNT = IBeXCoreModelPackage.IBE_XNAMED_ELEMENT_OPERATION_COUNT + 0;
 
 	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.impl.TGGAttributeConstraintParameterDefinitionImpl <em>TGG Attribute Constraint Parameter Definition</em>}' class.
@@ -413,8 +407,7 @@ public interface CSPPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_ATTRIBUTE_CONSTRAINT_VARIABLE_OPERATION_COUNT = IBeXCoreArithmeticPackage.VALUE_EXPRESSION_OPERATION_COUNT
-			+ 0;
+	int TGG_ATTRIBUTE_CONSTRAINT_VARIABLE_OPERATION_COUNT = IBeXCoreArithmeticPackage.VALUE_EXPRESSION_OPERATION_COUNT + 0;
 
 	/**
 	 * The meta object id for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.impl.TGGAttributeConstraintParameterValueImpl <em>TGG Attribute Constraint Parameter Value</em>}' class.
@@ -900,8 +893,7 @@ public interface CSPPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__PARAMETER_DEFINITIONS = eINSTANCE
-				.getTGGAttributeConstraintDefinition_ParameterDefinitions();
+		EReference TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__PARAMETER_DEFINITIONS = eINSTANCE.getTGGAttributeConstraintDefinition_ParameterDefinitions();
 
 		/**
 		 * The meta object literal for the '<em><b>Sync Bindings</b></em>' containment reference list feature.
@@ -909,8 +901,7 @@ public interface CSPPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__SYNC_BINDINGS = eINSTANCE
-				.getTGGAttributeConstraintDefinition_SyncBindings();
+		EReference TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__SYNC_BINDINGS = eINSTANCE.getTGGAttributeConstraintDefinition_SyncBindings();
 
 		/**
 		 * The meta object literal for the '<em><b>Gen Bindings</b></em>' containment reference list feature.
@@ -918,8 +909,7 @@ public interface CSPPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__GEN_BINDINGS = eINSTANCE
-				.getTGGAttributeConstraintDefinition_GenBindings();
+		EReference TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__GEN_BINDINGS = eINSTANCE.getTGGAttributeConstraintDefinition_GenBindings();
 
 		/**
 		 * The meta object literal for the '<em><b>Library</b></em>' container reference feature.
@@ -927,8 +917,7 @@ public interface CSPPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__LIBRARY = eINSTANCE
-				.getTGGAttributeConstraintDefinition_Library();
+		EReference TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__LIBRARY = eINSTANCE.getTGGAttributeConstraintDefinition_Library();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.impl.TGGAttributeConstraintDefinitionLibraryImpl <em>TGG Attribute Constraint Definition Library</em>}' class.
@@ -955,8 +944,7 @@ public interface CSPPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__PACKAGE_NAME = eINSTANCE
-				.getTGGAttributeConstraintDefinitionLibrary_PackageName();
+		EAttribute TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__PACKAGE_NAME = eINSTANCE.getTGGAttributeConstraintDefinitionLibrary_PackageName();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.impl.TGGAttributeConstraintParameterDefinitionImpl <em>TGG Attribute Constraint Parameter Definition</em>}' class.
@@ -974,8 +962,7 @@ public interface CSPPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__TYPE = eINSTANCE
-				.getTGGAttributeConstraintParameterDefinition_Type();
+		EReference TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__TYPE = eINSTANCE.getTGGAttributeConstraintParameterDefinition_Type();
 
 		/**
 		 * The meta object literal for the '<em><b>Name</b></em>' attribute feature.
@@ -983,8 +970,7 @@ public interface CSPPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__NAME = eINSTANCE
-				.getTGGAttributeConstraintParameterDefinition_Name();
+		EAttribute TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION__NAME = eINSTANCE.getTGGAttributeConstraintParameterDefinition_Name();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.impl.TGGAttributeConstraintBindingImpl <em>TGG Attribute Constraint Binding</em>}' class.
@@ -1020,8 +1006,7 @@ public interface CSPPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_ATTRIBUTE_CONSTRAINT_SET__TGG_ATTRIBUTE_CONSTRAINTS = eINSTANCE
-				.getTGGAttributeConstraintSet_TggAttributeConstraints();
+		EReference TGG_ATTRIBUTE_CONSTRAINT_SET__TGG_ATTRIBUTE_CONSTRAINTS = eINSTANCE.getTGGAttributeConstraintSet_TggAttributeConstraints();
 
 		/**
 		 * The meta object literal for the '<em><b>Parameters</b></em>' containment reference list feature.
@@ -1100,8 +1085,7 @@ public interface CSPPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__EXPRESSION = eINSTANCE
-				.getTGGAttributeConstraintParameterValue_Expression();
+		EReference TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__EXPRESSION = eINSTANCE.getTGGAttributeConstraintParameterValue_Expression();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.impl.TGGCSPImpl <em>TGGCSP</em>}' class.

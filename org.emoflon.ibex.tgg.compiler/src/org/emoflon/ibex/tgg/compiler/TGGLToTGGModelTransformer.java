@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.codegen.ecore.genmodel.GenPackage;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EEnumLiteral;
@@ -401,8 +402,21 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		for(var invocation : tggRule.getTargetRule().getInvocations()) {
 			precondition.getInvocations().add(transformInvocation(precondition, invocation));
 		}
+		
+		fillConditionReferencesForNodes(precondition.getConditions());
 	}
 	
+	private void fillConditionReferencesForNodes(EList<BooleanExpression> conditions) {
+		for (var condition : conditions) {
+			if (!(condition instanceof RelationalExpression relationalExpression))
+				continue;
+			if (relationalExpression.getLhs() instanceof IBeXAttributeValue attributeValue)
+				((TGGNode) attributeValue.getNode()).getReferencedByConditions().add(condition);
+			if (relationalExpression.getRhs() instanceof IBeXAttributeValue attributeValue)
+				((TGGNode) attributeValue.getNode()).getReferencedByConditions().add(condition);
+		}
+	}
+
 	private Collection<TGGNode> filterNodes(Collection<TGGNode> nodes, BindingType binding) {
 		return nodes.stream().filter(n -> n.getBindingType() == binding).collect(Collectors.toSet());
 	}

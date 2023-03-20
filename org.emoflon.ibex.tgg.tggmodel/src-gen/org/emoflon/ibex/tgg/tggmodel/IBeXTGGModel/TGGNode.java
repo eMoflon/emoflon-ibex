@@ -5,6 +5,7 @@ package org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel;
 import org.eclipse.emf.common.util.EList;
 
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeAssignment;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanExpression;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
 
 /**
@@ -19,6 +20,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode#getIncomingCorrespondence <em>Incoming Correspondence</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode#getOutgoingCorrespondence <em>Outgoing Correspondence</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode#getAttributeAssignments <em>Attribute Assignments</em>}</li>
+ *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode#getReferencedByConditions <em>Referenced By Conditions</em>}</li>
  * </ul>
  *
  * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage#getTGGNode()
@@ -65,5 +67,17 @@ public interface TGGNode extends IBeXNode, TGGRuleElement {
 	 * @generated
 	 */
 	EList<IBeXAttributeAssignment> getAttributeAssignments();
+
+	/**
+	 * Returns the value of the '<em><b>Referenced By Conditions</b></em>' reference list.
+	 * The list contents are of type {@link org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanExpression}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Referenced By Conditions</em>' reference list.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage#getTGGNode_ReferencedByConditions()
+	 * @model
+	 * @generated
+	 */
+	EList<BooleanExpression> getReferencedByConditions();
 
 } // TGGNode

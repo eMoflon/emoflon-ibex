@@ -6,6 +6,7 @@ package org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.validation;
 
 import org.eclipse.emf.common.util.EList;
 
+import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintSet;
 
@@ -60,4 +61,6 @@ public interface TGGRuleValidator {
 	boolean validateCorrespondence(IBeXRuleDelta value);
 
 	boolean validateTarget(IBeXRuleDelta value);
+
+	boolean validateGenericContents(EList<EObject> value);
 }

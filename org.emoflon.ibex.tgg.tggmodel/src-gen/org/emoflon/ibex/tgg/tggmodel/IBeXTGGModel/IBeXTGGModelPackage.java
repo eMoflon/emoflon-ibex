@@ -468,13 +468,22 @@ public interface IBeXTGGModelPackage extends EPackage {
 	int TGG_RULE__TARGET = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 17;
 
 	/**
+	 * The feature id for the '<em><b>Generic Contents</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_RULE__GENERIC_CONTENTS = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 18;
+
+	/**
 	 * The number of structural features of the '<em>TGG Rule</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE_FEATURE_COUNT = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 18;
+	int TGG_RULE_FEATURE_COUNT = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 19;
 
 	/**
 	 * The number of operations of the '<em>TGG Rule</em>' class.
@@ -728,6 +737,15 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int TGG_OPERATIONAL_RULE__TARGET = TGG_RULE__TARGET;
+
+	/**
+	 * The feature id for the '<em><b>Generic Contents</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_OPERATIONAL_RULE__GENERIC_CONTENTS = TGG_RULE__GENERIC_CONTENTS;
 
 	/**
 	 * The feature id for the '<em><b>Operationalisation Mode</b></em>' attribute.
@@ -1030,13 +1048,22 @@ public interface IBeXTGGModelPackage extends EPackage {
 	int TGG_NODE__ATTRIBUTE_ASSIGNMENTS = IBeXCoreModelPackage.IBE_XNODE_FEATURE_COUNT + 4;
 
 	/**
+	 * The feature id for the '<em><b>Referenced By Conditions</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_NODE__REFERENCED_BY_CONDITIONS = IBeXCoreModelPackage.IBE_XNODE_FEATURE_COUNT + 5;
+
+	/**
 	 * The number of structural features of the '<em>TGG Node</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_NODE_FEATURE_COUNT = IBeXCoreModelPackage.IBE_XNODE_FEATURE_COUNT + 5;
+	int TGG_NODE_FEATURE_COUNT = IBeXCoreModelPackage.IBE_XNODE_FEATURE_COUNT + 6;
 
 	/**
 	 * The number of operations of the '<em>TGG Node</em>' class.
@@ -1146,6 +1173,15 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int TGG_CORRESPONDENCE__ATTRIBUTE_ASSIGNMENTS = TGG_NODE__ATTRIBUTE_ASSIGNMENTS;
+
+	/**
+	 * The feature id for the '<em><b>Referenced By Conditions</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_CORRESPONDENCE__REFERENCED_BY_CONDITIONS = TGG_NODE__REFERENCED_BY_CONDITIONS;
 
 	/**
 	 * The feature id for the '<em><b>Source</b></em>' reference.
@@ -1517,6 +1553,15 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int TGG_SHORTCUT_RULE__TARGET = TGG_OPERATIONAL_RULE__TARGET;
+
+	/**
+	 * The feature id for the '<em><b>Generic Contents</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__GENERIC_CONTENTS = TGG_OPERATIONAL_RULE__GENERIC_CONTENTS;
 
 	/**
 	 * The feature id for the '<em><b>Operationalisation Mode</b></em>' attribute.
@@ -1979,6 +2024,17 @@ public interface IBeXTGGModelPackage extends EPackage {
 	EReference getTGGRule_Target();
 
 	/**
+	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getGenericContents <em>Generic Contents</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Generic Contents</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getGenericContents()
+	 * @see #getTGGRule()
+	 * @generated
+	 */
+	EReference getTGGRule_GenericContents();
+
+	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule <em>TGG Operational Rule</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -2116,6 +2172,17 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getTGGNode_AttributeAssignments();
+
+	/**
+	 * Returns the meta object for the reference list '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode#getReferencedByConditions <em>Referenced By Conditions</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference list '<em>Referenced By Conditions</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode#getReferencedByConditions()
+	 * @see #getTGGNode()
+	 * @generated
+	 */
+	EReference getTGGNode_ReferencedByConditions();
 
 	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence <em>TGG Correspondence</em>}'.
@@ -2357,8 +2424,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_MODEL__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARIES = eINSTANCE
-				.getTGGModel_AttributeConstraintDefinitionLibraries();
+		EReference TGG_MODEL__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARIES = eINSTANCE.getTGGModel_AttributeConstraintDefinitionLibraries();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleSetImpl <em>TGG Rule Set</em>}' class.
@@ -2533,6 +2599,14 @@ public interface IBeXTGGModelPackage extends EPackage {
 		EReference TGG_RULE__TARGET = eINSTANCE.getTGGRule_Target();
 
 		/**
+		 * The meta object literal for the '<em><b>Generic Contents</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference TGG_RULE__GENERIC_CONTENTS = eINSTANCE.getTGGRule_GenericContents();
+
+		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGOperationalRuleImpl <em>TGG Operational Rule</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -2548,8 +2622,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute TGG_OPERATIONAL_RULE__OPERATIONALISATION_MODE = eINSTANCE
-				.getTGGOperationalRule_OperationalisationMode();
+		EAttribute TGG_OPERATIONAL_RULE__OPERATIONALISATION_MODE = eINSTANCE.getTGGOperationalRule_OperationalisationMode();
 
 		/**
 		 * The meta object literal for the '<em><b>To Be Marked</b></em>' containment reference feature.
@@ -2646,6 +2719,14 @@ public interface IBeXTGGModelPackage extends EPackage {
 		EReference TGG_NODE__ATTRIBUTE_ASSIGNMENTS = eINSTANCE.getTGGNode_AttributeAssignments();
 
 		/**
+		 * The meta object literal for the '<em><b>Referenced By Conditions</b></em>' reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference TGG_NODE__REFERENCED_BY_CONDITIONS = eINSTANCE.getTGGNode_ReferencedByConditions();
+
+		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGCorrespondenceImpl <em>TGG Correspondence</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -2721,8 +2802,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_SHORTCUT_RULE__UNMAPPED_ORIGINAL_ELEMENTS = eINSTANCE
-				.getTGGShortcutRule_UnmappedOriginalElements();
+		EReference TGG_SHORTCUT_RULE__UNMAPPED_ORIGINAL_ELEMENTS = eINSTANCE.getTGGShortcutRule_UnmappedOriginalElements();
 
 		/**
 		 * The meta object literal for the '<em><b>Unmapped Replacing Elements</b></em>' reference list feature.
@@ -2730,8 +2810,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_SHORTCUT_RULE__UNMAPPED_REPLACING_ELEMENTS = eINSTANCE
-				.getTGGShortcutRule_UnmappedReplacingElements();
+		EReference TGG_SHORTCUT_RULE__UNMAPPED_REPLACING_ELEMENTS = eINSTANCE.getTGGShortcutRule_UnmappedReplacingElements();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGShortcutRuleElementMappingImpl <em>TGG Shortcut Rule Element Mapping</em>}' class.
@@ -2757,8 +2836,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_SHORTCUT_RULE_ELEMENT_MAPPING__REPLACING = eINSTANCE
-				.getTGGShortcutRuleElementMapping_Replacing();
+		EReference TGG_SHORTCUT_RULE_ELEMENT_MAPPING__REPLACING = eINSTANCE.getTGGShortcutRuleElementMapping_Replacing();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalisationMode <em>Operationalisation Mode</em>}' enum.

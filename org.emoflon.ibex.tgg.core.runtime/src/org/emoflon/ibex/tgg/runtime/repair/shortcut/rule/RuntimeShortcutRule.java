@@ -174,10 +174,14 @@ public class RuntimeShortcutRule {
 		for (var attributeCondition : attributeConditions) {
 			if (!(attributeCondition instanceof RelationalExpression relationalExpression))
 				throw new RuntimeException("Attribute conditions must be relational expressions!");
-			if (relationalExpression.getLhs() instanceof IBeXAttributeValue attributeValue)
+			if (relationalExpression.getLhs() instanceof IBeXAttributeValue attributeValue) {
 				attributeValue.setNode(replacing2newNodes.get(attributeValue.getNode()));
-			if (relationalExpression.getRhs() instanceof IBeXAttributeValue attributeValue)
+				((TGGNode) attributeValue.getNode()).getReferencedByConditions().add(attributeCondition);
+			}
+			if (relationalExpression.getRhs() instanceof IBeXAttributeValue attributeValue) {
 				attributeValue.setNode(replacing2newNodes.get(attributeValue.getNode()));
+				((TGGNode) attributeValue.getNode()).getReferencedByConditions().add(attributeCondition);
+			}
 		}
 		
 		return attributeConditions;

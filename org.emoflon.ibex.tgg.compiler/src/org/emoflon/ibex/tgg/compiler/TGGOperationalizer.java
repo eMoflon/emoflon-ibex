@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeAssignment;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelFactory;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
@@ -16,6 +17,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXOperationType;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternInvocation;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanExpression;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.IBeXCoreArithmeticFactory;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalExpression;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator;
 import org.emoflon.ibex.common.slimgt.slimGT.NodeAttributeExpression;
 import org.emoflon.ibex.common.slimgt.util.SlimGTModelUtil;
@@ -199,6 +201,14 @@ public class TGGOperationalizer {
 						}
 			}
 		}
+		for (var delCondition : deletedConditions) {
+			if (!(delCondition instanceof RelationalExpression relationalExpression))
+				continue;
+			if (relationalExpression.getLhs() instanceof IBeXAttributeValue attributeValue)
+				((TGGNode) attributeValue.getNode()).getReferencedByConditions().remove(delCondition);
+			if (relationalExpression.getRhs() instanceof IBeXAttributeValue attributeValue)
+				((TGGNode) attributeValue.getNode()).getReferencedByConditions().remove(delCondition);
+		}
 		conditions.removeAll(deletedConditions);
 	}
 	
@@ -334,10 +344,12 @@ public class TGGOperationalizer {
 		var op = factory.createTGGOperationalRule();
 		op.setName(rule.getName());
 		
+		rule.getGenericContents().add(rule.getPrecondition());
 		var ruleCopy = EcoreUtil.copy(rule);
-		var preconditionCopy = EcoreUtil.copy(rule.getPrecondition());
-		op.setPrecondition(preconditionCopy);
-		model.getPatternSet().getPatterns().add(preconditionCopy);
+		model.getPatternSet().getPatterns().add(rule.getPrecondition());
+		
+		op.setPrecondition(ruleCopy.getPrecondition());
+		model.getPatternSet().getPatterns().add(op.getPrecondition());
 
 		op.getNodes().addAll(ruleCopy.getNodes());
 		op.getAllNodes().addAll(ruleCopy.getNodes());
@@ -350,8 +362,6 @@ public class TGGOperationalizer {
 		op.getAllNodes().addAll(ruleCopy.getCorrespondenceNodes());
 		
 		op.getAttributeAssignments().addAll(ruleCopy.getAttributeAssignments());
-//		var tggAttributeConstraints = ((TGGPattern) ruleCopy.getPrecondition()).getAttributeConstraints().getTggAttributeConstraints();
-//		((TGGPattern) op.getPrecondition()).getAttributeConstraints().getTggAttributeConstraints().addAll(tggAttributeConstraints);
 
 		rule.getOperationalisations().add(op);
 		

@@ -4,6 +4,7 @@ package org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel;
 
 import org.eclipse.emf.common.util.EList;
 
+import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRule;
 
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta;
@@ -35,6 +36,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta;
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getSource <em>Source</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getCorrespondence <em>Correspondence</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getTarget <em>Target</em>}</li>
+ *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getGenericContents <em>Generic Contents</em>}</li>
  * </ul>
  *
  * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage#getTGGRule()
@@ -397,5 +399,17 @@ public interface TGGRule extends IBeXRule {
 	 * @generated
 	 */
 	void setTarget(IBeXRuleDelta value);
+
+	/**
+	 * Returns the value of the '<em><b>Generic Contents</b></em>' containment reference list.
+	 * The list contents are of type {@link org.eclipse.emf.ecore.EObject}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Generic Contents</em>' containment reference list.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage#getTGGRule_GenericContents()
+	 * @model containment="true"
+	 * @generated
+	 */
+	EList<EObject> getGenericContents();
 
 } // TGGRule
