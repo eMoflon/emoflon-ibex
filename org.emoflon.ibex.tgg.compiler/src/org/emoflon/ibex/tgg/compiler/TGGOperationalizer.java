@@ -216,8 +216,8 @@ public class TGGOperationalizer {
 		var deletedConstraints = new LinkedList<>();
 		for(var constraint : constraints) {
 			for(var param : constraint.getParameters()) {
-				if(param instanceof NodeAttributeExpression nodeAttrExpr) {
-					var ibexNode = nodeAttrExpr.getNodeExpression();
+				if(param.getExpression() instanceof IBeXAttributeValue nodeAttrExpr) {
+					var ibexNode = nodeAttrExpr.getNode();
 					if(ibexNode == null) {
 						deletedConstraints.add(constraint);
 						break;
