@@ -12,4 +12,6 @@ public interface ShortcutPatternProvider {
 
 	LocalPatternSearch getPatternSearch(OperationalShortcutRule opShortcutRule);
 
+	void persistShortcutRules();
+
 }

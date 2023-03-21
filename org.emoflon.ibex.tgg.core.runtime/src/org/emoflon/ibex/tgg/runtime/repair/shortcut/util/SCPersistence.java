@@ -1,9 +1,7 @@
 package org.emoflon.ibex.tgg.runtime.repair.shortcut.util;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
 import java.util.function.Supplier;
 
 import org.eclipse.emf.ecore.resource.Resource;
@@ -12,11 +10,6 @@ import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRu
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.OperationalShortcutRule;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.RuntimeShortcutRule;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.TGGResourceHandler;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
-
-import language.repair.ExternalShortcutRule;
-import language.repair.RepairFactory;
-import language.repair.TGGRuleElementMapping;
 
 public class SCPersistence {
 
@@ -53,8 +46,7 @@ public class SCPersistence {
 	}
 
 	private void saveFWDOSCRule(OperationalShortcutRule oscRule) {
-		ExternalShortcutRule esc = convertToEMF(oscRule.getOperationalizedSCR(), oscRule.getName());
-		oscFWDResource.getContents().add(esc);
+		oscFWDResource.getContents().add(oscRule.getOperationalizedSCR().getShortcutRule());
 	}
 
 	public void saveOperationalBWDSCRules(Collection<OperationalShortcutRule> oscRule) {
@@ -67,8 +59,7 @@ public class SCPersistence {
 	}
 
 	private void saveBWDOSCRule(OperationalShortcutRule oscRule) {
-		ExternalShortcutRule esc = convertToEMF(oscRule.getOperationalizedSCR(), oscRule.getName());
-		oscBWDResource.getContents().add(esc);
+		oscBWDResource.getContents().add(oscRule.getOperationalizedSCR().getShortcutRule());
 	}
 
 	public void saveSCRules(Collection<RuntimeShortcutRule> scRule) {
@@ -93,8 +84,7 @@ public class SCPersistence {
 		if (scRule.getReplacingRule() instanceof HigherOrderTGGRule hoReplacingRule)
 			save(hoReplacingRule);
 
-		ExternalShortcutRule esc = convertToEMF(scRule, scRule.getName());
-		scResource.getContents().add(esc);
+		scResource.getContents().add(scRule.getShortcutRule());
 	}
 
 	private void save(HigherOrderTGGRule hoRule) {
@@ -104,38 +94,4 @@ public class SCPersistence {
 		higherOrderResource.getContents().add(hoRule);
 	}
 
-	public ExternalShortcutRule convertToEMF(RuntimeShortcutRule scRule, String name) {
-		ExternalShortcutRule esc = createESCRule(name);
-
-		esc.setSourceRule(scRule.getOriginalRule());
-		esc.setTargetRule(scRule.getReplacingRule());
-
-		esc.getCreations().addAll(scRule.getOverlap().creations);
-		esc.getDeletions().addAll(scRule.getOverlap().deletions);
-		esc.getUnboundSrcContext().addAll(scRule.getOverlap().unboundOriginalContext);
-		esc.getUnboundTrgContext().addAll(scRule.getOverlap().unboundReplacingContext);
-
-		esc.getMapping().addAll(convertToEMF(scRule.getOverlap().mappings));
-
-		return esc;
-	}
-
-	public Collection<TGGRuleElementMapping> convertToEMF(Map<TGGRuleElement, TGGRuleElement> mappings) {
-		Collection<TGGRuleElementMapping> emfMappings = new ArrayList<>();
-		for (TGGRuleElement elt : mappings.keySet()) {
-			TGGRuleElement coElt = mappings.get(elt);
-
-			TGGRuleElementMapping mapping = RepairFactory.eINSTANCE.createTGGRuleElementMapping();
-			mapping.setSourceRuleElement(elt);
-			mapping.setTargetRuleElement(coElt);
-			emfMappings.add(mapping);
-		}
-		return emfMappings;
-	}
-
-	public ExternalShortcutRule createESCRule(String name) {
-		ExternalShortcutRule esc = RepairFactory.eINSTANCE.createExternalShortcutRule();
-		esc.setName(name);
-		return esc;
-	}
 }
