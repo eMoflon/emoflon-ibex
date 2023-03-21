@@ -14,27 +14,31 @@ import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeAssignment;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeValue;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelFactory;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelFactory;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGPattern;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.CSPFactory;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinition;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintParameterDefinition;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintParameterValue;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintSet;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl;
 import org.emoflon.ibex.tgg.util.TGGFilterUtil;
 import org.emoflon.ibex.tgg.util.debug.ConsoleUtil;
 
 import language.LanguageFactory;
 import language.NAC;
-import language.TGG;
 import language.TGGAttributeConstraintLibrary;
 import language.TGGAttributeExpression;
-import language.TGGInplaceAttributeExpression;
 import language.TGGParamValue;
 
 public class HigherOrderTGGRule extends TGGRuleImpl {
@@ -312,12 +316,12 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 		toBeDeletedAttrAssignments.forEach(e -> EcoreUtil.delete(e));
 	}
 
-	private void createEqualityCSP(TGGRule rule, TGGNode lhsNode, EAttribute lhsAttr, IBeXAttributeAssignment rhsAttrAssignment) {
-		TGGAttributeExpression lhsAttrExpr = LanguageFactory.eINSTANCE.createTGGAttributeExpression();
-		lhsAttrExpr.setAttribute(lhsAttr);
-		lhsAttrExpr.setObjectVar(lhsNode);
+	private void createEqualityCSP(TGGRule rule, TGGNode lhsNode, EAttribute lhsAttr, IBeXAttributeValue rhsAttributeValue) {
+		IBeXAttributeValue lhsAttributeValue = IBeXCoreModelFactory.eINSTANCE.createIBeXAttributeValue();
+		lhsAttributeValue.setAttribute(lhsAttr);
+		lhsAttributeValue.setNode(lhsNode);
 
-		TGGAttributeConstraintDefinition attrConstraintDef = getAttrConstraintDef(lhsAttr, (TGG) rule.eContainer());
+		TGGAttributeConstraintDefinition attrConstraintDef = getAttrConstraintDef(lhsAttr, (TGGModel) rule.eContainer().eContainer());
 		TGGAttributeConstraintParameterDefinition lhsParamDef;
 		TGGAttributeConstraintParameterDefinition rhsParamDef;
 		try {
@@ -326,20 +330,27 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 		} catch (IndexOutOfBoundsException e) {
 			throw new RuntimeException("This attribute constraint definition must have two parameter definitions!", e);
 		}
-		lhsAttrExpr.setParameterDefinition(lhsParamDef);
-		rhsAttrAssignment.setParameterDefinition(rhsParamDef);
 
-		TGGAttributeConstraint attrConstraint = LanguageFactory.eINSTANCE.createTGGAttributeConstraint();
-		attrConstraint.getParameters().add(lhsAttrExpr);
-		attrConstraint.getParameters().add(rhsAttrAssignment);
+		var lhsParameterValue = CSPFactory.eINSTANCE.createTGGAttributeConstraintParameterValue();
+		lhsParameterValue.setParameterDefinition(lhsParamDef);
+		lhsParameterValue.setExpression(lhsAttributeValue);
+		
+		var rhsParameterValue = CSPFactory.eINSTANCE.createTGGAttributeConstraintParameterValue();
+		rhsParameterValue.setParameterDefinition(rhsParamDef);
+		rhsParameterValue.setExpression(rhsAttributeValue);
+		
+		TGGAttributeConstraint attrConstraint = CSPFactory.eINSTANCE.createTGGAttributeConstraint();
+		attrConstraint.getParameters().add(lhsParameterValue);
+		attrConstraint.getParameters().add(rhsParameterValue);
 		attrConstraint.setDefinition(attrConstraintDef);
 
-		this.getAttributeConditionLibrary().getParameterValues().add(lhsAttrExpr);
-		this.getAttributeConditionLibrary().getParameterValues().add(rhsAttrAssignment);
-		this.getAttributeConditionLibrary().getTggAttributeConstraints().add(attrConstraint);
+		var attributeConstraintSet = ((TGGPattern) this.getPrecondition()).getAttributeConstraints();
+		attributeConstraintSet.getParameters().add(lhsParameterValue);
+		attributeConstraintSet.getParameters().add(rhsParameterValue);
+		attributeConstraintSet.getTggAttributeConstraints().add(attrConstraint);
 	}
 
-	private TGGAttributeConstraintDefinition getAttrConstraintDef(EAttribute attr, TGG tgg) {
+	private TGGAttributeConstraintDefinition getAttrConstraintDef(EAttribute attr, TGGModel tggModel) {
 		String defName = switch (attr.getEAttributeType().getName()) {
 			case "EString" -> "eq_string";
 			case "EInt" -> "eq_int";
@@ -350,7 +361,8 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 			case "EBoolean" -> "eq_boolean";
 			default -> throw new IllegalArgumentException("Unexpected value: " + attr.getEAttributeType());
 		};
-		for (TGGAttributeConstraintDefinition def : tgg.getAttributeConstraintDefinitionLibrary().getTggAttributeConstraintDefinitions()) {
+		// FIXME determine predefined library
+		for (TGGAttributeConstraintDefinition def : tggModel.getAttributeConstraintDefinitionLibraries().get(0).getTggAttributeConstraintDefinitions()) {
 			if (def.getName().equals(defName))
 				return def;
 		}
@@ -358,23 +370,24 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 	}
 
 	private void transferAttrCondLibrary(TGGRule rule, HigherOrderRuleComponent component) {
-		TGGAttributeConstraintLibrary copiedLib = EcoreUtil.copy(rule.getAttributeConditionLibrary());
+		var copiedConstraintSet = EcoreUtil.copy(((TGGPattern) this.getPrecondition()).getAttributeConstraints());
 
-		for (TGGParamValue paramValue : copiedLib.getParameterValues()) {
-			if (paramValue instanceof TGGAttributeExpression attrExpr) {
-				ComponentSpecificRuleElement componentNode = component.getComponentSpecificRuleElement(attrExpr.getObjectVar());
+		for (var parameterValue : copiedConstraintSet.getParameters()) {
+			if (parameterValue.getExpression() instanceof IBeXAttributeValue attributeValue) {
+				ComponentSpecificRuleElement componentNode = component.getComponentSpecificRuleElement((TGGNode) attributeValue.getNode());
 				TGGNode higherOrderObjVar = (TGGNode) componentElt2higherOrderElt.get(componentNode);
 				if (higherOrderObjVar == null)
 					throw new RuntimeException("Inconsistent higher-order rule construction! Cannot find rule element.");
-				attrExpr.setObjectVar(higherOrderObjVar);
+				attributeValue.setNode(higherOrderObjVar);
 			}
 		}
 
-		if (super.getAttributeConditionLibrary() == null) {
-			super.setAttributeConditionLibrary(copiedLib);
+		TGGPattern preConditionPattern = (TGGPattern) super.getPrecondition();
+		if (preConditionPattern.getAttributeConstraints() == null) {
+			preConditionPattern.setAttributeConstraints(copiedConstraintSet);
 		} else {
-			super.getAttributeConditionLibrary().getParameterValues().addAll(copiedLib.getParameterValues());
-			super.getAttributeConditionLibrary().getTggAttributeConstraints().addAll(copiedLib.getTggAttributeConstraints());
+			preConditionPattern.getAttributeConstraints().getParameters().addAll(copiedConstraintSet.getParameters());
+			preConditionPattern.getAttributeConstraints().getTggAttributeConstraints().addAll(copiedConstraintSet.getTggAttributeConstraints());
 		}
 	}
 
