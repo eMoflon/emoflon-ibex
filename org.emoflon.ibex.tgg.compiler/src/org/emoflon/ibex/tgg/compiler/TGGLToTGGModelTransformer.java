@@ -84,6 +84,8 @@ import org.emoflon.ibex.common.slimgt.slimGT.UnaryArithmeticExpression;
 import org.emoflon.ibex.common.slimgt.util.SlimGTEMFUtil;
 import org.emoflon.ibex.common.transformation.DataTypeUtil;
 import org.emoflon.ibex.common.transformation.SlimGtToIBeXCoreTransformer;
+import org.emoflon.ibex.tgg.compiler.builder.AttrCondDefLibraryProvider;
+import org.emoflon.ibex.tgg.compiler.builder.UserAttrCondHelper;
 import org.emoflon.ibex.tgg.compiler.defaults.TGGBuildUtil;
 import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuntimeModelPackage;
 import org.emoflon.ibex.tgg.tggl.scoping.TGGLScopeProvider;
@@ -241,6 +243,8 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 	private void createAttributeConstraintLibraries() {
 		for(var xtextConditionLibrary : editorFile.getLibraries()) {
 			var constraintDefinitionLibrary = cspFactory.createTGGAttributeConstraintDefinitionLibrary();
+			constraintDefinitionLibrary.setName(xtextConditionLibrary.getName());
+			constraintDefinitionLibrary.setPackageName(AttrCondDefLibraryProvider.ATTR_COND_DEF_USERDEFINED_PACKAGE);
 			model.getAttributeConstraintDefinitionLibraries().add(constraintDefinitionLibrary);
 			
 			for(var xtextConditionDefinition : xtextConditionLibrary.getAttributeCondDefs()) {

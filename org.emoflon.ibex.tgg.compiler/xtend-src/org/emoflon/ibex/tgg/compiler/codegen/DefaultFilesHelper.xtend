@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.compiler.builder
+package org.emoflon.ibex.tgg.compiler.codegen
 
 import java.util.List
 

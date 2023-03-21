@@ -4,6 +4,7 @@ import java.util.Collection;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.xtend2.lib.StringConcatenation;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency;
+import org.emoflon.ibex.tgg.compiler.builder.AttrCondDefLibraryProvider;
 import org.emoflon.ibex.tgg.compiler.builder.UserAttrCondHelper;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinition;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintParameterDefinition;
@@ -30,7 +31,9 @@ public class DefaultFilesGenerator {
     _builder.newLine();
     {
       for(final String constraint : userDefConstraints) {
-        _builder.append("import org.emoflon.ibex.tgg.operational.csp.constraints.custom.");
+        _builder.append("import ");
+        _builder.append(AttrCondDefLibraryProvider.ATTR_COND_DEF_USERDEFINED_PACKAGE);
+        _builder.append(".");
         String _lowerCase_1 = MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase();
         _builder.append(_lowerCase_1);
         _builder.append(".");
@@ -1115,11 +1118,11 @@ public class DefaultFilesGenerator {
     _builder.newLine();
     {
       EList<EPackageDependency> _dependencies = tgg.getMetaData().getDependencies();
-      for(final EPackageDependency dependency : _dependencies) {
+      for(final EPackageDependency imp : _dependencies) {
         _builder.append("\t\t");
         _builder.append("executable.getResourceHandler().loadAndRegisterMetamodel(\"");
-        String _name = dependency.getPackage().getName();
-        _builder.append(_name, "\t\t");
+        String _ecoreURI = imp.getEcoreURI();
+        _builder.append(_ecoreURI, "\t\t");
         _builder.append("\");");
         _builder.newLineIfNotEmpty();
       }

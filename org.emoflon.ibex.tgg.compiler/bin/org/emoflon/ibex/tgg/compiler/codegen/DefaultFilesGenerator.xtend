@@ -1,10 +1,11 @@
 package org.emoflon.ibex.tgg.compiler.codegen
 
 import java.util.Collection
+import org.emoflon.ibex.tgg.compiler.builder.AttrCondDefLibraryProvider
+import org.emoflon.ibex.tgg.compiler.builder.UserAttrCondHelper
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinition
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel
 import org.moflon.core.utilities.MoflonUtil
-import org.emoflon.ibex.tgg.compiler.builder.UserAttrCondHelper
 
 class DefaultFilesGenerator {
 
@@ -18,7 +19,7 @@ class DefaultFilesGenerator {
 			import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintFactory;			
 			
 			«FOR constraint : userDefConstraints»
-				import org.emoflon.ibex.tgg.operational.csp.constraints.custom.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase».«UserAttrCondHelper.getFileName(constraint)»;
+				import «AttrCondDefLibraryProvider.ATTR_COND_DEF_USERDEFINED_PACKAGE».«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase».«UserAttrCondHelper.getFileName(constraint)»;
 			«ENDFOR» 
 			
 			public class UserDefinedRuntimeTGGAttrConstraintFactory extends RuntimeTGGAttrConstraintFactory {
@@ -578,8 +579,8 @@ class DefaultFilesGenerator {
 				/** Load and register source and target metamodels */
 				public void registerMetamodels(ResourceSet rs, IbexExecutable executable) throws IOException {
 					// Replace to register generated code or handle other URI-related requirements
-					«FOR dependency : tgg.metaData.dependencies»
-						executable.getResourceHandler().loadAndRegisterMetamodel("«dependency.package.name»");
+					«FOR imp : tgg.metaData.dependencies»
+						executable.getResourceHandler().loadAndRegisterMetamodel("«imp.ecoreURI»");
 					«ENDFOR»
 				}
 			
