@@ -23,14 +23,16 @@ import org.moflon.core.utilities.WorkspaceHelper;
 
 public class AttrCondDefLibraryProvider {
 	private static final Logger logger = Logger.getLogger(AttrCondDefLibraryProvider.class);
+	
+	public static final String DEFAULT_ATTR_COND_LIB_NAME = "DefaultAttributeConditionLibrary";
+
 	private static final String USER_ATTR_PATH = "src/org/emoflon/ibex/tgg/operational/csp/constraints/";
 	private static final String USER_ATTR_COND_DEF_FACTORY_PATH = USER_ATTR_PATH + "factories/";
 	private static final String USER_ATTR_COND_DEF_FACTORY_NAME = "/UserDefinedRuntimeTGGAttrConstraintFactory.java";
 	private static final String USER_ATTR_CONDS_PATH = USER_ATTR_PATH + "custom/";
-	private static final String ATTR_COND_DEF_LIBRARY_PATH = "src/org/emoflon/ibex/tgg/csp/lib/AttrCondDefLibrary.tgg";
+	private static final String ATTR_COND_DEF_LIBRARY_PATH = "src/org/emoflon/ibex/tgg/csp/lib/" + DEFAULT_ATTR_COND_LIB_NAME + ".tggl";
 	public static final String ATTR_COND_DEF_PREDEFINED_PACKAGE = "org.emoflon.ibex.tgg.operational.csp.constraints";
 	public static final String ATTR_COND_DEF_USERDEFINED_PACKAGE = "org.emoflon.ibex.tgg.operational.csp.constraints.custom";
-			
 
 	
 	public static void userAttrCondDefFactory(IProject project, Collection<String> userDefConstraints) throws CoreException, IOException {
