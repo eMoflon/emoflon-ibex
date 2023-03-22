@@ -3,7 +3,7 @@ package org.emoflon.ibex.tgg.runtime.csp.constraints;
 import org.emoflon.ibex.tgg.runtime.csp.RuntimeTGGAttributeConstraint;
 import org.emoflon.ibex.tgg.runtime.csp.RuntimeTGGAttributeConstraintVariable;
 
-public class Max extends RuntimeTGGAttributeConstraint {
+public class Maximum extends RuntimeTGGAttributeConstraint {
 
 	/**
 	 * Constraint max(a,b,c) c = max(a,b)
@@ -12,7 +12,7 @@ public class Max extends RuntimeTGGAttributeConstraint {
 	@Override
 	public void solve() {
 		if (variables.size() != 3)
-			throw new RuntimeException("The CSP -MAX- needs exactly three variables");
+			throw new RuntimeException("The CSP -MAXIMUM- needs exactly three variables");
 
 		RuntimeTGGAttributeConstraintVariable a = variables.get(0);
 		RuntimeTGGAttributeConstraintVariable b = variables.get(1);

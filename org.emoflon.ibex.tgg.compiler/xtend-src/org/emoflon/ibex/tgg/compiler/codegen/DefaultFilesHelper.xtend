@@ -202,7 +202,7 @@ class DefaultFilesHelper {
 				}
 			
 				// Semantics: max == max(a, b)
-				max(a:EDouble, b:EDouble, max:EDouble) {
+				maximum(a:EDouble, b:EDouble, maximum:EDouble) {
 					sync { [B B B], [B B F], [B F B], [F B B] }
 					gen { [B B B], [B B F], [B F B], [F B B] }
 				}

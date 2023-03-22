@@ -442,7 +442,7 @@ public class DefaultFilesHelper {
     _builder.append("// Semantics: max == max(a, b)");
     _builder.newLine();
     _builder.append("\t");
-    _builder.append("max(a:EDouble, b:EDouble, max:EDouble) {");
+    _builder.append("maximum(a:EDouble, b:EDouble, maximum:EDouble) {");
     _builder.newLine();
     _builder.append("\t\t");
     _builder.append("sync { [B B B], [B B F], [B F B], [F B B] }");

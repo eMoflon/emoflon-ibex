@@ -56,12 +56,11 @@ public class AttrCondDefLibraryProvider {
 	
 	
 	public void generateAttrCondLibsAndStubs(TGGModel model, IProject project) {
-		// TODO larsF, adrianM hier muss geschaut werden dass keine Stubs für die Standardlib generiert werden
 		Collection<TGGAttributeConstraintDefinition> userAttrCondDefs = model
 				.getAttributeConstraintDefinitionLibraries() //
 				.stream() //
+				.filter(lib -> !lib.getPackageName().equals(ATTR_COND_DEF_PREDEFINED_PACKAGE) && !lib.getName().equals(DEFAULT_ATTR_COND_LIB_NAME))
 				.flatMap(lib -> lib.getTggAttributeConstraintDefinitions().stream())
-//				.filter(ac -> ac.isUserDefined()) //
 				.collect(Collectors.toList()); //
 		
 		Collection<String> userAttrCondNames = userAttrCondDefs.stream()

@@ -26,7 +26,7 @@ public class DefaultFilesGenerator {
     _builder.append("import java.util.HashSet;\t\t\t");
     _builder.newLine();
     _builder.newLine();
-    _builder.append("import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintFactory;\t\t\t");
+    _builder.append("import org.emoflon.ibex.tgg.runtime.csp.constraints.factories.RuntimeTGGAttrConstraintFactory;");
     _builder.newLine();
     _builder.newLine();
     {
@@ -102,9 +102,9 @@ public class DefaultFilesGenerator {
     _builder.append(";");
     _builder.newLineIfNotEmpty();
     _builder.newLine();
-    _builder.append("import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraint;");
+    _builder.append("import org.emoflon.ibex.tgg.runtime.csp.RuntimeTGGAttributeConstraint;");
     _builder.newLine();
-    _builder.append("import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintVariable;");
+    _builder.append("import org.emoflon.ibex.tgg.runtime.csp.RuntimeTGGAttributeConstraintVariable;");
     _builder.newLine();
     _builder.newLine();
     _builder.append("public class ");

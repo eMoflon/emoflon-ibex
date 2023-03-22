@@ -16,7 +16,7 @@ class DefaultFilesGenerator {
 			import java.util.HashMap;
 			import java.util.HashSet;			
 			
-			import org.emoflon.ibex.tgg.operational.csp.constraints.factories.RuntimeTGGAttrConstraintFactory;			
+			import org.emoflon.ibex.tgg.runtime.csp.constraints.factories.RuntimeTGGAttrConstraintFactory;
 			
 			«FOR constraint : userDefConstraints»
 				import «AttrCondDefLibraryProvider.ATTR_COND_DEF_USERDEFINED_PACKAGE».«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase».«UserAttrCondHelper.getFileName(constraint)»;
@@ -46,8 +46,8 @@ class DefaultFilesGenerator {
 		return '''
 			package org.emoflon.ibex.tgg.operational.csp.constraints.custom.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase»;
 			
-			import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraint;
-			import org.emoflon.ibex.tgg.operational.csp.RuntimeTGGAttributeConstraintVariable;
+			import org.emoflon.ibex.tgg.runtime.csp.RuntimeTGGAttributeConstraint;
+			import org.emoflon.ibex.tgg.runtime.csp.RuntimeTGGAttributeConstraintVariable;
 			
 			public class «UserAttrCondHelper.getFileName(tacd.name)» extends RuntimeTGGAttributeConstraint
 			{

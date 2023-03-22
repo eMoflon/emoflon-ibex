@@ -9,7 +9,7 @@ import org.emoflon.ibex.tgg.runtime.csp.constraints.AddSuffix;
 import org.emoflon.ibex.tgg.runtime.csp.constraints.Concat;
 import org.emoflon.ibex.tgg.runtime.csp.constraints.Divide;
 import org.emoflon.ibex.tgg.runtime.csp.constraints.Eq;
-import org.emoflon.ibex.tgg.runtime.csp.constraints.Max;
+import org.emoflon.ibex.tgg.runtime.csp.constraints.Maximum;
 import org.emoflon.ibex.tgg.runtime.csp.constraints.Multiply;
 import org.emoflon.ibex.tgg.runtime.csp.constraints.SetDefaultNumber;
 import org.emoflon.ibex.tgg.runtime.csp.constraints.SetDefaultString;
@@ -40,7 +40,7 @@ public class PredefRuntimeTGGAttrConstraintFactory extends RuntimeTGGAttrConstra
 		creators.put("eq_int", () -> new Eq());
 		creators.put("eq_long", () -> new Eq());
 		creators.put("eq_string", () -> new Eq());
-		creators.put("max", () -> new Max());
+		creators.put("maximum", () -> new Maximum());
 		creators.put("multiply", () -> new Multiply());
 		creators.put("setDefaultNumber", () -> new SetDefaultNumber());
 		creators.put("setDefaultString", () -> new SetDefaultString());
