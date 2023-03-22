@@ -4,10 +4,11 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinition;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinitionLibrary;
 
 public class UserAttrCondHelper {
-	public static String getFileName(String name) {
-		return "UserDefined_" + name;
+	public static String getFileName(TGGAttributeConstraintDefinition tacd) {
+		return "UserDefined_" + tacd.getName();
 	}
 	
 	public static String getParameterString(TGGAttributeConstraintDefinition def) {

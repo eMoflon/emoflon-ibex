@@ -17,6 +17,7 @@ import org.emoflon.ibex.tgg.compiler.codegen.DefaultFilesGenerator;
 import org.emoflon.ibex.tgg.compiler.codegen.DefaultFilesHelper;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinition;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinitionLibrary;
 import org.moflon.core.utilities.LogUtils;
 import org.moflon.core.utilities.MoflonUtil;
 import org.moflon.core.utilities.WorkspaceHelper;
@@ -27,24 +28,23 @@ public class AttrCondDefLibraryProvider {
 	public static final String DEFAULT_ATTR_COND_LIB_NAME = "DefaultAttributeConditionLibrary";
 
 	private static final String USER_ATTR_PATH = "src/org/emoflon/ibex/tgg/operational/csp/constraints/";
-	private static final String USER_ATTR_COND_DEF_FACTORY_PATH = USER_ATTR_PATH + "factories/";
-	private static final String USER_ATTR_COND_DEF_FACTORY_NAME = "/UserDefinedRuntimeTGGAttrConstraintFactory.java";
+	private static final String USER_ATTR_COND_DEF_FACTORY_NAME = "RuntimeTGGAttrConstraintFactory.java";
 	private static final String USER_ATTR_CONDS_PATH = USER_ATTR_PATH + "custom/";
 	private static final String ATTR_COND_DEF_LIBRARY_PATH = "src/org/emoflon/ibex/tgg/csp/lib/" + DEFAULT_ATTR_COND_LIB_NAME + ".tggl";
 	public static final String ATTR_COND_DEF_PREDEFINED_PACKAGE = "org.emoflon.ibex.tgg.operational.csp.constraints";
 	public static final String ATTR_COND_DEF_USERDEFINED_PACKAGE = "org.emoflon.ibex.tgg.operational.csp.constraints.custom";
 
 	
-	public static void userAttrCondDefFactory(IProject project, Collection<String> userDefConstraints) throws CoreException, IOException {
-		String path = USER_ATTR_COND_DEF_FACTORY_PATH + MoflonUtil.lastCapitalizedSegmentOf(project.getName()).toLowerCase() + USER_ATTR_COND_DEF_FACTORY_NAME ;
-		String userLib = DefaultFilesGenerator.generateUserRuntimeAttrCondFactory(userDefConstraints, MoflonUtil.lastCapitalizedSegmentOf(project.getName()));
+	public static void userAttrCondDefFactory(IProject project, TGGAttributeConstraintDefinitionLibrary library) throws CoreException, IOException {
+		String path = USER_ATTR_CONDS_PATH + MoflonUtil.lastCapitalizedSegmentOf(project.getName()).toLowerCase() + "/" + getAttrCondFactoryName(library);
+		String userLib = DefaultFilesGenerator.generateUserRuntimeAttrCondFactory(library, MoflonUtil.lastCapitalizedSegmentOf(project.getName()));
 		IPath pathToLib = new Path(path);
 		WorkspaceHelper.addAllFoldersAndFile(project, pathToLib, userLib, new NullProgressMonitor());
 	}
 
-	public static void userAttrCondDefStubs(IProject project, Collection<TGGAttributeConstraintDefinition> userDefConstraints) throws CoreException, IOException {
-		for(TGGAttributeConstraintDefinition tacd : userDefConstraints) {
-			String path = USER_ATTR_CONDS_PATH + MoflonUtil.lastCapitalizedSegmentOf(project.getName()).toLowerCase() + "/" + UserAttrCondHelper.getFileName(tacd.getName()) + ".java";
+	public static void userAttrCondDefStubs(IProject project, TGGAttributeConstraintDefinitionLibrary library) throws CoreException, IOException {
+		for(TGGAttributeConstraintDefinition tacd : library.getTggAttributeConstraintDefinitions()) {
+			String path = USER_ATTR_CONDS_PATH + MoflonUtil.lastCapitalizedSegmentOf(project.getName()).toLowerCase() + "/" + library.getName().toLowerCase() + "/" + UserAttrCondHelper.getFileName(tacd) + ".java";
 			String userLib = DefaultFilesGenerator.generateUserAttrCondDefStub(tacd, MoflonUtil.lastCapitalizedSegmentOf(project.getName()));
 			IPath pathToLib = new Path(path);
 			IFile userAttrLibFile = project.getFile(pathToLib);
@@ -54,23 +54,22 @@ public class AttrCondDefLibraryProvider {
 		}
 	}
 	
+	public static String getAttrCondFactoryName(TGGAttributeConstraintDefinitionLibrary library) {
+		return library.getName() + USER_ATTR_COND_DEF_FACTORY_NAME;
+	}
+	
 	
 	public void generateAttrCondLibsAndStubs(TGGModel model, IProject project) {
-		Collection<TGGAttributeConstraintDefinition> userAttrCondDefs = model
-				.getAttributeConstraintDefinitionLibraries() //
-				.stream() //
-				.filter(lib -> !lib.getPackageName().equals(ATTR_COND_DEF_PREDEFINED_PACKAGE) && !lib.getName().equals(DEFAULT_ATTR_COND_LIB_NAME))
-				.flatMap(lib -> lib.getTggAttributeConstraintDefinitions().stream())
-				.collect(Collectors.toList()); //
-		
-		Collection<String> userAttrCondNames = userAttrCondDefs.stream()
-				.map(udc -> udc.getName())
-				.collect(Collectors.toList());
-		try {
-			AttrCondDefLibraryProvider.userAttrCondDefFactory(project, userAttrCondNames);
-			AttrCondDefLibraryProvider.userAttrCondDefStubs(project, userAttrCondDefs);
-		} catch (CoreException | IOException e) {
-			LogUtils.error(logger, e);
+		for(var library : model.getAttributeConstraintDefinitionLibraries()) {
+			if(library.getPackageName().equals(ATTR_COND_DEF_PREDEFINED_PACKAGE) && library.getName().equals(DEFAULT_ATTR_COND_LIB_NAME))
+				continue;
+			
+			try {
+				AttrCondDefLibraryProvider.userAttrCondDefFactory(project, library);
+				AttrCondDefLibraryProvider.userAttrCondDefStubs(project, library);
+			} catch (CoreException | IOException e) {
+				LogUtils.error(logger, e);
+			}
 		}
 	}
 	

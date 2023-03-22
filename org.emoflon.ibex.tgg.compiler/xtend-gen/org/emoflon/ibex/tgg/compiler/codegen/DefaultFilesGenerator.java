@@ -2,20 +2,20 @@ package org.emoflon.ibex.tgg.compiler.codegen;
 
 import java.util.Collection;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xtend2.lib.StringConcatenation;
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency;
 import org.emoflon.ibex.tgg.compiler.builder.AttrCondDefLibraryProvider;
 import org.emoflon.ibex.tgg.compiler.builder.UserAttrCondHelper;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinition;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinitionLibrary;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintParameterDefinition;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel;
 import org.moflon.core.utilities.MoflonUtil;
 
 @SuppressWarnings("all")
 public class DefaultFilesGenerator {
-  public static String generateUserRuntimeAttrCondFactory(final Collection<String> userDefConstraints, final String projectName) {
+  public static String generateUserRuntimeAttrCondFactory(final TGGAttributeConstraintDefinitionLibrary library, final String projectName) {
     StringConcatenation _builder = new StringConcatenation();
-    _builder.append("package org.emoflon.ibex.tgg.operational.csp.constraints.factories.");
+    _builder.append("package org.emoflon.ibex.tgg.operational.csp.constraints.custom.");
     String _lowerCase = MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase();
     _builder.append(_lowerCase);
     _builder.append(";");
@@ -30,12 +30,16 @@ public class DefaultFilesGenerator {
     _builder.newLine();
     _builder.newLine();
     {
-      for(final String constraint : userDefConstraints) {
+      EList<TGGAttributeConstraintDefinition> _tggAttributeConstraintDefinitions = library.getTggAttributeConstraintDefinitions();
+      for(final TGGAttributeConstraintDefinition constraint : _tggAttributeConstraintDefinitions) {
         _builder.append("import ");
         _builder.append(AttrCondDefLibraryProvider.ATTR_COND_DEF_USERDEFINED_PACKAGE);
         _builder.append(".");
         String _lowerCase_1 = MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase();
         _builder.append(_lowerCase_1);
+        _builder.append(".");
+        String _lowerCase_2 = library.getName().toLowerCase();
+        _builder.append(_lowerCase_2);
         _builder.append(".");
         String _fileName = UserAttrCondHelper.getFileName(constraint);
         _builder.append(_fileName);
@@ -44,12 +48,18 @@ public class DefaultFilesGenerator {
       }
     }
     _builder.newLine();
-    _builder.append("public class UserDefinedRuntimeTGGAttrConstraintFactory extends RuntimeTGGAttrConstraintFactory {");
-    _builder.newLine();
+    _builder.append("public class ");
+    String _name = library.getName();
+    _builder.append(_name);
+    _builder.append("RuntimeTGGAttrConstraintFactory extends RuntimeTGGAttrConstraintFactory {");
+    _builder.newLineIfNotEmpty();
     _builder.newLine();
     _builder.append("\t");
-    _builder.append("public UserDefinedRuntimeTGGAttrConstraintFactory() {");
-    _builder.newLine();
+    _builder.append("public ");
+    String _name_1 = library.getName();
+    _builder.append(_name_1, "\t");
+    _builder.append("RuntimeTGGAttrConstraintFactory() {");
+    _builder.newLineIfNotEmpty();
     _builder.append("\t\t");
     _builder.append("super();");
     _builder.newLine();
@@ -68,10 +78,12 @@ public class DefaultFilesGenerator {
     _builder.append("creators = new HashMap<>();");
     _builder.newLine();
     {
-      for(final String constraint_1 : userDefConstraints) {
+      EList<TGGAttributeConstraintDefinition> _tggAttributeConstraintDefinitions_1 = library.getTggAttributeConstraintDefinitions();
+      for(final TGGAttributeConstraintDefinition constraint_1 : _tggAttributeConstraintDefinitions_1) {
         _builder.append("\t\t");
         _builder.append("creators.put(\"");
-        _builder.append(constraint_1, "\t\t");
+        String _name_2 = constraint_1.getName();
+        _builder.append(_name_2, "\t\t");
         _builder.append("\", () -> new ");
         String _fileName_1 = UserAttrCondHelper.getFileName(constraint_1);
         _builder.append(_fileName_1, "\t\t");
@@ -95,10 +107,15 @@ public class DefaultFilesGenerator {
   }
 
   public static String generateUserAttrCondDefStub(final TGGAttributeConstraintDefinition tacd, final String projectName) {
+    EObject _eContainer = tacd.eContainer();
+    TGGAttributeConstraintDefinitionLibrary library = ((TGGAttributeConstraintDefinitionLibrary) _eContainer);
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("package org.emoflon.ibex.tgg.operational.csp.constraints.custom.");
     String _lowerCase = MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase();
     _builder.append(_lowerCase);
+    _builder.append(".");
+    String _lowerCase_1 = library.getName().toLowerCase();
+    _builder.append(_lowerCase_1);
     _builder.append(";");
     _builder.newLineIfNotEmpty();
     _builder.newLine();
@@ -108,7 +125,7 @@ public class DefaultFilesGenerator {
     _builder.newLine();
     _builder.newLine();
     _builder.append("public class ");
-    String _fileName = UserAttrCondHelper.getFileName(tacd.getName());
+    String _fileName = UserAttrCondHelper.getFileName(tacd);
     _builder.append(_fileName);
     _builder.append(" extends RuntimeTGGAttributeConstraint");
     _builder.newLineIfNotEmpty();
@@ -225,9 +242,14 @@ public class DefaultFilesGenerator {
     _builder.append("import org.apache.log4j.BasicConfigurator;");
     _builder.newLine();
     _builder.newLine();
-    _builder.append("import org.emoflon.ibex.tgg.compiler.defaults.IRegistrationHelper;");
+    _builder.append("import org.emoflon.ibex.tgg.runtime.config.IRegistrationHelper;");
     _builder.newLine();
-    _builder.append("import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;");
+    _builder.append("import org.emoflon.ibex.tgg.runtime.strategies.modules.TGGResourceHandler;");
+    _builder.newLine();
+    _builder.append("import org.emoflon.ibex.tgg.runtime.strategies.sync.SYNC;");
+    _builder.newLine();
+    _builder.append("import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;");
+    _builder.newLine();
     _builder.newLine();
     _builder.newLine();
     _builder.append("import org.emoflon.ibex.tgg.run.");
@@ -351,90 +373,6 @@ public class DefaultFilesGenerator {
     return _builder.toString();
   }
 
-  public static String generateDebugStructure(final String additionalImports, final String fileName, final String strategy, final String projectName, final String setUpRoutine, final String body) {
-    StringConcatenation _builder = new StringConcatenation();
-    _builder.append("package org.emoflon.ibex.tgg.run.");
-    String _lowerCase = MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase();
-    _builder.append(_lowerCase);
-    _builder.append(".debug;");
-    _builder.newLineIfNotEmpty();
-    _builder.newLine();
-    _builder.append("import java.io.IOException;");
-    _builder.newLine();
-    _builder.newLine();
-    _builder.append("import org.apache.log4j.Level;");
-    _builder.newLine();
-    _builder.append("import org.apache.log4j.Logger;");
-    _builder.newLine();
-    _builder.append("import org.apache.log4j.BasicConfigurator;");
-    _builder.newLine();
-    _builder.newLine();
-    _builder.append("import org.emoflon.ibex.tgg.compiler.defaults.IRegistrationHelper;");
-    _builder.newLine();
-    _builder.newLine();
-    _builder.append("import org.emoflon.ibex.tgg.ui.debug.adapter.TGGAdapter.IBeXOperation;");
-    _builder.newLine();
-    _builder.append("import org.emoflon.ibex.tgg.ui.debug.adapter.TGGAdapter.VictoryIBeXAdapter;");
-    _builder.newLine();
-    _builder.newLine();
-    _builder.append("import org.emoflon.ibex.tgg.run.");
-    String _lowerCase_1 = MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase();
-    _builder.append(_lowerCase_1);
-    _builder.append(".config.*;");
-    _builder.newLineIfNotEmpty();
-    _builder.newLine();
-    _builder.append(additionalImports);
-    _builder.newLineIfNotEmpty();
-    _builder.newLine();
-    _builder.append("public class ");
-    _builder.append(fileName);
-    _builder.append(" extends ");
-    _builder.append(strategy);
-    _builder.append(" {");
-    _builder.newLineIfNotEmpty();
-    _builder.newLine();
-    _builder.append("\t");
-    _builder.append("private static IRegistrationHelper registrationHelper = new _DefaultRegistrationHelper();");
-    _builder.newLine();
-    _builder.newLine();
-    _builder.append("\t");
-    _builder.append("public ");
-    _builder.append(fileName, "\t");
-    _builder.append("() throws IOException {");
-    _builder.newLineIfNotEmpty();
-    _builder.append("\t\t");
-    _builder.append("super(registrationHelper.createIbexOptions());");
-    _builder.newLine();
-    _builder.append("\t");
-    _builder.append("}");
-    _builder.newLine();
-    _builder.newLine();
-    _builder.append("\t");
-    _builder.append("public static void main(String[] args) throws IOException {");
-    _builder.newLine();
-    _builder.append("\t\t");
-    _builder.append("BasicConfigurator.configure();");
-    _builder.newLine();
-    _builder.append("\t\t");
-    _builder.append("Logger.getRootLogger().setLevel(Level.INFO);");
-    _builder.newLine();
-    _builder.newLine();
-    _builder.append("\t\t");
-    _builder.append(setUpRoutine, "\t\t");
-    _builder.newLineIfNotEmpty();
-    _builder.append("\t");
-    _builder.append("}");
-    _builder.newLine();
-    _builder.append("\t");
-    _builder.newLine();
-    _builder.append("\t");
-    _builder.append(body, "\t");
-    _builder.newLineIfNotEmpty();
-    _builder.append("}");
-    _builder.newLine();
-    return _builder.toString();
-  }
-
   public static String generateModelGenFile(final String projectName, final String fileName) {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGEN;");
@@ -478,102 +416,6 @@ public class DefaultFilesGenerator {
     _builder_1.newLine();
     return DefaultFilesGenerator.generateBasicStructure(_builder.toString(), fileName, 
       "MODELGEN", projectName, _builder_1.toString());
-  }
-
-  public static String generateModelGenDebugFile(final String projectName, final String fileName) {
-    StringConcatenation _builder = new StringConcatenation();
-    _builder.append("import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGEN;");
-    _builder.newLine();
-    _builder.append("import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGENStopCriterion;");
-    _builder.newLine();
-    StringConcatenation _builder_1 = new StringConcatenation();
-    _builder_1.append("boolean restart = true;");
-    _builder_1.newLine();
-    _builder_1.append("while (restart) {");
-    _builder_1.newLine();
-    _builder_1.append("    ");
-    _builder_1.append("restart = false;");
-    _builder_1.newLine();
-    _builder_1.append("    ");
-    _builder_1.newLine();
-    _builder_1.append("    ");
-    _builder_1.append("logger.info(\"Starting MODELGEN_Debug\");");
-    _builder_1.newLine();
-    _builder_1.append("    ");
-    _builder_1.append("long tic = System.currentTimeMillis();");
-    _builder_1.newLine();
-    _builder_1.append("    ");
-    _builder_1.append(fileName, "    ");
-    _builder_1.append(" generator = new ");
-    _builder_1.append(fileName, "    ");
-    _builder_1.append("();");
-    _builder_1.newLineIfNotEmpty();
-    _builder_1.append("    ");
-    _builder_1.append("long toc = System.currentTimeMillis();");
-    _builder_1.newLine();
-    _builder_1.append("    ");
-    _builder_1.append("logger.info(\"Completed init for MODELGEN_Debug in: \" + (toc - tic) + \" ms\");");
-    _builder_1.newLine();
-    _builder_1.newLine();
-    _builder_1.append("    ");
-    _builder_1.append("MODELGENStopCriterion stop = new MODELGENStopCriterion(generator.getTGG());");
-    _builder_1.newLine();
-    _builder_1.append("    ");
-    _builder_1.append("generator.setStopCriterion(stop);");
-    _builder_1.newLine();
-    _builder_1.append("    ");
-    _builder_1.newLine();
-    _builder_1.append("    ");
-    _builder_1.append("VictoryIBeXAdapter adapter = VictoryIBeXAdapter.create(generator, IBeXOperation.MODELGEN);");
-    _builder_1.newLine();
-    _builder_1.append("\t");
-    _builder_1.append("restart = adapter.run(() -> {");
-    _builder_1.newLine();
-    _builder_1.append("\t       ");
-    _builder_1.append("adapter.register(generator);");
-    _builder_1.newLine();
-    _builder_1.append("\t       ");
-    _builder_1.append("try {");
-    _builder_1.newLine();
-    _builder_1.append("\t\t    ");
-    _builder_1.append("logger.info(\"Starting MODELGEN_Debug\");");
-    _builder_1.newLine();
-    _builder_1.append("\t\t    ");
-    _builder_1.append("long runTic = System.currentTimeMillis();");
-    _builder_1.newLine();
-    _builder_1.append("\t\t    ");
-    _builder_1.append("generator.run();");
-    _builder_1.newLine();
-    _builder_1.append("\t\t    ");
-    _builder_1.append("long runToc = System.currentTimeMillis();");
-    _builder_1.newLine();
-    _builder_1.append("\t\t    ");
-    _builder_1.append("logger.info(\"Completed MODELGEN_Debug in: \" + (runToc - runTic) + \" ms\");");
-    _builder_1.newLine();
-    _builder_1.newLine();
-    _builder_1.append("\t\t    ");
-    _builder_1.append("generator.saveModels();");
-    _builder_1.newLine();
-    _builder_1.append("\t\t    ");
-    _builder_1.append("generator.terminate();");
-    _builder_1.newLine();
-    _builder_1.append("\t\t      ");
-    _builder_1.append("} catch (IOException pIOE) {");
-    _builder_1.newLine();
-    _builder_1.append("\t\t    ");
-    _builder_1.append("logger.error(\"MODELGEN_Debug threw an IOException\", pIOE);");
-    _builder_1.newLine();
-    _builder_1.append("\t\t      ");
-    _builder_1.append("}");
-    _builder_1.newLine();
-    _builder_1.append("    ");
-    _builder_1.append("});");
-    _builder_1.newLine();
-    _builder_1.append("}");
-    _builder_1.newLine();
-    return DefaultFilesGenerator.generateDebugStructure(_builder.toString(), fileName, 
-      "MODELGEN", projectName, _builder_1.toString(), 
-      "");
   }
 
   public static String generateSyncAppFile(final String projectName, final String fileName) {
@@ -772,94 +614,6 @@ public class DefaultFilesGenerator {
       "INITIAL_FWD", projectName, _builder_1.toString());
   }
 
-  public static String generateInitialFwdDebugAppFile(final String projectName, final String fileName) {
-    StringConcatenation _builder = new StringConcatenation();
-    _builder.append("import org.emoflon.ibex.tgg.run.");
-    String _lowerCase = MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase();
-    _builder.append(_lowerCase);
-    _builder.append(".INITIAL_FWD_App;");
-    _builder.newLineIfNotEmpty();
-    StringConcatenation _builder_1 = new StringConcatenation();
-    _builder_1.append("boolean restart = true;");
-    _builder_1.newLine();
-    _builder_1.append("while (restart) {");
-    _builder_1.newLine();
-    _builder_1.append("    ");
-    _builder_1.append("restart = false;");
-    _builder_1.newLine();
-    _builder_1.newLine();
-    _builder_1.append("    ");
-    _builder_1.append("logger.info(\"Starting INITIAL_FWD_Debug\");");
-    _builder_1.newLine();
-    _builder_1.append("    ");
-    _builder_1.append("long tic = System.currentTimeMillis();");
-    _builder_1.newLine();
-    _builder_1.append("    ");
-    _builder_1.append(fileName, "    ");
-    _builder_1.append(" init_fwd = new ");
-    _builder_1.append(fileName, "    ");
-    _builder_1.append("();");
-    _builder_1.newLineIfNotEmpty();
-    _builder_1.append("    ");
-    _builder_1.append("long toc = System.currentTimeMillis();");
-    _builder_1.newLine();
-    _builder_1.append("    ");
-    _builder_1.append("logger.info(\"Completed init for INITIAL_FWD_Debug in: \" + (toc - tic) + \" ms\");");
-    _builder_1.newLine();
-    _builder_1.newLine();
-    _builder_1.append("    ");
-    _builder_1.append("VictoryIBeXAdapter adapter = VictoryIBeXAdapter.create(init_fwd, IBeXOperation.FWD);");
-    _builder_1.newLine();
-    _builder_1.append("    ");
-    _builder_1.append("restart = adapter.run(() -> {");
-    _builder_1.newLine();
-    _builder_1.append("        ");
-    _builder_1.append("adapter.register(init_fwd);");
-    _builder_1.newLine();
-    _builder_1.append("        ");
-    _builder_1.append("try {");
-    _builder_1.newLine();
-    _builder_1.append("      ");
-    _builder_1.append("logger.info(\"Starting INITIAL_FWD_Debug\");");
-    _builder_1.newLine();
-    _builder_1.append("      ");
-    _builder_1.append("long runTic = System.currentTimeMillis();");
-    _builder_1.newLine();
-    _builder_1.append("      ");
-    _builder_1.append("init_fwd.forward();");
-    _builder_1.newLine();
-    _builder_1.append("      ");
-    _builder_1.append("long runToc = System.currentTimeMillis();");
-    _builder_1.newLine();
-    _builder_1.append("      ");
-    _builder_1.append("logger.info(\"Completed INITIAL_FWD_Debug in: \" + (runToc - runTic) + \" ms\");");
-    _builder_1.newLine();
-    _builder_1.newLine();
-    _builder_1.append("\t\t    ");
-    _builder_1.append("init_fwd.saveModels();");
-    _builder_1.newLine();
-    _builder_1.append("\t\t    ");
-    _builder_1.append("init_fwd.terminate();");
-    _builder_1.newLine();
-    _builder_1.append("\t    ");
-    _builder_1.append("} catch (IOException pIOE) {");
-    _builder_1.newLine();
-    _builder_1.append("\t     ");
-    _builder_1.append("logger.error(\"INITIAL_FWD_Debug threw an IOException\", pIOE);");
-    _builder_1.newLine();
-    _builder_1.append("\t       ");
-    _builder_1.append("}");
-    _builder_1.newLine();
-    _builder_1.append("    ");
-    _builder_1.append("});");
-    _builder_1.newLine();
-    _builder_1.append("}");
-    _builder_1.newLine();
-    return DefaultFilesGenerator.generateDebugStructure(_builder.toString(), fileName, 
-      "INITIAL_FWD_App", projectName, _builder_1.toString(), 
-      "");
-  }
-
   public static String generateInitialBwdAppFile(final String projectName, final String fileName) {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("import org.emoflon.ibex.tgg.operational.strategies.sync.INITIAL_BWD;");
@@ -932,94 +686,6 @@ public class DefaultFilesGenerator {
       "INTEGRATE", projectName, _builder_1.toString());
   }
 
-  public static String generateInitialBwdDebugAppFile(final String projectName, final String fileName) {
-    StringConcatenation _builder = new StringConcatenation();
-    _builder.append("import org.emoflon.ibex.tgg.run.");
-    String _lowerCase = MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase();
-    _builder.append(_lowerCase);
-    _builder.append(".INITIAL_BWD_App;");
-    _builder.newLineIfNotEmpty();
-    StringConcatenation _builder_1 = new StringConcatenation();
-    _builder_1.append("boolean restart = true;");
-    _builder_1.newLine();
-    _builder_1.append("while (restart) {");
-    _builder_1.newLine();
-    _builder_1.append("    ");
-    _builder_1.append("restart = false;");
-    _builder_1.newLine();
-    _builder_1.newLine();
-    _builder_1.append("    ");
-    _builder_1.append("logger.info(\"Starting INITIAL_BWD_Debug\");");
-    _builder_1.newLine();
-    _builder_1.append("    ");
-    _builder_1.append("long tic = System.currentTimeMillis();");
-    _builder_1.newLine();
-    _builder_1.append("    ");
-    _builder_1.append(fileName, "    ");
-    _builder_1.append(" init_bwd = new ");
-    _builder_1.append(fileName, "    ");
-    _builder_1.append("();");
-    _builder_1.newLineIfNotEmpty();
-    _builder_1.append("    ");
-    _builder_1.append("long toc = System.currentTimeMillis();");
-    _builder_1.newLine();
-    _builder_1.append("    ");
-    _builder_1.append("logger.info(\"Completed init for INITIAL_BWD_Debug in: \" + (toc - tic) + \" ms\");");
-    _builder_1.newLine();
-    _builder_1.newLine();
-    _builder_1.append("    ");
-    _builder_1.append("VictoryIBeXAdapter adapter = VictoryIBeXAdapter.create(init_bwd, IBeXOperation.FWD);");
-    _builder_1.newLine();
-    _builder_1.append("    ");
-    _builder_1.append("restart = adapter.run(() -> {");
-    _builder_1.newLine();
-    _builder_1.append("        ");
-    _builder_1.append("adapter.register(init_bwd);");
-    _builder_1.newLine();
-    _builder_1.append("        ");
-    _builder_1.append("try {");
-    _builder_1.newLine();
-    _builder_1.append("      ");
-    _builder_1.append("logger.info(\"Starting INITIAL_BWD_Debug\");");
-    _builder_1.newLine();
-    _builder_1.append("      ");
-    _builder_1.append("long runTic = System.currentTimeMillis();");
-    _builder_1.newLine();
-    _builder_1.append("      ");
-    _builder_1.append("init_bwd.backward();");
-    _builder_1.newLine();
-    _builder_1.append("      ");
-    _builder_1.append("long runToc = System.currentTimeMillis();");
-    _builder_1.newLine();
-    _builder_1.append("      ");
-    _builder_1.append("logger.info(\"Completed INITIAL_BWD_Debug in: \" + (runToc - runTic) + \" ms\");");
-    _builder_1.newLine();
-    _builder_1.newLine();
-    _builder_1.append("\t\t    ");
-    _builder_1.append("init_bwd.saveModels();");
-    _builder_1.newLine();
-    _builder_1.append("\t\t    ");
-    _builder_1.append("init_bwd.terminate();");
-    _builder_1.newLine();
-    _builder_1.append("\t    ");
-    _builder_1.append("} catch (IOException pIOE) {");
-    _builder_1.newLine();
-    _builder_1.append("\t     ");
-    _builder_1.append("logger.error(\"INITIAL_BWD_Debug threw an IOException\", pIOE);");
-    _builder_1.newLine();
-    _builder_1.append("\t       ");
-    _builder_1.append("}");
-    _builder_1.newLine();
-    _builder_1.append("    ");
-    _builder_1.append("});");
-    _builder_1.newLine();
-    _builder_1.append("}");
-    _builder_1.newLine();
-    return DefaultFilesGenerator.generateDebugStructure(_builder.toString(), fileName, 
-      "INITIAL_BWD_App", projectName, _builder_1.toString(), 
-      "");
-  }
-
   public static String generateDefaultRegHelperFile(final String projectName) {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("package org.emoflon.ibex.tgg.run.");
@@ -1034,11 +700,11 @@ public class DefaultFilesGenerator {
     _builder.newLine();
     _builder.append("import org.eclipse.emf.ecore.resource.ResourceSet;");
     _builder.newLine();
-    _builder.append("import org.emoflon.ibex.tgg.compiler.defaults.IRegistrationHelper;");
+    _builder.append("import org.emoflon.ibex.tgg.runtime.config.IRegistrationHelper;");
     _builder.newLine();
-    _builder.append("import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;");
+    _builder.append("import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;");
     _builder.newLine();
-    _builder.append("import org.emoflon.ibex.tgg.operational.strategies.modules.IbexExecutable;");
+    _builder.append("import org.emoflon.ibex.tgg.runtime.strategies.modules.IbexExecutable;");
     _builder.newLine();
     _builder.newLine();
     _builder.append("public class _DefaultRegistrationHelper implements IRegistrationHelper{");
@@ -1068,103 +734,6 @@ public class DefaultFilesGenerator {
     _builder.newLine();
     _builder.append("\t\t");
     _builder.append("return new HiPERegistrationHelper().createIbexOptions();");
-    _builder.newLine();
-    _builder.append("\t");
-    _builder.append("}");
-    _builder.newLine();
-    _builder.append("}");
-    _builder.newLine();
-    return _builder.toString();
-  }
-
-  public static String generateRegHelperFile(final String projectName, final TGGModel tgg) {
-    StringConcatenation _builder = new StringConcatenation();
-    _builder.append("package org.emoflon.ibex.tgg.run.");
-    String _lowerCase = MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase();
-    _builder.append(_lowerCase);
-    _builder.append(".config;");
-    _builder.newLineIfNotEmpty();
-    _builder.newLine();
-    _builder.append("import java.io.IOException;");
-    _builder.newLine();
-    _builder.newLine();
-    _builder.append("import org.eclipse.emf.ecore.resource.ResourceSet;");
-    _builder.newLine();
-    _builder.append("import org.emoflon.ibex.tgg.operational.csp.constraints.factories.");
-    String _lowerCase_1 = MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase();
-    _builder.append(_lowerCase_1);
-    _builder.append(".UserDefinedRuntimeTGGAttrConstraintFactory;");
-    _builder.newLineIfNotEmpty();
-    _builder.append("import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;");
-    _builder.newLine();
-    _builder.append("import org.emoflon.ibex.tgg.compiler.defaults.IRegistrationHelper;");
-    _builder.newLine();
-    _builder.append("import org.emoflon.ibex.tgg.operational.strategies.modules.IbexExecutable;");
-    _builder.newLine();
-    _builder.append("import org.emoflon.ibex.tgg.runtime.democles.DemoclesTGGEngine;");
-    _builder.newLine();
-    _builder.newLine();
-    _builder.append("public class DemoclesRegistrationHelper implements IRegistrationHelper {");
-    _builder.newLine();
-    _builder.newLine();
-    _builder.append("\t");
-    _builder.append("/** Load and register source and target metamodels */");
-    _builder.newLine();
-    _builder.append("\t");
-    _builder.append("public void registerMetamodels(ResourceSet rs, IbexExecutable executable) throws IOException {");
-    _builder.newLine();
-    _builder.append("\t\t");
-    _builder.append("// Replace to register generated code or handle other URI-related requirements");
-    _builder.newLine();
-    {
-      EList<EPackageDependency> _dependencies = tgg.getMetaData().getDependencies();
-      for(final EPackageDependency imp : _dependencies) {
-        _builder.append("\t\t");
-        _builder.append("executable.getResourceHandler().loadAndRegisterMetamodel(\"");
-        String _ecoreURI = imp.getEcoreURI();
-        _builder.append(_ecoreURI, "\t\t");
-        _builder.append("\");");
-        _builder.newLineIfNotEmpty();
-      }
-    }
-    _builder.append("\t");
-    _builder.append("}");
-    _builder.newLine();
-    _builder.newLine();
-    _builder.append("\t");
-    _builder.append("/** Create default options **/");
-    _builder.newLine();
-    _builder.append("\t");
-    _builder.append("public IbexOptions createIbexOptions() {");
-    _builder.newLine();
-    _builder.append("\t\t");
-    _builder.append("IbexOptions options = new IbexOptions();");
-    _builder.newLine();
-    _builder.append("\t\t");
-    _builder.append("options.blackInterpreter(new DemoclesTGGEngine());");
-    _builder.newLine();
-    _builder.append("\t\t");
-    _builder.append("options.project.name(\"");
-    String _lastCapitalizedSegmentOf = MoflonUtil.lastCapitalizedSegmentOf(projectName);
-    _builder.append(_lastCapitalizedSegmentOf, "\t\t");
-    _builder.append("\");");
-    _builder.newLineIfNotEmpty();
-    _builder.append("\t\t");
-    _builder.append("options.project.path(\"");
-    _builder.append(projectName, "\t\t");
-    _builder.append("\");");
-    _builder.newLineIfNotEmpty();
-    _builder.append("\t\t");
-    _builder.append("options.debug.ibexDebug(false);");
-    _builder.newLine();
-    _builder.append("\t\t");
-    _builder.append("options.csp.userDefinedConstraints(new UserDefinedRuntimeTGGAttrConstraintFactory());");
-    _builder.newLine();
-    _builder.append("\t\t");
-    _builder.append("options.registrationHelper(this);");
-    _builder.newLine();
-    _builder.append("\t\t");
-    _builder.append("return options;");
     _builder.newLine();
     _builder.append("\t");
     _builder.append("}");

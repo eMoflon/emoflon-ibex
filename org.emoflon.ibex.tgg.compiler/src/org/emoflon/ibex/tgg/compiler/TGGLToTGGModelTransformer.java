@@ -244,7 +244,12 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		for(var xtextConditionLibrary : editorFile.getLibraries()) {
 			var constraintDefinitionLibrary = cspFactory.createTGGAttributeConstraintDefinitionLibrary();
 			constraintDefinitionLibrary.setName(xtextConditionLibrary.getName());
-			constraintDefinitionLibrary.setPackageName(AttrCondDefLibraryProvider.ATTR_COND_DEF_USERDEFINED_PACKAGE + "." + project.getName().toLowerCase());
+			if(xtextConditionLibrary.getName().equals(AttrCondDefLibraryProvider.DEFAULT_ATTR_COND_LIB_NAME)) {
+				constraintDefinitionLibrary.setPackageName(AttrCondDefLibraryProvider.ATTR_COND_DEF_PREDEFINED_PACKAGE);
+			}
+			else {
+				constraintDefinitionLibrary.setPackageName(AttrCondDefLibraryProvider.ATTR_COND_DEF_USERDEFINED_PACKAGE + "." + project.getName().toLowerCase());
+			}
 			model.getAttributeConstraintDefinitionLibraries().add(constraintDefinitionLibrary);
 			
 			for(var xtextConditionDefinition : xtextConditionLibrary.getAttributeCondDefs()) {
