@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
-import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.classification.ClassifiedMatch;

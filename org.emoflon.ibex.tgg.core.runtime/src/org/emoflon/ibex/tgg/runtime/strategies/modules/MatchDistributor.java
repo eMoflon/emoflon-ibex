@@ -15,7 +15,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.common.engine.IMatch;
-import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.interpreter.BlackInterpreter;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;

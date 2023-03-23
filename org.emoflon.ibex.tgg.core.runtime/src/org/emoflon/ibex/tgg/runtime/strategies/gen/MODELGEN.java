@@ -5,8 +5,8 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 
-import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
+import org.emoflon.ibex.tgg.patterns.PatternType;
+import org.emoflon.ibex.tgg.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.matches.SimpleTGGMatch;

@@ -2,7 +2,7 @@ package org.emoflon.ibex.tgg.runtime.repair.strategies;
 
 import java.util.Objects;
 
-import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 
 public class RepairApplicationPoint {

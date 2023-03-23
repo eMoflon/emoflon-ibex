@@ -2,7 +2,7 @@ package org.emoflon.ibex.tgg.runtime.strategies.integrate.util;
 
 import java.util.Map;
 
-import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.matches.container.ImmutableMatchContainer;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.INTEGRATE;

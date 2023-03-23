@@ -1,7 +1,7 @@
 package org.emoflon.ibex.tgg.runtime.strategies.opt;
 
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
-import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getNodes;
+import static org.emoflon.ibex.tgg.patterns.TGGPatternUtil.getNodes;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -13,7 +13,7 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
 import org.emoflon.ibex.common.emf.EMFEdge;
-import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
+import org.emoflon.ibex.tgg.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.runtime.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.RuleHandler;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.TGGResourceHandler;

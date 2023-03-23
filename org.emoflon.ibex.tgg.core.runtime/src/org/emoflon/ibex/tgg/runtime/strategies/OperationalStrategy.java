@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.interpreter.IGreenInterpreter;
 import org.emoflon.ibex.tgg.runtime.interpreter.IbexGreenInterpreter;

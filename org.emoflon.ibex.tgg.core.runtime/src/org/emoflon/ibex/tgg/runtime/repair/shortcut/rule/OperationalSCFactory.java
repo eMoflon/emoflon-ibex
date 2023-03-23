@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import org.emoflon.ibex.tgg.compiler.analysis.ACAnalysis;
-import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.analysis.ACAnalysis;
+import org.emoflon.ibex.tgg.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.interpreter.IGreenInterpreter;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderSupport;

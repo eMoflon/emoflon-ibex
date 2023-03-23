@@ -14,7 +14,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalExpression;
 import org.emoflon.ibex.common.emf.EMFEdge;
-import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.runtime.csp.RuntimeTGGAttributeConstraintContainer;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;

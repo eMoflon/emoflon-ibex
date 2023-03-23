@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.compiler.analysis;
+package org.emoflon.ibex.tgg.analysis;
 
 
 import java.util.HashMap;
@@ -14,10 +14,10 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXOperationType;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternInvocation;
-import org.emoflon.ibex.tgg.compiler.analysis.FilterNACCandidate.EdgeDirection;
-import org.emoflon.ibex.tgg.compiler.patterns.InjectivityConstraintHandler;
-import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
+import org.emoflon.ibex.tgg.analysis.FilterNACCandidate.EdgeDirection;
+import org.emoflon.ibex.tgg.patterns.InjectivityConstraintHandler;
+import org.emoflon.ibex.tgg.patterns.PatternSuffixes;
+import org.emoflon.ibex.tgg.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;

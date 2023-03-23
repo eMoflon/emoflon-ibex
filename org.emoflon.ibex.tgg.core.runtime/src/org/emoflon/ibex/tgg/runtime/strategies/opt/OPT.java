@@ -15,7 +15,7 @@ import org.emoflon.ibex.common.collections.IntToObjectMap;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.engine.IMatch;
-import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
+import org.emoflon.ibex.tgg.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.interpreter.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;

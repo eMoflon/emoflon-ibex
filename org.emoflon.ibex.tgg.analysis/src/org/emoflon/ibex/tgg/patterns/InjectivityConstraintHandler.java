@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.compiler.patterns;
+package org.emoflon.ibex.tgg.patterns;
 
 import java.util.Collection;
 import java.util.HashSet;

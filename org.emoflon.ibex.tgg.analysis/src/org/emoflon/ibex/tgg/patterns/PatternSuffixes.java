@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.compiler.patterns;
+package org.emoflon.ibex.tgg.patterns;
 
 /**
  * All suffixes used to distinguish the different patterns based on their names.

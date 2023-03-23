@@ -5,8 +5,8 @@ Bundle-SymbolicName: org.emoflon.ibex.tgg.analysis
 Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Automatic-Module-Name: org.emoflon.ibex.tgg.analysis
-Export-Package: org.emoflon.ibex.tgg.compiler.analysis,
- org.emoflon.ibex.tgg.compiler.patterns
+Export-Package: org.emoflon.ibex.tgg.analysis,
+ org.emoflon.ibex.tgg.patterns
 Require-Bundle: org.emoflon.ibex.tgg.tggmodel,
  org.emoflon.ibex.common.slimgt,
  org.emoflon.ibex.tgg.runtimemodel,

@@ -3,7 +3,7 @@ package org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.resolution.CRS_PreferSource;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.resolution.CRS_PreferTarget;

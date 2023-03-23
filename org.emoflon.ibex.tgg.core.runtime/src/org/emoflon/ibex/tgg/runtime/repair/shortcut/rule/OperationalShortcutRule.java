@@ -1,6 +1,6 @@
 package org.emoflon.ibex.tgg.runtime.repair.shortcut.rule;
 
-import static org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil.getProtocolNodeName;
+import static org.emoflon.ibex.tgg.patterns.TGGPatternUtil.getProtocolNodeName;
 import static org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType.CONTEXT;
 import static org.emoflon.ibex.tgg.util.TGGModelUtils.getMarkerRefName;
 import static org.emoflon.ibex.tgg.util.TGGModelUtils.getMarkerTypeName;
@@ -14,10 +14,10 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelFactory;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta;
+import org.emoflon.ibex.tgg.analysis.ACAnalysis;
+import org.emoflon.ibex.tgg.analysis.FilterNACCandidate;
 import org.emoflon.ibex.tgg.compiler.TGGRuleDerivedFieldsTool;
-import org.emoflon.ibex.tgg.compiler.analysis.ACAnalysis;
-import org.emoflon.ibex.tgg.compiler.analysis.FilterNACCandidate;
-import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.interpreter.IGreenInterpreter;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderSupport;

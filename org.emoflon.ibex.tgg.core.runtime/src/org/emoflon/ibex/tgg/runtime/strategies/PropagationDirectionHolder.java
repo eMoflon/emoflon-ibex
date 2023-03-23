@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.function.Function;
 
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
-import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.patterns.PatternType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalisationMode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 

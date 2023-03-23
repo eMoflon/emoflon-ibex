@@ -10,7 +10,7 @@ import java.util.function.BiConsumer;
 
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.delta.validation.InvalidDeltaException;
-import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.interpreter.IbexRedInterpreter;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;

@@ -31,7 +31,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.Double
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.IntegerLiteral;
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.emf.EMFManipulationUtils;
-import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
+import org.emoflon.ibex.tgg.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.runtime.csp.RuntimeTGGAttributeConstraintContainer;

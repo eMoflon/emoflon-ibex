@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.emf.EMFEdge;
-import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.Conflict;

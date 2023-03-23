@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.compiler.analysis;
+package org.emoflon.ibex.tgg.analysis;
 
 import java.util.LinkedList;
 import java.util.List;

@@ -4,10 +4,10 @@ import java.util.Collection;
 
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.engine.IMatch;
-import org.emoflon.ibex.tgg.compiler.patterns.PatternSuffixes;
-import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
-import org.emoflon.ibex.tgg.compiler.patterns.PatternUtil;
-import org.emoflon.ibex.tgg.compiler.patterns.TGGPatternUtil;
+import org.emoflon.ibex.tgg.patterns.PatternSuffixes;
+import org.emoflon.ibex.tgg.patterns.PatternType;
+import org.emoflon.ibex.tgg.patterns.PatternUtil;
+import org.emoflon.ibex.tgg.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuleApplication;
 
 public interface ITGGMatch extends IMatch {
