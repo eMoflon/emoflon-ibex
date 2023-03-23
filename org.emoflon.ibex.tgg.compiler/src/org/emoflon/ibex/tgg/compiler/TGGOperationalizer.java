@@ -58,6 +58,7 @@ public class TGGOperationalizer {
 		constructBackward(rule);
 		constructConsistencyCheck(rule);
 		constructCheckOnly(rule);
+		constructConsistency(rule);
 	}
 
 	private void constructModelGen(TGGRule rule) {
@@ -121,6 +122,21 @@ public class TGGOperationalizer {
 		transformAssignments(op);
 		
 		createProtocolNode(op, BindingType.CREATE);
+		rule.getOperationalisations().add(op);
+		fillDerivedTGGOperationalRuleFields(op);
+	}
+	
+	private void constructConsistency(TGGRule rule) {
+		var op = createOperationalizedTGGRule(rule);
+		setRuleName(op, OperationalisationMode.CONSISTENCY);
+		op.setOperationalisationMode(OperationalisationMode.CONSISTENCY);
+		
+		transformBindings(op, DomainType.SOURCE, BindingType.CREATE, BindingType.CONTEXT);
+		transformBindings(op,  DomainType.CORRESPONDENCE, BindingType.CREATE, BindingType.CONTEXT);
+		transformBindings(op, DomainType.TARGET, BindingType.CREATE, BindingType.CONTEXT);
+		transformAssignments(op);
+		
+		createProtocolNode(op, BindingType.CONTEXT);
 		rule.getOperationalisations().add(op);
 		fillDerivedTGGOperationalRuleFields(op);
 	}
