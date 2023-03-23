@@ -21,6 +21,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.Relati
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator;
 import org.emoflon.ibex.common.slimgt.slimGT.NodeAttributeExpression;
 import org.emoflon.ibex.common.slimgt.util.SlimGTModelUtil;
+import org.emoflon.ibex.tgg.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelFactory;
@@ -286,7 +287,7 @@ public class TGGOperationalizer {
 
 	private void setRuleName(TGGRule rule, OperationalisationMode mode) {
 		rule.setName(rule.getName() + "_" + mode.getName());
-		rule.getPrecondition().setName(rule.getPrecondition().getName() + "_" + mode.getName());
+		rule.getPrecondition().setName(PatternSuffixes.getPatternName(rule.getPrecondition().getName(), mode));
 	}
 	
 	private void transformBindings(TGGOperationalRule op, DomainType domain, BindingType formerBinding, BindingType newBinding) {

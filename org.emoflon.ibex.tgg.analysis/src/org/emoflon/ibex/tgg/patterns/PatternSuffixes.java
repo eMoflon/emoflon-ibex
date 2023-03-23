@@ -1,5 +1,7 @@
 package org.emoflon.ibex.tgg.patterns;
 
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalisationMode;
+
 /**
  * All suffixes used to distinguish the different patterns based on their names.
  * 
@@ -20,7 +22,7 @@ package org.emoflon.ibex.tgg.patterns;
  * @author anthony.anjorin
  */
 public class PatternSuffixes {
-	
+
 	/** Used to separate the suffix from the name of the pattern */
 	public static final String SEP = "__";
 
@@ -29,9 +31,9 @@ public class PatternSuffixes {
 
 	public static final String FILTER_NAC_SRC = SEP + "FILTER_NAC_SRC";
 	public static final String FILTER_NAC_TRG = SEP + "FILTER_NAC_TRG";
-	
+
 	public static final String PAC = SEP + "PAC";
-	
+
 	/** Used for edge patterns */
 	public static final String EDGE = SEP + "EDGE";
 
@@ -88,15 +90,16 @@ public class PatternSuffixes {
 	public static final String CONSISTENCY = SEP + "CONSISTENCY";
 
 	/**
-	 * This pattern contains the protocol node and all marked elements (marking edges)
+	 * This pattern contains the protocol node and all marked elements (marking
+	 * edges)
 	 */
 	public static final String PROTOCOL = SEP + "PROTOCOL";
-	
+
 	/**
 	 * This pattern contains a protocol node
 	 */
 	public static final String PROTOCOL_CORE = SEP + "PROTOCOL_CORE";
-	
+
 	/**
 	 * Used as part of PROTOCOL patterns.
 	 */
@@ -127,32 +130,33 @@ public class PatternSuffixes {
 	 * complement rules is met.
 	 */
 	public static final String GENForCO = SEP + "GenForCO";
-	
+
 	/**
 	 * Used for pattern invocation. Represents the source part of the rule
 	 */
 	public static final String SRC = SEP + "SRC";
-	
+
 	/**
 	 * Used for pattern invocation. Represents the target part of the rule
 	 */
 	public static final String TRG = SEP + "TRG";
-	
+
 	/**
-	 * Used for pattern invocation. Represents the create correspondence part of the rule
+	 * Used for pattern invocation. Represents the create correspondence part of the
+	 * rule
 	 */
 	public static final String GREENCORR = SEP + "GREENCORR";
-	
+
 	/**
 	 * Used for pattern invocation. Represents a FWD-pattern and a GEN-pattern
 	 */
 	public static final String FWD_GREENCORR = SEP + "FWD_GREENCORR";
-	
+
 	/**
 	 * Used for pattern invocation. Represents a BWD-pattern and a GEN-pattern
 	 */
 	public static final String BWD_GREENCORR = SEP + "BWD_GREENCORR";
-	
+
 	/**
 	 * Removes the suffix of a given pattern name.
 	 * 
@@ -164,6 +168,14 @@ public class PatternSuffixes {
 			return name;
 		return name.substring(0, name.indexOf(SEP));
 	}
+	
+	public static String getPatternName(String name, OperationalisationMode mode) {
+		return name + getPatternSuffix(mode);
+	}
+
+	public static String getPatternName(String name, PatternType type) {
+		return name + getPatternSuffix(type);
+	}
 
 	public static PatternType extractType(String name) {
 		if (name.lastIndexOf(SEP) == -1) {
@@ -171,31 +183,53 @@ public class PatternSuffixes {
 		}
 		String suffix = name.substring(name.lastIndexOf(SEP));
 		return switch (suffix) {
-			case USER_NAC -> PatternType.USER_NAC;
-			case FILTER_NAC_SRC -> PatternType.FILTER_NAC_SRC;
-			case FILTER_NAC_TRG -> PatternType.FILTER_NAC_TRG;
-			case EDGE -> PatternType.EDGE;
-			case GEN_REFINEMENT_INVOCATIONS -> PatternType.GEN_REFINEMENT_INVOCATIONS;
-			case GEN -> PatternType.GEN;
-			case GEN_AXIOM_NAC -> PatternType.GEN_AXIOM_NAC;
-			case FWD -> PatternType.FWD;
-			case FWD_OPT -> PatternType.FWD_OPT;
-			case BWD -> PatternType.BWD;
-			case BWD_OPT -> PatternType.BWD_OPT;
-			case CONSISTENCY -> PatternType.CONSISTENCY;
-			case PROTOCOL -> PatternType.PROTOCOL;
-			case PROTOCOL_CORE -> PatternType.PROTOCOL_CORE;
-			case CC -> PatternType.CC;
-			case GENForCC -> PatternType.GENForCC;
-			case CO -> PatternType.CO;
-			case GENForCO -> PatternType.GENForCO;
-			case SRC -> PatternType.SRC;
-			case TRG -> PatternType.TRG;
-			case FWD_GREENCORR -> PatternType.FWD_GREENCORR;
-			case BWD_GREENCORR -> PatternType.BWD_GREENCORR;
-			case GREENCORR -> PatternType.GREENCORR;
-			case PAC -> PatternType.PAC;
-			default -> throw new RuntimeException(suffix + " is an unknown suffix for TGG patterns");
+		case FILTER_NAC_SRC -> PatternType.FILTER_NAC_SRC;
+		case FILTER_NAC_TRG -> PatternType.FILTER_NAC_TRG;
+		case GEN -> PatternType.GEN;
+		case GEN_AXIOM_NAC -> PatternType.GEN_AXIOM_NAC;
+		case FWD -> PatternType.FWD;
+		case FWD_OPT -> PatternType.FWD_OPT;
+		case BWD -> PatternType.BWD;
+		case BWD_OPT -> PatternType.BWD_OPT;
+		case CONSISTENCY -> PatternType.CONSISTENCY;
+		case CC -> PatternType.CC;
+		case GENForCC -> PatternType.GENForCC;
+		case CO -> PatternType.CO;
+		case GENForCO -> PatternType.GENForCO;
+		case SRC -> PatternType.SRC;
+		case TRG -> PatternType.TRG;
+		case PAC -> PatternType.PAC;
+		default -> throw new RuntimeException(suffix + " is an unknown suffix for TGG patterns");
+		};
+	}
+	
+	private static String getPatternSuffix(PatternType type) {
+		return switch(type) {
+		case GEN -> GEN;
+		case FWD -> FWD;
+		case BWD -> BWD;
+		case CO -> CO;
+		case CC -> CC;
+		case CONSISTENCY -> CONSISTENCY;
+		case SRC -> SRC;
+		case TRG -> TRG;
+		case FILTER_NAC_SRC -> FILTER_NAC_SRC;
+		case FILTER_NAC_TRG -> FILTER_NAC_TRG;
+		default -> throw new RuntimeException("Unkown pattern type detected " + type);
+		};
+	}
+
+	private static String getPatternSuffix(OperationalisationMode mode) {
+		return switch (mode) {
+		case GENERATE -> GEN;
+		case FORWARD -> FWD;
+		case BACKWARD -> BWD;
+		case CHECK_ONLY -> CO;
+		case CONSISTENCY_CHECK -> CC;
+		case CONSISTENCY -> CONSISTENCY;
+		case SOURCE -> SRC;
+		case TARGET -> TRG;
+		default -> throw new RuntimeException("Unkown operation mode detected " + mode);
 		};
 	}
 }

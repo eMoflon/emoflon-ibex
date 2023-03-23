@@ -365,7 +365,7 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		
 		var precondition = factory.createTGGPattern();
 		precondition.setAttributeConstraints(cspFactory.createTGGAttributeConstraintSet());
-		precondition.setName(rule.getName() + "_precondition");
+		precondition.setName(rule.getName());
 		
 		model.getPatternSet().getPatterns().add(precondition);
 		internalRule.setPrecondition(precondition);
