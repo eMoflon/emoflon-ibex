@@ -41,24 +41,6 @@ public class TGGPatternUtil {
 		return patternName;
 	}
 	
-	public static String generateGREENCORRBlackPatternName(String ruleName) {
-		String patternName = ruleName + PatternSuffixes.GREENCORR;
-		PatternUtil.registerPattern(patternName, PatternType.GREENCORR);
-		return patternName;
-	}
-	
-	public static String generateFWD_GREENCORRBlackPatternName(String ruleName) {
-		String patternName = ruleName + PatternSuffixes.FWD_GREENCORR;
-		PatternUtil.registerPattern(patternName, PatternType.FWD_GREENCORR);
-		return patternName;
-	}
-	
-	public static String generateBWD_GREENCORRBlackPatternName(String ruleName) {
-		String patternName = ruleName + PatternSuffixes.BWD_GREENCORR;
-		PatternUtil.registerPattern(patternName, PatternType.BWD_GREENCORR);
-		return patternName;
-	}
-
 	public static String generateBWDBlackPatternName(String ruleName) {
 		String patternName = ruleName + PatternSuffixes.BWD;
 		PatternUtil.registerPattern(patternName, PatternType.BWD);
@@ -119,24 +101,6 @@ public class TGGPatternUtil {
 		return patternName;
 	}
 	
-	public static String getProtocolPatternName(String ruleName) {
-		String patternName = ruleName + PatternSuffixes.PROTOCOL;
-		PatternUtil.registerPattern(patternName, PatternType.PROTOCOL);
-		return patternName;
-	}
-	
-	public static String getProtocolCorePatternName(String ruleName) {
-		String patternName = ruleName + PatternSuffixes.PROTOCOL_CORE;
-		PatternUtil.registerPattern(patternName, PatternType.PROTOCOL_CORE);
-		return patternName;
-	}
-	
-	public static String getNACPatternName(String nacName) {
-		String patternName = nacName + PatternSuffixes.USER_NAC;
-		PatternUtil.registerPattern(patternName, PatternType.USER_NAC);
-		return patternName;
-	}
-
 	/**
 	 * Returns the axiom name encoded in the name of the rule
 	 * 
