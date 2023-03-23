@@ -201,6 +201,7 @@ public abstract class OperationalShortcutRule {
 	}
 
 	protected void createFilterNacs(TGGRule targetRule, DomainType domain) {
+		// TODO larsF: application conditions for shortcut rules must be reworked (filterNCAs)s
 		Collection<FilterNACCandidate> decCandidates = filterNACAnalysis.computeFilterNACCandidates(targetRule, domain);
 		for (FilterNACCandidate dec : decCandidates) {
 			TGGNode decNode = operationalizedSCR.mapRuleNodeToSCNode(dec.getNodeInRule(), SCInputRule.REPLACING);

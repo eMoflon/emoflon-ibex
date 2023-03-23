@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
+import org.emoflon.ibex.tgg.compiler.builder.AttrCondDefLibraryProvider;
 import org.emoflon.ibex.tgg.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.INTEGRATE;
@@ -37,6 +38,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinition;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinitionLibrary;
 import org.emoflon.ibex.tgg.util.TGGModelUtils;
 
 import com.google.common.collect.Sets;
@@ -272,7 +274,8 @@ public class ConflictDetector {
 	private void detectAttributeConflicts(ConflictContainer container, ClassifiedMatch brokenMatch) {
 		for (ConstrainedAttributeChanges constrAttrChanges : brokenMatch.getConstrainedAttrChanges()) {
 			TGGAttributeConstraintDefinition def = constrAttrChanges.constraint.getDefinition();
-			if (def.isUserDefined() || !def.getName().startsWith("eq_")) {
+			TGGAttributeConstraintDefinitionLibrary library = AttrCondDefLibraryProvider.getPredefinedAttrCondLibrary(integrate.getTGG());
+			if (!library.getTggAttributeConstraintDefinitions().contains(def) || !def.getName().startsWith("eq_")) {
 				logger.error("Conflicted AttributeConstraints that are not equality constraints are currently not supported!");
 				continue;
 			}
@@ -457,8 +460,8 @@ public class ConflictDetector {
 		new DelPreserveAttrConflict(container, attrChange, domainToBePreserved, computeSortedRollBackCausesIfAbsent(directCausingMatch));
 	}
 
-	private synchronized void createAttrConflict(ConflictContainer container, ConstrainedAttributeChanges conflictedConstraint,
-			AttributeChange srcChange, AttributeChange trgChange) {
+	private synchronized void createAttrConflict(ConflictContainer container, ConstrainedAttributeChanges conflictedConstraint, AttributeChange srcChange,
+			AttributeChange trgChange) {
 		new AttributeConflict(container, conflictedConstraint, srcChange, trgChange);
 	}
 

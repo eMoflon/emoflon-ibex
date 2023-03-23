@@ -29,17 +29,9 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.CSPFactory;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinition;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintParameterDefinition;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintParameterValue;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintSet;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl;
 import org.emoflon.ibex.tgg.util.TGGFilterUtil;
 import org.emoflon.ibex.tgg.util.debug.ConsoleUtil;
-
-import language.LanguageFactory;
-import language.NAC;
-import language.TGGAttributeConstraintLibrary;
-import language.TGGAttributeExpression;
-import language.TGGParamValue;
 
 public class HigherOrderTGGRule extends TGGRuleImpl {
 
@@ -186,7 +178,6 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 		populateElts(rule, component, contextMapping);
 		transferAttrCondLibrary(rule, component);
 		adaptAttributeAssignments(rule, component);
-		transferNACs(rule, component);
 	}
 
 	private void populateElts(TGGRule rule, HigherOrderRuleComponent component, Map<TGGRuleElement, ComponentSpecificRuleElement> contextMapping) {
@@ -388,23 +379,6 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 		} else {
 			preConditionPattern.getAttributeConstraints().getParameters().addAll(copiedConstraintSet.getParameters());
 			preConditionPattern.getAttributeConstraints().getTggAttributeConstraints().addAll(copiedConstraintSet.getTggAttributeConstraints());
-		}
-	}
-
-	private void transferNACs(TGGRule rule, HigherOrderRuleComponent component) {
-		if (rule.getNacs().isEmpty())
-			return;
-
-		Collection<NAC> copiedNacs = EcoreUtil.copyAll(rule.getNacs());
-		for (NAC nac : copiedNacs) {
-			// TODO check if this works
-			for (TGGNode nacNode : nac.getNodes()) {
-				TGGNode ruleNode = component.getNodeFromName(nacNode.getName());
-				if (ruleNode != null) {
-					TGGNode hoNode = HigherOrderSupport.getHigherOrderElement(component, ruleNode);
-					nacNode.setName(hoNode.getName());
-				}
-			}
 		}
 	}
 

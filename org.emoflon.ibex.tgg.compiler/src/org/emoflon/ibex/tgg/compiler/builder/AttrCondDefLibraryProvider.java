@@ -98,4 +98,12 @@ public class AttrCondDefLibraryProvider {
 			WorkspaceHelper.addAllFoldersAndFile(project, pathToLib, defaultLib, new NullProgressMonitor());
 		}
 	}
+	
+	public static TGGAttributeConstraintDefinitionLibrary getPredefinedAttrCondLibrary(TGGModel model) {
+		for (var library : model.getAttributeConstraintDefinitionLibraries()) {
+			if (library.getPackageName().equals(ATTR_COND_DEF_PREDEFINED_PACKAGE) && library.getName().equals(DEFAULT_ATTR_COND_LIB_NAME))
+				return library;
+		}
+		return null;
+	}
 }
