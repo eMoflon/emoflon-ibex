@@ -1,29 +1,18 @@
 package org.emoflon.ibex.common.visualization.tgg
 
-import java.util.List
-import language.BindingType
-import language.DomainType
-import language.TGG
-import language.TGGAttributeConstraint
-import language.TGGAttributeConstraintLibrary
-import language.TGGAttributeConstraintOperators
-import language.TGGAttributeExpression
-import language.TGGEnumExpression
-import language.TGGInplaceAttributeExpression
-import language.TGGLiteralExpression
-import language.TGGParamValue
-import language.TGGRule
-import language.TGGRuleCorr
-import language.TGGRuleEdge
-import language.TGGRuleElement
-import language.TGGRuleNode
-import language.impl.TGGAttributeExpressionImpl
-import language.impl.TGGEnumExpressionImpl
-import language.impl.TGGLiteralExpressionImpl
-import language.repair.ExternalShortcutRule
-import language.repair.TGGRuleElementMapping
-import java.util.Set
 import java.util.HashSet
+import java.util.List
+import java.util.Set
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode
 
 class IBeXTggXmiPlantUMLGenerator {
 
@@ -75,15 +64,15 @@ class IBeXTggXmiPlantUMLGenerator {
 		}»]'''
 	}
 
-	def static String visualizeTGG(TGG tgg) {
+	def static String visualizeTGG(TGGModel tgg) {
 		'''
 				«plantUMLPreamble»
 			
-				«FOR rule : tgg.rules»
+				«FOR rule : tgg.ruleSet.rules»
 					«IF rule.abstract»abstract «ENDIF»class «rule.name» «IF rule.abstract»<<WHITE>> <<GREY>>«ELSE»<<BLACK>>«ENDIF»
 				«ENDFOR»
 				
-				«FOR rule : tgg.rules»
+				«FOR rule : tgg.ruleSet.rules»
 					«FOR superRule : rule.refines»
 						«superRule.name» <|-- «rule.name»
 					«ENDFOR»
@@ -105,8 +94,8 @@ class IBeXTggXmiPlantUMLGenerator {
 	}
 
 	private def static visualizeTGGRule(String namespace, TGGRule rule) {
-		var Set<TGGRuleEdge> processedOpposites = new HashSet();
-		
+		var Set<TGGEdge> processedOpposites = new HashSet();
+
 		'''
 			together {
 				«FOR node : rule.trgNodes»
@@ -122,7 +111,7 @@ class IBeXTggXmiPlantUMLGenerator {
 			
 			together {
 				«FOR node : rule.corrNodes»
-					«visualizeCorr(namespace, node as TGGRuleCorr)»
+					«visualizeCorr(namespace, node as TGGCorrespondence)»
 				«ENDFOR»
 			}
 			
@@ -177,22 +166,22 @@ class IBeXTggXmiPlantUMLGenerator {
 	}
 
 	private def static getSrcNodes(TGGRule rule) {
-		rule.nodes.filter[n|n.domainType == DomainType.SRC]
+		rule.nodes.filter[n|n.domainType == DomainType.SOURCE]
 	}
 
 	private def static getTrgNodes(TGGRule rule) {
-		rule.nodes.filter[n|n.domainType == DomainType.TRG]
+		rule.nodes.filter[n|n.domainType == DomainType.TARGET]
 	}
 
 	private def static getCorrNodes(TGGRule rule) {
-		rule.nodes.filter[n|n.domainType == DomainType.CORR]
+		rule.nodes.filter[n|n.domainType == DomainType.CORRESPONDENCE]
 	}
 
 	private def static getSrcTrgEdges(TGGRule rule) {
-		rule.edges.filter[e|e.domainType != DomainType.CORR]
+		rule.edges.filter[e|e.domainType != DomainType.CORRESPONDENCE]
 	}
 
-	private def static visualizeNode(String namespace, TGGRuleNode node, String domain) {
+	private def static visualizeNode(String namespace, TGGNode node, String domain) {
 		'''
 			class «idOf(namespace, node)» <<«node.bindingType.color»>> <<«domain»>> {
 				«FOR expr : node.attrExpr»
@@ -229,37 +218,36 @@ class IBeXTggXmiPlantUMLGenerator {
 		}
 	}
 
-	private def static visualizeCorr(String namespace, TGGRuleCorr node) {
+	private def static visualizeCorr(String namespace, TGGCorrespondence node) {
 		'''
 			«idOf(namespace, node.source)» .«node.bindingType.color.color» «idOf(namespace, node.target)» : «node.name»
 		'''
 	}
 
-	private def static visualizeEdge(String namespace, TGGRuleEdge edge, Set<TGGRuleEdge> processedOpposites) {
+	private def static visualizeEdge(String namespace, TGGEdge edge, Set<TGGEdge> processedOpposites) {
 		if (edge.type.EOpposite !== null) {
 			if (processedOpposites.contains(edge) || edge.type.name.endsWith("Inverse"))
 				return null
 			processedOpposites.add(getOppositeEdge(edge))
 			return '''
-				«idOf(namespace, edge.srcNode)» "«edge.type.EOpposite.name»" <-«edge.bindingType.color.color»-> "«edge.type.name»" «idOf(namespace, edge.trgNode)»
+				«idOf(namespace, edge.source)» "«edge.type.EOpposite.name»" <-«edge.bindingType.color.color»-> "«edge.type.name»" «idOf(namespace, edge.target)»
 			'''
 		}
 
 		return '''
-			«idOf(namespace, edge.srcNode)» -«edge.bindingType.color.color»-> «idOf(namespace, edge.trgNode)» : «edge.type.name»
+			«idOf(namespace, edge.source)» -«edge.bindingType.color.color»-> «idOf(namespace, edge.target)» : «edge.type.name»
 		'''
 	}
-	
-	private def static getOppositeEdge(TGGRuleEdge edge) {
+
+	private def static getOppositeEdge(TGGEdge edge) {
 		val rule = edge.eContainer as TGGRule
 		val oppositeType = edge.type.EOpposite
-		return rule.edges.filter[e|e.type === oppositeType]
-				.filter[e|e.srcNode === edge.trgNode]
-				.filter[e|e.trgNode === edge.srcNode]
-				.findFirst[e|true]
+		return rule.edges.filter[e|e.type === oppositeType].filter[e|e.source === edge.target].filter [ e |
+			e.target === edge.source
+		].findFirst[e|true]
 	}
 
-	private def static idOf(String namespace, TGGRuleNode node) {
+	private def static idOf(String namespace, IBeXNode node) {
 		'''"«namespace».«node.name» : «node.type.name»"'''
 	}
 
@@ -295,15 +283,15 @@ class IBeXTggXmiPlantUMLGenerator {
 	}
 
 	private def static visualizeMapping(String srcNamespace, String trgNamespace, TGGRuleElementMapping mapping) {
-		if (mapping.sourceRuleElement instanceof TGGRuleCorr) {
+		if (mapping.sourceRuleElement instanceof TGGCorrespondence) {
 			'''
 			
 			'''
-		} else if (mapping.sourceRuleElement instanceof TGGRuleNode) {
+		} else if (mapping.sourceRuleElement instanceof TGGNode) {
 			'''
-				«idOf(srcNamespace, mapping.sourceRuleElement as TGGRuleNode)» --[#RoyalBlue] «idOf(trgNamespace, mapping.targetRuleElement as TGGRuleNode)»
+				«idOf(srcNamespace, mapping.sourceRuleElement as TGGNode)» --[#RoyalBlue] «idOf(trgNamespace, mapping.targetRuleElement as TGGNode)»
 			'''
-		} else if (mapping.sourceRuleElement instanceof TGGRuleEdge) {
+		} else if (mapping.sourceRuleElement instanceof TGGEdge) {
 			'''
 				
 			'''
@@ -314,65 +302,93 @@ class IBeXTggXmiPlantUMLGenerator {
 		var namespace = scrule.name
 		var namespaceSrc = "[O] " + scrule.sourceRule.name
 		var namespaceTrg = "[R] " + scrule.targetRule.name
-		
-		var Set<TGGRuleEdge> processedOpposites = new HashSet();
+
+		var Set<TGGEdge> processedOpposites = new HashSet();
 
 		'''
 			«plantUMLPreamble»
 			
-«««			together {
+			«««			together {
 				«FOR mapping : scrule.mapping.filter[m|m.sourceRuleElement.domainType == DomainType.SRC]»
-					«visualizeNodeMapping(namespace, mapping, "SRC")»
+				«visualizeNodeMapping(namespace, mapping, "SRC")»
 				«ENDFOR»
 				«FOR element : scrule.unboundSrcContext.filter(DomainType.SRC)»
-					«visualizeNode(namespace, element, "SRC", "BLACK", "O")»
+				«visualizeNode(namespace, element, "SRC", "BLACK", "O")»
 				«ENDFOR»
 				«FOR element : scrule.unboundTrgContext.filter(DomainType.SRC)»
-					«visualizeNode(namespace, element, "SRC", "BLACK", "R")»
+				«visualizeNode(namespace, element, "SRC", "BLACK", "R")»
 				«ENDFOR»
 				«FOR element : scrule.creations.filter(DomainType.SRC)»
-					«visualizeNode(namespace, element, "SRC", "GREEN", "R")»
+				«visualizeNode(namespace, element, "SRC", "GREEN", "R")»
 				«ENDFOR»
 				«FOR element : scrule.deletions.filter(DomainType.SRC)»
-					«visualizeNode(namespace, element, "SRC", "RED", "O")»
+				«visualizeNode(namespace, element, "SRC", "RED", "O")»
 				«ENDFOR»
-«««			}
+			«««			}
 			
 «««			together {
 				«FOR mapping : scrule.mapping.filter[m|m.sourceRuleElement.domainType == DomainType.TRG]»
-					«visualizeNodeMapping(namespace, mapping, "TRG")»
-				«ENDFOR»
-				«FOR element : scrule.unboundSrcContext.filter(DomainType.TRG)»
-					«visualizeNode(namespace, element, "TRG", "BLACK", "O")»
-				«ENDFOR»
-				«FOR element : scrule.unboundTrgContext.filter(DomainType.TRG)»
-					«visualizeNode(namespace, element, "TRG", "BLACK", "R")»
-				«ENDFOR»
-				«FOR element : scrule.creations.filter(DomainType.TRG)»
-					«visualizeNode(namespace, element, "TRG", "GREEN", "R")»
-				«ENDFOR»
-				«FOR element : scrule.deletions.filter(DomainType.TRG)»
-					«visualizeNode(namespace, element, "TRG", "RED", "O")»
-				«ENDFOR»
-«««			}
+			
+	«visualizeNodeMapping(namespace, mapping, "TRG")»
+			
+«ENDFOR»
+			
+«FOR element : scrule.unboundSrcContext.filter(DomainType.TRG)»
+			
+	«visualizeNode(namespace, element, "TRG", "BLACK", "O")»
+			
+«ENDFOR»
+			
+«FOR element : scrule.unboundTrgContext.filter(DomainType.TRG)»
+			
+	«visualizeNode(namespace, element, "TRG", "BLACK", "R")»
+			
+«ENDFOR»
+			
+«FOR element : scrule.creations.filter(DomainType.TRG)»
+			
+	«visualizeNode(namespace, element, "TRG", "GREEN", "R")»
+			
+«ENDFOR»
+			
+«FOR element : scrule.deletions.filter(DomainType.TRG)»
+			
+	«visualizeNode(namespace, element, "TRG", "RED", "O")»
+			
+«ENDFOR»
+			«««			}
 			
 «««			together {
 				«FOR mapping : scrule.mapping.filter[m|m.sourceRuleElement.domainType == DomainType.CORR]»
-					«visualizeCorrMapping(namespace, mapping)»
-				«ENDFOR»
-				«FOR corr : scrule.unboundSrcContext.filterCorrNodes»
-					«visualizeCorr(namespace, corr, "BLACK", "O", scrule.mapping)»
-				«ENDFOR»
-				«FOR corr : scrule.unboundTrgContext.filterCorrNodes»
-					«visualizeCorr(namespace, corr, "BLACK", "R", scrule.mapping)»
-				«ENDFOR»
-				«FOR corr : scrule.creations.filterCorrNodes»
-					«visualizeCorr(namespace, corr, "GREEN", "R", scrule.mapping)»
-				«ENDFOR»
-				«FOR corr : scrule.deletions.filterCorrNodes»
-					«visualizeCorr(namespace, corr, "RED", "O", scrule.mapping)»
-				«ENDFOR»
-«««			}
+			
+	«visualizeCorrMapping(namespace, mapping)»
+			
+«ENDFOR»
+			
+«FOR corr : scrule.unboundSrcContext.filterCorrNodes»
+			
+	«visualizeCorr(namespace, corr, "BLACK", "O", scrule.mapping)»
+			
+«ENDFOR»
+			
+«FOR corr : scrule.unboundTrgContext.filterCorrNodes»
+			
+	«visualizeCorr(namespace, corr, "BLACK", "R", scrule.mapping)»
+			
+«ENDFOR»
+			
+«FOR corr : scrule.creations.filterCorrNodes»
+			
+	«visualizeCorr(namespace, corr, "GREEN", "R", scrule.mapping)»
+			
+«ENDFOR»
+			
+«FOR corr : scrule.deletions.filterCorrNodes»
+			
+	«visualizeCorr(namespace, corr, "RED", "O", scrule.mapping)»
+			
+«ENDFOR»
+			«««			}
 			
 			«FOR mapping : scrule.mapping.filter[m|m.sourceRuleElement.domainType != DomainType.CORR]»
 				«visualizeEdgeMapping(namespace, mapping, processedOpposites)»
@@ -399,9 +415,9 @@ class IBeXTggXmiPlantUMLGenerator {
 	}
 
 	private def static visualizeNodeMapping(String namespace, TGGRuleElementMapping mapping, String domain) {
-		if (mapping.sourceRuleElement instanceof TGGRuleNode) {
-			var srcNode = mapping.sourceRuleElement as TGGRuleNode
-			var trgNode = mapping.targetRuleElement as TGGRuleNode
+		if (mapping.sourceRuleElement instanceof TGGNode) {
+			var srcNode = mapping.sourceRuleElement as TGGNode
+			var trgNode = mapping.targetRuleElement as TGGNode
 			'''
 				class «idOfMapped(namespace, srcNode)» <<BLUE>> <<«domain»>> {
 					«FOR expr : trgNode.attrExpr»
@@ -414,8 +430,8 @@ class IBeXTggXmiPlantUMLGenerator {
 
 	private def static visualizeNode(String namespace, TGGRuleElement elt, String domain, String binding,
 		String origin) {
-		if (elt instanceof TGGRuleNode) {
-			var node = elt as TGGRuleNode
+		if (elt instanceof TGGNode) {
+			var node = elt as TGGNode
 			'''
 				class «idOf(namespace, node, origin)» <<«binding»>> <<«domain»>> {
 					«FOR expr : node.attrExpr»
@@ -427,28 +443,34 @@ class IBeXTggXmiPlantUMLGenerator {
 	}
 
 	private def static visualizeCorrMapping(String namespace, TGGRuleElementMapping mapping) {
-		if (mapping.sourceRuleElement instanceof TGGRuleCorr) {
-			var srcCorr = mapping.sourceRuleElement as TGGRuleCorr
+		if (mapping.sourceRuleElement instanceof TGGCorrespondence) {
+			var srcCorr = mapping.sourceRuleElement as TGGCorrespondence
 			'''
 				«idOfMapped(namespace, srcCorr.source)» .«"BLUE".color» «idOfMapped(namespace, srcCorr.target)» : «srcCorr.name»
 			'''
 		}
 	}
 
-	private def static visualizeCorr(String namespace, TGGRuleCorr corr, String binding, String origin, List<TGGRuleElementMapping> mappings) {
+	private def static visualizeCorr(String namespace, TGGCorrespondence corr, String binding, String origin,
+		List<TGGRuleElementMapping> mappings) {
 		var srcMapping = corr.source.isMapped(mappings)
 		var trgMapping = corr.target.isMapped(mappings)
-		var srcId = srcMapping !== null ? idOfMapped(namespace, srcMapping.sourceRuleElement as TGGRuleNode) : idOf(namespace, corr.source, origin)
-		var trgId = trgMapping !== null ? idOfMapped(namespace, trgMapping.sourceRuleElement as TGGRuleNode) : idOf(namespace, corr.target, origin)
+		var srcId = srcMapping !== null
+				? idOfMapped(namespace, srcMapping.sourceRuleElement as TGGNode)
+				: idOf(namespace, corr.source, origin)
+		var trgId = trgMapping !== null
+				? idOfMapped(namespace, trgMapping.sourceRuleElement as TGGNode)
+				: idOf(namespace, corr.target, origin)
 		'''
 			«srcId» .«binding.color» «trgId» : «corr.name»
 		'''
 	}
 
-	private def static visualizeEdgeMapping(String namespace, TGGRuleElementMapping mapping, Set<TGGRuleEdge> processedOpposites) {
-		if (mapping.sourceRuleElement instanceof TGGRuleEdge) {
-			var srcEdge = mapping.sourceRuleElement as TGGRuleEdge
-			
+	private def static visualizeEdgeMapping(String namespace, TGGRuleElementMapping mapping,
+		Set<TGGEdge> processedOpposites) {
+		if (mapping.sourceRuleElement instanceof TGGEdge) {
+			var srcEdge = mapping.sourceRuleElement as TGGEdge
+
 			if (srcEdge.type.EOpposite !== null) {
 				if (processedOpposites.contains(srcEdge) || srcEdge.type.name.endsWith("Inverse"))
 					return null
@@ -457,7 +479,7 @@ class IBeXTggXmiPlantUMLGenerator {
 					«idOfMapped(namespace, srcEdge.srcNode)» "«srcEdge.type.EOpposite.name»" <-«"BLUE".color»-> "«srcEdge.type.name»" «idOfMapped(namespace, srcEdge.trgNode)»
 				'''
 			}
-			
+
 			return '''
 				«idOfMapped(namespace, srcEdge.srcNode)» -«"BLUE".color»-> «idOfMapped(namespace, srcEdge.trgNode)» : «srcEdge.type.name»
 			'''
@@ -465,18 +487,18 @@ class IBeXTggXmiPlantUMLGenerator {
 	}
 
 	private def static visualizeEdge(String namespace, TGGRuleElement elt, String binding, String origin,
-		List<TGGRuleElementMapping> mappings, Set<TGGRuleEdge> processedOpposites) {
-		if (elt instanceof TGGRuleEdge) {
-			var edge = elt as TGGRuleEdge
-			
+		List<TGGRuleElementMapping> mappings, Set<TGGEdge> processedOpposites) {
+		if (elt instanceof TGGEdge) {
+			var edge = elt as TGGEdge
+
 			var srcMapping = edge.srcNode.isMapped(mappings)
 			var trgMapping = edge.trgNode.isMapped(mappings)
 			var srcId = srcMapping === null
 					? idOf(namespace, edge.srcNode, origin)
-					: idOfMapped(namespace, srcMapping.sourceRuleElement as TGGRuleNode)
+					: idOfMapped(namespace, srcMapping.sourceRuleElement as TGGNode)
 			var trgId = trgMapping === null
 					? idOf(namespace, edge.trgNode, origin)
-					: idOfMapped(namespace, trgMapping.sourceRuleElement as TGGRuleNode)
+					: idOfMapped(namespace, trgMapping.sourceRuleElement as TGGNode)
 
 			if (edge.type.EOpposite !== null) {
 				if (processedOpposites.contains(edge) || edge.type.name.endsWith("Inverse"))
@@ -486,22 +508,22 @@ class IBeXTggXmiPlantUMLGenerator {
 					«srcId» "«edge.type.EOpposite.name»" <-«binding.color»-> "«edge.type.name»" «trgId»
 				'''
 			}
-			
+
 			return '''
 				«srcId» -«binding.color»-> «trgId» : «edge.type.name»
 			'''
 		}
 	}
 
-	private def static isMapped(TGGRuleNode node, List<TGGRuleElementMapping> mappings) {
+	private def static isMapped(TGGNode node, List<TGGRuleElementMapping> mappings) {
 		mappings.findFirst[m|m.sourceRuleElement.equals(node) || m.targetRuleElement.equals(node)]
 	}
 
-	private def static idOfMapped(String namespace, TGGRuleNode srcNode) {
+	private def static idOfMapped(String namespace, TGGNode srcNode) {
 		'''"«namespace».[M] «srcNode.name» : «srcNode.type.name»"'''
 	}
 
-	private def static idOf(String namespace, TGGRuleNode node, String origin) {
+	private def static idOf(String namespace, TGGNode node, String origin) {
 		'''"«namespace».[«origin»] «node.name» : «node.type.name»"'''
 	}
 
@@ -512,9 +534,9 @@ class IBeXTggXmiPlantUMLGenerator {
 	private def static filterInverse(List<TGGRuleElement> list, DomainType domainType) {
 		list.filter[e|e.domainType != domainType]
 	}
-	
+
 	private def static filterCorrNodes(List<TGGRuleElement> list) {
-		list.filter(TGGRuleCorr)
+		list.filter(TGGCorrespondence)
 	}
 
 	def static String visualizeMapping(TGGRuleElementMapping mapping) {
@@ -566,9 +588,9 @@ class IBeXTggXmiPlantUMLGenerator {
 		String namespaceTrg, int count) {
 		var srcName = '''"src«count»"'''
 		var trgName = '''"trg«count»"'''
-		if (mapping.sourceRuleElement instanceof TGGRuleCorr) {
-			var srcCorr = mapping.sourceRuleElement as TGGRuleCorr
-			var trgCorr = mapping.targetRuleElement as TGGRuleCorr
+		if (mapping.sourceRuleElement instanceof TGGCorrespondence) {
+			var srcCorr = mapping.sourceRuleElement as TGGCorrespondence
+			var trgCorr = mapping.targetRuleElement as TGGCorrespondence
 			'''
 				class «srcName» <<BLUE>> <<WHITE>>
 				«idOf(namespaceSrc, srcCorr.source)» -«"BLUE".color»# «srcName»
@@ -579,25 +601,25 @@ class IBeXTggXmiPlantUMLGenerator {
 				«mappingName» -left«"BLUE".color»> «srcName»
 				«mappingName» -right«"BLUE".color»> «trgName»
 			'''
-		} else if (mapping.sourceRuleElement instanceof TGGRuleNode) {
-			var srcNode = mapping.sourceRuleElement as TGGRuleNode
-			var trgNode = mapping.targetRuleElement as TGGRuleNode
+		} else if (mapping.sourceRuleElement instanceof TGGNode) {
+			var srcNode = mapping.sourceRuleElement as TGGNode
+			var trgNode = mapping.targetRuleElement as TGGNode
 			'''
 				«mappingName» -left«"BLUE".color»> «idOf(namespaceSrc, srcNode)»
 				«mappingName» -right«"BLUE".color»> «idOf(namespaceTrg, trgNode)»
 			'''
-		} else if (mapping.sourceRuleElement instanceof TGGRuleEdge) {
-			var srcEdge = mapping.sourceRuleElement as TGGRuleEdge
-			var trgEdge = mapping.targetRuleElement as TGGRuleEdge
+		} else if (mapping.sourceRuleElement instanceof TGGEdge) {
+			var srcEdge = mapping.sourceRuleElement as TGGEdge
+			var trgEdge = mapping.targetRuleElement as TGGEdge
 
-			if (srcEdge.domainType != DomainType.CORR) {
+			if (srcEdge.domainType != DomainType.CORRESPONDENCE) {
 				'''
 					class «srcName» <<BLUE>> <<WHITE>>
 					«idOf(namespaceSrc, srcEdge.srcNode)» -«"BLUE".color»-# «srcName»
-					«srcName» #-«"BLUE".color»- «idOf(namespaceSrc, srcEdge.trgNode)»
+					«srcName» #-«"BLUE".color»- «idOf(namespaceSrc, srcEdge.target)»
 					class «trgName» <<BLUE>> <<WHITE>>
 					«idOf(namespaceTrg, trgEdge.srcNode)» -«"BLUE".color»-# «trgName»
-					«trgName» #-«"BLUE".color»- «idOf(namespaceTrg, trgEdge.trgNode)»
+					«trgName» #-«"BLUE".color»- «idOf(namespaceTrg, trgEdge.target)»
 					«mappingName» -left«"BLUE".color»> «srcName»
 					«mappingName» -right«"BLUE".color»> «trgName»
 				'''
@@ -606,11 +628,11 @@ class IBeXTggXmiPlantUMLGenerator {
 	}
 
 	private def static String getMappingName(TGGRuleElementMapping mapping) {
-		if (mapping.sourceRuleElement instanceof TGGRuleNode) {
+		if (mapping.sourceRuleElement instanceof TGGNode) {
 			'''"«mapping.sourceRuleElement.name»<->«mapping.targetRuleElement.name» : Mapping"'''
-		} else if (mapping.sourceRuleElement instanceof TGGRuleEdge) {
-			var srcEdge = mapping.sourceRuleElement as TGGRuleEdge
-			var trgEdge = mapping.targetRuleElement as TGGRuleEdge
+		} else if (mapping.sourceRuleElement instanceof TGGEdge) {
+			var srcEdge = mapping.sourceRuleElement as TGGEdge
+			var trgEdge = mapping.targetRuleElement as TGGEdge
 			'''"«srcEdge.type.name»<->«trgEdge.type.name» : Mapping"'''
 		}
 	}
