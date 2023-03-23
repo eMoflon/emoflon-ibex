@@ -3,8 +3,8 @@ package org.emoflon.ibex.tgg.runtime.csp.constraints.factories;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.runtime.csp.RuntimeTGGAttributeConstraint;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinition;
@@ -12,21 +12,24 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefi
 
 public class RuntimeTGGAttrConstraintProvider {
 
+	private Collection<TGGAttributeConstraintDefinitionLibrary> libraries;
 	private Collection<RuntimeTGGAttrConstraintFactory> factories;
-	private Map<String, TGGAttributeConstraintDefinition> constraintDefinitions;
+	private Map<TGGAttributeConstraintDefinition, RuntimeTGGAttrConstraintFactory> constraintToFactory;
 	
 	public RuntimeTGGAttrConstraintProvider(Collection<TGGAttributeConstraintDefinitionLibrary> constraintDefLibraries) {
-		factories = new ArrayList<>();
+		factories = new LinkedList<>();
+		libraries = new LinkedList<>();
 		registerFactory(new PredefRuntimeTGGAttrConstraintFactory());
-		constraintDefinitions = new HashMap<>();
+		constraintToFactory = new HashMap<>();
 		for(var constraintDefLib : constraintDefLibraries)
 			registerAllTGGAttributeConstraintDefinitions(constraintDefLib);
 	}
 	
 	public RuntimeTGGAttrConstraintProvider(TGGAttributeConstraintDefinitionLibrary constraintDefLib) {
-		factories = new ArrayList<>();
+		factories = new LinkedList<>();
+		libraries = new LinkedList<>();
 		registerFactory(new PredefRuntimeTGGAttrConstraintFactory());
-		constraintDefinitions = new HashMap<>();
+		constraintToFactory = new HashMap<>();
 		registerAllTGGAttributeConstraintDefinitions(constraintDefLib);
 	}
 	
@@ -35,44 +38,37 @@ public class RuntimeTGGAttrConstraintProvider {
 	 */
 	public void registerFactory(RuntimeTGGAttrConstraintFactory factory) {
 		factories.add(factory);
+		for(var library : libraries) {
+			if(factory.getClass().getSimpleName().equals(library.getName())) {
+				library.getTggAttributeConstraintDefinitions().stream().forEach(def -> constraintToFactory.put(def, factory));
+				return;
+			}
+		}
 	}
 	
 	/**
 	 * registers all constraint definitions to be able to perform a more efficient lookup
 	 */
-	private void registerAllTGGAttributeConstraintDefinitions(TGGAttributeConstraintDefinitionLibrary constraintDefLib) {
-		constraintDefLib.getTggAttributeConstraintDefinitions().stream().forEach(def -> constraintDefinitions.put(def.getName(), def));
+	private void registerAllTGGAttributeConstraintDefinitions(TGGAttributeConstraintDefinitionLibrary library) {
+		libraries.add(library);
+		for(var factory : factories) {
+			if(factory.getClass().getSimpleName().equals(library.getName())) {
+				library.getTggAttributeConstraintDefinitions().stream().forEach(def -> constraintToFactory.put(def, factory));
+				return;
+			}
+		}
 	}
 	
 	/**
 	 * @param name of the constraint which is to be instantiated
 	 * @return a new instance of type RuntimeTGGAttributeConstraint implementing the constraint with id = name
 	 */
-	public RuntimeTGGAttributeConstraint createRuntimeTGGAttributeConstraint(String name){
-		TGGAttributeConstraintDefinition constraintDefinition = constraintDefinitions.get(name);
-		for(RuntimeTGGAttrConstraintFactory factory : factories) {
-			if(factory.containsRuntimeTGGAttributeConstraint(name)) {
-				return factory.createRuntimeTGGAttributeConstraint(name, constraintDefinition);
-			}
+	public RuntimeTGGAttributeConstraint createRuntimeTGGAttributeConstraint(TGGAttributeConstraintDefinition constraintDefinition){
+		if(constraintToFactory.containsKey(constraintDefinition)) {
+			var factory = constraintToFactory.get(constraintDefinition);
+			factory.createRuntimeTGGAttributeConstraint(constraintDefinition.getName(), constraintDefinition);
 		}
-		throw new RuntimeException("CSP " + name + " not implemented");
-	}
-	
-	public TGGAttributeConstraintDefinition getTGGAttributeConstraintDefinition(String name) {
-		return constraintDefinitions.get(name);
-	}
-	
-	/**
-	 * @return all constraint names of constraints which are registered together with a creator
-	 */
-	public Collection<String> getAllConstraintNames() {
-		return factories.stream().flatMap(factory -> factory.getConstraintNames().stream()).collect(Collectors.toList());
-	}
-
-	/**
-	 * @return all constraint names of those constraints which are referenced by any rule
-	 */
-	public Collection<String> getAllUsedConstraintNames() {
-		return constraintDefinitions.keySet();
+		
+		throw new RuntimeException("CSP " + constraintDefinition.getName() + " not implemented");
 	}
 }

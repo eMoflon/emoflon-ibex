@@ -454,7 +454,6 @@ public class TGGResourceHandler {
 
 		RuntimeTGGAttrConstraintProvider runtimeConstraintProvider = new RuntimeTGGAttrConstraintProvider(
 				options.tgg.tgg().getAttributeConstraintDefinitionLibraries());
-		runtimeConstraintProvider.registerFactory(options.csp.userDefinedConstraints());
 		options.csp.constraintProvider(runtimeConstraintProvider);
 
 		rs.getResources().remove(res);

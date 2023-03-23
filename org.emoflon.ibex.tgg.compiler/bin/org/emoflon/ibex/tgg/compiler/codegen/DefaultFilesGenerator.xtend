@@ -4,10 +4,37 @@ import org.emoflon.ibex.tgg.compiler.builder.AttrCondDefLibraryProvider
 import org.emoflon.ibex.tgg.compiler.builder.UserAttrCondHelper
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinition
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinitionLibrary
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel
 import org.moflon.core.utilities.MoflonUtil
+import java.util.Collection
 
 class DefaultFilesGenerator {
+
+	static def String generateUserRuntimeAttrCondContainer(Collection<TGGAttributeConstraintDefinitionLibrary> libraries, String projectName) {
+		'''
+			package org.emoflon.ibex.tgg.operational.csp.constraints.custom.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase»;
+			
+			import java.util.Collection;
+			import java.util.LinkedList;			
+			
+			import org.emoflon.ibex.tgg.operational.csp.constraints.custom.«MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase».*;
+			import org.emoflon.ibex.tgg.runtime.csp.constraints.factories.RuntimeTGGAttrConstraintFactory;
+			
+			public class RuntimeTGGAttrConstraintFactoryContainer {
+			
+				private Collection<RuntimeTGGAttrConstraintFactory> factories = new LinkedList<>();
+			
+				public RuntimeTGGAttrConstraintFactoryContainer() {
+					«FOR library : libraries»
+					factories.add(new «library.name»RuntimeTGGAttrConstraintFactory());
+					«ENDFOR»
+				}
+				
+				public Collection<RuntimeTGGAttrConstraintFactory> getFactories() {
+					return factories;
+				}
+			}
+		'''
+	}
 
 	static def String generateUserRuntimeAttrCondFactory(TGGAttributeConstraintDefinitionLibrary library, String projectName) {
 		'''

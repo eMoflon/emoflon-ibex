@@ -13,6 +13,66 @@ import org.moflon.core.utilities.MoflonUtil;
 
 @SuppressWarnings("all")
 public class DefaultFilesGenerator {
+  public static String generateUserRuntimeAttrCondContainer(final Collection<TGGAttributeConstraintDefinitionLibrary> libraries, final String projectName) {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("package org.emoflon.ibex.tgg.operational.csp.constraints.custom.");
+    String _lowerCase = MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase();
+    _builder.append(_lowerCase);
+    _builder.append(";");
+    _builder.newLineIfNotEmpty();
+    _builder.newLine();
+    _builder.append("import java.util.Collection;");
+    _builder.newLine();
+    _builder.append("import java.util.LinkedList;\t\t\t");
+    _builder.newLine();
+    _builder.newLine();
+    _builder.append("import org.emoflon.ibex.tgg.operational.csp.constraints.custom.");
+    String _lowerCase_1 = MoflonUtil.lastCapitalizedSegmentOf(projectName).toLowerCase();
+    _builder.append(_lowerCase_1);
+    _builder.append(".*;");
+    _builder.newLineIfNotEmpty();
+    _builder.append("import org.emoflon.ibex.tgg.runtime.csp.constraints.factories.RuntimeTGGAttrConstraintFactory;");
+    _builder.newLine();
+    _builder.newLine();
+    _builder.append("public class RuntimeTGGAttrConstraintFactoryContainer {");
+    _builder.newLine();
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("private Collection<RuntimeTGGAttrConstraintFactory> factories = new LinkedList<>();");
+    _builder.newLine();
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("public RuntimeTGGAttrConstraintFactoryContainer() {");
+    _builder.newLine();
+    {
+      for(final TGGAttributeConstraintDefinitionLibrary library : libraries) {
+        _builder.append("\t\t");
+        _builder.append("factories.add(new ");
+        String _name = library.getName();
+        _builder.append(_name, "\t\t");
+        _builder.append("RuntimeTGGAttrConstraintFactory());");
+        _builder.newLineIfNotEmpty();
+      }
+    }
+    _builder.append("\t");
+    _builder.append("}");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("public Collection<RuntimeTGGAttrConstraintFactory> getFactories() {");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("return factories;");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("}");
+    _builder.newLine();
+    _builder.append("}");
+    _builder.newLine();
+    return _builder.toString();
+  }
+
   public static String generateUserRuntimeAttrCondFactory(final TGGAttributeConstraintDefinitionLibrary library, final String projectName) {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("package org.emoflon.ibex.tgg.operational.csp.constraints.custom.");

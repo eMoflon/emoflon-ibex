@@ -3,7 +3,7 @@ package org.emoflon.ibex.tgg.compiler.builder;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.LinkedList;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -34,6 +34,12 @@ public class AttrCondDefLibraryProvider {
 	public static final String ATTR_COND_DEF_PREDEFINED_PACKAGE = "org.emoflon.ibex.tgg.operational.csp.constraints";
 	public static final String ATTR_COND_DEF_USERDEFINED_PACKAGE = "org.emoflon.ibex.tgg.operational.csp.constraints.custom";
 
+	public static void userAttrCondDefFactoryContainer(IProject project, Collection<TGGAttributeConstraintDefinitionLibrary> libraries) throws CoreException, IOException {
+		String path = USER_ATTR_CONDS_PATH + MoflonUtil.lastCapitalizedSegmentOf(project.getName()).toLowerCase() + "/RuntimeTGGAttrConstraintFactoryContainer.java";
+		String userLib = DefaultFilesGenerator.generateUserRuntimeAttrCondContainer(libraries, MoflonUtil.lastCapitalizedSegmentOf(project.getName()));
+		IPath pathToLib = new Path(path);
+		WorkspaceHelper.addAllFoldersAndFile(project, pathToLib, userLib, new NullProgressMonitor());
+	}
 	
 	public static void userAttrCondDefFactory(IProject project, TGGAttributeConstraintDefinitionLibrary library) throws CoreException, IOException {
 		String path = USER_ATTR_CONDS_PATH + MoflonUtil.lastCapitalizedSegmentOf(project.getName()).toLowerCase() + "/" + getAttrCondFactoryName(library);
@@ -60,16 +66,19 @@ public class AttrCondDefLibraryProvider {
 	
 	
 	public void generateAttrCondLibsAndStubs(TGGModel model, IProject project) {
-		for(var library : model.getAttributeConstraintDefinitionLibraries()) {
-			if(library.getPackageName().equals(ATTR_COND_DEF_PREDEFINED_PACKAGE) && library.getName().equals(DEFAULT_ATTR_COND_LIB_NAME))
-				continue;
-			
-			try {
+		try {
+			Collection<TGGAttributeConstraintDefinitionLibrary> userDefinedLibraries = new LinkedList<>();
+			for(var library : model.getAttributeConstraintDefinitionLibraries()) {
+				if(library.getPackageName().equals(ATTR_COND_DEF_PREDEFINED_PACKAGE) && library.getName().equals(DEFAULT_ATTR_COND_LIB_NAME))
+					continue;
+				
+				userDefinedLibraries.add(library);
 				AttrCondDefLibraryProvider.userAttrCondDefFactory(project, library);
 				AttrCondDefLibraryProvider.userAttrCondDefStubs(project, library);
-			} catch (CoreException | IOException e) {
-				LogUtils.error(logger, e);
 			}
+			AttrCondDefLibraryProvider.userAttrCondDefFactoryContainer(project, userDefinedLibraries);
+		} catch (CoreException | IOException e) {
+			LogUtils.error(logger, e);
 		}
 	}
 	

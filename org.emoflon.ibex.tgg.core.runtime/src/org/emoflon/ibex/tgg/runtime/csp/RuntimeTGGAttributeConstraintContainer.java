@@ -59,8 +59,7 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 	}
 
 	private RuntimeTGGAttributeConstraint extractRuntimeConstraint(TGGAttributeConstraint c) {
-		RuntimeTGGAttributeConstraint runtimeConstraint = constraintProvider
-				.createRuntimeTGGAttributeConstraint(c.getDefinition().getName());
+		RuntimeTGGAttributeConstraint runtimeConstraint = constraintProvider.createRuntimeTGGAttributeConstraint(c.getDefinition());
 		runtimeConstraint.initialize(this, c);
 		return runtimeConstraint;
 	}
