@@ -235,11 +235,11 @@ public class OverlapUtil {
 	private void computeNonOperationalizablePatterns(TGGOverlap overlap, boolean containsSrc, boolean containsTrg) {
 		if (!containsSrc) {
 			overlap.nonOperationalizablePatterns.add(PatternType.FWD);
-			overlap.nonOperationalizablePatterns.add(PatternType.SRC);
+			overlap.nonOperationalizablePatterns.add(PatternType.SOURCE);
 		}
 		if (!containsTrg) {
 			overlap.nonOperationalizablePatterns.add(PatternType.BWD);
-			overlap.nonOperationalizablePatterns.add(PatternType.TRG);
+			overlap.nonOperationalizablePatterns.add(PatternType.TARGET);
 		}
 	}
 

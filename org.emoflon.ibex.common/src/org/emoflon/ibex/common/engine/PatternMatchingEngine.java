@@ -62,9 +62,10 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, EM, IM
 		engineProperties = createEngineProperties();
 		this.ibexModel = ibexModel;
 		this.model = model;
-		for (IBeXPattern pattern : ibexModel.getPatternSet().getPatterns()) {
-			name2pattern.put(pattern.getName(), pattern);
-		}
+		if(ibexModel != null)
+			for (IBeXPattern pattern : ibexModel.getPatternSet().getPatterns()) {
+				name2pattern.put(pattern.getName(), pattern);
+			}
 		initialize();
 		matchFilter = createMatchFilter();
 	}

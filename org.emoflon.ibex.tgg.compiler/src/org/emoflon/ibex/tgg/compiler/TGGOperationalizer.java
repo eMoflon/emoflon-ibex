@@ -286,7 +286,7 @@ public class TGGOperationalizer {
 	}
 
 	private void setRuleName(TGGRule rule, OperationalisationMode mode) {
-		rule.setName(rule.getName() + "_" + mode.getName());
+		rule.setName(PatternSuffixes.getPatternName(rule.getName(), mode));
 		rule.getPrecondition().setName(PatternSuffixes.getPatternName(rule.getPrecondition().getName(), mode));
 	}
 	

@@ -460,7 +460,7 @@ public class TGGResourceHandler {
 	}
 
 	protected Resource loadFlattenedTGGResource() throws IOException {
-		return loadTGGResource("_flattened.tgg.xmi");
+		return loadTGGResource(".tgg.xmi");
 	}
 
 	protected Resource loadTGGResource() throws IOException {

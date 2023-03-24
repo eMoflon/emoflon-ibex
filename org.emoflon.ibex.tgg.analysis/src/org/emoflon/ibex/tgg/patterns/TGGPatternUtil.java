@@ -31,14 +31,14 @@ public class TGGPatternUtil {
 	}
 	
 	public static String generateSRCBlackPatternName(String ruleName) {
-		String patternName = ruleName + PatternSuffixes.SRC;
-		PatternUtil.registerPattern(patternName, PatternType.SRC);
+		String patternName = ruleName + PatternSuffixes.SOURCE;
+		PatternUtil.registerPattern(patternName, PatternType.SOURCE);
 		return patternName;
 	}
 	
 	public static String generateTRGBlackPatternName(String ruleName) {
-		String patternName = ruleName + PatternSuffixes.TRG;
-		PatternUtil.registerPattern(patternName, PatternType.TRG);
+		String patternName = ruleName + PatternSuffixes.TARGET;
+		PatternUtil.registerPattern(patternName, PatternType.TARGET);
 		return patternName;
 	}
 	
@@ -117,7 +117,7 @@ public class TGGPatternUtil {
 	}
 	
 	public static String getFilterNACTRGPatternName(FilterNACCandidate candidate, TGGRule rule) {
-		return rule.getName() + "_" + candidate + PatternSuffixes.FILTER_NAC_TRG;  
+		return rule.getName() + "_" + candidate + PatternSuffixes.FILTER_NAC_TARGET;  
 	}
 	
 	public static Collection<EObject> getNodes(EObject ruleAppNode, BindingType binding, DomainType type) {

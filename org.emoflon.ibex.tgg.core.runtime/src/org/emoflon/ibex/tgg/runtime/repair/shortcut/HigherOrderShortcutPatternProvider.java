@@ -116,8 +116,8 @@ public class HigherOrderShortcutPatternProvider extends BasicShortcutPatternProv
 
 	private Map<String, Set<RuntimeShortcutRule>> generateHigherOrderShortcutRules(ShortcutApplicationPoint applPoint, Set<String> replacingNodesIDs) {
 		DomainType propagationDomain = switch (applPoint.getPropagationMatchType()) {
-			case SRC -> DomainType.SOURCE;
-			case TRG -> DomainType.TARGET;
+			case SOURCE -> DomainType.SOURCE;
+			case TARGET -> DomainType.TARGET;
 			default -> throw new RuntimeException("Unexpected propagation type: " + applPoint.getRepairType());
 		};
 

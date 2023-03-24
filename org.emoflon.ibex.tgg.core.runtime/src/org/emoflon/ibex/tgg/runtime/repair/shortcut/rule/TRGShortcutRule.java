@@ -39,7 +39,7 @@ public class TRGShortcutRule extends OperationalShortcutRule {
 
 	@Override
 	public PatternType getType() {
-		return PatternType.TRG;
+		return PatternType.TARGET;
 	}
 
 	@Override

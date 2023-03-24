@@ -42,8 +42,8 @@ public class ShortcutApplicationPoint extends RepairApplicationPoint {
 
 	private static PatternType getRepairType(PatternType propagationMatchType) {
 		return switch (propagationMatchType) {
-			case SRC -> PatternType.FWD;
-			case TRG -> PatternType.BWD;
+			case SOURCE -> PatternType.FWD;
+			case TARGET -> PatternType.BWD;
 			default -> throw new IllegalArgumentException("Unexpected value: " + propagationMatchType);
 		};
 	}

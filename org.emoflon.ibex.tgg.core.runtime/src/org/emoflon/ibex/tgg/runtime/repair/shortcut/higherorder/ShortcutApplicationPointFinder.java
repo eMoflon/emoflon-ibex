@@ -125,16 +125,16 @@ public class ShortcutApplicationPointFinder {
 		}
 
 		if (srcViolations)
-			return PatternType.SRC;
+			return PatternType.SOURCE;
 		if (trgViolations)
-			return PatternType.TRG;
+			return PatternType.TARGET;
 		
 		if (followUpRepairTypes != null) {
 			PatternType followUpRepairType = followUpRepairTypes.get(classifiedMatch.getMatch());
 			if (followUpRepairType != null)
 				return switch (followUpRepairType) {
-					case FWD -> PatternType.SRC;
-					case BWD -> PatternType.TRG;
+					case FWD -> PatternType.SOURCE;
+					case BWD -> PatternType.TARGET;
 					default -> null;
 				};
 		}

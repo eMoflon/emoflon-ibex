@@ -5,7 +5,7 @@ import java.util.LinkedList;
 
 public enum PatternType {
 		FILTER_NAC_SRC, FILTER_NAC_TRG, GEN, GEN_AXIOM_NAC, FWD, FWD_OPT, BWD, BWD_OPT, CONSISTENCY,
-		CC, GENForCC, CO, GENForCO, SRC, TRG, PAC;
+		CC, GENForCC, CO, GENForCO, SOURCE, TARGET, PAC;
 
 	public static Collection<PatternType> getModelGENTypes() {
 		Collection<PatternType> patternTypes = new LinkedList<>();
@@ -16,8 +16,8 @@ public enum PatternType {
 
 	public static Collection<PatternType> getIntegrateTypes() {
 		Collection<PatternType> types = new LinkedList<>();
-		types.add(PatternType.SRC);
-		types.add(PatternType.TRG);
+		types.add(PatternType.SOURCE);
+		types.add(PatternType.TARGET);
 		types.add(PatternType.FWD);
 		types.add(PatternType.BWD);
 		types.add(PatternType.CONSISTENCY);

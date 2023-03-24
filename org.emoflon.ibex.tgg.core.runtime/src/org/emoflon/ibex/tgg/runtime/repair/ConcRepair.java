@@ -56,7 +56,7 @@ public class ConcRepair implements TimeMeasurable {
 	protected Runnable patternPersister = () -> {};
 
 	protected static final PatternType[] shortcutPatternTypes = //
-			{ PatternType.FWD, PatternType.BWD, PatternType.CC, PatternType.SRC, PatternType.TRG };
+			{ PatternType.FWD, PatternType.BWD, PatternType.CC, PatternType.SOURCE, PatternType.TARGET };
 
 	protected BrokenMatchContainer dependencyContainer;
 

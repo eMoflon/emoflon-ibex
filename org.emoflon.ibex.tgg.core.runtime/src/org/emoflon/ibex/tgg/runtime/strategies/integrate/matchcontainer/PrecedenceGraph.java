@@ -65,7 +65,7 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 	@Override
 	protected void registerAtMatchDistributor(MatchDistributor matchDistributor) {
 		// TODO split consistency and src/trg matches directly at registration
-		Set<PatternType> patternSet = new HashSet<>(Arrays.asList(PatternType.CONSISTENCY, PatternType.SRC, PatternType.TRG));
+		Set<PatternType> patternSet = new HashSet<>(Arrays.asList(PatternType.CONSISTENCY, PatternType.SOURCE, PatternType.TARGET));
 		matchDistributor.registerSingle(patternSet, this::notifyAddedMatch, this::notifyRemovedMatch);
 		matchDistributor.registerMultiple(patternSet, this::notifyAddedMatches, this::notifyRemovedMatches);
 	}
@@ -86,7 +86,7 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 		for (ITGGMatch match : matches) {
 			if (match.getType() == PatternType.CONSISTENCY)
 				consMatches.add(match);
-			else if (match.getType() == PatternType.SRC || match.getType() == PatternType.TRG)
+			else if (match.getType() == PatternType.SOURCE || match.getType() == PatternType.TARGET)
 				srcTrgMatches.add(match);
 		}
 		consMatches.parallelStream().forEach(this::addConsMatch);
@@ -103,7 +103,7 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 		if (match.getType() == PatternType.CONSISTENCY) {
 			addConsMatch(match);
 			killRedundantSrcTrgMatches(match);
-		} else if (match.getType() == PatternType.SRC || match.getType() == PatternType.TRG)
+		} else if (match.getType() == PatternType.SOURCE || match.getType() == PatternType.TARGET)
 			addSrcTrgMatch(match);
 	}
 
@@ -141,7 +141,7 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 	private void notifyRemovedOneMatch(ITGGMatch match) {
 		if (match.getType() == PatternType.CONSISTENCY) {
 			handleBrokenConsistencyMatch(match);
-		} else if (match.getType() == PatternType.SRC || match.getType() == PatternType.TRG) {
+		} else if (match.getType() == PatternType.SOURCE || match.getType() == PatternType.TARGET) {
 			if (match2node.containsKey(match))
 				removeMatch(match, getNode(match));
 			else
@@ -198,8 +198,8 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 	public Set<PrecedenceNode> getNodes(PatternType patternType) {
 		return switch (patternType) {
 			case CONSISTENCY -> consNodes;
-			case SRC -> srcNodes;
-			case TRG -> trgNodes;
+			case SOURCE -> srcNodes;
+			case TARGET -> trgNodes;
 			default -> throw new RuntimeException("Precedence graph does not support this pattern type!");
 		};
 	}
@@ -220,9 +220,9 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(srcTrgMatch.getRuleName());
 
 		Set<Object> translatedElts = cfactory.createObjectSet();
-		if (srcTrgMatch.getType() == PatternType.SRC) {
+		if (srcTrgMatch.getType() == PatternType.SOURCE) {
 			getGreenSrcElements(srcTrgMatch, operationalRule, translatedElts);
-		} else if (srcTrgMatch.getType() == PatternType.TRG) {
+		} else if (srcTrgMatch.getType() == PatternType.TARGET) {
 			getGreenTrgElements(srcTrgMatch, operationalRule, translatedElts);
 		} else {
 			throw new RuntimeException("The pattern type of the specified node can only to be source or target!");
@@ -252,8 +252,8 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 		Set<Object> translatedElts = cfactory.createObjectSet();
 		if (match.getType() == PatternType.CONSISTENCY) {
 			switch (overlapType) {
-				case SRC -> getGreenSrcElements(match, operationalRule, translatedElts);
-				case TRG -> getGreenTrgElements(match, operationalRule, translatedElts);
+				case SOURCE -> getGreenSrcElements(match, operationalRule, translatedElts);
+				case TARGET -> getGreenTrgElements(match, operationalRule, translatedElts);
 				default -> throw new RuntimeException(
 						"For consistency matches, the pattern type of overlapping matches can only be source or target!");
 			}
@@ -269,8 +269,8 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 					.collect(Collectors.groupingBy(e -> e.getKey(), Collectors.mapping(e -> e.getValue(), Collectors.toSet())));
 		} else {
 			switch (match.getType()) {
-				case SRC -> getGreenSrcElements(match, operationalRule, translatedElts);
-				case TRG -> getGreenTrgElements(match, operationalRule, translatedElts);
+				case SOURCE -> getGreenSrcElements(match, operationalRule, translatedElts);
+				case TARGET -> getGreenTrgElements(match, operationalRule, translatedElts);
 				default -> throw new RuntimeException("The pattern type of the specified node can only to be consistency, source or target!");
 			}
 
@@ -301,13 +301,13 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 		Collection<Object> requiredElts = cfactory.createObjectSet();
 		Collection<Object> translatedElts = cfactory.createObjectSet();
 
-		if (match.getType() != PatternType.TRG) {
+		if (match.getType() != PatternType.TARGET) {
 			operationalRule.getContextSource().getNodes().forEach(n -> requiredElts.add(match.get(n.getName())));
 			operationalRule.getContextSource().getEdges().forEach(e -> requiredElts.add(getRuntimeEdge(match, e)));
 			operationalRule.getCreateSource().getNodes().forEach(n -> translatedElts.add(match.get(n.getName())));
 			operationalRule.getCreateSource().getEdges().forEach(e -> translatedElts.add(getRuntimeEdge(match, e)));
 		}
-		if (match.getType() != PatternType.SRC) {
+		if (match.getType() != PatternType.SOURCE) {
 			operationalRule.getContextTarget().getNodes().forEach(n -> requiredElts.add(match.get(n.getName())));
 			operationalRule.getContextTarget().getEdges().forEach(e -> requiredElts.add(getRuntimeEdge(match, e)));
 			operationalRule.getCreateTarget().getNodes().forEach(n -> translatedElts.add(match.get(n.getName())));
@@ -378,8 +378,8 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 		// caching
 		switch (match.getType()) {
 			case CONSISTENCY -> consNodes.add(node);
-			case SRC -> srcNodes.add(node);
-			case TRG -> trgNodes.add(node);
+			case SOURCE -> srcNodes.add(node);
+			case TARGET -> trgNodes.add(node);
 			default -> {
 			}
 		}
@@ -434,8 +434,8 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 		// caching
 		switch (match.getType()) {
 			case CONSISTENCY -> consNodes.remove(node);
-			case SRC -> srcNodes.remove(node);
-			case TRG -> trgNodes.remove(node);
+			case SOURCE -> srcNodes.remove(node);
+			case TARGET -> trgNodes.remove(node);
 			default -> {
 			}
 		}
@@ -531,7 +531,7 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 		String ruleName = PatternSuffixes.removeSuffix(consMatch.getPatternName());
 		Map<String, TGGNode> param2node = TGGMatchParameterOrderProvider.getParam2NodeMap(ruleName);
 
-		ITGGMatch srcMatch = new SimpleTGGMatch(ruleName + PatternSuffixes.SRC);
+		ITGGMatch srcMatch = new SimpleTGGMatch(ruleName + PatternSuffixes.SOURCE);
 		if (srcMatch.getType() == null) {
 			srcMatch = null;
 		} else {
@@ -542,7 +542,7 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 			}
 		}
 
-		ITGGMatch trgMatch = new SimpleTGGMatch(ruleName + PatternSuffixes.TRG);
+		ITGGMatch trgMatch = new SimpleTGGMatch(ruleName + PatternSuffixes.TARGET);
 		if (trgMatch.getType() == null) {
 			trgMatch = null;
 		} else {

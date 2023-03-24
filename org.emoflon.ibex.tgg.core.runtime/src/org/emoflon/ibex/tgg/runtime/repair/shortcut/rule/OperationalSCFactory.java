@@ -60,8 +60,8 @@ public class OperationalSCFactory {
 			case FWD -> new FWDShortcutRule(options, greenInterpreter, scRule, filterNACAnalysis);
 			case BWD -> new BWDShortcutRule(options, greenInterpreter, scRule, filterNACAnalysis);
 			case CC -> new CCShortcutRule(options, greenInterpreter, scRule, filterNACAnalysis);
-			case SRC -> new SRCShortcutRule(options, greenInterpreter, scRule, filterNACAnalysis);
-			case TRG -> new TRGShortcutRule(options, greenInterpreter, scRule, filterNACAnalysis);
+			case SOURCE -> new SRCShortcutRule(options, greenInterpreter, scRule, filterNACAnalysis);
+			case TARGET -> new TRGShortcutRule(options, greenInterpreter, scRule, filterNACAnalysis);
 			default -> throw new RuntimeException("Shortcut Rules cannot be operationalized for " + type.toString() + " operations");
 		};
 	}

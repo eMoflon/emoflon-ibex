@@ -39,7 +39,7 @@ public class SRCShortcutRule extends OperationalShortcutRule {
 
 	@Override
 	public PatternType getType() {
-		return PatternType.SRC;
+		return PatternType.SOURCE;
 	}
 
 	@Override

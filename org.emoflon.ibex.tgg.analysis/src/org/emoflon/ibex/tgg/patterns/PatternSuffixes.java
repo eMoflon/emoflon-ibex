@@ -29,8 +29,8 @@ public class PatternSuffixes {
 	/** Used for user-defined NACs */
 	public static final String USER_NAC = SEP + "USER_NAC";
 
-	public static final String FILTER_NAC_SRC = SEP + "FILTER_NAC_SRC";
-	public static final String FILTER_NAC_TRG = SEP + "FILTER_NAC_TRG";
+	public static final String FILTER_NAC_SOURCE = SEP + "FILTER_NAC_SRC";
+	public static final String FILTER_NAC_TARGET = SEP + "FILTER_NAC_TRG";
 
 	public static final String PAC = SEP + "PAC";
 
@@ -90,22 +90,6 @@ public class PatternSuffixes {
 	public static final String CONSISTENCY = SEP + "CONSISTENCY";
 
 	/**
-	 * This pattern contains the protocol node and all marked elements (marking
-	 * edges)
-	 */
-	public static final String PROTOCOL = SEP + "PROTOCOL";
-
-	/**
-	 * This pattern contains a protocol node
-	 */
-	public static final String PROTOCOL_CORE = SEP + "PROTOCOL_CORE";
-
-	/**
-	 * Used as part of PROTOCOL patterns.
-	 */
-	public static final String WHOLE = SEP + "WHOLE";
-
-	/**
 	 * Used for consistency checking. Represents the context for creating potential
 	 * correspondence links between existing source and target fragments.
 	 */
@@ -134,28 +118,13 @@ public class PatternSuffixes {
 	/**
 	 * Used for pattern invocation. Represents the source part of the rule
 	 */
-	public static final String SRC = SEP + "SRC";
+	public static final String SOURCE = SEP + "SOURCE";
 
 	/**
 	 * Used for pattern invocation. Represents the target part of the rule
 	 */
-	public static final String TRG = SEP + "TRG";
+	public static final String TARGET = SEP + "TARGET";
 
-	/**
-	 * Used for pattern invocation. Represents the create correspondence part of the
-	 * rule
-	 */
-	public static final String GREENCORR = SEP + "GREENCORR";
-
-	/**
-	 * Used for pattern invocation. Represents a FWD-pattern and a GEN-pattern
-	 */
-	public static final String FWD_GREENCORR = SEP + "FWD_GREENCORR";
-
-	/**
-	 * Used for pattern invocation. Represents a BWD-pattern and a GEN-pattern
-	 */
-	public static final String BWD_GREENCORR = SEP + "BWD_GREENCORR";
 
 	/**
 	 * Removes the suffix of a given pattern name.
@@ -183,8 +152,8 @@ public class PatternSuffixes {
 		}
 		String suffix = name.substring(name.lastIndexOf(SEP));
 		return switch (suffix) {
-		case FILTER_NAC_SRC -> PatternType.FILTER_NAC_SRC;
-		case FILTER_NAC_TRG -> PatternType.FILTER_NAC_TRG;
+		case FILTER_NAC_SOURCE -> PatternType.FILTER_NAC_SRC;
+		case FILTER_NAC_TARGET -> PatternType.FILTER_NAC_TRG;
 		case GEN -> PatternType.GEN;
 		case GEN_AXIOM_NAC -> PatternType.GEN_AXIOM_NAC;
 		case FWD -> PatternType.FWD;
@@ -196,8 +165,8 @@ public class PatternSuffixes {
 		case GENForCC -> PatternType.GENForCC;
 		case CO -> PatternType.CO;
 		case GENForCO -> PatternType.GENForCO;
-		case SRC -> PatternType.SRC;
-		case TRG -> PatternType.TRG;
+		case SOURCE -> PatternType.SOURCE;
+		case TARGET -> PatternType.TARGET;
 		case PAC -> PatternType.PAC;
 		default -> throw new RuntimeException(suffix + " is an unknown suffix for TGG patterns");
 		};
@@ -211,10 +180,10 @@ public class PatternSuffixes {
 		case CO -> CO;
 		case CC -> CC;
 		case CONSISTENCY -> CONSISTENCY;
-		case SRC -> SRC;
-		case TRG -> TRG;
-		case FILTER_NAC_SRC -> FILTER_NAC_SRC;
-		case FILTER_NAC_TRG -> FILTER_NAC_TRG;
+		case SOURCE -> SOURCE;
+		case TARGET -> TARGET;
+		case FILTER_NAC_SRC -> FILTER_NAC_SOURCE;
+		case FILTER_NAC_TRG -> FILTER_NAC_TARGET;
 		default -> throw new RuntimeException("Unkown pattern type detected " + type);
 		};
 	}
@@ -227,8 +196,8 @@ public class PatternSuffixes {
 		case CHECK_ONLY -> CO;
 		case CONSISTENCY_CHECK -> CC;
 		case CONSISTENCY -> CONSISTENCY;
-		case SOURCE -> SRC;
-		case TARGET -> TRG;
+		case SOURCE -> SOURCE;
+		case TARGET -> TARGET;
 		default -> throw new RuntimeException("Unkown operation mode detected " + mode);
 		};
 	}

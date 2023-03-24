@@ -104,7 +104,7 @@ public class ConflictDetector {
 	 */
 	private boolean detectDeletePreserveEdgeConflict(PrecedenceNode srcTrgNode, ITGGMatch matchToBeRepaired) {
 		boolean anyConflictDetected = false;
-		DomainType domainToBePreserved = srcTrgNode.getMatch().getType() == PatternType.SRC ? DomainType.SOURCE : DomainType.TARGET;
+		DomainType domainToBePreserved = srcTrgNode.getMatch().getType() == PatternType.SOURCE ? DomainType.SOURCE : DomainType.TARGET;
 
 		Set<PrecedenceNode> directRollBackCauses = new HashSet<>();
 		srcTrgNode.forAllToBeRolledBackBy((act, pre) -> {
@@ -327,7 +327,7 @@ public class ConflictDetector {
 
 		boolean anyConflictsDetected = false;
 		if (partlyModSrc) {
-			Set<PrecedenceNode> srcNodes = integrate.precedenceGraph().findOverlappingNodes(brokenNode, PatternType.SRC).keySet();
+			Set<PrecedenceNode> srcNodes = integrate.precedenceGraph().findOverlappingNodes(brokenNode, PatternType.SOURCE).keySet();
 
 			// Detect delete-preserve conflicts whose conflicting creations are involved in a reparable
 			// delta (source domain partly deleted plus related creations). Thus, after conflict resolution the
@@ -356,7 +356,7 @@ public class ConflictDetector {
 				return true;
 			}
 		} else {
-			Set<PrecedenceNode> trgNodes = integrate.precedenceGraph().findOverlappingNodes(brokenNode, PatternType.TRG).keySet();
+			Set<PrecedenceNode> trgNodes = integrate.precedenceGraph().findOverlappingNodes(brokenNode, PatternType.TARGET).keySet();
 
 			// Detect delete-preserve conflicts whose conflicting creations are involved in a reparable
 			// delta (target domain partly deleted plus related creations). Thus, after conflict resolution the

@@ -174,7 +174,7 @@ public abstract class Conflict {
 
 		TGGMatchUtil matchUtil = integrate().matchUtils().get(match);
 		switch (match.getType()) {
-			case FWD, SRC -> {
+			case FWD, SOURCE -> {
 				TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getRuleName(), OperationalisationMode.FORWARD);
 				deletedNodes = operationalRule.getToBeMarked().getNodes().stream() //
 						.map(n -> (EObject) match.get(n.getName())) //
@@ -185,7 +185,7 @@ public abstract class Conflict {
 						.map(e -> TGGEdgeUtil.getRuntimeEdge(match, e)) //
 						.collect(Collectors.toSet());
 			}
-			case BWD, TRG -> {
+			case BWD, TARGET -> {
 				TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getRuleName(), OperationalisationMode.BACKWARD);
 				deletedNodes = operationalRule.getToBeMarked().getNodes().stream() //
 						.map(n -> (EObject) match.get(n.getName())) //
