@@ -26,7 +26,6 @@ import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.lambda.Lookup;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.lambda.NACNodeCheck;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.lambda.NodeCheck;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.SCMatch;
-import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuntimeModelPackage;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
@@ -35,6 +34,8 @@ import org.emoflon.ibex.tgg.util.EMFNavigationUtil;
 import org.emoflon.ibex.tgg.util.TGGAttributeCheckUtil;
 import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 import org.moflon.core.utilities.eMoflonEMFUtil;
+
+import TGGRuntimeModel.TGGRuntimeModelPackage;
 
 public class SearchPlanCreator {
 

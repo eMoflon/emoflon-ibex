@@ -23,7 +23,6 @@ import org.emoflon.ibex.tgg.runtime.strategies.integrate.modelchange.ModelChange
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.EltFilter;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.TGGMatchUtil;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.RuleHandler;
-import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuleApplication;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalisationMode;
@@ -33,6 +32,8 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 import org.emoflon.ibex.tgg.util.TGGEdgeUtil;
 import org.emoflon.ibex.tgg.util.TGGFilterUtil;
 import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
+
+import TGGRuntimeModel.TGGRuleApplication;
 
 public abstract class Conflict {
 

@@ -1,6 +1,8 @@
 /**
  */
-package org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.util;
+package TGGRuntimeModel.util;
+
+import TGGRuntimeModel.*;
 
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notifier;
@@ -9,14 +11,12 @@ import org.eclipse.emf.common.notify.impl.AdapterFactoryImpl;
 
 import org.eclipse.emf.ecore.EObject;
 
-import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.*;
-
 /**
  * <!-- begin-user-doc -->
  * The <b>Adapter Factory</b> for the model.
  * It provides an adapter <code>createXXX</code> method for each class of the model.
  * <!-- end-user-doc -->
- * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuntimeModelPackage
+ * @see TGGRuntimeModel.TGGRuntimeModelPackage
  * @generated
  */
 public class TGGRuntimeModelAdapterFactory extends AdapterFactoryImpl {
@@ -54,7 +54,7 @@ public class TGGRuntimeModelAdapterFactory extends AdapterFactoryImpl {
 			return true;
 		}
 		if (object instanceof EObject) {
-			return ((EObject) object).eClass().getEPackage() == modelPackage;
+			return ((EObject)object).eClass().getEPackage() == modelPackage;
 		}
 		return false;
 	}
@@ -65,37 +65,33 @@ public class TGGRuntimeModelAdapterFactory extends AdapterFactoryImpl {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected TGGRuntimeModelSwitch<Adapter> modelSwitch = new TGGRuntimeModelSwitch<Adapter>() {
-		@Override
-		public Adapter caseTempContainer(TempContainer object) {
-			return createTempContainerAdapter();
-		}
-
-		@Override
-		public Adapter caseProtocol(Protocol object) {
-			return createProtocolAdapter();
-		}
-
-		@Override
-		public Adapter caseTGGRuleApplication(TGGRuleApplication object) {
-			return createTGGRuleApplicationAdapter();
-		}
-
-		@Override
-		public Adapter caseCorrespondenceSet(CorrespondenceSet object) {
-			return createCorrespondenceSetAdapter();
-		}
-
-		@Override
-		public Adapter caseCorrespondence(Correspondence object) {
-			return createCorrespondenceAdapter();
-		}
-
-		@Override
-		public Adapter defaultCase(EObject object) {
-			return createEObjectAdapter();
-		}
-	};
+	protected TGGRuntimeModelSwitch<Adapter> modelSwitch =
+		new TGGRuntimeModelSwitch<Adapter>() {
+			@Override
+			public Adapter caseTempContainer(TempContainer object) {
+				return createTempContainerAdapter();
+			}
+			@Override
+			public Adapter caseProtocol(Protocol object) {
+				return createProtocolAdapter();
+			}
+			@Override
+			public Adapter caseTGGRuleApplication(TGGRuleApplication object) {
+				return createTGGRuleApplicationAdapter();
+			}
+			@Override
+			public Adapter caseCorrespondenceSet(CorrespondenceSet object) {
+				return createCorrespondenceSetAdapter();
+			}
+			@Override
+			public Adapter caseCorrespondence(Correspondence object) {
+				return createCorrespondenceAdapter();
+			}
+			@Override
+			public Adapter defaultCase(EObject object) {
+				return createEObjectAdapter();
+			}
+		};
 
 	/**
 	 * Creates an adapter for the <code>target</code>.
@@ -107,45 +103,18 @@ public class TGGRuntimeModelAdapterFactory extends AdapterFactoryImpl {
 	 */
 	@Override
 	public Adapter createAdapter(Notifier target) {
-		return modelSwitch.doSwitch((EObject) target);
+		return modelSwitch.doSwitch((EObject)target);
 	}
 
+
 	/**
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.Protocol <em>Protocol</em>}'.
+	 * Creates a new adapter for an object of class '{@link TGGRuntimeModel.TempContainer <em>Temp Container</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.Protocol
-	 * @generated
-	 */
-	public Adapter createProtocolAdapter() {
-		return null;
-	}
-
-	/**
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuleApplication <em>TGG Rule Application</em>}'.
-	 * <!-- begin-user-doc -->
-	 * This default implementation returns null so that we can easily ignore cases;
-	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
-	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuleApplication
-	 * @generated
-	 */
-	public Adapter createTGGRuleApplicationAdapter() {
-		return null;
-	}
-
-	/**
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TempContainer <em>Temp Container</em>}'.
-	 * <!-- begin-user-doc -->
-	 * This default implementation returns null so that we can easily ignore cases;
-	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
-	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TempContainer
+	 * @see TGGRuntimeModel.TempContainer
 	 * @generated
 	 */
 	public Adapter createTempContainerAdapter() {
@@ -153,13 +122,41 @@ public class TGGRuntimeModelAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.CorrespondenceSet <em>Correspondence Set</em>}'.
+	 * Creates a new adapter for an object of class '{@link TGGRuntimeModel.Protocol <em>Protocol</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.CorrespondenceSet
+	 * @see TGGRuntimeModel.Protocol
+	 * @generated
+	 */
+	public Adapter createProtocolAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link TGGRuntimeModel.TGGRuleApplication <em>TGG Rule Application</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see TGGRuntimeModel.TGGRuleApplication
+	 * @generated
+	 */
+	public Adapter createTGGRuleApplicationAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link TGGRuntimeModel.CorrespondenceSet <em>Correspondence Set</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see TGGRuntimeModel.CorrespondenceSet
 	 * @generated
 	 */
 	public Adapter createCorrespondenceSetAdapter() {
@@ -167,13 +164,13 @@ public class TGGRuntimeModelAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.Correspondence <em>Correspondence</em>}'.
+	 * Creates a new adapter for an object of class '{@link TGGRuntimeModel.Correspondence <em>Correspondence</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.Correspondence
+	 * @see TGGRuntimeModel.Correspondence
 	 * @generated
 	 */
 	public Adapter createCorrespondenceAdapter() {

@@ -1,6 +1,6 @@
 /**
  */
-package org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel;
+package TGGRuntimeModel;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
@@ -18,7 +18,7 @@ import org.eclipse.emf.ecore.EReference;
  *   <li>and each data type</li>
  * </ul>
  * <!-- end-user-doc -->
- * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuntimeModelFactory
+ * @see TGGRuntimeModel.TGGRuntimeModelFactory
  * @model kind="package"
  * @generated
  */
@@ -53,35 +53,14 @@ public interface TGGRuntimeModelPackage extends EPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	TGGRuntimeModelPackage eINSTANCE = org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl.TGGRuntimeModelPackageImpl
-			.init();
+	TGGRuntimeModelPackage eINSTANCE = TGGRuntimeModel.impl.TGGRuntimeModelPackageImpl.init();
 
 	/**
-	 * The meta object id for the '{@link org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl.ProtocolImpl <em>Protocol</em>}' class.
+	 * The meta object id for the '{@link TGGRuntimeModel.impl.TempContainerImpl <em>Temp Container</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl.ProtocolImpl
-	 * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl.TGGRuntimeModelPackageImpl#getProtocol()
-	 * @generated
-	 */
-	int PROTOCOL = 1;
-
-	/**
-	 * The meta object id for the '{@link org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl.TGGRuleApplicationImpl <em>TGG Rule Application</em>}' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl.TGGRuleApplicationImpl
-	 * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl.TGGRuntimeModelPackageImpl#getTGGRuleApplication()
-	 * @generated
-	 */
-	int TGG_RULE_APPLICATION = 2;
-
-	/**
-	 * The meta object id for the '{@link org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl.TempContainerImpl <em>Temp Container</em>}' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl.TempContainerImpl
-	 * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl.TGGRuntimeModelPackageImpl#getTempContainer()
+	 * @see TGGRuntimeModel.impl.TempContainerImpl
+	 * @see TGGRuntimeModel.impl.TGGRuntimeModelPackageImpl#getTempContainer()
 	 * @generated
 	 */
 	int TEMP_CONTAINER = 0;
@@ -114,6 +93,16 @@ public interface TGGRuntimeModelPackage extends EPackage {
 	int TEMP_CONTAINER_OPERATION_COUNT = 0;
 
 	/**
+	 * The meta object id for the '{@link TGGRuntimeModel.impl.ProtocolImpl <em>Protocol</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see TGGRuntimeModel.impl.ProtocolImpl
+	 * @see TGGRuntimeModel.impl.TGGRuntimeModelPackageImpl#getProtocol()
+	 * @generated
+	 */
+	int PROTOCOL = 1;
+
+	/**
 	 * The feature id for the '<em><b>Steps</b></em>' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -139,6 +128,16 @@ public interface TGGRuntimeModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int PROTOCOL_OPERATION_COUNT = 0;
+
+	/**
+	 * The meta object id for the '{@link TGGRuntimeModel.impl.TGGRuleApplicationImpl <em>TGG Rule Application</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see TGGRuntimeModel.impl.TGGRuleApplicationImpl
+	 * @see TGGRuntimeModel.impl.TGGRuntimeModelPackageImpl#getTGGRuleApplication()
+	 * @generated
+	 */
+	int TGG_RULE_APPLICATION = 2;
 
 	/**
 	 * The feature id for the '<em><b>Protocol</b></em>' container reference.
@@ -168,11 +167,11 @@ public interface TGGRuntimeModelPackage extends EPackage {
 	int TGG_RULE_APPLICATION_OPERATION_COUNT = 0;
 
 	/**
-	 * The meta object id for the '{@link org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl.CorrespondenceSetImpl <em>Correspondence Set</em>}' class.
+	 * The meta object id for the '{@link TGGRuntimeModel.impl.CorrespondenceSetImpl <em>Correspondence Set</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl.CorrespondenceSetImpl
-	 * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl.TGGRuntimeModelPackageImpl#getCorrespondenceSet()
+	 * @see TGGRuntimeModel.impl.CorrespondenceSetImpl
+	 * @see TGGRuntimeModel.impl.TGGRuntimeModelPackageImpl#getCorrespondenceSet()
 	 * @generated
 	 */
 	int CORRESPONDENCE_SET = 3;
@@ -205,11 +204,11 @@ public interface TGGRuntimeModelPackage extends EPackage {
 	int CORRESPONDENCE_SET_OPERATION_COUNT = 0;
 
 	/**
-	 * The meta object id for the '{@link org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl.CorrespondenceImpl <em>Correspondence</em>}' class.
+	 * The meta object id for the '{@link TGGRuntimeModel.impl.CorrespondenceImpl <em>Correspondence</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl.CorrespondenceImpl
-	 * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl.TGGRuntimeModelPackageImpl#getCorrespondence()
+	 * @see TGGRuntimeModel.impl.CorrespondenceImpl
+	 * @see TGGRuntimeModel.impl.TGGRuntimeModelPackageImpl#getCorrespondence()
 	 * @generated
 	 */
 	int CORRESPONDENCE = 4;
@@ -250,117 +249,118 @@ public interface TGGRuntimeModelPackage extends EPackage {
 	 */
 	int CORRESPONDENCE_OPERATION_COUNT = 0;
 
-	/**
-	 * Returns the meta object for class '{@link org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.Protocol <em>Protocol</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for class '<em>Protocol</em>'.
-	 * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.Protocol
-	 * @generated
-	 */
-	EClass getProtocol();
 
 	/**
-	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.Protocol#getSteps <em>Steps</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference list '<em>Steps</em>'.
-	 * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.Protocol#getSteps()
-	 * @see #getProtocol()
-	 * @generated
-	 */
-	EReference getProtocol_Steps();
-
-	/**
-	 * Returns the meta object for class '{@link org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuleApplication <em>TGG Rule Application</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for class '<em>TGG Rule Application</em>'.
-	 * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuleApplication
-	 * @generated
-	 */
-	EClass getTGGRuleApplication();
-
-	/**
-	 * Returns the meta object for the container reference '{@link org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuleApplication#getProtocol <em>Protocol</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the container reference '<em>Protocol</em>'.
-	 * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuleApplication#getProtocol()
-	 * @see #getTGGRuleApplication()
-	 * @generated
-	 */
-	EReference getTGGRuleApplication_Protocol();
-
-	/**
-	 * Returns the meta object for class '{@link org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TempContainer <em>Temp Container</em>}'.
+	 * Returns the meta object for class '{@link TGGRuntimeModel.TempContainer <em>Temp Container</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for class '<em>Temp Container</em>'.
-	 * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TempContainer
+	 * @see TGGRuntimeModel.TempContainer
 	 * @generated
 	 */
 	EClass getTempContainer();
 
 	/**
-	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TempContainer#getObjects <em>Objects</em>}'.
+	 * Returns the meta object for the containment reference list '{@link TGGRuntimeModel.TempContainer#getObjects <em>Objects</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the containment reference list '<em>Objects</em>'.
-	 * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TempContainer#getObjects()
+	 * @see TGGRuntimeModel.TempContainer#getObjects()
 	 * @see #getTempContainer()
 	 * @generated
 	 */
 	EReference getTempContainer_Objects();
 
 	/**
-	 * Returns the meta object for class '{@link org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.CorrespondenceSet <em>Correspondence Set</em>}'.
+	 * Returns the meta object for class '{@link TGGRuntimeModel.Protocol <em>Protocol</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Protocol</em>'.
+	 * @see TGGRuntimeModel.Protocol
+	 * @generated
+	 */
+	EClass getProtocol();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link TGGRuntimeModel.Protocol#getSteps <em>Steps</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Steps</em>'.
+	 * @see TGGRuntimeModel.Protocol#getSteps()
+	 * @see #getProtocol()
+	 * @generated
+	 */
+	EReference getProtocol_Steps();
+
+	/**
+	 * Returns the meta object for class '{@link TGGRuntimeModel.TGGRuleApplication <em>TGG Rule Application</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>TGG Rule Application</em>'.
+	 * @see TGGRuntimeModel.TGGRuleApplication
+	 * @generated
+	 */
+	EClass getTGGRuleApplication();
+
+	/**
+	 * Returns the meta object for the container reference '{@link TGGRuntimeModel.TGGRuleApplication#getProtocol <em>Protocol</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the container reference '<em>Protocol</em>'.
+	 * @see TGGRuntimeModel.TGGRuleApplication#getProtocol()
+	 * @see #getTGGRuleApplication()
+	 * @generated
+	 */
+	EReference getTGGRuleApplication_Protocol();
+
+	/**
+	 * Returns the meta object for class '{@link TGGRuntimeModel.CorrespondenceSet <em>Correspondence Set</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for class '<em>Correspondence Set</em>'.
-	 * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.CorrespondenceSet
+	 * @see TGGRuntimeModel.CorrespondenceSet
 	 * @generated
 	 */
 	EClass getCorrespondenceSet();
 
 	/**
-	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.CorrespondenceSet#getCorrespondences <em>Correspondences</em>}'.
+	 * Returns the meta object for the containment reference list '{@link TGGRuntimeModel.CorrespondenceSet#getCorrespondences <em>Correspondences</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the containment reference list '<em>Correspondences</em>'.
-	 * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.CorrespondenceSet#getCorrespondences()
+	 * @see TGGRuntimeModel.CorrespondenceSet#getCorrespondences()
 	 * @see #getCorrespondenceSet()
 	 * @generated
 	 */
 	EReference getCorrespondenceSet_Correspondences();
 
 	/**
-	 * Returns the meta object for class '{@link org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.Correspondence <em>Correspondence</em>}'.
+	 * Returns the meta object for class '{@link TGGRuntimeModel.Correspondence <em>Correspondence</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for class '<em>Correspondence</em>'.
-	 * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.Correspondence
+	 * @see TGGRuntimeModel.Correspondence
 	 * @generated
 	 */
 	EClass getCorrespondence();
 
 	/**
-	 * Returns the meta object for the reference '{@link org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.Correspondence#getSource <em>Source</em>}'.
+	 * Returns the meta object for the reference '{@link TGGRuntimeModel.Correspondence#getSource <em>Source</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the reference '<em>Source</em>'.
-	 * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.Correspondence#getSource()
+	 * @see TGGRuntimeModel.Correspondence#getSource()
 	 * @see #getCorrespondence()
 	 * @generated
 	 */
 	EReference getCorrespondence_Source();
 
 	/**
-	 * Returns the meta object for the reference '{@link org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.Correspondence#getTarget <em>Target</em>}'.
+	 * Returns the meta object for the reference '{@link TGGRuntimeModel.Correspondence#getTarget <em>Target</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the reference '<em>Target</em>'.
-	 * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.Correspondence#getTarget()
+	 * @see TGGRuntimeModel.Correspondence#getTarget()
 	 * @see #getCorrespondence()
 	 * @generated
 	 */
@@ -390,47 +390,11 @@ public interface TGGRuntimeModelPackage extends EPackage {
 	 */
 	interface Literals {
 		/**
-		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl.ProtocolImpl <em>Protocol</em>}' class.
+		 * The meta object literal for the '{@link TGGRuntimeModel.impl.TempContainerImpl <em>Temp Container</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
-		 * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl.ProtocolImpl
-		 * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl.TGGRuntimeModelPackageImpl#getProtocol()
-		 * @generated
-		 */
-		EClass PROTOCOL = eINSTANCE.getProtocol();
-
-		/**
-		 * The meta object literal for the '<em><b>Steps</b></em>' containment reference list feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference PROTOCOL__STEPS = eINSTANCE.getProtocol_Steps();
-
-		/**
-		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl.TGGRuleApplicationImpl <em>TGG Rule Application</em>}' class.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl.TGGRuleApplicationImpl
-		 * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl.TGGRuntimeModelPackageImpl#getTGGRuleApplication()
-		 * @generated
-		 */
-		EClass TGG_RULE_APPLICATION = eINSTANCE.getTGGRuleApplication();
-
-		/**
-		 * The meta object literal for the '<em><b>Protocol</b></em>' container reference feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference TGG_RULE_APPLICATION__PROTOCOL = eINSTANCE.getTGGRuleApplication_Protocol();
-
-		/**
-		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl.TempContainerImpl <em>Temp Container</em>}' class.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl.TempContainerImpl
-		 * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl.TGGRuntimeModelPackageImpl#getTempContainer()
+		 * @see TGGRuntimeModel.impl.TempContainerImpl
+		 * @see TGGRuntimeModel.impl.TGGRuntimeModelPackageImpl#getTempContainer()
 		 * @generated
 		 */
 		EClass TEMP_CONTAINER = eINSTANCE.getTempContainer();
@@ -444,11 +408,47 @@ public interface TGGRuntimeModelPackage extends EPackage {
 		EReference TEMP_CONTAINER__OBJECTS = eINSTANCE.getTempContainer_Objects();
 
 		/**
-		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl.CorrespondenceSetImpl <em>Correspondence Set</em>}' class.
+		 * The meta object literal for the '{@link TGGRuntimeModel.impl.ProtocolImpl <em>Protocol</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
-		 * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl.CorrespondenceSetImpl
-		 * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl.TGGRuntimeModelPackageImpl#getCorrespondenceSet()
+		 * @see TGGRuntimeModel.impl.ProtocolImpl
+		 * @see TGGRuntimeModel.impl.TGGRuntimeModelPackageImpl#getProtocol()
+		 * @generated
+		 */
+		EClass PROTOCOL = eINSTANCE.getProtocol();
+
+		/**
+		 * The meta object literal for the '<em><b>Steps</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference PROTOCOL__STEPS = eINSTANCE.getProtocol_Steps();
+
+		/**
+		 * The meta object literal for the '{@link TGGRuntimeModel.impl.TGGRuleApplicationImpl <em>TGG Rule Application</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see TGGRuntimeModel.impl.TGGRuleApplicationImpl
+		 * @see TGGRuntimeModel.impl.TGGRuntimeModelPackageImpl#getTGGRuleApplication()
+		 * @generated
+		 */
+		EClass TGG_RULE_APPLICATION = eINSTANCE.getTGGRuleApplication();
+
+		/**
+		 * The meta object literal for the '<em><b>Protocol</b></em>' container reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference TGG_RULE_APPLICATION__PROTOCOL = eINSTANCE.getTGGRuleApplication_Protocol();
+
+		/**
+		 * The meta object literal for the '{@link TGGRuntimeModel.impl.CorrespondenceSetImpl <em>Correspondence Set</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see TGGRuntimeModel.impl.CorrespondenceSetImpl
+		 * @see TGGRuntimeModel.impl.TGGRuntimeModelPackageImpl#getCorrespondenceSet()
 		 * @generated
 		 */
 		EClass CORRESPONDENCE_SET = eINSTANCE.getCorrespondenceSet();
@@ -462,11 +462,11 @@ public interface TGGRuntimeModelPackage extends EPackage {
 		EReference CORRESPONDENCE_SET__CORRESPONDENCES = eINSTANCE.getCorrespondenceSet_Correspondences();
 
 		/**
-		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl.CorrespondenceImpl <em>Correspondence</em>}' class.
+		 * The meta object literal for the '{@link TGGRuntimeModel.impl.CorrespondenceImpl <em>Correspondence</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
-		 * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl.CorrespondenceImpl
-		 * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl.TGGRuntimeModelPackageImpl#getCorrespondence()
+		 * @see TGGRuntimeModel.impl.CorrespondenceImpl
+		 * @see TGGRuntimeModel.impl.TGGRuntimeModelPackageImpl#getCorrespondence()
 		 * @generated
 		 */
 		EClass CORRESPONDENCE = eINSTANCE.getCorrespondence();

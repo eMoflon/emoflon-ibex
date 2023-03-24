@@ -8,9 +8,10 @@ Bundle-ClassPath: .
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Export-Package: org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel,
- org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl,
- org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.util
+Export-Package: TGGRuntimeModel,
+ TGGRuntimeModel.impl,
+ TGGRuntimeModel.util,
+ TGGRuntimeModel.validation
 Require-Bundle: org.eclipse.emf.ecore;visibility:=reexport,
  org.eclipse.core.runtime
 Bundle-ActivationPolicy: lazy

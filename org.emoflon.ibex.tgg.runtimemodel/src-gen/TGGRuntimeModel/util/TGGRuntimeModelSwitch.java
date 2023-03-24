@@ -1,13 +1,13 @@
 /**
  */
-package org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.util;
+package TGGRuntimeModel.util;
+
+import TGGRuntimeModel.*;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 
 import org.eclipse.emf.ecore.util.Switch;
-
-import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.*;
 
 /**
  * <!-- begin-user-doc -->
@@ -19,7 +19,7 @@ import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.*;
  * until a non-null result is returned,
  * which is the result of the switch.
  * <!-- end-user-doc -->
- * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuntimeModelPackage
+ * @see TGGRuntimeModel.TGGRuntimeModelPackage
  * @generated
  */
 public class TGGRuntimeModelSwitch<T> extends Switch<T> {
@@ -66,44 +66,53 @@ public class TGGRuntimeModelSwitch<T> extends Switch<T> {
 	@Override
 	protected T doSwitch(int classifierID, EObject theEObject) {
 		switch (classifierID) {
-		case TGGRuntimeModelPackage.TEMP_CONTAINER: {
-			TempContainer tempContainer = (TempContainer) theEObject;
-			T result = caseTempContainer(tempContainer);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
+			case TGGRuntimeModelPackage.TEMP_CONTAINER: {
+				TempContainer tempContainer = (TempContainer)theEObject;
+				T result = caseTempContainer(tempContainer);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case TGGRuntimeModelPackage.PROTOCOL: {
+				Protocol protocol = (Protocol)theEObject;
+				T result = caseProtocol(protocol);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case TGGRuntimeModelPackage.TGG_RULE_APPLICATION: {
+				TGGRuleApplication tggRuleApplication = (TGGRuleApplication)theEObject;
+				T result = caseTGGRuleApplication(tggRuleApplication);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case TGGRuntimeModelPackage.CORRESPONDENCE_SET: {
+				CorrespondenceSet correspondenceSet = (CorrespondenceSet)theEObject;
+				T result = caseCorrespondenceSet(correspondenceSet);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case TGGRuntimeModelPackage.CORRESPONDENCE: {
+				Correspondence correspondence = (Correspondence)theEObject;
+				T result = caseCorrespondence(correspondence);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			default: return defaultCase(theEObject);
 		}
-		case TGGRuntimeModelPackage.PROTOCOL: {
-			Protocol protocol = (Protocol) theEObject;
-			T result = caseProtocol(protocol);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
-		case TGGRuntimeModelPackage.TGG_RULE_APPLICATION: {
-			TGGRuleApplication tggRuleApplication = (TGGRuleApplication) theEObject;
-			T result = caseTGGRuleApplication(tggRuleApplication);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
-		case TGGRuntimeModelPackage.CORRESPONDENCE_SET: {
-			CorrespondenceSet correspondenceSet = (CorrespondenceSet) theEObject;
-			T result = caseCorrespondenceSet(correspondenceSet);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
-		case TGGRuntimeModelPackage.CORRESPONDENCE: {
-			Correspondence correspondence = (Correspondence) theEObject;
-			T result = caseCorrespondence(correspondence);
-			if (result == null)
-				result = defaultCase(theEObject);
-			return result;
-		}
-		default:
-			return defaultCase(theEObject);
-		}
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Temp Container</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Temp Container</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseTempContainer(TempContainer object) {
+		return null;
 	}
 
 	/**
@@ -133,21 +142,6 @@ public class TGGRuntimeModelSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseTGGRuleApplication(TGGRuleApplication object) {
-		return null;
-	}
-
-	/**
-	 * Returns the result of interpreting the object as an instance of '<em>Temp Container</em>'.
-	 * <!-- begin-user-doc -->
-	 * This implementation returns null;
-	 * returning a non-null result will terminate the switch.
-	 * <!-- end-user-doc -->
-	 * @param object the target of the switch.
-	 * @return the result of interpreting the object as an instance of '<em>Temp Container</em>'.
-	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-	 * @generated
-	 */
-	public T caseTempContainer(TempContainer object) {
 		return null;
 	}
 

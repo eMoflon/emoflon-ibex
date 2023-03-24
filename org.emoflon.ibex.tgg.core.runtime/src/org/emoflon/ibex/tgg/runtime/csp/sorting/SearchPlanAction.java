@@ -17,7 +17,6 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.Intege
 import org.emoflon.ibex.tgg.runtime.csp.sorting.solver.democles.common.Adornment;
 import org.emoflon.ibex.tgg.runtime.csp.sorting.solver.democles.plan.Algorithm;
 import org.emoflon.ibex.tgg.runtime.csp.sorting.solver.democles.plan.WeightedOperation;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintBinding;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintParameterValue;

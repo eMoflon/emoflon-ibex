@@ -1,6 +1,10 @@
 /**
  */
-package org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl;
+package TGGRuntimeModel.impl;
+
+import TGGRuntimeModel.Correspondence;
+import TGGRuntimeModel.CorrespondenceSet;
+import TGGRuntimeModel.TGGRuntimeModelPackage;
 
 import java.util.Collection;
 
@@ -9,7 +13,6 @@ import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
@@ -17,39 +20,36 @@ import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 
-import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuntimeModelPackage;
-import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TempContainer;
-
 /**
  * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>Temp Container</b></em>'.
+ * An implementation of the model object '<em><b>Correspondence Set</b></em>'.
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl.TempContainerImpl#getObjects <em>Objects</em>}</li>
+ *   <li>{@link TGGRuntimeModel.impl.CorrespondenceSetImpl#getCorrespondences <em>Correspondences</em>}</li>
  * </ul>
  *
  * @generated
  */
-public class TempContainerImpl extends MinimalEObjectImpl.Container implements TempContainer {
+public class CorrespondenceSetImpl extends MinimalEObjectImpl.Container implements CorrespondenceSet {
 	/**
-	 * The cached value of the '{@link #getObjects() <em>Objects</em>}' containment reference list.
+	 * The cached value of the '{@link #getCorrespondences() <em>Correspondences</em>}' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getObjects()
+	 * @see #getCorrespondences()
 	 * @generated
 	 * @ordered
 	 */
-	protected EList<EObject> objects;
+	protected EList<Correspondence> correspondences;
 
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected TempContainerImpl() {
+	protected CorrespondenceSetImpl() {
 		super();
 	}
 
@@ -60,7 +60,7 @@ public class TempContainerImpl extends MinimalEObjectImpl.Container implements T
 	 */
 	@Override
 	protected EClass eStaticClass() {
-		return TGGRuntimeModelPackage.Literals.TEMP_CONTAINER;
+		return TGGRuntimeModelPackage.Literals.CORRESPONDENCE_SET;
 	}
 
 	/**
@@ -68,12 +68,11 @@ public class TempContainerImpl extends MinimalEObjectImpl.Container implements T
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EList<EObject> getObjects() {
-		if (objects == null) {
-			objects = new EObjectContainmentEList<EObject>(EObject.class, this,
-					TGGRuntimeModelPackage.TEMP_CONTAINER__OBJECTS);
+	public EList<Correspondence> getCorrespondences() {
+		if (correspondences == null) {
+			correspondences = new EObjectContainmentEList<Correspondence>(Correspondence.class, this, TGGRuntimeModelPackage.CORRESPONDENCE_SET__CORRESPONDENCES);
 		}
-		return objects;
+		return correspondences;
 	}
 
 	/**
@@ -84,8 +83,8 @@ public class TempContainerImpl extends MinimalEObjectImpl.Container implements T
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-		case TGGRuntimeModelPackage.TEMP_CONTAINER__OBJECTS:
-			return ((InternalEList<?>) getObjects()).basicRemove(otherEnd, msgs);
+			case TGGRuntimeModelPackage.CORRESPONDENCE_SET__CORRESPONDENCES:
+				return ((InternalEList<?>)getCorrespondences()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -98,8 +97,8 @@ public class TempContainerImpl extends MinimalEObjectImpl.Container implements T
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case TGGRuntimeModelPackage.TEMP_CONTAINER__OBJECTS:
-			return getObjects();
+			case TGGRuntimeModelPackage.CORRESPONDENCE_SET__CORRESPONDENCES:
+				return getCorrespondences();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -113,10 +112,10 @@ public class TempContainerImpl extends MinimalEObjectImpl.Container implements T
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case TGGRuntimeModelPackage.TEMP_CONTAINER__OBJECTS:
-			getObjects().clear();
-			getObjects().addAll((Collection<? extends EObject>) newValue);
-			return;
+			case TGGRuntimeModelPackage.CORRESPONDENCE_SET__CORRESPONDENCES:
+				getCorrespondences().clear();
+				getCorrespondences().addAll((Collection<? extends Correspondence>)newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -129,9 +128,9 @@ public class TempContainerImpl extends MinimalEObjectImpl.Container implements T
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case TGGRuntimeModelPackage.TEMP_CONTAINER__OBJECTS:
-			getObjects().clear();
-			return;
+			case TGGRuntimeModelPackage.CORRESPONDENCE_SET__CORRESPONDENCES:
+				getCorrespondences().clear();
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -144,10 +143,10 @@ public class TempContainerImpl extends MinimalEObjectImpl.Container implements T
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case TGGRuntimeModelPackage.TEMP_CONTAINER__OBJECTS:
-			return objects != null && !objects.isEmpty();
+			case TGGRuntimeModelPackage.CORRESPONDENCE_SET__CORRESPONDENCES:
+				return correspondences != null && !correspondences.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}
 
-} //TempContainerImpl
+} //CorrespondenceSetImpl

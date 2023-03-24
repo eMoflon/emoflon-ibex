@@ -33,8 +33,6 @@ import org.emoflon.ibex.tgg.runtime.repair.shortcut.updatepolicy.IShortcutRuleUp
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.SCMatch;
 import org.emoflon.ibex.tgg.runtime.repair.strategies.RepairApplicationPoint;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.TGGResourceHandler;
-import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuleApplication;
-import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TempContainer;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
@@ -46,6 +44,9 @@ import org.emoflon.ibex.tgg.util.benchmark.TimeRegistry;
 import org.emoflon.ibex.tgg.util.benchmark.Timer;
 import org.emoflon.ibex.tgg.util.benchmark.Times;
 import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
+
+import TGGRuntimeModel.TGGRuleApplication;
+import TGGRuntimeModel.TempContainer;
 
 /**
  * This class handles all operationalized shortcut rules and their application to fix a broken

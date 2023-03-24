@@ -5,7 +5,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
-import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuleApplication;
+
+import TGGRuntimeModel.TGGRuleApplication;
 
 public interface RepairStrategy {
 

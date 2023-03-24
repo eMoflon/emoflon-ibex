@@ -16,11 +16,12 @@ import org.emoflon.ibex.tgg.runtime.interpreter.IGreenInterpreter;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.PropagationDirectionHolder.PropagationDirection;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.RuleHandler;
-import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuleApplication;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintParameterValue;
 import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
+
+import TGGRuntimeModel.TGGRuleApplication;
 
 public class AttributeRepairStrategy implements RepairStrategy {
 

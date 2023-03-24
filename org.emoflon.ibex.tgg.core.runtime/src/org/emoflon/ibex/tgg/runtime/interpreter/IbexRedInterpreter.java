@@ -1,10 +1,10 @@
 package org.emoflon.ibex.tgg.runtime.interpreter;
 
+import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
+
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-
-import static org.emoflon.ibex.tgg.util.TGGEdgeUtil.getRuntimeEdge;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
@@ -15,10 +15,10 @@ import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.TGGResourceHandler;
-import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.Correspondence;
-import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuleApplication;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
+
+import TGGRuntimeModel.Correspondence;
+import TGGRuntimeModel.TGGRuleApplication;
 
 public class IbexRedInterpreter implements IRedInterpreter {
 	private final OperationalStrategy strategy;

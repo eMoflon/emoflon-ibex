@@ -1,20 +1,20 @@
 /**
  */
-package org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl;
+package TGGRuntimeModel.impl;
+
+import TGGRuntimeModel.Correspondence;
+import TGGRuntimeModel.CorrespondenceSet;
+import TGGRuntimeModel.Protocol;
+import TGGRuntimeModel.TGGRuleApplication;
+import TGGRuntimeModel.TGGRuntimeModelFactory;
+import TGGRuntimeModel.TGGRuntimeModelPackage;
+import TGGRuntimeModel.TempContainer;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 
 import org.eclipse.emf.ecore.impl.EPackageImpl;
-
-import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.Correspondence;
-import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.CorrespondenceSet;
-import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.Protocol;
-import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuleApplication;
-import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuntimeModelFactory;
-import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuntimeModelPackage;
-import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TempContainer;
 
 /**
  * <!-- begin-user-doc -->
@@ -28,6 +28,13 @@ public class TGGRuntimeModelPackageImpl extends EPackageImpl implements TGGRunti
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	private EClass tempContainerEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	private EClass protocolEClass = null;
 
 	/**
@@ -36,13 +43,6 @@ public class TGGRuntimeModelPackageImpl extends EPackageImpl implements TGGRunti
 	 * @generated
 	 */
 	private EClass tggRuleApplicationEClass = null;
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	private EClass tempContainerEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -69,14 +69,13 @@ public class TGGRuntimeModelPackageImpl extends EPackageImpl implements TGGRunti
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @see org.eclipse.emf.ecore.EPackage.Registry
-	 * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuntimeModelPackage#eNS_URI
+	 * @see TGGRuntimeModel.TGGRuntimeModelPackage#eNS_URI
 	 * @see #init()
 	 * @generated
 	 */
 	private TGGRuntimeModelPackageImpl() {
 		super(eNS_URI, TGGRuntimeModelFactory.eINSTANCE);
 	}
-
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -97,14 +96,11 @@ public class TGGRuntimeModelPackageImpl extends EPackageImpl implements TGGRunti
 	 * @generated
 	 */
 	public static TGGRuntimeModelPackage init() {
-		if (isInited)
-			return (TGGRuntimeModelPackage) EPackage.Registry.INSTANCE.getEPackage(TGGRuntimeModelPackage.eNS_URI);
+		if (isInited) return (TGGRuntimeModelPackage)EPackage.Registry.INSTANCE.getEPackage(TGGRuntimeModelPackage.eNS_URI);
 
 		// Obtain or create and register package
 		Object registeredTGGRuntimeModelPackage = EPackage.Registry.INSTANCE.get(eNS_URI);
-		TGGRuntimeModelPackageImpl theTGGRuntimeModelPackage = registeredTGGRuntimeModelPackage instanceof TGGRuntimeModelPackageImpl
-				? (TGGRuntimeModelPackageImpl) registeredTGGRuntimeModelPackage
-				: new TGGRuntimeModelPackageImpl();
+		TGGRuntimeModelPackageImpl theTGGRuntimeModelPackage = registeredTGGRuntimeModelPackage instanceof TGGRuntimeModelPackageImpl ? (TGGRuntimeModelPackageImpl)registeredTGGRuntimeModelPackage : new TGGRuntimeModelPackageImpl();
 
 		isInited = true;
 
@@ -127,6 +123,24 @@ public class TGGRuntimeModelPackageImpl extends EPackageImpl implements TGGRunti
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getTempContainer() {
+		return tempContainerEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getTempContainer_Objects() {
+		return (EReference)tempContainerEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getProtocol() {
 		return protocolEClass;
 	}
@@ -137,7 +151,7 @@ public class TGGRuntimeModelPackageImpl extends EPackageImpl implements TGGRunti
 	 * @generated
 	 */
 	public EReference getProtocol_Steps() {
-		return (EReference) protocolEClass.getEStructuralFeatures().get(0);
+		return (EReference)protocolEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -155,25 +169,7 @@ public class TGGRuntimeModelPackageImpl extends EPackageImpl implements TGGRunti
 	 * @generated
 	 */
 	public EReference getTGGRuleApplication_Protocol() {
-		return (EReference) tggRuleApplicationEClass.getEStructuralFeatures().get(0);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EClass getTempContainer() {
-		return tempContainerEClass;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EReference getTempContainer_Objects() {
-		return (EReference) tempContainerEClass.getEStructuralFeatures().get(0);
+		return (EReference)tggRuleApplicationEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -191,7 +187,7 @@ public class TGGRuntimeModelPackageImpl extends EPackageImpl implements TGGRunti
 	 * @generated
 	 */
 	public EReference getCorrespondenceSet_Correspondences() {
-		return (EReference) correspondenceSetEClass.getEStructuralFeatures().get(0);
+		return (EReference)correspondenceSetEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -209,7 +205,7 @@ public class TGGRuntimeModelPackageImpl extends EPackageImpl implements TGGRunti
 	 * @generated
 	 */
 	public EReference getCorrespondence_Source() {
-		return (EReference) correspondenceEClass.getEStructuralFeatures().get(0);
+		return (EReference)correspondenceEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -218,7 +214,7 @@ public class TGGRuntimeModelPackageImpl extends EPackageImpl implements TGGRunti
 	 * @generated
 	 */
 	public EReference getCorrespondence_Target() {
-		return (EReference) correspondenceEClass.getEStructuralFeatures().get(1);
+		return (EReference)correspondenceEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -227,7 +223,7 @@ public class TGGRuntimeModelPackageImpl extends EPackageImpl implements TGGRunti
 	 * @generated
 	 */
 	public TGGRuntimeModelFactory getTGGRuntimeModelFactory() {
-		return (TGGRuntimeModelFactory) getEFactoryInstance();
+		return (TGGRuntimeModelFactory)getEFactoryInstance();
 	}
 
 	/**
@@ -245,8 +241,7 @@ public class TGGRuntimeModelPackageImpl extends EPackageImpl implements TGGRunti
 	 * @generated
 	 */
 	public void createPackageContents() {
-		if (isCreated)
-			return;
+		if (isCreated) return;
 		isCreated = true;
 
 		// Create classes and their features
@@ -282,8 +277,7 @@ public class TGGRuntimeModelPackageImpl extends EPackageImpl implements TGGRunti
 	 * @generated
 	 */
 	public void initializePackageContents() {
-		if (isInitialized)
-			return;
+		if (isInitialized) return;
 		isInitialized = true;
 
 		// Initialize package
@@ -298,38 +292,21 @@ public class TGGRuntimeModelPackageImpl extends EPackageImpl implements TGGRunti
 		// Add supertypes to classes
 
 		// Initialize classes, features, and operations; add parameters
-		initEClass(tempContainerEClass, TempContainer.class, "TempContainer", !IS_ABSTRACT, !IS_INTERFACE,
-				IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getTempContainer_Objects(), ecorePackage.getEObject(), null, "objects", null, 0, -1,
-				TempContainer.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES,
-				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEClass(tempContainerEClass, TempContainer.class, "TempContainer", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getTempContainer_Objects(), ecorePackage.getEObject(), null, "objects", null, 0, -1, TempContainer.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(protocolEClass, Protocol.class, "Protocol", !IS_ABSTRACT, !IS_INTERFACE,
-				IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getProtocol_Steps(), this.getTGGRuleApplication(), this.getTGGRuleApplication_Protocol(),
-				"steps", null, 0, -1, Protocol.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
-				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEClass(protocolEClass, Protocol.class, "Protocol", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getProtocol_Steps(), this.getTGGRuleApplication(), this.getTGGRuleApplication_Protocol(), "steps", null, 0, -1, Protocol.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(tggRuleApplicationEClass, TGGRuleApplication.class, "TGGRuleApplication", !IS_ABSTRACT,
-				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getTGGRuleApplication_Protocol(), this.getProtocol(), this.getProtocol_Steps(), "protocol", null,
-				0, 1, TGGRuleApplication.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
-				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEClass(tggRuleApplicationEClass, TGGRuleApplication.class, "TGGRuleApplication", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getTGGRuleApplication_Protocol(), this.getProtocol(), this.getProtocol_Steps(), "protocol", null, 0, 1, TGGRuleApplication.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(correspondenceSetEClass, CorrespondenceSet.class, "CorrespondenceSet", !IS_ABSTRACT, !IS_INTERFACE,
-				IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getCorrespondenceSet_Correspondences(), this.getCorrespondence(), null, "correspondences", null,
-				0, -1, CorrespondenceSet.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
-				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEClass(correspondenceSetEClass, CorrespondenceSet.class, "CorrespondenceSet", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getCorrespondenceSet_Correspondences(), this.getCorrespondence(), null, "correspondences", null, 0, -1, CorrespondenceSet.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(correspondenceEClass, Correspondence.class, "Correspondence", !IS_ABSTRACT, !IS_INTERFACE,
-				IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getCorrespondence_Source(), ecorePackage.getEObject(), null, "source", null, 0, 1,
-				Correspondence.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
-				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getCorrespondence_Target(), ecorePackage.getEObject(), null, "target", null, 0, 1,
-				Correspondence.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
-				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEClass(correspondenceEClass, Correspondence.class, "Correspondence", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getCorrespondence_Source(), ecorePackage.getEObject(), null, "source", null, 0, 1, Correspondence.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getCorrespondence_Target(), ecorePackage.getEObject(), null, "target", null, 0, 1, Correspondence.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Create resource
 		createResource(eNS_URI);

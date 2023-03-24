@@ -1,6 +1,10 @@
 /**
  */
-package org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl;
+package TGGRuntimeModel.impl;
+
+import TGGRuntimeModel.Protocol;
+import TGGRuntimeModel.TGGRuleApplication;
+import TGGRuntimeModel.TGGRuntimeModelPackage;
 
 import java.util.Collection;
 
@@ -16,10 +20,6 @@ import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 import org.eclipse.emf.ecore.util.EObjectContainmentWithInverseEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 
-import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.Protocol;
-import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuleApplication;
-import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuntimeModelPackage;
-
 /**
  * <!-- begin-user-doc -->
  * An implementation of the model object '<em><b>Protocol</b></em>'.
@@ -28,7 +28,7 @@ import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuntimeModelPackage;
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl.ProtocolImpl#getSteps <em>Steps</em>}</li>
+ *   <li>{@link TGGRuntimeModel.impl.ProtocolImpl#getSteps <em>Steps</em>}</li>
  * </ul>
  *
  * @generated
@@ -70,8 +70,7 @@ public class ProtocolImpl extends MinimalEObjectImpl.Container implements Protoc
 	 */
 	public EList<TGGRuleApplication> getSteps() {
 		if (steps == null) {
-			steps = new EObjectContainmentWithInverseEList<TGGRuleApplication>(TGGRuleApplication.class, this,
-					TGGRuntimeModelPackage.PROTOCOL__STEPS, TGGRuntimeModelPackage.TGG_RULE_APPLICATION__PROTOCOL);
+			steps = new EObjectContainmentWithInverseEList<TGGRuleApplication>(TGGRuleApplication.class, this, TGGRuntimeModelPackage.PROTOCOL__STEPS, TGGRuntimeModelPackage.TGG_RULE_APPLICATION__PROTOCOL);
 		}
 		return steps;
 	}
@@ -85,8 +84,8 @@ public class ProtocolImpl extends MinimalEObjectImpl.Container implements Protoc
 	@Override
 	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-		case TGGRuntimeModelPackage.PROTOCOL__STEPS:
-			return ((InternalEList<InternalEObject>) (InternalEList<?>) getSteps()).basicAdd(otherEnd, msgs);
+			case TGGRuntimeModelPackage.PROTOCOL__STEPS:
+				return ((InternalEList<InternalEObject>)(InternalEList<?>)getSteps()).basicAdd(otherEnd, msgs);
 		}
 		return super.eInverseAdd(otherEnd, featureID, msgs);
 	}
@@ -99,8 +98,8 @@ public class ProtocolImpl extends MinimalEObjectImpl.Container implements Protoc
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-		case TGGRuntimeModelPackage.PROTOCOL__STEPS:
-			return ((InternalEList<?>) getSteps()).basicRemove(otherEnd, msgs);
+			case TGGRuntimeModelPackage.PROTOCOL__STEPS:
+				return ((InternalEList<?>)getSteps()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -113,8 +112,8 @@ public class ProtocolImpl extends MinimalEObjectImpl.Container implements Protoc
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case TGGRuntimeModelPackage.PROTOCOL__STEPS:
-			return getSteps();
+			case TGGRuntimeModelPackage.PROTOCOL__STEPS:
+				return getSteps();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -128,10 +127,10 @@ public class ProtocolImpl extends MinimalEObjectImpl.Container implements Protoc
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case TGGRuntimeModelPackage.PROTOCOL__STEPS:
-			getSteps().clear();
-			getSteps().addAll((Collection<? extends TGGRuleApplication>) newValue);
-			return;
+			case TGGRuntimeModelPackage.PROTOCOL__STEPS:
+				getSteps().clear();
+				getSteps().addAll((Collection<? extends TGGRuleApplication>)newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -144,9 +143,9 @@ public class ProtocolImpl extends MinimalEObjectImpl.Container implements Protoc
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case TGGRuntimeModelPackage.PROTOCOL__STEPS:
-			getSteps().clear();
-			return;
+			case TGGRuntimeModelPackage.PROTOCOL__STEPS:
+				getSteps().clear();
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -159,8 +158,8 @@ public class ProtocolImpl extends MinimalEObjectImpl.Container implements Protoc
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case TGGRuntimeModelPackage.PROTOCOL__STEPS:
-			return steps != null && !steps.isEmpty();
+			case TGGRuntimeModelPackage.PROTOCOL__STEPS:
+				return steps != null && !steps.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

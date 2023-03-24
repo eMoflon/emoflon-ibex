@@ -3,7 +3,6 @@ package org.emoflon.ibex.tgg.analysis;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.BiFunction;
 
 import org.eclipse.emf.ecore.EClass;
@@ -15,8 +14,6 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXOperationType;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternInvocation;
 import org.emoflon.ibex.tgg.analysis.FilterNACCandidate.EdgeDirection;
-import org.emoflon.ibex.tgg.patterns.InjectivityConstraintHandler;
-import org.emoflon.ibex.tgg.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel;

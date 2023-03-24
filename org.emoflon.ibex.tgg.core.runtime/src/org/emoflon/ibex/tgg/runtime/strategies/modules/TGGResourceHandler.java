@@ -36,14 +36,13 @@ import org.emoflon.ibex.tgg.runtime.strategies.opt.MetamodelRelaxer;
 import org.emoflon.ibex.tgg.runtime.strategies.sync.INITIAL_BWD;
 import org.emoflon.ibex.tgg.runtime.strategies.sync.INITIAL_FWD;
 import org.emoflon.ibex.tgg.runtime.strategies.sync.SYNC;
-import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuntimeModelPackage;
-import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TempContainer;
-import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl.TGGRuntimeModelPackageImpl;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.IBeXTGGModelPackageImpl;
 import org.emoflon.smartemf.runtime.SmartObject;
 import org.moflon.core.utilities.MoflonUtil;
+
+import TGGRuntimeModel.TempContainer;
+import TGGRuntimeModel.impl.TGGRuntimeModelPackageImpl;
 
 public class TGGResourceHandler {
 

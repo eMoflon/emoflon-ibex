@@ -10,8 +10,8 @@ import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.repair.SeqRepair;
 import org.emoflon.ibex.tgg.runtime.strategies.PropagatingOperationalStrategy;
 import org.emoflon.ibex.tgg.runtime.strategies.PropagationDirectionHolder;
-import org.emoflon.ibex.tgg.runtime.strategies.StrategyMode;
 import org.emoflon.ibex.tgg.runtime.strategies.PropagationDirectionHolder.PropagationDirection;
+import org.emoflon.ibex.tgg.runtime.strategies.StrategyMode;
 
 public class SYNC extends PropagatingOperationalStrategy {
 

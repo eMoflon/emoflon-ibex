@@ -21,12 +21,13 @@ import org.emoflon.ibex.tgg.runtime.strategies.integrate.classification.Deletion
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.modelchange.ModelChangeProtocol.ChangeKey;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.modelchange.ModelChangeUtil;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.modelchange.ModelChanges;
-import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuleApplication;
 import org.emoflon.ibex.tgg.util.benchmark.TimeMeasurable;
 import org.emoflon.ibex.tgg.util.benchmark.Timer;
 import org.emoflon.ibex.tgg.util.benchmark.Times;
 import org.emoflon.ibex.tgg.util.debug.ConsoleUtil;
 import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
+
+import TGGRuntimeModel.TGGRuleApplication;
 
 public class Revoker implements TimeMeasurable {
 

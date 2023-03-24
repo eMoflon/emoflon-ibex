@@ -1,6 +1,8 @@
 /**
  */
-package org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl;
+package TGGRuntimeModel.impl;
+
+import TGGRuntimeModel.*;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -9,8 +11,6 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.impl.EFactoryImpl;
 
 import org.eclipse.emf.ecore.plugin.EcorePlugin;
-
-import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.*;
 
 /**
  * <!-- begin-user-doc -->
@@ -27,12 +27,12 @@ public class TGGRuntimeModelFactoryImpl extends EFactoryImpl implements TGGRunti
 	 */
 	public static TGGRuntimeModelFactory init() {
 		try {
-			TGGRuntimeModelFactory theTGGRuntimeModelFactory = (TGGRuntimeModelFactory) EPackage.Registry.INSTANCE
-					.getEFactory(TGGRuntimeModelPackage.eNS_URI);
+			TGGRuntimeModelFactory theTGGRuntimeModelFactory = (TGGRuntimeModelFactory)EPackage.Registry.INSTANCE.getEFactory(TGGRuntimeModelPackage.eNS_URI);
 			if (theTGGRuntimeModelFactory != null) {
 				return theTGGRuntimeModelFactory;
 			}
-		} catch (Exception exception) {
+		}
+		catch (Exception exception) {
 			EcorePlugin.INSTANCE.log(exception);
 		}
 		return new TGGRuntimeModelFactoryImpl();
@@ -56,19 +56,24 @@ public class TGGRuntimeModelFactoryImpl extends EFactoryImpl implements TGGRunti
 	@Override
 	public EObject create(EClass eClass) {
 		switch (eClass.getClassifierID()) {
-		case TGGRuntimeModelPackage.TEMP_CONTAINER:
-			return createTempContainer();
-		case TGGRuntimeModelPackage.PROTOCOL:
-			return createProtocol();
-		case TGGRuntimeModelPackage.TGG_RULE_APPLICATION:
-			return createTGGRuleApplication();
-		case TGGRuntimeModelPackage.CORRESPONDENCE_SET:
-			return createCorrespondenceSet();
-		case TGGRuntimeModelPackage.CORRESPONDENCE:
-			return createCorrespondence();
-		default:
-			throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
+			case TGGRuntimeModelPackage.TEMP_CONTAINER: return createTempContainer();
+			case TGGRuntimeModelPackage.PROTOCOL: return createProtocol();
+			case TGGRuntimeModelPackage.TGG_RULE_APPLICATION: return createTGGRuleApplication();
+			case TGGRuntimeModelPackage.CORRESPONDENCE_SET: return createCorrespondenceSet();
+			case TGGRuntimeModelPackage.CORRESPONDENCE: return createCorrespondence();
+			default:
+				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public TempContainer createTempContainer() {
+		TempContainerImpl tempContainer = new TempContainerImpl();
+		return tempContainer;
 	}
 
 	/**
@@ -89,16 +94,6 @@ public class TGGRuntimeModelFactoryImpl extends EFactoryImpl implements TGGRunti
 	public TGGRuleApplication createTGGRuleApplication() {
 		TGGRuleApplicationImpl tggRuleApplication = new TGGRuleApplicationImpl();
 		return tggRuleApplication;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public TempContainer createTempContainer() {
-		TempContainerImpl tempContainer = new TempContainerImpl();
-		return tempContainer;
 	}
 
 	/**
@@ -127,7 +122,7 @@ public class TGGRuntimeModelFactoryImpl extends EFactoryImpl implements TGGRunti
 	 * @generated
 	 */
 	public TGGRuntimeModelPackage getTGGRuntimeModelPackage() {
-		return (TGGRuntimeModelPackage) getEPackage();
+		return (TGGRuntimeModelPackage)getEPackage();
 	}
 
 	/**

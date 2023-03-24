@@ -1,6 +1,6 @@
 /**
  */
-package org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel;
+package TGGRuntimeModel;
 
 import org.eclipse.emf.ecore.EFactory;
 
@@ -9,7 +9,7 @@ import org.eclipse.emf.ecore.EFactory;
  * The <b>Factory</b> for the model.
  * It provides a create method for each non-abstract class of the model.
  * <!-- end-user-doc -->
- * @see org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuntimeModelPackage
+ * @see TGGRuntimeModel.TGGRuntimeModelPackage
  * @generated
  */
 public interface TGGRuntimeModelFactory extends EFactory {
@@ -19,8 +19,16 @@ public interface TGGRuntimeModelFactory extends EFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	TGGRuntimeModelFactory eINSTANCE = org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.impl.TGGRuntimeModelFactoryImpl
-			.init();
+	TGGRuntimeModelFactory eINSTANCE = TGGRuntimeModel.impl.TGGRuntimeModelFactoryImpl.init();
+
+	/**
+	 * Returns a new object of class '<em>Temp Container</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Temp Container</em>'.
+	 * @generated
+	 */
+	TempContainer createTempContainer();
 
 	/**
 	 * Returns a new object of class '<em>Protocol</em>'.
@@ -39,15 +47,6 @@ public interface TGGRuntimeModelFactory extends EFactory {
 	 * @generated
 	 */
 	TGGRuleApplication createTGGRuleApplication();
-
-	/**
-	 * Returns a new object of class '<em>Temp Container</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>Temp Container</em>'.
-	 * @generated
-	 */
-	TempContainer createTempContainer();
 
 	/**
 	 * Returns a new object of class '<em>Correspondence Set</em>'.

@@ -8,7 +8,8 @@ import org.emoflon.ibex.tgg.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.patterns.PatternType;
 import org.emoflon.ibex.tgg.patterns.PatternUtil;
 import org.emoflon.ibex.tgg.patterns.TGGPatternUtil;
-import org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuleApplication;
+
+import TGGRuntimeModel.TGGRuleApplication;
 
 public interface ITGGMatch extends IMatch {
 

@@ -10,7 +10,7 @@
       <!-- @generated TGGRuntimeModel -->
       <package
             uri="http://www.eMoflon.org/TGGRuntimeModel"
-            class="org.emoflon.ibex.tgg.runtimemodel.TGGRuntimeModel.TGGRuntimeModelPackage"
+            class="TGGRuntimeModel.TGGRuntimeModelPackage"
             genModel="model/TGGRuntimeModel.genmodel"/>
    </extension>
 

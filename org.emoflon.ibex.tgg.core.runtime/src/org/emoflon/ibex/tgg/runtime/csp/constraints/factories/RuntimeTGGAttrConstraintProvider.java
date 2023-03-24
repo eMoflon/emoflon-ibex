@@ -1,6 +1,5 @@
 package org.emoflon.ibex.tgg.runtime.csp.constraints.factories;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;

@@ -21,7 +21,6 @@ import org.emoflon.ibex.tgg.runtime.interpreter.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.IWeightCalculationStrategy;
 import org.emoflon.ibex.tgg.runtime.strategies.OperationalStrategy;
-import org.emoflon.ibex.tgg.runtime.strategies.modules.RuleHandler;
 import org.emoflon.ibex.tgg.runtime.updatepolicy.IUpdatePolicy;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
