@@ -20,7 +20,7 @@ public interface ITGGMatch extends IMatch {
 	}
 
 	default String getRuleName() {
-		return PatternUtil.getRuleName(getPatternName());
+		return getPatternName();
 	}
 
 	PatternType getType();

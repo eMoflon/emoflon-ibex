@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.compiler;
 
+import static org.emoflon.ibex.tgg.compiler.TGGRuleDerivedFieldsTool.fillDerivedTGGRuleFields;
 import static org.emoflon.ibex.tgg.compiler.TGGRuleDerivedFieldsTool.fillDerivedTGGOperationalRuleFields;
 
 import java.util.Collection;
@@ -71,6 +72,7 @@ public class TGGOperationalizer {
 		fixPrecondition(op);
 		
 		rule.getOperationalisations().add(op);
+		fillDerivedTGGRuleFields(op);
 		fillDerivedTGGOperationalRuleFields(op);
 		removeInvalidAttributeConstraintsFromPrecondition(op);
 	}
@@ -79,6 +81,9 @@ public class TGGOperationalizer {
 		var op = createOperationalizedTGGRule(rule);
 		setRuleName(op, OperationalisationMode.FORWARD);
 		op.setOperationalisationMode(OperationalisationMode.FORWARD);
+
+		// we have to fill marked fields before transforming the rule or else information about formerly created elements is lost
+		fillDerivedTGGOperationalRuleFields(op);
 		
 		transformBindings(op, DomainType.SOURCE, BindingType.CREATE, BindingType.CONTEXT);
 		transformAssignments(op);
@@ -86,7 +91,7 @@ public class TGGOperationalizer {
 		fixPrecondition(op);
 		
 		rule.getOperationalisations().add(op);
-		fillDerivedTGGOperationalRuleFields(op);
+		fillDerivedTGGRuleFields(op);
 		removeInvalidAttributeConstraintsFromPrecondition(op);
 	}
 
@@ -95,13 +100,16 @@ public class TGGOperationalizer {
 		setRuleName(op, OperationalisationMode.BACKWARD);
 		op.setOperationalisationMode(OperationalisationMode.BACKWARD);
 		
+		// we have to fill marked fields before transforming the rule or else information about formerly created elements is lost
+		fillDerivedTGGOperationalRuleFields(op);
+		
 		transformBindings(op, DomainType.TARGET, BindingType.CREATE, BindingType.CONTEXT);
 		transformAssignments(op);
 		createProtocolNode(op, BindingType.CREATE);
 		fixPrecondition(op);
 
 		rule.getOperationalisations().add(op);
-		fillDerivedTGGOperationalRuleFields(op);
+		fillDerivedTGGRuleFields(op);
 		removeInvalidAttributeConstraintsFromPrecondition(op);
 	}
 
@@ -110,14 +118,17 @@ public class TGGOperationalizer {
 		setRuleName(op, OperationalisationMode.CONSISTENCY_CHECK);
 		op.setOperationalisationMode(OperationalisationMode.CONSISTENCY_CHECK);
 		
+		// we have to fill marked fields before transforming the rule or else information about formerly created elements is lost
+		fillDerivedTGGOperationalRuleFields(op);
+
 		transformBindings(op, DomainType.SOURCE, BindingType.CREATE, BindingType.CONTEXT);
 		transformBindings(op, DomainType.TARGET, BindingType.CREATE, BindingType.CONTEXT);
 		transformAssignments(op);
+		createProtocolNode(op, BindingType.CREATE);
 		fixPrecondition(op);
 
-		createProtocolNode(op, BindingType.CREATE);
 		rule.getOperationalisations().add(op);
-		fillDerivedTGGOperationalRuleFields(op);
+		fillDerivedTGGRuleFields(op);
 		removeInvalidAttributeConstraintsFromPrecondition(op);
 	}
 
@@ -125,6 +136,9 @@ public class TGGOperationalizer {
 		var op = createOperationalizedTGGRule(rule);
 		setRuleName(op, OperationalisationMode.CHECK_ONLY);
 		op.setOperationalisationMode(OperationalisationMode.CHECK_ONLY);
+		
+		// we have to fill marked fields before transforming the rule or else information about formerly created elements is lost
+		fillDerivedTGGOperationalRuleFields(op);
 		
 		transformBindings(op, DomainType.SOURCE, BindingType.CREATE, BindingType.CONTEXT);
 		transformBindings(op,  DomainType.CORRESPONDENCE, BindingType.CREATE, BindingType.CONTEXT);
@@ -134,7 +148,7 @@ public class TGGOperationalizer {
 		fixPrecondition(op);
 		
 		rule.getOperationalisations().add(op);
-		fillDerivedTGGOperationalRuleFields(op);
+		fillDerivedTGGRuleFields(op);
 		removeInvalidAttributeConstraintsFromPrecondition(op);
 	}
 	
@@ -142,6 +156,9 @@ public class TGGOperationalizer {
 		var op = createOperationalizedTGGRule(rule);
 		setRuleName(op, OperationalisationMode.CONSISTENCY);
 		op.setOperationalisationMode(OperationalisationMode.CONSISTENCY);
+		
+		// we have to fill marked fields before transforming the rule or else information about formerly created elements is lost
+		fillDerivedTGGOperationalRuleFields(op);
 		
 		transformBindings(op, DomainType.SOURCE, BindingType.CREATE, BindingType.CONTEXT);
 		transformBindings(op,  DomainType.CORRESPONDENCE, BindingType.CREATE, BindingType.CONTEXT);
@@ -151,7 +168,7 @@ public class TGGOperationalizer {
 		fixPrecondition(op);
 		
 		rule.getOperationalisations().add(op);
-		fillDerivedTGGOperationalRuleFields(op);
+		fillDerivedTGGRuleFields(op);
 		removeInvalidAttributeConstraintsFromPrecondition(op);
 	}
 
@@ -160,12 +177,15 @@ public class TGGOperationalizer {
 		setRuleName(op, OperationalisationMode.SOURCE);
 		op.setOperationalisationMode(OperationalisationMode.SOURCE);
 		
+		// we have to fill marked fields before transforming the rule or else information about formerly created elements is lost
+		fillDerivedTGGOperationalRuleFields(op);
+		
 		transformBindings(op, DomainType.SOURCE, BindingType.CREATE, BindingType.CONTEXT);
 		removeDomainInformation(op, DomainType.CORRESPONDENCE);
 		removeDomainInformation(op, DomainType.TARGET);
 		fixPrecondition(op);
 		
-		fillDerivedTGGOperationalRuleFields(op);
+		fillDerivedTGGRuleFields(op);
 		removeInvalidAttributeConstraintsFromPrecondition(op);
 	}
 	
@@ -175,12 +195,15 @@ public class TGGOperationalizer {
 		setRuleName(op, OperationalisationMode.TARGET);
 		op.setOperationalisationMode(OperationalisationMode.TARGET);
 		
+		// we have to fill marked fields before transforming the rule or else information about formerly created elements is lost
+		fillDerivedTGGOperationalRuleFields(op);
+		
 		transformBindings(op, DomainType.TARGET, BindingType.CREATE, BindingType.CONTEXT);
 		removeDomainInformation(op, DomainType.CORRESPONDENCE);
 		removeDomainInformation(op, DomainType.SOURCE);
 		fixPrecondition(op);
 
-		fillDerivedTGGOperationalRuleFields(op);
+		fillDerivedTGGRuleFields(op);
 		removeInvalidAttributeConstraintsFromPrecondition(op);
 	}
 	

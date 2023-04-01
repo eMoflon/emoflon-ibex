@@ -41,8 +41,6 @@ public class TGGRuleDerivedFieldsTool {
 	}
 
 	public static void fillDerivedTGGOperationalRuleFields(TGGOperationalRule op) {
-		fillDerivedTGGRuleFields(op);
-		
 		switch(op.getOperationalisationMode()) {
 		case GENERATE:
 			// nothing to mark for generate
