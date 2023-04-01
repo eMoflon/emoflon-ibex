@@ -544,7 +544,7 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		
 		var source = transformNode(edgeSignature.source(), getBindingType(edgeSignature.source()), getDomainType(edgeSignature.source()));
 		var target = transformNode(edgeSignature.target(), getBindingType(edgeSignature.target()), getDomainType(edgeSignature.target()));
-		edge.setName(source.getName() + " -" + edgeSignature.type().getName()+"-> " + target.getName());
+		edge.setName(source.getName() + "_" + edgeSignature.type().getName()+"_" + target.getName());
 		edge.setSource(source);
 		edge.setTarget(target);
 		

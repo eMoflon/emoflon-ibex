@@ -67,8 +67,9 @@ public class TGGOperationalizer {
 		var op = createOperationalizedTGGRule(rule);
 		setRuleName(op, OperationalisationMode.GENERATE);
 		op.setOperationalisationMode(OperationalisationMode.GENERATE);
-		
 		createProtocolNode(op, BindingType.CREATE);
+		fixPrecondition(op);
+		
 		rule.getOperationalisations().add(op);
 		fillDerivedTGGOperationalRuleFields(op);
 		removeInvalidAttributeConstraintsFromPrecondition(op);
@@ -81,8 +82,9 @@ public class TGGOperationalizer {
 		
 		transformBindings(op, DomainType.SOURCE, BindingType.CREATE, BindingType.CONTEXT);
 		transformAssignments(op);
-		
 		createProtocolNode(op, BindingType.CREATE);
+		fixPrecondition(op);
+		
 		rule.getOperationalisations().add(op);
 		fillDerivedTGGOperationalRuleFields(op);
 		removeInvalidAttributeConstraintsFromPrecondition(op);
@@ -95,8 +97,9 @@ public class TGGOperationalizer {
 		
 		transformBindings(op, DomainType.TARGET, BindingType.CREATE, BindingType.CONTEXT);
 		transformAssignments(op);
-		
 		createProtocolNode(op, BindingType.CREATE);
+		fixPrecondition(op);
+
 		rule.getOperationalisations().add(op);
 		fillDerivedTGGOperationalRuleFields(op);
 		removeInvalidAttributeConstraintsFromPrecondition(op);
@@ -110,7 +113,8 @@ public class TGGOperationalizer {
 		transformBindings(op, DomainType.SOURCE, BindingType.CREATE, BindingType.CONTEXT);
 		transformBindings(op, DomainType.TARGET, BindingType.CREATE, BindingType.CONTEXT);
 		transformAssignments(op);
-		
+		fixPrecondition(op);
+
 		createProtocolNode(op, BindingType.CREATE);
 		rule.getOperationalisations().add(op);
 		fillDerivedTGGOperationalRuleFields(op);
@@ -126,8 +130,9 @@ public class TGGOperationalizer {
 		transformBindings(op,  DomainType.CORRESPONDENCE, BindingType.CREATE, BindingType.CONTEXT);
 		transformBindings(op, DomainType.TARGET, BindingType.CREATE, BindingType.CONTEXT);
 		transformAssignments(op);
-		
 		createProtocolNode(op, BindingType.CREATE);
+		fixPrecondition(op);
+		
 		rule.getOperationalisations().add(op);
 		fillDerivedTGGOperationalRuleFields(op);
 		removeInvalidAttributeConstraintsFromPrecondition(op);
@@ -142,8 +147,9 @@ public class TGGOperationalizer {
 		transformBindings(op,  DomainType.CORRESPONDENCE, BindingType.CREATE, BindingType.CONTEXT);
 		transformBindings(op, DomainType.TARGET, BindingType.CREATE, BindingType.CONTEXT);
 		transformAssignments(op);
-		
 		createProtocolNode(op, BindingType.CONTEXT);
+		fixPrecondition(op);
+		
 		rule.getOperationalisations().add(op);
 		fillDerivedTGGOperationalRuleFields(op);
 		removeInvalidAttributeConstraintsFromPrecondition(op);
@@ -157,6 +163,8 @@ public class TGGOperationalizer {
 		transformBindings(op, DomainType.SOURCE, BindingType.CREATE, BindingType.CONTEXT);
 		removeDomainInformation(op, DomainType.CORRESPONDENCE);
 		removeDomainInformation(op, DomainType.TARGET);
+		fixPrecondition(op);
+		
 		fillDerivedTGGOperationalRuleFields(op);
 		removeInvalidAttributeConstraintsFromPrecondition(op);
 	}
@@ -170,6 +178,8 @@ public class TGGOperationalizer {
 		transformBindings(op, DomainType.TARGET, BindingType.CREATE, BindingType.CONTEXT);
 		removeDomainInformation(op, DomainType.CORRESPONDENCE);
 		removeDomainInformation(op, DomainType.SOURCE);
+		fixPrecondition(op);
+
 		fillDerivedTGGOperationalRuleFields(op);
 		removeInvalidAttributeConstraintsFromPrecondition(op);
 	}
@@ -224,6 +234,29 @@ public class TGGOperationalizer {
 							deletedConditions.add(condition);
 							break;
 						}
+			}
+		}
+		for (var delCondition : deletedConditions) {
+			if (!(delCondition instanceof RelationalExpression relationalExpression))
+				continue;
+			if (relationalExpression.getLhs() instanceof IBeXAttributeValue attributeValue)
+				((TGGNode) attributeValue.getNode()).getReferencedByConditions().remove(delCondition);
+			if (relationalExpression.getRhs() instanceof IBeXAttributeValue attributeValue)
+				((TGGNode) attributeValue.getNode()).getReferencedByConditions().remove(delCondition);
+		}
+		conditions.removeAll(deletedConditions);
+	}
+	
+	private void removeBrokenAttributeConditions(Collection<BooleanExpression> conditions) {
+		var deletedConditions = new LinkedList<>();
+		for(var condition : conditions) {
+			var nodeExpressions = SlimGTModelUtil.getElements(condition, NodeAttributeExpression.class);	
+			for(var nodeAttrExpr : nodeExpressions) {
+				var ibexNode = nodeAttrExpr.getNodeExpression();
+				if(ibexNode == null) {
+					deletedConditions.add(condition);
+					break;
+				}
 			}
 		}
 		for (var delCondition : deletedConditions) {
@@ -412,7 +445,7 @@ public class TGGOperationalizer {
 		protocolNode.setBindingType(binding);
 		
 		for(var node : rule.getNodes()) {
-			var reference = protocolNodeInformation.nodeToReference().get(node);
+			var reference = protocolNodeInformation.nodeToReference().get(node.getName());
 			var edge = factory.createTGGEdge();
 			
 			edge.setSource(protocolNode);
@@ -481,6 +514,26 @@ public class TGGOperationalizer {
 		constraints.removeAll(deletedConstraints);
 		var deletedParameters = tggAttributeConstraintSet.getParameters().stream().filter(p -> !remainingParameters.contains(p)).toList();
 		deletedParameters.forEach(p -> EcoreUtil.delete(p));
+	}
+
+	private void fixPrecondition(TGGOperationalRule op) {
+		var precondition = op.getPrecondition();
+		
+		precondition.getLocalNodes().clear();
+		precondition.getSignatureNodes().clear();
+		precondition.getEdges().clear();
+
+		for(var node : op.getNodes()) {
+			if(node.getBindingType() == BindingType.CONTEXT)
+				precondition.getSignatureNodes().add(node);
+		}
+		
+		for(var edge : op.getEdges()) {
+			if(edge.getOperationType() == IBeXOperationType.CONTEXT)
+				precondition.getEdges().add(edge);
+		}
+		
+		removeBrokenAttributeConditions(precondition.getConditions());
 	}
 	
 }

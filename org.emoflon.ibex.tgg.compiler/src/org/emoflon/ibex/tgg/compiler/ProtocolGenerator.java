@@ -42,7 +42,7 @@ public class ProtocolGenerator {
 		var protocolType = factory.createEClass();
 		protocolType.setName(PROTOCOL_NODE_TYPE_PREFIX + rule.getName());
 		protocolType.getESuperTypes().add(runtimePackage.getProtocol());
-		var nodeToReference = new HashMap<TGGNode, EReference>();
+		var nodeToReference = new HashMap<String, EReference>();
 		
 		for(var node : rule.getNodes()) {
 			var reference = factory.createEReference();
@@ -52,7 +52,7 @@ public class ProtocolGenerator {
 			reference.setUpperBound(1);
 
 			protocolType.getEReferences().add(reference);
-			nodeToReference.put(node, reference);
+			nodeToReference.put(node.getName(), reference);
 		}
 		
 		var nodeInformation = new ProtocolNodeInformation(protocolType, nodeToReference);
@@ -64,4 +64,4 @@ public class ProtocolGenerator {
 
 record ProtocolInformation(EPackage metamodel, Map<TGGRule, ProtocolNodeInformation> ruleToInformation) {}
 
-record ProtocolNodeInformation(EClass type, Map<TGGNode, EReference> nodeToReference) {}
+record ProtocolNodeInformation(EClass type, Map<String, EReference> nodeToReference) {}

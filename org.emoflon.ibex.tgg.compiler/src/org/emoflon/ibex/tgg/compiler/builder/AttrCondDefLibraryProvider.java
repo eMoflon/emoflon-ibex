@@ -31,7 +31,7 @@ public class AttrCondDefLibraryProvider {
 	private static final String USER_ATTR_COND_DEF_FACTORY_NAME = "RuntimeTGGAttrConstraintFactory.java";
 	private static final String USER_ATTR_CONDS_PATH = USER_ATTR_PATH + "custom/";
 	private static final String ATTR_COND_DEF_LIBRARY_PATH = "src/org/emoflon/ibex/tgg/csp/lib/" + DEFAULT_ATTR_COND_LIB_NAME + ".tggl";
-	public static final String ATTR_COND_DEF_PREDEFINED_PACKAGE = "org.emoflon.ibex.tgg.operational.csp.constraints";
+	public static final String ATTR_COND_DEF_PREDEFINED_PACKAGE = "org.emoflon.ibex.tgg.runtime.csp.constraints";
 	public static final String ATTR_COND_DEF_USERDEFINED_PACKAGE = "org.emoflon.ibex.tgg.operational.csp.constraints.custom";
 
 	public static void userAttrCondDefFactoryContainer(IProject project, Collection<TGGAttributeConstraintDefinitionLibrary> libraries) throws CoreException, IOException {
