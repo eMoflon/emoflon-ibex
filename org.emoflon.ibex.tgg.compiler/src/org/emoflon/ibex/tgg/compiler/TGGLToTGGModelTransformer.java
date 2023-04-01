@@ -70,6 +70,7 @@ import org.emoflon.ibex.common.slimgt.slimGT.MinMaxArithmeticExpression;
 import org.emoflon.ibex.common.slimgt.slimGT.NodeAttributeExpression;
 import org.emoflon.ibex.common.slimgt.slimGT.NodeExpression;
 import org.emoflon.ibex.common.slimgt.slimGT.ProductArithmeticExpression;
+import org.emoflon.ibex.common.slimgt.slimGT.SlimParameter;
 import org.emoflon.ibex.common.slimgt.slimGT.SlimRuleAttributeAssignment;
 import org.emoflon.ibex.common.slimgt.slimGT.SlimRuleCondition;
 import org.emoflon.ibex.common.slimgt.slimGT.SlimRuleEdgeContext;
@@ -112,6 +113,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.CSPFactory;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinition;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintParameterDefinition;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintSet;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGLocalVariable;
 import org.moflon.core.utilities.LogUtils;
@@ -269,9 +271,7 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		attributeConstraintDefinition.setName(xtextConditionDefinition.getName());
 		
 		for(var xtextParameterBinding : xtextConditionDefinition.getParams()) {
-			var parameterDefinition = cspFactory.createTGGAttributeConstraintParameterDefinition();
-			parameterDefinition.setName(xtextParameterBinding.getName());
-			parameterDefinition.setType(xtextParameterBinding.getType());
+			var parameterDefinition = transformAttributeConstraintParameterDefinition(xtextParameterBinding);
 			attributeConstraintDefinition.getParameterDefinitions().add(parameterDefinition);
 		}
 		
@@ -287,6 +287,17 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 			attributeConstraintDefinition.getSyncBindings().add(binding);
 		}
 		return attributeConstraintDefinition;
+	}
+	
+	private TGGAttributeConstraintParameterDefinition transformAttributeConstraintParameterDefinition(SlimParameter parameter) {
+		if(tggl2tggModel.containsKey(parameter)) {
+			return (TGGAttributeConstraintParameterDefinition) tggl2tggModel.get(parameter);
+		}
+		var parameterDefinition = cspFactory.createTGGAttributeConstraintParameterDefinition();
+		tggl2tggModel.put(parameter, parameterDefinition);
+		parameterDefinition.setName(parameter.getName());
+		parameterDefinition.setType(parameter.getType());
+		return parameterDefinition;
 	}
 
 	private EPackage createCorrespondenceModel() {
@@ -449,10 +460,13 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		var attributeConstraint = cspFactory.createTGGAttributeConstraint();
 		tggl2tggModel.put(attributeCondition, attributeConstraint);
 		
-		attributeConstraint.setDefinition(transformAttributeConstraintDefinition(attributeCondition.getName()));
+		var definition = transformAttributeConstraintDefinition(attributeCondition.getName());
+		attributeConstraint.setDefinition(definition);
 		
-		for(var value : attributeCondition.getValues()) {
+		for(var i=0; i < attributeCondition.getValues().size(); i++) {
+			var value = attributeCondition.getValues().get(i);
 			var paramValue = cspFactory.createTGGAttributeConstraintParameterValue();
+			paramValue.setParameterDefinition(definition.getParameterDefinitions().get(i));
 			if(value instanceof org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression aritExpr) {
 				var valueExpression = transformArithmeticExpression(aritExpr);
 				

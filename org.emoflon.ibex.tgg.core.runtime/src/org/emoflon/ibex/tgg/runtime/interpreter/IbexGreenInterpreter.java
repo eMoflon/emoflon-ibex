@@ -263,7 +263,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		
 		cspContainer.applyCSPValues(comatch);
 
-		createEdges(comatch, operationRule.getCreation().getEdges(), true);
+		createEdges(comatch, operationRule.getCreate().getEdges(), true);
 		
 		for(var greenElement : createDelta.getNodes()) {
 			handlePlacementInResource((TGGNode) greenElement, resourceHandler.getSourceResource(), (EObject) comatch.get(greenElement.getName()));

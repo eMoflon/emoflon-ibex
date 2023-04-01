@@ -74,7 +74,7 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 	}
 
 	private boolean calculateBoundState(TGGAttributeConstraintParameterValue value) {
-		if (value instanceof IBeXAttributeValue tae) {
+		if (value.getExpression() instanceof IBeXAttributeValue tae) {
 			
 			// TODO: What was that supposed to do?
 //			if (tae.isDerived())
@@ -87,7 +87,7 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 //			return false;
 //		}
 		
-		if (value instanceof TGGLocalVariable lv)
+		if (value.getExpression() instanceof TGGLocalVariable lv)
 			return false;
 		return true;
 	}
