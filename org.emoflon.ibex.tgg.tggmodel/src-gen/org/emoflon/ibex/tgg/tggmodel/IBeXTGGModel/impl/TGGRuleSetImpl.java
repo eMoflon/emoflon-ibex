@@ -83,8 +83,8 @@ public class TGGRuleSetImpl extends MinimalEObjectImpl.Container implements TGGR
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-			case IBeXTGGModelPackage.TGG_RULE_SET__RULES:
-				return ((InternalEList<?>) getRules()).basicRemove(otherEnd, msgs);
+		case IBeXTGGModelPackage.TGG_RULE_SET__RULES:
+			return ((InternalEList<?>) getRules()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -97,8 +97,8 @@ public class TGGRuleSetImpl extends MinimalEObjectImpl.Container implements TGGR
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case IBeXTGGModelPackage.TGG_RULE_SET__RULES:
-				return getRules();
+		case IBeXTGGModelPackage.TGG_RULE_SET__RULES:
+			return getRules();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -112,10 +112,10 @@ public class TGGRuleSetImpl extends MinimalEObjectImpl.Container implements TGGR
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case IBeXTGGModelPackage.TGG_RULE_SET__RULES:
-				getRules().clear();
-				getRules().addAll((Collection<? extends TGGRule>) newValue);
-				return;
+		case IBeXTGGModelPackage.TGG_RULE_SET__RULES:
+			getRules().clear();
+			getRules().addAll((Collection<? extends TGGRule>) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -128,9 +128,9 @@ public class TGGRuleSetImpl extends MinimalEObjectImpl.Container implements TGGR
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case IBeXTGGModelPackage.TGG_RULE_SET__RULES:
-				getRules().clear();
-				return;
+		case IBeXTGGModelPackage.TGG_RULE_SET__RULES:
+			getRules().clear();
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -143,8 +143,8 @@ public class TGGRuleSetImpl extends MinimalEObjectImpl.Container implements TGGR
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case IBeXTGGModelPackage.TGG_RULE_SET__RULES:
-				return rules != null && !rules.isEmpty();
+		case IBeXTGGModelPackage.TGG_RULE_SET__RULES:
+			return rules != null && !rules.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

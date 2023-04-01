@@ -102,24 +102,24 @@ public class SearchPlanAction extends Algorithm<SimpleCombiner, TGGAttributeCons
 	 * @return
 	 */
 	public static boolean isBoundInPattern(TGGAttributeConstraintParameterValue variable, Predicate<String> patternContainsNode) {
-		if (variable instanceof IBeXAttributeValue attrExpr) {
+		if (variable.getExpression() instanceof IBeXAttributeValue attrExpr) {
 			String nameOfObj = attrExpr.getNode().getName();
 			return patternContainsNode.test(nameOfObj);
 		}
 
-		if (variable instanceof TGGLocalVariable)
+		if (variable.getExpression() instanceof TGGLocalVariable)
 			return false;
 
-		if (variable instanceof IBeXStringValue)
+		if (variable.getExpression() instanceof IBeXStringValue)
 			return true;
-		if (variable instanceof IBeXBooleanValue)
+		if (variable.getExpression() instanceof IBeXBooleanValue)
 			return true;
-		if (variable instanceof DoubleLiteral)
+		if (variable.getExpression() instanceof DoubleLiteral)
 			return true;
-		if (variable instanceof IntegerLiteral)
+		if (variable.getExpression() instanceof IntegerLiteral)
 			return true;
 		
-		if (variable instanceof IBeXEnumValue)
+		if (variable.getExpression() instanceof IBeXEnumValue)
 			return true;
 			
 		throw new IllegalStateException("Unable to handle " + variable);

@@ -41,7 +41,8 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintPara
  *
  * @generated
  */
-public class TGGAttributeConstraintDefinitionImpl extends IBeXNamedElementImpl implements TGGAttributeConstraintDefinition {
+public class TGGAttributeConstraintDefinitionImpl extends IBeXNamedElementImpl
+		implements TGGAttributeConstraintDefinition {
 	/**
 	 * The cached value of the '{@link #getParameterDefinitions() <em>Parameter Definitions</em>}' containment reference list.
 	 * <!-- begin-user-doc -->
@@ -98,8 +99,9 @@ public class TGGAttributeConstraintDefinitionImpl extends IBeXNamedElementImpl i
 	 */
 	public EList<TGGAttributeConstraintParameterDefinition> getParameterDefinitions() {
 		if (parameterDefinitions == null) {
-			parameterDefinitions = new EObjectContainmentEList<TGGAttributeConstraintParameterDefinition>(TGGAttributeConstraintParameterDefinition.class,
-					this, CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__PARAMETER_DEFINITIONS);
+			parameterDefinitions = new EObjectContainmentEList<TGGAttributeConstraintParameterDefinition>(
+					TGGAttributeConstraintParameterDefinition.class, this,
+					CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__PARAMETER_DEFINITIONS);
 		}
 		return parameterDefinitions;
 	}
@@ -111,7 +113,8 @@ public class TGGAttributeConstraintDefinitionImpl extends IBeXNamedElementImpl i
 	 */
 	public EList<TGGAttributeConstraintBinding> getSyncBindings() {
 		if (syncBindings == null) {
-			syncBindings = new EObjectContainmentEList<TGGAttributeConstraintBinding>(TGGAttributeConstraintBinding.class, this,
+			syncBindings = new EObjectContainmentEList<TGGAttributeConstraintBinding>(
+					TGGAttributeConstraintBinding.class, this,
 					CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__SYNC_BINDINGS);
 		}
 		return syncBindings;
@@ -124,7 +127,8 @@ public class TGGAttributeConstraintDefinitionImpl extends IBeXNamedElementImpl i
 	 */
 	public EList<TGGAttributeConstraintBinding> getGenBindings() {
 		if (genBindings == null) {
-			genBindings = new EObjectContainmentEList<TGGAttributeConstraintBinding>(TGGAttributeConstraintBinding.class, this,
+			genBindings = new EObjectContainmentEList<TGGAttributeConstraintBinding>(
+					TGGAttributeConstraintBinding.class, this,
 					CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__GEN_BINDINGS);
 		}
 		return genBindings;
@@ -146,8 +150,10 @@ public class TGGAttributeConstraintDefinitionImpl extends IBeXNamedElementImpl i
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public NotificationChain basicSetLibrary(TGGAttributeConstraintDefinitionLibrary newLibrary, NotificationChain msgs) {
-		msgs = eBasicSetContainer((InternalEObject) newLibrary, CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__LIBRARY, msgs);
+	public NotificationChain basicSetLibrary(TGGAttributeConstraintDefinitionLibrary newLibrary,
+			NotificationChain msgs) {
+		msgs = eBasicSetContainer((InternalEObject) newLibrary, CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__LIBRARY,
+				msgs);
 		return msgs;
 	}
 
@@ -158,7 +164,8 @@ public class TGGAttributeConstraintDefinitionImpl extends IBeXNamedElementImpl i
 	 */
 	public void setLibrary(TGGAttributeConstraintDefinitionLibrary newLibrary) {
 		if (newLibrary != eInternalContainer()
-				|| (eContainerFeatureID() != CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__LIBRARY && newLibrary != null)) {
+				|| (eContainerFeatureID() != CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__LIBRARY
+						&& newLibrary != null)) {
 			if (EcoreUtil.isAncestor(this, newLibrary))
 				throw new IllegalArgumentException("Recursive containment not allowed for " + toString());
 			NotificationChain msgs = null;
@@ -172,7 +179,8 @@ public class TGGAttributeConstraintDefinitionImpl extends IBeXNamedElementImpl i
 			if (msgs != null)
 				msgs.dispatch();
 		} else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__LIBRARY, newLibrary, newLibrary));
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__LIBRARY, newLibrary, newLibrary));
 	}
 
 	/**
@@ -183,10 +191,10 @@ public class TGGAttributeConstraintDefinitionImpl extends IBeXNamedElementImpl i
 	@Override
 	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__LIBRARY:
-				if (eInternalContainer() != null)
-					msgs = eBasicRemoveFromContainer(msgs);
-				return basicSetLibrary((TGGAttributeConstraintDefinitionLibrary) otherEnd, msgs);
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__LIBRARY:
+			if (eInternalContainer() != null)
+				msgs = eBasicRemoveFromContainer(msgs);
+			return basicSetLibrary((TGGAttributeConstraintDefinitionLibrary) otherEnd, msgs);
 		}
 		return super.eInverseAdd(otherEnd, featureID, msgs);
 	}
@@ -199,14 +207,14 @@ public class TGGAttributeConstraintDefinitionImpl extends IBeXNamedElementImpl i
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__PARAMETER_DEFINITIONS:
-				return ((InternalEList<?>) getParameterDefinitions()).basicRemove(otherEnd, msgs);
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__SYNC_BINDINGS:
-				return ((InternalEList<?>) getSyncBindings()).basicRemove(otherEnd, msgs);
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__GEN_BINDINGS:
-				return ((InternalEList<?>) getGenBindings()).basicRemove(otherEnd, msgs);
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__LIBRARY:
-				return basicSetLibrary(null, msgs);
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__PARAMETER_DEFINITIONS:
+			return ((InternalEList<?>) getParameterDefinitions()).basicRemove(otherEnd, msgs);
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__SYNC_BINDINGS:
+			return ((InternalEList<?>) getSyncBindings()).basicRemove(otherEnd, msgs);
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__GEN_BINDINGS:
+			return ((InternalEList<?>) getGenBindings()).basicRemove(otherEnd, msgs);
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__LIBRARY:
+			return basicSetLibrary(null, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -219,10 +227,10 @@ public class TGGAttributeConstraintDefinitionImpl extends IBeXNamedElementImpl i
 	@Override
 	public NotificationChain eBasicRemoveFromContainerFeature(NotificationChain msgs) {
 		switch (eContainerFeatureID()) {
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__LIBRARY:
-				return eInternalContainer().eInverseRemove(this,
-						CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS,
-						TGGAttributeConstraintDefinitionLibrary.class, msgs);
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__LIBRARY:
+			return eInternalContainer().eInverseRemove(this,
+					CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY__TGG_ATTRIBUTE_CONSTRAINT_DEFINITIONS,
+					TGGAttributeConstraintDefinitionLibrary.class, msgs);
 		}
 		return super.eBasicRemoveFromContainerFeature(msgs);
 	}
@@ -235,14 +243,14 @@ public class TGGAttributeConstraintDefinitionImpl extends IBeXNamedElementImpl i
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__PARAMETER_DEFINITIONS:
-				return getParameterDefinitions();
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__SYNC_BINDINGS:
-				return getSyncBindings();
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__GEN_BINDINGS:
-				return getGenBindings();
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__LIBRARY:
-				return getLibrary();
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__PARAMETER_DEFINITIONS:
+			return getParameterDefinitions();
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__SYNC_BINDINGS:
+			return getSyncBindings();
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__GEN_BINDINGS:
+			return getGenBindings();
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__LIBRARY:
+			return getLibrary();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -256,21 +264,22 @@ public class TGGAttributeConstraintDefinitionImpl extends IBeXNamedElementImpl i
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__PARAMETER_DEFINITIONS:
-				getParameterDefinitions().clear();
-				getParameterDefinitions().addAll((Collection<? extends TGGAttributeConstraintParameterDefinition>) newValue);
-				return;
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__SYNC_BINDINGS:
-				getSyncBindings().clear();
-				getSyncBindings().addAll((Collection<? extends TGGAttributeConstraintBinding>) newValue);
-				return;
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__GEN_BINDINGS:
-				getGenBindings().clear();
-				getGenBindings().addAll((Collection<? extends TGGAttributeConstraintBinding>) newValue);
-				return;
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__LIBRARY:
-				setLibrary((TGGAttributeConstraintDefinitionLibrary) newValue);
-				return;
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__PARAMETER_DEFINITIONS:
+			getParameterDefinitions().clear();
+			getParameterDefinitions()
+					.addAll((Collection<? extends TGGAttributeConstraintParameterDefinition>) newValue);
+			return;
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__SYNC_BINDINGS:
+			getSyncBindings().clear();
+			getSyncBindings().addAll((Collection<? extends TGGAttributeConstraintBinding>) newValue);
+			return;
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__GEN_BINDINGS:
+			getGenBindings().clear();
+			getGenBindings().addAll((Collection<? extends TGGAttributeConstraintBinding>) newValue);
+			return;
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__LIBRARY:
+			setLibrary((TGGAttributeConstraintDefinitionLibrary) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -283,18 +292,18 @@ public class TGGAttributeConstraintDefinitionImpl extends IBeXNamedElementImpl i
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__PARAMETER_DEFINITIONS:
-				getParameterDefinitions().clear();
-				return;
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__SYNC_BINDINGS:
-				getSyncBindings().clear();
-				return;
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__GEN_BINDINGS:
-				getGenBindings().clear();
-				return;
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__LIBRARY:
-				setLibrary((TGGAttributeConstraintDefinitionLibrary) null);
-				return;
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__PARAMETER_DEFINITIONS:
+			getParameterDefinitions().clear();
+			return;
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__SYNC_BINDINGS:
+			getSyncBindings().clear();
+			return;
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__GEN_BINDINGS:
+			getGenBindings().clear();
+			return;
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__LIBRARY:
+			setLibrary((TGGAttributeConstraintDefinitionLibrary) null);
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -307,14 +316,14 @@ public class TGGAttributeConstraintDefinitionImpl extends IBeXNamedElementImpl i
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__PARAMETER_DEFINITIONS:
-				return parameterDefinitions != null && !parameterDefinitions.isEmpty();
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__SYNC_BINDINGS:
-				return syncBindings != null && !syncBindings.isEmpty();
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__GEN_BINDINGS:
-				return genBindings != null && !genBindings.isEmpty();
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__LIBRARY:
-				return getLibrary() != null;
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__PARAMETER_DEFINITIONS:
+			return parameterDefinitions != null && !parameterDefinitions.isEmpty();
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__SYNC_BINDINGS:
+			return syncBindings != null && !syncBindings.isEmpty();
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__GEN_BINDINGS:
+			return genBindings != null && !genBindings.isEmpty();
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION__LIBRARY:
+			return getLibrary() != null;
 		}
 		return super.eIsSet(featureID);
 	}

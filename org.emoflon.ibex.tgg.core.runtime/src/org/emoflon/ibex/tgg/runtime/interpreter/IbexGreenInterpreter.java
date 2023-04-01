@@ -43,6 +43,7 @@ import org.emoflon.ibex.tgg.runtime.strategies.modules.RuleHandler;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.TGGResourceHandler;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalisationMode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
@@ -98,8 +99,10 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 			rule2sortedAttributeConstraints.put(operationalRule.getName(), //
 					sortConstraints(
 							operationalRule.getName(), //
-							((TGGPattern) operationalRule.getPrecondition()).getAttributeConstraints().getParameters(), //
-							((TGGPattern) operationalRule.getPrecondition()).getAttributeConstraints().getTggAttributeConstraints()));
+							operationalRule.getAttributeConstraints().getParameters(), //
+							operationalRule.getAttributeConstraints().getTggAttributeConstraints()));
+//							((TGGPattern) operationalRule.getPrecondition()).getAttributeConstraints().getParameters(), //
+//							((TGGPattern) operationalRule.getPrecondition()).getAttributeConstraints().getTggAttributeConstraints()));
 			rule2parameters.put(operationalRule.getName(), ((TGGPattern) operationalRule.getPrecondition()).getAttributeConstraints().getParameters());
 		} catch (Exception e) {
 			throw new IllegalStateException("Unable to sort attribute constraints, " + e.getMessage(), e);
@@ -279,7 +282,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 
 	protected List<TGGAttributeConstraint> sortConstraints(String ruleName, List<TGGAttributeConstraintParameterValue> variables, List<TGGAttributeConstraint> constraints) {
 		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(ruleName);
-		SearchPlanAction spa = new SearchPlanAction(variables, constraints, false,  operationalRule.getCreateSourceAndTarget().getNodes());
+		SearchPlanAction spa = new SearchPlanAction(variables, constraints, operationalRule.getOperationalisationMode() == OperationalisationMode.GENERATE,  operationalRule.getCreateSourceAndTarget().getNodes());
 		return spa.sortConstraints();
 	}
 	

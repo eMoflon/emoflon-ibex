@@ -113,7 +113,7 @@ public class TGGPatternUtil {
 	}
 	
 	public static String getFilterNACSRCPatternName(FilterNACCandidate candidate, TGGRule rule) {
-		return rule.getName() + "_" + candidate + PatternSuffixes.FILTER_NAC_SRC;  
+		return rule.getName() + "_" + candidate + PatternSuffixes.FILTER_NAC_SOURCE;  
 	}
 	
 	public static String getFilterNACTRGPatternName(FilterNACCandidate candidate, TGGRule rule) {

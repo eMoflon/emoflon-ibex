@@ -33,6 +33,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGPattern;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintSet;
 
 public class TGGOperationalizer {
 
@@ -70,6 +71,7 @@ public class TGGOperationalizer {
 		createProtocolNode(op, BindingType.CREATE);
 		rule.getOperationalisations().add(op);
 		fillDerivedTGGOperationalRuleFields(op);
+		removeInvalidAttributeConstraintsFromPrecondition(op);
 	}
 
 	private void constructForward(TGGRule rule) {
@@ -83,6 +85,7 @@ public class TGGOperationalizer {
 		createProtocolNode(op, BindingType.CREATE);
 		rule.getOperationalisations().add(op);
 		fillDerivedTGGOperationalRuleFields(op);
+		removeInvalidAttributeConstraintsFromPrecondition(op);
 	}
 
 	private void constructBackward(TGGRule rule) {
@@ -96,6 +99,7 @@ public class TGGOperationalizer {
 		createProtocolNode(op, BindingType.CREATE);
 		rule.getOperationalisations().add(op);
 		fillDerivedTGGOperationalRuleFields(op);
+		removeInvalidAttributeConstraintsFromPrecondition(op);
 	}
 
 	private void constructConsistencyCheck(TGGRule rule) {
@@ -110,6 +114,7 @@ public class TGGOperationalizer {
 		createProtocolNode(op, BindingType.CREATE);
 		rule.getOperationalisations().add(op);
 		fillDerivedTGGOperationalRuleFields(op);
+		removeInvalidAttributeConstraintsFromPrecondition(op);
 	}
 
 	private void constructCheckOnly(TGGRule rule) {
@@ -125,6 +130,7 @@ public class TGGOperationalizer {
 		createProtocolNode(op, BindingType.CREATE);
 		rule.getOperationalisations().add(op);
 		fillDerivedTGGOperationalRuleFields(op);
+		removeInvalidAttributeConstraintsFromPrecondition(op);
 	}
 	
 	private void constructConsistency(TGGRule rule) {
@@ -140,6 +146,7 @@ public class TGGOperationalizer {
 		createProtocolNode(op, BindingType.CONTEXT);
 		rule.getOperationalisations().add(op);
 		fillDerivedTGGOperationalRuleFields(op);
+		removeInvalidAttributeConstraintsFromPrecondition(op);
 	}
 
 	private void constructSource(TGGRule rule) {
@@ -151,6 +158,7 @@ public class TGGOperationalizer {
 		removeDomainInformation(op, DomainType.CORRESPONDENCE);
 		removeDomainInformation(op, DomainType.TARGET);
 		fillDerivedTGGOperationalRuleFields(op);
+		removeInvalidAttributeConstraintsFromPrecondition(op);
 	}
 	
 	
@@ -163,6 +171,7 @@ public class TGGOperationalizer {
 		removeDomainInformation(op, DomainType.CORRESPONDENCE);
 		removeDomainInformation(op, DomainType.SOURCE);
 		fillDerivedTGGOperationalRuleFields(op);
+		removeInvalidAttributeConstraintsFromPrecondition(op);
 	}
 	
 	private void removeDomainInformation(TGGOperationalRule op, DomainType type) {
@@ -171,13 +180,12 @@ public class TGGOperationalizer {
 		removeElements(op, DomainType.CORRESPONDENCE);
 
 		removeInvocations(op.getPrecondition().getInvocations(), type);
-//		removeInvocations(op.getPostcondition().getInvocations(), type);
 
 		removeAttributeAssignments(op.getAttributeAssignments(), type);
-		removeAttributeConstraints(((TGGPattern) op.getPrecondition()).getAttributeConstraints().getTggAttributeConstraints(), type);
-		
 		removeAttributeConditions(op.getPrecondition().getConditions(), type);
-//		removeAttributeConditions(op.getPostcondition().getConditions(), type);
+		
+		removeAttributeConstraints(op.getAttributeConstraints(), type);
+		removeAttributeConstraints(((TGGPattern) op.getPrecondition()).getAttributeConstraints(), type);
 	}
 	
 	private void removeElements(TGGOperationalRule op, DomainType domainType) {
@@ -229,8 +237,11 @@ public class TGGOperationalizer {
 		conditions.removeAll(deletedConditions);
 	}
 	
-	private void removeAttributeConstraints(Collection<TGGAttributeConstraint> constraints, DomainType domainType) {
-		var deletedConstraints = new LinkedList<>();
+	private void removeAttributeConstraints(TGGAttributeConstraintSet tggAttributeConstraintSet, DomainType domainType) {
+		var constraints = tggAttributeConstraintSet.getTggAttributeConstraints();
+		
+		var deletedConstraints = new HashSet<>();
+		var remainingParameters = new HashSet<>();
 		for(var constraint : constraints) {
 			for(var param : constraint.getParameters()) {
 				if(param.getExpression() instanceof IBeXAttributeValue nodeAttrExpr) {
@@ -246,9 +257,13 @@ public class TGGOperationalizer {
 								break;
 							}
 				}
-			}	
+			}
+			if(!deletedConstraints.contains(constraint))
+				remainingParameters.addAll(constraint.getParameters());
 		}
 		constraints.removeAll(deletedConstraints);
+		var deletedParameters = tggAttributeConstraintSet.getParameters().stream().filter(p -> !remainingParameters.contains(p)).toList();
+		deletedParameters.forEach(p -> EcoreUtil.delete(p));
 	}
 	
 	private void removeAttributeAssignments(Collection<IBeXAttributeAssignment> assignments, DomainType domainType) {
@@ -367,10 +382,9 @@ public class TGGOperationalizer {
 		
 		op.setPrecondition(ruleCopy.getPrecondition());
 		model.getPatternSet().getPatterns().add(op.getPrecondition());
-
+		
 		op.getNodes().addAll(ruleCopy.getNodes());
 		op.getAllNodes().addAll(ruleCopy.getNodes());
-		
 		
 		op.getEdges().addAll(ruleCopy.getEdges());
 		op.getAllEdges().addAll(ruleCopy.getEdges());
@@ -379,7 +393,8 @@ public class TGGOperationalizer {
 		op.getAllNodes().addAll(ruleCopy.getCorrespondenceNodes());
 		
 		op.getAttributeAssignments().addAll(ruleCopy.getAttributeAssignments());
-
+		op.setAttributeConstraints(ruleCopy.getAttributeConstraints());
+			
 		rule.getOperationalisations().add(op);
 		
 		return op;
@@ -435,6 +450,37 @@ public class TGGOperationalizer {
 //			rule.getCreation().getNodes().add(protocolNode);
 		
 		return protocolNode;
+	}
+
+	private void removeInvalidAttributeConstraintsFromPrecondition(TGGOperationalRule op) {
+		var precondition = op.getPrecondition();
+		var tggAttributeConstraintSet = ((TGGPattern) precondition).getAttributeConstraints();
+		
+		var constraints = tggAttributeConstraintSet.getTggAttributeConstraints();
+		var deletedConstraints = new HashSet<>();
+		var remainingParameters = new HashSet<>();
+		for(var constraint : constraints) {
+			for(var param : constraint.getParameters()) {
+				if(param.getExpression() instanceof IBeXAttributeValue nodeAttrExpr) {
+					var ibexNode = nodeAttrExpr.getNode();
+					if(ibexNode == null) {
+						deletedConstraints.add(constraint);
+						break;
+					}
+					else 
+						if(ibexNode instanceof TGGNode tggNode) 
+							if(tggNode.getBindingType() != BindingType.CONTEXT) {
+								deletedConstraints.add(constraint);
+								break;
+							}
+				}
+			}
+			if(!deletedConstraints.contains(constraint))
+				remainingParameters.addAll(constraint.getParameters());
+		}
+		constraints.removeAll(deletedConstraints);
+		var deletedParameters = tggAttributeConstraintSet.getParameters().stream().filter(p -> !remainingParameters.contains(p)).toList();
+		deletedParameters.forEach(p -> EcoreUtil.delete(p));
 	}
 	
 }

@@ -477,13 +477,22 @@ public interface IBeXTGGModelPackage extends EPackage {
 	int TGG_RULE__GENERIC_CONTENTS = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 18;
 
 	/**
+	 * The feature id for the '<em><b>Attribute Constraints</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_RULE__ATTRIBUTE_CONSTRAINTS = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 19;
+
+	/**
 	 * The number of structural features of the '<em>TGG Rule</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_RULE_FEATURE_COUNT = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 19;
+	int TGG_RULE_FEATURE_COUNT = IBeXCoreModelPackage.IBE_XRULE_FEATURE_COUNT + 20;
 
 	/**
 	 * The number of operations of the '<em>TGG Rule</em>' class.
@@ -746,6 +755,15 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int TGG_OPERATIONAL_RULE__GENERIC_CONTENTS = TGG_RULE__GENERIC_CONTENTS;
+
+	/**
+	 * The feature id for the '<em><b>Attribute Constraints</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_OPERATIONAL_RULE__ATTRIBUTE_CONSTRAINTS = TGG_RULE__ATTRIBUTE_CONSTRAINTS;
 
 	/**
 	 * The feature id for the '<em><b>Operationalisation Mode</b></em>' attribute.
@@ -1564,6 +1582,15 @@ public interface IBeXTGGModelPackage extends EPackage {
 	int TGG_SHORTCUT_RULE__GENERIC_CONTENTS = TGG_OPERATIONAL_RULE__GENERIC_CONTENTS;
 
 	/**
+	 * The feature id for the '<em><b>Attribute Constraints</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__ATTRIBUTE_CONSTRAINTS = TGG_OPERATIONAL_RULE__ATTRIBUTE_CONSTRAINTS;
+
+	/**
 	 * The feature id for the '<em><b>Operationalisation Mode</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -2035,6 +2062,17 @@ public interface IBeXTGGModelPackage extends EPackage {
 	EReference getTGGRule_GenericContents();
 
 	/**
+	 * Returns the meta object for the containment reference '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getAttributeConstraints <em>Attribute Constraints</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Attribute Constraints</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getAttributeConstraints()
+	 * @see #getTGGRule()
+	 * @generated
+	 */
+	EReference getTGGRule_AttributeConstraints();
+
+	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule <em>TGG Operational Rule</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -2424,7 +2462,8 @@ public interface IBeXTGGModelPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_MODEL__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARIES = eINSTANCE.getTGGModel_AttributeConstraintDefinitionLibraries();
+		EReference TGG_MODEL__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARIES = eINSTANCE
+				.getTGGModel_AttributeConstraintDefinitionLibraries();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleSetImpl <em>TGG Rule Set</em>}' class.
@@ -2607,6 +2646,14 @@ public interface IBeXTGGModelPackage extends EPackage {
 		EReference TGG_RULE__GENERIC_CONTENTS = eINSTANCE.getTGGRule_GenericContents();
 
 		/**
+		 * The meta object literal for the '<em><b>Attribute Constraints</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference TGG_RULE__ATTRIBUTE_CONSTRAINTS = eINSTANCE.getTGGRule_AttributeConstraints();
+
+		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGOperationalRuleImpl <em>TGG Operational Rule</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -2622,7 +2669,8 @@ public interface IBeXTGGModelPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute TGG_OPERATIONAL_RULE__OPERATIONALISATION_MODE = eINSTANCE.getTGGOperationalRule_OperationalisationMode();
+		EAttribute TGG_OPERATIONAL_RULE__OPERATIONALISATION_MODE = eINSTANCE
+				.getTGGOperationalRule_OperationalisationMode();
 
 		/**
 		 * The meta object literal for the '<em><b>To Be Marked</b></em>' containment reference feature.
@@ -2802,7 +2850,8 @@ public interface IBeXTGGModelPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_SHORTCUT_RULE__UNMAPPED_ORIGINAL_ELEMENTS = eINSTANCE.getTGGShortcutRule_UnmappedOriginalElements();
+		EReference TGG_SHORTCUT_RULE__UNMAPPED_ORIGINAL_ELEMENTS = eINSTANCE
+				.getTGGShortcutRule_UnmappedOriginalElements();
 
 		/**
 		 * The meta object literal for the '<em><b>Unmapped Replacing Elements</b></em>' reference list feature.
@@ -2810,7 +2859,8 @@ public interface IBeXTGGModelPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_SHORTCUT_RULE__UNMAPPED_REPLACING_ELEMENTS = eINSTANCE.getTGGShortcutRule_UnmappedReplacingElements();
+		EReference TGG_SHORTCUT_RULE__UNMAPPED_REPLACING_ELEMENTS = eINSTANCE
+				.getTGGShortcutRule_UnmappedReplacingElements();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGShortcutRuleElementMappingImpl <em>TGG Shortcut Rule Element Mapping</em>}' class.
@@ -2836,7 +2886,8 @@ public interface IBeXTGGModelPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_SHORTCUT_RULE_ELEMENT_MAPPING__REPLACING = eINSTANCE.getTGGShortcutRuleElementMapping_Replacing();
+		EReference TGG_SHORTCUT_RULE_ELEMENT_MAPPING__REPLACING = eINSTANCE
+				.getTGGShortcutRuleElementMapping_Replacing();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalisationMode <em>Operationalisation Mode</em>}' enum.

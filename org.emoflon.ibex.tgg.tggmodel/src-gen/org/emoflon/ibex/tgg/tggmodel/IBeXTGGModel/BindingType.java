@@ -185,16 +185,16 @@ public enum BindingType implements Enumerator {
 	 */
 	public static BindingType get(int value) {
 		switch (value) {
-			case CONTEXT_VALUE:
-				return CONTEXT;
-			case CREATE_VALUE:
-				return CREATE;
-			case DELETE_VALUE:
-				return DELETE;
-			case NEGATIVE_VALUE:
-				return NEGATIVE;
-			case RELAXED_VALUE:
-				return RELAXED;
+		case CONTEXT_VALUE:
+			return CONTEXT;
+		case CREATE_VALUE:
+			return CREATE;
+		case DELETE_VALUE:
+			return DELETE;
+		case NEGATIVE_VALUE:
+			return NEGATIVE;
+		case RELAXED_VALUE:
+			return RELAXED;
 		}
 		return null;
 	}

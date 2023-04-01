@@ -13,7 +13,7 @@ public class TGGOptions extends IbexSubOptions {
 	private TGGModel tgg;
 	private TGGModel flattenedTGG;
 	private EPackage corrMetamodel;
-	private RuleHandler ruleHandler;
+	private RuleHandler ruleHandler = new RuleHandler();
 	
 	public TGGOptions(IbexOptions options) {
 		super(options);
@@ -59,10 +59,6 @@ public class TGGOptions extends IbexSubOptions {
 		return this.corrMetamodel;
 	}
 	
-	public void ruleHandler(RuleHandler ruleHandler) {
-		this.ruleHandler = ruleHandler;
-	}
-
 	public RuleHandler ruleHandler() {
 		return ruleHandler;
 	}

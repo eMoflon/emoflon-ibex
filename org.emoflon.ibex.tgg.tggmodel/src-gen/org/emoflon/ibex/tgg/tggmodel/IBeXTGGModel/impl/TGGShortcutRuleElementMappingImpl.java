@@ -28,7 +28,8 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGShortcutRuleElementMapping;
  *
  * @generated
  */
-public class TGGShortcutRuleElementMappingImpl extends MinimalEObjectImpl.Container implements TGGShortcutRuleElementMapping {
+public class TGGShortcutRuleElementMappingImpl extends MinimalEObjectImpl.Container
+		implements TGGShortcutRuleElementMapping {
 	/**
 	 * The cached value of the '{@link #getOriginal() <em>Original</em>}' reference.
 	 * <!-- begin-user-doc -->
@@ -79,8 +80,8 @@ public class TGGShortcutRuleElementMappingImpl extends MinimalEObjectImpl.Contai
 			original = (TGGRuleElement) eResolveProxy(oldOriginal);
 			if (original != oldOriginal) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, IBeXTGGModelPackage.TGG_SHORTCUT_RULE_ELEMENT_MAPPING__ORIGINAL, oldOriginal,
-							original));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							IBeXTGGModelPackage.TGG_SHORTCUT_RULE_ELEMENT_MAPPING__ORIGINAL, oldOriginal, original));
 			}
 		}
 		return original;
@@ -104,7 +105,8 @@ public class TGGShortcutRuleElementMappingImpl extends MinimalEObjectImpl.Contai
 		TGGRuleElement oldOriginal = original;
 		original = newOriginal;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_SHORTCUT_RULE_ELEMENT_MAPPING__ORIGINAL, oldOriginal, original));
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					IBeXTGGModelPackage.TGG_SHORTCUT_RULE_ELEMENT_MAPPING__ORIGINAL, oldOriginal, original));
 	}
 
 	/**
@@ -118,8 +120,8 @@ public class TGGShortcutRuleElementMappingImpl extends MinimalEObjectImpl.Contai
 			replacing = (TGGRuleElement) eResolveProxy(oldReplacing);
 			if (replacing != oldReplacing) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, IBeXTGGModelPackage.TGG_SHORTCUT_RULE_ELEMENT_MAPPING__REPLACING,
-							oldReplacing, replacing));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE,
+							IBeXTGGModelPackage.TGG_SHORTCUT_RULE_ELEMENT_MAPPING__REPLACING, oldReplacing, replacing));
 			}
 		}
 		return replacing;
@@ -143,8 +145,8 @@ public class TGGShortcutRuleElementMappingImpl extends MinimalEObjectImpl.Contai
 		TGGRuleElement oldReplacing = replacing;
 		replacing = newReplacing;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_SHORTCUT_RULE_ELEMENT_MAPPING__REPLACING, oldReplacing,
-					replacing));
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					IBeXTGGModelPackage.TGG_SHORTCUT_RULE_ELEMENT_MAPPING__REPLACING, oldReplacing, replacing));
 	}
 
 	/**
@@ -155,14 +157,14 @@ public class TGGShortcutRuleElementMappingImpl extends MinimalEObjectImpl.Contai
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-			case IBeXTGGModelPackage.TGG_SHORTCUT_RULE_ELEMENT_MAPPING__ORIGINAL:
-				if (resolve)
-					return getOriginal();
-				return basicGetOriginal();
-			case IBeXTGGModelPackage.TGG_SHORTCUT_RULE_ELEMENT_MAPPING__REPLACING:
-				if (resolve)
-					return getReplacing();
-				return basicGetReplacing();
+		case IBeXTGGModelPackage.TGG_SHORTCUT_RULE_ELEMENT_MAPPING__ORIGINAL:
+			if (resolve)
+				return getOriginal();
+			return basicGetOriginal();
+		case IBeXTGGModelPackage.TGG_SHORTCUT_RULE_ELEMENT_MAPPING__REPLACING:
+			if (resolve)
+				return getReplacing();
+			return basicGetReplacing();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -175,12 +177,12 @@ public class TGGShortcutRuleElementMappingImpl extends MinimalEObjectImpl.Contai
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-			case IBeXTGGModelPackage.TGG_SHORTCUT_RULE_ELEMENT_MAPPING__ORIGINAL:
-				setOriginal((TGGRuleElement) newValue);
-				return;
-			case IBeXTGGModelPackage.TGG_SHORTCUT_RULE_ELEMENT_MAPPING__REPLACING:
-				setReplacing((TGGRuleElement) newValue);
-				return;
+		case IBeXTGGModelPackage.TGG_SHORTCUT_RULE_ELEMENT_MAPPING__ORIGINAL:
+			setOriginal((TGGRuleElement) newValue);
+			return;
+		case IBeXTGGModelPackage.TGG_SHORTCUT_RULE_ELEMENT_MAPPING__REPLACING:
+			setReplacing((TGGRuleElement) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -193,12 +195,12 @@ public class TGGShortcutRuleElementMappingImpl extends MinimalEObjectImpl.Contai
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-			case IBeXTGGModelPackage.TGG_SHORTCUT_RULE_ELEMENT_MAPPING__ORIGINAL:
-				setOriginal((TGGRuleElement) null);
-				return;
-			case IBeXTGGModelPackage.TGG_SHORTCUT_RULE_ELEMENT_MAPPING__REPLACING:
-				setReplacing((TGGRuleElement) null);
-				return;
+		case IBeXTGGModelPackage.TGG_SHORTCUT_RULE_ELEMENT_MAPPING__ORIGINAL:
+			setOriginal((TGGRuleElement) null);
+			return;
+		case IBeXTGGModelPackage.TGG_SHORTCUT_RULE_ELEMENT_MAPPING__REPLACING:
+			setReplacing((TGGRuleElement) null);
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -211,10 +213,10 @@ public class TGGShortcutRuleElementMappingImpl extends MinimalEObjectImpl.Contai
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-			case IBeXTGGModelPackage.TGG_SHORTCUT_RULE_ELEMENT_MAPPING__ORIGINAL:
-				return original != null;
-			case IBeXTGGModelPackage.TGG_SHORTCUT_RULE_ELEMENT_MAPPING__REPLACING:
-				return replacing != null;
+		case IBeXTGGModelPackage.TGG_SHORTCUT_RULE_ELEMENT_MAPPING__ORIGINAL:
+			return original != null;
+		case IBeXTGGModelPackage.TGG_SHORTCUT_RULE_ELEMENT_MAPPING__REPLACING:
+			return replacing != null;
 		}
 		return super.eIsSet(featureID);
 	}

@@ -51,7 +51,6 @@ public class MatchDistributor implements IMatchObserver, TimeMeasurable {
 	private ResourceSet rs;
 
 	private boolean initialized = false;
-	private boolean useTrashResource;
 
 	public MatchDistributor(IbexOptions options) {
 		this.options = options;
@@ -84,7 +83,6 @@ public class MatchDistributor implements IMatchObserver, TimeMeasurable {
 
 	protected void initialiseBlackInterpreter(IbexExecutable executable) throws IOException {
 		blackInterpreter = options.blackInterpreter();
-		useTrashResource = options.blackInterpreter().getClass().getName().contains("Democles");
 
 		Optional<RuntimeException> initExcep = Optional.empty();
 		try {
@@ -98,8 +96,6 @@ public class MatchDistributor implements IMatchObserver, TimeMeasurable {
 		resources.add(options.resourceHandler().corr);
 		resources.add(options.resourceHandler().target);
 		resources.add(options.resourceHandler().protocol);
-		if (useTrashResource)
-			resources.add(options.resourceHandler().getTrashResource());
 
 		try {
 			blackInterpreter.monitor(resources);
@@ -125,8 +121,6 @@ public class MatchDistributor implements IMatchObserver, TimeMeasurable {
 		resources.add(options.resourceHandler().corr);
 		resources.add(options.resourceHandler().target);
 		resources.add(options.resourceHandler().protocol);
-		if (useTrashResource)
-			resources.add(options.resourceHandler().getTrashResource());
 
 		this.blackInterpreter.monitor(resources);
 	}

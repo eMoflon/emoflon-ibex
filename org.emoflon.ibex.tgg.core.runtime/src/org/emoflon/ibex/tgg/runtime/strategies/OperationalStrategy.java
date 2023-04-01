@@ -82,7 +82,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		resourceHandler = options.resourceHandler();
 		matchDistributor = options.matchDistributor();
 		matchHandler = options.matchHandler();
-
+		
 		this.notifyStartLoading();
 		resourceHandler.initialize();
 		this.notifyLoadingFinished();
@@ -98,11 +98,11 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		matchHandler.initialize();
 		matchHandler.handleOperationalMatches(operationalMatchContainer, getRelevantOperationalPatterns(), this::isPatternRelevantForInterpreter);
 
+		options.tgg.ruleHandler().registerRules(options.tgg.flattenedTGG());
 		greenInterpreter = new IbexGreenInterpreter(this);
 
 		TGGMatchParameterOrderProvider.init(options.tgg.flattenedTGG());
 
-		options.tgg.ruleHandler().registerRules(options.tgg.flattenedTGG());
 		
 		this.notifyDoneInit();
 	}

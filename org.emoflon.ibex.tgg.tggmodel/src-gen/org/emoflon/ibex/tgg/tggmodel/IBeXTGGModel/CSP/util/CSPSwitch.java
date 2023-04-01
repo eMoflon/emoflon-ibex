@@ -71,92 +71,92 @@ public class CSPSwitch<T> extends Switch<T> {
 	@Override
 	protected T doSwitch(int classifierID, EObject theEObject) {
 		switch (classifierID) {
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION: {
-				TGGAttributeConstraintDefinition tggAttributeConstraintDefinition = (TGGAttributeConstraintDefinition) theEObject;
-				T result = caseTGGAttributeConstraintDefinition(tggAttributeConstraintDefinition);
-				if (result == null)
-					result = caseIBeXNamedElement(tggAttributeConstraintDefinition);
-				if (result == null)
-					result = defaultCase(theEObject);
-				return result;
-			}
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY: {
-				TGGAttributeConstraintDefinitionLibrary tggAttributeConstraintDefinitionLibrary = (TGGAttributeConstraintDefinitionLibrary) theEObject;
-				T result = caseTGGAttributeConstraintDefinitionLibrary(tggAttributeConstraintDefinitionLibrary);
-				if (result == null)
-					result = caseIBeXNamedElement(tggAttributeConstraintDefinitionLibrary);
-				if (result == null)
-					result = defaultCase(theEObject);
-				return result;
-			}
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION: {
-				TGGAttributeConstraintParameterDefinition tggAttributeConstraintParameterDefinition = (TGGAttributeConstraintParameterDefinition) theEObject;
-				T result = caseTGGAttributeConstraintParameterDefinition(tggAttributeConstraintParameterDefinition);
-				if (result == null)
-					result = defaultCase(theEObject);
-				return result;
-			}
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_BINDING: {
-				TGGAttributeConstraintBinding tggAttributeConstraintBinding = (TGGAttributeConstraintBinding) theEObject;
-				T result = caseTGGAttributeConstraintBinding(tggAttributeConstraintBinding);
-				if (result == null)
-					result = defaultCase(theEObject);
-				return result;
-			}
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_SET: {
-				TGGAttributeConstraintSet tggAttributeConstraintSet = (TGGAttributeConstraintSet) theEObject;
-				T result = caseTGGAttributeConstraintSet(tggAttributeConstraintSet);
-				if (result == null)
-					result = defaultCase(theEObject);
-				return result;
-			}
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT: {
-				TGGAttributeConstraint tggAttributeConstraint = (TGGAttributeConstraint) theEObject;
-				T result = caseTGGAttributeConstraint(tggAttributeConstraint);
-				if (result == null)
-					result = defaultCase(theEObject);
-				return result;
-			}
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_VARIABLE: {
-				TGGAttributeConstraintVariable tggAttributeConstraintVariable = (TGGAttributeConstraintVariable) theEObject;
-				T result = caseTGGAttributeConstraintVariable(tggAttributeConstraintVariable);
-				if (result == null)
-					result = caseValueExpression(tggAttributeConstraintVariable);
-				if (result == null)
-					result = defaultCase(theEObject);
-				return result;
-			}
-			case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE: {
-				TGGAttributeConstraintParameterValue tggAttributeConstraintParameterValue = (TGGAttributeConstraintParameterValue) theEObject;
-				T result = caseTGGAttributeConstraintParameterValue(tggAttributeConstraintParameterValue);
-				if (result == null)
-					result = defaultCase(theEObject);
-				return result;
-			}
-			case CSPPackage.TGGCSP: {
-				TGGCSP tggcsp = (TGGCSP) theEObject;
-				T result = caseTGGCSP(tggcsp);
-				if (result == null)
-					result = caseIBeXNamedElement(tggcsp);
-				if (result == null)
-					result = defaultCase(theEObject);
-				return result;
-			}
-			case CSPPackage.TGG_LOCAL_VARIABLE: {
-				TGGLocalVariable tggLocalVariable = (TGGLocalVariable) theEObject;
-				T result = caseTGGLocalVariable(tggLocalVariable);
-				if (result == null)
-					result = caseIBeXNamedElement(tggLocalVariable);
-				if (result == null)
-					result = caseArithmeticExpression(tggLocalVariable);
-				if (result == null)
-					result = caseValueExpression(tggLocalVariable);
-				if (result == null)
-					result = defaultCase(theEObject);
-				return result;
-			}
-			default:
-				return defaultCase(theEObject);
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION: {
+			TGGAttributeConstraintDefinition tggAttributeConstraintDefinition = (TGGAttributeConstraintDefinition) theEObject;
+			T result = caseTGGAttributeConstraintDefinition(tggAttributeConstraintDefinition);
+			if (result == null)
+				result = caseIBeXNamedElement(tggAttributeConstraintDefinition);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARY: {
+			TGGAttributeConstraintDefinitionLibrary tggAttributeConstraintDefinitionLibrary = (TGGAttributeConstraintDefinitionLibrary) theEObject;
+			T result = caseTGGAttributeConstraintDefinitionLibrary(tggAttributeConstraintDefinitionLibrary);
+			if (result == null)
+				result = caseIBeXNamedElement(tggAttributeConstraintDefinitionLibrary);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_DEFINITION: {
+			TGGAttributeConstraintParameterDefinition tggAttributeConstraintParameterDefinition = (TGGAttributeConstraintParameterDefinition) theEObject;
+			T result = caseTGGAttributeConstraintParameterDefinition(tggAttributeConstraintParameterDefinition);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_BINDING: {
+			TGGAttributeConstraintBinding tggAttributeConstraintBinding = (TGGAttributeConstraintBinding) theEObject;
+			T result = caseTGGAttributeConstraintBinding(tggAttributeConstraintBinding);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_SET: {
+			TGGAttributeConstraintSet tggAttributeConstraintSet = (TGGAttributeConstraintSet) theEObject;
+			T result = caseTGGAttributeConstraintSet(tggAttributeConstraintSet);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT: {
+			TGGAttributeConstraint tggAttributeConstraint = (TGGAttributeConstraint) theEObject;
+			T result = caseTGGAttributeConstraint(tggAttributeConstraint);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_VARIABLE: {
+			TGGAttributeConstraintVariable tggAttributeConstraintVariable = (TGGAttributeConstraintVariable) theEObject;
+			T result = caseTGGAttributeConstraintVariable(tggAttributeConstraintVariable);
+			if (result == null)
+				result = caseValueExpression(tggAttributeConstraintVariable);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE: {
+			TGGAttributeConstraintParameterValue tggAttributeConstraintParameterValue = (TGGAttributeConstraintParameterValue) theEObject;
+			T result = caseTGGAttributeConstraintParameterValue(tggAttributeConstraintParameterValue);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case CSPPackage.TGGCSP: {
+			TGGCSP tggcsp = (TGGCSP) theEObject;
+			T result = caseTGGCSP(tggcsp);
+			if (result == null)
+				result = caseIBeXNamedElement(tggcsp);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		case CSPPackage.TGG_LOCAL_VARIABLE: {
+			TGGLocalVariable tggLocalVariable = (TGGLocalVariable) theEObject;
+			T result = caseTGGLocalVariable(tggLocalVariable);
+			if (result == null)
+				result = caseIBeXNamedElement(tggLocalVariable);
+			if (result == null)
+				result = caseArithmeticExpression(tggLocalVariable);
+			if (result == null)
+				result = caseValueExpression(tggLocalVariable);
+			if (result == null)
+				result = defaultCase(theEObject);
+			return result;
+		}
+		default:
+			return defaultCase(theEObject);
 		}
 	}
 

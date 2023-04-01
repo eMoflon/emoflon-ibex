@@ -26,6 +26,7 @@ import org.eclipse.emf.ecore.EcoreFactory;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.EPackageDependency;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeAssignment;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeValue;
@@ -363,6 +364,8 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		internalRule.getEdges().addAll(transferredEdges);
 		internalRule.getAllEdges().addAll(internalRule.getEdges());
 		
+		internalRule.setAttributeConstraints(cspFactory.createTGGAttributeConstraintSet());
+		
 		var precondition = factory.createTGGPattern();
 		precondition.setAttributeConstraints(cspFactory.createTGGAttributeConstraintSet());
 		precondition.setName(rule.getName());
@@ -371,10 +374,11 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		internalRule.setPrecondition(precondition);
 		populatePrecondition(rule, internalRule, precondition);
 		
-		var attributeConstraints = ((TGGPattern) internalRule.getPrecondition()).getAttributeConstraints();
+		var ruleAttributeConstraints = internalRule.getAttributeConstraints();
 		for(var attributeCondition : rule.getAttrConditions()) {
-			attributeConstraints.getTggAttributeConstraints().add(transformAttributeCondition(attributeCondition, attributeConstraints));
+			ruleAttributeConstraints.getTggAttributeConstraints().add(transformAttributeCondition(attributeCondition, ruleAttributeConstraints));
 		}
+		((TGGPattern) internalRule.getPrecondition()).setAttributeConstraints(EcoreUtil.copy(ruleAttributeConstraints));
 		
 		for(var invocation : rule.getSourceRule().getInvocations()) {
 			precondition.getInvocations().add(transformInvocation(precondition, invocation));
