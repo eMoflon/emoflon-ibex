@@ -266,7 +266,14 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		createEdges(comatch, operationRule.getCreate().getEdges(), true);
 		
 		for(var greenElement : createDelta.getNodes()) {
-			handlePlacementInResource((TGGNode) greenElement, resourceHandler.getSourceResource(), (EObject) comatch.get(greenElement.getName()));
+			var resource = switch(((TGGNode) greenElement).getDomainType()) {
+				case SOURCE -> resourceHandler.getSourceResource();
+				case TARGET -> resourceHandler.getTargetResource();
+				case CORRESPONDENCE -> resourceHandler.getCorrResource();
+				case PROTOCOL -> resourceHandler.getProtocolResource();
+				default -> throw new RuntimeException("Unsupporte domaintype detected");
+			};
+			handlePlacementInResource((TGGNode) greenElement, resource, (EObject) comatch.get(greenElement.getName()));
 		}
 
 		return Optional.of(comatch);
@@ -449,14 +456,15 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	}
 	
 	@Override
-	public void createMarkers(String ruleName, ITGGMatch match) {
+	public void createMarkers(TGGOperationalRule operationalRule, ITGGMatch match) {
+		TGGRule tggRule = operationalRule.getTggRule();
+		
 		EPackage corrPackage = options.tgg.corrMetamodel();
-		EClass type = (EClass) corrPackage.getEClassifier(TGGModelUtils.getMarkerTypeName(ruleName));
+		EClass type = (EClass) corrPackage.getEClassifier(TGGModelUtils.getMarkerTypeName(tggRule.getName()));
 		
 		EObject ra = EcoreUtil.create(type);
-		TGGRule operationalRule = ruleHandler.getRule(ruleName);
 		
-		for (IBeXNode n : operationalRule.getCreateSource().getNodes()) {
+		for (IBeXNode n : tggRule.getCreateSource().getNodes()) {
 			EReference ref;
 			if(node2reference.containsKey(n))
 				ref = node2reference.get(n);
@@ -468,7 +476,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 			ra.eSet(ref, (EObject) match.get(n.getName()));			
 		}
 		
-		for (IBeXNode n : operationalRule.getContextSource().getNodes()) {
+		for (IBeXNode n : tggRule.getContextSource().getNodes()) {
 			EReference ref;
 			if(node2reference.containsKey(n))
 				ref = node2reference.get(n);
@@ -480,7 +488,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 			ra.eSet(ref, (EObject) match.get(n.getName()));			
 		}
 
-		for (IBeXNode n : operationalRule.getCreateTarget().getNodes()) {
+		for (IBeXNode n : tggRule.getCreateTarget().getNodes()) {
 			EReference ref;
 			if(node2reference.containsKey(n))
 				ref = node2reference.get(n);
@@ -492,7 +500,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 			ra.eSet(ref, (EObject) match.get(n.getName()));			
 		}
 		
-		for (IBeXNode n : operationalRule.getContextTarget().getNodes()) {
+		for (IBeXNode n : tggRule.getContextTarget().getNodes()) {
 			EReference ref;
 			if(node2reference.containsKey(n))
 				ref = node2reference.get(n);
@@ -504,7 +512,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 			ra.eSet(ref, (EObject) match.get(n.getName()));			
 		}
 
-		for (IBeXNode n : operationalRule.getCreateCorrespondence().getNodes()) {
+		for (IBeXNode n : tggRule.getCreateCorrespondence().getNodes()) {
 			EReference ref;
 			if(node2reference.containsKey(n))
 				ref = node2reference.get(n);
@@ -516,7 +524,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 			ra.eSet(ref, (EObject) match.get(n.getName()));			
 		}
 		
-		for (IBeXNode n : operationalRule.getContextCorrespondence().getNodes()) {
+		for (IBeXNode n : tggRule.getContextCorrespondence().getNodes()) {
 			EReference ref;
 			if(node2reference.containsKey(n))
 				ref = node2reference.get(n);
@@ -529,6 +537,6 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		}
 		
 		resourceHandler.getProtocolResource().getContents().add(ra);
-		match.put(TGGPatternUtil.getProtocolNodeName(ruleName), ra);
+		match.put(TGGPatternUtil.getProtocolNodeName(tggRule.getName()), ra);
 	}
 }

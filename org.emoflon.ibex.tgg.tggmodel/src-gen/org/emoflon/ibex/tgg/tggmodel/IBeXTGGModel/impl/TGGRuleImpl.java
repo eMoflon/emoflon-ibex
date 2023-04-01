@@ -16,6 +16,7 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
+import org.eclipse.emf.ecore.util.EObjectContainmentWithInverseEList;
 import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 
@@ -345,8 +346,9 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 	 */
 	public EList<TGGOperationalRule> getOperationalisations() {
 		if (operationalisations == null) {
-			operationalisations = new EObjectContainmentEList<TGGOperationalRule>(TGGOperationalRule.class, this,
-					IBeXTGGModelPackage.TGG_RULE__OPERATIONALISATIONS);
+			operationalisations = new EObjectContainmentWithInverseEList<TGGOperationalRule>(TGGOperationalRule.class,
+					this, IBeXTGGModelPackage.TGG_RULE__OPERATIONALISATIONS,
+					IBeXTGGModelPackage.TGG_OPERATIONAL_RULE__TGG_RULE);
 		}
 		return operationalisations;
 	}
@@ -1065,6 +1067,22 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		} else if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_RULE__ATTRIBUTE_CONSTRAINTS,
 					newAttributeConstraints, newAttributeConstraints));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
+		switch (featureID) {
+		case IBeXTGGModelPackage.TGG_RULE__OPERATIONALISATIONS:
+			return ((InternalEList<InternalEObject>) (InternalEList<?>) getOperationalisations()).basicAdd(otherEnd,
+					msgs);
+		}
+		return super.eInverseAdd(otherEnd, featureID, msgs);
 	}
 
 	/**

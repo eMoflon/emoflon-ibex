@@ -120,6 +120,7 @@ import org.moflon.core.utilities.LogUtils;
 import org.moflon.core.utilities.MoflonUtil;
 
 import TGGRuntimeModel.TGGRuntimeModelPackage;
+import static org.emoflon.ibex.tgg.compiler.TGGRuleDerivedFieldsTool.fillDerivedTGGRuleFields;
 
 public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<EditorFile, TGGModel, IBeXTGGModelFactory> {
 	
@@ -403,6 +404,8 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		creation.getNodes().addAll(filterNodes(internalRule.getNodes(), BindingType.CREATE));
 		creation.getEdges().addAll(filterEdges(internalRule.getEdges(), BindingType.CREATE));
 		internalRule.setCreation(creation);
+		
+		fillDerivedTGGRuleFields(internalRule);
 		
 		return internalRule;
 	}

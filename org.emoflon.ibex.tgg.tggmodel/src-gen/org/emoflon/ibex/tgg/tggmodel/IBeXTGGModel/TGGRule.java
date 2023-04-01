@@ -85,11 +85,13 @@ public interface TGGRule extends IBeXRule {
 	/**
 	 * Returns the value of the '<em><b>Operationalisations</b></em>' containment reference list.
 	 * The list contents are of type {@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule}.
+	 * It is bidirectional and its opposite is '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule#getTggRule <em>Tgg Rule</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Operationalisations</em>' containment reference list.
 	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage#getTGGRule_Operationalisations()
-	 * @model containment="true"
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule#getTggRule
+	 * @model opposite="tggRule" containment="true"
 	 * @generated
 	 */
 	EList<TGGOperationalRule> getOperationalisations();

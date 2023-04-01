@@ -25,7 +25,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="correspondenceNodes" upperBound="-1"
         eType="#//TGGCorrespondence"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="operationalisations" upperBound="-1"
-        eType="#//TGGOperationalRule" containment="true"/>
+        eType="#//TGGOperationalRule" containment="true" eOpposite="#//TGGOperationalRule/tggRule"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="abstract" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="axiom" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="context" eType="ecore:EClass ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXRuleDelta"
@@ -66,6 +66,8 @@
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="alreadyMarked" eType="ecore:EClass ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXRuleDelta"
         containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="tggRule" eType="#//TGGRule"
+        eOpposite="#//TGGRule/operationalisations"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="TGGPattern" eSuperTypes="../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXPattern">
     <eStructuralFeatures xsi:type="ecore:EReference" name="attributeConstraints" eType="#//CSP/TGGAttributeConstraintSet"

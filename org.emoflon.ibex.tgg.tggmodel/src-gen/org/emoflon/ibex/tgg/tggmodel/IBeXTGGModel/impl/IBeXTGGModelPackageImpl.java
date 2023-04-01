@@ -516,6 +516,15 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EReference getTGGOperationalRule_TggRule() {
+		return (EReference) tggOperationalRuleEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getTGGPattern() {
 		return tggPatternEClass;
 	}
@@ -810,6 +819,7 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 		createEAttribute(tggOperationalRuleEClass, TGG_OPERATIONAL_RULE__OPERATIONALISATION_MODE);
 		createEReference(tggOperationalRuleEClass, TGG_OPERATIONAL_RULE__TO_BE_MARKED);
 		createEReference(tggOperationalRuleEClass, TGG_OPERATIONAL_RULE__ALREADY_MARKED);
+		createEReference(tggOperationalRuleEClass, TGG_OPERATIONAL_RULE__TGG_RULE);
 
 		tggPatternEClass = createEClass(TGG_PATTERN);
 		createEReference(tggPatternEClass, TGG_PATTERN__ATTRIBUTE_CONSTRAINTS);
@@ -933,9 +943,10 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 		initEReference(getTGGRule_CorrespondenceNodes(), this.getTGGCorrespondence(), null, "correspondenceNodes", null,
 				0, -1, TGGRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES,
 				!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getTGGRule_Operationalisations(), this.getTGGOperationalRule(), null, "operationalisations",
-				null, 0, -1, TGGRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
-				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGGRule_Operationalisations(), this.getTGGOperationalRule(),
+				this.getTGGOperationalRule_TggRule(), "operationalisations", null, 0, -1, TGGRule.class, !IS_TRANSIENT,
+				!IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED,
+				IS_ORDERED);
 		initEAttribute(getTGGRule_Abstract(), ecorePackage.getEBoolean(), "abstract", null, 0, 1, TGGRule.class,
 				!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getTGGRule_Axiom(), ecorePackage.getEBoolean(), "axiom", null, 0, 1, TGGRule.class,
@@ -994,6 +1005,9 @@ public class IBeXTGGModelPackageImpl extends EPackageImpl implements IBeXTGGMode
 		initEReference(getTGGOperationalRule_AlreadyMarked(), theIBeXCoreModelPackage.getIBeXRuleDelta(), null,
 				"alreadyMarked", null, 0, 1, TGGOperationalRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
 				IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getTGGOperationalRule_TggRule(), this.getTGGRule(), this.getTGGRule_Operationalisations(),
+				"tggRule", null, 0, 1, TGGOperationalRule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				!IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(tggPatternEClass, TGGPattern.class, "TGGPattern", !IS_ABSTRACT, !IS_INTERFACE,
 				IS_GENERATED_INSTANCE_CLASS);

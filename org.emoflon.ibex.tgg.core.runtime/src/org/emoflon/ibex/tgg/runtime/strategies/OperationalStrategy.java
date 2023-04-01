@@ -247,7 +247,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 	protected void createMarkers(TGGOperationalRule operationRule, ITGGMatch comatch, String ruleName) {
 		prepareMarkerCreation(operationRule, comatch, ruleName);
-		greenInterpreter.createMarkers(ruleName, comatch);
+		greenInterpreter.createMarkers(operationRule, comatch);
 	}
 	
 	/***** Configuration *****/

@@ -10,10 +10,12 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalisationMode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 
 /**
  * <!-- begin-user-doc -->
@@ -26,6 +28,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGOperationalRuleImpl#getOperationalisationMode <em>Operationalisation Mode</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGOperationalRuleImpl#getToBeMarked <em>To Be Marked</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGOperationalRuleImpl#getAlreadyMarked <em>Already Marked</em>}</li>
+ *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGOperationalRuleImpl#getTggRule <em>Tgg Rule</em>}</li>
  * </ul>
  *
  * @generated
@@ -219,6 +222,69 @@ public class TGGOperationalRuleImpl extends TGGRuleImpl implements TGGOperationa
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public TGGRule getTggRule() {
+		if (eContainerFeatureID() != IBeXTGGModelPackage.TGG_OPERATIONAL_RULE__TGG_RULE)
+			return null;
+		return (TGGRule) eInternalContainer();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public NotificationChain basicSetTggRule(TGGRule newTggRule, NotificationChain msgs) {
+		msgs = eBasicSetContainer((InternalEObject) newTggRule, IBeXTGGModelPackage.TGG_OPERATIONAL_RULE__TGG_RULE,
+				msgs);
+		return msgs;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setTggRule(TGGRule newTggRule) {
+		if (newTggRule != eInternalContainer()
+				|| (eContainerFeatureID() != IBeXTGGModelPackage.TGG_OPERATIONAL_RULE__TGG_RULE
+						&& newTggRule != null)) {
+			if (EcoreUtil.isAncestor(this, newTggRule))
+				throw new IllegalArgumentException("Recursive containment not allowed for " + toString());
+			NotificationChain msgs = null;
+			if (eInternalContainer() != null)
+				msgs = eBasicRemoveFromContainer(msgs);
+			if (newTggRule != null)
+				msgs = ((InternalEObject) newTggRule).eInverseAdd(this,
+						IBeXTGGModelPackage.TGG_RULE__OPERATIONALISATIONS, TGGRule.class, msgs);
+			msgs = basicSetTggRule(newTggRule, msgs);
+			if (msgs != null)
+				msgs.dispatch();
+		} else if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_OPERATIONAL_RULE__TGG_RULE,
+					newTggRule, newTggRule));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
+		switch (featureID) {
+		case IBeXTGGModelPackage.TGG_OPERATIONAL_RULE__TGG_RULE:
+			if (eInternalContainer() != null)
+				msgs = eBasicRemoveFromContainer(msgs);
+			return basicSetTggRule((TGGRule) otherEnd, msgs);
+		}
+		return super.eInverseAdd(otherEnd, featureID, msgs);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
@@ -226,8 +292,25 @@ public class TGGOperationalRuleImpl extends TGGRuleImpl implements TGGOperationa
 			return basicSetToBeMarked(null, msgs);
 		case IBeXTGGModelPackage.TGG_OPERATIONAL_RULE__ALREADY_MARKED:
 			return basicSetAlreadyMarked(null, msgs);
+		case IBeXTGGModelPackage.TGG_OPERATIONAL_RULE__TGG_RULE:
+			return basicSetTggRule(null, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public NotificationChain eBasicRemoveFromContainerFeature(NotificationChain msgs) {
+		switch (eContainerFeatureID()) {
+		case IBeXTGGModelPackage.TGG_OPERATIONAL_RULE__TGG_RULE:
+			return eInternalContainer().eInverseRemove(this, IBeXTGGModelPackage.TGG_RULE__OPERATIONALISATIONS,
+					TGGRule.class, msgs);
+		}
+		return super.eBasicRemoveFromContainerFeature(msgs);
 	}
 
 	/**
@@ -244,6 +327,8 @@ public class TGGOperationalRuleImpl extends TGGRuleImpl implements TGGOperationa
 			return getToBeMarked();
 		case IBeXTGGModelPackage.TGG_OPERATIONAL_RULE__ALREADY_MARKED:
 			return getAlreadyMarked();
+		case IBeXTGGModelPackage.TGG_OPERATIONAL_RULE__TGG_RULE:
+			return getTggRule();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -264,6 +349,9 @@ public class TGGOperationalRuleImpl extends TGGRuleImpl implements TGGOperationa
 			return;
 		case IBeXTGGModelPackage.TGG_OPERATIONAL_RULE__ALREADY_MARKED:
 			setAlreadyMarked((IBeXRuleDelta) newValue);
+			return;
+		case IBeXTGGModelPackage.TGG_OPERATIONAL_RULE__TGG_RULE:
+			setTggRule((TGGRule) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -286,6 +374,9 @@ public class TGGOperationalRuleImpl extends TGGRuleImpl implements TGGOperationa
 		case IBeXTGGModelPackage.TGG_OPERATIONAL_RULE__ALREADY_MARKED:
 			setAlreadyMarked((IBeXRuleDelta) null);
 			return;
+		case IBeXTGGModelPackage.TGG_OPERATIONAL_RULE__TGG_RULE:
+			setTggRule((TGGRule) null);
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -304,6 +395,8 @@ public class TGGOperationalRuleImpl extends TGGRuleImpl implements TGGOperationa
 			return toBeMarked != null;
 		case IBeXTGGModelPackage.TGG_OPERATIONAL_RULE__ALREADY_MARKED:
 			return alreadyMarked != null;
+		case IBeXTGGModelPackage.TGG_OPERATIONAL_RULE__TGG_RULE:
+			return getTggRule() != null;
 		}
 		return super.eIsSet(featureID);
 	}

@@ -70,7 +70,7 @@ public class TGGModelUtils {
 	}
 
 	public static String getMarkerTypeName(String ruleName) {
-		return ruleName + "__" + "Marker";
+		return "ProtocolNode_" + ruleName ;
 	}
 
 	public static String getMarkerRefName(BindingType type, DomainType domain, String markedOVName) {

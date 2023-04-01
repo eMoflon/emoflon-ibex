@@ -10,6 +10,7 @@ import org.eclipse.emf.ecore.EcoreFactory;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
+import org.emoflon.ibex.tgg.util.TGGModelUtils;
 
 import TGGRuntimeModel.TGGRuntimeModelPackage;
 
@@ -40,13 +41,15 @@ public class ProtocolGenerator {
 
 	private EClass createProtocolType(TGGRule rule) {
 		var protocolType = factory.createEClass();
-		protocolType.setName(PROTOCOL_NODE_TYPE_PREFIX + rule.getName());
+		
+
+		protocolType.setName(TGGModelUtils.getMarkerTypeName(rule.getName()));
 		protocolType.getESuperTypes().add(runtimePackage.getProtocol());
 		var nodeToReference = new HashMap<String, EReference>();
 		
 		for(var node : rule.getNodes()) {
 			var reference = factory.createEReference();
-			reference.setName(PROTOCOL_EDGE_TYPE_PREFIX + node.getName());
+			reference.setName(TGGModelUtils.getMarkerRefName(node.getBindingType(), node.getDomainType(), node.getName()) );
 			reference.setEType(node.getType());
 			reference.setLowerBound(1);
 			reference.setUpperBound(1);

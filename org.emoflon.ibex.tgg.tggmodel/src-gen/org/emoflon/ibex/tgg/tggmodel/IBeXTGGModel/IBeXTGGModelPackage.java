@@ -793,13 +793,22 @@ public interface IBeXTGGModelPackage extends EPackage {
 	int TGG_OPERATIONAL_RULE__ALREADY_MARKED = TGG_RULE_FEATURE_COUNT + 2;
 
 	/**
+	 * The feature id for the '<em><b>Tgg Rule</b></em>' container reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_OPERATIONAL_RULE__TGG_RULE = TGG_RULE_FEATURE_COUNT + 3;
+
+	/**
 	 * The number of structural features of the '<em>TGG Operational Rule</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_OPERATIONAL_RULE_FEATURE_COUNT = TGG_RULE_FEATURE_COUNT + 3;
+	int TGG_OPERATIONAL_RULE_FEATURE_COUNT = TGG_RULE_FEATURE_COUNT + 4;
 
 	/**
 	 * The number of operations of the '<em>TGG Operational Rule</em>' class.
@@ -1618,6 +1627,15 @@ public interface IBeXTGGModelPackage extends EPackage {
 	int TGG_SHORTCUT_RULE__ALREADY_MARKED = TGG_OPERATIONAL_RULE__ALREADY_MARKED;
 
 	/**
+	 * The feature id for the '<em><b>Tgg Rule</b></em>' container reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_SHORTCUT_RULE__TGG_RULE = TGG_OPERATIONAL_RULE__TGG_RULE;
+
+	/**
 	 * The feature id for the '<em><b>Original Rule</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -2114,6 +2132,17 @@ public interface IBeXTGGModelPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getTGGOperationalRule_AlreadyMarked();
+
+	/**
+	 * Returns the meta object for the container reference '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule#getTggRule <em>Tgg Rule</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the container reference '<em>Tgg Rule</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule#getTggRule()
+	 * @see #getTGGOperationalRule()
+	 * @generated
+	 */
+	EReference getTGGOperationalRule_TggRule();
 
 	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGPattern <em>TGG Pattern</em>}'.
@@ -2687,6 +2716,14 @@ public interface IBeXTGGModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference TGG_OPERATIONAL_RULE__ALREADY_MARKED = eINSTANCE.getTGGOperationalRule_AlreadyMarked();
+
+		/**
+		 * The meta object literal for the '<em><b>Tgg Rule</b></em>' container reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference TGG_OPERATIONAL_RULE__TGG_RULE = eINSTANCE.getTGGOperationalRule_TggRule();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGPatternImpl <em>TGG Pattern</em>}' class.
