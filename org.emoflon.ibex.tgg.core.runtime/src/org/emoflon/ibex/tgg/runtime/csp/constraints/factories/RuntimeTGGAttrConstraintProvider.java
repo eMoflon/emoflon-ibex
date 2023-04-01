@@ -13,13 +13,13 @@ public class RuntimeTGGAttrConstraintProvider {
 
 	private Collection<TGGAttributeConstraintDefinitionLibrary> libraries;
 	private Collection<RuntimeTGGAttrConstraintFactory> factories;
-	private Map<TGGAttributeConstraintDefinition, RuntimeTGGAttrConstraintFactory> constraintToFactory;
+	private Map<String, RuntimeTGGAttrConstraintFactory> fqnConstraintsToFactory;
 	
 	public RuntimeTGGAttrConstraintProvider(Collection<TGGAttributeConstraintDefinitionLibrary> constraintDefLibraries) {
 		factories = new LinkedList<>();
 		libraries = new LinkedList<>();
 		registerFactory(new PredefRuntimeTGGAttrConstraintFactory());
-		constraintToFactory = new HashMap<>();
+		fqnConstraintsToFactory = new HashMap<>();
 		for(var constraintDefLib : constraintDefLibraries)
 			registerAllTGGAttributeConstraintDefinitions(constraintDefLib);
 	}
@@ -28,7 +28,7 @@ public class RuntimeTGGAttrConstraintProvider {
 		factories = new LinkedList<>();
 		libraries = new LinkedList<>();
 		registerFactory(new PredefRuntimeTGGAttrConstraintFactory());
-		constraintToFactory = new HashMap<>();
+		fqnConstraintsToFactory = new HashMap<>();
 		registerAllTGGAttributeConstraintDefinitions(constraintDefLib);
 	}
 	
@@ -38,8 +38,8 @@ public class RuntimeTGGAttrConstraintProvider {
 	public void registerFactory(RuntimeTGGAttrConstraintFactory factory) {
 		factories.add(factory);
 		for(var library : libraries) {
-			if(factory.getClass().getSimpleName().equals(library.getName())) {
-				library.getTggAttributeConstraintDefinitions().stream().forEach(def -> constraintToFactory.put(def, factory));
+			if(factory.getLibraryName().equals(library.getName())) {
+				library.getTggAttributeConstraintDefinitions().stream().forEach(def -> fqnConstraintsToFactory.put(library.getName()+"."+def.getName(), factory));
 				return;
 			}
 		}
@@ -53,8 +53,8 @@ public class RuntimeTGGAttrConstraintProvider {
 	private void registerAllTGGAttributeConstraintDefinitions(TGGAttributeConstraintDefinitionLibrary library) {
 		libraries.add(library);
 		for(var factory : factories) {
-			if(factory.getClass().getSimpleName().equals(library.getName())) {
-				library.getTggAttributeConstraintDefinitions().stream().forEach(def -> constraintToFactory.put(def, factory));
+			if(factory.getLibraryName().equals(library.getName())) {
+				library.getTggAttributeConstraintDefinitions().stream().forEach(def -> fqnConstraintsToFactory.put(library.getName()+"."+def.getName(), factory));
 				return;
 			}
 		}
@@ -65,9 +65,11 @@ public class RuntimeTGGAttrConstraintProvider {
 	 * @return a new instance of type RuntimeTGGAttributeConstraint implementing the constraint with id = name
 	 */
 	public RuntimeTGGAttributeConstraint createRuntimeTGGAttributeConstraint(TGGAttributeConstraintDefinition constraintDefinition){
-		if(constraintToFactory.containsKey(constraintDefinition)) {
-			var factory = constraintToFactory.get(constraintDefinition);
-			factory.createRuntimeTGGAttributeConstraint(constraintDefinition.getName(), constraintDefinition);
+		var library = constraintDefinition.getLibrary();
+		var fqnDefinitionName = library.getName()+"."+constraintDefinition.getName();
+		if(fqnConstraintsToFactory.containsKey(fqnDefinitionName)) {
+			var factory = fqnConstraintsToFactory.get(fqnDefinitionName);
+			return factory.createRuntimeTGGAttributeConstraint(constraintDefinition.getName(), constraintDefinition);
 		}
 		
 		throw new RuntimeException("CSP " + constraintDefinition.getName() + " not implemented");

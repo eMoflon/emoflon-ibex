@@ -103,7 +103,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 							operationalRule.getAttributeConstraints().getTggAttributeConstraints()));
 //							((TGGPattern) operationalRule.getPrecondition()).getAttributeConstraints().getParameters(), //
 //							((TGGPattern) operationalRule.getPrecondition()).getAttributeConstraints().getTggAttributeConstraints()));
-			rule2parameters.put(operationalRule.getName(), ((TGGPattern) operationalRule.getPrecondition()).getAttributeConstraints().getParameters());
+			rule2parameters.put(operationalRule.getName(), operationalRule.getAttributeConstraints().getParameters());
 		} catch (Exception e) {
 			throw new IllegalStateException("Unable to sort attribute constraints, " + e.getMessage(), e);
 		}
@@ -248,7 +248,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		}
 
 		ITGGMatch comatch = match.copy();
-		IBeXRuleDelta createDelta = operationRule.getCreation();
+		IBeXRuleDelta createDelta = operationRule.getCreate();
 		
 		for(var createdNode : createDelta.getNodes()) {
 			if(createdNode instanceof TGGCorrespondence correspondence)
@@ -295,7 +295,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	}
 
 	private boolean createsCyclicContainment(TGGOperationalRule operationalRule, ITGGMatch match) {
-		for (IBeXEdge edge : operationalRule.getCreation().getEdges()) {
+		for (IBeXEdge edge : operationalRule.getCreate().getEdges()) {
 			TGGEdge tggEdge = (TGGEdge) edge;
 
 			// we only search for cyclic containments on the source and target side
@@ -323,7 +323,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	}
 
 	private boolean createsDoubleEdge(TGGOperationalRule operationRule, ITGGMatch match) {
-		for (IBeXEdge edge : operationRule.getCreation().getEdges()) {
+		for (IBeXEdge edge : operationRule.getCreate().getEdges()) {
 			if (canCreateDoubleEdge(edge)) {
 				EObject src = (EObject) match.get(edge.getSource().getName());
 				EObject trg = (EObject) match.get(edge.getTarget().getName());
@@ -358,7 +358,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 //		if (greenPattern instanceof GreenSCPattern)
 //			return false;
 
-		for (IBeXEdge greenEdge : operationalRule.getCreation().getEdges()) {
+		for (IBeXEdge greenEdge : operationalRule.getCreate().getEdges()) {
 			if (violationOfContainerSemanticsIsPossible(operationalRule, greenEdge)) {
 				EObject trgObj = (EObject) match.get(greenEdge.getTarget().getName());
 				if (trgObj.eContainer() != null)
@@ -374,7 +374,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	}
 
 	private boolean violatesUpperBounds(TGGOperationalRule operationalRule, ITGGMatch match) {
-		for (IBeXEdge greenEdge : operationalRule.getCreation().getEdges()) {
+		for (IBeXEdge greenEdge : operationalRule.getCreate().getEdges()) {
 			if (violationIsPossible(greenEdge)) {
 				if (violatesUpperBounds(greenEdge, match, operationalRule))
 					return true;
@@ -411,7 +411,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	}
 
 	private long edgesOfThisTypeCreatedByRule(IBeXNode srcOfEdge, EReference ref, TGGOperationalRule operationalRule) {
-		return operationalRule.getCreation().getEdges().stream()//
+		return operationalRule.getCreate().getEdges().stream()//
 				.filter(e -> e.getSource().equals(srcOfEdge))//
 				.filter(e -> e.getType().equals(ref))//
 				.count();

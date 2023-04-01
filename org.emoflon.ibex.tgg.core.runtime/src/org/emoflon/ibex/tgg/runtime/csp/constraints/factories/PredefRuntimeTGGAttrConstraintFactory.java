@@ -3,6 +3,7 @@ package org.emoflon.ibex.tgg.runtime.csp.constraints.factories;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import org.emoflon.ibex.tgg.compiler.builder.AttrCondDefLibraryProvider;
 import org.emoflon.ibex.tgg.runtime.csp.constraints.Add;
 import org.emoflon.ibex.tgg.runtime.csp.constraints.AddPrefix;
 import org.emoflon.ibex.tgg.runtime.csp.constraints.AddSuffix;
@@ -54,4 +55,11 @@ public class PredefRuntimeTGGAttrConstraintFactory extends RuntimeTGGAttrConstra
 		constraints = new HashSet<String>();
 		constraints.addAll(creators.keySet());
 	}
+
+	@Override
+	public String getLibraryName() {
+		return AttrCondDefLibraryProvider.DEFAULT_ATTR_COND_LIB_NAME;
+	}
+	
+	
 }

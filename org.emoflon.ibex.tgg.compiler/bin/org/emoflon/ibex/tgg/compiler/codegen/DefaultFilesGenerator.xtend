@@ -65,6 +65,11 @@ class DefaultFilesGenerator {
 					constraints = new HashSet<String>();
 					constraints.addAll(creators.keySet());
 				}
+				
+				@Override
+				public String getLibraryName() {
+					return "«library.name»";
+				}
 			}
 		'''
 	}

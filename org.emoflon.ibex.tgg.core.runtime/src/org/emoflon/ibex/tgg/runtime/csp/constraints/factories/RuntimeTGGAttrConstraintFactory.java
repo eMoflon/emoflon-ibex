@@ -37,6 +37,8 @@ public abstract class RuntimeTGGAttrConstraintFactory {
 		constraintDefinition.getParameterDefinitions().stream()
 			.forEach(pDef -> runtimeConstraint.getVariables().add(new RuntimeTGGAttributeConstraintVariable(false, null, pDef.getType().getInstanceTypeName())));
 	}
+	
+	public abstract String getLibraryName();
 
 	public Collection<String> getConstraintNames() {
 		return constraints;
