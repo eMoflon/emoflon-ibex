@@ -193,17 +193,18 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		Optional<ITGGMatch> comatch = greenInterpreter.apply(operationRule, match);
 		times.addTo("ruleApplication:createElements", Timer.stop());
 
-		comatch.ifPresent(cm -> {
+		if(comatch.isPresent()) {
 			LoggerConfig.log(LoggerConfig.log_ruleApplication(),
 					() -> "Rule application: successfully applied " + match.getPatternName() + "(" + match.hashCode() + ")\n" //
-							+ ConsoleUtil.indent(ConsoleUtil.printMatchParameter(match), 18, true));
+					+ ConsoleUtil.indent(ConsoleUtil.printMatchParameter(match), 18, true));
 			this.notifyMatchApplied(match, ruleName);
 			operationalMatchContainer.matchApplied(match);
-
+			
 			Timer.start();
-			handleSuccessfulRuleApplication(cm, ruleName, operationRule);
+			handleSuccessfulRuleApplication(comatch.get(), ruleName, operationRule);
 			times.addTo("ruleApplication:finish", Timer.stop());
-		});
+		}
+		
 
 		return comatch;
 	}

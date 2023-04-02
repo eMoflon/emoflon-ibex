@@ -42,9 +42,8 @@ public class ProtocolGenerator {
 	private EClass createProtocolType(TGGRule rule) {
 		var protocolType = factory.createEClass();
 		
-
 		protocolType.setName(TGGModelUtils.getMarkerTypeName(rule.getName()));
-		protocolType.getESuperTypes().add(runtimePackage.getProtocol());
+		protocolType.getESuperTypes().add(runtimePackage.getTGGRuleApplication());
 		var nodeToReference = new HashMap<String, EReference>();
 		
 		for(var node : rule.getNodes()) {

@@ -456,8 +456,9 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	}
 	
 	@Override
-	public void createMarkers(TGGOperationalRule operationalRule, ITGGMatch match) {
-		TGGRule tggRule = operationalRule.getTggRule();
+	public void createMarkers(TGGRule rule, ITGGMatch match) {
+		// we need the basic tgg rule here
+		TGGRule tggRule = rule instanceof TGGOperationalRule op ? op.getTggRule() : rule;
 		
 		EPackage corrPackage = options.tgg.corrMetamodel();
 		EClass type = (EClass) corrPackage.getEClassifier(TGGModelUtils.getMarkerTypeName(tggRule.getName()));
@@ -537,6 +538,6 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		}
 		
 		resourceHandler.getProtocolResource().getContents().add(ra);
-		match.put(TGGPatternUtil.getProtocolNodeName(tggRule.getName()), ra);
+		match.put(TGGPatternUtil.getProtocolNodeName(), ra);
 	}
 }

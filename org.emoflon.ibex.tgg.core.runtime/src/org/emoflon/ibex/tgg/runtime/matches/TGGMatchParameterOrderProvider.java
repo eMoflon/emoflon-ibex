@@ -31,7 +31,7 @@ public class TGGMatchParameterOrderProvider {
 			params.addAll(rule.getEdges().stream() //
 					.map(e -> e.getName()) //
 					.collect(Collectors.toList()));
-			params.add(TGGPatternUtil.getProtocolNodeName(rule.getName()));
+			params.add(TGGPatternUtil.getProtocolNodeName());
 			ruleName2params.put(rule.getName(), params);
 
 			Map<String, TGGNode> param2node = rule.getNodes().stream() //

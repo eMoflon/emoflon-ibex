@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.emoflon.ibex.tgg.runtime.csp.IRuntimeTGGAttrConstrContainer;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 
 public interface IGreenInterpreter {
 
@@ -21,5 +22,5 @@ public interface IGreenInterpreter {
 	
 	int getNumOfCreatedCorrNodes();
 
-	void createMarkers(TGGOperationalRule operationalRule, ITGGMatch match);
+	void createMarkers(TGGRule tggRule, ITGGMatch match);
 }

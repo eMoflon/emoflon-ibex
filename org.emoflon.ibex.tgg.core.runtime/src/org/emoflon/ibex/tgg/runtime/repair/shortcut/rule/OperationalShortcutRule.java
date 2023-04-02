@@ -120,7 +120,7 @@ public abstract class OperationalShortcutRule {
 		String originalRuleName = operationalizedSCR.getOriginalRule().getName();
 
 		TGGNode oldRaNode = IBeXTGGModelFactory.eINSTANCE.createTGGNode();
-		oldRaNode.setName(getProtocolNodeName(originalRuleName));
+		oldRaNode.setName(getProtocolNodeName());
 		EClass oldRaType = (EClass) options.tgg.corrMetamodel().getEClassifier(getMarkerTypeName(originalRuleName));
 		oldRaNode.setType(oldRaType);
 		oldRaNode.setBindingType(BindingType.DELETE);
@@ -166,7 +166,7 @@ public abstract class OperationalShortcutRule {
 		String ruleName = component.rule.getName();
 
 		TGGNode oldRaNode = IBeXTGGModelFactory.eINSTANCE.createTGGNode();
-		oldRaNode.setName(getProtocolNodeName(ruleName) + component.id);
+		oldRaNode.setName(getProtocolNodeName() + component.id);
 		EClass oldRaType = (EClass) options.tgg.corrMetamodel().getEClassifier(getMarkerTypeName(ruleName));
 		oldRaNode.setType(oldRaType);
 		oldRaNode.setBindingType(BindingType.DELETE);

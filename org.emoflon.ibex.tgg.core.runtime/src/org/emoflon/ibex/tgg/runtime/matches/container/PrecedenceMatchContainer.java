@@ -15,6 +15,7 @@ import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.PropagatingOperationalStrategy;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.RuleHandler;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 import org.emoflon.ibex.tgg.util.benchmark.TimeMeasurable;
 import org.emoflon.ibex.tgg.util.benchmark.TimeRegistry;
 import org.emoflon.ibex.tgg.util.benchmark.Timer;
@@ -199,16 +200,15 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 			return;
 
 		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(m.getRuleName());
+		TGGRule tggRule = operationalRule.getTggRule();
 
 		// Add translated elements
 		Collection<Object> translatedElts = cfactory.createObjectSet();
-
 		
-		
-		operationalRule.getCreateSource().getNodes().forEach(n -> translatedElts.add(m.get(n.getName())));
-		operationalRule.getCreateTarget().getNodes().forEach(n -> translatedElts.add(m.get(n.getName())));
-		operationalRule.getCreateSource().getEdges().forEach(e -> translatedElts.add(getRuntimeEdge(m, e)));
-		operationalRule.getCreateTarget().getEdges().forEach(e -> translatedElts.add(getRuntimeEdge(m, e)));
+		tggRule.getCreateSource().getNodes().forEach(n -> translatedElts.add(m.get(n.getName())));
+		tggRule.getCreateTarget().getNodes().forEach(n -> translatedElts.add(m.get(n.getName())));
+		tggRule.getCreateSource().getEdges().forEach(e -> translatedElts.add(getRuntimeEdge(m, e)));
+		tggRule.getCreateTarget().getEdges().forEach(e -> translatedElts.add(getRuntimeEdge(m, e)));
 
 		raToTranslated.put(ra, translatedElts);
 		raToMatch.put(ra, m);

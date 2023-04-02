@@ -232,7 +232,7 @@ public class ShortcutApplicationTool implements TimeMeasurable {
 		shortcutRule.getReplacingRule().getNodes().forEach( //
 				n -> tempMatch.put(n.getName(), scMatch.get(shortcutRule.mapRuleNodeToSCNode(n, SCInputRule.REPLACING).getName())));
 
-		greenInterpreter.createMarkers(shortcutRule.getReplacingRule().getName(), tempMatch);
+		greenInterpreter.createMarkers(shortcutRule.getReplacingRule(), tempMatch);
 
 		ITGGMatch newMatch = new SimpleTGGMatch(tempMatch.getPatternName());
 		for (String p : TGGMatchParameterOrderProvider.getParams(PatternSuffixes.removeSuffix(tempMatch.getPatternName()))) {
@@ -255,7 +255,7 @@ public class ShortcutApplicationTool implements TimeMeasurable {
 				tempMatch.put(node.getName(), scMatch.get(scNode.getName()));
 			}
 
-			greenInterpreter.createMarkers(component.rule.getName(), tempMatch);
+			greenInterpreter.createMarkers(component.rule, tempMatch);
 
 			ITGGMatch newMatch = new SimpleTGGMatch(tempMatch.getPatternName());
 			for (String p : TGGMatchParameterOrderProvider.getParams(PatternSuffixes.removeSuffix(tempMatch.getPatternName()))) {

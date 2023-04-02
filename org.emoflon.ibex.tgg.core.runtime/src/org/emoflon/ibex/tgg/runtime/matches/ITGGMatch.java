@@ -32,7 +32,6 @@ public interface ITGGMatch extends IMatch {
 	 * @return TGGRuleApplication node or {@code null} if it does not exist
 	 */
 	default TGGRuleApplication getRuleApplicationNode() {
-		return (TGGRuleApplication) get(TGGPatternUtil.getProtocolNodeName(//
-				PatternSuffixes.removeSuffix(getPatternName())));
+		return (TGGRuleApplication) get(TGGPatternUtil.getProtocolNodeName());
 	}
 }

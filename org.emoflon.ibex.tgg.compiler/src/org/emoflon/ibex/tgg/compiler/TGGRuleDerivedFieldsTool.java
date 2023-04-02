@@ -42,9 +42,6 @@ public class TGGRuleDerivedFieldsTool {
 
 	public static void fillDerivedTGGOperationalRuleFields(TGGOperationalRule op) {
 		switch(op.getOperationalisationMode()) {
-		case GENERATE:
-			// nothing to mark for generate
-			break;
 		case FORWARD:
 			op.setAlreadyMarked(createRuleDelta(op, new DomainBinding(SOURCE, CONTEXT)));
 			op.setToBeMarked(createRuleDelta(op, new DomainBinding(SOURCE, CREATE)));
@@ -62,12 +59,10 @@ public class TGGRuleDerivedFieldsTool {
 			op.setAlreadyMarked(createRuleDelta(op, new DomainBinding(SOURCE, CONTEXT), new DomainBinding(TARGET, CONTEXT)));
 			op.setToBeMarked(createRuleDelta(op, new DomainBinding(SOURCE, CREATE), new DomainBinding(TARGET, CREATE)));
 			break;
-		// nothing to mark for source and target, whose created elements must be marked by forward, backward or consistency check
-		case SOURCE:
-			break;
-		case TARGET:
-			break;
+		// nothing to mark for the other operationalizations, whose created elements must be marked by forward, backward or consistency check
 		default:
+			op.setAlreadyMarked(IBeXCoreModelFactory.eINSTANCE.createIBeXRuleDelta());
+			op.setToBeMarked(IBeXCoreModelFactory.eINSTANCE.createIBeXRuleDelta());
 			break;
 		
 		}

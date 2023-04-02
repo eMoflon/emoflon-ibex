@@ -14,10 +14,10 @@ import org.emoflon.ibex.tgg.util.TGGModelUtils;
 import TGGRuntimeModel.TGGRuleApplication;
 
 public class TGGPatternUtil {
-	public static final String protocolNodeSuffix = "_eMoflon_ProtocolNode";
+	public static final String protocolNodeName = "_eMoflon_ProtocolNode_";
 
-	public static String getProtocolNodeName(String ruleName) {
-		return ruleName + protocolNodeSuffix;
+	public static String getProtocolNodeName() {
+		return protocolNodeName;
 	}
 
 	public final static boolean isAttrNode(String nodeName) {

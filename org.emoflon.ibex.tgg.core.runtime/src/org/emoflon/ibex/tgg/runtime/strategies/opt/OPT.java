@@ -245,7 +245,7 @@ public abstract class OPT extends OperationalStrategy {
 	}
 
 	protected Collection<EObject> getRuleApplicationNodes(final ITGGMatch comatch) {
-		return comatch.getParameterNames().stream().filter(p -> p.endsWith(TGGPatternUtil.protocolNodeSuffix))
+		return comatch.getParameterNames().stream().filter(p -> p.endsWith(TGGPatternUtil.protocolNodeName))
 				.map(comatch::get).map(EObject.class::cast).collect(Collectors.toList());
 	}
 

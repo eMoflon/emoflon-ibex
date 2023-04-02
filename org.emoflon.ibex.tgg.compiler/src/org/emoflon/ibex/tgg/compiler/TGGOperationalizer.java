@@ -23,6 +23,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.Relati
 import org.emoflon.ibex.common.slimgt.slimGT.NodeAttributeExpression;
 import org.emoflon.ibex.common.slimgt.util.SlimGTModelUtil;
 import org.emoflon.ibex.tgg.patterns.PatternSuffixes;
+import org.emoflon.ibex.tgg.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelFactory;
@@ -461,7 +462,7 @@ public class TGGOperationalizer {
 
 		var protocolNode = factory.createTGGNode();
 		
-		protocolNode.setName(ProtocolGenerator.PROTOCOL_NODE_PREFIX);
+		protocolNode.setName(TGGPatternUtil.getProtocolNodeName());
 		protocolNode.setType(protocolNodeInformation.type());
 		
 		protocolNode.setDomainType(DomainType.PROTOCOL);
