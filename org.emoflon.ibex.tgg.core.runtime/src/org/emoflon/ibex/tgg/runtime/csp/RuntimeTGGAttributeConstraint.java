@@ -61,8 +61,8 @@ public abstract class RuntimeTGGAttributeConstraint {
 	public Collection<Pair<IBeXAttributeValue, Object>> getBoundAttrExprValues() {
 		Collection<Pair<IBeXAttributeValue, Object>> tuples = new ArrayList<Pair<IBeXAttributeValue, Object>>();
 		for (int i = 0; i < constraint.getParameters().size(); i++) {
-			Object obj = constraint.getParameters().get(i);
-			if (obj instanceof IBeXAttributeValue attrExpr) {
+			var parameter = constraint.getParameters().get(i);
+			if (parameter.getExpression() instanceof IBeXAttributeValue attrExpr) {
 				tuples.add(Pair.of(attrExpr, variables.get(i).getValue()));
 			}
 		}
