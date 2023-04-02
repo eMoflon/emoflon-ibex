@@ -36,6 +36,10 @@ public class TGGRuleDerivedFieldsTool {
 		rule.setContextSource(createRuleDelta(rule, new DomainBinding(SOURCE, CONTEXT)));
 		rule.setContextCorrespondence(createRuleDelta(rule, new DomainBinding(CORRESPONDENCE, CONTEXT)));
 		rule.setContextTarget(createRuleDelta(rule, new DomainBinding(TARGET, CONTEXT)));
+
+		rule.setSource(createRuleDelta(rule, new DomainBinding(SOURCE, CONTEXT), new DomainBinding(SOURCE, CREATE)));
+		rule.setCorrespondence(createRuleDelta(rule, new DomainBinding(CORRESPONDENCE, CONTEXT), new DomainBinding(CORRESPONDENCE, CREATE)));
+		rule.setTarget(createRuleDelta(rule, new DomainBinding(TARGET, CONTEXT), new DomainBinding(TARGET, CREATE)));
 		
 		rule.setAxiom(ruleIsAxiom(rule));
 	}

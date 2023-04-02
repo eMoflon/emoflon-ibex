@@ -30,6 +30,10 @@ public class RuleHandler {
 	}
 
 	public TGGOperationalRule getOperationalRule(String name, OperationalisationMode operationalization) {
+		if(name2operationalRule.containsKey(name)) {
+			return name2operationalRule.get(name);
+		}
+		
 		for (var operationalRule : getRule(name).getOperationalisations()) {
 			if (operationalRule.getOperationalisationMode() == operationalization)
 				return operationalRule;
