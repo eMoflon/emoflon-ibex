@@ -31,6 +31,11 @@ public class IBeXTggXmiVisualizer implements EMoflonDiagramTextProvider {
 			return IBeXTggXmiPlantUMLGenerator.visualizeTGG(tgg);
 		if (element instanceof TGGRule tggRule)
 			return IBeXTggXmiPlantUMLGenerator.visualizeTGGRule(tggRule);
+//		if (element instanceof EditorFile ef) {
+//		if (element instanceof org.emoflon.ibex.tgg.tggl.tGGL.TGGRule rule) {
+//			TGGLModelFlattener flattener = new TGGLModelFlattener();
+//			flattener.flattenTGGRule(rule);
+//		}
 		// TODO larsF, adrianM: fix this to visualize sc rules again
 //				if (element instanceof ExternalShortcutRule extShortcutRule)
 //			return IBeXTggXmiPlantUMLGenerator.visualizeSCRuleMerged(extShortcutRule);
@@ -50,15 +55,16 @@ public class IBeXTggXmiVisualizer implements EMoflonDiagramTextProvider {
 		if (elements == null)
 			return false;
 
-		return elements.stream() //
-				.filter(this::isPartOfTGGLanguage) //
-				.findAny() //
-				.isPresent();
+		for(var element : elements) {
+			if(isPartOfTGGLanguage(element))
+				return true;
+		}
+		return false;
 	}
 
 	private boolean isPartOfTGGLanguage(EObject element) {
 		String packageName = element.eClass().getEPackage().getName();
-		return packageName.contains("language") || packageName.contains("repair");
+		return packageName.contains("IBeXTGGModel") || packageName.contains("repair");
 	}
 
 	@Override
