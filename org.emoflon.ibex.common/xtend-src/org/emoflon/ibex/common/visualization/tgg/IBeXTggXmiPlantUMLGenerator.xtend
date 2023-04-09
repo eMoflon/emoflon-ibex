@@ -2,9 +2,25 @@ package org.emoflon.ibex.common.visualization.tgg
 
 import java.util.HashSet
 import java.util.Set
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeAssignment
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeValue
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXBooleanValue
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.DoubleLiteral
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.IntegerLiteral
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ValueExpression
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.impl.DoubleLiteralImpl
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.impl.IntegerLiteralImpl
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEnumValue
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXStringValue
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXAttributeValueImpl
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXBooleanValueImpl
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXEnumValueImpl
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.impl.IBeXStringValueImpl
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintParameterValue
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintSet
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence
@@ -12,17 +28,10 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintParameterValue
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEnumValue
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeValue
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXStringValue
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXBooleanValue
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.DoubleLiteral
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.IntegerLiteral
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanValue
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeAssignment
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ValueExpression
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanExpression
+import java.util.Collection
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalExpression
 
 class IBeXTggXmiPlantUMLGenerator {
 
@@ -87,14 +96,17 @@ class IBeXTggXmiPlantUMLGenerator {
 
 	def static String visualizeTGGRule(TGGRule rule) {
 		var namespaceRule = "Rule: " + rule.name
-		var namespaceConstr = "Attribute Constraints"
+		var namespaceConstraints = "Attribute Constraints"
+		var namespaceConditions = "Attribute Conditions"
 
 		'''
 			«plantUMLPreamble»
 			
 			«visualizeTGGRule(namespaceRule, rule)»
 			
-			«visualizeContraints(namespaceRule, namespaceConstr, rule.attributeConstraints)»
+			«visualizeContraints(namespaceRule, namespaceConstraints, rule.attributeConstraints)»
+			
+			«visualizeConditions(namespaceRule, namespaceConditions, rule.precondition.conditions)»
 		'''
 	}
 
@@ -134,8 +146,7 @@ class IBeXTggXmiPlantUMLGenerator {
 		'''
 	}
 
-	private def static visualizeAttrConstr(String namespaceRule, String namespaceConstr,
-		TGGAttributeConstraint constraint) {
+	private def static visualizeAttrConstr(String namespaceRule, String namespaceConstr, TGGAttributeConstraint constraint) {
 		var paramString = '''«FOR parameter : constraint.parameters»«visualizeParameter(parameter)», «ENDFOR»'''
 		var constrId = '''"«namespaceConstr».«constraint.definition.name»"'''
 
@@ -152,21 +163,49 @@ class IBeXTggXmiPlantUMLGenerator {
 		'''
 	}
 	
+	private def static visualizeConditions(String namespaceRule, String namespaceConstr, Collection<BooleanExpression> conditions) {
+		'''
+			«FOR condition : conditions»
+				«visualizeCondition(namespaceRule, namespaceConstr, condition)»
+			«ENDFOR»
+		'''
+	}
+
+	private def static visualizeCondition(String namespaceRule, String namespaceConstr, BooleanExpression condition) {
+		var constrId = '''"«namespaceConstr»"'''
+
+		var relationalExpression = condition as RelationalExpression
+		var conditionString = '''«visualizeExpression(relationalExpression.lhs)» «getSign(relationalExpression.operator, BindingType.CONTEXT)» «visualizeExpression(relationalExpression.rhs)»'''
+		
+		'''
+			class «constrId» <<WHITE>> <<BLACK>> {
+				«conditionString»
+			}
+			
+			«IF relationalExpression.lhs instanceof IBeXAttributeValue»
+				«idOf(namespaceRule, (relationalExpression.lhs as IBeXAttributeValue).node)» ..«"LIGHT".color» «constrId»
+			«ENDIF»
+			«IF relationalExpression.rhs instanceof IBeXAttributeValue»
+				«idOf(namespaceRule, (relationalExpression.rhs as IBeXAttributeValue).node)» ..«"LIGHT".color» «constrId»
+			«ENDIF»
+		'''
+	}
+	
 	private def static visualizeExpression(ValueExpression valueExpression) {
 		switch (valueExpression.class) {
-			case IBeXStringValue: {
+			case IBeXStringValueImpl: {
 				var litExpr = valueExpression as IBeXStringValue
-				'''«litExpr.value»'''
+				'''"«litExpr.value»"'''
 			}
-			case IBeXBooleanValue: {
+			case IBeXBooleanValueImpl: {
 				var litExpr = valueExpression as IBeXBooleanValue
 				'''«litExpr.value»'''
 			}
-			case DoubleLiteral: {
+			case DoubleLiteralImpl: {
 				var litExpr = valueExpression as DoubleLiteral
 				'''«litExpr.value»'''
 			}
-			case IntegerLiteral: {
+			case IntegerLiteralImpl: {
 				var litExpr = valueExpression as IntegerLiteral
 				'''«litExpr.value»'''
 			}
@@ -174,11 +213,11 @@ class IBeXTggXmiPlantUMLGenerator {
 				var litExpr = valueExpression as IntegerLiteral
 				'''«litExpr.value»'''
 			}
-			case IBeXAttributeValue: {
+			case IBeXAttributeValueImpl: {
 				var attrExpr = valueExpression as IBeXAttributeValue
 				'''«attrExpr.node.name».«attrExpr.attribute.name»'''
 			}
-			case IBeXEnumValue: {
+			case IBeXEnumValueImpl: {
 				var enumExpr = valueExpression as IBeXEnumValue
 				'''«enumExpr.literal.literal»'''
 			}

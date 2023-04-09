@@ -409,24 +409,25 @@ public class TGGOperationalizer {
 		var transformedAssignments = new LinkedList<IBeXAttributeAssignment>();
 		for(var assignment : op.getAttributeAssignments()) {
 			if(assignment.getNode() instanceof TGGNode tggNode) {
-				var condition = arithmeticFactory.createRelationalExpression();
-				condition.setOperator(RelationalOperator.EQUAL);
-				
-				var lhs = superFactory.createIBeXAttributeValue();
-				lhs.setNode(tggNode);
-				lhs.setAttribute(assignment.getAttribute());
-				lhs.setType(assignment.getAttribute().getEType());
-				condition.setLhs(lhs);
-				condition.setRhs(assignment.getValue());
-				op.getPrecondition().getConditions().add(condition);
-				op.getPostcondition().getConditions().add(EcoreUtil.copy(condition));
-				transformedAssignments.add(assignment);
+				if(tggNode.getBindingType() == BindingType.CONTEXT) {
+					var condition = arithmeticFactory.createRelationalExpression();
+					condition.setOperator(RelationalOperator.EQUAL);
+					
+					var lhs = superFactory.createIBeXAttributeValue();
+					lhs.setNode(tggNode);
+					lhs.setAttribute(assignment.getAttribute());
+					lhs.setType(assignment.getAttribute().getEType());
+					condition.setLhs(lhs);
+					condition.setRhs(assignment.getValue());
+					op.getPrecondition().getConditions().add(condition);
+					transformedAssignments.add(assignment);
+				}
 			}
 			else {
 				throw new RuntimeException("Patterns should not contain any assignments");
 			}
 		}
-		op.getAttributeAssignments().removeAll(transformedAssignments);
+		EcoreUtil.deleteAll(transformedAssignments, true);
 	}
 
 	private TGGOperationalRule createOperationalizedTGGRule(TGGRule rule) {

@@ -377,6 +377,7 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		internalRule.getAllEdges().addAll(internalRule.getEdges());
 		
 		internalRule.setAttributeConstraints(cspFactory.createTGGAttributeConstraintSet());
+		internalRule.getNodes().forEach(n -> internalRule.getAttributeAssignments().addAll(n.getAttributeAssignments()));
 		
 		var precondition = factory.createTGGPattern();
 		precondition.setAttributeConstraints(cspFactory.createTGGAttributeConstraintSet());
@@ -658,6 +659,11 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		for(var createdEdge : node.getCreatedEdges()) {
 			var creation = createdEdge.getCreation();
 			transformTGGEdge(new EdgeSignature(node, creation.getTarget(), creation.getType()), BindingType.CREATE, domain);
+		}
+		
+		for(var assignment : node.getAssignments()) {			
+			var tggNodeAssignment = transformAttributeAssignment(node, assignment);
+			tggNode.getAttributeAssignments().add(tggNodeAssignment);
 		}
 		
 		return tggNode;
