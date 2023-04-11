@@ -53,7 +53,7 @@ public class ProtocolGenerator {
 			reference.setLowerBound(1);
 			reference.setUpperBound(1);
 
-			protocolType.getEReferences().add(reference);
+			protocolType.getEStructuralFeatures().add(reference);
 			nodeToReference.put(node.getName(), reference);
 		}
 		
