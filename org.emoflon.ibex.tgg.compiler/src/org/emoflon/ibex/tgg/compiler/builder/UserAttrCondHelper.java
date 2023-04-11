@@ -7,7 +7,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefi
 
 public class UserAttrCondHelper {
 	public static String getFileName(TGGAttributeConstraintDefinition tacd) {
-		return "UserDefined_" + tacd.getName();
+		return tacd.getName().substring(0, 1).toUpperCase() + tacd.getName().substring(1);
 	}
 	
 	public static String getParameterString(TGGAttributeConstraintDefinition def) {

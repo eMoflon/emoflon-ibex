@@ -252,7 +252,7 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 				constraintDefinitionLibrary.setPackageName(AttrCondDefLibraryProvider.ATTR_COND_DEF_PREDEFINED_PACKAGE);
 			}
 			else {
-				constraintDefinitionLibrary.setPackageName(AttrCondDefLibraryProvider.ATTR_COND_DEF_USERDEFINED_PACKAGE + "." + project.getName().toLowerCase());
+				constraintDefinitionLibrary.setPackageName(AttrCondDefLibraryProvider.ATTR_COND_DEF_USERDEFINED_PACKAGE + "." + project.getName().toLowerCase() + "." + constraintDefinitionLibrary.getName().toLowerCase());
 			}
 			model.getAttributeConstraintDefinitionLibraries().add(constraintDefinitionLibrary);
 			
