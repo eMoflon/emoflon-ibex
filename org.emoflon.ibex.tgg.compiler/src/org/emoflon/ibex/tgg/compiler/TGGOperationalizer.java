@@ -264,6 +264,21 @@ public class TGGOperationalizer {
 							break;
 						}
 			}
+			
+			var attributeExpressions = SlimGTModelUtil.getElements(condition, IBeXAttributeValue.class);
+			for(var attributeExpression : attributeExpressions) {
+				var ibexNode = attributeExpression.getNode();
+				if(ibexNode == null) {
+					deletedConditions.add(condition);
+					break;
+				}
+				else 
+					if(ibexNode instanceof TGGNode tggNode) 
+						if(tggNode.getDomainType() == domainType) {
+							deletedConditions.add(condition);
+							break;
+						}
+			} 
 		}
 		for (var delCondition : deletedConditions) {
 			if (!(delCondition instanceof RelationalExpression relationalExpression))
