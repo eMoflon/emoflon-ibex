@@ -181,6 +181,7 @@
       <eStructuralFeatures xsi:type="ecore:EReference" name="expression" lowerBound="1"
           eType="ecore:EClass ../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXCoreArithmetic/ValueExpression"
           containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="derived" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
     </eClassifiers>
     <eClassifiers xsi:type="ecore:EClass" name="TGGCSP" eSuperTypes="../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore#//IBeXNamedElement">
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="package" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>

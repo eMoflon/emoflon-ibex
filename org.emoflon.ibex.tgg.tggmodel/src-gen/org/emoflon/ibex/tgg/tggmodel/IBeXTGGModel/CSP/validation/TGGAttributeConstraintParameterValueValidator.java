@@ -20,4 +20,6 @@ public interface TGGAttributeConstraintParameterValueValidator {
 	boolean validateParameterDefinition(TGGAttributeConstraintParameterDefinition value);
 
 	boolean validateExpression(ValueExpression value);
+
+	boolean validateDerived(boolean value);
 }

@@ -445,13 +445,22 @@ public interface CSPPackage extends EPackage {
 	int TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__EXPRESSION = 1;
 
 	/**
+	 * The feature id for the '<em><b>Derived</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__DERIVED = 2;
+
+	/**
 	 * The number of structural features of the '<em>TGG Attribute Constraint Parameter Value</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE_FEATURE_COUNT = 2;
+	int TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE_FEATURE_COUNT = 3;
 
 	/**
 	 * The number of operations of the '<em>TGG Attribute Constraint Parameter Value</em>' class.
@@ -820,6 +829,17 @@ public interface CSPPackage extends EPackage {
 	EReference getTGGAttributeConstraintParameterValue_Expression();
 
 	/**
+	 * Returns the meta object for the attribute '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintParameterValue#isDerived <em>Derived</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Derived</em>'.
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintParameterValue#isDerived()
+	 * @see #getTGGAttributeConstraintParameterValue()
+	 * @generated
+	 */
+	EAttribute getTGGAttributeConstraintParameterValue_Derived();
+
+	/**
 	 * Returns the meta object for class '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGCSP <em>TGGCSP</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1102,6 +1122,15 @@ public interface CSPPackage extends EPackage {
 		 */
 		EReference TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__EXPRESSION = eINSTANCE
 				.getTGGAttributeConstraintParameterValue_Expression();
+
+		/**
+		 * The meta object literal for the '<em><b>Derived</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__DERIVED = eINSTANCE
+				.getTGGAttributeConstraintParameterValue_Derived();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.impl.TGGCSPImpl <em>TGGCSP</em>}' class.

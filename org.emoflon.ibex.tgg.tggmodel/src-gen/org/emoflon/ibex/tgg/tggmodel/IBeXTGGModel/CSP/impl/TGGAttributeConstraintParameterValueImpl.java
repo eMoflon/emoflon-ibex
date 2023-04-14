@@ -27,6 +27,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintPara
  * <ul>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.impl.TGGAttributeConstraintParameterValueImpl#getParameterDefinition <em>Parameter Definition</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.impl.TGGAttributeConstraintParameterValueImpl#getExpression <em>Expression</em>}</li>
+ *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.impl.TGGAttributeConstraintParameterValueImpl#isDerived <em>Derived</em>}</li>
  * </ul>
  *
  * @generated
@@ -52,6 +53,26 @@ public class TGGAttributeConstraintParameterValueImpl extends MinimalEObjectImpl
 	 * @ordered
 	 */
 	protected ValueExpression expression;
+
+	/**
+	 * The default value of the '{@link #isDerived() <em>Derived</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isDerived()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final boolean DERIVED_EDEFAULT = false;
+
+	/**
+	 * The cached value of the '{@link #isDerived() <em>Derived</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isDerived()
+	 * @generated
+	 * @ordered
+	 */
+	protected boolean derived = DERIVED_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -171,6 +192,28 @@ public class TGGAttributeConstraintParameterValueImpl extends MinimalEObjectImpl
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public boolean isDerived() {
+		return derived;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setDerived(boolean newDerived) {
+		boolean oldDerived = derived;
+		derived = newDerived;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__DERIVED, oldDerived, derived));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
@@ -194,6 +237,8 @@ public class TGGAttributeConstraintParameterValueImpl extends MinimalEObjectImpl
 			return basicGetParameterDefinition();
 		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__EXPRESSION:
 			return getExpression();
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__DERIVED:
+			return isDerived();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -211,6 +256,9 @@ public class TGGAttributeConstraintParameterValueImpl extends MinimalEObjectImpl
 			return;
 		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__EXPRESSION:
 			setExpression((ValueExpression) newValue);
+			return;
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__DERIVED:
+			setDerived((Boolean) newValue);
 			return;
 		}
 		super.eSet(featureID, newValue);
@@ -230,6 +278,9 @@ public class TGGAttributeConstraintParameterValueImpl extends MinimalEObjectImpl
 		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__EXPRESSION:
 			setExpression((ValueExpression) null);
 			return;
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__DERIVED:
+			setDerived(DERIVED_EDEFAULT);
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -246,8 +297,27 @@ public class TGGAttributeConstraintParameterValueImpl extends MinimalEObjectImpl
 			return parameterDefinition != null;
 		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__EXPRESSION:
 			return expression != null;
+		case CSPPackage.TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__DERIVED:
+			return derived != DERIVED_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public String toString() {
+		if (eIsProxy())
+			return super.toString();
+
+		StringBuilder result = new StringBuilder(super.toString());
+		result.append(" (derived: ");
+		result.append(derived);
+		result.append(')');
+		return result.toString();
 	}
 
 } //TGGAttributeConstraintParameterValueImpl

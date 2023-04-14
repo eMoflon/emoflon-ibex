@@ -402,6 +402,15 @@ public class CSPPackageImpl extends EPackageImpl implements CSPPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EAttribute getTGGAttributeConstraintParameterValue_Derived() {
+		return (EAttribute) tggAttributeConstraintParameterValueEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getTGGCSP() {
 		return tggcspEClass;
 	}
@@ -500,6 +509,7 @@ public class CSPPackageImpl extends EPackageImpl implements CSPPackage {
 				TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__PARAMETER_DEFINITION);
 		createEReference(tggAttributeConstraintParameterValueEClass,
 				TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__EXPRESSION);
+		createEAttribute(tggAttributeConstraintParameterValueEClass, TGG_ATTRIBUTE_CONSTRAINT_PARAMETER_VALUE__DERIVED);
 
 		tggcspEClass = createEClass(TGGCSP);
 		createEAttribute(tggcspEClass, TGGCSP__PACKAGE);
@@ -629,6 +639,9 @@ public class CSPPackageImpl extends EPackageImpl implements CSPPackage {
 				theIBeXCoreArithmeticPackage.getValueExpression(), null, "expression", null, 1, 1,
 				TGGAttributeConstraintParameterValue.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE,
 				!IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getTGGAttributeConstraintParameterValue_Derived(), ecorePackage.getEBoolean(), "derived", null,
+				0, 1, TGGAttributeConstraintParameterValue.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE,
+				!IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(tggcspEClass, org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGCSP.class, "TGGCSP", !IS_ABSTRACT,
 				!IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);

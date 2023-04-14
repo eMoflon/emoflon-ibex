@@ -74,11 +74,10 @@ public class RuntimeTGGAttributeConstraintContainer implements IRuntimeTGGAttrCo
 	}
 
 	private boolean calculateBoundState(TGGAttributeConstraintParameterValue value) {
+		if (value.isDerived())
+			return false;
+
 		if (value.getExpression() instanceof IBeXAttributeValue tae) {
-			
-			// TODO: What was that supposed to do?
-//			if (tae.isDerived())
-//				return false;
 			return boundObjectNames.contains(tae.getNode().getName());
 		}
 		

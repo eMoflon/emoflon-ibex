@@ -75,6 +75,7 @@ public class TGGOperationalizer {
 		rule.getOperationalisations().add(op);
 		fillDerivedTGGRuleFields(op);
 		fillDerivedTGGOperationalRuleFields(op);
+		invalidateAttributeConstraintsWithDerivedParameters(op);
 		removeInvalidAttributeConstraintsFromPrecondition(op);
 	}
 
@@ -93,6 +94,7 @@ public class TGGOperationalizer {
 		
 		rule.getOperationalisations().add(op);
 		fillDerivedTGGRuleFields(op);
+		invalidateAttributeConstraintsWithDerivedParameters(op);
 		removeInvalidAttributeConstraintsFromPrecondition(op);
 	}
 
@@ -111,6 +113,7 @@ public class TGGOperationalizer {
 
 		rule.getOperationalisations().add(op);
 		fillDerivedTGGRuleFields(op);
+		invalidateAttributeConstraintsWithDerivedParameters(op);
 		removeInvalidAttributeConstraintsFromPrecondition(op);
 	}
 
@@ -187,6 +190,7 @@ public class TGGOperationalizer {
 		fixPrecondition(op);
 		
 		fillDerivedTGGRuleFields(op);
+		invalidateAttributeConstraintsWithDerivedParameters(op);
 		removeInvalidAttributeConstraintsFromPrecondition(op);
 	}
 	
@@ -205,6 +209,7 @@ public class TGGOperationalizer {
 		fixPrecondition(op);
 
 		fillDerivedTGGRuleFields(op);
+		invalidateAttributeConstraintsWithDerivedParameters(op);
 		removeInvalidAttributeConstraintsFromPrecondition(op);
 	}
 	
@@ -510,6 +515,21 @@ public class TGGOperationalizer {
 		return protocolNode;
 	}
 
+	private void invalidateAttributeConstraintsWithDerivedParameters(TGGOperationalRule op) {
+		var precondition = op.getPrecondition();
+		var tggAttributeConstraintSet = ((TGGPattern) precondition).getAttributeConstraints();
+		var constraints = tggAttributeConstraintSet.getTggAttributeConstraints();
+		for(var constraint : constraints) {
+			for(var param : constraint.getParameters()) {
+				if(param.isDerived()) {
+					var expression = (IBeXAttributeValue) param.getExpression();
+					expression.setNode(null);
+					break;
+				}
+			}
+		}
+	}
+	
 	private void removeInvalidAttributeConstraintsFromPrecondition(TGGOperationalRule op) {
 		var precondition = op.getPrecondition();
 		var tggAttributeConstraintSet = ((TGGPattern) precondition).getAttributeConstraints();

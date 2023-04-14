@@ -92,6 +92,7 @@ import org.emoflon.ibex.tgg.tggl.scoping.TGGLScopeProvider;
 import org.emoflon.ibex.tgg.tggl.tGGL.AttributeCondition;
 import org.emoflon.ibex.tgg.tggl.tGGL.AttributeConditionDefinition;
 import org.emoflon.ibex.tgg.tggl.tGGL.CorrespondenceType;
+import org.emoflon.ibex.tgg.tggl.tGGL.DerivableNodeAttributeExpression;
 import org.emoflon.ibex.tgg.tggl.tGGL.EditorFile;
 import org.emoflon.ibex.tgg.tggl.tGGL.LocalVariable;
 import org.emoflon.ibex.tgg.tggl.tGGL.SlimRule;
@@ -473,6 +474,10 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 			paramValue.setParameterDefinition(definition.getParameterDefinitions().get(i));
 			if(value instanceof org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression aritExpr) {
 				var valueExpression = transformArithmeticExpression(aritExpr);
+				
+				if(aritExpr instanceof DerivableNodeAttributeExpression) {
+					paramValue.setDerived(true);
+				}
 				
 				// look in the attribute constraint set for equivalent parameters and take them instead
 				if(valueExpression instanceof IBeXAttributeValue attributeValue) {
@@ -1007,6 +1012,12 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 			unary.setType(unary.getOperand().getType());
 			unary.setOperator(org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.UnaryOperator.BRACKET);
 			return unary;
+		} else if (expression instanceof DerivableNodeAttributeExpression nae) {
+			IBeXAttributeValue atrValue = superFactory.createIBeXAttributeValue();
+			atrValue.setNode(transformNode(nae.getNodeExpression().getNode()));
+			atrValue.setType(nae.getFeature().getEType());
+			atrValue.setAttribute(nae.getFeature());
+			return atrValue;
 		} else if (expression instanceof org.emoflon.ibex.common.slimgt.slimGT.ExpressionOperand op) {
 			if (op.getOperand() instanceof NodeExpression ne) {
 				IBeXNodeValue nodeValue = superFactory.createIBeXNodeValue();
@@ -1015,6 +1026,12 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 				nodeValue.setType(nodeValue.getNode().getType());
 				return nodeValue;
 			} else if (op.getOperand() instanceof NodeAttributeExpression nae) {
+				IBeXAttributeValue atrValue = superFactory.createIBeXAttributeValue();
+				atrValue.setNode(transformNode(nae.getNodeExpression().getNode()));
+				atrValue.setType(nae.getFeature().getEType());
+				atrValue.setAttribute(nae.getFeature());
+				return atrValue;
+			} else if (op.getOperand() instanceof DerivableNodeAttributeExpression nae) {
 				IBeXAttributeValue atrValue = superFactory.createIBeXAttributeValue();
 				atrValue.setNode(transformNode(nae.getNodeExpression().getNode()));
 				atrValue.setType(nae.getFeature().getEType());

@@ -17,6 +17,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ValueE
  * <ul>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintParameterValue#getParameterDefinition <em>Parameter Definition</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintParameterValue#getExpression <em>Expression</em>}</li>
+ *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintParameterValue#isDerived <em>Derived</em>}</li>
  * </ul>
  *
  * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.CSPPackage#getTGGAttributeConstraintParameterValue()
@@ -67,5 +68,27 @@ public interface TGGAttributeConstraintParameterValue extends EObject {
 	 * @generated
 	 */
 	void setExpression(ValueExpression value);
+
+	/**
+	 * Returns the value of the '<em><b>Derived</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Derived</em>' attribute.
+	 * @see #setDerived(boolean)
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.CSPPackage#getTGGAttributeConstraintParameterValue_Derived()
+	 * @model
+	 * @generated
+	 */
+	boolean isDerived();
+
+	/**
+	 * Sets the value of the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintParameterValue#isDerived <em>Derived</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Derived</em>' attribute.
+	 * @see #isDerived()
+	 * @generated
+	 */
+	void setDerived(boolean value);
 
 } // TGGAttributeConstraintParameterValue

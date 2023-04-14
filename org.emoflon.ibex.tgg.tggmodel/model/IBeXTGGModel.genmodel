@@ -138,6 +138,7 @@
         <genFeatures notify="false" createChild="false" propertySortChoices="true"
             ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//CSP/TGGAttributeConstraintParameterValue/parameterDefinition"/>
         <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXTGGModel.ecore#//CSP/TGGAttributeConstraintParameterValue/expression"/>
+        <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXTGGModel.ecore#//CSP/TGGAttributeConstraintParameterValue/derived"/>
       </genClasses>
       <genClasses ecoreClass="IBeXTGGModel.ecore#//CSP/TGGCSP">
         <genFeatures createChild="false" ecoreFeature="ecore:EAttribute IBeXTGGModel.ecore#//CSP/TGGCSP/package"/>
