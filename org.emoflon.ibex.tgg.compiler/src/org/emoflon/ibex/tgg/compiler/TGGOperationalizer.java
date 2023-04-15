@@ -87,6 +87,9 @@ public class TGGOperationalizer {
 	}
 
 	private void constructForward(TGGRule rule) {
+		if(rule.getCreateSource().getNodes().isEmpty() && rule.getCreateSource().getEdges().isEmpty())
+			return;
+		
 		var op = createOperationalizedTGGRule(rule);
 		setRuleName(op, OperationalisationMode.FORWARD);
 		op.setNoGeneratedInjectivityConstraints(rule.isNoGeneratedInjectivityConstraints());
@@ -109,6 +112,9 @@ public class TGGOperationalizer {
 	}
 
 	private void constructBackward(TGGRule rule) {
+		if(rule.getCreateTarget().getNodes().isEmpty() && rule.getCreateTarget().getEdges().isEmpty())
+			return;
+		
 		var op = createOperationalizedTGGRule(rule);
 		setRuleName(op, OperationalisationMode.BACKWARD);
 		op.setNoGeneratedInjectivityConstraints(rule.isNoGeneratedInjectivityConstraints());
@@ -199,6 +205,9 @@ public class TGGOperationalizer {
 	}
 
 	private void constructSource(TGGRule rule) {
+		if(rule.getSource().getNodes().isEmpty())
+			return;
+		
 		var op = createOperationalizedTGGRule(rule);
 		setRuleName(op, OperationalisationMode.SOURCE);
 		op.setNoGeneratedInjectivityConstraints(rule.isNoGeneratedInjectivityConstraints());
@@ -221,6 +230,9 @@ public class TGGOperationalizer {
 	
 	
 	private void constructTarget(TGGRule rule) {
+		if(rule.getTarget().getNodes().isEmpty())
+			return;
+		
 		var op = createOperationalizedTGGRule(rule);
 		setRuleName(op, OperationalisationMode.TARGET);
 		op.setNoGeneratedInjectivityConstraints(rule.isNoGeneratedInjectivityConstraints());
