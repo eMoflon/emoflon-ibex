@@ -58,6 +58,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getTarget <em>Target</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getGenericContents <em>Generic Contents</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#getAttributeConstraints <em>Attribute Constraints</em>}</li>
+ *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl#isNoGeneratedInjectivityConstraints <em>No Generated Injectivity Constraints</em>}</li>
  * </ul>
  *
  * @generated
@@ -282,6 +283,26 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 	 * @ordered
 	 */
 	protected TGGAttributeConstraintSet attributeConstraints;
+
+	/**
+	 * The default value of the '{@link #isNoGeneratedInjectivityConstraints() <em>No Generated Injectivity Constraints</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isNoGeneratedInjectivityConstraints()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final boolean NO_GENERATED_INJECTIVITY_CONSTRAINTS_EDEFAULT = false;
+
+	/**
+	 * The cached value of the '{@link #isNoGeneratedInjectivityConstraints() <em>No Generated Injectivity Constraints</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isNoGeneratedInjectivityConstraints()
+	 * @generated
+	 * @ordered
+	 */
+	protected boolean noGeneratedInjectivityConstraints = NO_GENERATED_INJECTIVITY_CONSTRAINTS_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -1074,6 +1095,29 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public boolean isNoGeneratedInjectivityConstraints() {
+		return noGeneratedInjectivityConstraints;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setNoGeneratedInjectivityConstraints(boolean newNoGeneratedInjectivityConstraints) {
+		boolean oldNoGeneratedInjectivityConstraints = noGeneratedInjectivityConstraints;
+		noGeneratedInjectivityConstraints = newNoGeneratedInjectivityConstraints;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET,
+					IBeXTGGModelPackage.TGG_RULE__NO_GENERATED_INJECTIVITY_CONSTRAINTS,
+					oldNoGeneratedInjectivityConstraints, noGeneratedInjectivityConstraints));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
@@ -1179,6 +1223,8 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 			return getGenericContents();
 		case IBeXTGGModelPackage.TGG_RULE__ATTRIBUTE_CONSTRAINTS:
 			return getAttributeConstraints();
+		case IBeXTGGModelPackage.TGG_RULE__NO_GENERATED_INJECTIVITY_CONSTRAINTS:
+			return isNoGeneratedInjectivityConstraints();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -1257,6 +1303,9 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		case IBeXTGGModelPackage.TGG_RULE__ATTRIBUTE_CONSTRAINTS:
 			setAttributeConstraints((TGGAttributeConstraintSet) newValue);
 			return;
+		case IBeXTGGModelPackage.TGG_RULE__NO_GENERATED_INJECTIVITY_CONSTRAINTS:
+			setNoGeneratedInjectivityConstraints((Boolean) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -1329,6 +1378,9 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		case IBeXTGGModelPackage.TGG_RULE__ATTRIBUTE_CONSTRAINTS:
 			setAttributeConstraints((TGGAttributeConstraintSet) null);
 			return;
+		case IBeXTGGModelPackage.TGG_RULE__NO_GENERATED_INJECTIVITY_CONSTRAINTS:
+			setNoGeneratedInjectivityConstraints(NO_GENERATED_INJECTIVITY_CONSTRAINTS_EDEFAULT);
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -1381,6 +1433,8 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 			return genericContents != null && !genericContents.isEmpty();
 		case IBeXTGGModelPackage.TGG_RULE__ATTRIBUTE_CONSTRAINTS:
 			return attributeConstraints != null;
+		case IBeXTGGModelPackage.TGG_RULE__NO_GENERATED_INJECTIVITY_CONSTRAINTS:
+			return noGeneratedInjectivityConstraints != NO_GENERATED_INJECTIVITY_CONSTRAINTS_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
 	}
@@ -1400,6 +1454,8 @@ public class TGGRuleImpl extends IBeXRuleImpl implements TGGRule {
 		result.append(abstract_);
 		result.append(", axiom: ");
 		result.append(axiom);
+		result.append(", noGeneratedInjectivityConstraints: ");
+		result.append(noGeneratedInjectivityConstraints);
 		result.append(')');
 		return result.toString();
 	}

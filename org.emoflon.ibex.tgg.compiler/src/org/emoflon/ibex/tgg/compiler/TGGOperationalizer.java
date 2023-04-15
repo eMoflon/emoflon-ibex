@@ -14,6 +14,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelFactory;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNodeValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXOperationType;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternInvocation;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanExpression;
@@ -63,11 +64,15 @@ public class TGGOperationalizer {
 		constructConsistencyCheck(rule);
 		constructCheckOnly(rule);
 		constructConsistency(rule);
+		
+		addInjectivityConstraints(rule);
+		optimizeInjectivityConstraints(rule);
 	}
 
 	private void constructModelGen(TGGRule rule) {
 		var op = createOperationalizedTGGRule(rule);
 		setRuleName(op, OperationalisationMode.GENERATE);
+		op.setNoGeneratedInjectivityConstraints(rule.isNoGeneratedInjectivityConstraints());
 		op.setOperationalisationMode(OperationalisationMode.GENERATE);
 		createProtocolNode(op, BindingType.CREATE);
 		fixPrecondition(op);
@@ -77,11 +82,14 @@ public class TGGOperationalizer {
 		fillDerivedTGGOperationalRuleFields(op);
 		invalidateAttributeConstraintsWithDerivedParameters(op);
 		removeInvalidAttributeConstraintsFromPrecondition(op);
+		addInjectivityConstraints(rule);
+		optimizeInjectivityConstraints(rule);
 	}
 
 	private void constructForward(TGGRule rule) {
 		var op = createOperationalizedTGGRule(rule);
 		setRuleName(op, OperationalisationMode.FORWARD);
+		op.setNoGeneratedInjectivityConstraints(rule.isNoGeneratedInjectivityConstraints());
 		op.setOperationalisationMode(OperationalisationMode.FORWARD);
 
 		// we have to fill marked fields before transforming the rule or else information about formerly created elements is lost
@@ -96,11 +104,14 @@ public class TGGOperationalizer {
 		fillDerivedTGGRuleFields(op);
 		invalidateAttributeConstraintsWithDerivedParameters(op);
 		removeInvalidAttributeConstraintsFromPrecondition(op);
+		addInjectivityConstraints(rule);
+		optimizeInjectivityConstraints(rule);
 	}
 
 	private void constructBackward(TGGRule rule) {
 		var op = createOperationalizedTGGRule(rule);
 		setRuleName(op, OperationalisationMode.BACKWARD);
+		op.setNoGeneratedInjectivityConstraints(rule.isNoGeneratedInjectivityConstraints());
 		op.setOperationalisationMode(OperationalisationMode.BACKWARD);
 		
 		// we have to fill marked fields before transforming the rule or else information about formerly created elements is lost
@@ -115,11 +126,14 @@ public class TGGOperationalizer {
 		fillDerivedTGGRuleFields(op);
 		invalidateAttributeConstraintsWithDerivedParameters(op);
 		removeInvalidAttributeConstraintsFromPrecondition(op);
+		addInjectivityConstraints(rule);
+		optimizeInjectivityConstraints(rule);
 	}
 
 	private void constructConsistencyCheck(TGGRule rule) {
 		var op = createOperationalizedTGGRule(rule);
 		setRuleName(op, OperationalisationMode.CONSISTENCY_CHECK);
+		op.setNoGeneratedInjectivityConstraints(rule.isNoGeneratedInjectivityConstraints());
 		op.setOperationalisationMode(OperationalisationMode.CONSISTENCY_CHECK);
 		
 		// we have to fill marked fields before transforming the rule or else information about formerly created elements is lost
@@ -134,11 +148,14 @@ public class TGGOperationalizer {
 		rule.getOperationalisations().add(op);
 		fillDerivedTGGRuleFields(op);
 		removeInvalidAttributeConstraintsFromPrecondition(op);
+		addInjectivityConstraints(rule);
+		optimizeInjectivityConstraints(rule);
 	}
 
 	private void constructCheckOnly(TGGRule rule) {
 		var op = createOperationalizedTGGRule(rule);
 		setRuleName(op, OperationalisationMode.CHECK_ONLY);
+		op.setNoGeneratedInjectivityConstraints(rule.isNoGeneratedInjectivityConstraints());
 		op.setOperationalisationMode(OperationalisationMode.CHECK_ONLY);
 		
 		// we have to fill marked fields before transforming the rule or else information about formerly created elements is lost
@@ -154,11 +171,14 @@ public class TGGOperationalizer {
 		rule.getOperationalisations().add(op);
 		fillDerivedTGGRuleFields(op);
 		removeInvalidAttributeConstraintsFromPrecondition(op);
+		addInjectivityConstraints(rule);
+		optimizeInjectivityConstraints(rule);
 	}
 	
 	private void constructConsistency(TGGRule rule) {
 		var op = createOperationalizedTGGRule(rule);
 		setRuleName(op, OperationalisationMode.CONSISTENCY);
+		op.setNoGeneratedInjectivityConstraints(rule.isNoGeneratedInjectivityConstraints());
 		op.setOperationalisationMode(OperationalisationMode.CONSISTENCY);
 		
 		// we have to fill marked fields before transforming the rule or else information about formerly created elements is lost
@@ -174,11 +194,14 @@ public class TGGOperationalizer {
 		rule.getOperationalisations().add(op);
 		fillDerivedTGGRuleFields(op);
 		removeInvalidAttributeConstraintsFromPrecondition(op);
+		addInjectivityConstraints(rule);
+		optimizeInjectivityConstraints(rule);
 	}
 
 	private void constructSource(TGGRule rule) {
 		var op = createOperationalizedTGGRule(rule);
 		setRuleName(op, OperationalisationMode.SOURCE);
+		op.setNoGeneratedInjectivityConstraints(rule.isNoGeneratedInjectivityConstraints());
 		op.setOperationalisationMode(OperationalisationMode.SOURCE);
 		
 		// we have to fill marked fields before transforming the rule or else information about formerly created elements is lost
@@ -192,12 +215,15 @@ public class TGGOperationalizer {
 		fillDerivedTGGRuleFields(op);
 		invalidateAttributeConstraintsWithDerivedParameters(op);
 		removeInvalidAttributeConstraintsFromPrecondition(op);
+		addInjectivityConstraints(rule);
+		optimizeInjectivityConstraints(rule);
 	}
 	
 	
 	private void constructTarget(TGGRule rule) {
 		var op = createOperationalizedTGGRule(rule);
 		setRuleName(op, OperationalisationMode.TARGET);
+		op.setNoGeneratedInjectivityConstraints(rule.isNoGeneratedInjectivityConstraints());
 		op.setOperationalisationMode(OperationalisationMode.TARGET);
 		
 		// we have to fill marked fields before transforming the rule or else information about formerly created elements is lost
@@ -211,6 +237,8 @@ public class TGGOperationalizer {
 		fillDerivedTGGRuleFields(op);
 		invalidateAttributeConstraintsWithDerivedParameters(op);
 		removeInvalidAttributeConstraintsFromPrecondition(op);
+		addInjectivityConstraints(rule);
+		optimizeInjectivityConstraints(rule);
 	}
 	
 	private void removeDomainInformation(TGGOperationalRule op, DomainType type) {
@@ -596,4 +624,64 @@ public class TGGOperationalizer {
 		removeBrokenAttributeConditions(precondition.getConditions());
 	}
 	
+	private void addInjectivityConstraints(TGGRule internalRule) {
+		if(internalRule.isNoGeneratedInjectivityConstraints())
+			return;
+			
+		var nodes = internalRule.getContext().getNodes();
+		outer: for(int i=0; i < nodes.size(); i++) {
+			for(int j=i+1; j < nodes.size(); j++) {
+				var node = (TGGNode) nodes.get(i);
+				var otherNode = (TGGNode) nodes.get(j);
+				
+				if(node.getDomainType() == DomainType.CORRESPONDENCE)
+					continue outer;
+				if(otherNode.getDomainType() == DomainType.CORRESPONDENCE)
+					continue;
+				
+				if(node.getType().isSuperTypeOf(otherNode.getType()) || otherNode.getType().isSuperTypeOf(node.getType())) {
+					var lhs = superFactory.createIBeXNodeValue();
+					lhs.setNode(node);
+					lhs.setType(node.getType());
+					var rhs = superFactory.createIBeXNodeValue();
+					rhs.setNode(otherNode);
+					rhs.setType(otherNode.getType());
+					var condition = arithmeticFactory.createRelationalExpression();
+					condition.setLhs(lhs);
+					condition.setRhs(rhs);
+					condition.setOperator(RelationalOperator.EQUAL);
+					internalRule.getPrecondition().getConditions().add(condition);
+				}
+			}
+		}
+	}
+
+	private void optimizeInjectivityConstraints(TGGRule internalRule) {
+		var nodePairs = new HashSet<NodePair>();
+		var deletedConditions = new LinkedList<EObject>();
+		for(var condition : internalRule.getPrecondition().getConditions()) {
+			if(condition instanceof RelationalExpression relationConstraint) {
+				if(relationConstraint.getOperator() == RelationalOperator.EQUAL) {
+					if(relationConstraint.getLhs() instanceof IBeXNodeValue nodeValue &&
+							relationConstraint.getRhs() instanceof IBeXNodeValue otherNodeValue) {
+						IBeXNode node = (IBeXNode) nodeValue.getNode();
+						IBeXNode otherNode = (IBeXNode) otherNodeValue.getNode();
+						
+						NodePair nodePair = null;
+						if(node.getName().compareTo(otherNode.getName()) > 0) {
+							nodePair = new NodePair(node, otherNode);
+						}
+						else {
+							nodePair = new NodePair(otherNode, node);
+						}
+						
+						if(!nodePairs.add(nodePair)) {
+							deletedConditions.add(condition);
+						}
+					}
+				}
+			}
+		}
+		EcoreUtil.deleteAll(deletedConditions, true);
+	}
 }

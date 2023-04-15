@@ -51,6 +51,7 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.Boolea
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanUnaryExpression;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanUnaryOperator;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalExpression;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.UnaryExpression;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ValueExpression;
 import org.emoflon.ibex.common.slimgt.slimGT.ArithmeticLiteral;
@@ -73,6 +74,7 @@ import org.emoflon.ibex.common.slimgt.slimGT.ProductArithmeticExpression;
 import org.emoflon.ibex.common.slimgt.slimGT.SlimParameter;
 import org.emoflon.ibex.common.slimgt.slimGT.SlimRuleAttributeAssignment;
 import org.emoflon.ibex.common.slimgt.slimGT.SlimRuleCondition;
+import org.emoflon.ibex.common.slimgt.slimGT.SlimRuleConfiguration;
 import org.emoflon.ibex.common.slimgt.slimGT.SlimRuleEdgeContext;
 import org.emoflon.ibex.common.slimgt.slimGT.SlimRuleEdgeCreation;
 import org.emoflon.ibex.common.slimgt.slimGT.SlimRuleInvocation;
@@ -409,9 +411,12 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		
 		fillDerivedTGGRuleFields(internalRule);
 		
+		internalRule.setNoGeneratedInjectivityConstraints(rule.getConfiguration() != null && rule.getConfiguration().getConfigurations().contains(SlimRuleConfiguration.DISABLE_INJECTIVITY_CONSTRAINTS));
+		
 		return internalRule;
 	}
 	
+
 	private void populatePrecondition(org.emoflon.ibex.tgg.tggl.tGGL.TGGRule tggRule, TGGRule internalRule, IBeXPattern precondition) {
 		precondition.getSignatureNodes().addAll(filterNodes(internalRule.getNodes(), BindingType.CONTEXT));
 		precondition.getEdges().addAll(filterEdges(internalRule.getEdges(), BindingType.CONTEXT));
@@ -1122,5 +1127,9 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 }
 
 record EdgeSignature(EObject source, EObject target, EReference type) {
+	
+}
+
+record NodePair(EObject first, EObject second) {
 	
 }

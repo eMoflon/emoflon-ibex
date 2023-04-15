@@ -34,6 +34,8 @@ public interface TGGRuleValidator {
 
 	boolean validateAttributeConstraints(TGGAttributeConstraintSet value);
 
+	boolean validateNoGeneratedInjectivityConstraints(boolean value);
+
 	boolean validateAbstract(boolean value);
 
 	boolean validateContext(IBeXRuleDelta value);

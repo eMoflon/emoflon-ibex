@@ -39,6 +39,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintSet;
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getTarget <em>Target</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getGenericContents <em>Generic Contents</em>}</li>
  *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#getAttributeConstraints <em>Attribute Constraints</em>}</li>
+ *   <li>{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#isNoGeneratedInjectivityConstraints <em>No Generated Injectivity Constraints</em>}</li>
  * </ul>
  *
  * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage#getTGGRule()
@@ -437,5 +438,27 @@ public interface TGGRule extends IBeXRule {
 	 * @generated
 	 */
 	void setAttributeConstraints(TGGAttributeConstraintSet value);
+
+	/**
+	 * Returns the value of the '<em><b>No Generated Injectivity Constraints</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>No Generated Injectivity Constraints</em>' attribute.
+	 * @see #setNoGeneratedInjectivityConstraints(boolean)
+	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage#getTGGRule_NoGeneratedInjectivityConstraints()
+	 * @model
+	 * @generated
+	 */
+	boolean isNoGeneratedInjectivityConstraints();
+
+	/**
+	 * Sets the value of the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule#isNoGeneratedInjectivityConstraints <em>No Generated Injectivity Constraints</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>No Generated Injectivity Constraints</em>' attribute.
+	 * @see #isNoGeneratedInjectivityConstraints()
+	 * @generated
+	 */
+	void setNoGeneratedInjectivityConstraints(boolean value);
 
 } // TGGRule
