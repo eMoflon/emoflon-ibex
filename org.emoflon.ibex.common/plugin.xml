@@ -5,16 +5,4 @@
   <extension point="org.moflon.emf.codegen.URIPreferenceExtension">
     <uri_preference_extension class="org.emoflon.ibex.common.ide.URIPreferenceExtension"/>
   </extension>
-  <extension
-        point="org.moflon.core.ui.DiagramTextProvider">
-     <diagram_text_provider
-           class="org.emoflon.ibex.common.visualization.IBeXPatternVisualizer">
-     </diagram_text_provider>
-  </extension>
-  <extension
-        point="org.moflon.core.ui.DiagramTextProvider">
-     <diagram_text_provider
-           class="org.emoflon.ibex.common.visualization.tgg.IBeXTggXmiVisualizer">
-     </diagram_text_provider>
-  </extension>
 </plugin>

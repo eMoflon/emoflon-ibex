@@ -34,7 +34,5 @@ Export-Package: org.emoflon.ibex.common,
  org.emoflon.ibex.common.engine,
  org.emoflon.ibex.common.ide,
  org.emoflon.ibex.common.project,
- org.emoflon.ibex.common.transformation,
- org.emoflon.ibex.common.visualization,
- org.emoflon.ibex.common.visualization.tgg
+ org.emoflon.ibex.common.transformation
 Import-Package: org.emoflon.smartemf.runtime

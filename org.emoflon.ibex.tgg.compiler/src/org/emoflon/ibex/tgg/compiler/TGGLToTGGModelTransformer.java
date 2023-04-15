@@ -337,7 +337,7 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		return corrType;
 	}
 	
-	protected TGGRule transformRule(org.emoflon.ibex.tgg.tggl.tGGL.TGGRule rule) {
+	public TGGRule transformRule(org.emoflon.ibex.tgg.tggl.tGGL.TGGRule rule) {
 		if(tggl2tggModel.containsKey(rule))
 			return (TGGRule) tggl2tggModel.get(rule);
 		
