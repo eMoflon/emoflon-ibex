@@ -57,7 +57,7 @@ public class TGGPackageBuilder implements SlimGTBuilderExtension<EditorFile> {
 		ResourceSet rs = tggModel.eResource().getResourceSet();
 		IFile tggFile = project.getFolder(TGGBuildUtil.MODEL_FOLDER).getFile(filenameFromProject() + TGGBuildUtil.EDITOR_MODEL_EXTENSION);
 		try {
-			saveModelInProject(tggFile, rs, tggModel);
+			saveModelInProject(tggFile, rs, editorFile);
 		} catch (Exception e) {
 			logError(e);
 		}
