@@ -90,6 +90,8 @@ public class TGGRuleDerivedFieldsTool {
 
 		precondition.getConditions().addAll(attributeConditions);
 		precondition.setAttributeConstraints(attributeConstraints);
+		
+		rule.setPrecondition(precondition);
 	}
 }
 
