@@ -172,11 +172,13 @@ public class RuntimeShortcutRule {
 	private void initializeContextEdges() {
 		for (TGGEdge edge : extractEdges(overlap.unboundOriginalContext)) {
 			TGGEdge newEdge = createNewEdge(edge, relaxedPatternMatching ? BindingType.RELAXED : BindingType.CONTEXT, SCInputRule.ORIGINAL);
-			shortcutRule.getUnmappedOriginalElements().add(newEdge);
+			if (newEdge != null)
+				shortcutRule.getUnmappedOriginalElements().add(newEdge);
 		}
 		for (TGGEdge edge : extractEdges(overlap.unboundReplacingContext)) {
 			TGGEdge newEdge = createNewEdge(edge, BindingType.CONTEXT, SCInputRule.REPLACING);
-			shortcutRule.getUnmappedReplacingElements().add(newEdge);
+			if (newEdge != null)
+				shortcutRule.getUnmappedReplacingElements().add(newEdge);
 		}
 
 		for (TGGEdge edge : extractEdges(overlap.mappings.keySet()))
