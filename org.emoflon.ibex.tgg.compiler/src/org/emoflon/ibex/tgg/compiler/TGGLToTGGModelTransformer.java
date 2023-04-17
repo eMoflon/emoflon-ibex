@@ -484,30 +484,6 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 					paramValue.setDerived(true);
 				}
 				
-				// look in the attribute constraint set for equivalent parameters and take them instead
-				if(valueExpression instanceof IBeXAttributeValue attributeValue) {
-					for(var containerParamValue : attributeConstraints.getParameters()) {
-						if(containerParamValue.getExpression() instanceof IBeXAttributeValue containerAttributeValue) {
-							if(attributeValue.getNode().equals(containerAttributeValue.getNode())) {
-								if(attributeValue.getAttribute().equals(containerAttributeValue.getAttribute())) {
-									attributeConstraint.getParameters().add(containerParamValue);
-									continue;
-								}
-							}
-						}
-					}
-				}
-				if(valueExpression instanceof TGGLocalVariable localVariable) {
-					for(var containerParamValue : attributeConstraints.getParameters()) {
-						if(containerParamValue.getExpression() instanceof TGGLocalVariable containerLocalVariable) {
-							if(localVariable.getName().equals(containerLocalVariable.getName())) {
-								attributeConstraint.getParameters().add(containerParamValue);
-								continue;
-							}
-						}
-					}
-				}
-				
 				// if this param value is new or a constant then we add it to both the constraint and the set of constraints
 				paramValue.setExpression(valueExpression);
 				attributeConstraint.getParameters().add(paramValue);
