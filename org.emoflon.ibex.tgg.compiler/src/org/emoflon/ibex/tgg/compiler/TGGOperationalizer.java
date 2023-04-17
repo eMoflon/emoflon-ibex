@@ -1,7 +1,7 @@
 package org.emoflon.ibex.tgg.compiler;
 
-import static org.emoflon.ibex.tgg.compiler.TGGRuleDerivedFieldsTool.fillDerivedTGGRuleFields;
 import static org.emoflon.ibex.tgg.compiler.TGGRuleDerivedFieldsTool.fillDerivedTGGOperationalRuleFields;
+import static org.emoflon.ibex.tgg.compiler.TGGRuleDerivedFieldsTool.fillDerivedTGGRuleFields;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -35,7 +35,6 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGPattern;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintSet;
 
 public class TGGOperationalizer {
@@ -323,10 +322,16 @@ public class TGGOperationalizer {
 		for (var delCondition : deletedConditions) {
 			if (!(delCondition instanceof RelationalExpression relationalExpression))
 				continue;
-			if (relationalExpression.getLhs() instanceof IBeXAttributeValue attributeValue)
-				((TGGNode) attributeValue.getNode()).getReferencedByConditions().remove(delCondition);
-			if (relationalExpression.getRhs() instanceof IBeXAttributeValue attributeValue)
-				((TGGNode) attributeValue.getNode()).getReferencedByConditions().remove(delCondition);
+			if (relationalExpression.getLhs() instanceof IBeXAttributeValue attributeValue) {
+				IBeXNode lhsNode = attributeValue.getNode();
+				if (lhsNode != null)
+					((TGGNode) lhsNode).getReferencedByConditions().remove(delCondition);
+			}
+			if (relationalExpression.getRhs() instanceof IBeXAttributeValue attributeValue) {
+				IBeXNode rhsNode = attributeValue.getNode();
+				if (rhsNode != null)
+					((TGGNode) rhsNode).getReferencedByConditions().remove(delCondition);
+			}
 		}
 		conditions.removeAll(deletedConditions);
 	}
