@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -95,6 +96,13 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	}
 
 	public void registerOperationalRule(TGGOperationalRule operationalRule) {
+		if(operationalRule.getAttributeConstraints() == null || 
+				operationalRule.getAttributeConstraints().getTggAttributeConstraints().isEmpty()) {
+			rule2sortedAttributeConstraints.put(operationalRule.getName(), new LinkedList<>());
+			rule2parameters.put(operationalRule.getName(), new LinkedList<>());
+			return;
+		}
+		
 		try {
 			rule2sortedAttributeConstraints.put(operationalRule.getName(), //
 					sortConstraints(
