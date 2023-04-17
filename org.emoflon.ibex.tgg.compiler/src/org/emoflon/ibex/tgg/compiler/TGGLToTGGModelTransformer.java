@@ -413,6 +413,8 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		
 		internalRule.setNoGeneratedInjectivityConstraints(rule.getConfiguration() != null && rule.getConfiguration().getConfigurations().contains(SlimRuleConfiguration.DISABLE_INJECTIVITY_CONSTRAINTS));
 		
+		
+		
 		return internalRule;
 	}
 	
