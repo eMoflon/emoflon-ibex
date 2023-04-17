@@ -105,7 +105,7 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 //							((TGGPattern) operationalRule.getPrecondition()).getAttributeConstraints().getTggAttributeConstraints()));
 			rule2parameters.put(operationalRule.getName(), operationalRule.getAttributeConstraints().getParameters());
 		} catch (Exception e) {
-			throw new IllegalStateException("Unable to sort attribute constraints, " + e.getMessage(), e);
+			throw new IllegalStateException(operationalRule.getName() + " -> Unable to sort attribute constraints, " + e.getMessage(), e);
 		}
 	}
 

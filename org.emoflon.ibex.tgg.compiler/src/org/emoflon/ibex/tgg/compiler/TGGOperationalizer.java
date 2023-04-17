@@ -287,7 +287,7 @@ public class TGGOperationalizer {
 	}
 
 	private void removeAttributeConditions(Collection<BooleanExpression> conditions, DomainType domainType) {
-		var deletedConditions = new LinkedList<>();
+		var deletedConditions = new LinkedList<EObject>();
 		for(var condition : conditions) {
 			var nodeExpressions = SlimGTModelUtil.getElements(condition, NodeAttributeExpression.class);	
 			for(var nodeAttrExpr : nodeExpressions) {
@@ -319,21 +319,7 @@ public class TGGOperationalizer {
 						}
 			} 
 		}
-		for (var delCondition : deletedConditions) {
-			if (!(delCondition instanceof RelationalExpression relationalExpression))
-				continue;
-			if (relationalExpression.getLhs() instanceof IBeXAttributeValue attributeValue) {
-				IBeXNode lhsNode = attributeValue.getNode();
-				if (lhsNode != null)
-					((TGGNode) lhsNode).getReferencedByConditions().remove(delCondition);
-			}
-			if (relationalExpression.getRhs() instanceof IBeXAttributeValue attributeValue) {
-				IBeXNode rhsNode = attributeValue.getNode();
-				if (rhsNode != null)
-					((TGGNode) rhsNode).getReferencedByConditions().remove(delCondition);
-			}
-		}
-		conditions.removeAll(deletedConditions);
+		EcoreUtil.deleteAll(deletedConditions, true); 
 	}
 	
 	private void removeBrokenAttributeConditions(Collection<BooleanExpression> conditions) {
