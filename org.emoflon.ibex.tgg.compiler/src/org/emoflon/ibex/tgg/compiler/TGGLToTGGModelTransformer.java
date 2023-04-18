@@ -1,10 +1,12 @@
 package org.emoflon.ibex.tgg.compiler;
 
 import static org.emoflon.ibex.common.slimgt.util.SlimGTModelUtil.getContainer;
+import static org.emoflon.ibex.tgg.compiler.TGGRuleDerivedFieldsTool.fillDerivedTGGRuleFields;
 
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
@@ -16,6 +18,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.codegen.ecore.genmodel.GenPackage;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EEnumLiteral;
@@ -51,7 +54,6 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.Boolea
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanUnaryExpression;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanUnaryOperator;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalExpression;
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.UnaryExpression;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.ValueExpression;
 import org.emoflon.ibex.common.slimgt.slimGT.ArithmeticLiteral;
@@ -96,6 +98,7 @@ import org.emoflon.ibex.tgg.tggl.tGGL.AttributeConditionDefinition;
 import org.emoflon.ibex.tgg.tggl.tGGL.CorrespondenceType;
 import org.emoflon.ibex.tgg.tggl.tGGL.DerivableNodeAttributeExpression;
 import org.emoflon.ibex.tgg.tggl.tGGL.EditorFile;
+import org.emoflon.ibex.tgg.tggl.tGGL.ExpressionOperand;
 import org.emoflon.ibex.tgg.tggl.tGGL.LocalVariable;
 import org.emoflon.ibex.tgg.tggl.tGGL.SlimRule;
 import org.emoflon.ibex.tgg.tggl.tGGL.SlimRuleNode;
@@ -117,13 +120,13 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.CSPFactory;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraint;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefinition;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintParameterDefinition;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintParameterValue;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintSet;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGLocalVariable;
 import org.moflon.core.utilities.LogUtils;
 import org.moflon.core.utilities.MoflonUtil;
 
 import TGGRuntimeModel.TGGRuntimeModelPackage;
-import static org.emoflon.ibex.tgg.compiler.TGGRuleDerivedFieldsTool.fillDerivedTGGRuleFields;
 
 public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<EditorFile, TGGModel, IBeXTGGModelFactory> {
 	
@@ -134,6 +137,7 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 	private TGGRuntimeModelPackage runtimePackage = TGGRuntimeModelPackage.eINSTANCE;
 	
 	private Map<Object, EObject> tggl2tggModel = new ConcurrentHashMap<>();
+	private Map<NodeAttributeEntry, TGGAttributeConstraintParameterValue> nodeAttributeEntry2parameterValue = new HashMap<>();
 	private EPackage correspondenceModel;
 
 	private IBeXFeatureConfig featureConfig;
@@ -477,19 +481,52 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		
 		for(var i=0; i < attributeCondition.getValues().size(); i++) {
 			var value = attributeCondition.getValues().get(i);
-			var paramValue = cspFactory.createTGGAttributeConstraintParameterValue();
-			paramValue.setParameterDefinition(definition.getParameterDefinitions().get(i));
 			if(value instanceof org.emoflon.ibex.common.slimgt.slimGT.ArithmeticExpression aritExpr) {
 				var valueExpression = transformArithmeticExpression(aritExpr);
+				var isDerived = aritExpr instanceof DerivableNodeAttributeExpression;
 				
-				if(aritExpr instanceof DerivableNodeAttributeExpression) {
-					paramValue.setDerived(true);
+				// we have to check if this parameter already exists
+				EObject node = null;
+				EAttribute attribute = null;
+				if(aritExpr instanceof ExpressionOperand expressionOperand) {					
+					if(expressionOperand.getOperand() instanceof NodeAttributeExpression expr) {
+						node = expr.getNodeExpression().getNode();
+						attribute = expr.getFeature();
+					}
+					if(expressionOperand.getOperand() instanceof DerivableNodeAttributeExpression expr) {
+						node = expr.getNodeExpression().getNode();
+						attribute = expr.getFeature();
+					}
+				}
+				
+				TGGAttributeConstraintParameterValue paramValue = null;
+				if(node != null && attribute != null) {
+					var parameter = new NodeAttributeEntry(node, attribute);
+					
+					// if this is true, then there was no parameter like this before and we have to create it
+					// else we simply look it up and add it
+					if(nodeAttributeEntry2parameterValue.containsKey(parameter)) {
+						paramValue = nodeAttributeEntry2parameterValue.get(parameter);
+					}
+					else {
+						paramValue = cspFactory.createTGGAttributeConstraintParameterValue();
+						nodeAttributeEntry2parameterValue.put(parameter, paramValue);
+					}
+				}
+
+				if(paramValue == null) {
+					paramValue = cspFactory.createTGGAttributeConstraintParameterValue();
+				}
+
+				if(paramValue.getParameterDefinition() == null) {
+					paramValue.setParameterDefinition(definition.getParameterDefinitions().get(i));
+					paramValue.setDerived(isDerived);
+					paramValue.setExpression(valueExpression);
+					attributeConstraints.getParameters().add(paramValue);
 				}
 				
 				// if this param value is new or a constant then we add it to both the constraint and the set of constraints
-				paramValue.setExpression(valueExpression);
 				attributeConstraint.getParameters().add(paramValue);
-				attributeConstraints.getParameters().add(paramValue);
 			} else {
 				throw new RuntimeException(value + " could not be converted to an internal model element");
 			}
@@ -1101,6 +1138,10 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 			}
 		};
 	}
+	
+}
+
+record NodeAttributeEntry(EObject node, EAttribute attribute) {
 	
 }
 
