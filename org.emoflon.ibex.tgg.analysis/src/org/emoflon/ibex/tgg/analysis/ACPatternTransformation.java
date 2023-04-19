@@ -2,6 +2,7 @@ package org.emoflon.ibex.tgg.analysis;
 
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.function.BiFunction;
 
@@ -13,6 +14,8 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXOperationType;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPattern;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternInvocation;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.IBeXCoreArithmeticFactory;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator;
 import org.emoflon.ibex.tgg.analysis.FilterNACCandidate.EdgeDirection;
 import org.emoflon.ibex.tgg.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
@@ -33,6 +36,8 @@ public class ACPatternTransformation {
 
 	private Map<IBeXNode, IBeXNode> copyToOriginal = new HashMap<>();
 	
+	private Map<String, IBeXPattern> name2pattern = new HashMap<>();
+	
 	public ACPatternTransformation(TGGModel tgg) {
 		this.tgg = tgg;
 	}
@@ -43,22 +48,32 @@ public class ACPatternTransformation {
 	 * @param candidate
 	 * @return 
 	 */
-	protected IBeXPattern addFilterNAC(TGGOperationalRule operationalRule, FilterNACCandidate candidate) {
-		TGGNode firstNode = candidate.getNodeInRule();
-
+	public IBeXPattern addFilterNAC(TGGOperationalRule operationalRule, FilterNACCandidate candidate) {
+		TGGNode candidateNode = candidate.getNodeInRule();
+		
 		BiFunction<FilterNACCandidate, TGGRule, String> getFilterNACPatternName;
-		if (firstNode.getDomainType() == DomainType.SOURCE)
+		if (candidateNode.getDomainType() == DomainType.SOURCE)
 			getFilterNACPatternName = TGGPatternUtil::getFilterNACSRCPatternName;
 		else
 			getFilterNACPatternName = TGGPatternUtil::getFilterNACTRGPatternName;
 
+		var nacPatternName = getFilterNACPatternName.apply(candidate, operationalRule.getTggRule());
+		if(name2pattern.containsKey(nacPatternName)) {
+			var nacPattern = name2pattern.get(nacPatternName);
+			createNegativeInvocation(operationalRule.getPrecondition(), nacPattern);
+			return nacPattern;
+		}
+		
 		// NAC pattern
 		var nacPattern = factory.createIBeXPattern();
-		nacPattern.setName(getFilterNACPatternName.apply(candidate, operationalRule));
-
+		nacPattern.setName(nacPatternName);
+		name2pattern.put(nacPattern.getName(), nacPattern);
+		
 		// Transform nodes
-		IBeXNode checkedNode = copyIBeXNode(firstNode);
+		IBeXNode checkedNode = copyIBeXNode(candidateNode);
+		// we also remember the mapping from the node from the original tgg rule
 		nacPattern.getSignatureNodes().add(checkedNode);
+		tgg.getNodeSet().getNodes().add(checkedNode);
 
 		addNodesOfSameTypeFromInvoker(nacPattern, checkedNode, candidate);
 
@@ -68,13 +83,15 @@ public class ACPatternTransformation {
 		nacNode.setOperationType(IBeXOperationType.CONTEXT);
 		nacNode.setType(getNACNodeType(candidate));
 		nacPattern.getLocalNodes().add(nacNode);
+		tgg.getNodeSet().getNodes().add(nacNode);
 
 		// create edge to nac node
 		IBeXEdge nacEdge = factory.createIBeXEdge();
 		nacEdge.setName("nac edge");
 		nacEdge.setOperationType(IBeXOperationType.CONTEXT);
 		nacEdge.setType(candidate.getEdgeType());
-		
+		tgg.getEdgeSet().getEdges().add(nacEdge);
+
 		if (candidate.getEDirection() == EdgeDirection.OUTGOING) {
 			nacEdge.setSource(checkedNode);
 			nacEdge.setTarget(nacNode);
@@ -83,14 +100,45 @@ public class ACPatternTransformation {
 			nacEdge.setSource(nacNode);
 			nacEdge.setTarget(checkedNode);
 		}
+		
+		addInjectivityConstraints(nacPattern);
 
 		// call nac pattern form both the pre and the postcondition
 		createNegativeInvocation(operationalRule.getPrecondition(), nacPattern);
 		createNegativeInvocation(operationalRule.getPostcondition(), nacPattern);
 
+		tgg.getPatternSet().getPatterns().add(nacPattern);
+		
 		return nacPattern;
 	}
 
+	private void addInjectivityConstraints(IBeXPattern pattern) {
+		var nodes = new LinkedList<IBeXNode>();
+		nodes.addAll(pattern.getSignatureNodes());
+		nodes.addAll(pattern.getLocalNodes());
+		
+		for(int i=0; i < nodes.size(); i++) {
+			for(int j=i+1; j < nodes.size(); j++) {
+				var node = nodes.get(i);
+				var otherNode = nodes.get(j);
+				
+				if(node.getType().isSuperTypeOf(otherNode.getType()) || otherNode.getType().isSuperTypeOf(node.getType())) {
+					var lhs = IBeXCoreModelFactory.eINSTANCE.createIBeXNodeValue();
+					lhs.setNode(node);
+					lhs.setType(node.getType());
+					var rhs = IBeXCoreModelFactory.eINSTANCE.createIBeXNodeValue();
+					rhs.setNode(otherNode);
+					rhs.setType(otherNode.getType());
+					var condition = IBeXCoreArithmeticFactory.eINSTANCE.createRelationalExpression();
+					condition.setLhs(lhs);
+					condition.setRhs(rhs);
+					condition.setOperator(RelationalOperator.EQUAL);
+					pattern.getConditions().add(condition);
+				}
+			}
+		}
+	}
+	
 	/**
 	 * Copy the node and register it 
 	 * 
@@ -134,15 +182,24 @@ public class ACPatternTransformation {
 	 * @param invokee
 	 */
 	private void createNegativeInvocation(IBeXPattern invoker, IBeXPattern invokee) {
+		if(invoker == null)
+			return;
+		
 		IBeXPatternInvocation invocation = factory.createIBeXPatternInvocation();
 		invocation.setPositive(false);
 		invocation.setInvocation(invokee);
 		invocation.setInvokedBy(invoker);
+		invoker.getInvocations().add(invocation);
 		
 		// connect all elements with their counterpart in the calling pattern
 		for (IBeXNode node : invokee.getSignatureNodes()) {
 			var original = copyToOriginal.get(node);
-			invocation.getMapping().put(node, original);
+			for(var otherNode : invoker.getSignatureNodes()) {
+				if(otherNode.getName().equals(original.getName())) {
+					invocation.getMapping().put(otherNode, node);
+					break;
+				}
+			}
 		}
 	}
 
@@ -165,9 +222,11 @@ public class ACPatternTransformation {
 							// make a copy of this node and append it to nac pattern then connect it via edge
 							IBeXNode nodeCopy = copyIBeXNode(e.getSource());
 							nacPattern.getSignatureNodes().add(nodeCopy);
+							tgg.getNodeSet().getNodes().add(nodeCopy);
 							
 							IBeXEdge edgeCopy = copyIBeXEdge(e, nodeCopy, checkedNode);
 							nacPattern.getEdges().add(edgeCopy);
+							tgg.getEdgeSet().getEdges().add(edgeCopy);
 						});
 			}
 			case OUTGOING -> {
@@ -177,9 +236,11 @@ public class ACPatternTransformation {
 							// make a copy of this node and append it to nac pattern then connect it via edge
 							IBeXNode nodeCopy = copyIBeXNode(e.getSource());
 							nacPattern.getSignatureNodes().add(nodeCopy);
+							tgg.getNodeSet().getNodes().add(nodeCopy);
 							
 							IBeXEdge edgeCopy = copyIBeXEdge(e, checkedNode, nodeCopy);
 							nacPattern.getEdges().add(edgeCopy);
+							tgg.getEdgeSet().getEdges().add(edgeCopy);
 						});
 			}
 		}

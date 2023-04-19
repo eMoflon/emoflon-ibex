@@ -21,6 +21,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 import org.emoflon.smartemf.runtime.util.SmartEMFUtil;
 
 import TGGRuntimeModel.TGGRuleApplication;
@@ -129,9 +130,9 @@ public class ConsistencyReporter {
 
 		protocol.getContents().forEach(c -> {
 			if (c instanceof TGGRuleApplication ra) {
-
-				String ruleName = ra.eClass().getName().substring(0, ra.eClass().getName().length() - 8);
-				TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(ruleName);
+				String typeName = ra.eClass().getName();
+				String ruleName = typeName.substring(typeName.indexOf("_") + 1);
+				TGGRule operationalRule = ruleHandler.getRule(ruleName);
 
 				Collection<IBeXEdge> specificationEdges = domain == DomainType.SOURCE ? operationalRule.getCreateSource().getEdges()
 						: operationalRule.getCreateTarget().getEdges();

@@ -4,8 +4,10 @@ import static org.emoflon.ibex.tgg.compiler.TGGRuleDerivedFieldsTool.fillDerived
 import static org.emoflon.ibex.tgg.compiler.TGGRuleDerivedFieldsTool.fillDerivedTGGRuleFields;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -23,6 +25,10 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.Relati
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator;
 import org.emoflon.ibex.common.slimgt.slimGT.NodeAttributeExpression;
 import org.emoflon.ibex.common.slimgt.util.SlimGTModelUtil;
+import org.emoflon.ibex.tgg.analysis.ACAnalysis;
+import org.emoflon.ibex.tgg.analysis.ACPatternTransformation;
+import org.emoflon.ibex.tgg.analysis.ACStrategy;
+import org.emoflon.ibex.tgg.analysis.FilterNACCandidate;
 import org.emoflon.ibex.tgg.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
@@ -45,8 +51,17 @@ public class TGGOperationalizer {
 	private IBeXCoreArithmeticFactory arithmeticFactory = IBeXCoreArithmeticFactory.eINSTANCE;
 	private ProtocolInformation protocolInformation;
 	
+	private ACAnalysis acAnalysis;
+	private ACPatternTransformation acPatternTransformation;
+	
+	private Map<TGGRule, Collection<FilterNACCandidate>> rule2nacCandidates = new HashMap<>();
+	
 	public TGGModel operationalizeTGGRules(TGGModel model, ProtocolInformation protocolInformation) {
 		this.model = model;
+		
+		acAnalysis = new ACAnalysis(model, ACStrategy.FILTER_NACS);
+		acPatternTransformation = new ACPatternTransformation(model);
+		
 		this.protocolInformation = protocolInformation;
 		for(var rule : model.getRuleSet().getRules()) {
 			operationalizeRule(rule);
@@ -55,6 +70,8 @@ public class TGGOperationalizer {
 	}
 
 	private void operationalizeRule(TGGRule rule) {
+		initializeACAnalysis(rule);
+		
 		constructSource(rule);
 		constructTarget(rule);
 		constructModelGen(rule);
@@ -108,8 +125,10 @@ public class TGGOperationalizer {
 		removeInvalidAttributeConstraintsFromPrecondition(op);
 		addInjectivityConstraints(rule);
 		optimizeInjectivityConstraints(rule);
+		
+		applyACAnalysis(op, DomainType.SOURCE);
 	}
-
+	
 	private void constructBackward(TGGRule rule) {
 		if(rule.getCreateTarget().getNodes().isEmpty() && rule.getCreateTarget().getEdges().isEmpty())
 			return;
@@ -133,6 +152,8 @@ public class TGGOperationalizer {
 		removeInvalidAttributeConstraintsFromPrecondition(op);
 		addInjectivityConstraints(rule);
 		optimizeInjectivityConstraints(rule);
+		
+		applyACAnalysis(op, DomainType.TARGET);
 	}
 
 	private void constructConsistencyCheck(TGGRule rule) {
@@ -155,6 +176,8 @@ public class TGGOperationalizer {
 		removeInvalidAttributeConstraintsFromPrecondition(op);
 		addInjectivityConstraints(rule);
 		optimizeInjectivityConstraints(rule);
+		
+		applyACAnalysis(op, DomainType.SOURCE, DomainType.TARGET);
 	}
 
 	private void constructCheckOnly(TGGRule rule) {
@@ -201,6 +224,8 @@ public class TGGOperationalizer {
 		removeInvalidAttributeConstraintsFromPrecondition(op);
 		addInjectivityConstraints(rule);
 		optimizeInjectivityConstraints(rule);
+		
+		applyACAnalysis(op, DomainType.SOURCE, DomainType.TARGET);
 	}
 
 	private void constructSource(TGGRule rule) {
@@ -225,6 +250,8 @@ public class TGGOperationalizer {
 		removeInvalidAttributeConstraintsFromPrecondition(op);
 		addInjectivityConstraints(rule);
 		optimizeInjectivityConstraints(rule);
+		
+		applyACAnalysis(op, DomainType.SOURCE);
 	}
 	
 	
@@ -250,10 +277,29 @@ public class TGGOperationalizer {
 		removeInvalidAttributeConstraintsFromPrecondition(op);
 		addInjectivityConstraints(rule);
 		optimizeInjectivityConstraints(rule);
+		
+		applyACAnalysis(op, DomainType.TARGET);
 	}
 	
-	private void removeDomainInformation(TGGOperationalRule op, DomainType type) {
+	private void initializeACAnalysis(TGGRule rule) {
+		var candidates = new LinkedList<FilterNACCandidate>();
+		candidates.addAll(acAnalysis.computeFilterNACCandidates(rule, DomainType.SOURCE));
+		candidates.addAll(acAnalysis.computeFilterNACCandidates(rule, DomainType.TARGET));
+		rule2nacCandidates.put(rule, candidates);
+	}
+
+	private void applyACAnalysis(TGGOperationalRule operationalRule, DomainType...domainTypes) {
+		var tggRule = operationalRule.getTggRule();
 		
+		for(var nacCandidate : rule2nacCandidates.get(tggRule)) {
+			for(var domainType : domainTypes) {
+				if(nacCandidate.getNodeInRule().getDomainType() == domainType)
+					acPatternTransformation.addFilterNAC(operationalRule, nacCandidate);
+			}
+		}
+	}
+
+	private void removeDomainInformation(TGGOperationalRule op, DomainType type) {
 		removeElements(op, type);
 		removeElements(op, DomainType.CORRESPONDENCE);
 

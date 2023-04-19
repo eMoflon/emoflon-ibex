@@ -20,6 +20,7 @@ import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.StrategyMode;
 import org.emoflon.ibex.tgg.runtime.updatepolicy.IUpdatePolicy;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 
 public class CC extends OPT {
 
@@ -33,11 +34,17 @@ public class CC extends OPT {
 
 	@Override
 	public double getDefaultWeightForMatch(IMatch comatch, String ruleName) {
-		var operationalRule = ruleHandler.getOperationalRule(ruleName);
-		return operationalRule.getCreateSource().getNodes().size() + 
-				operationalRule.getCreateSource().getEdges().size() + 
-				operationalRule.getCreateTarget().getNodes().size() + 
-				operationalRule.getCreateTarget().getEdges().size();
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(ruleName);
+		TGGRule tggRule = null;
+		if(operationalRule == null)
+			tggRule = ruleHandler.getRule(ruleName);
+		else 
+			tggRule = operationalRule.getTggRule();
+		
+		return tggRule.getCreateSource().getNodes().size() + 
+				tggRule.getCreateSource().getEdges().size() + 
+				tggRule.getCreateTarget().getNodes().size() + 
+				tggRule.getCreateTarget().getEdges().size();
 	}
 
 	@Override

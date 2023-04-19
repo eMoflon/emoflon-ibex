@@ -23,6 +23,7 @@ import org.emoflon.ibex.tgg.runtime.strategies.IWeightCalculationStrategy;
 import org.emoflon.ibex.tgg.runtime.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.runtime.updatepolicy.IUpdatePolicy;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.util.ilp.BinaryILPProblem;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory;
@@ -208,14 +209,14 @@ public abstract class OPT extends OperationalStrategy {
 
 	protected Set<EObject> getGreenNodes(final ITGGMatch comatch, final String ruleName) {
 		Set<EObject> result = cfactory.createObjectSet();
-		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(ruleName);
+		TGGRule operationalRule = ruleHandler.getOperationalRule(ruleName).getTggRule();;
 		result.addAll(getNodes(comatch, operationalRule.getCreate().getNodes())); 
 		return result;
 	}
 
 	protected Set<EObject> getBlackNodes(final ITGGMatch comatch, final String ruleName) {
 		Set<EObject> result = cfactory.createObjectSet();
-		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(ruleName);
+		TGGRule operationalRule = ruleHandler.getOperationalRule(ruleName).getTggRule();;
 		result.addAll(getNodes(comatch, operationalRule.getContext().getNodes()));
 		return result;
 	}
@@ -230,7 +231,7 @@ public abstract class OPT extends OperationalStrategy {
 
 	protected Set<EMFEdge> getGreenEdges(final ITGGMatch comatch, final String ruleName) {
 		Set<EMFEdge> result = cfactory.createEMFEdgeHashSet();
-		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(ruleName);
+		TGGRule operationalRule = ruleHandler.getOperationalRule(ruleName).getTggRule();
 		result.addAll(((IbexGreenInterpreter) greenInterpreter).createEdges(comatch, operationalRule.getCreateSource().getEdges(), false));
 		result.addAll(((IbexGreenInterpreter) greenInterpreter).createEdges(comatch, operationalRule.getCreateTarget().getEdges(), false));
 		return result;
@@ -238,7 +239,7 @@ public abstract class OPT extends OperationalStrategy {
 
 	protected Set<EMFEdge> getBlackEdges(final ITGGMatch comatch, final String ruleName) {
 		Set<EMFEdge> result = cfactory.createEMFEdgeHashSet();
-		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(ruleName);
+		TGGRule operationalRule = ruleHandler.getOperationalRule(ruleName).getTggRule();;
 		result.addAll(((IbexGreenInterpreter) greenInterpreter).createEdges(comatch, operationalRule.getContextSource().getEdges(), false));
 		result.addAll(((IbexGreenInterpreter) greenInterpreter).createEdges(comatch, operationalRule.getContextTarget().getEdges(), false));
 		return result;
