@@ -698,7 +698,7 @@ public class TGGOperationalizer {
 					var condition = arithmeticFactory.createRelationalExpression();
 					condition.setLhs(lhs);
 					condition.setRhs(rhs);
-					condition.setOperator(RelationalOperator.EQUAL);
+					condition.setOperator(RelationalOperator.OBJECT_NOT_EQUALS);
 					internalRule.getPrecondition().getConditions().add(condition);
 				}
 			}
@@ -710,7 +710,7 @@ public class TGGOperationalizer {
 		var deletedConditions = new LinkedList<EObject>();
 		for(var condition : internalRule.getPrecondition().getConditions()) {
 			if(condition instanceof RelationalExpression relationConstraint) {
-				if(relationConstraint.getOperator() == RelationalOperator.EQUAL) {
+				if(relationConstraint.getOperator() == RelationalOperator.OBJECT_NOT_EQUALS) {
 					if(relationConstraint.getLhs() instanceof IBeXNodeValue nodeValue &&
 							relationConstraint.getRhs() instanceof IBeXNodeValue otherNodeValue) {
 						IBeXNode node = (IBeXNode) nodeValue.getNode();

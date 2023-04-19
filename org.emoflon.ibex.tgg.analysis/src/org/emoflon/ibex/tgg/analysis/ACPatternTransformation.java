@@ -91,6 +91,7 @@ public class ACPatternTransformation {
 		nacEdge.setOperationType(IBeXOperationType.CONTEXT);
 		nacEdge.setType(candidate.getEdgeType());
 		tgg.getEdgeSet().getEdges().add(nacEdge);
+		nacPattern.getEdges().add(nacEdge);
 
 		if (candidate.getEDirection() == EdgeDirection.OUTGOING) {
 			nacEdge.setSource(checkedNode);
@@ -132,7 +133,7 @@ public class ACPatternTransformation {
 					var condition = IBeXCoreArithmeticFactory.eINSTANCE.createRelationalExpression();
 					condition.setLhs(lhs);
 					condition.setRhs(rhs);
-					condition.setOperator(RelationalOperator.EQUAL);
+					condition.setOperator(RelationalOperator.OBJECT_NOT_EQUALS);
 					pattern.getConditions().add(condition);
 				}
 			}
@@ -223,6 +224,7 @@ public class ACPatternTransformation {
 							IBeXNode nodeCopy = copyIBeXNode(e.getSource());
 							nacPattern.getSignatureNodes().add(nodeCopy);
 							tgg.getNodeSet().getNodes().add(nodeCopy);
+							copyToOriginal.put(nodeCopy, e.getSource());
 							
 							IBeXEdge edgeCopy = copyIBeXEdge(e, nodeCopy, checkedNode);
 							nacPattern.getEdges().add(edgeCopy);
@@ -234,10 +236,11 @@ public class ACPatternTransformation {
 						.filter(e -> e.getType().equals(candidate.getEdgeType())) //
 						.forEach(e -> {
 							// make a copy of this node and append it to nac pattern then connect it via edge
-							IBeXNode nodeCopy = copyIBeXNode(e.getSource());
+							IBeXNode nodeCopy = copyIBeXNode(e.getTarget());
 							nacPattern.getSignatureNodes().add(nodeCopy);
 							tgg.getNodeSet().getNodes().add(nodeCopy);
-							
+							copyToOriginal.put(nodeCopy, e.getTarget());
+
 							IBeXEdge edgeCopy = copyIBeXEdge(e, checkedNode, nodeCopy);
 							nacPattern.getEdges().add(edgeCopy);
 							tgg.getEdgeSet().getEdges().add(edgeCopy);
