@@ -98,8 +98,8 @@ public class TGGOperationalizer {
 		fillDerivedTGGOperationalRuleFields(op);
 		invalidateAttributeConstraintsWithDerivedParameters(op);
 		removeInvalidAttributeConstraintsFromPrecondition(op);
-		addInjectivityConstraints(rule);
-		optimizeInjectivityConstraints(rule);
+		addInjectivityConstraints(op);
+		optimizeInjectivityConstraints(op);
 	}
 
 	private void constructForward(TGGRule rule) {
@@ -123,8 +123,8 @@ public class TGGOperationalizer {
 		fillDerivedTGGRuleFields(op);
 		invalidateAttributeConstraintsWithDerivedParameters(op);
 		removeInvalidAttributeConstraintsFromPrecondition(op);
-		addInjectivityConstraints(rule);
-		optimizeInjectivityConstraints(rule);
+		addInjectivityConstraints(op);
+		optimizeInjectivityConstraints(op);
 		
 		applyACAnalysis(op, DomainType.SOURCE);
 	}
@@ -150,8 +150,8 @@ public class TGGOperationalizer {
 		fillDerivedTGGRuleFields(op);
 		invalidateAttributeConstraintsWithDerivedParameters(op);
 		removeInvalidAttributeConstraintsFromPrecondition(op);
-		addInjectivityConstraints(rule);
-		optimizeInjectivityConstraints(rule);
+		addInjectivityConstraints(op);
+		optimizeInjectivityConstraints(op);
 		
 		applyACAnalysis(op, DomainType.TARGET);
 	}
@@ -174,8 +174,8 @@ public class TGGOperationalizer {
 		rule.getOperationalisations().add(op);
 		fillDerivedTGGRuleFields(op);
 		removeInvalidAttributeConstraintsFromPrecondition(op);
-		addInjectivityConstraints(rule);
-		optimizeInjectivityConstraints(rule);
+		addInjectivityConstraints(op);
+		optimizeInjectivityConstraints(op);
 		
 		applyACAnalysis(op, DomainType.SOURCE, DomainType.TARGET);
 	}
@@ -199,8 +199,8 @@ public class TGGOperationalizer {
 		rule.getOperationalisations().add(op);
 		fillDerivedTGGRuleFields(op);
 		removeInvalidAttributeConstraintsFromPrecondition(op);
-		addInjectivityConstraints(rule);
-		optimizeInjectivityConstraints(rule);
+		addInjectivityConstraints(op);
+		optimizeInjectivityConstraints(op);
 	}
 	
 	private void constructConsistency(TGGRule rule) {
@@ -222,8 +222,8 @@ public class TGGOperationalizer {
 		rule.getOperationalisations().add(op);
 		fillDerivedTGGRuleFields(op);
 		removeInvalidAttributeConstraintsFromPrecondition(op);
-		addInjectivityConstraints(rule);
-		optimizeInjectivityConstraints(rule);
+		addInjectivityConstraints(op);
+		optimizeInjectivityConstraints(op);
 		
 		applyACAnalysis(op, DomainType.SOURCE, DomainType.TARGET);
 	}
@@ -248,8 +248,8 @@ public class TGGOperationalizer {
 		fillDerivedTGGRuleFields(op);
 		invalidateAttributeConstraintsWithDerivedParameters(op);
 		removeInvalidAttributeConstraintsFromPrecondition(op);
-		addInjectivityConstraints(rule);
-		optimizeInjectivityConstraints(rule);
+		addInjectivityConstraints(op);
+		optimizeInjectivityConstraints(op);
 		
 		applyACAnalysis(op, DomainType.SOURCE);
 	}
@@ -275,8 +275,8 @@ public class TGGOperationalizer {
 		fillDerivedTGGRuleFields(op);
 		invalidateAttributeConstraintsWithDerivedParameters(op);
 		removeInvalidAttributeConstraintsFromPrecondition(op);
-		addInjectivityConstraints(rule);
-		optimizeInjectivityConstraints(rule);
+		addInjectivityConstraints(op);
+		optimizeInjectivityConstraints(op);
 		
 		applyACAnalysis(op, DomainType.TARGET);
 	}
@@ -711,6 +711,11 @@ public class TGGOperationalizer {
 		for(var condition : internalRule.getPrecondition().getConditions()) {
 			if(condition instanceof RelationalExpression relationConstraint) {
 				if(relationConstraint.getOperator() == RelationalOperator.OBJECT_NOT_EQUALS) {
+					if(relationConstraint.getLhs() == null || relationConstraint.getRhs() == null) {
+						deletedConditions.add(condition);
+						continue;
+					}
+					
 					if(relationConstraint.getLhs() instanceof IBeXNodeValue nodeValue &&
 							relationConstraint.getRhs() instanceof IBeXNodeValue otherNodeValue) {
 						IBeXNode node = (IBeXNode) nodeValue.getNode();
