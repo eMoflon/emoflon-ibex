@@ -15,6 +15,7 @@ import org.emoflon.ibex.tgg.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.StrategyMode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalisationMode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 
 public class FWD_OPT extends OPT {
@@ -106,5 +107,10 @@ public class FWD_OPT extends OPT {
 	@Override
 	public StrategyMode getStrategyMode() {
 		return StrategyMode.FWD_OPT;
+	}
+
+	@Override
+	public OperationalisationMode currentlyAppliedRuleMode() {
+		return OperationalisationMode.FORWARD;
 	}
 }

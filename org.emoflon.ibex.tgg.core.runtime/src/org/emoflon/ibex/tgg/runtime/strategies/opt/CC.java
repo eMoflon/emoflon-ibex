@@ -19,6 +19,7 @@ import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.StrategyMode;
 import org.emoflon.ibex.tgg.runtime.updatepolicy.IUpdatePolicy;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalisationMode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 
@@ -192,5 +193,10 @@ public class CC extends OPT {
 	@Override
 	public StrategyMode getStrategyMode() {
 		return StrategyMode.CC;
+	}
+
+	@Override
+	public OperationalisationMode currentlyAppliedRuleMode() {
+		return OperationalisationMode.CONSISTENCY_CHECK;
 	}
 }

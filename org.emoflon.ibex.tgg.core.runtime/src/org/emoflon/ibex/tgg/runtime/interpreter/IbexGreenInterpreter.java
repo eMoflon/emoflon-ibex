@@ -84,15 +84,6 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		options = operationalStrategy.getOptions();
 		resourceHandler = options.resourceHandler();
 		ruleHandler = options.tgg.ruleHandler();
-		initializeSortedConstraints();
-	}
-
-	private void initializeSortedConstraints() {
-		for(var rule : options.tgg.flattenedTGG().getRuleSet().getRules()) {
-			for(var operationalRule : rule.getOperationalisations()) {
-				registerOperationalRule(operationalRule);
-			}
-		}
 	}
 
 	public void registerOperationalRule(TGGOperationalRule operationalRule) {
@@ -109,8 +100,6 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 							operationalRule.getName(), //
 							operationalRule.getAttributeConstraints().getParameters(), //
 							operationalRule.getAttributeConstraints().getTggAttributeConstraints()));
-//							((TGGPattern) operationalRule.getPrecondition()).getAttributeConstraints().getParameters(), //
-//							((TGGPattern) operationalRule.getPrecondition()).getAttributeConstraints().getTggAttributeConstraints()));
 			rule2parameters.put(operationalRule.getName(), operationalRule.getAttributeConstraints().getParameters());
 		} catch (Exception e) {
 			throw new IllegalStateException(operationalRule.getName() + " -> Unable to sort attribute constraints, " + e.getMessage(), e);
@@ -288,6 +277,11 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	}
 	
 	public IRuntimeTGGAttrConstrContainer getAttributeConstraintContainer(ITGGMatch match) {
+		if(!rule2parameters.containsKey(match.getRuleName())) {
+			TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getRuleName());
+			registerOperationalRule(operationalRule);
+		}
+		
 		return new RuntimeTGGAttributeConstraintContainer(
 				rule2parameters.get(match.getRuleName()), 
 				rule2sortedAttributeConstraints.get(match.getRuleName()),

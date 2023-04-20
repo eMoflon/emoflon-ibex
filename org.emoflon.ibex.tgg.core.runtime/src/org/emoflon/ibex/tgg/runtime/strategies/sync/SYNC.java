@@ -12,6 +12,7 @@ import org.emoflon.ibex.tgg.runtime.strategies.PropagatingOperationalStrategy;
 import org.emoflon.ibex.tgg.runtime.strategies.PropagationDirectionHolder;
 import org.emoflon.ibex.tgg.runtime.strategies.PropagationDirectionHolder.PropagationDirection;
 import org.emoflon.ibex.tgg.runtime.strategies.StrategyMode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalisationMode;
 
 public class SYNC extends PropagatingOperationalStrategy {
 
@@ -84,5 +85,10 @@ public class SYNC extends PropagatingOperationalStrategy {
 	@Override
 	public StrategyMode getStrategyMode() {
 		return StrategyMode.SYNC;
+	}
+
+	@Override
+	public OperationalisationMode currentlyAppliedRuleMode() {
+		return propagationDirectionHolder.get().getOperationalisationMode();
 	}
 }

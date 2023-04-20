@@ -15,6 +15,7 @@ import org.emoflon.ibex.tgg.runtime.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.runtime.strategies.StrategyMode;
 import org.emoflon.ibex.tgg.runtime.updatepolicy.RandomMatchUpdatePolicy;
 import org.emoflon.ibex.tgg.runtime.updatepolicy.UpdatePolicy;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalisationMode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 
 /**
@@ -194,5 +195,10 @@ public class MODELGEN extends OperationalStrategy {
 	@Override
 	public StrategyMode getStrategyMode() {
 		return StrategyMode.MODELGEN;
+	}
+
+	@Override
+	public OperationalisationMode currentlyAppliedRuleMode() {
+		return OperationalisationMode.GENERATE;
 	}
 }

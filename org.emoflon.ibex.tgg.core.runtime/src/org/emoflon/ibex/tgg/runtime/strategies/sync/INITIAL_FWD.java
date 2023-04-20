@@ -7,6 +7,7 @@ import java.util.Set;
 import org.emoflon.ibex.tgg.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.strategies.StrategyMode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalisationMode;
 
 public class INITIAL_FWD extends SYNC {
 	public INITIAL_FWD(IbexOptions options) throws IOException {
@@ -21,5 +22,10 @@ public class INITIAL_FWD extends SYNC {
 	@Override
 	public StrategyMode getStrategyMode() {
 		return StrategyMode.INITIAL_FWD;
+	}
+	
+	@Override
+	public OperationalisationMode currentlyAppliedRuleMode() {
+		return OperationalisationMode.FORWARD;
 	}
 }

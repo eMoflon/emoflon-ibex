@@ -34,6 +34,7 @@ import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.Revoker;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.util.TGGMatchUtilProvider;
 import org.emoflon.ibex.tgg.runtime.strategies.opt.CC;
 import org.emoflon.ibex.tgg.runtime.strategies.opt.LocalCC;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalisationMode;
 import org.emoflon.ibex.tgg.util.benchmark.Timer;
 import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 
@@ -318,6 +319,11 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	@Override
 	public StrategyMode getStrategyMode() {
 		return StrategyMode.INTEGRATE;
+	}
+
+	@Override
+	public OperationalisationMode currentlyAppliedRuleMode() {
+		throw new UnsupportedOperationException("Integrate does not yet supported this");
 	}
 
 }

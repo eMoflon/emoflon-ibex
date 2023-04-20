@@ -25,6 +25,7 @@ import org.emoflon.ibex.tgg.runtime.strategies.modules.RuleHandler;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.TGGResourceHandler;
 import org.emoflon.ibex.tgg.runtime.updatepolicy.IUpdatePolicy;
 import org.emoflon.ibex.tgg.runtime.updatepolicy.NextMatchUpdatePolicy;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalisationMode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGModel;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 import org.emoflon.ibex.tgg.util.benchmark.TimeMeasurable;
@@ -283,4 +284,6 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	}
 	
 	public abstract StrategyMode getStrategyMode();
+	
+	public abstract OperationalisationMode currentlyAppliedRuleMode();
 }

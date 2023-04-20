@@ -81,6 +81,7 @@ public class AttributeRepairStrategy implements RepairStrategy {
 						.map(n -> n.getName()) //
 						.collect(Collectors.toList()) //
 		);
+		matchCopy.setPatternName(operationalRule.getName());
 
 		return greenInterpreter.getAttributeConstraintContainer(matchCopy);
 	}
@@ -95,7 +96,8 @@ public class AttributeRepairStrategy implements RepairStrategy {
 						.map(n -> n.getName()) //
 						.collect(Collectors.toList()) //
 		);
-
+		matchCopy.setPatternName(operationalRule.getName());
+		
 		Set<TGGAttributeConstraintParameterValue> params = new HashSet<>();
 		for (TGGAttributeConstraint constraint : constraints)
 			params.addAll(new HashSet<>(constraint.getParameters()));

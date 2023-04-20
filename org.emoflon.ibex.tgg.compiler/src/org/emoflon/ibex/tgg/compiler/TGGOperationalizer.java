@@ -103,7 +103,7 @@ public class TGGOperationalizer {
 	}
 
 	private void constructForward(TGGRule rule) {
-		if(rule.getCreateSource().getNodes().isEmpty() && rule.getCreateSource().getEdges().isEmpty())
+		if(rule.getAllNodes().isEmpty())
 			return;
 		
 		var op = createOperationalizedTGGRule(rule);
@@ -130,7 +130,7 @@ public class TGGOperationalizer {
 	}
 	
 	private void constructBackward(TGGRule rule) {
-		if(rule.getCreateTarget().getNodes().isEmpty() && rule.getCreateTarget().getEdges().isEmpty())
+		if(rule.getNodes().isEmpty())
 			return;
 		
 		var op = createOperationalizedTGGRule(rule);

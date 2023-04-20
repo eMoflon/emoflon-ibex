@@ -15,6 +15,7 @@ import org.emoflon.ibex.tgg.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.PropagatingOperationalStrategy;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.RuleHandler;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalisationMode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 import org.emoflon.ibex.tgg.util.benchmark.TimeMeasurable;
 import org.emoflon.ibex.tgg.util.benchmark.TimeRegistry;
@@ -105,7 +106,7 @@ public class BrokenMatchContainer implements IMatchContainer, TimeMeasurable {
 	}
 
 	private void handleMatch(ITGGMatch m) {
-		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(m.getRuleName());
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(m.getRuleName(), OperationalisationMode.CONSISTENCY_CHECK);
 		
 		if (anElementHasAlreadyBeenTranslated(m, operationalRule))
 			return;

@@ -14,8 +14,10 @@ import org.emoflon.ibex.common.emf.EMFManipulationUtils;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.OperationalStrategy;
+import org.emoflon.ibex.tgg.runtime.strategies.modules.RuleHandler;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.TGGResourceHandler;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 
 import TGGRuntimeModel.Correspondence;
 import TGGRuntimeModel.TGGRuleApplication;
@@ -23,6 +25,7 @@ import TGGRuntimeModel.TGGRuleApplication;
 public class IbexRedInterpreter implements IRedInterpreter {
 	private final OperationalStrategy strategy;
 	private IbexOptions options;
+	private RuleHandler ruleHandler;
 	
 	/**
 	 * Number of deleted source & target nodes
@@ -36,18 +39,21 @@ public class IbexRedInterpreter implements IRedInterpreter {
 		this.strategy = operationalStrategy;
 		options = strategy.getOptions();
 		resourceHandler = options.resourceHandler();
+		ruleHandler = options.tgg.ruleHandler();
 	}
 
 	@Override
 	public void revokeOperationalRule(final ITGGMatch match) {
 		TGGRuleApplication ra = match.getRuleApplicationNode();
-		TGGOperationalRule operationalRule = options.tgg.ruleHandler().getOperationalRule(match.getRuleName());
-
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getRuleName());
+		TGGRule rule = operationalRule.getTggRule();
+		TGGOperationalRule revokedRule = ruleHandler.getOperationalRule(rule.getName(), strategy.currentlyAppliedRuleMode());
+		
 		// Revoke nodes and edges in the correspondence model.
-		revokeCorrs(match, operationalRule);
+		revokeCorrs(match, revokedRule);
 
 		// Revoke nodes and edges in the source and target model.
-		revoke(getNodesToRevoke(match, operationalRule), getEdgesToRevoke(match, operationalRule));
+		revoke(getNodesToRevoke(match, revokedRule), getEdgesToRevoke(match, revokedRule));
 
 		EMFManipulationUtils.delete(ra);
 	}
