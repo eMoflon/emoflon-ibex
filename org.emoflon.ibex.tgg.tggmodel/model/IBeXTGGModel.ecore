@@ -100,7 +100,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="originalRule" eType="#//TGGRule"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="replacingRule" eType="#//TGGRule"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="mappings" upperBound="-1"
-        eType="#//TGGShortcutRuleElementMapping"/>
+        eType="#//TGGShortcutRuleElementMapping" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="unmappedOriginalElements"
         ordered="false" upperBound="-1" eType="#//TGGRuleElement"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="unmappedReplacingElements"

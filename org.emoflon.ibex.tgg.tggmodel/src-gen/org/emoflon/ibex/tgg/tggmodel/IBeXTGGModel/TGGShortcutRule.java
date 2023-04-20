@@ -70,13 +70,13 @@ public interface TGGShortcutRule extends TGGOperationalRule {
 	void setReplacingRule(TGGRule value);
 
 	/**
-	 * Returns the value of the '<em><b>Mappings</b></em>' reference list.
+	 * Returns the value of the '<em><b>Mappings</b></em>' containment reference list.
 	 * The list contents are of type {@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGShortcutRuleElementMapping}.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Mappings</em>' reference list.
+	 * @return the value of the '<em>Mappings</em>' containment reference list.
 	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelPackage#getTGGShortcutRule_Mappings()
-	 * @model
+	 * @model containment="true"
 	 * @generated
 	 */
 	EList<TGGShortcutRuleElementMapping> getMappings();

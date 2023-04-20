@@ -1681,7 +1681,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 	int TGG_SHORTCUT_RULE__REPLACING_RULE = TGG_OPERATIONAL_RULE_FEATURE_COUNT + 1;
 
 	/**
-	 * The feature id for the '<em><b>Mappings</b></em>' reference list.
+	 * The feature id for the '<em><b>Mappings</b></em>' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -2364,10 +2364,10 @@ public interface IBeXTGGModelPackage extends EPackage {
 	EReference getTGGShortcutRule_ReplacingRule();
 
 	/**
-	 * Returns the meta object for the reference list '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGShortcutRule#getMappings <em>Mappings</em>}'.
+	 * Returns the meta object for the containment reference list '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGShortcutRule#getMappings <em>Mappings</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the reference list '<em>Mappings</em>'.
+	 * @return the meta object for the containment reference list '<em>Mappings</em>'.
 	 * @see org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGShortcutRule#getMappings()
 	 * @see #getTGGShortcutRule()
 	 * @generated
@@ -2529,8 +2529,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_MODEL__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARIES = eINSTANCE
-				.getTGGModel_AttributeConstraintDefinitionLibraries();
+		EReference TGG_MODEL__ATTRIBUTE_CONSTRAINT_DEFINITION_LIBRARIES = eINSTANCE.getTGGModel_AttributeConstraintDefinitionLibraries();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleSetImpl <em>TGG Rule Set</em>}' class.
@@ -2726,8 +2725,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute TGG_RULE__NO_GENERATED_INJECTIVITY_CONSTRAINTS = eINSTANCE
-				.getTGGRule_NoGeneratedInjectivityConstraints();
+		EAttribute TGG_RULE__NO_GENERATED_INJECTIVITY_CONSTRAINTS = eINSTANCE.getTGGRule_NoGeneratedInjectivityConstraints();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGOperationalRuleImpl <em>TGG Operational Rule</em>}' class.
@@ -2745,8 +2743,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute TGG_OPERATIONAL_RULE__OPERATIONALISATION_MODE = eINSTANCE
-				.getTGGOperationalRule_OperationalisationMode();
+		EAttribute TGG_OPERATIONAL_RULE__OPERATIONALISATION_MODE = eINSTANCE.getTGGOperationalRule_OperationalisationMode();
 
 		/**
 		 * The meta object literal for the '<em><b>To Be Marked</b></em>' containment reference feature.
@@ -2921,7 +2918,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 		EReference TGG_SHORTCUT_RULE__REPLACING_RULE = eINSTANCE.getTGGShortcutRule_ReplacingRule();
 
 		/**
-		 * The meta object literal for the '<em><b>Mappings</b></em>' reference list feature.
+		 * The meta object literal for the '<em><b>Mappings</b></em>' containment reference list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
@@ -2934,8 +2931,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_SHORTCUT_RULE__UNMAPPED_ORIGINAL_ELEMENTS = eINSTANCE
-				.getTGGShortcutRule_UnmappedOriginalElements();
+		EReference TGG_SHORTCUT_RULE__UNMAPPED_ORIGINAL_ELEMENTS = eINSTANCE.getTGGShortcutRule_UnmappedOriginalElements();
 
 		/**
 		 * The meta object literal for the '<em><b>Unmapped Replacing Elements</b></em>' reference list feature.
@@ -2943,8 +2939,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_SHORTCUT_RULE__UNMAPPED_REPLACING_ELEMENTS = eINSTANCE
-				.getTGGShortcutRule_UnmappedReplacingElements();
+		EReference TGG_SHORTCUT_RULE__UNMAPPED_REPLACING_ELEMENTS = eINSTANCE.getTGGShortcutRule_UnmappedReplacingElements();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGShortcutRuleElementMappingImpl <em>TGG Shortcut Rule Element Mapping</em>}' class.
@@ -2970,8 +2965,7 @@ public interface IBeXTGGModelPackage extends EPackage {
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EReference TGG_SHORTCUT_RULE_ELEMENT_MAPPING__REPLACING = eINSTANCE
-				.getTGGShortcutRuleElementMapping_Replacing();
+		EReference TGG_SHORTCUT_RULE_ELEMENT_MAPPING__REPLACING = eINSTANCE.getTGGShortcutRuleElementMapping_Replacing();
 
 		/**
 		 * The meta object literal for the '{@link org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalisationMode <em>Operationalisation Mode</em>}' enum.

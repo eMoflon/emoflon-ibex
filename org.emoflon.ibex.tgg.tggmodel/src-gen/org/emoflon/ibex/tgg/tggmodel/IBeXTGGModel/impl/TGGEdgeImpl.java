@@ -108,8 +108,7 @@ public class TGGEdgeImpl extends IBeXEdgeImpl implements TGGEdge {
 		DomainType oldDomainType = domainType;
 		domainType = newDomainType == null ? DOMAIN_TYPE_EDEFAULT : newDomainType;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_EDGE__DOMAIN_TYPE,
-					oldDomainType, domainType));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_EDGE__DOMAIN_TYPE, oldDomainType, domainType));
 	}
 
 	/**
@@ -130,8 +129,7 @@ public class TGGEdgeImpl extends IBeXEdgeImpl implements TGGEdge {
 		BindingType oldBindingType = bindingType;
 		bindingType = newBindingType == null ? BINDING_TYPE_EDEFAULT : newBindingType;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_EDGE__BINDING_TYPE,
-					oldBindingType, bindingType));
+			eNotify(new ENotificationImpl(this, Notification.SET, IBeXTGGModelPackage.TGG_EDGE__BINDING_TYPE, oldBindingType, bindingType));
 	}
 
 	/**
@@ -142,10 +140,10 @@ public class TGGEdgeImpl extends IBeXEdgeImpl implements TGGEdge {
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case IBeXTGGModelPackage.TGG_EDGE__DOMAIN_TYPE:
-			return getDomainType();
-		case IBeXTGGModelPackage.TGG_EDGE__BINDING_TYPE:
-			return getBindingType();
+			case IBeXTGGModelPackage.TGG_EDGE__DOMAIN_TYPE:
+				return getDomainType();
+			case IBeXTGGModelPackage.TGG_EDGE__BINDING_TYPE:
+				return getBindingType();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -158,12 +156,12 @@ public class TGGEdgeImpl extends IBeXEdgeImpl implements TGGEdge {
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case IBeXTGGModelPackage.TGG_EDGE__DOMAIN_TYPE:
-			setDomainType((DomainType) newValue);
-			return;
-		case IBeXTGGModelPackage.TGG_EDGE__BINDING_TYPE:
-			setBindingType((BindingType) newValue);
-			return;
+			case IBeXTGGModelPackage.TGG_EDGE__DOMAIN_TYPE:
+				setDomainType((DomainType) newValue);
+				return;
+			case IBeXTGGModelPackage.TGG_EDGE__BINDING_TYPE:
+				setBindingType((BindingType) newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -176,12 +174,12 @@ public class TGGEdgeImpl extends IBeXEdgeImpl implements TGGEdge {
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case IBeXTGGModelPackage.TGG_EDGE__DOMAIN_TYPE:
-			setDomainType(DOMAIN_TYPE_EDEFAULT);
-			return;
-		case IBeXTGGModelPackage.TGG_EDGE__BINDING_TYPE:
-			setBindingType(BINDING_TYPE_EDEFAULT);
-			return;
+			case IBeXTGGModelPackage.TGG_EDGE__DOMAIN_TYPE:
+				setDomainType(DOMAIN_TYPE_EDEFAULT);
+				return;
+			case IBeXTGGModelPackage.TGG_EDGE__BINDING_TYPE:
+				setBindingType(BINDING_TYPE_EDEFAULT);
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -194,10 +192,10 @@ public class TGGEdgeImpl extends IBeXEdgeImpl implements TGGEdge {
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case IBeXTGGModelPackage.TGG_EDGE__DOMAIN_TYPE:
-			return domainType != DOMAIN_TYPE_EDEFAULT;
-		case IBeXTGGModelPackage.TGG_EDGE__BINDING_TYPE:
-			return bindingType != BINDING_TYPE_EDEFAULT;
+			case IBeXTGGModelPackage.TGG_EDGE__DOMAIN_TYPE:
+				return domainType != DOMAIN_TYPE_EDEFAULT;
+			case IBeXTGGModelPackage.TGG_EDGE__BINDING_TYPE:
+				return bindingType != BINDING_TYPE_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
 	}
@@ -211,12 +209,12 @@ public class TGGEdgeImpl extends IBeXEdgeImpl implements TGGEdge {
 	public int eBaseStructuralFeatureID(int derivedFeatureID, Class<?> baseClass) {
 		if (baseClass == TGGRuleElement.class) {
 			switch (derivedFeatureID) {
-			case IBeXTGGModelPackage.TGG_EDGE__DOMAIN_TYPE:
-				return IBeXTGGModelPackage.TGG_RULE_ELEMENT__DOMAIN_TYPE;
-			case IBeXTGGModelPackage.TGG_EDGE__BINDING_TYPE:
-				return IBeXTGGModelPackage.TGG_RULE_ELEMENT__BINDING_TYPE;
-			default:
-				return -1;
+				case IBeXTGGModelPackage.TGG_EDGE__DOMAIN_TYPE:
+					return IBeXTGGModelPackage.TGG_RULE_ELEMENT__DOMAIN_TYPE;
+				case IBeXTGGModelPackage.TGG_EDGE__BINDING_TYPE:
+					return IBeXTGGModelPackage.TGG_RULE_ELEMENT__BINDING_TYPE;
+				default:
+					return -1;
 			}
 		}
 		return super.eBaseStructuralFeatureID(derivedFeatureID, baseClass);
@@ -231,12 +229,12 @@ public class TGGEdgeImpl extends IBeXEdgeImpl implements TGGEdge {
 	public int eDerivedStructuralFeatureID(int baseFeatureID, Class<?> baseClass) {
 		if (baseClass == TGGRuleElement.class) {
 			switch (baseFeatureID) {
-			case IBeXTGGModelPackage.TGG_RULE_ELEMENT__DOMAIN_TYPE:
-				return IBeXTGGModelPackage.TGG_EDGE__DOMAIN_TYPE;
-			case IBeXTGGModelPackage.TGG_RULE_ELEMENT__BINDING_TYPE:
-				return IBeXTGGModelPackage.TGG_EDGE__BINDING_TYPE;
-			default:
-				return -1;
+				case IBeXTGGModelPackage.TGG_RULE_ELEMENT__DOMAIN_TYPE:
+					return IBeXTGGModelPackage.TGG_EDGE__DOMAIN_TYPE;
+				case IBeXTGGModelPackage.TGG_RULE_ELEMENT__BINDING_TYPE:
+					return IBeXTGGModelPackage.TGG_EDGE__BINDING_TYPE;
+				default:
+					return -1;
 			}
 		}
 		return super.eDerivedStructuralFeatureID(baseFeatureID, baseClass);

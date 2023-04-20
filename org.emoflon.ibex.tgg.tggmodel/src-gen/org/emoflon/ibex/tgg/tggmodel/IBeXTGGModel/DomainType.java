@@ -128,8 +128,7 @@ public enum DomainType implements Enumerator {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private static final DomainType[] VALUES_ARRAY = new DomainType[] { SOURCE, TARGET, CORRESPONDENCE, PROTOCOL,
-			PATTERN, };
+	private static final DomainType[] VALUES_ARRAY = new DomainType[] { SOURCE, TARGET, CORRESPONDENCE, PROTOCOL, PATTERN, };
 
 	/**
 	 * A public read-only list of all the '<em><b>Domain Type</b></em>' enumerators.
@@ -185,16 +184,16 @@ public enum DomainType implements Enumerator {
 	 */
 	public static DomainType get(int value) {
 		switch (value) {
-		case SOURCE_VALUE:
-			return SOURCE;
-		case TARGET_VALUE:
-			return TARGET;
-		case CORRESPONDENCE_VALUE:
-			return CORRESPONDENCE;
-		case PROTOCOL_VALUE:
-			return PROTOCOL;
-		case PATTERN_VALUE:
-			return PATTERN;
+			case SOURCE_VALUE:
+				return SOURCE;
+			case TARGET_VALUE:
+				return TARGET;
+			case CORRESPONDENCE_VALUE:
+				return CORRESPONDENCE;
+			case PROTOCOL_VALUE:
+				return PROTOCOL;
+			case PATTERN_VALUE:
+				return PATTERN;
 		}
 		return null;
 	}
