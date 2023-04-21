@@ -277,14 +277,14 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 	}
 	
 	public IRuntimeTGGAttrConstrContainer getAttributeConstraintContainer(ITGGMatch match) {
-		if(!rule2parameters.containsKey(match.getRuleName())) {
-			TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getRuleName());
+		if(!rule2parameters.containsKey(match.getOperationalRuleName())) {
+			TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getOperationalRuleName());
 			registerOperationalRule(operationalRule);
 		}
 		
 		return new RuntimeTGGAttributeConstraintContainer(
-				rule2parameters.get(match.getRuleName()), 
-				rule2sortedAttributeConstraints.get(match.getRuleName()),
+				rule2parameters.get(match.getOperationalRuleName()), 
+				rule2sortedAttributeConstraints.get(match.getOperationalRuleName()),
 				match,
 				options.csp.constraintProvider());
 	}

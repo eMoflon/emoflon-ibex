@@ -45,9 +45,7 @@ public class IbexRedInterpreter implements IRedInterpreter {
 	@Override
 	public void revokeOperationalRule(final ITGGMatch match) {
 		TGGRuleApplication ra = match.getRuleApplicationNode();
-		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getRuleName());
-		TGGRule rule = operationalRule.getTggRule();
-		TGGOperationalRule revokedRule = ruleHandler.getOperationalRule(rule.getName(), strategy.currentlyAppliedRuleMode());
+		TGGOperationalRule revokedRule = ruleHandler.getOperationalRule(match.getRuleName(), strategy.currentlyAppliedRuleMode());
 		
 		// Revoke nodes and edges in the correspondence model.
 		revokeCorrs(match, revokedRule);

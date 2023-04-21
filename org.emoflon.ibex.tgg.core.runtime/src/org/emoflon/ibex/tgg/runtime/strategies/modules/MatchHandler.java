@@ -267,7 +267,7 @@ public class MatchHandler {
 	}
 
 	private boolean matchIsDomainConform(ITGGMatch match) {
-		TGGOperationalRule operationalRule = options.tgg.ruleHandler().getOperationalRule(match.getRuleName());
+		TGGOperationalRule operationalRule = options.tgg.ruleHandler().getOperationalRule(match.getOperationalRuleName());
 		if (domainsHaveNoSharedTypes || options.patterns.ignoreDomainConformity())
 			return true;
 

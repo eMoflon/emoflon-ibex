@@ -115,7 +115,7 @@ public class MODELGEN extends OperationalStrategy {
 		// Rule application failed, match must have invalid so remove
 		if (!comatch.isPresent()) {
 			matchHandler.removeOperationalMatch(match);
-			logger.debug("Unable to apply: " + ruleName);
+			logger.debug("Unable to apply: " + match.getOperationalRuleName());
 		}
 
 		return true;
@@ -165,13 +165,13 @@ public class MODELGEN extends OperationalStrategy {
 	 * @param ruleName
 	 */
 	private void updateStopCriterion(String ruleName) {
-		var operationalRule = options.tgg.ruleHandler().getOperationalRule(ruleName);
+		var rule = options.tgg.ruleHandler().getRule(ruleName);
 		
 		stopCriterion.update(ruleName,
-				operationalRule.getCreateSource().getNodes().size() +
-				operationalRule.getCreateSource().getEdges().size(), 
-				operationalRule.getCreateTarget().getNodes().size() + 
-				operationalRule.getCreateTarget().getEdges().size());
+				rule.getCreateSource().getNodes().size() +
+				rule.getCreateSource().getEdges().size(), 
+				rule.getCreateTarget().getNodes().size() + 
+				rule.getCreateTarget().getEdges().size());
 	}
 
 	/**

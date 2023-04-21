@@ -35,17 +35,12 @@ public class CC extends OPT {
 
 	@Override
 	public double getDefaultWeightForMatch(IMatch comatch, String ruleName) {
-		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(ruleName);
-		TGGRule tggRule = null;
-		if(operationalRule == null)
-			tggRule = ruleHandler.getRule(ruleName);
-		else 
-			tggRule = operationalRule.getTggRule();
+		TGGRule rule = ruleHandler.getRule(ruleName);
 		
-		return tggRule.getCreateSource().getNodes().size() + 
-				tggRule.getCreateSource().getEdges().size() + 
-				tggRule.getCreateTarget().getNodes().size() + 
-				tggRule.getCreateTarget().getEdges().size();
+		return rule.getCreateSource().getNodes().size() + 
+				rule.getCreateSource().getEdges().size() + 
+				rule.getCreateTarget().getNodes().size() + 
+				rule.getCreateTarget().getEdges().size();
 	}
 
 	@Override
@@ -74,9 +69,9 @@ public class CC extends OPT {
 		for (int v : chooseTGGRuleApplications()) {
 			int id = v < 0 ? -v : v;
 			ITGGMatch comatch = idToMatch.get(id);
-			TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(matchIdToRuleName.get(id));
+			TGGRule rule = ruleHandler.getRule(matchIdToRuleName.get(id));
 			if (v < 0) {
-				for (IBeXNode createdCorr : operationalRule.getCreateCorrespondence().getNodes())
+				for (IBeXNode createdCorr : rule.getCreateCorrespondence().getNodes())
 					objectsToDelete.add((EObject) comatch.get(createdCorr.getName()));
 
 				objectsToDelete.add(comatch.getRuleApplicationNode());

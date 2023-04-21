@@ -183,7 +183,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 			return Optional.empty();
 		}
 
-		TGGOperationalRule operationRule = ruleHandler.getOperationalRule(ruleName);
+		TGGOperationalRule operationRule = ruleHandler.getOperationalRule(match.getOperationalRuleName());
 		
 		LoggerConfig.log(LoggerConfig.log_ruleApplication(),
 				() -> "Rule application: attempting to apply " + match.getPatternName() + "(" + match.hashCode() + ") with " //

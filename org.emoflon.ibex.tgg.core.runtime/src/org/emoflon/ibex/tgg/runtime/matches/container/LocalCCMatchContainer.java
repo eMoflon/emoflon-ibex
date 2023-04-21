@@ -65,7 +65,7 @@ public class LocalCCMatchContainer implements IMatchContainer{
 	}
 
 	private void addConsistencyMatch(ITGGMatch match) {
-		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getRuleName());
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getOperationalRuleName());
 		
 		for(IBeXNode node : operationalRule.getToBeMarked().getNodes()) {
 			Object object = match.get(node.getName());
@@ -79,7 +79,7 @@ public class LocalCCMatchContainer implements IMatchContainer{
 	}
 	
 	private boolean removeConsistencyMatch(ITGGMatch match) {
-		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getRuleName());
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getOperationalRuleName());
 
 		for(IBeXNode node : operationalRule.getToBeMarked().getNodes()) {
 			Object object = match.get(node.getName());
@@ -93,7 +93,7 @@ public class LocalCCMatchContainer implements IMatchContainer{
 	}
 
 	private void addCCMatch(ITGGMatch match) {
-		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getRuleName());
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getOperationalRuleName());
 		
 		for(IBeXNode node : operationalRule.getToBeMarked().getNodes()) {
 			Object object = match.get(node.getName());
@@ -165,7 +165,7 @@ public class LocalCCMatchContainer implements IMatchContainer{
 	
 	protected Set<EMFEdge> getGreenEdges(final ITGGMatch match) {
 		Set<EMFEdge> result = cfactory.createEMFEdgeHashSet();
-		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getRuleName());
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getOperationalRuleName());
 		result.addAll(interpreter.createEdges(match, operationalRule.getCreateSource().getEdges(), false));
 		result.addAll(interpreter.createEdges(match, operationalRule.getCreateTarget().getEdges(), false));
 		return result;

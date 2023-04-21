@@ -188,7 +188,7 @@ public class BrokenMatchContainer implements IMatchContainer, TimeMeasurable {
 	}
 	
 	private boolean noElementIsPending(ITGGMatch m) {
-		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(m.getRuleName());
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(m.getOperationalRuleName());
 		
 		for (IBeXNode createdNode : operationalRule.getToBeMarked().getNodes()) {
 			Object createdObj = m.get(createdNode.getName());

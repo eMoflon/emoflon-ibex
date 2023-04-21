@@ -4,7 +4,6 @@ import java.util.Collection;
 
 import org.emoflon.ibex.common.emf.EMFEdge;
 import org.emoflon.ibex.common.engine.IMatch;
-import org.emoflon.ibex.tgg.patterns.PatternSuffixes;
 import org.emoflon.ibex.tgg.patterns.PatternType;
 import org.emoflon.ibex.tgg.patterns.PatternUtil;
 import org.emoflon.ibex.tgg.patterns.TGGPatternUtil;
@@ -18,8 +17,12 @@ public interface ITGGMatch extends IMatch {
 	default Collection<EMFEdge> getCreatedEdges() {
 		throw new UnsupportedOperationException("This match does not support keeping track of matched edges!");
 	}
-
+	
 	default String getRuleName() {
+		return PatternUtil.getRuleName(getPatternName());
+	}
+
+	default String getOperationalRuleName() {
 		return getPatternName();
 	}
 

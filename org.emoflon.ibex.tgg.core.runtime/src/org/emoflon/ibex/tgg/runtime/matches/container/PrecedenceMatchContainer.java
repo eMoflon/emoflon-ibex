@@ -69,7 +69,7 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 	}
 
 	private void handleMatch(ITGGMatch m) {
-		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(m.getRuleName());
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(m.getOperationalRuleName());
 		
 		if (anElementHasAlreadyBeenTranslated(m, operationalRule))
 			return;
@@ -139,7 +139,7 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 	}
 
 	private boolean noElementIsPending(ITGGMatch m) {
-		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(m.getRuleName());
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(m.getOperationalRuleName());
 		
 		for (IBeXNode createdNode : operationalRule.getToBeMarked().getNodes()) {
 			Object createdObj = m.get(createdNode.getName());
@@ -199,7 +199,7 @@ public class PrecedenceMatchContainer implements IMatchContainer, TimeMeasurable
 		if (raToTranslated.containsKey(ra))
 			return;
 
-		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(m.getRuleName());
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(m.getOperationalRuleName());
 		TGGRule tggRule = operationalRule.getTggRule();
 
 		// Add translated elements

@@ -41,7 +41,7 @@ public class CorrPreservationConflict extends InconsistentChangesConflict implem
 
 		PrecedenceGraph pg = integrate().precedenceGraph();
 		ITGGMatch match = getMatch();
-		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getRuleName());
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getOperationalRuleName());
 
 		Collection<IBeXNode> greenRuleNodes = new HashSet<>();
 		greenRuleNodes.addAll(operationalRule.getCreateSource().getNodes());

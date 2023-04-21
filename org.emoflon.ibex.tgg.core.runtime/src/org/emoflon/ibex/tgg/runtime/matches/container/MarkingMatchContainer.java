@@ -143,7 +143,7 @@ public class MarkingMatchContainer implements IMatchContainer, TimeMeasurable {
 	}
 
 	private boolean removeConsistencyMatch(ITGGMatch match) {
-		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getRuleName());
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getOperationalRuleName());
 
 		operationalRule.getCreateSource().getNodes().stream() //
 				.map(n -> (EObject) match.get(n.getName())) //
@@ -156,7 +156,7 @@ public class MarkingMatchContainer implements IMatchContainer, TimeMeasurable {
 	}
 
 	private void consistencyMatchApplied(ITGGMatch match) {
-		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getRuleName());
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getOperationalRuleName());
 		
 		operationalRule.getCreateSource().getNodes().stream() //
 				.map(n -> (EObject) match.get(n.getName())) //
@@ -167,7 +167,7 @@ public class MarkingMatchContainer implements IMatchContainer, TimeMeasurable {
 	}
 
 	private boolean checkPositiveRAs(ITGGMatch match) {
-		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getRuleName());
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getOperationalRuleName());
 
 		boolean srcRAsExist = operationalRule.getContextSource().getNodes().stream() //
 				.map(n -> (EObject) match.get(n.getName())) //
@@ -179,7 +179,7 @@ public class MarkingMatchContainer implements IMatchContainer, TimeMeasurable {
 	}
 
 	private boolean checkNegativeRAs(ITGGMatch match) {
-		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getRuleName());
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getOperationalRuleName());
 
 		if (match.getType() == PatternType.FWD)
 			return operationalRule. getCreateSource().getNodes().stream() //

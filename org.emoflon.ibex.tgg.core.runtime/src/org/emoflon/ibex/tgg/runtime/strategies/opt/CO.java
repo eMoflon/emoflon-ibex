@@ -15,7 +15,7 @@ import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.StrategyMode;
 import org.emoflon.ibex.tgg.runtime.updatepolicy.NextMatchUpdatePolicy;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 
 public class CO extends CC {
 
@@ -47,10 +47,10 @@ public class CO extends CC {
 	 */
 	@Override
 	public double getDefaultWeightForMatch(IMatch comatch, String ruleName) {
-		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(ruleName);
+		TGGRule rule = ruleHandler.getRule(ruleName);
 
 		return super.getDefaultWeightForMatch(comatch, ruleName)
-				+operationalRule.getCreateCorrespondence().getNodes().size();
+				+ rule.getCreateCorrespondence().getNodes().size();
 	}
 
 	@Override

@@ -17,6 +17,7 @@ import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.StrategyMode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalisationMode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 
 public class FWD_OPT extends OPT {
 
@@ -89,10 +90,10 @@ public class FWD_OPT extends OPT {
 
 	@Override
 	public double getDefaultWeightForMatch(IMatch comatch, String ruleName) {
-		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(ruleName);
+		TGGRule rule = ruleHandler.getRule(ruleName);
 
-		return operationalRule.getCreateSource().getNodes().size() +
-				operationalRule.getCreateSource().getEdges().size();
+		return rule.getCreateSource().getNodes().size() +
+				rule.getCreateSource().getEdges().size();
 	}
 
 	public void forward() throws IOException {

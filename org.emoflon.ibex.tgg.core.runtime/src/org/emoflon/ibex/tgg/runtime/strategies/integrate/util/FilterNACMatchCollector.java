@@ -39,8 +39,7 @@ public class FilterNACMatchCollector extends MatchConsumer {
 
 	public void addFilterNACMatch(ITGGMatch match) {
 		if (!pattern2filterNacMatches.containsKey(match.getPatternName())) {
-			String ruleName = match.getRuleName().split("_")[0];
-			ruleName2filterNacPatternNames.get(ruleName).add(match.getPatternName());
+			ruleName2filterNacPatternNames.get(match.getRuleName()).add(match.getPatternName());
 
 			pattern2filterNacMatches.put(match.getPatternName(), new HashMap<>());
 			filterNacPattern2nodeNames.put(match.getPatternName(), match.getParameterNames());

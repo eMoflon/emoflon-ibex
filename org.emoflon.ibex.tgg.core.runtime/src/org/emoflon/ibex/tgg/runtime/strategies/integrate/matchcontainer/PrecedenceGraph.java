@@ -23,6 +23,7 @@ import org.emoflon.ibex.tgg.runtime.strategies.modules.MatchDistributor;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 import org.emoflon.ibex.tgg.util.benchmark.TimeMeasurable;
 import org.emoflon.ibex.tgg.util.benchmark.TimeRegistry;
 import org.emoflon.ibex.tgg.util.benchmark.Timer;
@@ -217,7 +218,7 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 	 */
 	public boolean hasConsistencyMatchOverlap(PrecedenceNode srcTrgNode) {
 		ITGGMatch srcTrgMatch = srcTrgNode.getMatch();
-		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(srcTrgMatch.getRuleName());
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(srcTrgMatch.getOperationalRuleName());
 
 		Set<Object> translatedElts = cfactory.createObjectSet();
 		if (srcTrgMatch.getType() == PatternType.SOURCE) {
@@ -247,7 +248,7 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 		Map<PrecedenceNode, Set<Object>> overlaps;
 
 		ITGGMatch match = node.getMatch();
-		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getRuleName());
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getOperationalRuleName());
 		
 		Set<Object> translatedElts = cfactory.createObjectSet();
 		if (match.getType() == PatternType.CONSISTENCY) {
@@ -296,28 +297,28 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 	}
 
 	private void addMatch(ITGGMatch match) {
-		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getRuleName());
+		TGGRule rule = ruleHandler.getRule(match.getRuleName());
 		
 		Collection<Object> requiredElts = cfactory.createObjectSet();
 		Collection<Object> translatedElts = cfactory.createObjectSet();
 
 		if (match.getType() != PatternType.TARGET) {
-			operationalRule.getContextSource().getNodes().forEach(n -> requiredElts.add(match.get(n.getName())));
-			operationalRule.getContextSource().getEdges().forEach(e -> requiredElts.add(getRuntimeEdge(match, e)));
-			operationalRule.getCreateSource().getNodes().forEach(n -> translatedElts.add(match.get(n.getName())));
-			operationalRule.getCreateSource().getEdges().forEach(e -> translatedElts.add(getRuntimeEdge(match, e)));
+			rule.getContextSource().getNodes().forEach(n -> requiredElts.add(match.get(n.getName())));
+			rule.getContextSource().getEdges().forEach(e -> requiredElts.add(getRuntimeEdge(match, e)));
+			rule.getCreateSource().getNodes().forEach(n -> translatedElts.add(match.get(n.getName())));
+			rule.getCreateSource().getEdges().forEach(e -> translatedElts.add(getRuntimeEdge(match, e)));
 		}
 		if (match.getType() != PatternType.SOURCE) {
-			operationalRule.getContextTarget().getNodes().forEach(n -> requiredElts.add(match.get(n.getName())));
-			operationalRule.getContextTarget().getEdges().forEach(e -> requiredElts.add(getRuntimeEdge(match, e)));
-			operationalRule.getCreateTarget().getNodes().forEach(n -> translatedElts.add(match.get(n.getName())));
-			operationalRule.getCreateTarget().getEdges().forEach(e -> translatedElts.add(getRuntimeEdge(match, e)));
+			rule.getContextTarget().getNodes().forEach(n -> requiredElts.add(match.get(n.getName())));
+			rule.getContextTarget().getEdges().forEach(e -> requiredElts.add(getRuntimeEdge(match, e)));
+			rule.getCreateTarget().getNodes().forEach(n -> translatedElts.add(match.get(n.getName())));
+			rule.getCreateTarget().getEdges().forEach(e -> translatedElts.add(getRuntimeEdge(match, e)));
 		}
 		if (match.getType() == PatternType.CONSISTENCY) {
-			operationalRule.getContextCorrespondence().getNodes().forEach(n -> requiredElts.add(match.get(n.getName())));
-			operationalRule.getContextCorrespondence().getEdges().forEach(e -> requiredElts.add(getRuntimeEdge(match, e)));
-			operationalRule.getCreateCorrespondence().getNodes().forEach(n -> translatedElts.add(match.get(n.getName())));
-			operationalRule.getCreateCorrespondence().getEdges().forEach(e -> translatedElts.add(getRuntimeEdge(match, e)));
+			rule.getContextCorrespondence().getNodes().forEach(n -> requiredElts.add(match.get(n.getName())));
+			rule.getContextCorrespondence().getEdges().forEach(e -> requiredElts.add(getRuntimeEdge(match, e)));
+			rule.getCreateCorrespondence().getNodes().forEach(n -> translatedElts.add(match.get(n.getName())));
+			rule.getCreateCorrespondence().getEdges().forEach(e -> translatedElts.add(getRuntimeEdge(match, e)));
 		}
 
 		// Create node
