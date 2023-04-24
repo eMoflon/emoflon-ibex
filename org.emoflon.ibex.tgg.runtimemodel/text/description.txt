@@ -20,5 +20,3 @@ Package TGGRuntimeModel <http://www.eMoflon.org/TGGRuntimeModel>
     Reference correspondences : Correspondence<<0..*>>
 
   Class Correspondence
-    Reference source : EObject
-    Reference target : EObject

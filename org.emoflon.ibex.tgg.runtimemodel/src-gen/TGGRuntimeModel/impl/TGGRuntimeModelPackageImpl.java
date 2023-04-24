@@ -204,24 +204,6 @@ public class TGGRuntimeModelPackageImpl extends EPackageImpl implements TGGRunti
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getCorrespondence_Source() {
-		return (EReference)correspondenceEClass.getEStructuralFeatures().get(0);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EReference getCorrespondence_Target() {
-		return (EReference)correspondenceEClass.getEStructuralFeatures().get(1);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	public TGGRuntimeModelFactory getTGGRuntimeModelFactory() {
 		return (TGGRuntimeModelFactory)getEFactoryInstance();
 	}
@@ -258,8 +240,6 @@ public class TGGRuntimeModelPackageImpl extends EPackageImpl implements TGGRunti
 		createEReference(correspondenceSetEClass, CORRESPONDENCE_SET__CORRESPONDENCES);
 
 		correspondenceEClass = createEClass(CORRESPONDENCE);
-		createEReference(correspondenceEClass, CORRESPONDENCE__SOURCE);
-		createEReference(correspondenceEClass, CORRESPONDENCE__TARGET);
 	}
 
 	/**
@@ -305,8 +285,6 @@ public class TGGRuntimeModelPackageImpl extends EPackageImpl implements TGGRunti
 		initEReference(getCorrespondenceSet_Correspondences(), this.getCorrespondence(), null, "correspondences", null, 0, -1, CorrespondenceSet.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(correspondenceEClass, Correspondence.class, "Correspondence", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getCorrespondence_Source(), ecorePackage.getEObject(), null, "source", null, 0, 1, Correspondence.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getCorrespondence_Target(), ecorePackage.getEObject(), null, "target", null, 0, 1, Correspondence.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Create resource
 		createResource(eNS_URI);

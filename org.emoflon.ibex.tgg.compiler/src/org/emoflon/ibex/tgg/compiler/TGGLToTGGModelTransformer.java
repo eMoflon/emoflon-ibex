@@ -139,6 +139,9 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 	private TGGRuntimeModelPackage runtimePackage = TGGRuntimeModelPackage.eINSTANCE;
 	
 	private Map<Object, EObject> tggl2tggModel = new ConcurrentHashMap<>();
+	private Map<EClass, EReference> corrType2sourceRef = new ConcurrentHashMap<EClass, EReference>();
+	private Map<EClass, EReference> corrType2targetRef = new ConcurrentHashMap<EClass, EReference>();
+	
 	private Map<NodeAttributeEntry, TGGAttributeConstraintParameterValue> nodeAttributeEntry2parameterValue = new HashMap<>();
 	private EPackage correspondenceModel;
 
@@ -341,6 +344,21 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 			corrType.getESuperTypes().add(runtimeCorrType);
 		else
 			corrType.getESuperTypes().add(transformCorrespondenceType(xtextCorrType.getSuper()));
+		
+		EReference source = ecoreFactory.createEReference();
+		source.setName("source");
+		source.setUpperBound(1);
+		source.setEType(xtextCorrType.getSource());
+		corrType2sourceRef.put(corrType, source);
+		
+		EReference target = ecoreFactory.createEReference();
+		target.setName("target");
+		target.setUpperBound(1);
+		target.setEType(xtextCorrType.getTarget());
+		corrType2targetRef.put(corrType, target);
+
+		corrType.getEStructuralFeatures().add(source);
+		corrType.getEStructuralFeatures().add(target);
 		
 		return corrType;
 	}
@@ -561,8 +579,8 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		corrNode.setSource(source);
 		corrNode.setTarget(target);
 		
-		transformTGGEdge(new EdgeSignature(node, node.getSource(), runtimePackage.getCorrespondence_Source()), binding, domain);
-		transformTGGEdge(new EdgeSignature(node, node.getTarget(), runtimePackage.getCorrespondence_Target()), binding, domain);
+		transformTGGEdge(new EdgeSignature(node, node.getSource(), corrType2sourceRef.get(corrNode.getType())), binding, domain);
+		transformTGGEdge(new EdgeSignature(node, node.getTarget(), corrType2targetRef.get(corrNode.getType())), binding, domain);
 		
 		return corrNode;
 	}

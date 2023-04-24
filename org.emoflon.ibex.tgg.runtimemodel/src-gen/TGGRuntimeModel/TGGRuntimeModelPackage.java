@@ -214,31 +214,13 @@ public interface TGGRuntimeModelPackage extends EPackage {
 	int CORRESPONDENCE = 4;
 
 	/**
-	 * The feature id for the '<em><b>Source</b></em>' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int CORRESPONDENCE__SOURCE = 0;
-
-	/**
-	 * The feature id for the '<em><b>Target</b></em>' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int CORRESPONDENCE__TARGET = 1;
-
-	/**
 	 * The number of structural features of the '<em>Correspondence</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int CORRESPONDENCE_FEATURE_COUNT = 2;
+	int CORRESPONDENCE_FEATURE_COUNT = 0;
 
 	/**
 	 * The number of operations of the '<em>Correspondence</em>' class.
@@ -345,28 +327,6 @@ public interface TGGRuntimeModelPackage extends EPackage {
 	EClass getCorrespondence();
 
 	/**
-	 * Returns the meta object for the reference '{@link TGGRuntimeModel.Correspondence#getSource <em>Source</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the reference '<em>Source</em>'.
-	 * @see TGGRuntimeModel.Correspondence#getSource()
-	 * @see #getCorrespondence()
-	 * @generated
-	 */
-	EReference getCorrespondence_Source();
-
-	/**
-	 * Returns the meta object for the reference '{@link TGGRuntimeModel.Correspondence#getTarget <em>Target</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the reference '<em>Target</em>'.
-	 * @see TGGRuntimeModel.Correspondence#getTarget()
-	 * @see #getCorrespondence()
-	 * @generated
-	 */
-	EReference getCorrespondence_Target();
-
-	/**
 	 * Returns the factory that creates the instances of the model.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -470,22 +430,6 @@ public interface TGGRuntimeModelPackage extends EPackage {
 		 * @generated
 		 */
 		EClass CORRESPONDENCE = eINSTANCE.getCorrespondence();
-
-		/**
-		 * The meta object literal for the '<em><b>Source</b></em>' reference feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference CORRESPONDENCE__SOURCE = eINSTANCE.getCorrespondence_Source();
-
-		/**
-		 * The meta object literal for the '<em><b>Target</b></em>' reference feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference CORRESPONDENCE__TARGET = eINSTANCE.getCorrespondence_Target();
 
 	}
 
