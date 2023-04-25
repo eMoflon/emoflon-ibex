@@ -21,6 +21,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EEnumLiteral;
 import org.eclipse.emf.ecore.EObject;
@@ -353,16 +354,23 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		else
 			corrType.getESuperTypes().add(transformCorrespondenceType(xtextCorrType.getSuper()));
 		
+		EClass superCorr = xtextCorrType == null ? null : transformCorrespondenceType(xtextCorrType.getSuper());
+		
 		EReference source = ecoreFactory.createEReference();
 		source.setName("source");
 		source.setUpperBound(1);
 		source.setEType(xtextCorrType.getSource());
+		if(source.getEType() == null)
+			source.setEType((EClassifier) superCorr.getEStructuralFeature("source"));
 		corrType2sourceRef.put(corrType, source);
 		
 		EReference target = ecoreFactory.createEReference();
 		target.setName("target");
 		target.setUpperBound(1);
 		target.setEType(xtextCorrType.getTarget());
+		if(target.getEType() == null)
+			target.setEType((EClassifier) superCorr.getEStructuralFeature("target"));
+		
 		corrType2targetRef.put(corrType, target);
 
 		corrType.getEStructuralFeatures().add(source);
