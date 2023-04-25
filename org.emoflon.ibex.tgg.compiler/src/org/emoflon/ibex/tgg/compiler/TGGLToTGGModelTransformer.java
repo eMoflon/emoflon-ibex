@@ -18,6 +18,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.codegen.ecore.genmodel.GenPackage;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
@@ -93,6 +94,7 @@ import org.emoflon.ibex.common.transformation.SlimGtToIBeXCoreTransformer;
 import org.emoflon.ibex.tgg.analysis.ACAnalysis;
 import org.emoflon.ibex.tgg.analysis.ACStrategy;
 import org.emoflon.ibex.tgg.compiler.builder.AttrCondDefLibraryProvider;
+import org.emoflon.ibex.tgg.compiler.builder.CorrespondenceBuilderUtil;
 import org.emoflon.ibex.tgg.compiler.defaults.TGGBuildUtil;
 import org.emoflon.ibex.tgg.tggl.scoping.TGGLScopeProvider;
 import org.emoflon.ibex.tgg.tggl.tGGL.AttributeCondition;
@@ -127,6 +129,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintSet;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGLocalVariable;
 import org.moflon.core.utilities.LogUtils;
 import org.moflon.core.utilities.MoflonUtil;
+import org.moflon.core.utilities.WorkspaceHelper;
 
 import TGGRuntimeModel.TGGRuntimeModelPackage;
 
@@ -238,15 +241,20 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 	private void saveModels(TGGModel model) {
 		
 		try {
-//			ResourceSet rs = editorFile.eResource().getResourceSet();
-//			EcoreUtil.resolveAll(rs);
 			ResourceSet rs = new ResourceSetImpl();
 			IFile corrFile = project.getFolder(TGGBuildUtil.MODEL_FOLDER)//
 					.getFile(getNameOfGeneratedFile(project) + TGGBuildUtil.ECORE_FILE_EXTENSION);
 			TGGBuildUtil.saveModelInProject(corrFile, rs, model.getCorrespondence());
+			IFile corrGenFile = project.getFolder(TGGBuildUtil.MODEL_FOLDER)//
+					.getFile(getNameOfGeneratedFile(project) + TGGBuildUtil.GENMODEL_FILE_EXTENSION);
 			IFile tggFile = project.getFolder(TGGBuildUtil.MODEL_FOLDER)//
 					.getFile(getNameOfGeneratedFile(project) + TGGBuildUtil.INTERNAL_TGG_MODEL_EXTENSION);
 			TGGBuildUtil.saveModelInProject(tggFile, rs, model);
+			
+			// build correspondence code
+			CorrespondenceBuilderUtil corrBuilderUtil = new CorrespondenceBuilderUtil(project);
+			URI base = URI.createPlatformResourceURI("/", true);
+			corrBuilderUtil.generateMetaModelCode(base, corrFile.getFullPath().toOSString(), corrGenFile.getFullPath().toOSString(), model.getCorrespondence());
 		} catch (IOException e) {
 			LogUtils.error(logger, e);
 		}

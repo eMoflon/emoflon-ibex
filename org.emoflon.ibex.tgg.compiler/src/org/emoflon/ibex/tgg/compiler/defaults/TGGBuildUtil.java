@@ -26,6 +26,7 @@ public class TGGBuildUtil {
 
 	public static final String INTERNAL_TGG_MODEL_EXTENSION = ".tgg.xmi";
 	public static final String ECORE_FILE_EXTENSION = ".ecore";
+	public static final String GENMODEL_FILE_EXTENSION = ".genmodel";
 	public static final String TGG_FILE_EXTENSION = ".tgg";
 	public static final String EDITOR_MODEL_EXTENSION = ".editor.xmi";
 	public static final String EDITOR_FLATTENED_MODEL_EXTENSION = "_flattened.editor.xmi";
