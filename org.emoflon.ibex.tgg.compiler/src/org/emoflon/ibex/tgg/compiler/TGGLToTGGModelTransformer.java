@@ -354,27 +354,31 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		else
 			corrType.getESuperTypes().add(transformCorrespondenceType(xtextCorrType.getSuper()));
 		
-		EClass superCorr = xtextCorrType == null ? null : transformCorrespondenceType(xtextCorrType.getSuper());
+		EClass superCorr = xtextCorrType.getSuper() == null ? null : transformCorrespondenceType(xtextCorrType.getSuper());
 		
-		EReference source = ecoreFactory.createEReference();
-		source.setName("source");
-		source.setUpperBound(1);
-		source.setEType(xtextCorrType.getSource());
-		if(source.getEType() == null)
-			source.setEType((EClassifier) superCorr.getEStructuralFeature("source"));
-		corrType2sourceRef.put(corrType, source);
-		
-		EReference target = ecoreFactory.createEReference();
-		target.setName("target");
-		target.setUpperBound(1);
-		target.setEType(xtextCorrType.getTarget());
-		if(target.getEType() == null)
-			target.setEType((EClassifier) superCorr.getEStructuralFeature("target"));
-		
-		corrType2targetRef.put(corrType, target);
-
-		corrType.getEStructuralFeatures().add(source);
-		corrType.getEStructuralFeatures().add(target);
+		if(superCorr == null) {
+			EReference source = ecoreFactory.createEReference();
+			source.setName("source");
+			source.setUpperBound(1);
+			source.setEType(xtextCorrType.getSource());
+			corrType2sourceRef.put(corrType, source);
+			
+			EReference target = ecoreFactory.createEReference();
+			target.setName("target");
+			target.setUpperBound(1);
+			target.setEType(xtextCorrType.getTarget());
+			corrType2targetRef.put(corrType, target);
+			
+			corrType.getEStructuralFeatures().add(source);
+			corrType.getEStructuralFeatures().add(target);
+		}
+		else {
+			// register the EReference for sub correspondence types
+			EReference source = (EReference) superCorr.getEStructuralFeature("source");
+			EReference target = (EReference) superCorr.getEStructuralFeature("target");
+			corrType2sourceRef.put(corrType, source);
+			corrType2targetRef.put(corrType, target);
+		}
 		
 		return corrType;
 	}
