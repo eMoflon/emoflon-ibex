@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.emf.ecore.EObject;
@@ -421,7 +422,7 @@ public class TGGOperationalizer {
 	}
 	
 	private void removeAttributeAssignments(Collection<IBeXAttributeAssignment> assignments, DomainType domainType) {
-		var deletedAssignments = new LinkedList<>();
+		List<EObject> deletedAssignments = new LinkedList<>();
 		for(var assignment : assignments) {
 			var ibexNode = assignment.getNode();
 			if(ibexNode == null)
@@ -430,8 +431,9 @@ public class TGGOperationalizer {
 				if(ibexNode instanceof TGGNode tggNode) 
 					if(tggNode.getDomainType() == domainType)
 						deletedAssignments.add(assignment);
-				
 		}
+		
+		EcoreUtil.removeAll(deletedAssignments);
 	}
 	
 	private void removeInvocations(Collection<IBeXPatternInvocation> invocations, DomainType domainType) {
