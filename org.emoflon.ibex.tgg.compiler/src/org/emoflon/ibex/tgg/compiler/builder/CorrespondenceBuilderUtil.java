@@ -72,9 +72,9 @@ public class CorrespondenceBuilderUtil {
 		try {
 			EcoreImporter importer = new EcoreImporter();
 			importer.setModelLocation(metaModelUri.toString());
-			importer.getEPackages().add(corrModel);
+			importer.getEPackages().add(metaModel);
 			importer.computeEPackages(monitor);
-			importer.getEPackages().add(corrModel);
+			importer.getEPackages().add(metaModel);
 			importer.adjustEPackages(monitor);
 			
 			for(EPackage ePackage : importer.getEPackages()) {

@@ -255,7 +255,7 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 			// build correspondence code
 			CorrespondenceBuilderUtil corrBuilderUtil = new CorrespondenceBuilderUtil(project);
 			URI base = URI.createPlatformResourceURI("/", true);
-			corrBuilderUtil.generateMetaModelCode(base, corrFile.getFullPath().toOSString(), corrGenFile.getFullPath().toOSString(), model.getCorrespondence());
+			corrBuilderUtil.generateMetaModelCode(base, corrFile.getFullPath().toPortableString().substring(1), corrGenFile.getFullPath().toPortableString().substring(1), model.getCorrespondence());
 		} catch (IOException e) {
 			LogUtils.error(logger, e);
 		}
