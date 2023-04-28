@@ -34,7 +34,8 @@ public class TGGModelUtils {
 	public static List<TGGEdge> getEdgesByOperator(TGGRule rule, BindingType type) {
 		Objects.requireNonNull(rule, "The rule must not be null!");
 		return rule.getEdges().stream() //
-				.filter(n -> type.equals(n.getBindingType())).sorted((a, b) -> a.getName().compareTo(b.getName())) //
+				.filter(n -> type.equals(n.getBindingType())) //
+				.sorted((a, b) -> a.getName().compareTo(b.getName())) //
 				.collect(Collectors.toList());
 	}
 

@@ -116,12 +116,27 @@ public class IbexGreenInterpreter implements IGreenInterpreter {
 		for (IBeXEdge e : greenEdges) {
 			EObject src = (EObject) comatch.get(e.getSource().getName());
 			EObject trg = (EObject) comatch.get(e.getTarget().getName());
+			EReference edgeType = e.getType();
+			
+			// we have to order edges in cases where they are bidirectional
+			// else we may later not be able to distinguish between them
+			if(edgeType.getEOpposite() != null && !(e.getSource() instanceof TGGCorrespondence) && !edgeType.isContainment()) {
+				EReference opposite = edgeType.getEOpposite();
+				// we prefer containments, else we sort by name
+				if(edgeType.isContainment() || edgeType.getName().compareTo(opposite.getName()) > 0) {
+					edgeType = opposite;
+					EObject cache = src;
+					src = trg;
+					trg = cache;
+				}
+			}
+			
 			if (createEMFEdge) {
-				EMFManipulationUtils.createEdge(src, trg, e.getType());
+				EMFManipulationUtils.createEdge(src, trg, edgeType);
 			}
 			
 			// create actual edge
-			var newEdge = new EMFEdge(src, trg, e.getType());
+			var newEdge = new EMFEdge(src, trg, edgeType);
 
 			// add corr caching in case that this is a correspondence edge
 			if(e.getSource() instanceof TGGCorrespondence) 
