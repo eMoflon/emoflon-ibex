@@ -117,6 +117,9 @@ public class SearchPlanCreator {
 			} else {
 				if (key.sourceNode instanceof TGGCorrespondence) {
 					key2lookup.put(key, n -> {
+						if (options.project.usesSmartEMF())
+							throw new IllegalStateException("If SmartEMF is used, there is no need to traverse using opposite lookups! "
+									+ "Check if lookups for derived opposite edges were created properly.");
 						// make sure that we only get the correct corrs with the right type
 						Collection<EObject> corrs = options.resourceHandler().getCorrCaching().getOrDefault(n, Collections.emptyList());
 						return corrs.stream().filter(c -> n.equals(c.eGet(key.edge.getType()))).collect(Collectors.toList());
