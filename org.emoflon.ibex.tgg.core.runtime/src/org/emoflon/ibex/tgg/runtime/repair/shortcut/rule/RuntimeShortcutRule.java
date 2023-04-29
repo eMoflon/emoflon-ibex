@@ -216,11 +216,12 @@ public class RuntimeShortcutRule {
 		var attributeConstraints = EcoreUtil.copy(((TGGPattern) getReplacingRule().getPrecondition()).getAttributeConstraints());
 
 		for (var parameter : attributeConstraints.getParameters()) {
-			if (parameter instanceof IBeXAttributeValue attributeParameter)
-				attributeParameter.setNode(replacing2newNodes.get(attributeParameter.getNode()));
+			if (parameter.getExpression() instanceof IBeXAttributeValue attributeExpression)
+				attributeExpression.setNode(replacing2newNodes.get(attributeExpression.getNode()));
 		}
 
 		((TGGPattern) shortcutRule.getPrecondition()).setAttributeConstraints(attributeConstraints);
+		shortcutRule.setAttributeConstraints(attributeConstraints);
 	}
 
 	private TGGNode createNewNodeIfNecessary(TGGNode oldNode, BindingType binding, SCInputRule scInput) {

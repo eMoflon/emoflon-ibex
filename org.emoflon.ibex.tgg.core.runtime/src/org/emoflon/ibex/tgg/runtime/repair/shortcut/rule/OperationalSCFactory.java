@@ -48,6 +48,7 @@ public class OperationalSCFactory {
 					: originalRule.getName();
 			operationalRules.computeIfAbsent(keyRuleName, k -> new LinkedList<>()).add(opSCR);
 
+			options.tgg.ruleHandler().registerOperationalRule(opSCR.getOperationalizedSCR().getShortcutRule());
 			greenInterpreter.registerOperationalRule(opSCR.getOperationalizedSCR().getShortcutRule());
 		}
 
