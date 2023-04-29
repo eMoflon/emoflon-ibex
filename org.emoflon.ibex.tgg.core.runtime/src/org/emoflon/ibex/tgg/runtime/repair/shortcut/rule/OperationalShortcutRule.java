@@ -124,6 +124,7 @@ public abstract class OperationalShortcutRule {
 		EClass oldRaType = (EClass) options.tgg.corrMetamodel().getEClassifier(getMarkerTypeName(originalRuleName));
 		oldRaNode.setType(oldRaType);
 		oldRaNode.setBindingType(BindingType.DELETE);
+		TGGModelUtils.setOperationType(oldRaNode, BindingType.DELETE);
 
 		createRuleApplicationLinks(oldRaNode);
 
@@ -145,6 +146,7 @@ public abstract class OperationalShortcutRule {
 		edge.setName(raNode.getName() + "__" + ref.getName() + "__" + scNode.getName());
 		edge.setType(ref);
 		edge.setBindingType(BindingType.DELETE);
+		TGGModelUtils.setOperationType(edge, BindingType.DELETE);
 		edge.setDomainType(node.getDomainType());
 		edge.setSource(raNode);
 		edge.setTarget(scNode);
@@ -170,6 +172,7 @@ public abstract class OperationalShortcutRule {
 		EClass oldRaType = (EClass) options.tgg.corrMetamodel().getEClassifier(getMarkerTypeName(ruleName));
 		oldRaNode.setType(oldRaType);
 		oldRaNode.setBindingType(BindingType.DELETE);
+		TGGModelUtils.setOperationType(oldRaNode, BindingType.DELETE);
 
 		createRuleApplicationLinks(component, oldRaNode);
 
@@ -193,6 +196,7 @@ public abstract class OperationalShortcutRule {
 		edge.setName(raNode.getName() + "__" + ref.getName() + "__" + scNode.getName());
 		edge.setType(ref);
 		edge.setBindingType(BindingType.DELETE);
+		TGGModelUtils.setOperationType(edge, BindingType.DELETE);
 		edge.setDomainType(higherOrderNode.getDomainType());
 		edge.setSource(raNode);
 		edge.setTarget(scNode);
@@ -208,6 +212,7 @@ public abstract class OperationalShortcutRule {
 			TGGEdge edge = IBeXTGGModelFactory.eINSTANCE.createTGGEdge();
 			edge.setType(dec.getEdgeType());
 			edge.setBindingType(BindingType.NEGATIVE);
+			TGGModelUtils.setOperationType(edge, BindingType.NEGATIVE);
 			edge.setDomainType(decNode.getDomainType());
 
 			TGGNode node = IBeXTGGModelFactory.eINSTANCE.createTGGNode();
@@ -215,6 +220,7 @@ public abstract class OperationalShortcutRule {
 			node.setDomainType(decNode.getDomainType());
 			node.setType(dec.getOtherNodeType());
 			node.setBindingType(BindingType.NEGATIVE);
+			TGGModelUtils.setOperationType(node, BindingType.NEGATIVE);
 
 			switch (dec.getEDirection()) {
 				case INCOMING -> {
@@ -235,11 +241,17 @@ public abstract class OperationalShortcutRule {
 	}
 
 	protected void transformNodes(Collection<TGGNode> filteredNodes, BindingType target) {
-		filteredNodes.forEach(n -> n.setBindingType(target));
+		filteredNodes.forEach(n -> {
+			n.setBindingType(target);
+			TGGModelUtils.setOperationType(n, target);
+		});
 	}
 
 	protected void transformEdges(Collection<TGGEdge> filteredEdges, BindingType target) {
-		filteredEdges.forEach(e -> e.setBindingType(target));
+		filteredEdges.forEach(e -> {
+			e.setBindingType(target);
+			TGGModelUtils.setOperationType(e, target);
+		});
 	}
 
 	protected void transformInterfaceEdges(Collection<TGGEdge> filteredEdges, BindingType target) {
@@ -259,6 +271,7 @@ public abstract class OperationalShortcutRule {
 				continue;
 
 			edge.setBindingType(target);
+			TGGModelUtils.setOperationType(edge, target);
 		}
 	}
 
@@ -293,6 +306,7 @@ public abstract class OperationalShortcutRule {
 				TGGEdge nac = IBeXTGGModelFactory.eINSTANCE.createTGGEdge();
 				nac.setDomainType(edge.getDomainType());
 				nac.setBindingType(BindingType.NEGATIVE);
+				TGGModelUtils.setOperationType(nac, BindingType.NEGATIVE);
 				nac.setType(edge.getType());
 				nac.setSource(edge.getSource());
 				nac.setTarget(edge.getTarget());

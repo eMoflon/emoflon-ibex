@@ -30,6 +30,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGShortcutRule;
 import org.emoflon.ibex.tgg.util.TGGFilterUtil;
+import org.emoflon.ibex.tgg.util.TGGModelUtils;
 
 /**
  * This class contains a shortcut rule which applied transforms a original rule application into a
@@ -300,6 +301,7 @@ public class RuntimeShortcutRule {
 		nodeNames.add(adjustedName);
 		node.setName(adjustedName);
 		node.setBindingType(binding);
+		TGGModelUtils.setOperationType(node, binding);
 		node.setDomainType(domain);
 		node.setType(type);
 		var copiedAttributeAssignments = EcoreUtil.copyAll(attrAssignments);
@@ -341,6 +343,7 @@ public class RuntimeShortcutRule {
 		}
 		TGGEdge newEdge = IBeXTGGModelFactory.eINSTANCE.createTGGEdge();
 		newEdge.setBindingType(binding);
+		TGGModelUtils.setOperationType(newEdge, binding);
 		newEdge.setDomainType(edge.getDomainType());
 		newEdge.setType(edge.getType());
 		newEdge.setSource(srcSCRuleNode);

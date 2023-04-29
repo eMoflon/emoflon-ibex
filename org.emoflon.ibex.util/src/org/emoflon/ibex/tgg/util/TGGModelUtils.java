@@ -10,6 +10,9 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeAssignment;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelFactory;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXOperationType;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanExpression;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.IBeXCoreArithmeticFactory;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalExpression;
@@ -134,6 +137,24 @@ public class TGGModelUtils {
 		if (relationalExpression.getRhs() instanceof IBeXAttributeValue rightAttrValue && rightAttrValue.getNode().equals(referencedNode))
 			return rightAttrValue;
 		return null;
+	}
+
+	public static void setOperationType(IBeXNode node, BindingType binding) {
+		switch (binding) {
+			case CREATE -> node.setOperationType(IBeXOperationType.CREATION);
+			case DELETE -> node.setOperationType(IBeXOperationType.DELETION);
+			case CONTEXT, RELAXED, NEGATIVE -> node.setOperationType(IBeXOperationType.CONTEXT);
+			default -> {}
+		}
+	}
+
+	public static void setOperationType(IBeXEdge edge, BindingType binding) {
+		switch (binding) {
+			case CREATE -> edge.setOperationType(IBeXOperationType.CREATION);
+			case DELETE -> edge.setOperationType(IBeXOperationType.DELETION);
+			case CONTEXT, RELAXED, NEGATIVE -> edge.setOperationType(IBeXOperationType.CONTEXT);
+			default -> {}
+		}
 	}
 
 }
