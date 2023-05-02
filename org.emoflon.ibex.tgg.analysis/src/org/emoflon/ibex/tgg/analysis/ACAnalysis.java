@@ -198,12 +198,12 @@ public class ACAnalysis {
 		Stream<TGGNode> nodeStream = rule.getNodes().stream().filter(n -> n.getDomainType() == domain);
 		if (!findRescuePattern)
 			return nodeStream //
-					.map(n -> countOutgoingEdgeInRule(rule, n, edgeType, findRescuePattern)) //
+					.map(n -> countOutgoingEdgeWithOppositeInRule(rule, n, edgeType, findRescuePattern)) //
 					.max((t1, t2) -> Integer.compare(t1.numberOfEdges(), t2.numberOfEdges())) //
 					.orElse(new MaxIncidentEdgeCount(0, null, null));
 
 		return nodeStream //
-				.map(n -> countIncomingEdgeInRule(rule, n, edgeType, findRescuePattern)) //
+				.map(n -> countIncomingEdgeWithOppositeInRule(rule, n, edgeType, findRescuePattern)) //
 				.max((t1, t2) -> Integer.compare(t1.numberOfEdges(), t2.numberOfEdges())) //
 				.orElse(new MaxIncidentEdgeCount(0, null, null));
 	}
@@ -212,14 +212,34 @@ public class ACAnalysis {
 		Stream<TGGNode> nodeStream = rule.getNodes().stream().filter(n -> n.getDomainType() == domain);
 		if (!findRescuePattern)
 			return nodeStream //
-					.map(n -> countIncomingEdgeInRule(rule, n, edgeType, findRescuePattern)) //
+					.map(n -> countIncomingEdgeWithOppositeInRule(rule, n, edgeType, findRescuePattern)) //
 					.max((t1, t2) -> Integer.compare(t1.numberOfEdges(), t2.numberOfEdges())) //
 					.orElse(new MaxIncidentEdgeCount(0, null, null));
 
 		return nodeStream //
-				.map(n -> countOutgoingEdgeInRule(rule, n, edgeType, findRescuePattern)) //
+				.map(n -> countOutgoingEdgeWithOppositeInRule(rule, n, edgeType, findRescuePattern)) //
 				.max((t1, t2) -> Integer.compare(t1.numberOfEdges(), t2.numberOfEdges())) //
 				.orElse(new MaxIncidentEdgeCount(0, null, null));
+	}
+	
+	private MaxIncidentEdgeCount countIncomingEdgeWithOppositeInRule(TGGRule rule, TGGNode entryPoint, EReference edgeType, boolean findRescuePattern) {
+		var edgeCount = countIncomingEdgeInRule(rule, entryPoint, edgeType, findRescuePattern);
+		if(edgeType.getEOpposite() != null) {
+			var oppositeEdgeCount = countOutgoingEdgeInRule(rule, entryPoint, edgeType.getEOpposite(), findRescuePattern);
+			return new MaxIncidentEdgeCount(edgeCount.numberOfEdges() + oppositeEdgeCount.numberOfEdges(), edgeCount.fromNode(), edgeCount.toNode());
+		}
+		
+		return edgeCount;
+	}
+	
+	private MaxIncidentEdgeCount countOutgoingEdgeWithOppositeInRule(TGGRule rule, TGGNode entryPoint, EReference edgeType, boolean findRescuePattern) {
+		var edgeCount = countOutgoingEdgeInRule(rule, entryPoint, edgeType, findRescuePattern);
+		if(edgeType.getEOpposite() != null) {
+			var oppositeEdgeCount = countIncomingEdgeInRule(rule, entryPoint, edgeType.getEOpposite(), findRescuePattern);
+			return new MaxIncidentEdgeCount(edgeCount.numberOfEdges() + oppositeEdgeCount.numberOfEdges(), edgeCount.fromNode(), edgeCount.toNode());
+		}
+		
+		return edgeCount;
 	}
 
 	private MaxIncidentEdgeCount countIncomingEdgeInRule(TGGRule rule, TGGNode entryPoint, EReference edgeType, boolean findRescuePattern) {
