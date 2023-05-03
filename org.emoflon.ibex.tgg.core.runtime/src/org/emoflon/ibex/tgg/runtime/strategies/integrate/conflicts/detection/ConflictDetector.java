@@ -274,8 +274,8 @@ public class ConflictDetector {
 	private void detectAttributeConflicts(ConflictContainer container, ClassifiedMatch brokenMatch) {
 		for (ConstrainedAttributeChanges constrAttrChanges : brokenMatch.getConstrainedAttrChanges()) {
 			TGGAttributeConstraintDefinition def = constrAttrChanges.constraint.getDefinition();
-			TGGAttributeConstraintDefinitionLibrary library = AttrCondDefLibraryProvider.getPredefinedAttrCondLibrary(integrate.getTGG());
-			if (!library.getTggAttributeConstraintDefinitions().contains(def) || !def.getName().startsWith("eq_")) {
+			if (!AttrCondDefLibraryProvider.isPredefinedAttrCondLibrary((TGGAttributeConstraintDefinitionLibrary) def.eContainer())
+					|| !def.getName().startsWith("eq_")) {
 				logger.error("Conflicted AttributeConstraints that are not equality constraints are currently not supported!");
 				continue;
 			}

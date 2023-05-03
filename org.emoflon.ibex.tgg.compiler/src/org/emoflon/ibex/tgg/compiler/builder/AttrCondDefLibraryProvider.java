@@ -69,7 +69,7 @@ public class AttrCondDefLibraryProvider {
 		try {
 			Collection<TGGAttributeConstraintDefinitionLibrary> userDefinedLibraries = new LinkedList<>();
 			for(var library : model.getAttributeConstraintDefinitionLibraries()) {
-				if(library.getPackageName().equals(ATTR_COND_DEF_PREDEFINED_PACKAGE) && library.getName().equals(DEFAULT_ATTR_COND_LIB_NAME))
+				if(isPredefinedAttrCondLibrary(library))
 					continue;
 				
 				userDefinedLibraries.add(library);
@@ -101,9 +101,14 @@ public class AttrCondDefLibraryProvider {
 	
 	public static TGGAttributeConstraintDefinitionLibrary getPredefinedAttrCondLibrary(TGGModel model) {
 		for (var library : model.getAttributeConstraintDefinitionLibraries()) {
-			if (library.getPackageName().equals(ATTR_COND_DEF_PREDEFINED_PACKAGE) && library.getName().equals(DEFAULT_ATTR_COND_LIB_NAME))
+			if (isPredefinedAttrCondLibrary(library))
 				return library;
 		}
 		return null;
 	}
+
+	public static boolean isPredefinedAttrCondLibrary(TGGAttributeConstraintDefinitionLibrary library) {
+		return library.getPackageName().equals(ATTR_COND_DEF_PREDEFINED_PACKAGE) && library.getName().equals(DEFAULT_ATTR_COND_LIB_NAME);
+	}
+
 }
