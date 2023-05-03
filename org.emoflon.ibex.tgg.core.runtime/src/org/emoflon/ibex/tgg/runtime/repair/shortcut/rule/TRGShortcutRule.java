@@ -35,6 +35,8 @@ public class TRGShortcutRule extends OperationalShortcutRule {
 
 		removeEdges(filterEdges(operationalizedSCR.getEdges(), DomainType.SOURCE));
 		removeNodes(filterNodes(operationalizedSCR.getNodes(), DomainType.SOURCE));
+		
+		removeDomainDependentRuleComponents(DomainType.SOURCE);
 	}
 
 	@Override

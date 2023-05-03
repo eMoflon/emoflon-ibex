@@ -32,7 +32,9 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelFactory;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalisationMode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGPattern;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGShortcutRule;
 import org.emoflon.ibex.tgg.util.TGGModelUtils;
 
 /**
@@ -314,6 +316,17 @@ public abstract class OperationalShortcutRule {
 				operationalizedSCR.getEdges().add(nac);
 			}
 		}
+	}
+	
+	protected void removeDomainDependentRuleComponents(DomainType domain) {
+		TGGShortcutRule shortcutRule = operationalizedSCR.getShortcutRule();
+		TGGModelUtils.removeInvocations(shortcutRule.getPrecondition().getInvocations(), domain);
+
+		TGGModelUtils.removeAttributeAssignments(shortcutRule.getAttributeAssignments(), domain);
+		TGGModelUtils.removeAttributeConditions(shortcutRule.getPrecondition().getConditions(), domain);
+		
+		TGGModelUtils.removeAttributeConstraints(shortcutRule.getAttributeConstraints(), domain);
+		TGGModelUtils.removeAttributeConstraints(((TGGPattern) shortcutRule.getPrecondition()).getAttributeConstraints(), domain);
 	}
 
 	public SearchPlan createSearchPlan() {

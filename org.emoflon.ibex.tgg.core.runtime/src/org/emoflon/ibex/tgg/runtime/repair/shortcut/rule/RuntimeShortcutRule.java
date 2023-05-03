@@ -119,7 +119,7 @@ public class RuntimeShortcutRule {
 				EcoreUtil.copy(((TGGPattern) getReplacingRule().getPrecondition()).getAttributeConstraints()) //
 		);
 
-		initializeCSPs();
+		adaptCSPs();
 		fillMappingsForPersistence();
 	}
 
@@ -212,16 +212,15 @@ public class RuntimeShortcutRule {
 		return attributeConditions;
 	}
 
-	private void initializeCSPs() {
-		var attributeConstraints = EcoreUtil.copy(((TGGPattern) getReplacingRule().getPrecondition()).getAttributeConstraints());
+	private void adaptCSPs() {
+		var attributeConstraints = ((TGGPattern) shortcutRule.getPrecondition()).getAttributeConstraints();
 
 		for (var parameter : attributeConstraints.getParameters()) {
 			if (parameter.getExpression() instanceof IBeXAttributeValue attributeExpression)
 				attributeExpression.setNode(replacing2newNodes.get(attributeExpression.getNode()));
 		}
 
-		((TGGPattern) shortcutRule.getPrecondition()).setAttributeConstraints(attributeConstraints);
-		shortcutRule.setAttributeConstraints(attributeConstraints);
+		shortcutRule.setAttributeConstraints(EcoreUtil.copy(attributeConstraints));
 	}
 
 	private TGGNode createNewNodeIfNecessary(TGGNode oldNode, BindingType binding, SCInputRule scInput) {

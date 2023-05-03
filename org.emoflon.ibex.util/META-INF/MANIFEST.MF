@@ -63,4 +63,5 @@ Require-Bundle: org.emoflon.smartemf,
  org.emoflon.ibex.common;bundle-version="1.0.0",
  org.emoflon.ibex.tgg.tggmodel;bundle-version="0.1.0",
  org.sat4j.pb,
- org.sat4j.core
+ org.sat4j.core,
+ org.emoflon.ibex.common.slimgt

@@ -35,6 +35,8 @@ public class SRCShortcutRule extends OperationalShortcutRule {
 
 		removeEdges(filterEdges(operationalizedSCR.getEdges(), DomainType.TARGET));
 		removeNodes(filterNodes(operationalizedSCR.getNodes(), DomainType.TARGET));
+		
+		removeDomainDependentRuleComponents(DomainType.TARGET);
 	}
 
 	@Override

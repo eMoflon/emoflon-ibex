@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.emf.ecore.EObject;
@@ -19,13 +18,9 @@ import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNode;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNodeValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXOperationType;
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXPatternInvocation;
-import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanExpression;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.IBeXCoreArithmeticFactory;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalExpression;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalOperator;
-import org.emoflon.ibex.common.slimgt.slimGT.NodeAttributeExpression;
-import org.emoflon.ibex.common.slimgt.util.SlimGTModelUtil;
 import org.emoflon.ibex.tgg.analysis.ACAnalysis;
 import org.emoflon.ibex.tgg.analysis.ACPatternTransformation;
 import org.emoflon.ibex.tgg.analysis.ACStrategy;
@@ -42,7 +37,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGPattern;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRuleElement;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintSet;
+import org.emoflon.ibex.tgg.util.TGGModelUtils;
 
 public class TGGOperationalizer {
 
@@ -304,13 +299,13 @@ public class TGGOperationalizer {
 		removeElements(op, type);
 		removeElements(op, DomainType.CORRESPONDENCE);
 
-		removeInvocations(op.getPrecondition().getInvocations(), type);
+		TGGModelUtils.removeInvocations(op.getPrecondition().getInvocations(), type);
 
-		removeAttributeAssignments(op.getAttributeAssignments(), type);
-		removeAttributeConditions(op.getPrecondition().getConditions(), type);
+		TGGModelUtils.removeAttributeAssignments(op.getAttributeAssignments(), type);
+		TGGModelUtils.removeAttributeConditions(op.getPrecondition().getConditions(), type);
 		
-		removeAttributeConstraints(op.getAttributeConstraints(), type);
-		removeAttributeConstraints(((TGGPattern) op.getPrecondition()).getAttributeConstraints(), type);
+		TGGModelUtils.removeAttributeConstraints(op.getAttributeConstraints(), type);
+		TGGModelUtils.removeAttributeConstraints(((TGGPattern) op.getPrecondition()).getAttributeConstraints(), type);
 	}
 	
 	private void removeElements(TGGOperationalRule op, DomainType domainType) {
@@ -331,129 +326,6 @@ public class TGGOperationalizer {
 			}
 		}
 		deletedEdges.forEach(EcoreUtil::delete);
-	}
-
-	private void removeAttributeConditions(Collection<BooleanExpression> conditions, DomainType domainType) {
-		var deletedConditions = new LinkedList<EObject>();
-		for(var condition : conditions) {
-			var nodeExpressions = SlimGTModelUtil.getElements(condition, NodeAttributeExpression.class);	
-			for(var nodeAttrExpr : nodeExpressions) {
-				var ibexNode = nodeAttrExpr.getNodeExpression();
-				if(ibexNode == null) {
-					deletedConditions.add(condition);
-					break;
-				}
-				else 
-					if(ibexNode instanceof TGGNode tggNode) 
-						if(tggNode.getDomainType() == domainType) {
-							deletedConditions.add(condition);
-							break;
-						}
-			}
-			
-			var attributeExpressions = SlimGTModelUtil.getElements(condition, IBeXAttributeValue.class);
-			for(var attributeExpression : attributeExpressions) {
-				var ibexNode = attributeExpression.getNode();
-				if(ibexNode == null) {
-					deletedConditions.add(condition);
-					break;
-				}
-				else 
-					if(ibexNode instanceof TGGNode tggNode) 
-						if(tggNode.getDomainType() == domainType) {
-							deletedConditions.add(condition);
-							break;
-						}
-			} 
-		}
-		EcoreUtil.deleteAll(deletedConditions, true); 
-	}
-	
-	private void removeBrokenAttributeConditions(Collection<BooleanExpression> conditions) {
-		var deletedConditions = new LinkedList<>();
-		for(var condition : conditions) {
-			var nodeExpressions = SlimGTModelUtil.getElements(condition, NodeAttributeExpression.class);	
-			for(var nodeAttrExpr : nodeExpressions) {
-				var ibexNode = nodeAttrExpr.getNodeExpression();
-				if(ibexNode == null) {
-					deletedConditions.add(condition);
-					break;
-				}
-			}
-		}
-		for (var delCondition : deletedConditions) {
-			if (!(delCondition instanceof RelationalExpression relationalExpression))
-				continue;
-			if (relationalExpression.getLhs() instanceof IBeXAttributeValue attributeValue)
-				((TGGNode) attributeValue.getNode()).getReferencedByConditions().remove(delCondition);
-			if (relationalExpression.getRhs() instanceof IBeXAttributeValue attributeValue)
-				((TGGNode) attributeValue.getNode()).getReferencedByConditions().remove(delCondition);
-		}
-		conditions.removeAll(deletedConditions);
-	}
-	
-	private void removeAttributeConstraints(TGGAttributeConstraintSet tggAttributeConstraintSet, DomainType domainType) {
-		var constraints = tggAttributeConstraintSet.getTggAttributeConstraints();
-		
-		var deletedConstraints = new HashSet<>();
-		var remainingParameters = new HashSet<>();
-		for(var constraint : constraints) {
-			for(var param : constraint.getParameters()) {
-				if(param.getExpression() instanceof IBeXAttributeValue nodeAttrExpr) {
-					var ibexNode = nodeAttrExpr.getNode();
-					if(ibexNode == null) {
-						deletedConstraints.add(constraint);
-						break;
-					}
-					else 
-						if(ibexNode instanceof TGGNode tggNode) 
-							if(tggNode.getDomainType() == domainType) {
-								deletedConstraints.add(constraint);
-								break;
-							}
-				}
-			}
-			if(!deletedConstraints.contains(constraint))
-				remainingParameters.addAll(constraint.getParameters());
-		}
-		constraints.removeAll(deletedConstraints);
-		var deletedParameters = tggAttributeConstraintSet.getParameters().stream().filter(p -> !remainingParameters.contains(p)).toList();
-		deletedParameters.forEach(p -> EcoreUtil.delete(p));
-	}
-	
-	private void removeAttributeAssignments(Collection<IBeXAttributeAssignment> assignments, DomainType domainType) {
-		List<EObject> deletedAssignments = new LinkedList<>();
-		for(var assignment : assignments) {
-			var ibexNode = assignment.getNode();
-			if(ibexNode == null)
-				deletedAssignments.add(assignment);
-			else 
-				if(ibexNode instanceof TGGNode tggNode) 
-					if(tggNode.getDomainType() == domainType)
-						deletedAssignments.add(assignment);
-		}
-		
-		EcoreUtil.removeAll(deletedAssignments);
-	}
-	
-	private void removeInvocations(Collection<IBeXPatternInvocation> invocations, DomainType domainType) {
-		var deletedInvocations = new LinkedList<>();
-		for(var invocation : invocations) {
-			for(var mapping : invocation.getMapping()) {
-				var ibexNode = mapping.getKey();
-				if(ibexNode == null) {
-					deletedInvocations.add(invocation);
-				}
-				else
-					if(ibexNode instanceof TGGNode tggNode) {
-						if(tggNode.getDomainType() == domainType) {
-							deletedInvocations.add(invocation);
-						}
-					}
-			}
-		}
-		
-		invocations.removeAll(deletedInvocations);
 	}
 
 	private void setRuleName(TGGRule rule, OperationalisationMode mode) {
@@ -672,7 +544,7 @@ public class TGGOperationalizer {
 				precondition.getEdges().add(edge);
 		}
 		
-		removeBrokenAttributeConditions(precondition.getConditions());
+		TGGModelUtils.removeBrokenAttributeConditions(precondition.getConditions());
 	}
 	
 	private void addInjectivityConstraints(TGGRule internalRule) {
