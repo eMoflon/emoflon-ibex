@@ -449,7 +449,7 @@ public class TGGResourceHandler {
 				.forEach((eob, settings) -> logger.error("Problems resolving: " + eob));
 
 		options.tgg.tgg((TGGModel) res.getContents().get(0));
-		options.tgg.flattenedTgg((TGGModel) flattenedRes.getContents().get(0));
+		options.tgg.tgg((TGGModel) flattenedRes.getContents().get(0));
 
 		RuntimeTGGAttrConstraintProvider runtimeConstraintProvider = new RuntimeTGGAttrConstraintProvider(
 				options.tgg.tgg().getAttributeConstraintDefinitionLibraries());

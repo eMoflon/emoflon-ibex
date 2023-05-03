@@ -11,7 +11,6 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 public class TGGOptions extends IbexSubOptions {
 
 	private TGGModel tgg;
-	private TGGModel flattenedTGG;
 	private EPackage corrMetamodel;
 	private RuleHandler ruleHandler = new RuleHandler();
 	
@@ -26,22 +25,6 @@ public class TGGOptions extends IbexSubOptions {
 
 	public TGGModel tgg() {
 		return tgg;
-	}
-
-	public IbexOptions flattenedTgg(TGGModel flattenedTGG) {
-		this.flattenedTGG = flattenedTGG;
-		return options;
-	}
-
-	public TGGModel flattenedTGG() {
-		return flattenedTGG;
-	}
-
-	public Collection<TGGRule> getFlattenedConcreteTGGRules() {
-		return flattenedTGG.getRuleSet().getRules() //
-				.stream() //
-				.filter(r -> !r.isAbstract()) //
-				.collect(Collectors.toList());
 	}
 
 	public Collection<TGGRule> getConcreteTGGRules() {

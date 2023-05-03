@@ -24,7 +24,7 @@ public class FilterNACMatchCollector extends MatchConsumer {
 
 	public FilterNACMatchCollector(IbexOptions options) {
 		super(options);
-		ruleName2filterNacPatternNames = options.tgg.getFlattenedConcreteTGGRules().stream() //
+		ruleName2filterNacPatternNames = options.tgg.getConcreteTGGRules().stream() //
 				.collect(Collectors.toMap(r -> r.getName(), r -> new LinkedList<>()));
 		pattern2filterNacMatches = new HashMap<>();
 		filterNacPattern2nodeNames = new HashMap<>();

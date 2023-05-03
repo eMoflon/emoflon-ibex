@@ -181,7 +181,7 @@ public class MODELGEN extends OperationalStrategy {
 	 * the axiom is found (or the stop criterion blocks the rule).
 	 */
 	private void collectMatchesForAxioms() {
-		options.tgg.getFlattenedConcreteTGGRules().stream().filter(r -> r.isAxiom())
+		options.tgg.getConcreteTGGRules().stream().filter(r -> r.isAxiom())
 				.forEach(r -> {
 					matchHandler.addOperationalMatch(new SimpleTGGMatch(TGGPatternUtil.generateGENBlackPatternName(r.getName())));
 				});

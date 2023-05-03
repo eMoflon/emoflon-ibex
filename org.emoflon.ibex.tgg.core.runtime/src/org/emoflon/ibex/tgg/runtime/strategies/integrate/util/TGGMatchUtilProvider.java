@@ -22,7 +22,7 @@ public class TGGMatchUtilProvider {
 	}
 
 	private void init() {
-		name2rule = integrate.getOptions().tgg.getFlattenedConcreteTGGRules().stream() //
+		name2rule = integrate.getOptions().tgg.getConcreteTGGRules().stream() //
 				.collect(Collectors.toMap(rule -> rule.getName(), rule -> rule));
 		match2util = Collections.synchronizedMap(new HashMap<>());
 	}

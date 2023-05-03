@@ -50,7 +50,7 @@ public class MultiplicityCounter extends MatchConsumer {
 		outgoingEdge2addedMatches2numOfEdges = new HashMap<>();
 		outgoingEdge2removedMatches2numOfEdges = new HashMap<>();
 
-		for (TGGRule rule : options.tgg.getFlattenedConcreteTGGRules()) {
+		for (TGGRule rule : options.tgg.getConcreteTGGRules()) {
 			for (TGGEdge greenEdge : TGGFilterUtil.filterEdges(rule.getEdges(), BindingType.CREATE)) {
 				if (greenEdge.getDomainType() == DomainType.CORRESPONDENCE)
 					continue;
