@@ -16,6 +16,7 @@ import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.interpreter.IbexGreenInterpreter;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.RuleHandler;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalisationMode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
 
 public class LocalCCMatchContainer implements IMatchContainer{
@@ -65,13 +66,13 @@ public class LocalCCMatchContainer implements IMatchContainer{
 	}
 
 	private void addConsistencyMatch(ITGGMatch match) {
-		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getOperationalRuleName());
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getRuleName(), OperationalisationMode.GENERATE);
 		
-		for(IBeXNode node : operationalRule.getToBeMarked().getNodes()) {
+		for(IBeXNode node : operationalRule.getCreate().getNodes()) {
 			Object object = match.get(node.getName());
 			markedElements.add(object);
 		}
-		for(IBeXEdge edge : operationalRule.getToBeMarked().getEdges()) {
+		for(IBeXEdge edge : operationalRule.getCreateSourceAndTarget().getEdges()) {
 			markedEdges.add(getRuntimeEdge(match, edge));
 		}
 		
@@ -79,13 +80,13 @@ public class LocalCCMatchContainer implements IMatchContainer{
 	}
 	
 	private boolean removeConsistencyMatch(ITGGMatch match) {
-		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getOperationalRuleName());
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getRuleName(), OperationalisationMode.GENERATE);
 
-		for(IBeXNode node : operationalRule.getToBeMarked().getNodes()) {
+		for(IBeXNode node : operationalRule.getCreate().getNodes()) {
 			Object object = match.get(node.getName());
 			markedElements.remove(object);
 		}
-		for(IBeXEdge edge : operationalRule.getToBeMarked().getEdges()) {
+		for(IBeXEdge edge : operationalRule.getCreateSourceAndTarget().getEdges()) {
 			markedEdges.remove(getRuntimeEdge(match, edge));
 		}
 		
@@ -93,16 +94,16 @@ public class LocalCCMatchContainer implements IMatchContainer{
 	}
 
 	private void addCCMatch(ITGGMatch match) {
-		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getOperationalRuleName());
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getRuleName(), OperationalisationMode.GENERATE);
 		
-		for(IBeXNode node : operationalRule.getToBeMarked().getNodes()) {
+		for(IBeXNode node : operationalRule.getCreate().getNodes()) {
 			Object object = match.get(node.getName());
 			if(markedElements.contains(object)) {
 				invalidCCMatches.add(match);
 				return;
 			}
 		}
-		for(IBeXEdge edge : operationalRule.getToBeMarked().getEdges()) {
+		for(IBeXEdge edge : operationalRule.getCreateSourceAndTarget().getEdges()) {
 			EMFEdge emfEdge = getRuntimeEdge(match, edge);
 			if(markedEdges.contains(emfEdge)) {
 				invalidCCMatches.add(match);
@@ -165,7 +166,7 @@ public class LocalCCMatchContainer implements IMatchContainer{
 	
 	protected Set<EMFEdge> getGreenEdges(final ITGGMatch match) {
 		Set<EMFEdge> result = cfactory.createEMFEdgeHashSet();
-		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getOperationalRuleName());
+		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getRuleName(), OperationalisationMode.GENERATE);
 		result.addAll(interpreter.createEdges(match, operationalRule.getCreateSource().getEdges(), false));
 		result.addAll(interpreter.createEdges(match, operationalRule.getCreateTarget().getEdges(), false));
 		return result;

@@ -36,6 +36,7 @@ public class StrategyToOperationalization {
 			modes.add(OperationalisationMode.FORWARD);
 			modes.add(OperationalisationMode.BACKWARD);
 			modes.add(OperationalisationMode.CONSISTENCY);
+			modes.add(OperationalisationMode.CONSISTENCY_CHECK);
 			break;
 		case CC:
 			modes.add(OperationalisationMode.CONSISTENCY_CHECK);

@@ -218,13 +218,13 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 	 */
 	public boolean hasConsistencyMatchOverlap(PrecedenceNode srcTrgNode) {
 		ITGGMatch srcTrgMatch = srcTrgNode.getMatch();
-		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(srcTrgMatch.getOperationalRuleName());
+		TGGRule rule = ruleHandler.getRule(srcTrgMatch.getRuleName());
 
 		Set<Object> translatedElts = cfactory.createObjectSet();
 		if (srcTrgMatch.getType() == PatternType.SOURCE) {
-			getGreenSrcElements(srcTrgMatch, operationalRule, translatedElts);
+			getGreenSrcElements(srcTrgMatch, rule, translatedElts);
 		} else if (srcTrgMatch.getType() == PatternType.TARGET) {
-			getGreenTrgElements(srcTrgMatch, operationalRule, translatedElts);
+			getGreenTrgElements(srcTrgMatch, rule, translatedElts);
 		} else {
 			throw new RuntimeException("The pattern type of the specified node can only to be source or target!");
 		}
@@ -286,14 +286,14 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 		return overlaps;
 	}
 
-	private void getGreenTrgElements(ITGGMatch match, TGGOperationalRule operationalRule, Set<Object> elements) {
-		operationalRule.getCreateTarget().getNodes().forEach(n -> elements.add(match.get(n.getName())));
-		operationalRule.getCreateTarget().getEdges().forEach(e -> elements.add(getRuntimeEdge(match, e)));
+	private void getGreenTrgElements(ITGGMatch match, TGGRule rule, Set<Object> elements) {
+		rule.getCreateTarget().getNodes().forEach(n -> elements.add(match.get(n.getName())));
+		rule.getCreateTarget().getEdges().forEach(e -> elements.add(getRuntimeEdge(match, e)));
 	}
 
-	private void getGreenSrcElements(ITGGMatch match, TGGOperationalRule operationalRule, Set<Object> elements) {
-		operationalRule.getCreateSource().getNodes().forEach(n -> elements.add(match.get(n.getName())));
-		operationalRule.getCreateSource().getEdges().forEach(e -> elements.add(getRuntimeEdge(match, e)));
+	private void getGreenSrcElements(ITGGMatch match, TGGRule rule, Set<Object> elements) {
+		rule.getCreateSource().getNodes().forEach(n -> elements.add(match.get(n.getName())));
+		rule.getCreateSource().getEdges().forEach(e -> elements.add(getRuntimeEdge(match, e)));
 	}
 
 	private void addMatch(ITGGMatch match) {
