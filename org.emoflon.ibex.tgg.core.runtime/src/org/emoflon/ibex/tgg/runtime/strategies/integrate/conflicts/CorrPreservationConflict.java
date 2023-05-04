@@ -13,7 +13,7 @@ import org.emoflon.ibex.tgg.runtime.strategies.integrate.conflicts.resolution.CR
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.matchcontainer.PrecedenceGraph;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.matchcontainer.PrecedenceNode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
-import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGOperationalRule;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 
 public class CorrPreservationConflict extends InconsistentChangesConflict implements CRS_PreferSource, CRS_PreferTarget {
@@ -41,11 +41,11 @@ public class CorrPreservationConflict extends InconsistentChangesConflict implem
 
 		PrecedenceGraph pg = integrate().precedenceGraph();
 		ITGGMatch match = getMatch();
-		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getOperationalRuleName());
+		TGGRule rule = ruleHandler.getRule(match.getRuleName());
 
 		Collection<IBeXNode> greenRuleNodes = new HashSet<>();
-		greenRuleNodes.addAll(operationalRule.getCreateSource().getNodes());
-		greenRuleNodes.addAll(operationalRule.getCreateTarget().getNodes());
+		greenRuleNodes.addAll(rule.getCreateSource().getNodes());
+		greenRuleNodes.addAll(rule.getCreateTarget().getNodes());
 		for (IBeXNode ruleNode : greenRuleNodes) {
 			for (PrecedenceNode node : pg.getNodesTranslating(match.get(ruleNode.getName()))) {
 				if (node.getMatch().getType() == PatternType.CONSISTENCY)
