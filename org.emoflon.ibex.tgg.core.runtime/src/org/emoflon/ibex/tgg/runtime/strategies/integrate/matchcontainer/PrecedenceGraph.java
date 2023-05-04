@@ -248,13 +248,13 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 		Map<PrecedenceNode, Set<Object>> overlaps;
 
 		ITGGMatch match = node.getMatch();
-		TGGOperationalRule operationalRule = ruleHandler.getOperationalRule(match.getOperationalRuleName());
+		TGGRule rule = ruleHandler.getRule(match.getRuleName());
 		
 		Set<Object> translatedElts = cfactory.createObjectSet();
 		if (match.getType() == PatternType.CONSISTENCY) {
 			switch (overlapType) {
-				case SOURCE -> getGreenSrcElements(match, operationalRule, translatedElts);
-				case TARGET -> getGreenTrgElements(match, operationalRule, translatedElts);
+				case SOURCE -> getGreenSrcElements(match, rule, translatedElts);
+				case TARGET -> getGreenTrgElements(match, rule, translatedElts);
 				default -> throw new RuntimeException(
 						"For consistency matches, the pattern type of overlapping matches can only be source or target!");
 			}
@@ -270,8 +270,8 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 					.collect(Collectors.groupingBy(e -> e.getKey(), Collectors.mapping(e -> e.getValue(), Collectors.toSet())));
 		} else {
 			switch (match.getType()) {
-				case SOURCE -> getGreenSrcElements(match, operationalRule, translatedElts);
-				case TARGET -> getGreenTrgElements(match, operationalRule, translatedElts);
+				case SOURCE -> getGreenSrcElements(match, rule, translatedElts);
+				case TARGET -> getGreenTrgElements(match, rule, translatedElts);
 				default -> throw new RuntimeException("The pattern type of the specified node can only to be consistency, source or target!");
 			}
 
