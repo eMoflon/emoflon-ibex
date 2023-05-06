@@ -15,6 +15,9 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeAssignment;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelFactory;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.RelationalExpression;
+import org.emoflon.ibex.tgg.compiler.TGGRuleDerivedFieldsTool;
+import org.emoflon.ibex.tgg.compiler.builder.AttrCondDefLibraryProvider;
 import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelFactory;
@@ -170,13 +173,19 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 		super.setAbstract(false);
 		this.componentElt2higherOrderElt = new HashMap<>();
 		this.higherOrderNodeNames = new HashSet<>();
+		
+		TGGPattern precondition = IBeXTGGModelFactory.eINSTANCE.createTGGPattern();
+		precondition.setName(super.getName());
+		super.setPrecondition(precondition);
 	}
 
 	private void populateTGGRule(TGGRule rule, HigherOrderRuleComponent component, Map<TGGRuleElement, ComponentSpecificRuleElement> contextMapping) {
 		super.setName(super.getName() + "_" + rule.getName());
+		super.getPrecondition().setName(super.getName());
 
 		populateElts(rule, component, contextMapping);
-		transferAttrCondLibrary(rule, component);
+		transferCSPs(rule, component);
+		transferAttributeConditions(rule, component);
 		adaptAttributeAssignments(rule, component);
 	}
 
@@ -231,7 +240,10 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 		higherOrderNode.setBindingType(node.getBindingType());
 		higherOrderNode.setDomainType(node.getDomainType());
 		higherOrderNode.setType(node.getType());
-		higherOrderNode.getAttributeAssignments().addAll(EcoreUtil.copyAll(node.getAttributeAssignments()));
+		
+		var attrAssignments = EcoreUtil.copyAll(node.getAttributeAssignments());
+		higherOrderNode.getAttributeAssignments().addAll(attrAssignments);
+		super.getAttributeAssignments().addAll(attributeAssignments);
 
 		super.getNodes().add(higherOrderNode);
 
@@ -270,7 +282,7 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 	}
 
 	private void adaptAttributeAssignments(TGGRule rule, HigherOrderRuleComponent component) {
-		rule.getNodes().stream() //
+		List<IBeXAttributeAssignment> attrAssignments = rule.getNodes().stream() //
 				.filter(n -> n.getBindingType() == BindingType.CREATE) //
 				.map(n -> {
 					ComponentSpecificRuleElement compSpecRuleElt = component.getComponentSpecificRuleElement((TGGNode) n);
@@ -278,21 +290,33 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 				}) //
 				.flatMap(n -> n.getAttributeAssignments().stream()) //
 				.filter(e -> e.getValue() instanceof IBeXAttributeValue) //
+				.toList();
+		
+		attrAssignments.forEach(assignment -> {
+			ComponentSpecificRuleElement compSpecRuleElt = component.getComponentSpecificRuleElement((TGGNode) assignment.getNode());
+			TGGNode newNode = (TGGNode) componentElt2higherOrderElt.get(compSpecRuleElt);
+			if (newNode == null)
+				throw new RuntimeException("Inconsistent higher-order rule construction! Cannot find rule element.");
+			assignment.setNode(newNode);
+		});
+		
+		attrAssignments.stream() //
 				.map(e -> (IBeXAttributeValue) e.getValue()) //
 				.forEach(attrValue -> {
 					ComponentSpecificRuleElement compSpecRuleElt = component.getComponentSpecificRuleElement((TGGNode) attrValue.getNode());
 					TGGNode newNode = (TGGNode) componentElt2higherOrderElt.get(compSpecRuleElt);
-					if (newNode != null)
-						attrValue.setNode(newNode);
+					if (newNode == null)
+						throw new RuntimeException("Inconsistent higher-order rule construction! Cannot find rule element.");
+					attrValue.setNode(newNode);
 				});
-
+	
 		// Edge case: higher-order rules are able to create multiple rule applications at once. This causes
 		// in-place attribute assignment expressions to reference green nodes. In case of utilizing
 		// higher-order rules to create short-cut rules, green nodes with such in-place attribute
 		// expressions may turn to context nodes, but it's referenced node doesn't. This creates a scenario
 		// where the in-place attribute assignment expression has to be converted to a CSP to be applied
 		// properly:
-
+	
 		Collection<IBeXAttributeAssignment> toBeDeletedAttrAssignments = new LinkedList<>();
 		for (TGGNode node : TGGFilterUtil.filterNodes(nodes, BindingType.CREATE)) {
 			for (var attributeAssignment : node.getAttributeAssignments()) {
@@ -304,6 +328,7 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 				}
 			}
 		}
+		toBeDeletedAttrAssignments.forEach(e -> ((TGGNode) e.getNode()).getAttributeAssignments().remove(e));
 		toBeDeletedAttrAssignments.forEach(e -> EcoreUtil.delete(e));
 	}
 
@@ -312,7 +337,7 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 		lhsAttributeValue.setAttribute(lhsAttr);
 		lhsAttributeValue.setNode(lhsNode);
 
-		TGGAttributeConstraintDefinition attrConstraintDef = getAttrConstraintDef(lhsAttr, (TGGModel) rule.eContainer().eContainer());
+		TGGAttributeConstraintDefinition attrConstraintDef = getCSPDefinition(lhsAttr, (TGGModel) rule.eContainer().eContainer());
 		TGGAttributeConstraintParameterDefinition lhsParamDef;
 		TGGAttributeConstraintParameterDefinition rhsParamDef;
 		try {
@@ -341,7 +366,7 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 		attributeConstraintSet.getTggAttributeConstraints().add(attrConstraint);
 	}
 
-	private TGGAttributeConstraintDefinition getAttrConstraintDef(EAttribute attr, TGGModel tggModel) {
+	private TGGAttributeConstraintDefinition getCSPDefinition(EAttribute attr, TGGModel tggModel) {
 		String defName = switch (attr.getEAttributeType().getName()) {
 			case "EString" -> "eq_string";
 			case "EInt" -> "eq_int";
@@ -352,16 +377,46 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 			case "EBoolean" -> "eq_boolean";
 			default -> throw new IllegalArgumentException("Unexpected value: " + attr.getEAttributeType());
 		};
-		// FIXME determine predefined library
-		for (TGGAttributeConstraintDefinition def : tggModel.getAttributeConstraintDefinitionLibraries().get(0).getTggAttributeConstraintDefinitions()) {
+		var predefinedDefs = AttrCondDefLibraryProvider.getPredefinedAttrCondLibrary(tggModel).getTggAttributeConstraintDefinitions();
+		for (TGGAttributeConstraintDefinition def : predefinedDefs) {
 			if (def.getName().equals(defName))
 				return def;
 		}
 		return null;
 	}
 
-	private void transferAttrCondLibrary(TGGRule rule, HigherOrderRuleComponent component) {
-		var copiedConstraintSet = EcoreUtil.copy(((TGGPattern) this.getPrecondition()).getAttributeConstraints());
+	private void transferAttributeConditions(TGGRule rule, HigherOrderRuleComponent component) {
+		var attributeConditions = EcoreUtil.copyAll(rule.getPrecondition().getConditions());
+		
+		for (var attributeCondition : attributeConditions) {
+			if (!(attributeCondition instanceof RelationalExpression relationalExpression))
+				throw new RuntimeException("Attribute conditions must be relational expressions!");
+			if (relationalExpression.getLhs() instanceof IBeXAttributeValue attributeValue) {
+				ComponentSpecificRuleElement compSpecRuleElt = component.getComponentSpecificRuleElement((TGGNode) attributeValue.getNode());
+				TGGNode newNode = (TGGNode) componentElt2higherOrderElt.get(compSpecRuleElt);
+				if (newNode == null)
+					throw new RuntimeException("Inconsistent higher-order rule construction! Cannot find rule element.");
+				attributeValue.setNode(newNode);
+				
+				((TGGNode) attributeValue.getNode()).getReferencedByConditions().add(attributeCondition);
+			}
+			if (relationalExpression.getRhs() instanceof IBeXAttributeValue attributeValue) {
+				ComponentSpecificRuleElement compSpecRuleElt = component.getComponentSpecificRuleElement((TGGNode) attributeValue.getNode());
+				TGGNode newNode = (TGGNode) componentElt2higherOrderElt.get(compSpecRuleElt);
+				if (newNode == null)
+					throw new RuntimeException("Inconsistent higher-order rule construction! Cannot find rule element.");
+				attributeValue.setNode(newNode);
+				
+				((TGGNode) attributeValue.getNode()).getReferencedByConditions().add(attributeCondition);
+			}
+		}
+		
+		TGGPattern precondition = (TGGPattern) super.getPrecondition();
+		precondition.getConditions().addAll(attributeConditions);
+	}
+
+	private void transferCSPs(TGGRule rule, HigherOrderRuleComponent component) {
+		var copiedConstraintSet = EcoreUtil.copy(((TGGPattern) rule.getPrecondition()).getAttributeConstraints());
 
 		for (var parameterValue : copiedConstraintSet.getParameters()) {
 			if (parameterValue.getExpression() instanceof IBeXAttributeValue attributeValue) {
@@ -373,13 +428,21 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 			}
 		}
 
-		TGGPattern preConditionPattern = (TGGPattern) super.getPrecondition();
-		if (preConditionPattern.getAttributeConstraints() == null) {
-			preConditionPattern.setAttributeConstraints(copiedConstraintSet);
+		TGGPattern precondition = (TGGPattern) super.getPrecondition();
+		if (precondition.getAttributeConstraints() == null) {
+			precondition.setAttributeConstraints(copiedConstraintSet);
 		} else {
-			preConditionPattern.getAttributeConstraints().getParameters().addAll(copiedConstraintSet.getParameters());
-			preConditionPattern.getAttributeConstraints().getTggAttributeConstraints().addAll(copiedConstraintSet.getTggAttributeConstraints());
+			precondition.getAttributeConstraints().getParameters().addAll(copiedConstraintSet.getParameters());
+			precondition.getAttributeConstraints().getTggAttributeConstraints().addAll(copiedConstraintSet.getTggAttributeConstraints());
 		}
+	}
+	
+	public void postProcess() {
+		this.getAllNodes().addAll(this.getNodes());
+		this.getAllEdges().addAll(this.getEdges());
+		TGGRuleDerivedFieldsTool.fillDerivedTGGRuleFields(this);
+		var attributeConstraints = ((TGGPattern) super.getPrecondition()).getAttributeConstraints();
+		super.setAttributeConstraints(EcoreUtil.copy(attributeConstraints));
 	}
 
 }

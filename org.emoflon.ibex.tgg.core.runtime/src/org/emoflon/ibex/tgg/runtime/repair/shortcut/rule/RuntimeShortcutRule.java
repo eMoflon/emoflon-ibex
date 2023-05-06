@@ -187,6 +187,9 @@ public class RuntimeShortcutRule {
 	}
 
 	private void adaptAttributeAssignments() {
+		shortcutRule.getAttributeAssignments() //
+				.forEach(a -> a.setNode(replacing2newNodes.get(a.getNode())));
+		
 		shortcutRule.getAttributeAssignments().stream() //
 				.filter(a -> a.getValue() instanceof IBeXAttributeValue) //
 				.map(a -> (IBeXAttributeValue) a.getValue()) //

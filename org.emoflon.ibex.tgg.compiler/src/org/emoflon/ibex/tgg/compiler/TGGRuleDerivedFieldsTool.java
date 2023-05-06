@@ -85,6 +85,7 @@ public class TGGRuleDerivedFieldsTool {
 	public static void fillDerivedTGGRulePreCondition(TGGRule rule, Collection<BooleanExpression> attributeConditions,
 			TGGAttributeConstraintSet attributeConstraints) {
 		TGGPattern precondition = IBeXTGGModelFactory.eINSTANCE.createTGGPattern();
+		precondition.setName(rule.getName());
 		precondition.getSignatureNodes().addAll(TGGModelUtils.getNodesByOperator(rule, CONTEXT));
 		precondition.getEdges().addAll(TGGModelUtils.getEdgesByOperator(rule, CONTEXT));
 

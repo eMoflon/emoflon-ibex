@@ -66,6 +66,7 @@ public class HigherOrderTGGRuleFactory {
 			higherOrderRule.addComponent(rule, pgNode.getMatch(), contextMapping);
 		}
 
+		higherOrderRule.postProcess();
 		return higherOrderRule;
 	}
 
@@ -201,6 +202,7 @@ public class HigherOrderTGGRuleFactory {
 			higherOrderRule.addComponent(rule, pgNode.getMatch(), contextMapping);
 		}
 
+		higherOrderRule.postProcess();
 		return higherOrderRule;
 	}
 
