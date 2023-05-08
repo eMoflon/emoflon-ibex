@@ -34,6 +34,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintDefi
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintParameterDefinition;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.impl.TGGRuleImpl;
 import org.emoflon.ibex.tgg.util.TGGFilterUtil;
+import org.emoflon.ibex.tgg.util.TGGModelUtils;
 import org.emoflon.ibex.tgg.util.debug.ConsoleUtil;
 
 public class HigherOrderTGGRule extends TGGRuleImpl {
@@ -213,8 +214,6 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 
 		ComponentSpecificRuleElement componentNode = component.getComponentSpecificRuleElement(node);
 		componentElt2higherOrderElt.put(componentNode, higherOrderNode);
-
-		// TODO transfer inplace attributes!
 	}
 
 	private void transformHigherOrderEdge(HigherOrderRuleComponent component, TGGEdge edge, ComponentSpecificRuleElement mappedComponentNode) {
@@ -238,12 +237,13 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 
 		higherOrderNode.setName(newName);
 		higherOrderNode.setBindingType(node.getBindingType());
+		TGGModelUtils.setOperationType(higherOrderNode, higherOrderNode.getBindingType());
 		higherOrderNode.setDomainType(node.getDomainType());
 		higherOrderNode.setType(node.getType());
 		
 		var attrAssignments = EcoreUtil.copyAll(node.getAttributeAssignments());
 		higherOrderNode.getAttributeAssignments().addAll(attrAssignments);
-		super.getAttributeAssignments().addAll(attributeAssignments);
+		super.getAttributeAssignments().addAll(attrAssignments);
 
 		super.getNodes().add(higherOrderNode);
 
@@ -272,6 +272,7 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 
 		higherOrderEdge.setName(newName);
 		higherOrderEdge.setBindingType(edge.getBindingType());
+		TGGModelUtils.setOperationType(higherOrderEdge, higherOrderEdge.getBindingType());
 		higherOrderEdge.setDomainType(edge.getDomainType());
 		higherOrderEdge.setType(edge.getType());
 
