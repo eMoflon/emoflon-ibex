@@ -6,6 +6,7 @@ import static org.emoflon.ibex.tgg.util.TGGModelUtils.getMarkerRefName;
 import static org.emoflon.ibex.tgg.util.TGGModelUtils.getMarkerTypeName;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
@@ -26,6 +27,7 @@ import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRu
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.RuntimeShortcutRule.SCInputRule;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.SearchPlan;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.SearchPlanCreator;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.ShortcutResourceHandler;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelFactory;
@@ -60,10 +62,12 @@ public abstract class OperationalShortcutRule {
 
 	protected SearchPlanCreator searchPlanCreator;
 
-	public OperationalShortcutRule(IbexOptions options, IGreenInterpreter greenInterpreter, RuntimeShortcutRule shortcutRule, ACAnalysis filterNACAnalysis) {
+	public OperationalShortcutRule(IbexOptions options, IGreenInterpreter greenInterpreter, RuntimeShortcutRule shortcutRule, //
+			ACAnalysis filterNACAnalysis, ShortcutResourceHandler scResourceHandler) {
 		this.options = options;
 		this.rawShortcutRule = shortcutRule;
 		this.operationalizedSCR = shortcutRule.copy();
+		scResourceHandler.add(operationalizedSCR.getShortcutRule());
 		initMarkerSets();
 		this.filterNACAnalysis = filterNACAnalysis;
 
@@ -131,6 +135,7 @@ public abstract class OperationalShortcutRule {
 		createRuleApplicationLinks(oldRaNode);
 
 		operationalizedSCR.getNodes().add(oldRaNode);
+		operationalizedSCR.getShortcutRule().getAllNodes().add(oldRaNode);
 	}
 
 	private void createRuleApplicationLinks(TGGNode oldRaNode) {
@@ -154,6 +159,7 @@ public abstract class OperationalShortcutRule {
 		edge.setTarget(scNode);
 
 		operationalizedSCR.getEdges().add(edge);
+		operationalizedSCR.getShortcutRule().getAllEdges().add(edge);
 	}
 
 	private EReference getProtocolRef(TGGNode protocolNode, TGGNode node) {
@@ -179,6 +185,7 @@ public abstract class OperationalShortcutRule {
 		createRuleApplicationLinks(component, oldRaNode);
 
 		operationalizedSCR.getNodes().add(oldRaNode);
+		operationalizedSCR.getShortcutRule().getAllNodes().add(oldRaNode);
 	}
 
 	private void createRuleApplicationLinks(HigherOrderRuleComponent component, TGGNode oldRaNode) {
@@ -204,6 +211,7 @@ public abstract class OperationalShortcutRule {
 		edge.setTarget(scNode);
 
 		operationalizedSCR.getEdges().add(edge);
+		operationalizedSCR.getShortcutRule().getAllEdges().add(edge);
 	}
 
 	protected void createFilterNacs(TGGRule targetRule, DomainType domain) {
@@ -238,7 +246,9 @@ public abstract class OperationalShortcutRule {
 			edge.setName(edge.getSource().getName() + "__" + dec.getEdgeType().getName() + "__" + edge.getTarget().getName());
 
 			operationalizedSCR.getNodes().add(node);
+			operationalizedSCR.getShortcutRule().getAllNodes().add(node);
 			operationalizedSCR.getEdges().add(edge);
+			operationalizedSCR.getShortcutRule().getAllEdges().add(edge);
 		}
 	}
 
@@ -279,18 +289,15 @@ public abstract class OperationalShortcutRule {
 
 	// TODO lfritsche: delete -> nac?
 	protected void removeNodes(Collection<TGGNode> filterNodes) {
-		filterNodes.iterator().forEachRemaining(f -> {
-			operationalizedSCR.getEdges().removeAll(f.getIncomingEdges());
-			operationalizedSCR.getEdges().removeAll(f.getOutgoingEdges());
-			f.getIncomingEdges().stream().forEach(e -> EcoreUtil.delete(e));
-			f.getOutgoingEdges().stream().forEach(e -> EcoreUtil.delete(e));
-			EcoreUtil.delete(f);
+		filterNodes.forEach(n -> {
+			new LinkedList<>(n.getIncomingEdges()).forEach(EcoreUtil::delete);
+			new LinkedList<>(n.getOutgoingEdges()).forEach(EcoreUtil::delete);
+			EcoreUtil.delete(n);
 		});
-		operationalizedSCR.getNodes().removeAll(filterNodes);
 	}
 
 	protected void removeEdges(Collection<TGGEdge> filterEdges) {
-		filterEdges.iterator().forEachRemaining(EcoreUtil::delete);
+		filterEdges.forEach(EcoreUtil::delete);
 	}
 
 	protected void addNACforCreatedInterface(Collection<TGGEdge> edges) {

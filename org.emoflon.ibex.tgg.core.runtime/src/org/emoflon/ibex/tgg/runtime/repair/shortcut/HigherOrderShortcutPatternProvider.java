@@ -21,7 +21,6 @@ import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.RuntimeShortcutRule;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.LocalPatternSearch;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.OverlapCategory;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.OverlapUtil.FixedMappings;
-import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.SCPersistence;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.TGGOverlap;
 import org.emoflon.ibex.tgg.runtime.repair.strategies.RepairApplicationPoint;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.matchcontainer.PrecedenceGraph;
@@ -135,7 +134,11 @@ public class HigherOrderShortcutPatternProvider extends BasicShortcutPatternProv
 		Map<String, Set<RuntimeShortcutRule>> shortcutRules = new HashMap<>();
 		id2overlaps.forEach((id, overlaps) -> shortcutRules.put(id, //
 				overlaps.stream() //
-						.map(overlap -> new RuntimeShortcutRule(overlap, options)) //
+						.map(overlap -> {
+							RuntimeShortcutRule rtShortcutRule = new RuntimeShortcutRule(overlap, options);
+							scResourceHandler.add(rtShortcutRule.getShortcutRule());
+							return rtShortcutRule;
+						}) //
 						.collect(Collectors.toSet()) //
 		));
 
@@ -179,31 +182,6 @@ public class HigherOrderShortcutPatternProvider extends BasicShortcutPatternProv
 		TGGRuleElement element = mu.getElement(sharingObject);
 		ComponentSpecificRuleElement componentSpecRuleElt = component.getComponentSpecificRuleElement(element);
 		return componentSpecRuleElt.getRespectiveHigherOrderElement();
-	}
-
-	@Override
-	public void persistShortcutRules() {
-		SCPersistence persistence = new SCPersistence(options);
-
-		LinkedList<RuntimeShortcutRule> allShortcutRules = new LinkedList<>(basicShortcutRules);
-		allShortcutRules.addAll( //
-				higherOrderShortcutRules.values().stream() //
-						.flatMap(m -> m.values().stream()) //
-						.flatMap(c -> c.stream()) //
-						.toList() //
-		);
-
-		persistence.saveSCRules(allShortcutRules);
-		Map<String, Collection<OperationalShortcutRule>> fwdOpSCRs = basicShortcutPatterns.get(PatternType.FWD);
-		if (fwdOpSCRs != null) {
-			persistence.saveOperationalFWDSCRules(fwdOpSCRs.values().stream() //
-					.flatMap(c -> c.stream()).collect(Collectors.toList()));
-		}
-		Map<String, Collection<OperationalShortcutRule>> bwdOpSCRs = basicShortcutPatterns.get(PatternType.BWD);
-		if (bwdOpSCRs != null) {
-			persistence.saveOperationalBWDSCRules(bwdOpSCRs.values().stream() //
-					.flatMap(c -> c.stream()).collect(Collectors.toList()));
-		}
 	}
 
 }

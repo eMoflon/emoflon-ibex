@@ -7,14 +7,16 @@ import org.emoflon.ibex.tgg.analysis.ACAnalysis;
 import org.emoflon.ibex.tgg.patterns.PatternType;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.interpreter.IGreenInterpreter;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.ShortcutResourceHandler;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalisationMode;
 
 public class FWDShortcutRule extends OperationalShortcutRule {
 
-	public FWDShortcutRule(IbexOptions options, IGreenInterpreter greenInterpreter, RuntimeShortcutRule scRule, ACAnalysis filterNACAnalysis) {
-		super(options, greenInterpreter, scRule, filterNACAnalysis);
+	public FWDShortcutRule(IbexOptions options, IGreenInterpreter greenInterpreter, RuntimeShortcutRule scRule, //
+			ACAnalysis filterNACAnalysis, ShortcutResourceHandler scResourceHandler) {
+		super(options, greenInterpreter, scRule, filterNACAnalysis, scResourceHandler);
 	}
 
 	@Override

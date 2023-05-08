@@ -18,7 +18,7 @@ import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.OperationalShortcutRule
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.rule.RuntimeShortcutRule;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.search.LocalPatternSearch;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.OverlapUtil;
-import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.SCPersistence;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.ShortcutResourceHandler;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.TGGOverlap;
 import org.emoflon.ibex.tgg.runtime.repair.strategies.RepairApplicationPoint;
 import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
@@ -27,6 +27,7 @@ public class BasicShortcutPatternProvider implements ShortcutPatternProvider {
 
 	protected final IbexOptions options;
 	protected final OverlapUtil overlapUtil;
+	protected final ShortcutResourceHandler scResourceHandler;
 	protected final OperationalSCFactory opSCFactory;
 
 	protected final Set<PatternType> types;
@@ -36,10 +37,12 @@ public class BasicShortcutPatternProvider implements ShortcutPatternProvider {
 
 	protected final Map<OperationalShortcutRule, LocalPatternSearch> opShortcutRule2patternMatcher;
 
-	public BasicShortcutPatternProvider(IbexOptions options, IGreenInterpreter greenInterpreter, PatternType[] types, boolean initiallyPersistShortcutRules) {
+	public BasicShortcutPatternProvider(IbexOptions options, IGreenInterpreter greenInterpreter, PatternType[] types,
+			boolean initiallyPersistShortcutRules) {
 		this.options = options;
 		this.overlapUtil = new OverlapUtil(options);
-		this.opSCFactory = new OperationalSCFactory(options);
+		this.scResourceHandler = new ShortcutResourceHandler(options);
+		this.opSCFactory = new OperationalSCFactory(options, scResourceHandler);
 
 		this.types = new HashSet<>(Arrays.asList(types));
 
@@ -58,11 +61,16 @@ public class BasicShortcutPatternProvider implements ShortcutPatternProvider {
 		Collection<TGGOverlap> basicOverlaps = overlapUtil.calculateOverlaps(options.tgg.tgg().getRuleSet());
 
 		basicShortcutRules = basicOverlaps.stream() //
-				.map(overlap -> new RuntimeShortcutRule(overlap, options)) //
+				.map(overlap -> {
+					RuntimeShortcutRule rtShortcutRule = new RuntimeShortcutRule(overlap, options);
+					scResourceHandler.add(rtShortcutRule.getShortcutRule());
+					return rtShortcutRule;
+				}) //
 				.collect(Collectors.toList());
 
 		for (PatternType type : types) {
-			Map<String, Collection<OperationalShortcutRule>> opShortcutRules = opSCFactory.createOperationalRules(greenInterpreter, basicShortcutRules, type);
+			Map<String, Collection<OperationalShortcutRule>> opShortcutRules = opSCFactory.createOperationalRules(greenInterpreter, basicShortcutRules,
+					type);
 			basicShortcutPatterns.put(type, opShortcutRules);
 
 			LoggerConfig.log(LoggerConfig.log_repair(), //
@@ -94,19 +102,7 @@ public class BasicShortcutPatternProvider implements ShortcutPatternProvider {
 	}
 
 	public void persistShortcutRules() {
-		SCPersistence persistence = new SCPersistence(options);
-
-		persistence.saveSCRules(basicShortcutRules);
-		Map<String, Collection<OperationalShortcutRule>> fwdOpSCRs = basicShortcutPatterns.get(PatternType.FWD);
-		if (fwdOpSCRs != null) {
-			persistence.saveOperationalFWDSCRules(fwdOpSCRs.values().stream() //
-					.flatMap(c -> c.stream()).collect(Collectors.toList()));
-		}
-		Map<String, Collection<OperationalShortcutRule>> bwdOpSCRs = basicShortcutPatterns.get(PatternType.BWD);
-		if (bwdOpSCRs != null) {
-			persistence.saveOperationalBWDSCRules(bwdOpSCRs.values().stream() //
-					.flatMap(c -> c.stream()).collect(Collectors.toList()));
-		}
+		scResourceHandler.save();
 	}
 
 }

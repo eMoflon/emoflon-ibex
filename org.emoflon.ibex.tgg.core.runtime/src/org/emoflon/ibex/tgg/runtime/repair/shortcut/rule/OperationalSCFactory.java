@@ -11,6 +11,7 @@ import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.interpreter.IGreenInterpreter;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderSupport;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.higherorder.HigherOrderTGGRule;
+import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.ShortcutResourceHandler;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 import org.emoflon.ibex.tgg.util.TGGFilterUtil;
@@ -19,10 +20,12 @@ public class OperationalSCFactory {
 
 	private final IbexOptions options;
 	private final ACAnalysis filterNACAnalysis;
+	private final ShortcutResourceHandler scResourceHandler;
 
-	public OperationalSCFactory(IbexOptions options) {
+	public OperationalSCFactory(IbexOptions options, ShortcutResourceHandler scResourceHandler) {
 		this.options = options;
 		this.filterNACAnalysis = new ACAnalysis(options.tgg.tgg(), options.patterns.acStrategy());
+		this.scResourceHandler = scResourceHandler;
 	}
 
 	public Map<String, Collection<OperationalShortcutRule>> createOperationalRules(IGreenInterpreter greenInterpreter,
@@ -58,11 +61,11 @@ public class OperationalSCFactory {
 	private OperationalShortcutRule createOpShortcutRule(IGreenInterpreter greenInterpreter, RuntimeShortcutRule scRule, ACAnalysis filterNACAnalysis,
 			PatternType type) {
 		return switch (type) {
-			case FWD -> new FWDShortcutRule(options, greenInterpreter, scRule, filterNACAnalysis);
-			case BWD -> new BWDShortcutRule(options, greenInterpreter, scRule, filterNACAnalysis);
-			case CC -> new CCShortcutRule(options, greenInterpreter, scRule, filterNACAnalysis);
-			case SOURCE -> new SRCShortcutRule(options, greenInterpreter, scRule, filterNACAnalysis);
-			case TARGET -> new TRGShortcutRule(options, greenInterpreter, scRule, filterNACAnalysis);
+			case FWD -> new FWDShortcutRule(options, greenInterpreter, scRule, filterNACAnalysis, scResourceHandler);
+			case BWD -> new BWDShortcutRule(options, greenInterpreter, scRule, filterNACAnalysis, scResourceHandler);
+			case CC -> new CCShortcutRule(options, greenInterpreter, scRule, filterNACAnalysis, scResourceHandler);
+			case SOURCE -> new SRCShortcutRule(options, greenInterpreter, scRule, filterNACAnalysis, scResourceHandler);
+			case TARGET -> new TRGShortcutRule(options, greenInterpreter, scRule, filterNACAnalysis, scResourceHandler);
 			default -> throw new RuntimeException("Shortcut Rules cannot be operationalized for " + type.toString() + " operations");
 		};
 	}
