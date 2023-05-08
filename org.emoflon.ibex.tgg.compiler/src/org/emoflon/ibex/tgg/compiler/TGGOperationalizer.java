@@ -391,6 +391,9 @@ public class TGGOperationalizer {
 					condition.setLhs(lhs);
 					condition.setRhs(assignment.getValue());
 					op.getPrecondition().getConditions().add(condition);
+					((TGGNode) assignment.getNode()).getReferencedByConditions().add(condition);
+					if (condition.getRhs() instanceof IBeXAttributeValue attributeValue)
+						((TGGNode) attributeValue.getNode()).getReferencedByConditions().add(condition);
 					transformedAssignments.add(assignment);
 				}
 			}

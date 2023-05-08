@@ -289,7 +289,6 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 					return (TGGNode) componentElt2higherOrderElt.get(compSpecRuleElt);
 				}) //
 				.flatMap(n -> n.getAttributeAssignments().stream()) //
-				.filter(e -> e.getValue() instanceof IBeXAttributeValue) //
 				.toList();
 		
 		attrAssignments.forEach(assignment -> {
@@ -301,6 +300,7 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 		});
 		
 		attrAssignments.stream() //
+				.filter(e -> e.getValue() instanceof IBeXAttributeValue) //
 				.map(e -> (IBeXAttributeValue) e.getValue()) //
 				.forEach(attrValue -> {
 					ComponentSpecificRuleElement compSpecRuleElt = component.getComponentSpecificRuleElement((TGGNode) attrValue.getNode());

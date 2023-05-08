@@ -21,6 +21,7 @@ import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.classification.DeletionPattern;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.classification.DomainModification;
 import org.emoflon.ibex.tgg.runtime.strategies.integrate.modelchange.AttributeChange;
+import org.emoflon.ibex.tgg.runtime.strategies.modules.RuleHandler;
 import org.emoflon.ibex.tgg.runtime.strategies.modules.TGGResourceHandler;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
@@ -140,8 +141,9 @@ public class TGGMatchAnalyzer {
 
 		Map<String, EObject> nodeName2eObject = util.getNodeToEObject().entrySet().stream() //
 				.collect(Collectors.toMap(e -> e.getKey().getName(), e -> e.getValue()));
-		for (TGGNode node : util.rule.getNodes()) {
-			EObject eObject = util.getEObject(node);
+		RuleHandler ruleHandler = util.integrate.getOptions().tgg.ruleHandler();
+		for (TGGNode node : ruleHandler.getOperationalRule(util.match.getOperationalRuleName()).getNodes()) {
+			EObject eObject = nodeName2eObject.get(node.getName());
 			for (var attributeCondition : node.getReferencedByConditions()) {
 				if (!(attributeCondition instanceof RelationalExpression relationalExpression))
 					continue;

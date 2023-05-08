@@ -8,6 +8,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXBooleanValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEnumValue;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXNodeValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXStringValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.BooleanExpression;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.DoubleLiteral;
@@ -31,6 +32,9 @@ public class TGGAttributeCheckUtil {
 	public static boolean checkAttributeCondition(BooleanExpression expression, Map<String, EObject> objectReferences) {
 		if (!(expression instanceof RelationalExpression relationalExpression))
 			throw new RuntimeException("Only relational expressions are supported for attribute conditions!");
+		
+		if (relationalExpression.getLhs() instanceof IBeXNodeValue || relationalExpression.getRhs() instanceof IBeXNodeValue)
+			return true;
 
 		Object lhsValue = extractValue(relationalExpression.getLhs(), objectReferences);
 		Object rhsValue = extractValue(relationalExpression.getRhs(), objectReferences);
@@ -48,6 +52,8 @@ public class TGGAttributeCheckUtil {
 	 */
 	public static boolean checkRelation(ValueExpression lhs, RelationalOperator operator, ValueExpression rhs) {
 		if (lhs instanceof IBeXAttributeValue || rhs instanceof IBeXAttributeValue)
+			return true;
+		if (lhs instanceof IBeXNodeValue || rhs instanceof IBeXNodeValue)
 			return true;
 
 		Object lhsValue = extractValue(lhs, Collections.emptyMap());
