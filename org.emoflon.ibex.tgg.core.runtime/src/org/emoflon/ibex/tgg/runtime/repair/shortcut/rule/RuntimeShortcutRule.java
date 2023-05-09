@@ -310,6 +310,9 @@ public class RuntimeShortcutRule {
 		var copiedAttributeAssignments = EcoreUtil.copyAll(attrAssignments);
 		node.getAttributeAssignments().addAll(copiedAttributeAssignments);
 		shortcutRule.getAttributeAssignments().addAll(copiedAttributeAssignments);
+		
+		if (node instanceof TGGCorrespondence corrNode)
+			shortcutRule.getCorrespondenceNodes().add(corrNode);
 
 		return node;
 	}

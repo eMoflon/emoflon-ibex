@@ -226,7 +226,7 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 	}
 
 	private void createNewHigherOrderNode(HigherOrderRuleComponent component, TGGNode node) {
-		TGGNode higherOrderNode = IBeXTGGModelFactory.eINSTANCE.createTGGNode();
+		TGGNode higherOrderNode = (TGGNode) IBeXTGGModelFactory.eINSTANCE.create(node.eClass());
 
 		String newName = node.getName();
 		char c = 'a';
@@ -246,6 +246,8 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 		super.getAttributeAssignments().addAll(attrAssignments);
 
 		super.getNodes().add(higherOrderNode);
+		if (higherOrderNode instanceof TGGCorrespondence corrNode)
+			super.getCorrespondenceNodes().add(corrNode);
 
 		ComponentSpecificRuleElement componentNode = component.getComponentSpecificRuleElement(node);
 		componentElt2higherOrderElt.put(componentNode, higherOrderNode);
