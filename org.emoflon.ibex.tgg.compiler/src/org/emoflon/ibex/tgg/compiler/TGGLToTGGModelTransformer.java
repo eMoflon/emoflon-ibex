@@ -742,11 +742,12 @@ public class TGGLToTGGModelTransformer extends SlimGtToIBeXCoreTransformer<Edito
 		model.getPatternSet().getPatterns().add(internPattern);
 		
 		for(var node : pattern.getContextNodes()) {
-			internPattern.getSignatureNodes().add(transformTGGNode((SlimRuleNode) node.getContext(), BindingType.CONTEXT, DomainType.PATTERN));	
+			if(!node.isLocal())
+				internPattern.getSignatureNodes().add(transformTGGNode((SlimRuleNode) node.getContext(), BindingType.CONTEXT, DomainType.PATTERN));	
 		}
 		
-		for(var node : pattern.getCreatedNodes()) {
-			internPattern.getSignatureNodes().add(transformTGGNode((SlimRuleNode) node.getCreation(), BindingType.CREATE, DomainType.PATTERN));		
+		if(!pattern.getCreatedNodes().isEmpty()) {
+			throw new RuntimeException("Patterns are not allowed to create elements!");
 		}
 		
 		for(var invocation : pattern.getInvocations()) {
