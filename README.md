@@ -48,7 +48,7 @@ For detailed installation instructions, please refer to the [README.md file](htt
 ## How to develop
 1. Install a Java JDK >= 17.0.6.
 1. Install [GraphViz](http://www.graphviz.org/download/).
-1. Get the latest version of the [Eclipse Modeling Tools](https://www.eclipse.org/downloads/packages/). You need at least **Eclipse 2022-09**.
+1. Get the latest version of the [Eclipse Modeling Tools](https://www.eclipse.org/downloads/packages/). You need at least **Eclipse 2023-06**.
 1. Install Xtext from this update site (or use the Eclipse Marketplace):
 	http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/
 1. Install PlantUML from this update site (or use the Eclipse Marketplace):
@@ -99,7 +99,7 @@ Running ```Testsuite_CBC.launch``` requires Google OR tools (see installation st
 
 eMoflon::IBeX can be installed via its updatesite: https://github.com/eMoflon/emoflon-ibex-updatesite
 
-Please notice: You need at least Eclipse 2022-09.
+Please notice: You need at least Eclipse 2023-06.
 
 Please notice: Ensure that your Eclipse runs with an OpenJDK >= 17.0.6.
 
