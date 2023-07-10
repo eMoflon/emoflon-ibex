@@ -53,7 +53,7 @@ public class ACAnalysis {
 	}
 
 	public Collection<FilterNACCandidate> computeFilterNACCandidates(TGGRule rule, DomainType domain) {
-		final Collection<FilterNACCandidate> filterNACs = new ArrayList<>();
+		final Collection<FilterNACCandidate> filterNACs = new HashSet<>();
 
 		if (acStrategy == ACStrategy.NONE)
 			return filterNACs;
@@ -67,7 +67,8 @@ public class ACAnalysis {
 				continue;
 
 			// Create DECPatterns as negative children in the network
-			for (EReference eType : extractEReferences(nodeClass)) {
+			var references = extractEReferences(nodeClass);
+			for (EReference eType : references) {
 				for (EdgeDirection eDirection : EdgeDirection.values()) {
 					TGGModel tgg = SlimGTModelUtil.getContainer(rule, TGGModel.class);
 

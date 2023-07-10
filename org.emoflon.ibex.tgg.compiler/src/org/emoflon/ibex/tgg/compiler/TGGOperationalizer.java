@@ -278,7 +278,7 @@ public class TGGOperationalizer {
 	}
 	
 	private void initializeACAnalysis(TGGRule rule) {
-		var candidates = new LinkedList<FilterNACCandidate>();
+		var candidates = new HashSet<FilterNACCandidate>();
 		candidates.addAll(acAnalysis.computeFilterNACCandidates(rule, DomainType.SOURCE));
 		candidates.addAll(acAnalysis.computeFilterNACCandidates(rule, DomainType.TARGET));
 		rule2nacCandidates.put(rule, candidates);
