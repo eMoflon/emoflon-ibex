@@ -24,6 +24,7 @@ import org.emoflon.ibex.tgg.util.benchmark.TimeMeasurable;
 import org.emoflon.ibex.tgg.util.benchmark.TimeRegistry;
 import org.emoflon.ibex.tgg.util.benchmark.Timer;
 import org.emoflon.ibex.tgg.util.benchmark.Times;
+import org.emoflon.ibex.tgg.util.debug.ConsoleUtil;
 import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 
 public class MatchDistributor implements IMatchObserver, TimeMeasurable {
@@ -178,7 +179,7 @@ public class MatchDistributor implements IMatchObserver, TimeMeasurable {
 		Collection<Consumer<ITGGMatch>> consumers = type2removeMatch.get(tggMatch.getType());
 		if (consumers != null) {
 			consumers.forEach(c -> c.accept(tggMatch));
-			LoggerConfig.log(LoggerConfig.log_matches(), () -> "Matches: removed " + match.getPatternName() + "(" + match.hashCode() + ")");
+			LoggerConfig.log(LoggerConfig.log_matches(), () -> "Matches: removed " + match.getPatternName() + "(" + match.hashCode() + ") \n" + ConsoleUtil.indent(ConsoleUtil.printMatchParameter(match), 18, true));
 		}
 	}
 
@@ -191,7 +192,7 @@ public class MatchDistributor implements IMatchObserver, TimeMeasurable {
 			Collection<ITGGMatch> tggMatches = matches.parallelStream().map(m -> (ITGGMatch) m).filter(m -> types.contains(m.getType())).collect(Collectors.toList());
 			consumer.accept(tggMatches);
 		}
-		matches.forEach(match -> LoggerConfig.log(LoggerConfig.log_matches(), () -> "Matches: removed " + match.getPatternName() + "(" + match.hashCode() + ")"));
+		matches.forEach(match -> LoggerConfig.log(LoggerConfig.log_matches(), () -> "Matches: removed " + match.getPatternName() + "(" + match.hashCode() + ")\n"+ ConsoleUtil.indent(ConsoleUtil.printMatchParameter(match), 18, true)));
 	}
 
 	/***** Benchmark Logging *****/

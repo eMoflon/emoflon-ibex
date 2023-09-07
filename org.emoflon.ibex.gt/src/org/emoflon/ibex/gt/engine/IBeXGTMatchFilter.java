@@ -18,7 +18,7 @@ public class IBeXGTMatchFilter extends MatchFilter<IBeXGTPatternMatcher<?>, GTMo
 	public Stream<IBeXGTMatch<?, ?>> filterMatchStream(IBeXPattern pattern) {
 		IBeXGTPattern<?, ?> typedPattern = patternMatcher.name2typedPattern.get(pattern.getName());
 
-		if ((pattern.getConditions() == null || pattern.getConditions().isEmpty())
+		if ((pattern.getConditions() == null || pattern.getConditions().isEmpty() || !typedPattern.requiresChecks(engineProperties))
 				&& typedPattern.getBindings().isEmpty())
 			return patternMatcher.getMatches(pattern.getName(), false).stream();
 
@@ -37,7 +37,7 @@ public class IBeXGTMatchFilter extends MatchFilter<IBeXGTPatternMatcher<?>, GTMo
 	public Collection<IBeXGTMatch<?, ?>> filterMatches(IBeXPattern pattern) {
 		IBeXGTPattern<?, ?> typedPattern = patternMatcher.name2typedPattern.get(pattern.getName());
 
-		if ((pattern.getConditions() == null || pattern.getConditions().isEmpty())
+		if ((pattern.getConditions() == null || pattern.getConditions().isEmpty() || !typedPattern.requiresChecks(engineProperties))
 				&& typedPattern.getBindings().isEmpty())
 			return patternMatcher.getMatches(pattern.getName(), false);
 

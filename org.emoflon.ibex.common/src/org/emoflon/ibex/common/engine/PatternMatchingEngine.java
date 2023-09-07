@@ -350,6 +350,8 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, EM, IM
 	 * Updates the matches.
 	 */
 	public synchronized void updateMatches() {
+		var updatedPatterns = new HashSet<String>();
+		
 		// Clear old state
 		filteredMatches.forEach((patternName, collection) -> collection.clear());
 		addedMatches.forEach((patternName, collection) -> collection.clear());
@@ -357,6 +359,7 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, EM, IM
 
 		// Fetch matches from pm
 		fetchMatches();
+		
 		// Update filtered matches
 		name2pattern.keySet().forEach(patternName -> updateMatchesInternal(patternName));
 
@@ -364,7 +367,8 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, EM, IM
 		subscriptionsForAppearingMatchesOfPattern.keySet().stream().forEach(patternName -> {
 			// Check if pending matches became valid again due to attribute changes
 			// Fill filtered matches Map by calling the match stream
-			updateMatchesInternal(patternName);
+			if(updatedPatterns.add(patternName))
+				updateMatchesInternal(patternName);
 
 			// Check if existing matches recently became valid (pending) and add removal
 			// jobs
@@ -424,7 +428,8 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, EM, IM
 		subscriptionsForDisappearingMatchesOfPattern.keySet().stream().forEach(patternName -> {
 			// Check if existing matches became invalid due to attribute changes
 			// Fill filtered matches Map by calling the match stream
-			updateMatchesInternal(patternName);
+			if(updatedPatterns.add(patternName))
+				updateMatchesInternal(patternName);
 
 			// Check if existing matches recently became invalid (not pending) and add
 			// removal jobs
@@ -524,6 +529,10 @@ public abstract class PatternMatchingEngine<IBEX_MODEL extends IBeXModel, EM, IM
 				subs.poll().accept(nextMatch);
 			}
 		}
+	}
+	
+	public void clearMatches() {
+		matches.forEach((patternName, collection) -> collection.clear());
 	}
 
 }
