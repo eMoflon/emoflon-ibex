@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.codegen;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -13,7 +14,6 @@ import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -272,7 +272,7 @@ public class TGGPackageBuilder implements TGGBuilderExtension {
 			visitAllFiles(allTGGFiles, project.getFolder("src"), (file, acc) -> {
 				if (file.getFileExtension().equals("tgg")) {
 					try {
-						String contents = FileUtils.readFileToString(file.getLocation().toFile());
+						String contents = Files.readString(file.getLocation().toFile().toPath());
 						if (contents.split("#rule\\s+" + name).length > 1)
 							acc.add(file);
 					} catch (IOException e) {
