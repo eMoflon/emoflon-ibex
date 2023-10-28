@@ -121,7 +121,7 @@ public class HigherOrderShortcutPatternProvider extends BasicShortcutPatternProv
 		HigherOrderTGGRule originalHigherOrderRule = ruleFactory.createHigherOrderTGGRuleFromConsMatches(applPoint.getOriginalNodes());
 		Map<String, HigherOrderTGGRule> replacingHigherOrderRules = applPoint.getID2replacingNodes().entrySet().stream() //
 				.collect(Collectors.toMap(e -> e.getKey(), //
-						e -> ruleFactory.createHigherOrderTGGRuleFromSrcTrgNodes(e.getValue(), propagationDomain)));
+						e -> ruleFactory.createHigherOrderTGGRuleFromSrcTrgNodes(e.getValue(), applPoint.getOriginalNodes(), propagationDomain)));
 
 		Map<String, Set<TGGOverlap>> id2overlaps = new HashMap<>();
 		replacingHigherOrderRules.forEach((id, replacingHigherOrderRule) -> {
