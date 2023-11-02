@@ -8,10 +8,8 @@ import org.eclipse.emf.mwe2.ecore.EcoreGenerator
 import org.eclipse.emf.mwe2.runtime.workflow.Workflow
 
 var rootPath = ".."
-//var pluginID
 
 Workflow {
-//    bean = EcoreSupport {}
     bean = ResourceSetImpl : resourceSet {}
     
     bean = StandaloneSetup {
@@ -25,10 +23,7 @@ Workflow {
         
         genModel = "platform:/resource/org.emoflon.ibex.patternmodel/model/IBeXPatternModel.genmodel"
         srcPath = "platform:/resource/org.emoflon.ibex.patternmodel/src-gen/"
-        
-        
-//        generateEdit = true
-//        generateEditor = true
+
 		generateModel = true
     }
 }
