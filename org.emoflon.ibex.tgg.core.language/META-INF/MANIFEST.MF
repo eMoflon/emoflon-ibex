@@ -23,7 +23,9 @@ Require-Bundle: com.google.guava,
  org.emoflon.ibex.tgg.editor.ide,
  org.moflon.core.utilities,
  org.eclipse.xtext,
- org.moflon.core.plugins
+ org.moflon.core.plugins,
+ org.eclipse.emf.mwe2.launch,
+ org.apache.commons.logging
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-Vendor: eMoflon::IBeX Developers
 Bundle-ManifestVersion: 2
