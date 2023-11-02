@@ -4,40 +4,40 @@
     <booleanAttribute key="org.eclipse.debug.core.launchGroup.0.adoptIfRunning" value="false"/>
     <booleanAttribute key="org.eclipse.debug.core.launchGroup.0.enabled" value="true"/>
     <stringAttribute key="org.eclipse.debug.core.launchGroup.0.mode" value="inherit"/>
-    <stringAttribute key="org.eclipse.debug.core.launchGroup.0.name" value="GenerateGT.mwe2"/>
+    <stringAttribute key="org.eclipse.debug.core.launchGroup.0.name" value="GenerateIBeXPatternModel.mwe2"/>
     <stringAttribute key="org.eclipse.debug.core.launchGroup.1.action" value="WAIT_FOR_TERMINATION"/>
     <booleanAttribute key="org.eclipse.debug.core.launchGroup.1.adoptIfRunning" value="false"/>
     <booleanAttribute key="org.eclipse.debug.core.launchGroup.1.enabled" value="true"/>
     <stringAttribute key="org.eclipse.debug.core.launchGroup.1.mode" value="inherit"/>
-    <stringAttribute key="org.eclipse.debug.core.launchGroup.1.name" value="GenerateTGG.mwe2"/>
+    <stringAttribute key="org.eclipse.debug.core.launchGroup.1.name" value="GenerateIBeXGTStateModel.mwe2"/>
     <stringAttribute key="org.eclipse.debug.core.launchGroup.2.action" value="WAIT_FOR_TERMINATION"/>
     <booleanAttribute key="org.eclipse.debug.core.launchGroup.2.adoptIfRunning" value="false"/>
     <booleanAttribute key="org.eclipse.debug.core.launchGroup.2.enabled" value="true"/>
     <stringAttribute key="org.eclipse.debug.core.launchGroup.2.mode" value="inherit"/>
-    <stringAttribute key="org.eclipse.debug.core.launchGroup.2.name" value="GenerateIntegrate.mwe2"/>
+    <stringAttribute key="org.eclipse.debug.core.launchGroup.2.name" value="GenerateIBeXTGGLanguageModel.mwe2"/>
     <stringAttribute key="org.eclipse.debug.core.launchGroup.3.action" value="WAIT_FOR_TERMINATION"/>
     <booleanAttribute key="org.eclipse.debug.core.launchGroup.3.adoptIfRunning" value="false"/>
     <booleanAttribute key="org.eclipse.debug.core.launchGroup.3.enabled" value="true"/>
     <stringAttribute key="org.eclipse.debug.core.launchGroup.3.mode" value="inherit"/>
-    <stringAttribute key="org.eclipse.debug.core.launchGroup.3.name" value="GenerateEmoflonDelta.mwe2"/>
+    <stringAttribute key="org.eclipse.debug.core.launchGroup.3.name" value="GenerateIBeXTGGRuntimeModel.mwe2"/>
     <stringAttribute key="org.eclipse.debug.core.launchGroup.4.action" value="WAIT_FOR_TERMINATION"/>
     <booleanAttribute key="org.eclipse.debug.core.launchGroup.4.adoptIfRunning" value="false"/>
     <booleanAttribute key="org.eclipse.debug.core.launchGroup.4.enabled" value="true"/>
     <stringAttribute key="org.eclipse.debug.core.launchGroup.4.mode" value="inherit"/>
-    <stringAttribute key="org.eclipse.debug.core.launchGroup.4.name" value="GenerateIBeXGTStateModel.mwe2"/>
+    <stringAttribute key="org.eclipse.debug.core.launchGroup.4.name" value="GenerateEmoflonDelta.mwe2"/>
     <stringAttribute key="org.eclipse.debug.core.launchGroup.5.action" value="WAIT_FOR_TERMINATION"/>
     <booleanAttribute key="org.eclipse.debug.core.launchGroup.5.adoptIfRunning" value="false"/>
     <booleanAttribute key="org.eclipse.debug.core.launchGroup.5.enabled" value="true"/>
     <stringAttribute key="org.eclipse.debug.core.launchGroup.5.mode" value="inherit"/>
-    <stringAttribute key="org.eclipse.debug.core.launchGroup.5.name" value="GenerateIBeXPatternModel.mwe2"/>
+    <stringAttribute key="org.eclipse.debug.core.launchGroup.5.name" value="GenerateGT.mwe2"/>
     <stringAttribute key="org.eclipse.debug.core.launchGroup.6.action" value="WAIT_FOR_TERMINATION"/>
     <booleanAttribute key="org.eclipse.debug.core.launchGroup.6.adoptIfRunning" value="false"/>
     <booleanAttribute key="org.eclipse.debug.core.launchGroup.6.enabled" value="true"/>
     <stringAttribute key="org.eclipse.debug.core.launchGroup.6.mode" value="inherit"/>
-    <stringAttribute key="org.eclipse.debug.core.launchGroup.6.name" value="GenerateIBeXTGGLanguageModel.mwe2"/>
+    <stringAttribute key="org.eclipse.debug.core.launchGroup.6.name" value="GenerateTGG.mwe2"/>
     <stringAttribute key="org.eclipse.debug.core.launchGroup.7.action" value="WAIT_FOR_TERMINATION"/>
     <booleanAttribute key="org.eclipse.debug.core.launchGroup.7.adoptIfRunning" value="false"/>
     <booleanAttribute key="org.eclipse.debug.core.launchGroup.7.enabled" value="true"/>
     <stringAttribute key="org.eclipse.debug.core.launchGroup.7.mode" value="inherit"/>
-    <stringAttribute key="org.eclipse.debug.core.launchGroup.7.name" value="GenerateIBeXTGGRuntimeModel.mwe2"/>
+    <stringAttribute key="org.eclipse.debug.core.launchGroup.7.name" value="GenerateIntegrate.mwe2"/>
 </launchConfiguration>
