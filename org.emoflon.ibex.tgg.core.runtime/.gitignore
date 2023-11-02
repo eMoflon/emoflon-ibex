@@ -1,5 +1,5 @@
 /bin
 /model/*.xmi
 /xtend-gen/
-/src-gen/
+/gen/
 
