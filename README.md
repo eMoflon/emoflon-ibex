@@ -63,9 +63,9 @@ For detailed installation instructions, please refer to the [README.md file](htt
 1. Go to ```File/Import.../Team/Team Project Set```, check URL and enter in and import this PSF file:
 	- https://raw.githubusercontent.com/eMoflon/emoflon-ibex-deployment/master/devProjectSet.psf
 1. Execute MWE2
-    - Open packages ```org.emoflon.ibex.gt.editor/src/org.emoflon.ibex.gt.editor```, ```org.emoflon.ibex.tgg.editor/src/org.emoflon.ibex.tgg.editor```, and ```org.emoflon.ibex.tgg.integrate/src/org.emoflon.ibex.tgg.integrate```
-    - Right-click on ```GenerateGT.mwe2``` in the first package, ```GenerateTGG.mwe2``` in the second, and ```GenerateIntegrate.mwe2``` in the third.
-    - Press ```Run As -> MWE2 Workflow``` respectively.
+    - Open package ```org.emoflon.ibex.common/launch```.
+    - Right-click on ```Run all eMoflon MWE2 files.mwe2```.
+    - Press ```Run As -> MWE2 Workflow```.
 1. Set UTF-8 as file encoding for the development workspace (*Window &rarr; Preferences &rarr; General/Workspace*) and manually build all projects by clicking (*Project &rarr; Clean... &rarr; Clean all projects*) to trigger code generation (and get rid of errors). Make sure to check *Project &rarr; Build Automatically*.
 1. Set up your runtime and test workspaces by starting a runtime Eclipse workspace from your development workspace:
 	- To start the runtime workspace, do the following steps *inside* your development workspace: *Run &rarr; Run Configurations...;* double click on *Eclipse Application*, give it a name (e.g., *test-workspace*) and click on *Run*.
