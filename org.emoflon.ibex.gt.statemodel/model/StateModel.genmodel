@@ -4,7 +4,7 @@
     modelDirectory="/org.emoflon.ibex.gt.statemodel/src-gen" creationIcons="false"
     editDirectory="/org.emoflon.ibex.gt.statemodel.edit/src-gen" editorDirectory="/org.emoflon.ibex.gt.statemodel.editor/src-gen"
     modelPluginID="org.emoflon.ibex.gt.statemodel" modelName="StateModel" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
-    codeFormatting="true" importerID="org.eclipse.emf.importer.ecore" complianceLevel="8.0"
+    codeFormatting="true" importerID="org.eclipse.emf.importer.ecore" complianceLevel="17.0"
     copyrightFields="false" usedGenPackages="../../org.emoflon.ibex.patternmodel/model/IBeXPatternModel.genmodel#//IBeXPatternModel"
     operationReflection="true" importOrganizing="true">
   <foreignModel>StateModel.ecore</foreignModel>
