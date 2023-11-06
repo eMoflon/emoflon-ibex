@@ -65,7 +65,7 @@ For detailed installation instructions, please refer to the [README.md file](htt
 1. Execute MWE2
     - Open package ```org.emoflon.ibex.common/launch```.
     - Right-click on ```Run all eMoflon MWE2 files.mwe2```.
-    - Press ```Run As -> MWE2 Workflow```.
+    - Press ```Run As -> Run all eMoflon MWE2 files```.
 1. Set UTF-8 as file encoding for the development workspace (*Window &rarr; Preferences &rarr; General/Workspace*) and manually build all projects by clicking (*Project &rarr; Clean... &rarr; Clean all projects*) to trigger code generation (and get rid of errors). Make sure to check *Project &rarr; Build Automatically*.
 1. Set up your runtime and test workspaces by starting a runtime Eclipse workspace from your development workspace:
 	- To start the runtime workspace, do the following steps *inside* your development workspace: *Run &rarr; Run Configurations...;* double click on *Eclipse Application*, give it a name (e.g., *test-workspace*) and click on *Run*.
