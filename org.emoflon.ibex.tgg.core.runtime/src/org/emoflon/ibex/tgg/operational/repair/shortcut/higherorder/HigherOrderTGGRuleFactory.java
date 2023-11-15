@@ -165,7 +165,7 @@ public class HigherOrderTGGRuleFactory {
 		ILPHigherOrderRuleMappingSolver ilpSolver = new ILPHigherOrderRuleMappingSolver( //
 				mup, //
 				options.ilpSolver(), //
-				srcTrgNodes.stream().map(n -> n.getMatch()).toList(),
+				srcTrgNodes.stream().map(n -> n.getMatch()).toList(), //
 				totalPropDomainMappings, //
 				totalOppositeDomainMappings, //
 				totalCorrDomainMappings, //
@@ -400,17 +400,30 @@ public class HigherOrderTGGRuleFactory {
 				consMapping.put(new MatchRelatedRuleElement(ruleEdge, pgNode.getMatch()), mappedEdges);
 		}
 
-		Collection<TGGRuleNode> ruleCorrs = TGGFilterUtil.filterNodes(rule.getNodes(), DomainType.CORR, BindingType.CREATE);
-		for (TGGRuleNode ruleCorr : ruleCorrs) {
-			Set<MatchRelatedRuleElement> mappedCorrs = new HashSet<>();
-			for (MatchRelatedRuleElement matchRelRuleElt : elementsOfConsNodes.corrs) {
-				TGGRuleCorr consCorr = (TGGRuleCorr) matchRelRuleElt.ruleElement;
-				if (matchesContext(consCorr, (TGGRuleCorr) ruleCorr)) {
-					mappedCorrs.add(matchRelRuleElt);
+		Collection<TGGRuleNode> ruleCorrNodes = TGGFilterUtil.filterNodes(rule.getNodes(), DomainType.CORR, BindingType.CREATE);
+		for (TGGRuleNode ruleCorrNode : ruleCorrNodes) {
+			Set<MatchRelatedRuleElement> mappedCorrNodes = new HashSet<>();
+			for (MatchRelatedRuleElement matchRelRuleElt : elementsOfConsNodes.corrNodes) {
+				TGGRuleCorr consCorrNode = (TGGRuleCorr) matchRelRuleElt.ruleElement;
+				if (matchesContext(consCorrNode, (TGGRuleCorr) ruleCorrNode)) {
+					mappedCorrNodes.add(matchRelRuleElt);
 				}
 			}
-			if (!mappedCorrs.isEmpty())
-				consMapping.put(new MatchRelatedRuleElement(ruleCorr, pgNode.getMatch()), mappedCorrs);
+			if (!mappedCorrNodes.isEmpty())
+				consMapping.put(new MatchRelatedRuleElement(ruleCorrNode, pgNode.getMatch()), mappedCorrNodes);
+		}
+
+		Collection<TGGRuleEdge> ruleCorrEdges = TGGFilterUtil.filterEdges(rule.getEdges(), DomainType.CORR, BindingType.CREATE);
+		for (TGGRuleEdge ruleCorrEdge : ruleCorrEdges) {
+			Set<MatchRelatedRuleElement> mappedCorrEdges = new HashSet<>();
+			for (MatchRelatedRuleElement matchRelRuleElt : elementsOfConsNodes.corrEdges) {
+				TGGRuleEdge consCorrEdge = (TGGRuleEdge) matchRelRuleElt.ruleElement;
+				if (matchesContext(consCorrEdge, ruleCorrEdge)) {
+					mappedCorrEdges.add(matchRelRuleElt);
+				}
+			}
+			if (!mappedCorrEdges.isEmpty())
+				consMapping.put(new MatchRelatedRuleElement(ruleCorrEdge, pgNode.getMatch()), mappedCorrEdges);
 		}
 
 		return consMapping;
@@ -478,31 +491,36 @@ public class HigherOrderTGGRuleFactory {
 	private ElementsContainer collectElementsFromMatches(List<PrecedenceNode> consNodes, DomainType propagationDomain) {
 		Set<MatchRelatedRuleElement> nodes = new HashSet<>();
 		Set<MatchRelatedRuleElement> edges = new HashSet<>();
-		Set<MatchRelatedRuleElement> corrs = new HashSet<>();
+		Set<MatchRelatedRuleElement> corrNodes = new HashSet<>();
+		Set<MatchRelatedRuleElement> corrEdges = new HashSet<>();
 		Map<EObject, MatchRelatedRuleElement> eObject2elements = new HashMap<>();
 
 		DomainType oppositeDomain = TGGModelUtils.oppositeOf(propagationDomain);
 		EltFilter oppositeEltFilter = new EltFilter().create().domains(oppositeDomain);
 		EltFilter corrEltFilter = new EltFilter().create().corr();
+		EltFilter bothEltFilter = new EltFilter().create().domains(oppositeDomain, DomainType.CORR);
 
 		for (PrecedenceNode pgNode : consNodes) {
 			ITGGMatch match = pgNode.getMatch();
 			TGGMatchUtil matchUtil = mup.get(match);
 
-			var oppNodes = matchUtil.getNodeStream(oppositeEltFilter).map(n -> new MatchRelatedRuleElement(n, match)).toList();
+			var oppNodes = matchUtil.getNodeStream(bothEltFilter).map(n -> new MatchRelatedRuleElement(n, match)).toList();
 			for (MatchRelatedRuleElement oppNode : oppNodes)
 				eObject2elements.put(matchUtil.getEObject((TGGRuleNode) oppNode.ruleElement), oppNode);
-			nodes.addAll(oppNodes);
+
+			nodes.addAll(matchUtil.getNodeStream(oppositeEltFilter).map(n -> new MatchRelatedRuleElement(n, match)).toList());
 			edges.addAll(matchUtil.getEdgeStream(oppositeEltFilter).map(e -> new MatchRelatedRuleElement(e, match)).toList());
-			corrs.addAll(matchUtil.getNodeStream(corrEltFilter).map(n -> new MatchRelatedRuleElement(n, match)).toList());
+			corrNodes.addAll(matchUtil.getNodeStream(corrEltFilter).map(n -> new MatchRelatedRuleElement(n, match)).toList());
+			corrEdges.addAll(matchUtil.getEdgeStream(corrEltFilter).map(n -> new MatchRelatedRuleElement(n, match)).toList());
 		}
-		return new ElementsContainer(nodes, edges, corrs, eObject2elements);
+		return new ElementsContainer(nodes, edges, corrNodes, corrEdges, eObject2elements);
 	}
 
 	private record ElementsContainer( //
 			Set<MatchRelatedRuleElement> nodes, //
 			Set<MatchRelatedRuleElement> edges, //
-			Set<MatchRelatedRuleElement> corrs, //
+			Set<MatchRelatedRuleElement> corrNodes, //
+			Set<MatchRelatedRuleElement> corrEdges, //
 			Map<EObject, MatchRelatedRuleElement> eObject2elements //
 	) {
 	}
