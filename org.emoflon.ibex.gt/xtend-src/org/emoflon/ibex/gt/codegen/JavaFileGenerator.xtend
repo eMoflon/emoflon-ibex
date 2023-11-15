@@ -366,9 +366,9 @@ class JavaFileGenerator {
 			
 				@Override
 				public String toString() {
-					String s = "match {" + System.lineSeparator();
+					String s = "match {" + java.lang.System.lineSeparator();
 					«FOR node : EditorToIBeXPatternHelper.getAllRuleNodes(rule)»
-						s += "	«node.name» --> " + «getVariableName(node)» + System.lineSeparator();
+						s += "	«node.name» --> " + «getVariableName(node)» + java.lang.System.lineSeparator();
 					«ENDFOR»
 					s += "} for " + getPattern();
 					return s;
@@ -428,9 +428,9 @@ class JavaFileGenerator {
 			
 				@Override
 				public String toString() {
-					String s = "match {" + System.lineSeparator();
+					String s = "match {" + java.lang.System.lineSeparator();
 					«FOR node : EditorToIBeXPatternHelper.getPatternNodes(pattern)»
-						s += "	«node.name» --> " + «getVariableName(node)» + System.lineSeparator();
+						s += "	«node.name» --> " + «getVariableName(node)» + java.lang.System.lineSeparator();
 					«ENDFOR»
 					s += "} for " + getPattern();
 					return s;
@@ -575,12 +575,12 @@ class JavaFileGenerator {
 				«ENDIF»
 				@Override
 				public String toString() {
-					String s = "rule " + patternName + " {" + System.lineSeparator();
+					String s = "rule " + patternName + " {" + java.lang.System.lineSeparator();
 					«FOR node : EditorToIBeXPatternHelper.getRuleContextNodes(rule)»
-						s += "	«node.name» --> " + parameters.get("«node.name»") + System.lineSeparator();
+						s += "	«node.name» --> " + parameters.get("«node.name»") + java.lang.System.lineSeparator();
 					«ENDFOR»
 					«FOR parameter : rule.parameters»
-						s += "	«parameter.name» --> " + parameters.get("«parameter.name»") + System.lineSeparator();
+						s += "	«parameter.name» --> " + parameters.get("«parameter.name»") + java.lang.System.lineSeparator();
 					«ENDFOR»
 					s += "}";
 					return s;
@@ -717,12 +717,12 @@ class JavaFileGenerator {
 				«ENDIF»
 				@Override
 				public String toString() {
-					String s = "pattern " + patternName + " {" + System.lineSeparator();
+					String s = "pattern " + patternName + " {" + java.lang.System.lineSeparator();
 					«FOR node : EditorToIBeXPatternHelper.getPatternNodes(pattern)»
-						s += "	«node.name» --> " + parameters.get("«node.name»") + System.lineSeparator();
+						s += "	«node.name» --> " + parameters.get("«node.name»") + java.lang.System.lineSeparator();
 					«ENDFOR»
 					«FOR parameter : getPatternParameter(pattern)»
-						s += "	«parameter.name» --> " + parameters.get("«parameter.name»") + System.lineSeparator();
+						s += "	«parameter.name» --> " + parameters.get("«parameter.name»") + java.lang.System.lineSeparator();
 					«ENDFOR»
 					s += "}";
 					return s;
