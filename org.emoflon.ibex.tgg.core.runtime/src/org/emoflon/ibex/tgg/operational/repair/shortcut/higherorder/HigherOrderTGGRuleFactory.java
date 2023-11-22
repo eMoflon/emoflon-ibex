@@ -303,8 +303,12 @@ public class HigherOrderTGGRuleFactory {
 				Collection<TGGRuleNode> mappedNodes = TGGFilterUtil.filterNodes(mappedRule.getNodes(), oppositeDomain);
 				for (TGGRuleNode mappedNode : mappedNodes) {
 					if (matchesContext(ruleNode, mappedNode)) {
-						for (ITGGMatch mappedMatch : rule2matches.get(mappedRule))
+						for (ITGGMatch mappedMatch : rule2matches.get(mappedRule)) {
+							// Prevents from creating invalid candidates due to PG dependency relations
+							if (pgNode.transitivelyRequiredBy(pg.getNode(mappedMatch)))
+								continue;
 							mappedElements.add(new MatchRelatedRuleElement(mappedNode, mappedMatch));
+						}
 					}
 				}
 			}
@@ -320,8 +324,12 @@ public class HigherOrderTGGRuleFactory {
 				Collection<TGGRuleEdge> mappedEdges = TGGFilterUtil.filterEdges(mappedRule.getEdges(), oppositeDomain);
 				for (TGGRuleEdge mappedEdge : mappedEdges) {
 					if (matchesContext(ruleEdge, mappedEdge)) {
-						for (ITGGMatch mappedMatch : rule2matches.get(mappedRule))
+						for (ITGGMatch mappedMatch : rule2matches.get(mappedRule)) {
+							// Prevents from creating invalid candidates due to PG dependency relations
+							if (pgNode.transitivelyRequiredBy(pg.getNode(mappedMatch)))
+								continue;
 							mappedElements.add(new MatchRelatedRuleElement(mappedEdge, mappedMatch));
+						}
 					}
 				}
 			}

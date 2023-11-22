@@ -2,12 +2,15 @@ package org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder;
 
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -16,6 +19,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRuleFactory.MatchRelatedRuleElement;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRuleFactory.MatchRelatedRuleElementMap;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.util.EltFilter;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtilProvider;
 import org.emoflon.ibex.tgg.util.ilp.BinaryILPProblem;
@@ -26,8 +30,6 @@ import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPLinearExpression;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPSolution;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.Objective;
 import org.emoflon.ibex.tgg.util.ilp.ILPSolver;
-
-import com.google.common.collect.Sets;
 
 import language.BindingType;
 import language.DomainType;
@@ -63,14 +65,13 @@ public class ILPHigherOrderRuleMappingSolver {
 	private Map<ElementCandidate, Integer> candidate2ID = cfactory.createObjectToIntHashMap();
 	private Map<Integer, ElementCandidate> id2Candidate = cfactory.createIntToObjectHashMap();
 
-	private Set<Set<ITGGMatch>> overlappingMatches = cfactory.createObjectSet();
+	private Set<MatchContainer> overlappingMatches = cfactory.createObjectSet();
 	private Map<ITGGMatch, Integer> match2ID = cfactory.createObjectToIntHashMap();
 	private Map<Integer, ITGGMatch> id2match = cfactory.createIntToObjectHashMap();
 
 	private Map<ElementCandidate, Integer> consCandidate2ID = cfactory.createObjectToIntHashMap();
 	private Map<Integer, ElementCandidate> id2ConsCandidate = cfactory.createIntToObjectHashMap();
 
-	private static final double EDGE_COEFF = 0.0000001;
 	private static final double SIDE_OBJECTIVE = 0.0000000001;
 	private static final double CONTEXT_TARGET_COEFF = 0.0000000000001;
 	private Set<Integer> candidatesWithContextTarget = cfactory.createIntSet();
@@ -166,33 +167,62 @@ public class ILPHigherOrderRuleMappingSolver {
 		}
 	}
 
-	private void createMatchCandidates() {
-		// FIXME: how overlapping matches are defined here, is probably incorrect
-		Set<Set<ITGGMatch>> matchSets = propDomainMapping.values().stream() //
-				.map(set -> set.stream().map(e -> e.match()).collect(Collectors.toSet())) //
-				.collect(Collectors.toSet());
+	private class MatchContainer {
+		final Set<ITGGMatch> matches;
+		private final Object[] array;
 
-		for (Set<ITGGMatch> matchSet : matchSets) {
-			Set<Set<ITGGMatch>> overlappingSets = new HashSet<>();
-			for (Set<ITGGMatch> collapsedMatchSet : overlappingMatches) {
-				if (!Sets.intersection(matchSet, collapsedMatchSet).isEmpty())
-					overlappingSets.add(collapsedMatchSet);
-			}
-
-			Set<ITGGMatch> matchSetCopy = new HashSet<>(matchSet);
-			for (Set<ITGGMatch> overlappingSet : overlappingSets) {
-				matchSetCopy.addAll(overlappingSet);
-				overlappingMatches.remove(overlappingSet);
-			}
-			overlappingMatches.add(matchSetCopy);
+		MatchContainer(Set<ITGGMatch> matches) {
+			this.matches = matches;
+			array = matches.stream().sorted(new java.util.Comparator<ITGGMatch>() {
+				@Override
+				public int compare(ITGGMatch o1, ITGGMatch o2) {
+					if (o1 == null || o2 == null)
+						return 0;
+					return o1.toString().compareTo(o2.toString());
+				}
+			}).toArray();
 		}
 
+		@Override
+		public int hashCode() {
+			return Objects.hash(array);
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			MatchContainer other = (MatchContainer) obj;
+			return Arrays.equals(array, other.array);
+		}
+
+	}
+
+	private void createMatchCandidates() {
 		// register match candidates
 		srcTrgMatches.forEach(match -> {
 			match2ID.put(match, matchIDCounter);
 			id2match.put(matchIDCounter, match);
 			matchIDCounter++;
 		});
+
+		// determine matches translating same elements
+		Map<Object, Set<ITGGMatch>> objects2overlappingMatches = new HashMap<>();
+		EltFilter createFilter = new EltFilter().create();
+		for (ITGGMatch srcTrgMatch : srcTrgMatches) {
+			TGGMatchUtil matchUtil = mup.get(srcTrgMatch);
+			Set<Object> createObjects = matchUtil.getObjects(createFilter);
+			for (Object createObject : createObjects)
+				objects2overlappingMatches.computeIfAbsent(createObject, k -> new HashSet<>()).add(srcTrgMatch);
+		}
+
+		overlappingMatches = objects2overlappingMatches.values().stream() //
+				.map(matches -> new MatchContainer(matches)) //
+				.collect(Collectors.toSet());
 	}
 
 	private BinaryILPProblem createILPProblem() {
@@ -283,12 +313,20 @@ public class ILPHigherOrderRuleMappingSolver {
 
 	private void defineExclusionsForMatches(BinaryILPProblem ilpProblem) {
 		// matches that translate the same elements cannot be chosen at the same time:
-		for (Set<ITGGMatch> matchSet : overlappingMatches) {
-			if (matchSet.size() <= 1)
+		for (MatchContainer container : overlappingMatches) {
+			if (container.matches.size() <= 1)
 				continue;
 
-			ilpProblem.addExclusion(matchSet.stream().map(c -> "m" + c), //
-					"EXCL_match_" + constraintNameCounter++);
+			Stream<String> vars = container.matches.stream() //
+					.map(m -> {
+						Integer matchId = match2ID.get(m);
+						if (matchId == null)
+							throw new RuntimeException("Incansistent state: cannot find registrated candidate!");
+						return matchId;
+					})
+					.map(id -> "m" + id);
+
+			ilpProblem.addExclusion(vars, "EXCL_match_" + constraintNameCounter++);
 		}
 	}
 
@@ -522,19 +560,12 @@ public class ILPHigherOrderRuleMappingSolver {
 	private void defineObjective(BinaryILPProblem ilpProblem) {
 		ILPLinearExpression expression = ilpProblem.createLinearExpression();
 
-		if (true) {
-			for (int i = 0; i < consIDCounter; i++)
-				expression.addTerm("c" + i, 1.0);
-			for (int i = 0; i < elementIDCounter; i++)
-				expression.addTerm("e" + i, candidatesWithContextTarget.contains(i) ? CONTEXT_TARGET_COEFF : SIDE_OBJECTIVE);
-			for (int i = 0; i < noConcatVarCounter; i++)
-				expression.addTerm("x" + i, SIDE_OBJECTIVE);
-		} else {
-			for (int i = 0; i < elementIDCounter; i++)
-				expression.addTerm("e" + i, candidatesWithContextTarget.contains(i) ? CONTEXT_TARGET_COEFF : 1);
-			for (int i = 0; i < matchIDCounter; i++)
-				expression.addTerm("m" + i, 1);
-		}
+		for (int i = 0; i < consIDCounter; i++)
+			expression.addTerm("c" + i, 1.0);
+		for (int i = 0; i < elementIDCounter; i++)
+			expression.addTerm("e" + i, candidatesWithContextTarget.contains(i) ? CONTEXT_TARGET_COEFF : SIDE_OBJECTIVE);
+		for (int i = 0; i < noConcatVarCounter; i++)
+			expression.addTerm("x" + i, SIDE_OBJECTIVE);
 
 		ilpProblem.setObjective(expression, Objective.maximize);
 	}
