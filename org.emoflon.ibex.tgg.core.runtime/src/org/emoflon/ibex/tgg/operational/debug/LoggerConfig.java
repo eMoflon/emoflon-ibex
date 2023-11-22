@@ -21,6 +21,7 @@ import org.emoflon.smartemf.runtime.SmartEMFConfig;
  * <li>repair</li>
  * <li>conflicts</li>
  * <li>ilp</li>
+ * <li>ilpExt</li>
  * <li>precedenceGraph</li>
  * <li>times</li>
  * <li>simple</li>
@@ -41,6 +42,7 @@ public final class LoggerConfig {
 	private static final boolean log_repair = getValue("repair");
 	private static final boolean log_conflicts = getValue("conflicts");
 	private static final boolean log_ilp = getValue("ilp");
+	private static final boolean log_ilp_ext = getValue("ilpExt");
 	private static final boolean log_pg = getValue("precedenceGraph");
 	private static final boolean log_times = getValue("times");
 	private static final boolean simplified_logs = getValue("simple");
@@ -83,7 +85,11 @@ public final class LoggerConfig {
 	}
 
 	public static boolean log_ilp() {
-		return log_all || log_ilp;
+		return log_all || log_ilp || log_ilp_ext;
+	}
+	
+	public static boolean log_ilp_extended() {
+		return log_ilp_ext;
 	}
 
 	public static boolean log_pg() {

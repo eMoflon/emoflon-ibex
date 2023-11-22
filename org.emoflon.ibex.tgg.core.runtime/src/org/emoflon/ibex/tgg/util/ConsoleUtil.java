@@ -37,19 +37,27 @@ public class ConsoleUtil {
 	 * @param operation operation that produces unwanted prints
 	 * @return return value of the given operation if present
 	 */
-	public static <T, E extends Exception> T suppressUnwantedPrints(ThrowingSupplier<T, E> operation) throws E {
-		PrintStream currentPrintStream = System.out;
-		System.setOut(dummyPrintStream);
-		T result = operation.get();
-		System.setOut(currentPrintStream);
-		return result;
+	public static <T, E extends Exception> T suppressUnwantedPrints(boolean suppress, ThrowingSupplier<T, E> operation) throws E {
+		if (suppress) {
+			PrintStream currentPrintStream = System.out;
+			System.setOut(dummyPrintStream);
+			T result = operation.get();
+			System.setOut(currentPrintStream);
+			return result;
+		} else {
+			return operation.get();
+		}
 	}
 
-	public static <E extends Exception> void suppressUnwantedPrints(ThrowingVoidSupplier<E> operation) throws E {
-		PrintStream currentPrintStream = System.out;
-		System.setOut(dummyPrintStream);
-		operation.get();
-		System.setOut(currentPrintStream);
+	public static <E extends Exception> void suppressUnwantedPrints(boolean suppress, ThrowingVoidSupplier<E> operation) throws E {
+		if (suppress) {
+			PrintStream currentPrintStream = System.out;
+			System.setOut(dummyPrintStream);
+			operation.get();
+			System.setOut(currentPrintStream);
+		} else {
+			operation.get();
+		}
 	}
 
 	public static String indent(String s, int indent, boolean indentFirstLine) {
