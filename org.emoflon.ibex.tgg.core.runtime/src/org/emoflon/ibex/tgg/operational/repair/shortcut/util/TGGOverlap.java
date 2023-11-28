@@ -99,4 +99,17 @@ public class TGGOverlap {
 		
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("TGGOverlap [originalRule=");
+		builder.append(originalRule);
+		builder.append(", replacingRule=");
+		builder.append(replacingRule);
+		builder.append(", category=");
+		builder.append(category);
+		builder.append("]");
+		return builder.toString();
+	}
 }

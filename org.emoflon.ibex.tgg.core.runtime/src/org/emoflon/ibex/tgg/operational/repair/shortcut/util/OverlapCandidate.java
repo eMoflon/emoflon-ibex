@@ -49,12 +49,11 @@ class NodeCandidate extends OverlapCandidate {
 	@Override
 	public String toString() {
 		StringBuilder b = new StringBuilder();
-		b.append("NodeCandidate [\n");
-		b.append("  originalNode:  ");
+		b.append("NodeCandidate [");
 		b.append(originalElt);
-		b.append("\n  replacingNode: ");
+		b.append(" => ");
 		b.append(replacingElt);
-		b.append("\n]");
+		b.append("]");
 		return b.toString();
 	}
 }
@@ -75,12 +74,11 @@ class EdgeCandidate extends OverlapCandidate {
 	@Override
 	public String toString() {
 		StringBuilder b = new StringBuilder();
-		b.append("EdgeCandidate [\n");
-		b.append("  originalEdge:  ");
+		b.append("EdgeCandidate [");
 		b.append(originalElt);
-		b.append("\n  replacingEdge: ");
+		b.append(" => ");
 		b.append(replacingElt);
-		b.append("\n]");
+		b.append("]");
 		return b.toString();
 	}
 }

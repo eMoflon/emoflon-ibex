@@ -112,10 +112,13 @@ public class PrecedenceNode {
 	 */
 	public boolean transitivelyRequires(PrecedenceNode other, boolean stayInPatternType) {
 		PatternType patternType = this.match.getType();
+		if (stayInPatternType && !patternType.equals(other.match.getType()))
+			throw new RuntimeException("This node and other node must have the same pattern type if stayInPatternType is true");
+
 		AtomicBoolean found = new AtomicBoolean(false);
 
 		this.forAllRequires((act, pre) -> {
-			if (!patternType.equals(other.match.getType()))
+			if (stayInPatternType && !patternType.equals(act.match.getType()))
 				return false;
 
 			if (found.get() || act.equals(other)) {
@@ -139,10 +142,13 @@ public class PrecedenceNode {
 	 */
 	public boolean transitivelyRequiredBy(PrecedenceNode other, boolean stayInPatternType) {
 		PatternType patternType = this.match.getType();
+		if (stayInPatternType && !patternType.equals(other.match.getType()))
+			throw new RuntimeException("This node and other node must have the same pattern type if stayInPatternType is true");
+
 		AtomicBoolean found = new AtomicBoolean(false);
 
 		this.forAllRequiredBy((act, pre) -> {
-			if (!patternType.equals(other.match.getType()))
+			if (stayInPatternType && !patternType.equals(act.match.getType()))
 				return false;
 
 			if (found.get() || act.equals(other)) {

@@ -85,11 +85,11 @@ public class ConflictDetector {
 		// we only iterate over src/trg matches which are not part of a consistency match (already filtered
 		// in precedence graph)
 		integrate.precedenceGraph().getSourceNodes().parallelStream() //
-				.filter(srcNode -> !integrate.precedenceGraph().hasConsistencyMatchOverlap(srcNode)) //
+				.filter(srcNode -> !integrate.precedenceGraph().hasConsistencyMatchOverlap(srcNode, false)) //
 				.forEach(srcNode -> detectDeletePreserveEdgeConflict(srcNode, null));
 
 		integrate.precedenceGraph().getTargetNodes().parallelStream() //
-				.filter(trgNode -> !integrate.precedenceGraph().hasConsistencyMatchOverlap(trgNode)) //
+				.filter(trgNode -> !integrate.precedenceGraph().hasConsistencyMatchOverlap(trgNode, false)) //
 				.forEach(trgNode -> detectDeletePreserveEdgeConflict(trgNode, null));
 
 		detectDeletePreserveAttrConflicts();
@@ -110,7 +110,7 @@ public class ConflictDetector {
 		srcTrgNode.forAllToBeRolledBackBy((act, pre) -> {
 			// TODO adrianm: improve performance?
 			// we only want to traverse those src/trg matches that only matches non-translated green elements
-			if (act.getMatch().getType() != PatternType.CONSISTENCY && integrate.precedenceGraph().hasConsistencyMatchOverlap(act))
+			if (act.getMatch().getType() != PatternType.CONSISTENCY && integrate.precedenceGraph().hasConsistencyMatchOverlap(act, false))
 				return false;
 			if (act.isBroken()) {
 				directRollBackCauses.add(act);

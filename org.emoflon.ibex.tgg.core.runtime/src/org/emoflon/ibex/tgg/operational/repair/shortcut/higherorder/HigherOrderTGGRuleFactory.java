@@ -15,6 +15,7 @@ import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRule.ComponentSpecificRuleElement;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRule.HigherOrderRuleComponent;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.ILPHigherOrderRuleMappingSolver.ILPResult;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceGraph;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceNode;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.EltFilter;
@@ -51,7 +52,7 @@ public class HigherOrderTGGRuleFactory {
 	//// MAPPING FROM CONSISTENCY ////
 
 	public HigherOrderTGGRule createHigherOrderTGGRuleFromConsMatches(List<PrecedenceNode> pgNodes) {
-		validateInputNodes(pgNodes);
+		validateConsInputNodes(pgNodes);
 
 		HigherOrderTGGRule higherOrderRule = new HigherOrderTGGRule();
 		for (PrecedenceNode pgNode : pgNodes) {
@@ -124,7 +125,7 @@ public class HigherOrderTGGRuleFactory {
 		// domain") a mapping is found by collecting all possible mappings & then using ILP to determine a
 		// valid mapping solution
 
-		validateInputNodes(srcTrgNodes);
+		List<PrecedenceNode> validatedSrcTrgNodes = validateSrcTrgInputNodes(srcTrgNodes);
 
 		ElementsContainer elementsOfConsNodes = collectElementsFromMatches(consNodes, propagationDomain);
 
@@ -134,28 +135,28 @@ public class HigherOrderTGGRuleFactory {
 		MatchRelatedRuleElementMap totalOppositeDomainMappings = new MatchRelatedRuleElementMap();
 		MatchRelatedRuleElementMap totalCorrDomainMappings = new MatchRelatedRuleElementMap();
 		MatchRelatedRuleElementMap totalConsMappings = new MatchRelatedRuleElementMap();
-		for (PrecedenceNode srcTrgNode : srcTrgNodes) {
+		for (PrecedenceNode srcTrgNode : validatedSrcTrgNodes) {
 			TGGMatchUtil matchUtil = mup.get(srcTrgNode.getMatch());
 
 			totalConsMappings.putAll(createConsMappingForOppositeDomain(srcTrgNode, matchUtil, propagationDomain, elementsOfConsNodes));
 
 			// since the src/trg node nearest to the root cannot have any context->create mappings to other
 			// src/trg matches, we skip it
-			if (srcTrgNodes.indexOf(srcTrgNode) == 0)
+			if (validatedSrcTrgNodes.indexOf(srcTrgNode) == 0)
 				continue;
 
 			Set<MatchRelatedRuleElement> matchRelatedRuleElements = new HashSet<>();
 
-			MatchRelatedRuleElementMap propDomainMapping = createMappingForPropagationDomain(srcTrgNode, matchUtil, propagationDomain, srcTrgNodes);
+			MatchRelatedRuleElementMap propDomainMapping = createMappingForPropagationDomain(srcTrgNode, matchUtil, propagationDomain, validatedSrcTrgNodes);
 			matchRelatedRuleElements.addAll(propDomainMapping.keySet());
 			totalPropDomainMappings.putAll(propDomainMapping);
 
-			Map<TGGRule, Set<ITGGMatch>> rule2matches = collectRules(srcTrgNode, srcTrgNodes);
-			MatchRelatedRuleElementMap oppositeDomainMapping = createMappingForOppositeDomain(srcTrgNode, matchUtil, propagationDomain, srcTrgNodes, rule2matches);
+			Map<TGGRule, Set<ITGGMatch>> rule2matches = collectRules(srcTrgNode, validatedSrcTrgNodes);
+			MatchRelatedRuleElementMap oppositeDomainMapping = createMappingForOppositeDomain(srcTrgNode, matchUtil, propagationDomain, validatedSrcTrgNodes, rule2matches);
 			matchRelatedRuleElements.addAll(oppositeDomainMapping.keySet());
 			totalOppositeDomainMappings.putAll(oppositeDomainMapping);
 
-			MatchRelatedRuleElementMap corrDomainMapping = createMappingForCorrDomain(srcTrgNode, matchUtil, srcTrgNodes, rule2matches);
+			MatchRelatedRuleElementMap corrDomainMapping = createMappingForCorrDomain(srcTrgNode, matchUtil, validatedSrcTrgNodes, rule2matches);
 			matchRelatedRuleElements.addAll(corrDomainMapping.keySet());
 			totalCorrDomainMappings.putAll(corrDomainMapping);
 
@@ -165,21 +166,26 @@ public class HigherOrderTGGRuleFactory {
 		ILPHigherOrderRuleMappingSolver ilpSolver = new ILPHigherOrderRuleMappingSolver( //
 				mup, //
 				options.ilpSolver(), //
-				srcTrgNodes.stream().map(n -> n.getMatch()).toList(), //
+				validatedSrcTrgNodes.stream().map(n -> n.getMatch()).toList(), //
 				totalPropDomainMappings, //
 				totalOppositeDomainMappings, //
 				totalCorrDomainMappings, //
 				totalConsMappings, //
-				elementsOfConsNodes.eObject2elements //
+				elementsOfConsNodes.eObject2elements, //
+				propagationDomain //
 		);
-		Map<MatchRelatedRuleElement, MatchRelatedRuleElement> overallContextMapping = ilpSolver.getResult();
+		ILPResult ilpResult = ilpSolver.getResult();
+		Map<MatchRelatedRuleElement, MatchRelatedRuleElement> overallContextMapping = ilpResult.mappings();
+		List<PrecedenceNode> nodesToUse = validatedSrcTrgNodes.stream() //
+				.filter(n -> ilpResult.matches().contains(n.getMatch())) //
+				.toList();
 
 		// transform ILP solution to higher-order rule:
 		HigherOrderTGGRule higherOrderRule = new HigherOrderTGGRule();
-		for (PrecedenceNode pgNode : srcTrgNodes) {
+		for (PrecedenceNode pgNode : nodesToUse) {
 			TGGRule rule = mup.get(pgNode.getMatch()).getRule();
 
-			if (srcTrgNodes.indexOf(pgNode) == 0) {
+			if (nodesToUse.indexOf(pgNode) == 0) {
 				higherOrderRule.addComponent(rule, pgNode.getMatch(), Collections.emptyMap());
 				continue;
 			}
@@ -236,11 +242,13 @@ public class HigherOrderTGGRuleFactory {
 			Set<PrecedenceNode> mappedPGNodes = pg.getNodesTranslating(obj);
 
 			Set<MatchRelatedRuleElement> mappedElements = new HashSet<>();
+			boolean alreadyCreated = false;
 			for (PrecedenceNode mappedPGNode : mappedPGNodes) {
 				// if there is an intact consistency match covering that object, we don't want to map the object's
 				// rule node, except if there is a context to context mapping
 				if (mappedPGNode.getMatch().getType() == PatternType.CONSISTENCY && !mappedPGNode.isBroken()) {
 					handleContextToContextMapping(pgNode, obj, mappedPGNode, mappedElements);
+					alreadyCreated = true;
 					break;
 				}
 
@@ -256,7 +264,7 @@ public class HigherOrderTGGRuleFactory {
 				}
 			}
 
-			if (!mappedElements.isEmpty())
+			if (!alreadyCreated && !mappedElements.isEmpty())
 				contextMapping.put(new MatchRelatedRuleElement(ruleElement, pgNode.getMatch()), mappedElements);
 		}
 
@@ -269,18 +277,20 @@ public class HigherOrderTGGRuleFactory {
 			PrecedenceNode mappedPGNode, //
 			Set<MatchRelatedRuleElement> mappedElements //
 	) {
-		for (PrecedenceNode reqPGNode : mappedPGNode.getRequiredBy()) {
-			if (reqPGNode.getMatch().getType() != pgNode.getMatch().getType())
-				continue;
-			if (reqPGNode.equals(pgNode))
-				continue;
-			if (reqPGNode.getMatch().getObjects().contains(obj)) {
-				TGGMatchUtil reqMatchUtil = mup.get(reqPGNode.getMatch());
-				TGGRuleElement mappedRuleElement = reqMatchUtil.getElement(obj);
-				if (mappedRuleElement.getBindingType() == BindingType.CONTEXT)
-					mappedElements.add(new MatchRelatedRuleElement(mappedRuleElement, reqPGNode.getMatch()));
-			}
-		}
+		// Since we do not know why we may need this, we leave it out to avoid trouble:
+
+//		for (PrecedenceNode reqPGNode : mappedPGNode.getRequiredBy()) {
+//			if (reqPGNode.getMatch().getType() != pgNode.getMatch().getType())
+//				continue;
+//			if (reqPGNode.equals(pgNode))
+//				continue;
+//			if (reqPGNode.getMatch().getObjects().contains(obj)) {
+//				TGGMatchUtil reqMatchUtil = mup.get(reqPGNode.getMatch());
+//				TGGRuleElement mappedRuleElement = reqMatchUtil.getElement(obj);
+//				if (mappedRuleElement.getBindingType() == BindingType.CONTEXT)
+//					mappedElements.add(new MatchRelatedRuleElement(mappedRuleElement, reqPGNode.getMatch()));
+//			}
+//		}
 	}
 
 	private MatchRelatedRuleElementMap createMappingForOppositeDomain( //
@@ -491,9 +501,21 @@ public class HigherOrderTGGRuleFactory {
 		return context.getType().equals(matchCandidate.getType());
 	}
 
-	private void validateInputNodes(List<PrecedenceNode> nodes) {
+	private void validateConsInputNodes(List<PrecedenceNode> nodes) {
 		if (nodes.isEmpty())
 			throw new RuntimeException("There must be at least one simple rule to create a higher-order TGG rule!");
+	}
+
+	private List<PrecedenceNode> validateSrcTrgInputNodes(List<PrecedenceNode> nodes) {
+		List<PrecedenceNode> result = nodes.stream() //
+				.filter(n -> !pg.hasConsistencyMatchOverlap(n, true)) //
+				.toList();
+
+		if (result.isEmpty())
+			// TODO should not be an exception since we have multiple branches. But we need at least one branch!
+			throw new RuntimeException("There must be at least one simple rule to create a higher-order TGG rule!");
+
+		return result;
 	}
 
 	private ElementsContainer collectElementsFromMatches(List<PrecedenceNode> consNodes, DomainType propagationDomain) {

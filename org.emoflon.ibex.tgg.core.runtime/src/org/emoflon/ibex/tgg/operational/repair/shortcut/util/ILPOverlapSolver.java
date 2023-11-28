@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.util.ilp.BinaryILPProblem;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;
@@ -126,12 +127,16 @@ public class ILPOverlapSolver {
 		defineILPImplications(ilpProblem);
 		defineMoreILPConditions(ilpProblem);
 		defineILPObjective(ilpProblem);
+		
+		LoggerConfig.log(LoggerConfig.log_ilp_extended(), () -> "ILP problem:\n" + ilpProblem + "\n");
 
 		try {
 			ILPSolution ilpSolution = ILPSolver.solveBinaryILPProblem(ilpProblem, solver);
 			if (!ilpProblem.checkValidity(ilpSolution)) {
 				throw new AssertionError("Invalid solution");
 			}
+			
+			LoggerConfig.log(LoggerConfig.log_ilp_extended(), () -> printILPSolution(ilpSolution) + "\n");
 
 			int[] result = new int[idCounter];
 			for (int i = 0; i < idCounter; i++) {
@@ -276,7 +281,6 @@ public class ILPOverlapSolver {
 						"CONSTR_corrSrcTrg_subSrc_lb_" + corr.getName() + "_" + nameCounter);
 				ilpProblem.addConstraint(subSrcExpr, Comparator.le, srcNodeCdtIDs.size(), //
 						"CONSTR_corrSrcTrg_subSrc_ub_" + corr.getName() + "_" + nameCounter);
-				
 			}
 			
 			if (trgNodeCdtIDs.size() == 1) {
@@ -348,6 +352,19 @@ public class ILPOverlapSolver {
 			if (id2edgeCdt.containsKey(i))
 				outputEdgeCdts.add(id2edgeCdt.get(i));
 		}
+	}
+
+	private String printILPSolution(ILPSolution ilpSolution) {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Mappings:\n");
+		for (int i = 0; i < idCounter; i++) {
+			String v = "x" + i;
+			if (id2nodeCdt.containsKey(i))
+				builder.append("  " + v + ": " + ilpSolution.getVariable(v) + " | " + id2nodeCdt.get(i) + "\n");
+			if (id2edgeCdt.containsKey(i))
+				builder.append("  " + v + ": " + ilpSolution.getVariable(v) + " | " + id2edgeCdt.get(i) + "\n");
+		}
+		return builder.toString();
 	}
 
 }

@@ -19,17 +19,14 @@ import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.OperationalShortcut
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.search.LocalPatternSearch;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.OverlapCategory;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCPersistence;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.OverlapUtil.FixedMappings;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCPersistence;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.TGGOverlap;
 import org.emoflon.ibex.tgg.operational.repair.strategies.RepairApplicationPoint;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceGraph;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.matchcontainer.PrecedenceNode;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtilProvider;
-
-import com.google.common.collect.Sets;
-import com.google.common.collect.Sets.SetView;
 
 import language.DomainType;
 import language.TGGRuleElement;
@@ -75,7 +72,11 @@ public class HigherOrderShortcutPatternProvider extends BasicShortcutPatternProv
 		Map<String, Collection<ShortcutRule>> replacingID2shortcutRules = higherOrderShortcutRules //
 				.computeIfAbsent(originalNodesID, k -> new HashMap<>());
 
-		SetView<String> missingReplacingNodeIDs = Sets.difference(replacingNodesIDs, replacingID2shortcutRules.keySet());
+		// FIXME start
+//		SetView<String> missingReplacingNodeIDs = Sets.difference(replacingNodesIDs, replacingID2shortcutRules.keySet());
+		Set<String> missingReplacingNodeIDs = replacingNodesIDs;
+		// FIXME end: deactivated caching HO-SC-rules, reason: see FIXME comment at ShortcutApplicationTool#getEntryNodeElts
+		
 		Map<String, Set<ShortcutRule>> missingReplacingID2shortcutRules = generateHigherOrderShortcutRules(applPoint, missingReplacingNodeIDs);
 		replacingID2shortcutRules.putAll(missingReplacingID2shortcutRules);
 
@@ -95,11 +96,6 @@ public class HigherOrderShortcutPatternProvider extends BasicShortcutPatternProv
 		}
 
 		generatedOpRules.forEach(r -> opShortcutRule2patternMatcher.put(r, new LocalPatternSearch(r, options)));
-		
-		// FIXME start
-		higherOrderShortcutRules.clear();
-		higherOrderShortcutPatterns.clear();
-		// FIXME end: deactivated caching HO-SC-rules, reason: see FIXME comment at ShortcutApplicationTool#getEntryNodeElts
 
 		return generatedOpRules;
 	}

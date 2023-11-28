@@ -369,8 +369,12 @@ public class OverlapUtil {
 		Collection<EdgeCandidate> edgeCandidates = calculateEdgeCandidates(originalRule, replacingRule, fixedMappings, mapContext, fixedCandidates);
 		ILPOverlapSolver overlapSolver = new ILPOverlapSolver(nodeCandidates, edgeCandidates, fixedCandidates, options.ilpSolver());
 
-		return createOverlapFromILPSolution(originalRule, replacingRule, //
+		TGGOverlap solution = createOverlapFromILPSolution(originalRule, replacingRule, //
 				overlapSolver.solvedNodeCandidates(), overlapSolver.solvedEdgeCandidates(), category);
+		
+		LoggerConfig.log(LoggerConfig.log_ilp_extended(), () -> "Created " + solution + "\n");
+		
+		return solution;
 	}
 
 	private List<NodeCandidate> calculateNodeCandidates(TGGRule originalRule, TGGRule replacingRule, FixedMappings fixedMappings,

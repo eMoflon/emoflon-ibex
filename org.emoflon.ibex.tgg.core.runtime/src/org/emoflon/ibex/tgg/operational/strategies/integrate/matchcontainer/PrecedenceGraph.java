@@ -214,9 +214,10 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 	 * elements from the specified source or target match.
 	 * 
 	 * @param srcTrgNode
+	 * @param excludeBroken if true, broken consistency matches are ignored
 	 * @return {@code true} if there is a consistency match overlap
 	 */
-	public boolean hasConsistencyMatchOverlap(PrecedenceNode srcTrgNode) {
+	public boolean hasConsistencyMatchOverlap(PrecedenceNode srcTrgNode, boolean excludeBroken) {
 		ITGGMatch srcTrgMatch = srcTrgNode.getMatch();
 
 		IGreenPatternFactory gFactory = strategy.getGreenFactories().get(srcTrgMatch.getRuleName());
@@ -231,7 +232,7 @@ public class PrecedenceGraph extends MatchConsumer implements TimeMeasurable {
 
 		return translatedElts.parallelStream() //
 				.flatMap(elt -> this.getNodesTranslating(elt).stream()) //
-				.anyMatch(n -> n.getMatch().getType() == PatternType.CONSISTENCY);
+				.anyMatch(n -> n.getMatch().getType() == PatternType.CONSISTENCY && (!excludeBroken || !n.isBroken()));
 	}
 
 	/**
