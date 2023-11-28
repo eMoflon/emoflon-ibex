@@ -305,7 +305,7 @@ public class HigherOrderTGGRuleFactory {
 					if (matchesContext(ruleNode, mappedNode)) {
 						for (ITGGMatch mappedMatch : rule2matches.get(mappedRule)) {
 							// Prevents from creating invalid candidates due to PG dependency relations
-							if (pgNode.transitivelyRequiredBy(pg.getNode(mappedMatch)))
+							if (pgNode.transitivelyRequiredBy(pg.getNode(mappedMatch), true))
 								continue;
 							mappedElements.add(new MatchRelatedRuleElement(mappedNode, mappedMatch));
 						}
@@ -326,7 +326,7 @@ public class HigherOrderTGGRuleFactory {
 					if (matchesContext(ruleEdge, mappedEdge)) {
 						for (ITGGMatch mappedMatch : rule2matches.get(mappedRule)) {
 							// Prevents from creating invalid candidates due to PG dependency relations
-							if (pgNode.transitivelyRequiredBy(pg.getNode(mappedMatch)))
+							if (pgNode.transitivelyRequiredBy(pg.getNode(mappedMatch), true))
 								continue;
 							mappedElements.add(new MatchRelatedRuleElement(mappedEdge, mappedMatch));
 						}

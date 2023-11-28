@@ -10,6 +10,7 @@ import java.util.Stack;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiPredicate;
 
+import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.util.ConsoleUtil;
 
@@ -101,15 +102,22 @@ public class PrecedenceNode {
 	}
 
 	/**
-	 * Checks if this node (transitively) requires the <code>other</code> node.
+	 * Checks if this node (transitively) requires the <code>other</code> node. If
+	 * <code>stayInPatternType</code> is true, only nodes with the same pattern type as this are
+	 * considered while traversing.
 	 * 
 	 * @param other
+	 * @param stayInPatternType
 	 * @return <code>true</code> if this node (transitively) requires the <code>other</code> node
 	 */
-	public boolean transitivelyRequires(PrecedenceNode other) {
+	public boolean transitivelyRequires(PrecedenceNode other, boolean stayInPatternType) {
+		PatternType patternType = this.match.getType();
 		AtomicBoolean found = new AtomicBoolean(false);
 
 		this.forAllRequires((act, pre) -> {
+			if (!patternType.equals(other.match.getType()))
+				return false;
+
 			if (found.get() || act.equals(other)) {
 				found.set(true);
 				return false;
@@ -121,15 +129,22 @@ public class PrecedenceNode {
 	}
 
 	/**
-	 * Checks if this node is (transitively) required by the <code>other</code> node.
+	 * Checks if this node is (transitively) required by the <code>other</code> node. If
+	 * <code>stayInPatternType</code> is true, only nodes with the same pattern type as this are
+	 * considered while traversing.
 	 * 
 	 * @param other
+	 * @param stayInPatternType
 	 * @return <code>true</code> if this node is (transitively) required by the <code>other</code> node
 	 */
-	public boolean transitivelyRequiredBy(PrecedenceNode other) {
+	public boolean transitivelyRequiredBy(PrecedenceNode other, boolean stayInPatternType) {
+		PatternType patternType = this.match.getType();
 		AtomicBoolean found = new AtomicBoolean(false);
 
 		this.forAllRequiredBy((act, pre) -> {
+			if (!patternType.equals(other.match.getType()))
+				return false;
+
 			if (found.get() || act.equals(other)) {
 				found.set(true);
 				return false;

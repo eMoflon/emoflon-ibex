@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.emf.ecore.EObject;
+import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRuleFactory.MatchRelatedRuleElement;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRuleFactory.MatchRelatedRuleElementMap;
@@ -72,8 +73,8 @@ public class ILPHigherOrderRuleMappingSolver {
 	private Map<ElementCandidate, Integer> consCandidate2ID = cfactory.createObjectToIntHashMap();
 	private Map<Integer, ElementCandidate> id2ConsCandidate = cfactory.createIntToObjectHashMap();
 
-	private static final double SIDE_OBJECTIVE = 0.0000000001;
-	private static final double CONTEXT_TARGET_COEFF = 0.0000000000001;
+	private static final double SIDE_OBJECTIVE = 0.0001;
+	private static final double CONTEXT_TARGET_COEFF = 0.00001;
 	private Set<Integer> candidatesWithContextTarget = cfactory.createIntSet();
 
 	private Map<MatchRelatedRuleElement, MatchRelatedRuleElement> mappingResult;
@@ -571,11 +572,15 @@ public class ILPHigherOrderRuleMappingSolver {
 	}
 
 	private int[] solveILPProblem(BinaryILPProblem ilpProblem) {
+		LoggerConfig.log(LoggerConfig.log_ilp_extended(), () -> "ILP problem:\n" + ilpProblem + "\n");
+		
 		try {
 			ILPSolution ilpSolution = ILPSolver.solveBinaryILPProblem(ilpProblem, solver);
 			if (!ilpProblem.checkValidity(ilpSolution)) {
 				throw new AssertionError("Invalid solution");
 			}
+			
+			LoggerConfig.log(LoggerConfig.log_ilp_extended(), () -> printILPSolution(ilpSolution) + "\n");
 
 			int[] result = new int[elementIDCounter];
 			for (int i = 0; i < elementIDCounter; i++) {
@@ -607,8 +612,49 @@ public class ILPHigherOrderRuleMappingSolver {
 	private void convertCandidatesToMappingResult(Set<ElementCandidate> candidates) {
 		mappingResult = candidates.stream().collect(Collectors.toMap(c -> c.source, c -> c.target));
 	}
+	
+	private String printILPSolution(ILPSolution ilpSolution) {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Replacing => replaced mappings:\n");
+		for (int i = 0; i < consIDCounter; i++) {
+			String v = "c" + i;
+			builder.append("  " + v + ": " + ilpSolution.getVariable(v) + " | " + id2ConsCandidate.get(i) + "\n");
+		}
+		builder.append("Concatenating replacing mappings:\n");
+		for (int i = 0; i < elementIDCounter; i++) {
+			String v = "e" + i;
+			builder.append("  " + v + ": " + ilpSolution.getVariable(v) + " | " + id2Candidate.get(i) + "\n");
+		}
+		builder.append("Matches:\n");
+		for (int i = 0; i < matchIDCounter; i++) {
+			String v = "m" + i;
+			builder.append("  " + v + ": " + ilpSolution.getVariable(v) + " | " + id2match.get(i).getPatternName() + "\n");
+		}
+		builder.append("Helper variables:\n");
+		for (int i = 0; i < noConcatVarCounter; i++) {
+			String v = "x" + i;
+			builder.append(v + ": " + v + " | " + ilpSolution.getVariable(v) + "\n");
+		}
+		return builder.toString();
+	}
 
 	private record ElementCandidate(MatchRelatedRuleElement source, MatchRelatedRuleElement target) {
+		@Override
+		public String toString() {
+			StringBuilder builder = new StringBuilder();
+			builder.append("ElementCandidate [");
+			builder.append(source.ruleElement());
+			builder.append("(");
+			builder.append(source.match().getPatternName());
+			builder.append(")");
+			builder.append(" => ");
+			builder.append(target.ruleElement());
+			builder.append("(");
+			builder.append(target.match().getPatternName());
+			builder.append(")");
+			builder.append("]");
+			return builder.toString();
+		}
 	}
 
 }
