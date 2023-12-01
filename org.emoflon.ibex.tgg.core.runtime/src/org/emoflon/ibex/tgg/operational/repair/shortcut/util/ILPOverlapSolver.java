@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
+import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.util.ilp.BinaryILPProblem;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;
@@ -26,6 +27,8 @@ import language.TGGRuleEdge;
 import language.TGGRuleNode;
 
 public class ILPOverlapSolver {
+
+	private final IbexOptions options;
 
 	// GENERAL //
 	private SupportedILPSolver solver;
@@ -50,13 +53,23 @@ public class ILPOverlapSolver {
 	private Collection<NodeCandidate> outputNodeCdts = new LinkedList<>();
 	private Collection<EdgeCandidate> outputEdgeCdts = new LinkedList<>();
 
-	public ILPOverlapSolver(Collection<NodeCandidate> nodeCandidates, Collection<EdgeCandidate> edgeCandidates,
-			SupportedILPSolver solver) {
-		this(nodeCandidates, edgeCandidates, Collections.emptyList(), solver);
+	public ILPOverlapSolver( //
+			IbexOptions options, //
+			Collection<NodeCandidate> nodeCandidates, //
+			Collection<EdgeCandidate> edgeCandidates, //
+			SupportedILPSolver solver //
+	) {
+		this(options, nodeCandidates, edgeCandidates, Collections.emptyList(), solver);
 	}
-	
-	public ILPOverlapSolver(Collection<NodeCandidate> nodeCandidates, Collection<EdgeCandidate> edgeCandidates, Collection<OverlapCandidate> fixedCandidates,
-			SupportedILPSolver solver) {
+
+	public ILPOverlapSolver( //
+			IbexOptions options, //
+			Collection<NodeCandidate> nodeCandidates, //
+			Collection<EdgeCandidate> edgeCandidates, //
+			Collection<OverlapCandidate> fixedCandidates, //
+			SupportedILPSolver solver //
+	) {
+		this.options = options;
 		this.inputNodeCdts = nodeCandidates;
 		this.inputEdgeCdts = edgeCandidates;
 		this.fixedCdts = fixedCandidates;
@@ -127,7 +140,7 @@ public class ILPOverlapSolver {
 		defineILPImplications(ilpProblem);
 		defineMoreILPConditions(ilpProblem);
 		defineILPObjective(ilpProblem);
-		
+
 		LoggerConfig.log(LoggerConfig.log_ilp_extended(), () -> "ILP problem:\n" + ilpProblem + "\n");
 
 		try {
@@ -135,7 +148,7 @@ public class ILPOverlapSolver {
 			if (!ilpProblem.checkValidity(ilpSolution)) {
 				throw new AssertionError("Invalid solution");
 			}
-			
+
 			LoggerConfig.log(LoggerConfig.log_ilp_extended(), () -> printILPSolution(ilpSolution) + "\n");
 
 			int[] result = new int[idCounter];
@@ -171,18 +184,19 @@ public class ILPOverlapSolver {
 	private void defineILPImplications(BinaryILPProblem ilpProblem) {
 		defineEdgeSrcTrgNodeImplications(ilpProblem);
 		defineCorrNodeSrcTrgEdgeImplications(ilpProblem);
-		defineCorrNodeSrcTrgNodeImplications(ilpProblem);
+		if (options.repair.useExperimentalCorrConstraints())
+			defineCorrNodeSrcTrgNodeImplications(ilpProblem);
 	}
 
 	private void defineEdgeSrcTrgNodeImplications(BinaryILPProblem ilpProblem) {
 		for (EdgeCandidate edgeCdt : edgeCdt2id.keySet()) {
 			Integer edgeCdtID = edgeCdt2id.get(edgeCdt);
-			
+
 			NodeCandidate srcNodeCdt = new NodeCandidate(edgeCdt.originalEdge().getSrcNode(), edgeCdt.replacingEdge().getSrcNode());
 			NodeCandidate trgNodeCdt = new NodeCandidate(edgeCdt.originalEdge().getTrgNode(), edgeCdt.replacingEdge().getTrgNode());
 			Integer srcNodeCdtID = nodeCdt2id.get(srcNodeCdt);
 			Integer trgNodeCdtID = nodeCdt2id.get(trgNodeCdt);
-			
+
 			if (srcNodeCdtID == null || trgNodeCdtID == null) {
 				ILPLinearExpression expr = ilpProblem.createLinearExpression();
 				expr.addTerm("x" + edgeCdtID, 1);
@@ -199,9 +213,9 @@ public class ILPOverlapSolver {
 
 	private void defineCorrNodeSrcTrgEdgeImplications(BinaryILPProblem ilpProblem) {
 		for (NodeCandidate nodeCdt : nodeCdt2id.keySet()) {
-			if (!(nodeCdt.originalNode() instanceof TGGRuleCorr origCorr && nodeCdt.replacingNode() instanceof TGGRuleCorr replCorr ))
+			if (!(nodeCdt.originalNode() instanceof TGGRuleCorr origCorr && nodeCdt.replacingNode() instanceof TGGRuleCorr replCorr))
 				continue;
-			
+
 			TGGRuleEdge origSrcEdge = null;
 			TGGRuleEdge origTrgEdge = null;
 			for (TGGRuleEdge edgeOrigCorr : origCorr.getOutgoingEdges()) {
@@ -210,7 +224,7 @@ public class ILPOverlapSolver {
 				else if (edgeOrigCorr.getTrgNode().getDomainType() == DomainType.TRG)
 					origTrgEdge = edgeOrigCorr;
 			}
-			
+
 			TGGRuleEdge replSrcEdge = null;
 			TGGRuleEdge replTrgEdge = null;
 			for (TGGRuleEdge edgeReplCorr : replCorr.getOutgoingEdges()) {
@@ -219,13 +233,13 @@ public class ILPOverlapSolver {
 				else if (edgeReplCorr.getTrgNode().getDomainType() == DomainType.TRG)
 					replTrgEdge = edgeReplCorr;
 			}
-			
+
 			EdgeCandidate srcEdgeCdt = new EdgeCandidate(origSrcEdge, replSrcEdge);
 			EdgeCandidate trgEdgeCdt = new EdgeCandidate(origTrgEdge, replTrgEdge);
 			Integer srcEdgeCdtID = edgeCdt2id.get(srcEdgeCdt);
 			Integer trgEdgeCdtID = edgeCdt2id.get(trgEdgeCdt);
 			Integer nodeCdtID = nodeCdt2id.get(nodeCdt);
-			
+
 			if (srcEdgeCdtID == null || trgEdgeCdtID == null) {
 				ILPLinearExpression expr = ilpProblem.createLinearExpression();
 				expr.addTerm("x" + nodeCdtID, 1);
@@ -246,61 +260,61 @@ public class ILPOverlapSolver {
 				.filter(n -> n instanceof TGGRuleCorr) //
 				.map(n -> (TGGRuleCorr) n) //
 				.collect(Collectors.toSet());
-		
+
 		for (TGGRuleCorr corr : replCorrs) {
 			Set<Integer> corrCdtIDs = node2cdts.get(corr);
 			if (corrCdtIDs == null || corrCdtIDs.isEmpty())
 				continue;
-			
+
 			Set<Integer> srcNodeCdtIDs = node2cdts.get(corr.getSource());
 			Set<Integer> trgNodeCdtIDs = node2cdts.get(corr.getTarget());
-			
+
 			boolean noSrcNodeCdts = srcNodeCdtIDs == null || srcNodeCdtIDs.isEmpty();
 			boolean noTrgNodeCdts = trgNodeCdtIDs == null || trgNodeCdtIDs.isEmpty();
-			
+
 			if (noSrcNodeCdts || noTrgNodeCdts)
 				continue;
-			
+
 			ILPLinearExpression mainExpr = ilpProblem.createLinearExpression();
 			for (int corrCdtID : corrCdtIDs)
 				mainExpr.addTerm("x" + corrCdtID, 1.0);
-			
+
 			int mainConstant = 1;
 			if (srcNodeCdtIDs.size() == 1) {
 				mainExpr.addTerm("x" + srcNodeCdtIDs.iterator().next(), -1.0);
 				mainConstant--;
 			} else {
 				mainExpr.addTerm("s" + tmpVarIdCounter, 1.0);
-				
+
 				ILPLinearExpression subSrcExpr = ilpProblem.createLinearExpression();
 				for (int srcNodeCdtID : srcNodeCdtIDs)
 					subSrcExpr.addTerm("x" + srcNodeCdtID, 1.0);
 				subSrcExpr.addTerm("s" + tmpVarIdCounter, srcNodeCdtIDs.size());
-				
+
 				ilpProblem.addConstraint(subSrcExpr, Comparator.ge, 1, //
 						"CONSTR_corrSrcTrg_subSrc_lb_" + corr.getName() + "_" + nameCounter);
 				ilpProblem.addConstraint(subSrcExpr, Comparator.le, srcNodeCdtIDs.size(), //
 						"CONSTR_corrSrcTrg_subSrc_ub_" + corr.getName() + "_" + nameCounter);
 			}
-			
+
 			if (trgNodeCdtIDs.size() == 1) {
 				mainExpr.addTerm("x" + trgNodeCdtIDs.iterator().next(), -1.0);
 				mainConstant--;
 			} else {
 				mainExpr.addTerm("t" + tmpVarIdCounter, 1.0);
-				
+
 				ILPLinearExpression subTrgExpr = ilpProblem.createLinearExpression();
 				for (int trgNodeCdtID : trgNodeCdtIDs)
 					subTrgExpr.addTerm("x" + trgNodeCdtID, 1.0);
 				subTrgExpr.addTerm("t" + tmpVarIdCounter, trgNodeCdtIDs.size());
-				
+
 				ilpProblem.addConstraint(subTrgExpr, Comparator.ge, 1, //
 						"CONSTR_corrSrcTrg_subTrg_lb_" + corr.getName() + "_" + nameCounter);
 				ilpProblem.addConstraint(subTrgExpr, Comparator.le, trgNodeCdtIDs.size(), //
 						"CONSTR_corrSrcTrg_subTrg_ub_" + corr.getName() + "_" + nameCounter);
 			}
 			tmpVarIdCounter++;
-			
+
 			ilpProblem.addConstraint(mainExpr, Comparator.ge, mainConstant, //
 					"CONSTR_corrSrcTrg_main_" + corr.getName() + "_" + nameCounter++);
 		}
@@ -316,8 +330,7 @@ public class ILPOverlapSolver {
 		if (candidates.size() <= 1)
 			return;
 
-		ilpProblem.addExclusion(candidates.stream().map(v -> "x" + v),
-				"EXCL_nodeJustOnce_" + node.eClass().getName() + "_" + nameCounter++);
+		ilpProblem.addExclusion(candidates.stream().map(v -> "x" + v), "EXCL_nodeJustOnce_" + node.eClass().getName() + "_" + nameCounter++);
 	}
 
 	private void defineILPExclusions(BinaryILPProblem ilpProblem, TGGRuleEdge edge) {
@@ -325,8 +338,7 @@ public class ILPOverlapSolver {
 		if (candidates.size() <= 1)
 			return;
 
-		ilpProblem.addExclusion(candidates.stream().map(v -> "x" + v),
-				"EXCL_edgeJustOnce_" + edge.eClass().getName() + "_" + nameCounter++);
+		ilpProblem.addExclusion(candidates.stream().map(v -> "x" + v), "EXCL_edgeJustOnce_" + edge.eClass().getName() + "_" + nameCounter++);
 	}
 
 	protected void defineMoreILPConditions(BinaryILPProblem ilpProblem) {

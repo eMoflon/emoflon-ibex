@@ -77,7 +77,7 @@ public class ConcRepair implements TimeMeasurable {
 			LoggerConfig.log(LoggerConfig.log_repair(), () -> "Repair: init strategies");
 			Timer.start();
 
-			this.scApplPointFinder = new ShortcutApplicationPointFinder(opStrat.precedenceGraph(), opStrat.matchClassifier());
+			this.scApplPointFinder = new ShortcutApplicationPointFinder(opStrat.getOptions(), opStrat.precedenceGraph(), opStrat.matchClassifier());
 			ShortcutPatternProvider shortcutPatternProvider = initShortcutPatternProvider(opStrat.getOptions());
 			this.shortcutRepairStrat = new ShortcutRepairStrategy(opStrat.getOptions(), //
 					opStrat.getGreenInterpreter(), opStrat.getRedInterpreter(), shortcutPatternProvider);

@@ -95,6 +95,7 @@ public class OverlapUtil {
 
 	private TGGOverlap createOverlap(TGGRule originalRule, TGGRule replacingRule, boolean mapContext, OverlapCategory category) {
 		ILPOverlapSolver overlapSolver = new ILPOverlapSolver( //
+				options, //
 				calculateNodeCandidates(originalRule, replacingRule, mapContext), //
 				calculateEdgeCandidates(originalRule, replacingRule, mapContext), //
 				options.ilpSolver());
@@ -266,6 +267,7 @@ public class OverlapUtil {
 
 	private ILPOverlapSolver configureAndSolveILP(TGGRule rule, Collection<Implication> implications, TGGRuleNode flexNode) {
 		return new ILPOverlapSolver( //
+				options, //
 				rule.getNodes().stream().map(n -> new NodeCandidate(n, n)).collect(Collectors.toList()), //
 				rule.getEdges().stream().map(e -> new EdgeCandidate(e, e)).collect(Collectors.toList()), //
 				options.ilpSolver()) {
@@ -367,7 +369,7 @@ public class OverlapUtil {
 		Collection<OverlapCandidate> fixedCandidates = new LinkedList<>();
 		Collection<NodeCandidate> nodeCandidates = calculateNodeCandidates(originalRule, replacingRule, fixedMappings, mapContext, fixedCandidates);
 		Collection<EdgeCandidate> edgeCandidates = calculateEdgeCandidates(originalRule, replacingRule, fixedMappings, mapContext, fixedCandidates);
-		ILPOverlapSolver overlapSolver = new ILPOverlapSolver(nodeCandidates, edgeCandidates, fixedCandidates, options.ilpSolver());
+		ILPOverlapSolver overlapSolver = new ILPOverlapSolver(options, nodeCandidates, edgeCandidates, fixedCandidates, options.ilpSolver());
 
 		TGGOverlap solution = createOverlapFromILPSolution(originalRule, replacingRule, //
 				overlapSolver.solvedNodeCandidates(), overlapSolver.solvedEdgeCandidates(), category);

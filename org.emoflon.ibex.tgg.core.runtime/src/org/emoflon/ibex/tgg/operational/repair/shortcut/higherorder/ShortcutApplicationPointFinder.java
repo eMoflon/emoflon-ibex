@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.compiler.patterns.PatternType;
+import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.ClassifiedMatch;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.classification.DeletionType;
@@ -19,12 +21,15 @@ import language.DomainType;
 
 public class ShortcutApplicationPointFinder {
 
+	private final IbexOptions options;
+
 	private final PrecedenceGraph pg;
 	private final MatchClassifier mc;
-	
+
 	private Map<ITGGMatch, PatternType> followUpRepairTypes;
 
-	public ShortcutApplicationPointFinder(PrecedenceGraph pg, MatchClassifier mc) {
+	public ShortcutApplicationPointFinder(IbexOptions options, PrecedenceGraph pg, MatchClassifier mc) {
+		this.options = options;
 		this.pg = pg;
 		this.mc = mc;
 	}
@@ -43,7 +48,7 @@ public class ShortcutApplicationPointFinder {
 
 		return results;
 	}
-	
+
 	public Set<ShortcutApplicationPoint> searchForShortcutApplications(Map<ITGGMatch, PatternType> followUpRepairTypes) {
 		this.followUpRepairTypes = followUpRepairTypes;
 		return searchForShortcutApplications();
@@ -90,6 +95,15 @@ public class ShortcutApplicationPointFinder {
 			setOfReplacingNodes.add(replacingNodes);
 		}
 
+		if (!options.repair.createBranchesOfHigherOrderRules()) {
+			LinkedHashSet<PrecedenceNode> mergedNodes = new LinkedHashSet<>();
+			for (List<PrecedenceNode> replNodes : setOfReplacingNodes) {
+				mergedNodes.addAll(replNodes);
+			}
+			setOfReplacingNodes.clear();
+			setOfReplacingNodes.add(new LinkedList<>(mergedNodes));
+		}
+
 		ShortcutApplicationPoint shortcutApplPoint = new ShortcutApplicationPoint(applNode, originalNodes, setOfReplacingNodes, propagationType);
 		shortcutApplPoint.addOverlaps(applNode, overlappingNodes);
 		return shortcutApplPoint;
@@ -98,7 +112,7 @@ public class ShortcutApplicationPointFinder {
 	private PatternType filterMatchesAndCalcPropagationType(ClassifiedMatch classifiedMatch) {
 		// TODO differentiate between application node and subsequent node for deletion type
 		// -> important: then, subset application points won't work
-		
+
 		boolean srcViolations = false;
 		boolean trgViolations = false;
 
@@ -112,14 +126,12 @@ public class ShortcutApplicationPointFinder {
 			return null;
 
 		// filter NACs & inplace attributes:
-		if (classifiedMatch.getFilterNacViolations().containsValue(DomainType.SRC)
-				|| classifiedMatch.getInplaceAttrChanges().containsValue(DomainType.SRC)) {
+		if (classifiedMatch.getFilterNacViolations().containsValue(DomainType.SRC) || classifiedMatch.getInplaceAttrChanges().containsValue(DomainType.SRC)) {
 			if (trgViolations)
 				return null;
 			srcViolations = true;
 		}
-		if (classifiedMatch.getFilterNacViolations().containsValue(DomainType.TRG)
-				|| classifiedMatch.getInplaceAttrChanges().containsValue(DomainType.TRG)) {
+		if (classifiedMatch.getFilterNacViolations().containsValue(DomainType.TRG) || classifiedMatch.getInplaceAttrChanges().containsValue(DomainType.TRG)) {
 			if (srcViolations)
 				return null;
 			trgViolations = true;
@@ -129,7 +141,7 @@ public class ShortcutApplicationPointFinder {
 			return PatternType.SRC;
 		if (trgViolations)
 			return PatternType.TRG;
-		
+
 		if (followUpRepairTypes != null) {
 			PatternType followUpRepairType = followUpRepairTypes.get(classifiedMatch.getMatch());
 			if (followUpRepairType != null)

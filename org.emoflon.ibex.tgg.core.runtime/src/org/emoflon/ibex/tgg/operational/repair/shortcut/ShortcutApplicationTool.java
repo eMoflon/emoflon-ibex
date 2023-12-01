@@ -38,7 +38,7 @@ import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderT
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.OperationalShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.rule.ShortcutRule.SCInputRule;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.updatepolicy.IShortcutRuleUpdatePolicy;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.selectionpolicy.IShortcutRuleSelectionPolicy;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.util.SCMatch;
 import org.emoflon.ibex.tgg.operational.repair.strategies.RepairApplicationPoint;
 import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
@@ -111,9 +111,9 @@ public class ShortcutApplicationTool implements TimeMeasurable {
 			return null;
 
 		Collection<OperationalShortcutRule> copiedRules = new ArrayList<>(rules);
-		IShortcutRuleUpdatePolicy policy = options.repair.shortcutRuleUpdatePolicy();
+		IShortcutRuleSelectionPolicy policy = options.repair.shortcutRuleSelectionPolicy();
 		do {
-			OperationalShortcutRule osr = policy.chooseOneShortcutRule(copiedRules, applMatch);
+			OperationalShortcutRule osr = policy.selectOneShortcutRule(copiedRules, applMatch);
 			if (osr == null)
 				return null;
 

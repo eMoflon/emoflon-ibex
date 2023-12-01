@@ -1,8 +1,8 @@
 package org.emoflon.ibex.tgg.operational.defaults.options;
 
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.updatepolicy.DefaultSCRUpdatePolicy;
-import org.emoflon.ibex.tgg.operational.repair.shortcut.updatepolicy.IShortcutRuleUpdatePolicy;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.selectionpolicy.DefaultSCRSelectionPolicy;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.selectionpolicy.IShortcutRuleSelectionPolicy;
 
 public class RepairOptions extends IbexSubOptions {
 
@@ -13,7 +13,9 @@ public class RepairOptions extends IbexSubOptions {
 	private boolean omitUnnecessaryContext;
 	private boolean advancedOverlapStrategies;
 	private boolean usePGbasedSCruleCreation;
-	private IShortcutRuleUpdatePolicy scrUpdatePolicy;
+	private boolean useExperimentalCorrConstraints;
+	private boolean createBranchesOfHigherOrderRules;
+	private IShortcutRuleSelectionPolicy scrSelectionPolicy;
 
 	public RepairOptions(IbexOptions options) {
 		super(options);
@@ -25,7 +27,9 @@ public class RepairOptions extends IbexSubOptions {
 		disableInjectivity = true;
 		omitUnnecessaryContext = true;
 		usePGbasedSCruleCreation = false;
-		scrUpdatePolicy = new DefaultSCRUpdatePolicy();
+		useExperimentalCorrConstraints = false;
+		createBranchesOfHigherOrderRules = false;
+		scrSelectionPolicy = new DefaultSCRSelectionPolicy();
 	}
 
 	public boolean useShortcutRules() {
@@ -91,15 +95,33 @@ public class RepairOptions extends IbexSubOptions {
 		return options;
 	}
 
-	public IShortcutRuleUpdatePolicy shortcutRuleUpdatePolicy() {
-		return scrUpdatePolicy;
+	public boolean useExperimentalCorrConstraints() {
+		return useExperimentalCorrConstraints;
 	}
 
-	public IbexOptions shortcutRuleUpdatePolicy(IShortcutRuleUpdatePolicy scrUpdatePolicy) {
-		if (scrUpdatePolicy == null)
-			this.scrUpdatePolicy = new DefaultSCRUpdatePolicy();
+	public IbexOptions useExperimentalCorrConstraints(boolean useExperimentalCorrConstraints) {
+		this.useExperimentalCorrConstraints = useExperimentalCorrConstraints;
+		return options;
+	}
+
+	public boolean createBranchesOfHigherOrderRules() {
+		return createBranchesOfHigherOrderRules;
+	}
+
+	public IbexOptions createBranchesOfHigherOrderRules(boolean createBranchesOfHigherOrderRules) {
+		this.createBranchesOfHigherOrderRules = createBranchesOfHigherOrderRules;
+		return options;
+	}
+
+	public IShortcutRuleSelectionPolicy shortcutRuleSelectionPolicy() {
+		return scrSelectionPolicy;
+	}
+
+	public IbexOptions shortcutRuleSelectionPolicy(IShortcutRuleSelectionPolicy scrSelectionPolicy) {
+		if (scrSelectionPolicy == null)
+			this.scrSelectionPolicy = new DefaultSCRSelectionPolicy();
 		else
-			this.scrUpdatePolicy = scrUpdatePolicy;
+			this.scrSelectionPolicy = scrSelectionPolicy;
 		return options;
 	}
 
