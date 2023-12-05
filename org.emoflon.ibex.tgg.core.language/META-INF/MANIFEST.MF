@@ -25,7 +25,10 @@ Require-Bundle: com.google.guava,
  org.eclipse.xtext,
  org.moflon.core.plugins,
  org.eclipse.emf.mwe2.launch,
- org.apache.commons.logging
+ org.apache.commons.logging,
+ org.eclipse.emf.mwe2.lib,
+ org.eclipse.emf.codegen,
+ org.eclipse.emf.codegen.ecore
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-Vendor: eMoflon::IBeX Developers
 Bundle-ManifestVersion: 2

@@ -15,5 +15,8 @@ Require-Bundle: org.eclipse.emf.ecore;visibility:=reexport,
  org.eclipse.core.runtime,
  org.eclipse.emf.mwe2.launch,
  org.apache.log4j,
- org.apache.commons.logging
+ org.apache.commons.logging,
+ org.eclipse.emf.mwe2.lib,
+ org.eclipse.emf.codegen,
+ org.eclipse.emf.codegen.ecore
 Bundle-ActivationPolicy: lazy
