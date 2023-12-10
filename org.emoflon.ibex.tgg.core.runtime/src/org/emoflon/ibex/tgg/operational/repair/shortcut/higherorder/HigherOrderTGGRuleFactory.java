@@ -176,6 +176,7 @@ public class HigherOrderTGGRuleFactory {
 				totalCorrDomainMappings, //
 				totalConsMappings, //
 				elementsOfConsNodes.eObject2elements, //
+				overlappingSrcTrgMatches, //
 				propagationDomain //
 		);
 		ILPResult ilpResult = ilpSolver.getResult();
@@ -240,7 +241,7 @@ public class HigherOrderTGGRuleFactory {
 			Set<MatchContainer> srcTrgMatchOverlapSets //
 	) {
 		Set<ITGGMatch> overlappingMatches = getOverlappingMatches(pgNode.getMatch(), srcTrgMatchOverlapSets);
-		
+
 		MatchRelatedRuleElementMap contextMapping = new MatchRelatedRuleElementMap();
 
 		Set<Object> objects = matchUtil.getObjects(new EltFilter().domains(propagationDomain).context());
@@ -253,7 +254,7 @@ public class HigherOrderTGGRuleFactory {
 			for (PrecedenceNode mappedPGNode : mappedPGNodes) {
 				if (overlappingMatches.contains(mappedPGNode.getMatch()))
 					continue;
-				
+
 				// if there is an intact consistency match covering that object, we don't want to map the object's
 				// rule node, except if there is a context to context mapping
 				if (mappedPGNode.getMatch().getType() == PatternType.CONSISTENCY && !mappedPGNode.isBroken()) {
@@ -312,7 +313,7 @@ public class HigherOrderTGGRuleFactory {
 			Set<MatchContainer> srcTrgMatchOverlapSets //
 	) {
 		Set<ITGGMatch> overlappingMatches = getOverlappingMatches(pgNode.getMatch(), srcTrgMatchOverlapSets);
-		
+
 		DomainType oppositeDomain = TGGModelUtils.oppositeOf(propagationDomain);
 		TGGRule rule = matchUtil.getRule();
 
@@ -329,10 +330,11 @@ public class HigherOrderTGGRuleFactory {
 						for (ITGGMatch mappedMatch : rule2matches.get(mappedRule)) {
 							if (overlappingMatches.contains(mappedMatch))
 								continue;
-							
+
 							// Prevents from creating invalid candidates due to PG dependency relations
 							if (pgNode.transitivelyRequiredBy(pg.getNode(mappedMatch), true))
 								continue;
+
 							mappedElements.add(new MatchRelatedRuleElement(mappedNode, mappedMatch));
 						}
 					}
@@ -351,9 +353,13 @@ public class HigherOrderTGGRuleFactory {
 				for (TGGRuleEdge mappedEdge : mappedEdges) {
 					if (matchesContext(ruleEdge, mappedEdge)) {
 						for (ITGGMatch mappedMatch : rule2matches.get(mappedRule)) {
+							if (overlappingMatches.contains(mappedMatch))
+								continue;
+
 							// Prevents from creating invalid candidates due to PG dependency relations
 							if (pgNode.transitivelyRequiredBy(pg.getNode(mappedMatch), true))
 								continue;
+
 							mappedElements.add(new MatchRelatedRuleElement(mappedEdge, mappedMatch));
 						}
 					}
@@ -375,7 +381,7 @@ public class HigherOrderTGGRuleFactory {
 			Set<MatchContainer> srcTrgMatchOverlapSets //
 	) {
 		Set<ITGGMatch> overlappingMatches = getOverlappingMatches(pgNode.getMatch(), srcTrgMatchOverlapSets);
-		
+
 		TGGRule rule = matchUtil.getRule();
 
 		MatchRelatedRuleElementMap contextMapping = new MatchRelatedRuleElementMap();
@@ -390,7 +396,7 @@ public class HigherOrderTGGRuleFactory {
 						for (ITGGMatch mappedMatch : rule2matches.get(mappedRule)) {
 							if (overlappingMatches.contains(mappedMatch))
 								continue;
-							
+
 							mappedElements.add(new MatchRelatedRuleElement(mappedCorr, mappedMatch));
 						}
 					}

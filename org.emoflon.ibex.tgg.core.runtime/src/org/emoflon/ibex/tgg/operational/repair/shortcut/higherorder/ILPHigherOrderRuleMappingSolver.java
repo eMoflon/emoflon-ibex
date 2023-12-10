@@ -4,7 +4,6 @@ import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,7 +18,6 @@ import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRuleFactory.MatchContainer;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRuleFactory.MatchRelatedRuleElement;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRuleFactory.MatchRelatedRuleElementMap;
-import org.emoflon.ibex.tgg.operational.strategies.integrate.util.EltFilter;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtilProvider;
 import org.emoflon.ibex.tgg.util.ilp.BinaryILPProblem;
@@ -48,6 +46,7 @@ public class ILPHigherOrderRuleMappingSolver {
 	private final MatchRelatedRuleElementMap corrDomainMappings;
 	private final MatchRelatedRuleElementMap consMappings;
 	private final Map<EObject, MatchRelatedRuleElement> consEObject2elements;
+	private final Set<MatchContainer> overlappingSrcTrgMatches;
 	private final DomainType propagationDomain;
 
 	private int elementIDCounter = 0;
@@ -66,7 +65,6 @@ public class ILPHigherOrderRuleMappingSolver {
 	private Map<ElementCandidate, Integer> candidate2ID = cfactory.createObjectToIntHashMap();
 	private Map<Integer, ElementCandidate> id2Candidate = cfactory.createIntToObjectHashMap();
 
-	private Set<MatchContainer> overlappingMatches = cfactory.createObjectSet();
 	private Map<ITGGMatch, Integer> match2ID = cfactory.createObjectToIntHashMap();
 	private Map<Integer, ITGGMatch> id2match = cfactory.createIntToObjectHashMap();
 
@@ -89,6 +87,7 @@ public class ILPHigherOrderRuleMappingSolver {
 			MatchRelatedRuleElementMap corrDomainMappings, //
 			MatchRelatedRuleElementMap consMappings, //
 			Map<EObject, MatchRelatedRuleElement> consEObject2elements, //
+			Set<MatchContainer> overlappingSrcTrgMatches, //
 			DomainType propagationDomain //
 	) {
 		this.mup = mup;
@@ -99,6 +98,7 @@ public class ILPHigherOrderRuleMappingSolver {
 		this.corrDomainMappings = corrDomainMappings;
 		this.consMappings = consMappings;
 		this.consEObject2elements = consEObject2elements;
+		this.overlappingSrcTrgMatches = overlappingSrcTrgMatches;
 		this.propagationDomain = propagationDomain;
 
 		solve();
@@ -179,20 +179,6 @@ public class ILPHigherOrderRuleMappingSolver {
 			id2match.put(matchIDCounter, match);
 			matchIDCounter++;
 		});
-
-		// determine matches translating same elements
-		Map<Object, Set<ITGGMatch>> objects2overlappingMatches = new HashMap<>();
-		EltFilter createFilter = new EltFilter().create();
-		for (ITGGMatch srcTrgMatch : srcTrgMatches) {
-			TGGMatchUtil matchUtil = mup.get(srcTrgMatch);
-			Set<Object> createObjects = matchUtil.getObjects(createFilter);
-			for (Object createObject : createObjects)
-				objects2overlappingMatches.computeIfAbsent(createObject, k -> new HashSet<>()).add(srcTrgMatch);
-		}
-
-		overlappingMatches = objects2overlappingMatches.values().stream() //
-				.map(matches -> new MatchContainer(matches)) //
-				.collect(Collectors.toSet());
 	}
 
 	private BinaryILPProblem createILPProblem() {
@@ -283,7 +269,7 @@ public class ILPHigherOrderRuleMappingSolver {
 
 	private void defineExclusionsForMatches(BinaryILPProblem ilpProblem) {
 		// matches that translate the same elements cannot be chosen at the same time:
-		for (MatchContainer container : overlappingMatches) {
+		for (MatchContainer container : overlappingSrcTrgMatches) {
 			if (container.matches.size() <= 1)
 				continue;
 
@@ -565,7 +551,6 @@ public class ILPHigherOrderRuleMappingSolver {
 
 	private void solveILPProblem(BinaryILPProblem ilpProblem) {
 		LoggerConfig.log(LoggerConfig.log_ilp_extended(), () -> "ILP problem:\n" + ilpProblem + "\n");
-		System.out.println(printILPVars());
 
 		try {
 			ILPSolution ilpSolution = ILPSolver.solveBinaryILPProblem(ilpProblem, solver);
@@ -599,16 +584,6 @@ public class ILPHigherOrderRuleMappingSolver {
 			e.printStackTrace();
 			throw new RuntimeException("Solving ILP failed", e);
 		}
-	}
-	
-	private String printILPVars() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("Concatenating replacing vars:\n");
-		for (int i = 0; i < elementIDCounter; i++) {
-			String v = "e" + i;
-			builder.append("  " + v + ": " + id2Candidate.get(i) + "\n");
-		}
-		return builder.toString();
 	}
 
 	private Set<ElementCandidate> convertSolutionToCandidates(int[] solution) {
