@@ -2,7 +2,6 @@ package org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder;
 
 import static org.emoflon.ibex.common.collections.CollectionFactory.cfactory;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -10,7 +9,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -18,6 +16,7 @@ import java.util.stream.Stream;
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
+import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRuleFactory.MatchContainer;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRuleFactory.MatchRelatedRuleElement;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRuleFactory.MatchRelatedRuleElementMap;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.EltFilter;
@@ -171,41 +170,6 @@ public class ILPHigherOrderRuleMappingSolver {
 			id2ConsCandidate.put(consIDCounter, candidate);
 			consIDCounter++;
 		}
-	}
-
-	private class MatchContainer {
-		final Set<ITGGMatch> matches;
-		private final Object[] array;
-
-		MatchContainer(Set<ITGGMatch> matches) {
-			this.matches = matches;
-			array = matches.stream().sorted(new java.util.Comparator<ITGGMatch>() {
-				@Override
-				public int compare(ITGGMatch o1, ITGGMatch o2) {
-					if (o1 == null || o2 == null)
-						return 0;
-					return o1.toString().compareTo(o2.toString());
-				}
-			}).toArray();
-		}
-
-		@Override
-		public int hashCode() {
-			return Objects.hash(array);
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			MatchContainer other = (MatchContainer) obj;
-			return Arrays.equals(array, other.array);
-		}
-
 	}
 
 	private void createMatchCandidates() {
@@ -601,6 +565,7 @@ public class ILPHigherOrderRuleMappingSolver {
 
 	private void solveILPProblem(BinaryILPProblem ilpProblem) {
 		LoggerConfig.log(LoggerConfig.log_ilp_extended(), () -> "ILP problem:\n" + ilpProblem + "\n");
+		System.out.println(printILPVars());
 
 		try {
 			ILPSolution ilpSolution = ILPSolver.solveBinaryILPProblem(ilpProblem, solver);
@@ -634,6 +599,16 @@ public class ILPHigherOrderRuleMappingSolver {
 			e.printStackTrace();
 			throw new RuntimeException("Solving ILP failed", e);
 		}
+	}
+	
+	private String printILPVars() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Concatenating replacing vars:\n");
+		for (int i = 0; i < elementIDCounter; i++) {
+			String v = "e" + i;
+			builder.append("  " + v + ": " + id2Candidate.get(i) + "\n");
+		}
+		return builder.toString();
 	}
 
 	private Set<ElementCandidate> convertSolutionToCandidates(int[] solution) {

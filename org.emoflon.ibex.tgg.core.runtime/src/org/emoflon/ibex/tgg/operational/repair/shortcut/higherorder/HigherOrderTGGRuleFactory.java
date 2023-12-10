@@ -1,11 +1,13 @@
 package org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -129,6 +131,8 @@ public class HigherOrderTGGRuleFactory {
 
 		ElementsContainer elementsOfConsNodes = collectElementsFromMatches(consNodes, propagationDomain);
 
+		Set<MatchContainer> overlappingSrcTrgMatches = getSrcTrgMatchOverlapSets(validatedSrcTrgNodes.stream().map(n -> n.getMatch()).toList());
+
 		Map<PrecedenceNode, Set<MatchRelatedRuleElement>> node2ruleElements = new HashMap<>();
 
 		MatchRelatedRuleElementMap totalPropDomainMappings = new MatchRelatedRuleElementMap();
@@ -147,16 +151,16 @@ public class HigherOrderTGGRuleFactory {
 
 			Set<MatchRelatedRuleElement> matchRelatedRuleElements = new HashSet<>();
 
-			MatchRelatedRuleElementMap propDomainMapping = createMappingForPropagationDomain(srcTrgNode, matchUtil, propagationDomain, validatedSrcTrgNodes);
+			MatchRelatedRuleElementMap propDomainMapping = createMappingForPropagationDomain(srcTrgNode, matchUtil, propagationDomain, validatedSrcTrgNodes, overlappingSrcTrgMatches);
 			matchRelatedRuleElements.addAll(propDomainMapping.keySet());
 			totalPropDomainMappings.putAll(propDomainMapping);
 
 			Map<TGGRule, Set<ITGGMatch>> rule2matches = collectRules(srcTrgNode, validatedSrcTrgNodes);
-			MatchRelatedRuleElementMap oppositeDomainMapping = createMappingForOppositeDomain(srcTrgNode, matchUtil, propagationDomain, validatedSrcTrgNodes, rule2matches);
+			MatchRelatedRuleElementMap oppositeDomainMapping = createMappingForOppositeDomain(srcTrgNode, matchUtil, propagationDomain, validatedSrcTrgNodes, rule2matches, overlappingSrcTrgMatches);
 			matchRelatedRuleElements.addAll(oppositeDomainMapping.keySet());
 			totalOppositeDomainMappings.putAll(oppositeDomainMapping);
 
-			MatchRelatedRuleElementMap corrDomainMapping = createMappingForCorrDomain(srcTrgNode, matchUtil, validatedSrcTrgNodes, rule2matches);
+			MatchRelatedRuleElementMap corrDomainMapping = createMappingForCorrDomain(srcTrgNode, matchUtil, validatedSrcTrgNodes, rule2matches, overlappingSrcTrgMatches);
 			matchRelatedRuleElements.addAll(corrDomainMapping.keySet());
 			totalCorrDomainMappings.putAll(corrDomainMapping);
 
@@ -232,8 +236,11 @@ public class HigherOrderTGGRuleFactory {
 			PrecedenceNode pgNode, //
 			TGGMatchUtil matchUtil, //
 			DomainType propagationDomain, //
-			List<PrecedenceNode> pgNodes //
+			List<PrecedenceNode> pgNodes, //
+			Set<MatchContainer> srcTrgMatchOverlapSets //
 	) {
+		Set<ITGGMatch> overlappingMatches = getOverlappingMatches(pgNode.getMatch(), srcTrgMatchOverlapSets);
+		
 		MatchRelatedRuleElementMap contextMapping = new MatchRelatedRuleElementMap();
 
 		Set<Object> objects = matchUtil.getObjects(new EltFilter().domains(propagationDomain).context());
@@ -244,6 +251,9 @@ public class HigherOrderTGGRuleFactory {
 			Set<MatchRelatedRuleElement> mappedElements = new HashSet<>();
 			boolean alreadyCreated = false;
 			for (PrecedenceNode mappedPGNode : mappedPGNodes) {
+				if (overlappingMatches.contains(mappedPGNode.getMatch()))
+					continue;
+				
 				// if there is an intact consistency match covering that object, we don't want to map the object's
 				// rule node, except if there is a context to context mapping
 				if (mappedPGNode.getMatch().getType() == PatternType.CONSISTENCY && !mappedPGNode.isBroken()) {
@@ -298,8 +308,11 @@ public class HigherOrderTGGRuleFactory {
 			TGGMatchUtil matchUtil, //
 			DomainType propagationDomain, //
 			List<PrecedenceNode> pgNodes, //
-			Map<TGGRule, Set<ITGGMatch>> rule2matches //
+			Map<TGGRule, Set<ITGGMatch>> rule2matches, //
+			Set<MatchContainer> srcTrgMatchOverlapSets //
 	) {
+		Set<ITGGMatch> overlappingMatches = getOverlappingMatches(pgNode.getMatch(), srcTrgMatchOverlapSets);
+		
 		DomainType oppositeDomain = TGGModelUtils.oppositeOf(propagationDomain);
 		TGGRule rule = matchUtil.getRule();
 
@@ -314,6 +327,9 @@ public class HigherOrderTGGRuleFactory {
 				for (TGGRuleNode mappedNode : mappedNodes) {
 					if (matchesContext(ruleNode, mappedNode)) {
 						for (ITGGMatch mappedMatch : rule2matches.get(mappedRule)) {
+							if (overlappingMatches.contains(mappedMatch))
+								continue;
+							
 							// Prevents from creating invalid candidates due to PG dependency relations
 							if (pgNode.transitivelyRequiredBy(pg.getNode(mappedMatch), true))
 								continue;
@@ -355,8 +371,11 @@ public class HigherOrderTGGRuleFactory {
 			PrecedenceNode pgNode, //
 			TGGMatchUtil matchUtil, //
 			List<PrecedenceNode> pgNodes, //
-			Map<TGGRule, Set<ITGGMatch>> rule2matches //
+			Map<TGGRule, Set<ITGGMatch>> rule2matches, //
+			Set<MatchContainer> srcTrgMatchOverlapSets //
 	) {
+		Set<ITGGMatch> overlappingMatches = getOverlappingMatches(pgNode.getMatch(), srcTrgMatchOverlapSets);
+		
 		TGGRule rule = matchUtil.getRule();
 
 		MatchRelatedRuleElementMap contextMapping = new MatchRelatedRuleElementMap();
@@ -368,8 +387,12 @@ public class HigherOrderTGGRuleFactory {
 				Collection<TGGRuleNode> mappedCorrs = TGGFilterUtil.filterNodes(mappedRule.getNodes(), DomainType.CORR);
 				for (TGGRuleNode mappedCorr : mappedCorrs) {
 					if (matchesContext((TGGRuleCorr) ruleCorr, (TGGRuleCorr) mappedCorr)) {
-						for (ITGGMatch mappedMatch : rule2matches.get(mappedRule))
+						for (ITGGMatch mappedMatch : rule2matches.get(mappedRule)) {
+							if (overlappingMatches.contains(mappedMatch))
+								continue;
+							
 							mappedElements.add(new MatchRelatedRuleElement(mappedCorr, mappedMatch));
+						}
 					}
 				}
 			}
@@ -518,6 +541,32 @@ public class HigherOrderTGGRuleFactory {
 		return result;
 	}
 
+	private Set<MatchContainer> getSrcTrgMatchOverlapSets(List<ITGGMatch> srcTrgMatches) {
+		// determine matches translating same elements
+		Map<Object, Set<ITGGMatch>> objects2overlappingMatches = new HashMap<>();
+		EltFilter createFilter = new EltFilter().create();
+		for (ITGGMatch srcTrgMatch : srcTrgMatches) {
+			TGGMatchUtil matchUtil = mup.get(srcTrgMatch);
+			Set<Object> createObjects = matchUtil.getObjects(createFilter);
+			for (Object createObject : createObjects)
+				objects2overlappingMatches.computeIfAbsent(createObject, k -> new HashSet<>()).add(srcTrgMatch);
+		}
+
+		return objects2overlappingMatches.values().stream() //
+				.map(matches -> new MatchContainer(matches)) //
+				.collect(Collectors.toSet());
+	}
+
+	private Set<ITGGMatch> getOverlappingMatches(ITGGMatch match, Set<MatchContainer> srcTrgMatchOverlapSets) {
+		Set<ITGGMatch> result = new HashSet<>();
+		for (MatchContainer matchContainer : srcTrgMatchOverlapSets) {
+			if (matchContainer.matches.contains(match))
+				result.addAll(matchContainer.matches);
+		}
+		result.remove(match);
+		return result;
+	}
+
 	private ElementsContainer collectElementsFromMatches(List<PrecedenceNode> consNodes, DomainType propagationDomain) {
 		Set<MatchRelatedRuleElement> nodes = new HashSet<>();
 		Set<MatchRelatedRuleElement> edges = new HashSet<>();
@@ -560,6 +609,41 @@ public class HigherOrderTGGRuleFactory {
 
 	public static class MatchRelatedRuleElementMap extends HashMap<MatchRelatedRuleElement, Set<MatchRelatedRuleElement>> {
 		private static final long serialVersionUID = 6577887190624934742L;
+	}
+
+	public static class MatchContainer {
+		final Set<ITGGMatch> matches;
+		private final Object[] array;
+
+		public MatchContainer(Set<ITGGMatch> matches) {
+			this.matches = matches;
+			array = matches.stream().sorted(new java.util.Comparator<ITGGMatch>() {
+				@Override
+				public int compare(ITGGMatch o1, ITGGMatch o2) {
+					if (o1 == null || o2 == null)
+						return 0;
+					return o1.toString().compareTo(o2.toString());
+				}
+			}).toArray();
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(array);
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			MatchContainer other = (MatchContainer) obj;
+			return Arrays.equals(array, other.array);
+		}
+
 	}
 
 }
