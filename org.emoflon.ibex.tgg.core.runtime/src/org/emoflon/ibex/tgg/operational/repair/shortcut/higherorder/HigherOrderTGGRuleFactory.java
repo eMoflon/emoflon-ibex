@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -144,10 +145,10 @@ public class HigherOrderTGGRuleFactory {
 
 			totalConsMappings.putAll(createConsMappingForOppositeDomain(srcTrgNode, matchUtil, propagationDomain, elementsOfConsNodes));
 
-			// since the src/trg node nearest to the root cannot have any context->create mappings to other
-			// src/trg matches, we skip it
-			if (validatedSrcTrgNodes.indexOf(srcTrgNode) == 0)
-				continue;
+//			// since the src/trg node nearest to the root cannot have any context->create mappings to other
+//			// src/trg matches, we skip it
+//			if (validatedSrcTrgNodes.indexOf(srcTrgNode) == 0)
+//				continue;
 
 			Set<MatchRelatedRuleElement> matchRelatedRuleElements = new HashSet<>();
 
@@ -166,7 +167,7 @@ public class HigherOrderTGGRuleFactory {
 
 			node2ruleElements.put(srcTrgNode, matchRelatedRuleElements);
 		}
-
+		
 		ILPHigherOrderRuleMappingSolver ilpSolver = new ILPHigherOrderRuleMappingSolver( //
 				mup, //
 				options.ilpSolver(), //
