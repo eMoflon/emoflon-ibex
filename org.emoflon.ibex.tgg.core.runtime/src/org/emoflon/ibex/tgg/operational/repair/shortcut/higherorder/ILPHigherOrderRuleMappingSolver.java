@@ -21,6 +21,7 @@ import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderT
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtil;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.util.TGGMatchUtilProvider;
 import org.emoflon.ibex.tgg.util.ilp.BinaryILPProblem;
+import org.emoflon.ibex.tgg.util.ilp.BinaryILPProblem.Implication;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.Comparator;
@@ -72,7 +73,7 @@ public class ILPHigherOrderRuleMappingSolver {
 	private Map<Integer, ElementCandidate> id2ConsCandidate = cfactory.createIntToObjectHashMap();
 
 	private static final double SIDE_OBJECTIVE = 0.0001;
-	private static final double OPTIONAL = 0.00001;
+	private static final double OPTIONAL = 0.001;
 	private Set<Integer> candidatesWithContextTarget = cfactory.createIntSet();
 
 	private Map<MatchRelatedRuleElement, MatchRelatedRuleElement> mappingResult;
@@ -544,13 +545,26 @@ public class ILPHigherOrderRuleMappingSolver {
 		for (int i = 0; i < elementIDCounter; i++)
 			expression.addTerm("e" + i, candidatesWithContextTarget.contains(i) ? OPTIONAL : SIDE_OBJECTIVE);
 		for (int i = 0; i < noConcatVarCounter; i++)
-			expression.addTerm("x" + i, OPTIONAL);
+			expression.addTerm("x" + i, -OPTIONAL);
 
 		ilpProblem.setObjective(expression, Objective.maximize);
+	}
+	
+	private String printILPVars() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Concatenating replacing vars:\n");
+		for (int i = 0; i < elementIDCounter; i++) {
+			String v = "e" + i;
+			builder.append("  " + v + ": " + id2Candidate.get(i) + "\n");
+		}
+		return builder.toString();
 	}
 
 	private void solveILPProblem(BinaryILPProblem ilpProblem) {
 		LoggerConfig.log(LoggerConfig.log_ilp_extended(), () -> "ILP problem:\n" + ilpProblem + "\n");
+		System.out.println(printILPVars());
+		
+		printPlantUML(ilpProblem);
 
 		try {
 			ILPSolution ilpSolution = ILPSolver.solveBinaryILPProblem(ilpProblem, solver);
@@ -584,6 +598,17 @@ public class ILPHigherOrderRuleMappingSolver {
 			e.printStackTrace();
 			throw new RuntimeException("Solving ILP failed", e);
 		}
+	}
+
+	private void printPlantUML(BinaryILPProblem ilpProblem) {
+		var b = new StringBuilder();
+		b.append("\n\n\nPlantUML-ILP-Vis\n\n\n");
+		for(var implication : ilpProblem.getImplications()) {
+			b.append(implication.getTermStrings());
+		}
+		
+		b.append("END-PlantUML-Code\n\n\n");
+		System.out.println(b.toString());
 	}
 
 	private Set<ElementCandidate> convertSolutionToCandidates(int[] solution) {
@@ -634,6 +659,7 @@ public class ILPHigherOrderRuleMappingSolver {
 			String v = "x" + i;
 			builder.append(v + ": " + v + " | " + ilpSolution.getVariable(v) + "\n");
 		}
+		
 		return builder.toString();
 	}
 

@@ -1,8 +1,11 @@
 package org.emoflon.ibex.tgg.util.ilp;
 
+import java.io.Console;
+
 import org.emoflon.ibex.common.collections.CollectionFactory;
 import org.emoflon.ibex.common.collections.IntToIntMap;
 import org.emoflon.ibex.common.collections.IntToObjectMap;
+import org.emoflon.ibex.tgg.util.ConsoleUtil;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPConstraint;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPLinearExpression;
 import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPObjective;
@@ -10,6 +13,9 @@ import org.emoflon.ibex.tgg.util.ilp.ILPProblem.ILPSolution;
 
 import gurobi.GRB;
 import gurobi.GRB.DoubleAttr;
+import gurobi.GRB.IntParam;
+import gurobi.GRB.StringAttr;
+import gurobi.GRB.StringParam;
 import gurobi.GRBEnv;
 import gurobi.GRBException;
 import gurobi.GRBLinExpr;
@@ -97,6 +103,10 @@ final class GurobiWrapper extends ILPSolver {
 	 */
 	private void prepareModel() throws GRBException {
 		this.env = new GRBEnv("Gurobi_ILP.log");
+//		this.env = new GRBEnv();
+		env.set(IntParam.OutputFlag,0);
+		env.set(IntParam.LogToConsole,0);
+//		env.set(StringParam.UserName, "lars.fritsche@es.tu-darmstadt.de");
 		this.model = new GRBModel(this.env);
 		this.model.set(GRB.IntParam.OutputFlag, 0);
 

@@ -376,6 +376,7 @@ public class ILPProblem {
 		for (java.util.Map.Entry<Integer, Integer> entry : this.fixedVariableValues.entrySet()) {
 			b.append("\n" + this.getVariable(entry.getKey()) + " = " + entry.getValue());
 		}
+		
 		return b.toString();
 	}
 
@@ -465,7 +466,7 @@ public class ILPProblem {
 	 * @author Robin Oppermann
 	 *
 	 */
-	final class ILPConstraint {
+	public final class ILPConstraint {
 		/**
 		 * The linear expression of the constraint (left side of the inequation)
 		 */

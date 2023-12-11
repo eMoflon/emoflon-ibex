@@ -41,6 +41,7 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 	private final Map<ITGGMatch, HigherOrderRuleComponent> match2component;
 
 	private int componentCounter;
+	private int nodeCounter = 0;
 
 	protected HigherOrderTGGRule() {
 		super();
@@ -224,10 +225,9 @@ public class HigherOrderTGGRule extends TGGRuleImpl {
 		TGGRuleNode higherOrderNode = (TGGRuleNode) LanguageFactory.eINSTANCE.create(node.eClass());
 
 		String newName = node.getName();
-		char c = 'a';
-		while (higherOrderNodeNames.contains(newName + "-" + c))
-			c++;
-		newName += "-" + c;
+		while (higherOrderNodeNames.contains(newName + "-HO-" + nodeCounter))
+			nodeCounter++;
+		newName += "-HO-" + nodeCounter;
 		higherOrderNodeNames.add(newName);
 
 		higherOrderNode.setName(newName);

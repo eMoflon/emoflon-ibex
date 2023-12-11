@@ -21,7 +21,7 @@ public class FragmentProvider {
 
 	public static final List<IntegrationFragment> DEFAULT_FRAGMENTS = Arrays.asList( //
 			REPAIR, //
-			CHECK_LOCAL_CONSISTENCY, //
+//			CHECK_LOCAL_CONSISTENCY, //
 			RESOLVE_CONFLICTS, //
 			RESOLVE_BROKEN_MATCHES, //
 			TRANSLATE, //

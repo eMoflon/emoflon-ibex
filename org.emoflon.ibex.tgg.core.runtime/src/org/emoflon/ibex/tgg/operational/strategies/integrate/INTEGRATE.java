@@ -81,12 +81,12 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 		revoker = new Revoker(this);
 
 		conflictHandler = new ConflictHandler(this);
-		consistencyChecker = new LocalCC(options) {
-			@Override
-			protected void processValidMatch(ITGGMatch match) {
-				removeBrokenMatchesAfterCCMatchApplication(match);
-			}
-		};
+//		consistencyChecker = new LocalCC(options) {
+//			@Override
+//			protected void processValidMatch(ITGGMatch match) {
+//				removeBrokenMatchesAfterCCMatchApplication(match);
+//			}
+//		};
 		options.executable(this);
 		precedenceGraph = new PrecedenceGraph(this);
 		multiplicityCounter = new MultiplicityCounter(this);
@@ -202,7 +202,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 
 	@Override
 	protected Set<PatternType> getRelevantOperationalPatterns() {
-		return new HashSet<>(Arrays.asList(PatternType.SRC, PatternType.TRG, PatternType.FWD, PatternType.BWD, PatternType.CC));
+		return new HashSet<>(Arrays.asList(PatternType.SRC, PatternType.TRG, PatternType.FWD, PatternType.BWD));//, PatternType.CC));
 	}
 
 	/**

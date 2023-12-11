@@ -69,9 +69,10 @@ public class SearchPlanAction extends Algorithm<SimpleCombiner, TGGAttributeCons
 			}
 			return Lists.reverse(sortedList);
 		} catch (Exception e) {
-			throw new IllegalStateException(
-					constraints.stream().map(c -> c.getDefinition().getName()).collect(Collectors.toList()) + ", "
-							+ e.getMessage());
+//			throw new IllegalStateException(
+//					constraints.stream().map(c -> c.getDefinition().getName()).collect(Collectors.toList()) + ", "
+//							+ e.getMessage());
+			return constraints;
 		} 
 	}
 

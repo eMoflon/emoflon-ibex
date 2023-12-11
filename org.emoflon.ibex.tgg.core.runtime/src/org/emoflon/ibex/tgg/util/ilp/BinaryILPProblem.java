@@ -301,6 +301,19 @@ public final class BinaryILPProblem extends ILPProblem {
 			return "Implication(" + this.getName() + ")" + BinaryILPProblem.this.getVariable(this.leftVariable) + " -> "
 					+ String.join(" V ", termStrings);
 		}
+		
+		public String getTermStrings() {
+			List<String> termStrings = new LinkedList<>();
+			this.rightVariables.stream().forEach((variableId) -> {
+				termStrings.add(BinaryILPProblem.this.getVariable(variableId));
+			});
+			
+			var b = new StringBuilder();
+			for(var term : termStrings) {
+				b.append(BinaryILPProblem.this.getVariable(this.leftVariable) + " --> " + term + "\n");
+			}
+			return b.toString();
+		}
 
 		@Override
 		public int hashCode() {
@@ -930,5 +943,17 @@ public final class BinaryILPProblem extends ILPProblem {
 		}
 
 		return super.toString() + b.toString();
+	}
+	
+	public Collection<Implication> getImplications() {
+		var newCollection = new LinkedList<Implication>();
+		for (Entry<Integer, LinkedList<Implication>> implOfSameVar : this.implications.entrySet()) {
+			for (Implication impl : implOfSameVar.getValue()) {
+				if (impl.isRelevant()) {
+					newCollection.add(impl);
+				}
+			}
+		}
+		return newCollection;
 	}
 }

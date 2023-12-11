@@ -31,7 +31,7 @@ public class HigherOrderShortcutRepairStrategy {
 		this.options = options;
 		this.pg = pg;
 
-		PatternType[] types = { PatternType.FWD, PatternType.BWD, PatternType.CC, PatternType.SRC, PatternType.TRG };
+		PatternType[] types = { PatternType.FWD, PatternType.BWD, PatternType.SRC, PatternType.TRG };
 		this.scApplPointFinder = new ShortcutApplicationPointFinder(options, pg, mc);
 		this.shortcutPatternProvider = new HigherOrderShortcutPatternProvider(options, pg, mup, types, true);
 		this.shortcutApplTool = new ShortcutApplicationTool(options, greenInterpreter, redInterpreter, shortcutPatternProvider);
