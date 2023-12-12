@@ -188,7 +188,21 @@ public class HigherOrderTGGRuleFactory {
 
 		// transform ILP solution to higher-order rule:
 		HigherOrderTGGRule higherOrderRule = new HigherOrderTGGRule();
-		for (PrecedenceNode pgNode : nodesToUse) {
+		
+		var nodesToUse_queue = new HashSet<>(nodesToUse);
+		while(!nodesToUse_queue.isEmpty()) {
+			PrecedenceNode pgNode = null;
+			for(var nextPGCandidate : nodesToUse_queue) {
+				if(nextPGCandidate.getRequires().stream().allMatch(required -> !nodesToUse_queue.contains(required))) {
+					pgNode = nextPGCandidate;
+					break;
+				}
+			}
+			if(pgNode == null)
+				throw new IllegalStateException("Cannot construct HO SC Rule because the relevant PG nodes have a cyclic dependency");
+			nodesToUse_queue.remove(pgNode);
+			
+//		for (PrecedenceNode pgNode : nodesToUse) {
 			TGGRule rule = mup.get(pgNode.getMatch()).getRule();
 
 			if (nodesToUse.indexOf(pgNode) == 0) {
