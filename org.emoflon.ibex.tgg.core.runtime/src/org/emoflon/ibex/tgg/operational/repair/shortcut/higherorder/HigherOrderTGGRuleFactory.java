@@ -189,8 +189,10 @@ public class HigherOrderTGGRuleFactory {
 		// transform ILP solution to higher-order rule:
 		HigherOrderTGGRule higherOrderRule = new HigherOrderTGGRule();
 		
+		var firstNode = false;
 		var nodesToUse_queue = new HashSet<>(nodesToUse);
 		while(!nodesToUse_queue.isEmpty()) {
+			// find the next node that does not require any node included in nodesToUse. Any required node has to be processed beforehand.
 			PrecedenceNode pgNode = null;
 			for(var nextPGCandidate : nodesToUse_queue) {
 				if(nextPGCandidate.getRequires().stream().allMatch(required -> !nodesToUse_queue.contains(required))) {
@@ -202,11 +204,12 @@ public class HigherOrderTGGRuleFactory {
 				throw new IllegalStateException("Cannot construct HO SC Rule because the relevant PG nodes have a cyclic dependency");
 			nodesToUse_queue.remove(pgNode);
 			
-//		for (PrecedenceNode pgNode : nodesToUse) {
 			TGGRule rule = mup.get(pgNode.getMatch()).getRule();
 
-			if (nodesToUse.indexOf(pgNode) == 0) {
+			// in case that this is the first node, we can register it directly without mappings
+			if(!firstNode) {
 				higherOrderRule.addComponent(rule, pgNode.getMatch(), Collections.emptyMap());
+				firstNode = true;
 				continue;
 			}
 
