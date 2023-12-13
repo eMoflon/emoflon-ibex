@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.ui.actions.OpenPerspectiveAction;
 import org.emoflon.ibex.tgg.operational.debug.LoggerConfig;
 import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.repair.shortcut.higherorder.HigherOrderTGGRuleFactory.MatchContainer;
@@ -72,8 +73,10 @@ public class ILPHigherOrderRuleMappingSolver {
 	private Map<ElementCandidate, Integer> consCandidate2ID = cfactory.createObjectToIntHashMap();
 	private Map<Integer, ElementCandidate> id2ConsCandidate = cfactory.createIntToObjectHashMap();
 
-	private static final double SIDE_OBJECTIVE = 0.0001;
-	private static final double OPTIONAL = 0.001;
+	private static final double MAIN_REWARD = 10000;
+	private static final double SIDE_REWARD = 10;
+	private static final double OPTIONAL_REWARD = 1;
+	
 	private Set<Integer> candidatesWithContextTarget = cfactory.createIntSet();
 
 	private Map<MatchRelatedRuleElement, MatchRelatedRuleElement> mappingResult;
@@ -212,7 +215,7 @@ public class ILPHigherOrderRuleMappingSolver {
 
 			ilpProblem.addExclusion(candidates.stream().map(c -> "e" + c), //
 					"EXCL_propDomElement_" + element.ruleElement().eClass().getName() + "_" + constraintNameCounter++, //
-					1, 1);
+					1, 0);
 		}
 	}
 
@@ -282,7 +285,7 @@ public class ILPHigherOrderRuleMappingSolver {
 						return matchId;
 					}).map(id -> "m" + id);
 
-			ilpProblem.addExclusion(vars, "EXCL_match_" + constraintNameCounter++);
+			ilpProblem.addExclusion(vars, "EXCL_match_" + constraintNameCounter++, 1, 1);
 		}
 	}
 
@@ -541,11 +544,11 @@ public class ILPHigherOrderRuleMappingSolver {
 		ILPLinearExpression expression = ilpProblem.createLinearExpression();
 
 		for (int i = 0; i < consIDCounter; i++)
-			expression.addTerm("c" + i, 1.0);
+			expression.addTerm("c" + i, 100000);
 		for (int i = 0; i < elementIDCounter; i++)
-			expression.addTerm("e" + i, candidatesWithContextTarget.contains(i) ? OPTIONAL : SIDE_OBJECTIVE);
+			expression.addTerm("e" + i, candidatesWithContextTarget.contains(i) ? OPTIONAL_REWARD : 1000);
 		for (int i = 0; i < noConcatVarCounter; i++)
-			expression.addTerm("x" + i, -OPTIONAL);
+			expression.addTerm("x" + i, 0.0001);
 
 		ilpProblem.setObjective(expression, Objective.maximize);
 	}
@@ -562,22 +565,27 @@ public class ILPHigherOrderRuleMappingSolver {
 
 	private void solveILPProblem(BinaryILPProblem ilpProblem) {
 		LoggerConfig.log(LoggerConfig.log_ilp_extended(), () -> "ILP problem:\n" + ilpProblem + "\n");
-		System.out.println(printILPVars());
+		LoggerConfig.log(LoggerConfig.log_ilp_extended(), () -> printILPVars());
 		
-		printPlantUML(ilpProblem);
-
 		try {
+			var tic = System.currentTimeMillis();
 			ILPSolution ilpSolution = ILPSolver.solveBinaryILPProblem(ilpProblem, solver);
+			var timeInS = (double) (System.currentTimeMillis() - tic) / 1000;
+			System.out.println("Solving HO ILP took : " + timeInS);
+			
 			if (!ilpProblem.checkValidity(ilpSolution)) {
 				throw new AssertionError("Invalid solution");
 			}
-
+			
 			LoggerConfig.log(LoggerConfig.log_ilp_extended(), () -> printILPSolution(ilpSolution) + "\n");
 
+			var activatedEs = 0;
 			int[] mappingResult = new int[elementIDCounter];
 			for (int i = 0; i < elementIDCounter; i++) {
-				if (ilpSolution.getVariable("e" + i) > 0)
+				if (ilpSolution.getVariable("e" + i) > 0) {
 					mappingResult[i] = 1;
+					activatedEs++;
+				}
 				else
 					mappingResult[i] = -1;
 			}
@@ -598,17 +606,6 @@ public class ILPHigherOrderRuleMappingSolver {
 			e.printStackTrace();
 			throw new RuntimeException("Solving ILP failed", e);
 		}
-	}
-
-	private void printPlantUML(BinaryILPProblem ilpProblem) {
-		var b = new StringBuilder();
-		b.append("\n\n\nPlantUML-ILP-Vis\n\n\n");
-		for(var implication : ilpProblem.getImplications()) {
-			b.append(implication.getTermStrings());
-		}
-		
-		b.append("END-PlantUML-Code\n\n\n");
-		System.out.println(b.toString());
 	}
 
 	private Set<ElementCandidate> convertSolutionToCandidates(int[] solution) {

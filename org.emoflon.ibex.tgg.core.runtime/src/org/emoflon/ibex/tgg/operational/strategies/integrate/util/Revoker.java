@@ -113,6 +113,37 @@ public class Revoker implements TimeMeasurable {
 			return PatternType.FWD;
 		if (DeletionType.propBWDCandidates.contains(classifiedMatch.getDeletionType()))
 			return PatternType.BWD;
+		
+		boolean srcAttrChanged = false;
+		boolean trgAttrChanged = false;
+		for(var inplaceEntry : classifiedMatch.getInplaceAttrChanges().entrySet()) {
+			switch(inplaceEntry.getValue()) {
+			case SRC:
+				srcAttrChanged = true;
+				break;
+			case TRG:
+				trgAttrChanged = true;
+				break;
+			}
+		}
+		for(var constraintAttrChange : classifiedMatch.getConstrainedAttrChanges()) {
+			for(var affectedParameterEntry : constraintAttrChange.affectedParams.entrySet()) {
+				switch(affectedParameterEntry.getKey().getObjectVar().getDomainType()) {
+				case SRC:
+					srcAttrChanged = true;
+					break;
+				case TRG:
+					trgAttrChanged = true;
+					break;
+				}
+			}
+		}
+		if(srcAttrChanged && trgAttrChanged)
+			return null;
+		if(srcAttrChanged)
+			return PatternType.FWD;
+		if(trgAttrChanged)
+			return PatternType.BWD;
 		return null;
 	}
 

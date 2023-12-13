@@ -265,9 +265,10 @@ public class ConcRepair implements TimeMeasurable {
 			repairType = PatternType.CC;
 			applPoint = new RepairApplicationPoint(classifiedMatch.getMatch(), repairType);
 			repairedMatches = shortcutRepairStrat.repair(applPoint);
-		} else if (DeletionType.shortcutPropCandidates.contains(delType)) {
+		} else{
 			// FIXME inplace attributes and filter NACS are not considered here!
-			repairType = delType == DeletionType.SRC_PARTLY_TRG_NOT ? PatternType.FWD : PatternType.BWD;
+			repairType = determineRepairDirection(classifiedMatch);
+			
 			applPoint = new RepairApplicationPoint(classifiedMatch.getMatch(), repairType);
 			repairedMatches = shortcutRepairStrat.repair(applPoint);
 			if (repairedMatches == null) {
@@ -337,6 +338,45 @@ public class ConcRepair implements TimeMeasurable {
 			opStrat.precedenceGraph().notifyAddedMatch(repairedMatch);
 			opStrat.precedenceGraph().notifyRemovedMatch(repairedMatch);
 		}
+	}
+	
+	private PatternType determineRepairDirection(ClassifiedMatch classifiedMatch) {
+		if (DeletionType.SRC_PARTLY_TRG_NOT == classifiedMatch.getDeletionType())
+			return PatternType.FWD;
+		if (DeletionType.SRC_NOT_TRG_PARTLY == classifiedMatch.getDeletionType())
+			return PatternType.BWD;
+		
+		boolean srcAttrChanged = false;
+		boolean trgAttrChanged = false;
+		for(var inplaceEntry : classifiedMatch.getInplaceAttrChanges().entrySet()) {
+			switch(inplaceEntry.getValue()) {
+			case SRC:
+				srcAttrChanged = true;
+				break;
+			case TRG:
+				trgAttrChanged = true;
+				break;
+			}
+		}
+		for(var constraintAttrChange : classifiedMatch.getConstrainedAttrChanges()) {
+			for(var affectedParameterEntry : constraintAttrChange.affectedParams.entrySet()) {
+				switch(affectedParameterEntry.getKey().getObjectVar().getDomainType()) {
+				case SRC:
+					srcAttrChanged = true;
+					break;
+				case TRG:
+					trgAttrChanged = true;
+					break;
+				}
+			}
+		}
+		if(srcAttrChanged && trgAttrChanged)
+			return null;
+		if(srcAttrChanged)
+			return PatternType.FWD;
+		if(trgAttrChanged)
+			return PatternType.BWD;
+		return null;
 	}
 
 	public void terminate() {
