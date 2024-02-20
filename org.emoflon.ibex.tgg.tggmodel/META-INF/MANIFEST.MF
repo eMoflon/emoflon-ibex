@@ -16,5 +16,11 @@ Export-Package: org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel,
  org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.util
 Require-Bundle: org.eclipse.emf.ecore;visibility:=reexport,
  org.emoflon.ibex.common.coremodel;visibility:=reexport,
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ org.eclipse.emf.mwe2.launch,
+ org.apache.log4j,
+ org.apache.commons.logging,
+ org.eclipse.emf.mwe2.lib,
+ org.eclipse.emf.codegen,
+ org.eclipse.emf.codegen.ecore
 Bundle-ActivationPolicy: lazy

@@ -1,4 +1,4 @@
-module org.emoflon.ibex.tgg.runtime.GenerateIBeXTGGRuntimeModel
+module org.emoflon.ibex.gt.statemodel.GenerateIBeXGTStateModel
 
 import org.eclipse.xtext.ecore.EcoreSupport
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl
@@ -21,8 +21,8 @@ Workflow {
     component = EcoreGenerator {
         resourceSet = resourceSet
         
-        genModel = "platform:/resource/org.emoflon.ibex.tgg.runtime/model/Runtime.genmodel"
-        srcPath = "platform:/resource/org.emoflon.ibex.tgg.runtime/gen/"
+		genModel = "platform:/resource/org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.genmodel"
+		srcPath = "platform:/resource/org.emoflon.ibex.common.coremodel/src-gen/"
 
 		generateModel = true
     }
