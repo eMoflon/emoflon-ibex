@@ -4,7 +4,7 @@
     modelDirectory="/org.emoflon.ibex.tgg.tggmodel/src-gen" creationIcons="false"
     editDirectory="/org.emoflon.ibex.tgg.tggmodel.edit/src-gen" editorDirectory="/org.emoflon.ibex.tgg.tggmodel.editor/src-gen"
     modelPluginID="org.emoflon.ibex.tgg.tggmodel" modelName="IBeXTGGModel" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
-    codeFormatting="true" importerID="org.eclipse.emf.importer.ecore" complianceLevel="5.0"
+    codeFormatting="true" importerID="org.eclipse.emf.importer.ecore" complianceLevel="17.0"
     copyrightFields="false" usedGenPackages="../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.genmodel#//IBeXCoreModel"
     operationReflection="true" importOrganizing="true">
   <foreignModel>IBeXTGGModel.ecore</foreignModel>
