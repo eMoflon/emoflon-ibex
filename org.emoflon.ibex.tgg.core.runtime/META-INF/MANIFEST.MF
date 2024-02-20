@@ -26,7 +26,12 @@ Require-Bundle: org.eclipse.emf.ecore,
  org.emoflon.ibex.tgg.tggmodel,
  org.emoflon.ibex.tgg.runtimemodel,
  org.emoflon.ibex.tgg.analysis,
- org.emoflon.ibex.tgg.compiler;visibility:=reexport
+ org.emoflon.ibex.tgg.compiler;visibility:=reexport,
+ org.eclipse.emf.mwe2.launch,
+ org.apache.commons.logging,
+ org.eclipse.emf.codegen,
+ org.eclipse.emf.mwe2.lib,
+ org.eclipse.emf.codegen.ecore
 Bundle-ManifestVersion: 2
 Bundle-ActivationPolicy: lazy
 Export-Package: .,

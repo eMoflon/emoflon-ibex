@@ -15,5 +15,10 @@ Require-Bundle: org.eclipse.emf.ecore;visibility:=reexport,
  org.eclipse.core.runtime,
  org.emoflon.ibex.common,
  org.emoflon.ibex.gt.gtmodel;bundle-version="0.1.0";visibility:=reexport,
- org.emoflon.ibex.common.coremodel;visibility:=reexport
+ org.emoflon.ibex.common.coremodel;visibility:=reexport,
+ org.apache.commons.logging,
+ org.eclipse.emf.mwe2.lib,
+ org.eclipse.emf.mwe2.launch,
+ org.eclipse.emf.codegen,
+ org.eclipse.emf.codegen.ecore
 Bundle-ActivationPolicy: lazy

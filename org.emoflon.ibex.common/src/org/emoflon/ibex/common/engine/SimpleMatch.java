@@ -103,12 +103,11 @@ public class SimpleMatch implements IMatch {
 	@Override
 	public String toString() {
 		StringBuilder s = new StringBuilder();
-		s.append("IMatch for ").append(getPatternName()).append("(" + this.hashCode() + ") {")
-				.append(System.lineSeparator());
+		s.append("IMatch for ").append(getPatternName()).append("(" + this.hashCode()+ ") {").append(java.lang.System.lineSeparator());
 
 		for (final String parameterName : getParameterNames()) {
 			s.append("	").append(parameterName);
-			s.append(" -> ").append(get(parameterName)).append(System.lineSeparator());
+			s.append(" -> ").append(get(parameterName)).append(java.lang.System.lineSeparator());
 		}
 		s.append("}");
 
