@@ -6,14 +6,14 @@ import static org.emoflon.ibex.tgg.util.TGGModelUtils.getMarkerRefName;
 import static org.emoflon.ibex.tgg.util.TGGModelUtils.getMarkerTypeName;
 
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelFactory;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta;
 import org.emoflon.ibex.tgg.analysis.ACAnalysis;
 import org.emoflon.ibex.tgg.analysis.FilterNACCandidate;
@@ -32,6 +32,7 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.BindingType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.DomainType;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.IBeXTGGModelFactory;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.OperationalisationMode;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGCorrespondence;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGPattern;
@@ -41,13 +42,15 @@ import org.emoflon.ibex.tgg.util.TGGModelUtils;
 
 /**
  * 
- * This class represents an operationalized shortcut rule. The pattern information are stored in the
- * shortcut rule (copied instance). Operationalization means that these rules are applicable in a
- * certain translation direction (FORWARD, BACKWARD). However, the operationalize() method has to be
- * implemented by sub classes. This class also creates a SearchPlan for the operationalized pattern
- * and created Lookup and Check Operations which are used by LocalPatternSearch to execute the
- * SearchPlan. The interfaces used to implement these operations are EdgeCheck, Lookup, NACNodeCheck
- * and NodeCheck.
+ * This class represents an operationalized shortcut rule. The pattern
+ * information are stored in the shortcut rule (copied instance).
+ * Operationalization means that these rules are applicable in a certain
+ * translation direction (FORWARD, BACKWARD). However, the operationalize()
+ * method has to be implemented by sub classes. This class also creates a
+ * SearchPlan for the operationalized pattern and created Lookup and Check
+ * Operations which are used by LocalPatternSearch to execute the SearchPlan.
+ * The interfaces used to implement these operations are EdgeCheck, Lookup,
+ * NACNodeCheck and NodeCheck.
  * 
  * @author lfritsche
  *
@@ -95,7 +98,7 @@ public abstract class OperationalShortcutRule {
 	abstract protected void operationalize();
 
 	abstract public PatternType getType();
-	
+
 	abstract protected OperationalisationMode getOperationalisationMode();
 
 	private void convertAttributeAssignments() {
@@ -114,9 +117,9 @@ public abstract class OperationalShortcutRule {
 	private boolean skipConversion(TGGNode node) {
 		if (operationalizedSCR.getPreservedNodes().contains(node)) {
 			return switch (node.getDomainType()) {
-				case SOURCE -> getType() == PatternType.BWD;
-				case TARGET -> getType() == PatternType.FWD;
-				default -> false;
+			case SOURCE -> getType() == PatternType.BWD;
+			case TARGET -> getType() == PatternType.FWD;
+			default -> false;
 			};
 		}
 		return false;
@@ -215,7 +218,8 @@ public abstract class OperationalShortcutRule {
 	}
 
 	protected void createFilterNacs(TGGRule targetRule, DomainType domain) {
-		// TODO larsF: application conditions for shortcut rules must be reworked (filterNCAs)s
+		// TODO larsF: application conditions for shortcut rules must be reworked
+		// (filterNCAs)s
 		Collection<FilterNACCandidate> decCandidates = filterNACAnalysis.computeFilterNACCandidates(targetRule, domain);
 		for (FilterNACCandidate dec : decCandidates) {
 			TGGNode decNode = operationalizedSCR.mapRuleNodeToSCNode(dec.getNodeInRule(), SCInputRule.REPLACING);
@@ -233,14 +237,14 @@ public abstract class OperationalShortcutRule {
 			TGGModelUtils.setOperationType(node, BindingType.NEGATIVE);
 
 			switch (dec.getEDirection()) {
-				case INCOMING -> {
-					edge.setSource(node);
-					edge.setTarget(decNode);
-				}
-				case OUTGOING -> {
-					edge.setSource(decNode);
-					edge.setTarget(node);
-				}
+			case INCOMING -> {
+				edge.setSource(node);
+				edge.setTarget(decNode);
+			}
+			case OUTGOING -> {
+				edge.setSource(decNode);
+				edge.setTarget(node);
+			}
 			}
 
 			edge.setName(edge.getSource().getName() + "__" + dec.getEdgeType().getName() + "__" + edge.getTarget().getName());
@@ -278,8 +282,7 @@ public abstract class OperationalShortcutRule {
 
 			BindingType srcNodeBinding = ((TGGNode) edge.getSource()).getBindingType();
 			BindingType trgNodeBinding = ((TGGNode) edge.getTarget()).getBindingType();
-			if ((srcNodeBinding != BindingType.CONTEXT && srcNodeBinding != BindingType.RELAXED)
-					|| (trgNodeBinding != BindingType.CONTEXT && trgNodeBinding != BindingType.RELAXED))
+			if ((srcNodeBinding != BindingType.CONTEXT && srcNodeBinding != BindingType.RELAXED) || (trgNodeBinding != BindingType.CONTEXT && trgNodeBinding != BindingType.RELAXED))
 				continue;
 
 			edge.setBindingType(target);
@@ -289,15 +292,42 @@ public abstract class OperationalShortcutRule {
 
 	// TODO lfritsche: delete -> nac?
 	protected void removeNodes(Collection<TGGNode> filterNodes) {
+		Collection<IBeXEdge> edges = new HashSet<>();
+		Collection<TGGCorrespondence> correspondences = new HashSet<>();
 		filterNodes.forEach(n -> {
-			new LinkedList<>(n.getIncomingEdges()).forEach(EcoreUtil::delete);
-			new LinkedList<>(n.getOutgoingEdges()).forEach(EcoreUtil::delete);
-			EcoreUtil.delete(n);
+			edges.addAll(n.getIncomingEdges());
+			edges.addAll(n.getOutgoingEdges());
+//			correspondences.addAll(n.getIncomingCorrespondence());
+//			correspondences.addAll(n.getOutgoingCorrespondence());
+		});
+		removeEdges(edges);
+//		removeCorrespondences(correspondences);
+		filterNodes.forEach(n -> {
+			TGGRule eContainer = (TGGRule) n.eContainer();
+			eContainer.getAllNodes().remove(n);
+			eContainer.getNodes().remove(n);
 		});
 	}
 
-	protected void removeEdges(Collection<TGGEdge> filterEdges) {
-		filterEdges.forEach(EcoreUtil::delete);
+	protected void removeCorrespondences(Collection<TGGCorrespondence> correspondences) {
+		for (var correspondence : correspondences) {
+			correspondence.setSource(null);
+			correspondence.setTarget(null);
+
+			TGGRule eContainer = (TGGRule) correspondence.eContainer();
+			eContainer.getCorrespondenceNodes().remove(correspondence);
+		}
+	}
+
+	protected void removeEdges(Collection<? extends IBeXEdge> filterEdges) {
+		for (var edge : filterEdges) {
+			edge.setSource(null);
+			edge.setTarget(null);
+
+			TGGRule eContainer = (TGGRule) edge.eContainer();
+			eContainer.getAllEdges().remove(edge);
+			eContainer.getEdges().remove(edge);
+		}
 	}
 
 	protected void addNACforCreatedInterface(Collection<TGGEdge> edges) {
@@ -324,14 +354,15 @@ public abstract class OperationalShortcutRule {
 			}
 		}
 	}
-	
+
 	protected void removeDomainDependentRuleComponents(DomainType domain) {
 		TGGShortcutRule shortcutRule = operationalizedSCR.getShortcutRule();
+
 		TGGModelUtils.removeInvocations(shortcutRule.getPrecondition().getInvocations(), domain);
 
 		TGGModelUtils.removeAttributeAssignments(shortcutRule.getAttributeAssignments(), domain);
 		TGGModelUtils.removeAttributeConditions(shortcutRule.getPrecondition().getConditions(), domain);
-		
+
 		TGGModelUtils.removeAttributeConstraints(shortcutRule.getAttributeConstraints(), domain);
 		TGGModelUtils.removeAttributeConstraints(((TGGPattern) shortcutRule.getPrecondition()).getAttributeConstraints(), domain);
 	}
@@ -356,4 +387,5 @@ public abstract class OperationalShortcutRule {
 	public String toString() {
 		return getType() + operationalizedSCR.toString();
 	}
+
 }

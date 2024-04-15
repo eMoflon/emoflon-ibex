@@ -65,8 +65,10 @@ public class ConflictDetector {
 
 		integrate.getOptions().matchDistributor().updateMatches();
 
-		// delete-preserve conflicts must be detected last, since some of them may be irrelevant, in case
-		// they depend on other conflicts which repair the deletions while being resolved (see method
+		// delete-preserve conflicts must be detected last, since some of them may be
+		// irrelevant, in case
+		// they depend on other conflicts which repair the deletions while being
+		// resolved (see method
 		// isDeletionRepairableConflictedMatch)
 		detectBrokenMatchBasedConflicts();
 		detectDeletePreserveConflicts();
@@ -82,7 +84,8 @@ public class ConflictDetector {
 	}
 
 	private void detectDeletePreserveConflicts() {
-		// we only iterate over src/trg matches which are not part of a consistency match (already filtered
+		// we only iterate over src/trg matches which are not part of a consistency
+		// match (already filtered
 		// in precedence graph)
 		integrate.precedenceGraph().getSourceNodes().parallelStream() //
 				.filter(srcNode -> !integrate.precedenceGraph().hasConsistencyMatchOverlap(srcNode)) //
@@ -96,11 +99,13 @@ public class ConflictDetector {
 	}
 
 	/**
-	 * Detects one or multiple delete-preserve conflicts for a given source/target match.
+	 * Detects one or multiple delete-preserve conflicts for a given source/target
+	 * match.
 	 * 
 	 * @param srcTrgNode        node which contains the source/target match
-	 * @param matchToBeRepaired optional consistency match which has to be repaired after resolving this
-	 *                          conflict (may be <code>null</code>)
+	 * @param matchToBeRepaired optional consistency match which has to be repaired
+	 *                          after resolving this conflict (may be
+	 *                          <code>null</code>)
 	 */
 	private boolean detectDeletePreserveEdgeConflict(PrecedenceNode srcTrgNode, ITGGMatch matchToBeRepaired) {
 		boolean anyConflictDetected = false;
@@ -109,7 +114,8 @@ public class ConflictDetector {
 		Set<PrecedenceNode> directRollBackCauses = new HashSet<>();
 		srcTrgNode.forAllToBeRolledBackBy((act, pre) -> {
 			// TODO adrianm: improve performance?
-			// we only want to traverse those src/trg matches that only matches non-translated green elements
+			// we only want to traverse those src/trg matches that only matches
+			// non-translated green elements
 			if (act.getMatch().getType() != PatternType.CONSISTENCY && integrate.precedenceGraph().hasConsistencyMatchOverlap(act))
 				return false;
 			if (act.isBroken()) {
@@ -168,10 +174,10 @@ public class ConflictDetector {
 	}
 
 	/**
-	 * Checks for all matches which will roll back the considered rule hierarchy if they have domain
-	 * specific violations. If during this process a conflicted match was found whose deletions can be
-	 * repaired, the check is canceled. If until here a domain specific violation was found, this method
-	 * returns true.
+	 * Checks for all matches which will roll back the considered rule hierarchy if
+	 * they have domain specific violations. If during this process a conflicted
+	 * match was found whose deletions can be repaired, the check is canceled. If
+	 * until here a domain specific violation was found, this method returns true.
 	 * 
 	 * @param directRollBackCause the match which directly causes the roll back
 	 * @param criticalDomain      the domain for which violations are critical
@@ -202,7 +208,8 @@ public class ConflictDetector {
 		});
 
 		if (domainSpecificViolation.get()) {
-			// cache the roll back causing matches, since they might be needed by conflicts for their resolution
+			// cache the roll back causing matches, since they might be needed by conflicts
+			// for their resolution
 			match2sortedRollBackCauses.put(directRollBackCause.getMatch(), rollBackCauses);
 			return true;
 		}
@@ -210,12 +217,14 @@ public class ConflictDetector {
 	}
 
 	/**
-	 * This method aims to check if a delete-preserve conflict above the specified match may be ignored.
-	 * This is the case if a later conflict resolution is going to repair the deletions, that caused the
-	 * delete-preserve conflict, anyway.
+	 * This method aims to check if a delete-preserve conflict above the specified
+	 * match may be ignored. This is the case if a later conflict resolution is
+	 * going to repair the deletions, that caused the delete-preserve conflict,
+	 * anyway.
 	 * <p>
-	 * So we check, if the specified match is part of an inconsistent changes conflict, since resolution
-	 * of these conflicts repairs the deleted structure in all cases.
+	 * So we check, if the specified match is part of an inconsistent changes
+	 * conflict, since resolution of these conflicts repairs the deleted structure
+	 * in all cases.
 	 * 
 	 * @param match
 	 * @return true if delete-preserve conflicts above may be ignored
@@ -236,9 +245,9 @@ public class ConflictDetector {
 		ClassifiedMatch classifiedMatch = integrate.matchClassifier().get(match);
 
 		Set<DeletionType> expectedDeletionTypes = switch (domain) {
-			case SOURCE -> DeletionType.srcDelCandidates;
-			case TARGET -> DeletionType.trgDelCandidates;
-			default -> throw new IllegalArgumentException("Unexpected value: " + domain);
+		case SOURCE -> DeletionType.srcDelCandidates;
+		case TARGET -> DeletionType.trgDelCandidates;
+		default -> throw new IllegalArgumentException("Unexpected value: " + domain);
 		};
 		if (expectedDeletionTypes.contains(classifiedMatch.getDeletionType()))
 			return true;
@@ -274,8 +283,7 @@ public class ConflictDetector {
 	private void detectAttributeConflicts(ConflictContainer container, ClassifiedMatch brokenMatch) {
 		for (ConstrainedAttributeChanges constrAttrChanges : brokenMatch.getConstrainedAttrChanges()) {
 			TGGAttributeConstraintDefinition def = constrAttrChanges.constraint.getDefinition();
-			if (!AttrCondDefLibraryProvider.isPredefinedAttrCondLibrary((TGGAttributeConstraintDefinitionLibrary) def.eContainer())
-					|| !def.getName().startsWith("eq_")) {
+			if (!AttrCondDefLibraryProvider.isPredefinedAttrCondLibrary((TGGAttributeConstraintDefinitionLibrary) def.eContainer()) || !def.getName().startsWith("eq_")) {
 				logger.error("Conflicted AttributeConstraints that are not equality constraints are currently not supported!");
 				continue;
 			}
@@ -290,10 +298,10 @@ public class ConflictDetector {
 
 				for (var param : constrAttrChanges.affectedParams.keySet()) {
 					switch (((TGGNode) param.getNode()).getDomainType()) {
-						case SOURCE -> srcChange = constrAttrChanges.affectedParams.get(param);
-						case TARGET -> trgChange = constrAttrChanges.affectedParams.get(param);
-						default -> {
-						}
+					case SOURCE -> srcChange = constrAttrChanges.affectedParams.get(param);
+					case TARGET -> trgChange = constrAttrChanges.affectedParams.get(param);
+					default -> {
+					}
 					}
 				}
 
@@ -329,18 +337,23 @@ public class ConflictDetector {
 		if (partlyModSrc) {
 			Set<PrecedenceNode> srcNodes = integrate.precedenceGraph().findOverlappingNodes(brokenNode, PatternType.SOURCE).keySet();
 
-			// Detect delete-preserve conflicts whose conflicting creations are involved in a reparable
-			// delta (source domain partly deleted plus related creations). Thus, after conflict resolution the
+			// Detect delete-preserve conflicts whose conflicting creations are involved in
+			// a reparable
+			// delta (source domain partly deleted plus related creations). Thus, after
+			// conflict resolution the
 			// reparable match has to be explicitly repaired.
 			{
-				// In case the conflicting match i.e. the match which has deletions is not the same as the
-				// reparable match, we additionally have to detect possible conflicts starting from all qualified
+				// In case the conflicting match i.e. the match which has deletions is not the
+				// same as the
+				// reparable match, we additionally have to detect possible conflicts starting
+				// from all qualified
 				// source matches.
 				for (PrecedenceNode srcNode : srcNodes)
 					if (detectDeletePreserveEdgeConflict(srcNode, brokenMatch.getMatch()))
 						anyConflictsDetected = true;
 
-				// In case the conflicting match is also the reparable match, we simply can create the conflict.
+				// In case the conflicting match is also the reparable match, we simply can
+				// create the conflict.
 				if (domainModTrg == DomainModification.COMPL_DEL) {
 					for (PrecedenceNode srcNode : srcNodes) {
 						createDelPresEdgeConflict(container, srcNode.getMatch(), DomainType.SOURCE, brokenMatch.getMatch(), brokenMatch.getMatch());
@@ -349,7 +362,8 @@ public class ConflictDetector {
 				}
 			}
 
-			// If there are changes at source domain which are inconsistent w.r.t. the specified TGG rules,
+			// If there are changes at source domain which are inconsistent w.r.t. the
+			// specified TGG rules,
 			// an appropriate conflict is created.
 			if (!anyConflictsDetected) {
 				createInconsDomainChangesConflict(container, DomainType.SOURCE);
@@ -358,18 +372,23 @@ public class ConflictDetector {
 		} else {
 			Set<PrecedenceNode> trgNodes = integrate.precedenceGraph().findOverlappingNodes(brokenNode, PatternType.TARGET).keySet();
 
-			// Detect delete-preserve conflicts whose conflicting creations are involved in a reparable
-			// delta (target domain partly deleted plus related creations). Thus, after conflict resolution the
+			// Detect delete-preserve conflicts whose conflicting creations are involved in
+			// a reparable
+			// delta (target domain partly deleted plus related creations). Thus, after
+			// conflict resolution the
 			// reparable match has to be explicitly repaired.
 			{
-				// In case the conflicting match i.e. the match which has deletions is not the same as the
-				// reparable match, we additionally have to detect possible conflicts starting from all qualified
+				// In case the conflicting match i.e. the match which has deletions is not the
+				// same as the
+				// reparable match, we additionally have to detect possible conflicts starting
+				// from all qualified
 				// target matches.
 				for (PrecedenceNode trgNode : trgNodes)
 					if (detectDeletePreserveEdgeConflict(trgNode, brokenMatch.getMatch()))
 						anyConflictsDetected = true;
 
-				// In case the conflicting match is also the reparable match, we simply can create the conflict.
+				// In case the conflicting match is also the reparable match, we simply can
+				// create the conflict.
 				if (domainModSrc == DomainModification.COMPL_DEL) {
 					for (PrecedenceNode trgNode : trgNodes) {
 						createDelPresEdgeConflict(container, trgNode.getMatch(), DomainType.TARGET, brokenMatch.getMatch(), brokenMatch.getMatch());
@@ -378,7 +397,8 @@ public class ConflictDetector {
 				}
 			}
 
-			// If there are changes at target domain which are inconsistent w.r.t. the specified TGG rules,
+			// If there are changes at target domain which are inconsistent w.r.t. the
+			// specified TGG rules,
 			// an appropriate conflict is created.
 			if (!anyConflictsDetected) {
 				createInconsDomainChangesConflict(container, DomainType.TARGET);
@@ -399,7 +419,8 @@ public class ConflictDetector {
 	public Map<ITGGMatch, ConflictContainer> detectOpMultiplicityConflicts() {
 		Map<ITGGMatch, ConflictContainer> match2conflictContainer = new HashMap<>();
 
-		// fill multiplicity counter with applicable fwd & bwd matches (consistency matches are caught
+		// fill multiplicity counter with applicable fwd & bwd matches (consistency
+		// matches are caught
 		// directly at INTEGRATE)
 		Set<ITGGMatch> actFwdBwdMatches = integrate.getMatchContainer().getMatches();
 		for (ITGGMatch fwdBwdMatch : Sets.difference(actFwdBwdMatches, cachedAddedFwdBwdMatches))
@@ -422,7 +443,8 @@ public class ConflictDetector {
 					}
 
 					if (underlyingMatch == null)
-						throw new RuntimeException("There must exist an underlying consistency match!");
+//						throw new RuntimeException("There must exist an underlying consistency match!");
+						return;
 
 					final ITGGMatch tmpUnderlyingMatch = underlyingMatch;
 					ConflictContainer container = match2conflictContainer.computeIfAbsent(underlyingMatch, //
@@ -444,24 +466,19 @@ public class ConflictDetector {
 
 	//// CONFLICT FACTORIES ////
 
-	private synchronized void createDelPresEdgeConflict(ConflictContainer container, ITGGMatch srcTrgMatch, DomainType domainToBePreserved,
-			ITGGMatch directCausingMatch) {
+	private synchronized void createDelPresEdgeConflict(ConflictContainer container, ITGGMatch srcTrgMatch, DomainType domainToBePreserved, ITGGMatch directCausingMatch) {
 		new DelPreserveEdgeConflict(container, srcTrgMatch, domainToBePreserved, computeSortedRollBackCausesIfAbsent(directCausingMatch));
 	}
 
-	private synchronized void createDelPresEdgeConflict(ConflictContainer container, ITGGMatch srcTrgMatch, DomainType domainToBePreserved,
-			ITGGMatch directCausingMatch, ITGGMatch matchToBeRepaired) {
-		new DelPreserveEdgeConflict(container, srcTrgMatch, domainToBePreserved, computeSortedRollBackCausesIfAbsent(directCausingMatch),
-				matchToBeRepaired);
+	private synchronized void createDelPresEdgeConflict(ConflictContainer container, ITGGMatch srcTrgMatch, DomainType domainToBePreserved, ITGGMatch directCausingMatch, ITGGMatch matchToBeRepaired) {
+		new DelPreserveEdgeConflict(container, srcTrgMatch, domainToBePreserved, computeSortedRollBackCausesIfAbsent(directCausingMatch), matchToBeRepaired);
 	}
 
-	private synchronized void createDelPresAttrConflict(ConflictContainer container, AttributeChange attrChange, DomainType domainToBePreserved,
-			ITGGMatch directCausingMatch) {
+	private synchronized void createDelPresAttrConflict(ConflictContainer container, AttributeChange attrChange, DomainType domainToBePreserved, ITGGMatch directCausingMatch) {
 		new DelPreserveAttrConflict(container, attrChange, domainToBePreserved, computeSortedRollBackCausesIfAbsent(directCausingMatch));
 	}
 
-	private synchronized void createAttrConflict(ConflictContainer container, ConstrainedAttributeChanges conflictedConstraint, AttributeChange srcChange,
-			AttributeChange trgChange) {
+	private synchronized void createAttrConflict(ConflictContainer container, ConstrainedAttributeChanges conflictedConstraint, AttributeChange srcChange, AttributeChange trgChange) {
 		new AttributeConflict(container, conflictedConstraint, srcChange, trgChange);
 	}
 

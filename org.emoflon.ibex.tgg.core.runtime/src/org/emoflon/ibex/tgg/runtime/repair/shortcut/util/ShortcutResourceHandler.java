@@ -27,13 +27,11 @@ public class ShortcutResourceHandler {
 	public ShortcutResourceHandler(IbexOptions options) {
 		resourceHandler = options.resourceHandler();
 
-		scResource = resourceHandler.createResource(resourceHandler.getSpecificationResourceSet(),
-				options.project.path() + "/model/" + options.project.name() + ".sc.tgg.xmi");
+		scResource = resourceHandler.createResource(resourceHandler.getSpecificationResourceSet(), options.project.path() + "/model/" + options.project.name() + ".sc.tgg.xmi");
 		scTggModel = initContainer(scResource);
 
 		hoResCreator = () -> {
-			Resource hoResource = resourceHandler.createResource(resourceHandler.getSpecificationResourceSet(),
-				options.project.path() + "/model/" + options.project.name() + ".ho.tgg.xmi");
+			Resource hoResource = resourceHandler.createResource(resourceHandler.getSpecificationResourceSet(), options.project.path() + "/model/" + options.project.name() + ".ho.tgg.xmi");
 			initContainer(hoResource);
 			return hoResource;
 		};
@@ -42,16 +40,16 @@ public class ShortcutResourceHandler {
 	private TGGModel initContainer(Resource res) {
 		TGGModel tggModel = IBeXTGGModelFactory.eINSTANCE.createTGGModel();
 		res.getContents().add(tggModel);
-		
+
 		IBeXPatternSet patternSet = IBeXCoreModelFactory.eINSTANCE.createIBeXPatternSet();
 		tggModel.setPatternSet(patternSet);
 		TGGRuleSet ruleSet = IBeXTGGModelFactory.eINSTANCE.createTGGRuleSet();
 		tggModel.setRuleSet(ruleSet);
-		
+
 		return tggModel;
 	}
 
-	public void save() {		
+	public void save() {
 		if (higherOrderResource != null) {
 			try {
 				higherOrderResource.save(null);
@@ -66,12 +64,12 @@ public class ShortcutResourceHandler {
 		}
 	}
 
-	public void add(TGGShortcutRule shortcutRule) {
+	public synchronized void add(TGGShortcutRule shortcutRule) {
 		if (shortcutRule.getOriginalRule() instanceof HigherOrderTGGRule hoOriginalRule)
 			addHigherOrderRule(hoOriginalRule);
 		if (shortcutRule.getReplacingRule() instanceof HigherOrderTGGRule hoReplacingRule)
 			addHigherOrderRule(hoReplacingRule);
-		
+
 		scTggModel.getRuleSet().getRules().add(shortcutRule);
 		scTggModel.getPatternSet().getPatterns().add(shortcutRule.getPrecondition());
 	}

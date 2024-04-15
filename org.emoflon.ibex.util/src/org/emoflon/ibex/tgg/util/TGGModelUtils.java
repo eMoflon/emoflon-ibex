@@ -1,6 +1,5 @@
 package org.emoflon.ibex.tgg.util;
 
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -30,7 +29,6 @@ import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGRule;
 import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.CSP.TGGAttributeConstraintSet;
-
 
 public class TGGModelUtils {
 
@@ -81,7 +79,7 @@ public class TGGModelUtils {
 	}
 
 	public static String getMarkerTypeName(String ruleName) {
-		return "ProtocolNode_" + ruleName ;
+		return "ProtocolNode_" + ruleName;
 	}
 
 	public static String getMarkerRefName(BindingType type, DomainType domain, String markedOVName) {
@@ -128,14 +126,14 @@ public class TGGModelUtils {
 		attributeExpression.setLhs(lhsValue);
 		attributeExpression.setOperator(RelationalOperator.EQUAL);
 		attributeExpression.setRhs(rhsValue);
-		
+
 		((TGGNode) attributeAssignment.getNode()).getReferencedByConditions().add(attributeExpression);
 		if (rhsValue instanceof IBeXAttributeValue attributeValue)
 			((TGGNode) attributeValue.getNode()).getReferencedByConditions().add(attributeExpression);
 
 		return attributeExpression;
 	}
-	
+
 	public static IBeXAttributeValue getOperandWithAttributeValue(BooleanExpression expression, TGGNode referencedNode) {
 		if (!(expression instanceof RelationalExpression relationalExpression))
 			return null;
@@ -148,65 +146,63 @@ public class TGGModelUtils {
 
 	public static void setOperationType(IBeXNode node, BindingType binding) {
 		switch (binding) {
-			case CREATE -> node.setOperationType(IBeXOperationType.CREATION);
-			case DELETE -> node.setOperationType(IBeXOperationType.DELETION);
-			case CONTEXT, RELAXED, NEGATIVE -> node.setOperationType(IBeXOperationType.CONTEXT);
-			default -> {}
+		case CREATE -> node.setOperationType(IBeXOperationType.CREATION);
+		case DELETE -> node.setOperationType(IBeXOperationType.DELETION);
+		case CONTEXT, RELAXED, NEGATIVE -> node.setOperationType(IBeXOperationType.CONTEXT);
+		default -> {
+		}
 		}
 	}
 
 	public static void setOperationType(IBeXEdge edge, BindingType binding) {
 		switch (binding) {
-			case CREATE -> edge.setOperationType(IBeXOperationType.CREATION);
-			case DELETE -> edge.setOperationType(IBeXOperationType.DELETION);
-			case CONTEXT, RELAXED, NEGATIVE -> edge.setOperationType(IBeXOperationType.CONTEXT);
-			default -> {}
+		case CREATE -> edge.setOperationType(IBeXOperationType.CREATION);
+		case DELETE -> edge.setOperationType(IBeXOperationType.DELETION);
+		case CONTEXT, RELAXED, NEGATIVE -> edge.setOperationType(IBeXOperationType.CONTEXT);
+		default -> {
+		}
 		}
 	}
 
 	public static void removeAttributeConditions(Collection<BooleanExpression> conditions, DomainType domainType) {
 		var deletedConditions = new LinkedList<EObject>();
-		for(var condition : conditions) {
-			var nodeExpressions = SlimGTModelUtil.getElements(condition, NodeAttributeExpression.class);	
-			for(var nodeAttrExpr : nodeExpressions) {
+		for (var condition : conditions) {
+			var nodeExpressions = SlimGTModelUtil.getElements(condition, NodeAttributeExpression.class);
+			for (var nodeAttrExpr : nodeExpressions) {
 				var ibexNode = nodeAttrExpr.getNodeExpression();
-				if(ibexNode == null) {
+				if (ibexNode == null) {
 					deletedConditions.add(condition);
 					break;
-				}
-				else 
-					if(ibexNode instanceof TGGNode tggNode) 
-						if(tggNode.getDomainType() == domainType) {
-							deletedConditions.add(condition);
-							break;
-						}
+				} else if (ibexNode instanceof TGGNode tggNode)
+					if (tggNode.getDomainType() == domainType) {
+						deletedConditions.add(condition);
+						break;
+					}
 			}
-			
+
 			var attributeExpressions = SlimGTModelUtil.getElements(condition, IBeXAttributeValue.class);
-			for(var attributeExpression : attributeExpressions) {
+			for (var attributeExpression : attributeExpressions) {
 				var ibexNode = attributeExpression.getNode();
-				if(ibexNode == null) {
+				if (ibexNode == null) {
 					deletedConditions.add(condition);
 					break;
-				}
-				else 
-					if(ibexNode instanceof TGGNode tggNode) 
-						if(tggNode.getDomainType() == domainType) {
-							deletedConditions.add(condition);
-							break;
-						}
-			} 
+				} else if (ibexNode instanceof TGGNode tggNode)
+					if (tggNode.getDomainType() == domainType) {
+						deletedConditions.add(condition);
+						break;
+					}
+			}
 		}
-		EcoreUtil.deleteAll(deletedConditions, true); 
+		EcoreUtil.deleteAll(deletedConditions, true);
 	}
 
 	public static void removeBrokenAttributeConditions(Collection<BooleanExpression> conditions) {
 		var deletedConditions = new LinkedList<>();
-		for(var condition : conditions) {
-			var nodeExpressions = SlimGTModelUtil.getElements(condition, NodeAttributeExpression.class);	
-			for(var nodeAttrExpr : nodeExpressions) {
+		for (var condition : conditions) {
+			var nodeExpressions = SlimGTModelUtil.getElements(condition, NodeAttributeExpression.class);
+			for (var nodeAttrExpr : nodeExpressions) {
 				var ibexNode = nodeAttrExpr.getNodeExpression();
-				if(ibexNode == null) {
+				if (ibexNode == null) {
 					deletedConditions.add(condition);
 					break;
 				}
@@ -225,65 +221,61 @@ public class TGGModelUtils {
 
 	public static void removeAttributeConstraints(TGGAttributeConstraintSet tggAttributeConstraintSet, DomainType domainType) {
 		var constraints = tggAttributeConstraintSet.getTggAttributeConstraints();
-		
+
 		var deletedConstraints = new HashSet<>();
 		var remainingParameters = new HashSet<>();
-		for(var constraint : constraints) {
-			for(var param : constraint.getParameters()) {
-				if(param.getExpression() instanceof IBeXAttributeValue nodeAttrExpr) {
+		for (var constraint : constraints) {
+			for (var param : constraint.getParameters()) {
+				if (param.getExpression() instanceof IBeXAttributeValue nodeAttrExpr) {
 					var ibexNode = nodeAttrExpr.getNode();
-					if(ibexNode == null) {
+					if (ibexNode == null) {
 						deletedConstraints.add(constraint);
 						break;
-					}
-					else 
-						if(ibexNode instanceof TGGNode tggNode) 
-							if(tggNode.getDomainType() == domainType) {
-								deletedConstraints.add(constraint);
-								break;
-							}
+					} else if (ibexNode instanceof TGGNode tggNode)
+						if (tggNode.getDomainType() == domainType) {
+							deletedConstraints.add(constraint);
+							break;
+						}
 				}
 			}
-			if(!deletedConstraints.contains(constraint))
+			if (!deletedConstraints.contains(constraint))
 				remainingParameters.addAll(constraint.getParameters());
 		}
+		var deletedParameters = tggAttributeConstraintSet.getParameters().parallelStream().filter(p -> !remainingParameters.contains(p)).toList();
 		constraints.removeAll(deletedConstraints);
-		var deletedParameters = tggAttributeConstraintSet.getParameters().stream().filter(p -> !remainingParameters.contains(p)).toList();
-		deletedParameters.forEach(p -> EcoreUtil.delete(p));
+		tggAttributeConstraintSet.getParameters().removeAll(deletedParameters);
+//		deletedParameters.forEach(p -> EcoreUtil.delete(p, false));
 	}
 
 	public static void removeAttributeAssignments(Collection<IBeXAttributeAssignment> assignments, DomainType domainType) {
 		List<EObject> deletedAssignments = new LinkedList<>();
-		for(var assignment : assignments) {
+		for (var assignment : assignments) {
 			var ibexNode = assignment.getNode();
-			if(ibexNode == null)
+			if (ibexNode == null)
 				deletedAssignments.add(assignment);
-			else 
-				if(ibexNode instanceof TGGNode tggNode) 
-					if(tggNode.getDomainType() == domainType)
-						deletedAssignments.add(assignment);
+			else if (ibexNode instanceof TGGNode tggNode)
+				if (tggNode.getDomainType() == domainType)
+					deletedAssignments.add(assignment);
 		}
-		
+
 		EcoreUtil.removeAll(deletedAssignments);
 	}
 
 	public static void removeInvocations(Collection<IBeXPatternInvocation> invocations, DomainType domainType) {
 		var deletedInvocations = new LinkedList<>();
-		for(var invocation : invocations) {
-			for(var mapping : invocation.getMapping()) {
+		for (var invocation : invocations) {
+			for (var mapping : invocation.getMapping()) {
 				var ibexNode = mapping.getKey();
-				if(ibexNode == null) {
+				if (ibexNode == null) {
 					deletedInvocations.add(invocation);
-				}
-				else
-					if(ibexNode instanceof TGGNode tggNode) {
-						if(tggNode.getDomainType() == domainType) {
-							deletedInvocations.add(invocation);
-						}
+				} else if (ibexNode instanceof TGGNode tggNode) {
+					if (tggNode.getDomainType() == domainType) {
+						deletedInvocations.add(invocation);
 					}
+				}
 			}
 		}
-		
+
 		invocations.removeAll(deletedInvocations);
 	}
 

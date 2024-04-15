@@ -33,7 +33,8 @@ public class BWDShortcutRule extends OperationalShortcutRule {
 		removeEdges(filterEdges(operationalizedSCR.getEdges(), DomainType.TARGET, BindingType.DELETE));
 		removeNodes(filterNodes(operationalizedSCR.getNodes(), DomainType.TARGET, BindingType.DELETE));
 
-		// Note: at the moment not required -> maybe use it if there are problems with already created green edges
+		// Note: at the moment not required -> maybe use it if there are problems with
+		// already created green edges
 		// addNACforCreatedInterface(filterEdges(scRule.getEdges(), DomainType.SRC));
 	}
 

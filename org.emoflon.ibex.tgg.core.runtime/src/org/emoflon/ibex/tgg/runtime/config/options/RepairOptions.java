@@ -85,8 +85,9 @@ public class RepairOptions extends IbexSubOptions {
 		return usePGbasedSCruleCreation;
 	}
 
-	public void usePGbasedSCruleCreation(boolean usePGbasedSCruleCreation) {
+	public IbexOptions usePGbasedSCruleCreation(boolean usePGbasedSCruleCreation) {
 		this.usePGbasedSCruleCreation = usePGbasedSCruleCreation;
+		return options;
 	}
 
 	public IShortcutRuleUpdatePolicy shortcutRuleUpdatePolicy() {
