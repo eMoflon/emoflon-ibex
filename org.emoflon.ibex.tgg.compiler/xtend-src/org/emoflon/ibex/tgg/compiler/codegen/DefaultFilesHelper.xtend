@@ -39,47 +39,42 @@ class DefaultFilesHelper {
 		return '''
 			«importSection»
 			
-			#schema «projectName»
-				
-			#source {
-				«sourceSection»
-			}
+			schema «projectName» {
 			
-			#target { 
-				«targetSection»
-			} 
-			
-			#correspondence {
+				source {
+					«sourceSection»
+				}
 				
-			}
-			
-			#attributeConditions {
+				target { 
+					«targetSection»
+				} 
 				
+				correspondence {
+					
+				}
 			}
 		'''
 	}
 
 	static def generateDefaultRule(String schema, String ruleName) {
 		return '''
-			#using «schema».*
-			#using AttrCondDefLibrary.*
+			rule «ruleName» {
 			
-			#rule «ruleName» #with «schema»
-			
-			#source { 
+				source { 
+					
+				}
 				
-			}
-			
-			#target {
+				target {
+					
+				}
 				
-			}
+				correspondence {
+					
+				}
 			
-			#correspondence {
-				
-			}
-			
-			#attributeConditions {
-				
+				attributeConditions {
+					
+				}
 			}
 		'''
 	}

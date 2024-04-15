@@ -22,7 +22,7 @@ import org.moflon.core.utilities.WorkspaceHelper;
 
 public class TGGBuildUtil {
 
-	public static final String SCHEMA_FILE = "src/org/emoflon/ibex/tgg/Schema.tgg";
+	public static final String SCHEMA_FILE = "src/org/emoflon/ibex/tgg/Schema.tggl";
 
 	public static final String INTERNAL_TGG_MODEL_EXTENSION = ".tgg.xmi";
 	public static final String ECORE_FILE_EXTENSION = ".ecore";
@@ -34,15 +34,13 @@ public class TGGBuildUtil {
 	public static final String MODEL_FOLDER = "model";
 	public static final String RUN_FILE_PATH_PREFIX = "src/org/emoflon/ibex/tgg/run/";
 	public static final String CONFIG_FILE_PATH_PREFIX = RUN_FILE_PATH_PREFIX + "config/";
-	
+
 	/**
 	 * Creates a new file as RUN_FILE_PATH + fileName + ".java"
 	 * 
-	 * @param fileName
-	 *            The name of the file to be generated
-	 * @param generator
-	 *            A bi-function used to generate the string content of the new
-	 *            file of the form: (project name, file name) -> file contents
+	 * @param fileName  The name of the file to be generated
+	 * @param generator A bi-function used to generate the string content of the new
+	 *                  file of the form: (project name, file name) -> file contents
 	 * @throws CoreException
 	 */
 	public static void createDefaultRunFile(IProject project, String fileName, BiFunction<String, String, String> generator) throws CoreException {
@@ -76,15 +74,11 @@ public class TGGBuildUtil {
 	/**
 	 * Creates a new file as path + fileName + ending
 	 * 
-	 * @param path
-	 *            The project relative path to the file
-	 * @param ending
-	 *            The file extension to use
-	 * @param fileName
-	 *            The name of the file to be generated
-	 * @param generator
-	 *            A bi-function used to generate the string content of the new
-	 *            file of the form: (project name, file name) -> file contents
+	 * @param path      The project relative path to the file
+	 * @param ending    The file extension to use
+	 * @param fileName  The name of the file to be generated
+	 * @param generator A bi-function used to generate the string content of the new
+	 *                  file of the form: (project name, file name) -> file contents
 	 * @throws CoreException
 	 */
 	public static void createIfNotExists(IProject project, String path, String fileName, String ending, BiFunction<String, String, String> generator, Boolean force) throws CoreException {
@@ -99,7 +93,7 @@ public class TGGBuildUtil {
 			WorkspaceHelper.addAllFoldersAndFile(project, pathToFile, defaultContent, new NullProgressMonitor());
 		}
 	}
-	
+
 	public static void saveModelInProject(IFile file, ResourceSet rs, EObject model) throws IOException {
 		URI uri = URI.createPlatformResourceURI(file.getProject().getName()//
 				+ "/" + file.getProjectRelativePath().toString(), true);
