@@ -21,13 +21,9 @@ import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.OverlapUtil;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.ShortcutResourceHandler;
 import org.emoflon.ibex.tgg.runtime.repair.shortcut.util.TGGOverlap;
 import org.emoflon.ibex.tgg.runtime.repair.strategies.RepairApplicationPoint;
-import org.emoflon.ibex.tgg.util.benchmark.TimeMeasurable;
-import org.emoflon.ibex.tgg.util.benchmark.TimeRegistry;
-import org.emoflon.ibex.tgg.util.benchmark.Timer;
-import org.emoflon.ibex.tgg.util.benchmark.Times;
 import org.emoflon.ibex.tgg.util.debug.LoggerConfig;
 
-public class BasicShortcutPatternProvider implements ShortcutPatternProvider, TimeMeasurable {
+public class BasicShortcutPatternProvider implements ShortcutPatternProvider {
 
 	protected final IbexOptions options;
 	protected final OverlapUtil overlapUtil;
@@ -41,15 +37,11 @@ public class BasicShortcutPatternProvider implements ShortcutPatternProvider, Ti
 
 	protected final Map<OperationalShortcutRule, LocalPatternSearch> opShortcutRule2patternMatcher;
 
-	private Times times;
-
 	public BasicShortcutPatternProvider(IbexOptions options, IGreenInterpreter greenInterpreter, PatternType[] types, boolean initiallyPersistShortcutRules) {
 		this.options = options;
 		this.overlapUtil = new OverlapUtil(options);
 		this.scResourceHandler = new ShortcutResourceHandler(options);
 		this.opSCFactory = new OperationalSCFactory(options, scResourceHandler);
-		this.times = new Times();
-		TimeRegistry.register(this);
 
 		this.types = new HashSet<>(Arrays.asList(types));
 
@@ -64,12 +56,8 @@ public class BasicShortcutPatternProvider implements ShortcutPatternProvider, Ti
 
 	private void createBasicShortcutPatterns(IGreenInterpreter greenInterpreter) {
 		LoggerConfig.log(LoggerConfig.log_repair(), () -> "Generate basic Short-cut Rules:");
-		System.out.println("BLABLA");
-		Timer.start();
 		Collection<TGGOverlap> basicOverlaps = overlapUtil.calculateOverlaps(options.tgg.tgg().getRuleSet());
-		times.addTo("BasicShortcutPatternProvider:calculcateOverlaps", Timer.stop());
 
-		Timer.start();
 		basicShortcutRules = basicOverlaps.stream() //
 				.map(overlap -> {
 					RuntimeShortcutRule rtShortcutRule = new RuntimeShortcutRule(overlap, options);
@@ -78,9 +66,6 @@ public class BasicShortcutPatternProvider implements ShortcutPatternProvider, Ti
 				}) //
 				.collect(Collectors.toList());
 
-		times.addTo("BasicShortcutPatternProvider:createRuntimeSCRules", Timer.stop());
-
-		Timer.start();
 		types.stream().forEach(type -> {
 			Map<String, Collection<OperationalShortcutRule>> opShortcutRules = opSCFactory.createOperationalRules(greenInterpreter, basicShortcutRules, type);
 			basicShortcutPatterns.put(type, opShortcutRules);
@@ -88,14 +73,11 @@ public class BasicShortcutPatternProvider implements ShortcutPatternProvider, Ti
 			LoggerConfig.log(LoggerConfig.log_repair(), //
 					() -> "  Generated " + opShortcutRules.values().stream().mapToInt(s -> s.size()).sum() + " " + type.name() + " Short-cut Rules");
 		});
-		times.addTo("BasicShortcutPatternProvider:createOperationalRules", Timer.stop());
 
-		Timer.start();
 		basicShortcutPatterns.values().stream() //
 				.flatMap(m -> m.values().stream()) //
 				.flatMap(c -> c.stream()) //
 				.forEach(r -> opShortcutRule2patternMatcher.put(r, new LocalPatternSearch(r, options)));
-		times.addTo("BasicShortcutPatternProvider:createSearchPlans", Timer.stop());
 	}
 
 	@Override
@@ -120,8 +102,4 @@ public class BasicShortcutPatternProvider implements ShortcutPatternProvider, Ti
 //		scResourceHandler.save();
 	}
 
-	@Override
-	public Times getTimes() {
-		return times;
-	}
 }
