@@ -61,8 +61,11 @@ public class MODELGEN extends OperationalStrategy {
 
 	protected AxiomNACHandler axiomMatchHandler;
 
-	/** Constructors 
-	 * @param modelgen **/
+	/**
+	 * Constructors
+	 * 
+	 * @param modelgen
+	 **/
 
 	public MODELGEN(IbexOptions options) throws IOException {
 		super(options, new RandomMatchUpdatePolicy(50));
@@ -100,11 +103,13 @@ public class MODELGEN extends OperationalStrategy {
 	 */
 	@Override
 	protected boolean processOneOperationalRuleMatch() {
-		this.updateBlockedMatches();
 		if (operationalMatchContainer.isEmpty())
 			return false;
 
 		ITGGMatch match = chooseOneMatch();
+		if (match == null) {
+			return false;
+		}
 		String ruleName = match.getRuleName();
 
 		Optional<ITGGMatch> comatch = processOperationalRuleMatch(ruleName, match);
@@ -166,12 +171,8 @@ public class MODELGEN extends OperationalStrategy {
 	 */
 	private void updateStopCriterion(String ruleName) {
 		var rule = options.tgg.ruleHandler().getRule(ruleName);
-		
-		stopCriterion.update(ruleName,
-				rule.getCreateSource().getNodes().size() +
-				rule.getCreateSource().getEdges().size(), 
-				rule.getCreateTarget().getNodes().size() + 
-				rule.getCreateTarget().getEdges().size());
+
+		stopCriterion.update(ruleName, rule.getCreateSource().getNodes().size() + rule.getCreateSource().getEdges().size(), rule.getCreateTarget().getNodes().size() + rule.getCreateTarget().getEdges().size());
 	}
 
 	/**
@@ -181,10 +182,9 @@ public class MODELGEN extends OperationalStrategy {
 	 * the axiom is found (or the stop criterion blocks the rule).
 	 */
 	private void collectMatchesForAxioms() {
-		options.tgg.getConcreteTGGRules().stream().filter(r -> r.isAxiom())
-				.forEach(r -> {
-					matchHandler.addOperationalMatch(new SimpleTGGMatch(TGGPatternUtil.generateGENBlackPatternName(r.getName())));
-				});
+		options.tgg.getConcreteTGGRules().stream().filter(r -> r.isAxiom()).forEach(r -> {
+			matchHandler.addOperationalMatch(new SimpleTGGMatch(TGGPatternUtil.generateGENBlackPatternName(r.getName())));
+		});
 	}
 
 	@Override

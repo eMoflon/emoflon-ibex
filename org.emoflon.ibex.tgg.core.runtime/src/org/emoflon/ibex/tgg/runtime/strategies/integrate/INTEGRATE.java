@@ -168,7 +168,6 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	protected boolean processOneOperationalRuleMatch() {
 		Timer.start();
 
-		this.updateBlockedMatches();
 		if (operationalMatchContainer.isEmpty()) {
 			times.addTo("translate:ruleApplication", Timer.stop());
 			return false;
@@ -208,8 +207,8 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	}
 
 	/**
-	 * Applies a given delta to source and target models specified by a {@link BiConsumer} providing the
-	 * source and target root elements.
+	 * Applies a given delta to source and target models specified by a
+	 * {@link BiConsumer} providing the source and target root elements.
 	 * <p>
 	 * Alternatively use {@link INTEGRATE#applyDelta(DeltaContainer)}.
 	 * </p>
@@ -232,15 +231,16 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	}
 
 	/**
-	 * Applies a given delta to source and target models specified by a {@link delta.DeltaContainer
-	 * DeltaContainer}.
+	 * Applies a given delta to source and target models specified by a
+	 * {@link delta.DeltaContainer DeltaContainer}.
 	 * <p>
 	 * Alternatively use {@link INTEGRATE#applyDelta(BiConsumer)}.
 	 * </p>
 	 * 
 	 * @param delta delta to be applied
-	 * @throws InvalidDeltaException if a <code>Delta</code> of the given <code>DeltaContainer</code>
-	 *                               has an invalid structure or invalid components
+	 * @throws InvalidDeltaException if a <code>Delta</code> of the given
+	 *                               <code>DeltaContainer</code> has an invalid
+	 *                               structure or invalid components
 	 */
 	public void applyDelta(DeltaContainer delta) throws InvalidDeltaException {
 		Timer.start();
@@ -315,7 +315,7 @@ public class INTEGRATE extends PropagatingOperationalStrategy {
 	private void logDeltaApplication() {
 		LoggerConfig.log(LoggerConfig.log_executionStructure(), () -> "Delta Application:\n");
 	}
-	
+
 	@Override
 	public StrategyMode getStrategyMode() {
 		return StrategyMode.INTEGRATE;

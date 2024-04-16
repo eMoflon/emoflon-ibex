@@ -55,7 +55,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	protected TGGResourceHandler resourceHandler;
 
 	protected MatchDistributor matchDistributor;
-	
+
 	protected RuleHandler ruleHandler;
 
 	/***** Constructors *****/
@@ -83,7 +83,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		resourceHandler = options.resourceHandler();
 		matchDistributor = options.matchDistributor();
 		matchHandler = options.matchHandler();
-		
+
 		this.notifyStartLoading();
 		resourceHandler.initialize();
 		this.notifyLoadingFinished();
@@ -104,7 +104,6 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 		TGGMatchParameterOrderProvider.init(options.tgg.tgg());
 
-		
 		this.notifyDoneInit();
 	}
 
@@ -138,7 +137,6 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	protected boolean processOneOperationalRuleMatch() {
 		Timer.start();
 
-		this.updateBlockedMatches();
 		if (operationalMatchContainer.isEmpty()) {
 			times.addTo("translate:ruleApplication", Timer.stop());
 			return false;
@@ -146,66 +144,71 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 
 		Timer.start();
 		ITGGMatch match = chooseOneMatch();
-		String ruleName = match.getRuleName();
 		times.addTo("ruleApplication:chooseMatch", Timer.stop());
+		if (match == null) {
+			times.addTo("translate:ruleApplication", Timer.stop());
+			return false;
+		}
+		String ruleName = match.getRuleName();
 
 		Optional<ITGGMatch> result = processOperationalRuleMatch(ruleName, match);
 		matchHandler.removeOperationalMatch(match);
 
 		if (result.isPresent()) {
 			options.debug.benchmarkLogger().addToNumOfMatchesApplied(1);
-			LoggerConfig.log(LoggerConfig.log_ruleApplication(),
-					() -> "Matches: removed (as it has just been applied) " + match.getPatternName() + "(" + match.hashCode() + ")\n");
+			LoggerConfig.log(LoggerConfig.log_ruleApplication(), () -> "Matches: removed (as it has just been applied) " + match.getPatternName() + "(" + match.hashCode() + ")\n");
 		} else
-			LoggerConfig.log(LoggerConfig.log_ruleApplication(),
-					() -> "Matches: removed (as application failed) " + match.getPatternName() + "(" + match.hashCode() + ")\n");
+			LoggerConfig.log(LoggerConfig.log_ruleApplication(), () -> "Matches: removed (as application failed) " + match.getPatternName() + "(" + match.hashCode() + ")\n");
 
 		times.addTo("translate:ruleApplication", Timer.stop());
 		return true;
 	}
 
 	protected ITGGMatch chooseOneMatch() {
-		ITGGMatch match = this.notifyChooseMatch(new ImmutableMatchContainer(operationalMatchContainer));
+		while (!operationalMatchContainer.isEmpty()) {
+			ITGGMatch match = this.notifyChooseMatch(new ImmutableMatchContainer(operationalMatchContainer));
 
-		if (match == null)
-			throw new IllegalStateException("Update policies should never return null!");
+			if (!this.getUpdatePolicy().matchShouldBeApplied(match, match.getRuleName())) {
+				if (!blockedMatches.containsKey(match))
+					blockedMatches.put(match, "Match is blocked by the update policy");
+				this.operationalMatchContainer.removeMatch(match);
+			} else {
+				return match;
+			}
 
-		return match;
+		}
+		throw new IllegalStateException("Update policies should never return null!");
 	}
 
 	protected Optional<ITGGMatch> processOperationalRuleMatch(String ruleName, ITGGMatch match) {
 		// generatedPatternsSizeObserver.setNodes(match);
 		Timer.start();
 		if (getBlockedMatches().containsKey(match)) {
-			LoggerConfig.log(LoggerConfig.log_ruleApplication(),
-					() -> "Rule application: blocked by update policy " + match.getPatternName() + "(" + match.hashCode() + ")");
+			LoggerConfig.log(LoggerConfig.log_ruleApplication(), () -> "Rule application: blocked by update policy " + match.getPatternName() + "(" + match.hashCode() + ")");
 			times.addTo("ruleApplication:init", Timer.stop());
 			return Optional.empty();
 		}
 
 		TGGOperationalRule operationRule = ruleHandler.getOperationalRule(match.getOperationalRuleName());
-		
-		LoggerConfig.log(LoggerConfig.log_ruleApplication(),
-				() -> "Rule application: attempting to apply " + match.getPatternName() + "(" + match.hashCode() + ") with " //
-						+ operationRule.getClass().getSimpleName() + "@" + Integer.toHexString(operationRule.hashCode()));
+
+		LoggerConfig.log(LoggerConfig.log_ruleApplication(), () -> "Rule application: attempting to apply " + match.getPatternName() + "(" + match.hashCode() + ") with " //
+				+ operationRule.getClass().getSimpleName() + "@" + Integer.toHexString(operationRule.hashCode()));
 		times.addTo("ruleApplication:init", Timer.stop());
 
 		Timer.start();
 		Optional<ITGGMatch> comatch = greenInterpreter.apply(operationRule, match);
 		times.addTo("ruleApplication:createElements", Timer.stop());
 
-		if(comatch.isPresent()) {
-			LoggerConfig.log(LoggerConfig.log_ruleApplication(),
-					() -> "Rule application: successfully applied " + match.getPatternName() + "(" + match.hashCode() + ")\n" //
+		if (comatch.isPresent()) {
+			LoggerConfig.log(LoggerConfig.log_ruleApplication(), () -> "Rule application: successfully applied " + match.getPatternName() + "(" + match.hashCode() + ")\n" //
 					+ ConsoleUtil.indent(ConsoleUtil.printMatchParameter(match), 18, true));
 			this.notifyMatchApplied(match, ruleName);
 			operationalMatchContainer.matchApplied(match);
-			
+
 			Timer.start();
 			handleSuccessfulRuleApplication(comatch.get(), ruleName, operationRule);
 			times.addTo("ruleApplication:finish", Timer.stop());
 		}
-		
 
 		return comatch;
 	}
@@ -251,7 +254,7 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 		prepareMarkerCreation(operationRule, comatch, ruleName);
 		greenInterpreter.createMarkers(operationRule, comatch);
 	}
-	
+
 	/***** Configuration *****/
 
 	public IbexOptions getOptions() {
@@ -282,8 +285,8 @@ public abstract class OperationalStrategy extends AbstractIbexObservable impleme
 	public Times getTimes() {
 		return times;
 	}
-	
+
 	public abstract StrategyMode getStrategyMode();
-	
+
 	public abstract OperationalisationMode currentlyAppliedRuleMode();
 }
