@@ -107,7 +107,8 @@ public class SearchPlanCreator {
 		// create opposite ref
 		if (edgeRef.isContainment()) {
 			key2lookup.put(key, n -> {
-				return (EObject) n.eContainer();
+				// we have to make sure that the eContaining feature is the correct one
+				return edgeRef.equals(n.eContainingFeature()) ? (EObject) n.eContainer() : null;
 			});
 		} else {
 			if (edgeRef.getEOpposite() != null) {
@@ -118,8 +119,7 @@ public class SearchPlanCreator {
 				if (key.sourceNode instanceof TGGCorrespondence) {
 					key2lookup.put(key, n -> {
 						if (options.project.usesSmartEMF())
-							throw new IllegalStateException("If SmartEMF is used, there is no need to traverse using opposite lookups! "
-									+ "Check if lookups for derived opposite edges were created properly.");
+							throw new IllegalStateException("If SmartEMF is used, there is no need to traverse using opposite lookups! " + "Check if lookups for derived opposite edges were created properly.");
 						// make sure that we only get the correct corrs with the right type
 						Collection<EObject> corrs = options.resourceHandler().getCorrCaching().getOrDefault(n, Collections.emptyList());
 						return corrs.stream().filter(c -> n.equals(c.eGet(key.edge.getType()))).collect(Collectors.toList());
@@ -139,8 +139,7 @@ public class SearchPlanCreator {
 	private void createEdgeCheck(SearchKey key) {
 		boolean negative = key.edge.getBindingType() == BindingType.NEGATIVE;
 		if (negative) {
-			if (((TGGNode) key.edge.getSource()).getBindingType().equals(BindingType.NEGATIVE)
-					|| ((TGGNode) key.edge.getTarget()).getBindingType().equals(BindingType.NEGATIVE))
+			if (((TGGNode) key.edge.getSource()).getBindingType().equals(BindingType.NEGATIVE) || ((TGGNode) key.edge.getTarget()).getBindingType().equals(BindingType.NEGATIVE))
 				return;
 
 			key2edgeCheck.put(key, (s, t) -> {
@@ -243,7 +242,8 @@ public class SearchPlanCreator {
 
 		List<Pair<SearchKey, Lookup>> searchPlan = new ArrayList<>();
 
-		// first calculate the lookups to find all elements + their corresponding node checks
+		// first calculate the lookups to find all elements + their corresponding node
+		// checks
 		while (!uncheckedNodes.isEmpty()) {
 			List<SearchKey> nextSearchKeys = filterKeys(uncheckedSearchKeys, uncheckedNodes, uncheckedRelaxedNodes, false);
 			if (nextSearchKeys.isEmpty()) {
@@ -293,8 +293,7 @@ public class SearchPlanCreator {
 		return new SearchPlan(searchPlan, elt2nodeCheck, key2uncheckedEdgeCheck, key2nacNodeCheck, attributeCheck);
 	}
 
-	private List<SearchKey> filterKeys(List<SearchKey> keys, Collection<TGGNode> uncheckedNodes, Collection<TGGNode> uncheckedRelaxedNodes,
-			boolean relaxed) {
+	private List<SearchKey> filterKeys(List<SearchKey> keys, Collection<TGGNode> uncheckedNodes, Collection<TGGNode> uncheckedRelaxedNodes, boolean relaxed) {
 		Collection<SearchKey> filteredKeys = keys.stream() //
 				.filter(k -> validLookupKey(uncheckedNodes, uncheckedRelaxedNodes, k, false)).collect(Collectors.toList());
 
@@ -342,8 +341,7 @@ public class SearchPlanCreator {
 	}
 
 	// a valid lookup key is a key where source xor target has already been checked
-	private boolean validLookupKey(Collection<TGGNode> uncheckedNodes, Collection<TGGNode> uncheckedRelaxedNodes, SearchKey key,
-			boolean allowBackNavigate) {
+	private boolean validLookupKey(Collection<TGGNode> uncheckedNodes, Collection<TGGNode> uncheckedRelaxedNodes, SearchKey key, boolean allowBackNavigate) {
 		boolean srcChecked = !uncheckedNodes.contains(key.sourceNode) && !uncheckedRelaxedNodes.contains(key.sourceNode);
 		boolean trgChecked = !uncheckedNodes.contains(key.targetNode) && !uncheckedRelaxedNodes.contains(key.targetNode);
 
