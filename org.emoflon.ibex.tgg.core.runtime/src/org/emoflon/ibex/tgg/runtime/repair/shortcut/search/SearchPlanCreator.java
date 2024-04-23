@@ -91,7 +91,7 @@ public class SearchPlanCreator {
 		}
 
 		attributeCheck = (name2candidates) -> {
-			return checkAttributeConditions(name2candidates) && checkCSPs(name2candidates);
+			return checkAttributeConditions(name2candidates);// && checkCSPs(name2candidates);
 		};
 	}
 

@@ -36,6 +36,8 @@ public class BWDShortcutRule extends OperationalShortcutRule {
 		// Note: at the moment not required -> maybe use it if there are problems with
 		// already created green edges
 		// addNACforCreatedInterface(filterEdges(scRule.getEdges(), DomainType.SRC));
+
+		transformAttributeConstraintBindings(operationalizedSCR.getShortcutRule(), DomainType.SOURCE);
 	}
 
 	@Override

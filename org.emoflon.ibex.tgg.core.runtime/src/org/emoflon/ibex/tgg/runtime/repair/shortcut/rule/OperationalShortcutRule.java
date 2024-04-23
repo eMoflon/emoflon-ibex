@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXAttributeValue;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelFactory;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXEdge;
 import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXRuleDelta;
@@ -70,6 +71,8 @@ public abstract class OperationalShortcutRule {
 		this.options = options;
 		this.rawShortcutRule = shortcutRule;
 		this.operationalizedSCR = shortcutRule.copy();
+		this.operationalizedSCR.getShortcutRule().setName(this.operationalizedSCR.getShortcutRule().getName() + "_" + getOperationalisationMode());
+
 		scResourceHandler.add(operationalizedSCR.getShortcutRule());
 		initMarkerSets();
 		this.filterNACAnalysis = filterNACAnalysis;
@@ -365,6 +368,26 @@ public abstract class OperationalShortcutRule {
 
 		TGGModelUtils.removeAttributeConstraints(shortcutRule.getAttributeConstraints(), domain);
 		TGGModelUtils.removeAttributeConstraints(((TGGPattern) shortcutRule.getPrecondition()).getAttributeConstraints(), domain);
+	}
+
+	/**
+	 * This method transforms constraint parameters of the chosen domain to be
+	 * derived so that they are calculcated anew
+	 * 
+	 * @param rule
+	 * @param domain
+	 */
+	protected void transformAttributeConstraintBindings(TGGRule rule, DomainType domain) {
+		for (var parameter : rule.getAttributeConstraints().getParameters()) {
+			if (parameter.getExpression() instanceof IBeXAttributeValue attributeValue) {
+				if (attributeValue.getNode() instanceof TGGNode tggNode) {
+					if (tggNode.getDomainType() == domain) {
+						parameter.setDerived(true);
+					}
+				} else
+					throw new IllegalStateException("Attributeconstraints are only allowed to reference TGGNodes but detected " + attributeValue.getNode());
+			}
+		}
 	}
 
 	public SearchPlan createSearchPlan() {

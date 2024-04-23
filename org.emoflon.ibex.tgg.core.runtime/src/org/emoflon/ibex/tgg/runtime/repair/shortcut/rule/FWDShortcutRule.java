@@ -33,8 +33,11 @@ public class FWDShortcutRule extends OperationalShortcutRule {
 		removeEdges(filterEdges(operationalizedSCR.getEdges(), DomainType.SOURCE, BindingType.DELETE));
 		removeNodes(filterNodes(operationalizedSCR.getNodes(), DomainType.SOURCE, BindingType.DELETE));
 
-		// Note: at the moment not required -> maybe use it if there are problems with already created green edges
+		// Note: at the moment not required -> maybe use it if there are problems with
+		// already created green edges
 		// addNACforCreatedInterface(filterEdges(scRule.getEdges(), DomainType.TRG));
+
+		transformAttributeConstraintBindings(operationalizedSCR.getShortcutRule(), DomainType.TARGET);
 	}
 
 	@Override
