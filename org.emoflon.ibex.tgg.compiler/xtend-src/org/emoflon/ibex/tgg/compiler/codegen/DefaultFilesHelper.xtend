@@ -24,7 +24,7 @@ class DefaultFilesHelper {
 		if (importURIs !== null && importURIs.size() > 0) {
 			val StringBuilder sb = new StringBuilder();
 			for (String modelURI : importURIs) {
-				sb.append("#import \"");
+				sb.append("import \"");
 				sb.append(modelURI);
 				sb.append("\"")
 				sb.append(System.lineSeparator());
