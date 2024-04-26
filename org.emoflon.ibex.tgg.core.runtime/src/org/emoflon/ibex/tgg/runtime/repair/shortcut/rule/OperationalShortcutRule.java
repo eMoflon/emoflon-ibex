@@ -381,8 +381,10 @@ public abstract class OperationalShortcutRule {
 		for (var parameter : rule.getAttributeConstraints().getParameters()) {
 			if (parameter.getExpression() instanceof IBeXAttributeValue attributeValue) {
 				if (attributeValue.getNode() instanceof TGGNode tggNode) {
-					if (tggNode.getDomainType() == domain) {
-						parameter.setDerived(true);
+					if (tggNode.getBindingType() == BindingType.CREATE) {
+						if (tggNode.getDomainType() == domain) {
+							parameter.setDerived(true);
+						}
 					}
 				} else
 					throw new IllegalStateException("Attributeconstraints are only allowed to reference TGGNodes but detected " + attributeValue.getNode());
