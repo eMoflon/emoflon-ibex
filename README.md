@@ -7,10 +7,18 @@ It uses [eMoflon::IBeX UI](https://github.com/eMoflon/emoflon-ibex-ui)
 	for the textual rule specification.
 
 This repository contains only the part which is independent from a concrete pattern matcher.
-- [eMoflon::IBeX Democles](https://github.com/eMoflon/emoflon-ibex-democles)
-	uses eMoflon::IBeX with the Democles pattern matching engine.
 - [eMoflon::IBeX HiPE](https://github.com/eMoflon/emoflon-ibex-hipe)
 	uses eMoflon::IBeX with our new HiPE parallel pattern matching engine.
+
+**Important**:
+There are two versions of eMoflon::IBeX:
+1. eMoflon::IBeX v1: Legacy version
+1. eMoflon::IBeX v2: Newer version with a complete rewrite of both, the GT and TGG language.
+
+Whenever you have to choose between versions, keep in mind that all components must be either v1 or v2.  
+(Example: If you want to use eMoflon::IBeX v2, you have to download a pre-built Eclipse with v2 and use HiPE v2.)
+
+---
 
 There are 4 ways how to use eMoflon::IBeX:
 1. Use our [pre-built Eclipse download](#pre-built-eclipse) with eMoflon::IBeX installed (or the version without eMoflon::IBeX to develop it).
@@ -48,7 +56,7 @@ For detailed installation instructions, please refer to the [README.md file](htt
 ## How to develop
 1. Install a Java JDK >= 17.0.6.
 1. Install [GraphViz](http://www.graphviz.org/download/).
-1. Get the latest version of the [Eclipse Modeling Tools](https://www.eclipse.org/downloads/packages/). You need at least **Eclipse 2023-06**.
+1. Get the latest version of the [Eclipse Modeling Tools](https://www.eclipse.org/downloads/packages/). You need at least **Eclipse 2024-03**.
 1. Install Xtext from this update site (or use the Eclipse Marketplace):
 	http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/
 1. Install PlantUML from this update site (or use the Eclipse Marketplace):
@@ -59,7 +67,7 @@ For detailed installation instructions, please refer to the [README.md file](htt
 1. Check the encoding for Xtend files.
     - In Eclipse: Go to ```Window->Preferences->General->Workspace```.
     - Change the text file encoding to 'Other: UTF-8'.
-1. (Important!) Set standard git folder to (workspace) relative path, e.g., (Eclipse ->) Window -> Preferences -> Team (or Version Control) -> Git -> Default Repository Folder = `${workspace_loc}\git` (for Windows) or `${workspace_loc}/git` (for Linux and macOS)
+1. (Important!) Set standard git folder to (workspace) relative path, e.g., (Eclipse ->) Window -> Preferences -> Team (or Version Control) -> Git -> Default Repository Folder = `${workspace_loc}/git`
 1. Go to ```File/Import.../Team/Team Project Set```, check URL and enter in and import this PSF file:
 	- https://raw.githubusercontent.com/eMoflon/emoflon-ibex-deployment/master/devProjectSet.psf
 1. Execute MWE2
@@ -74,10 +82,6 @@ For detailed installation instructions, please refer to the [README.md file](htt
 		- Check and/or apply the git setting of **step 8** again.
 		- Import this PSF file:  
 		https://raw.githubusercontent.com/eMoflon/emoflon-ibex-tests/master/testProjectSet.psf
-1. Execute MWE2
-    - Open package ```/org.emoflon.express/src/org.emoflon.express```
-    - Right-click on ```GenerateExpress.mwe2```
-    - Press ```Run As -> MWE2 Workflow```
 1. Inside the runtime workspace, build all projects (*Project &rarr; Clean... &rarr; Clean all projects*) to trigger code generation.
 	- Hint: It may be required to trigger a full eMoflon build on all projects. Select all projects in *Package Explorer* and click on the black hammer symbol.
 1. Run the JUnit tests to ensure that all is well by right-clicking
@@ -99,7 +103,7 @@ Running ```Testsuite_CBC.launch``` requires Google OR tools (see installation st
 
 eMoflon::IBeX can be installed via its updatesite: https://github.com/eMoflon/emoflon-ibex-updatesite
 
-Please notice: You need at least Eclipse 2023-06.
+Please notice: You need at least Eclipse 2024-03.
 
 Please notice: Ensure that your Eclipse runs with an OpenJDK >= 17.0.6.
 
