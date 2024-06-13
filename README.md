@@ -46,7 +46,7 @@ For detailed installation instructions, please refer to the [README.md file](htt
 
 
 ## How to develop
-1. Install a Java JDK >= 17.0.6.
+1. Install a Java JDK >= 21.
 1. Install [GraphViz](http://www.graphviz.org/download/).
 1. Get the latest version of the [Eclipse Modeling Tools](https://www.eclipse.org/downloads/packages/). You need at least **Eclipse 2023-06**.
 1. Install Xtext from this update site (or use the Eclipse Marketplace):
@@ -101,7 +101,7 @@ eMoflon::IBeX can be installed via its updatesite: https://github.com/eMoflon/em
 
 Please notice: You need at least Eclipse 2023-06.
 
-Please notice: Ensure that your Eclipse runs with an OpenJDK >= 17.0.6.
+Please notice: Ensure that your Eclipse runs with an OpenJDK >= 21.
 
 (Please notice:
 This section is for *installation purpose* only.
