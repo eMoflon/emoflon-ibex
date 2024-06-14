@@ -4,7 +4,7 @@
     modelDirectory="/org.emoflon.ibex.patternmodel/src-gen" creationIcons="false"
     editDirectory="/org.emoflon.ibex.patternmodel.edit/src-gen" editorDirectory="/org.emoflon.ibex.patternmodel.editor/src-gen"
     modelPluginID="org.emoflon.ibex.patternmodel" modelName="IBeXPatternModel" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
-    codeFormatting="true" importerID="org.eclipse.emf.importer.ecore" complianceLevel="17.0"
+    codeFormatting="true" importerID="org.eclipse.emf.importer.ecore" complianceLevel="21.0"
     copyrightFields="false" operationReflection="true" importOrganizing="true">
   <foreignModel>IBeXPatternModel.ecore</foreignModel>
   <testsDirectory xsi:nil="true"/>
