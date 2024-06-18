@@ -34,4 +34,4 @@ Require-Bundle: org.apache.log4j,
  org.emoflon.ibex.common.coremodel
 Bundle-ClassPath: .
 Automatic-Module-Name: org.emoflon.ibex.gt
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21

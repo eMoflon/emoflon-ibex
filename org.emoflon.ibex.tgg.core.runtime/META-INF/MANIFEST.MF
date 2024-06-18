@@ -77,7 +77,7 @@ Export-Package: .,
  org.emoflon.ibex.tgg.runtime.updatepolicy,
  org.emoflon.ibex.tgg.util
 Automatic-Module-Name: org.emoflon.ibex.tgg.runtime
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Import-Package: delta,
  org.emoflon.delta.validation
 

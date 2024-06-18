@@ -26,7 +26,7 @@ Require-Bundle: net.sourceforge.plantuml.eclipse,
  org.emoflon.ibex.tgg.tggmodel;bundle-version="0.1.0"
 Bundle-ClassPath: .
 Automatic-Module-Name: org.emoflon.ibex.common
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Export-Package: org.emoflon.ibex.common,
  org.emoflon.ibex.common.collections,
  org.emoflon.ibex.common.collections.jdk,
