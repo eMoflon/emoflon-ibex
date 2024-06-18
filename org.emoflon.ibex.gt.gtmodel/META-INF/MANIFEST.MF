@@ -7,7 +7,7 @@ Bundle-Version: 0.1.0.qualifier
 Bundle-ClassPath: .
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Export-Package: org.emoflon.ibex.gt.gtmodel.IBeXGTModel,
  org.emoflon.ibex.gt.gtmodel.IBeXGTModel.impl,
  org.emoflon.ibex.gt.gtmodel.IBeXGTModel.util
