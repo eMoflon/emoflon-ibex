@@ -106,17 +106,38 @@ public class MODELGEN extends OperationalStrategy {
 		if (operationalMatchContainer.isEmpty())
 			return false;
 
-		ITGGMatch match = chooseOneMatch();
-		if (match == null) {
+		if (stopCriterion.dont())
 			return false;
-		}
-		String ruleName = match.getRuleName();
+		
+		ITGGMatch match = chooseOneMatch();
+		String ruleName = null;
+		do {
+			// if there is no match, we can abort
+			if (match == null) {
+				return false;
+			}
 
+			ruleName = match.getRuleName();
+
+			// if the match does not sattisfy the stopcriterion, we remove it from the active matches and try the next one
+			if(stopCriterion.dont(ruleName)) {
+				operationalMatchContainer.removeMatch(match);
+				match = chooseOneMatch();
+				continue;
+			}
+			// if this match is valid, we break this while and process it
+			else {
+				break;
+			}
+			
+		} while(true);
+
+		final String finalRuleName = ruleName;
 		Optional<ITGGMatch> comatch = processOperationalRuleMatch(ruleName, match);
 		comatch.ifPresent(cm -> {
-			updateStopCriterion(ruleName);
+			updateStopCriterion(finalRuleName);
 		});
-
+		
 		// Rule application failed, match must have invalid so remove
 		if (!comatch.isPresent()) {
 			matchHandler.removeOperationalMatch(match);
