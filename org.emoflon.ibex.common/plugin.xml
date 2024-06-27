@@ -1,19 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?eclipse version="3.0"?><!--
 --><plugin>
+      <extension-point id="IBeXPMEngineExtension" name="IBeXPMEngineExtension" schema="schema/IBeXPMEngineExtension.exsd"/>
   <extension point="org.moflon.emf.codegen.URIPreferenceExtension">
     <uri_preference_extension class="org.emoflon.ibex.common.ide.URIPreferenceExtension"/>
-  </extension>
-  <extension
-        point="org.moflon.core.ui.DiagramTextProvider">
-     <diagram_text_provider
-           class="org.emoflon.ibex.common.visualization.IBeXPatternVisualizer">
-     </diagram_text_provider>
-  </extension>
-  <extension
-        point="org.moflon.core.ui.DiagramTextProvider">
-     <diagram_text_provider
-           class="org.emoflon.ibex.common.visualization.tgg.IBeXTggXmiVisualizer">
-     </diagram_text_provider>
   </extension>
 </plugin>

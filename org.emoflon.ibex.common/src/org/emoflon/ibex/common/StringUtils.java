@@ -48,7 +48,8 @@ public class StringUtils {
 		return splitWorker(str, null, -1, false);
 	}
 
-	private static String[] splitWorker(final String str, final String separatorChars, final int max, final boolean preserveAllTokens) {
+	private static String[] splitWorker(final String str, final String separatorChars, final int max,
+			final boolean preserveAllTokens) {
 		// Performance tuned for 2.0 (JDK1.4)
 		// Direct code is quicker than StringTokenizer.
 		// Also, StringTokenizer uses isSpace() not isWhitespace()

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+-->
+
+<plugin>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated IBeXCoreModel -->
+      <package
+            uri="platform:/resource/org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.ecore"
+            class="org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreModelPackage"
+            genModel="model/IBeXCoreModel.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated IBeXCoreModel -->
+      <package
+            uri="platform:/resource/org.emoflon.ibex.common.coremodel/model/IBeXCoreArithmetic.ecore"
+            class="org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXCoreArithmetic.IBeXCoreArithmeticPackage"
+            genModel="model/IBeXCoreModel.genmodel"/>
+   </extension>
+
+</plugin>
