@@ -121,6 +121,23 @@ class JavaFileGenerator {
 					patternMap = initiatePatternMap();
 					gillespieMap = initiateGillespieMap();
 				}
+				
+				/**
+				 * Creates a new «APIClassName».
+				 *
+				 * @param engine
+				 *			  the engine to use for queries and transformations.
+				 * @param model
+				 *            the resource set containing the model file.
+				 * @param patternPath
+				 *            the path to the IBeX pattern XMI file to load.
+				 */
+				public «APIClassName»(final IContextPatternInterpreter engine, final ResourceSet model, final URI patternPath) {
+					super(engine, model);
+					interpreter.loadPatternSet(patternPath);
+					patternMap = initiatePatternMap();
+					gillespieMap = initiateGillespieMap();
+				}
 			
 				/**
 				 * Creates a new «APIClassName».
@@ -228,6 +245,7 @@ class JavaFileGenerator {
 	def generateAppClass(IFolder apiPackage) {
 		val imports = eClassifiersManager.importsForPackages
 		imports.addAll(
+			'org.eclipse.emf.common.util.URI',
 			'org.emoflon.ibex.common.operational.IContextPatternInterpreter',
 			'org.emoflon.ibex.gt.api.GraphTransformationApp'
 		)
@@ -275,6 +293,17 @@ class JavaFileGenerator {
 						return new «APIClassName»(engine, resourceSet, defaultResource.get(), workspacePath);
 					}
 					return new «APIClassName»(engine, resourceSet, workspacePath);
+				}
+				
+				/**
+				 * Initializes the API with a given (dynamic) IBeX pattern path (URI).
+				 *
+				 * @param patternPath
+				 *            the (dynamic) IBeX pattern path (URI) to load the XMI file from.
+				 */
+				@Override
+				public «APIClassName» initAPI(final URI patternPath) {
+					return new «APIClassName»(engine, resourceSet, patternPath);
 				}
 			}
 		'''
