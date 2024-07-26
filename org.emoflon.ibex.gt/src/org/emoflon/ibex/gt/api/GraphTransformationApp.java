@@ -157,4 +157,13 @@ public abstract class GraphTransformationApp<API extends GraphTransformationAPI>
 	 * @return the created API
 	 */
 	public abstract API initAPI();
+	
+	/**
+	 * Creates a new API with a given IBeX pattern path (URI) to load instead of the 
+	 * hard-coded value that was created during compile time.
+	 * 
+	 * @param patternPath The (dynamic) IBeX pattern path (URI) to load the XMI from.
+	 * @return the created API.
+	 */
+	public abstract API initAPI(final URI patternPath);
 }
