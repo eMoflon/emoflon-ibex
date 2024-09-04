@@ -1,0 +1,34 @@
+Manifest-Version: 1.0
+Automatic-Module-Name: org.emoflon.ibex.tgg.language
+Bundle-SymbolicName: org.emoflon.ibex.tgg.language;singleton:=true
+Export-Package: language,
+ language.impl,
+ language.repair,
+ language.repair.impl,
+ language.repair.util,
+ language.util,
+ org.emoflon.ibex.tgg.codegen,
+ org.emoflon.ibex.tgg.transformation,
+ org.emoflon.ibex.tgg.util
+Bundle-Name: eMoflon::IBeX Bidirectional Model Transformation via Trip
+ le Graph Grammars - Language
+Bundle-Version: 1.0.0.qualifier
+Bundle-ClassPath: .
+Require-Bundle: com.google.guava,
+ org.apache.log4j,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.eclipse.emf.ecore,
+ org.emoflon.ibex.tgg.editor,
+ org.emoflon.ibex.tgg.editor.ide,
+ org.moflon.core.utilities,
+ org.eclipse.xtext,
+ org.moflon.core.plugins,
+ org.eclipse.emf.mwe2.launch,
+ org.apache.commons.logging,
+ org.eclipse.emf.mwe2.lib,
+ org.eclipse.emf.codegen,
+ org.eclipse.emf.codegen.ecore
+Bundle-RequiredExecutionEnvironment: JavaSE-21
+Bundle-Vendor: eMoflon::IBeX Developers
+Bundle-ManifestVersion: 2

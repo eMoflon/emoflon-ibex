@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?eclipse version="3.0"?><plugin>
+                            <extension-point id="TGGEngineBuilderExtension" name="TGGEngineBuilderExtension" schema="schema/TGGEngineBuilderExtension.exsd"/>
+                            <extension-point id="TGGInternalModelBuilderExtension" name="TGGInternalModelBuilderExtension" schema="schema/TGGInternalModelBuilderExtension.exsd"/>
+  <extension point="org.eclipse.emf.ecore.generated_package">
+    <package class="language.LanguagePackage" genModel="model/Language.genmodel" uri="platform:/plugin/org.emoflon.ibex.tgg.language/model/Language.ecore"/>
+  </extension>
+  <extension point="org.eclipse.emf.ecore.generated_package">
+    <package class="language.repair.RepairPackage" genModel="model/Language.genmodel" uri="platform:/plugin/org.emoflon.ibex.tgg.language/model/Language.ecore#/repair"/>
+  </extension>
+  <extension
+        point="org.emoflon.ibex.tgg.editor.TGGBuilderExtension">
+     <builder_extension
+           class="org.emoflon.ibex.tgg.codegen.TGGPackageBuilder">
+     </builder_extension>
+  </extension>
+</plugin>
