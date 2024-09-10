@@ -40,6 +40,22 @@ class IBeXGtApiAbstractTemplate extends GeneratorTemplate<GTModel> {
 	protected «data.rule2ruleClassName.get(rule)» «rule.name.toFirstLower»;
 	«ENDFOR»
 	
+	/**
+	 * Default constructor that uses the hard-coded IBeX GT pattern path.
+	 */
+	public «className»() {
+		super();
+	}
+	
+	/**
+	 * Constructor that uses a given path to override the IBeX GT pattern path.
+	 *
+	 * @param patternPath Path to override the IBeX GT pattern path with.
+	 */
+	public «className»(final String patternPath) {
+		super(patternPath);
+	}
+	
 	@Override
 	public String getWorkspacePath() {
 		return "«data.model.metaData.projectPath»/../";

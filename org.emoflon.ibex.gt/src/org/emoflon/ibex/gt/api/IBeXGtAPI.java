@@ -63,6 +63,25 @@ public abstract class IBeXGtAPI<PM extends IBeXGTPatternMatcher<?>, PF extends I
 		}
 	}
 
+	/**
+	 * Constructor for instantiating a new IBeXGtAPI object with a passed IBeX GT
+	 * pattern model (XMI) path as an argument. This constructor overrides the
+	 * default hard-coded pattern path.
+	 * 
+	 * @param patternPath IBeX GT pattern model (XMI) path to load.
+	 */
+	public IBeXGtAPI(final String patternPath) {
+		workspacePath = getWorkspacePath();
+		projectPath = getProjectPath();
+		ibexModelPath = patternPath;
+		projectName = getProjectName();
+		try {
+			ibexModel = loadGTModel();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	public abstract String getWorkspacePath();
 
 	public abstract String getProjectPath();
