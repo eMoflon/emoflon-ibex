@@ -20,15 +20,13 @@ public class DelPreserveEdgeConflict extends DeletePreserveConflict {
 	protected final ITGGMatch srcTrgMatch;
 	protected final ITGGMatch matchToBeRepaired;
 
-	public DelPreserveEdgeConflict(ConflictContainer container, ITGGMatch srcTrgMatch, DomainType domainToBePreserved,
-			List<ITGGMatch> causingMatches) {
+	public DelPreserveEdgeConflict(ConflictContainer container, ITGGMatch srcTrgMatch, DomainType domainToBePreserved, List<ITGGMatch> causingMatches) {
 		super(container, domainToBePreserved, causingMatches);
 		this.srcTrgMatch = srcTrgMatch;
 		this.matchToBeRepaired = null;
 	}
 
-	public DelPreserveEdgeConflict(ConflictContainer container, ITGGMatch srcTrgMatch, DomainType domainToBePreserved, List<ITGGMatch> causingMatches,
-			ITGGMatch matchToBeRepaired) {
+	public DelPreserveEdgeConflict(ConflictContainer container, ITGGMatch srcTrgMatch, DomainType domainToBePreserved, List<ITGGMatch> causingMatches, ITGGMatch matchToBeRepaired) {
 		super(container, domainToBePreserved, causingMatches);
 		this.srcTrgMatch = srcTrgMatch;
 		this.matchToBeRepaired = matchToBeRepaired;
@@ -95,6 +93,10 @@ public class DelPreserveEdgeConflict extends DeletePreserveConflict {
 			else
 				ModelChangeUtil.deleteEdge(emfEdge);
 		}
+	}
+
+	public ITGGMatch getOperationalMatch() {
+		return srcTrgMatch;
 	}
 
 	protected void autoRepair() {

@@ -377,14 +377,18 @@ public abstract class OperationalShortcutRule {
 	 * @param rule
 	 * @param domain
 	 */
-	protected void transformAttributeConstraintBindings(TGGRule rule, DomainType domain) {
+	protected void transformAttributeConstraintBindings(RuntimeShortcutRule runtimeSCRule, DomainType domain) {
+		var preservedNodeNames = runtimeSCRule.getPreservedNodes().stream() //
+				.filter(n -> n.getDomainType() == domain) //
+				.map(TGGNode::getName) //
+				.collect(Collectors.toSet());
+
+		var rule = runtimeSCRule.getShortcutRule();
 		for (var parameter : rule.getAttributeConstraints().getParameters()) {
 			if (parameter.getExpression() instanceof IBeXAttributeValue attributeValue) {
 				if (attributeValue.getNode() instanceof TGGNode tggNode) {
-					if (tggNode.getBindingType() == BindingType.CREATE) {
-						if (tggNode.getDomainType() == domain) {
-							parameter.setDerived(true);
-						}
+					if (preservedNodeNames.contains(tggNode.getName())) {
+						parameter.setDerived(true);
 					}
 				} else
 					throw new IllegalStateException("Attributeconstraints are only allowed to reference TGGNodes but detected " + attributeValue.getNode());

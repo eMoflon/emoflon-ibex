@@ -23,6 +23,8 @@ public class FWDShortcutRule extends OperationalShortcutRule {
 	protected void operationalize() {
 		createFilterNacs(operationalizedSCR.getReplacingRule(), DomainType.SOURCE);
 
+		transformAttributeConstraintBindings(operationalizedSCR, DomainType.TARGET);
+
 		transformEdges(filterEdges(operationalizedSCR.getEdges(), DomainType.SOURCE, BindingType.CREATE), BindingType.CONTEXT);
 //		transformEdges(filterEdges(scRule.getEdges(), DomainType.TRG, BindingType.RELAXED), BindingType.CONTEXT);
 		transformInterfaceEdges(filterEdges(operationalizedSCR.getEdges(), DomainType.SOURCE, BindingType.DELETE), BindingType.NEGATIVE);
@@ -37,7 +39,6 @@ public class FWDShortcutRule extends OperationalShortcutRule {
 		// already created green edges
 		// addNACforCreatedInterface(filterEdges(scRule.getEdges(), DomainType.TRG));
 
-		transformAttributeConstraintBindings(operationalizedSCR.getShortcutRule(), DomainType.TARGET);
 	}
 
 	@Override

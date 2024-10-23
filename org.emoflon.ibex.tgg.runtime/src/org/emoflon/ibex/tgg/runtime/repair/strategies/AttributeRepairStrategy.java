@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.emoflon.ibex.common.coremodel.IBeXCoreModel.IBeXOperationType;
 import org.emoflon.ibex.tgg.patterns.TGGPatternUtil;
 import org.emoflon.ibex.tgg.runtime.config.options.IbexOptions;
 import org.emoflon.ibex.tgg.runtime.csp.IRuntimeTGGAttrConstrContainer;
@@ -78,6 +79,7 @@ public class AttributeRepairStrategy implements RepairStrategy {
 
 		matchCopy.getParameterNames().removeAll( //
 				propDir.getNodesInOutputDomain(operationalRule).stream() //
+						.filter(n -> n.getOperationType() == IBeXOperationType.CREATION) // we only remove nodes that are not bound in the opposite side
 						.map(n -> n.getName()) //
 						.collect(Collectors.toList()) //
 		);
@@ -93,11 +95,12 @@ public class AttributeRepairStrategy implements RepairStrategy {
 
 		matchCopy.getParameterNames().removeAll( //
 				propDir.getNodesInOutputDomain(operationalRule).stream() //
+						.filter(n -> n.getOperationType() == IBeXOperationType.CREATION) // we only remove nodes that are not bound in the opposite side
 						.map(n -> n.getName()) //
 						.collect(Collectors.toList()) //
 		);
 		matchCopy.setPatternName(operationalRule.getName());
-		
+
 		Set<TGGAttributeConstraintParameterValue> params = new HashSet<>();
 		for (TGGAttributeConstraint constraint : constraints)
 			params.addAll(new HashSet<>(constraint.getParameters()));

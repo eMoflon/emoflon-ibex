@@ -284,12 +284,12 @@ public class ConflictDetector {
 		for (ConstrainedAttributeChanges constrAttrChanges : brokenMatch.getConstrainedAttrChanges()) {
 			TGGAttributeConstraintDefinition def = constrAttrChanges.constraint.getDefinition();
 			if (!AttrCondDefLibraryProvider.isPredefinedAttrCondLibrary((TGGAttributeConstraintDefinitionLibrary) def.eContainer()) || !def.getName().startsWith("eq_")) {
-				logger.error("Conflicted AttributeConstraints that are not equality constraints are currently not supported!");
-				continue;
+				logger.warn("Conflicted AttributeConstraints that are not equality constraints are currently not supported!");
+//				continue;
 			}
 			if (constrAttrChanges.constraint.getParameters().size() > 2) {
-				logger.error("Conflicted AttributeConstraints with more than 2 parameters are currently not supported!");
-				continue;
+				logger.warn("Conflicted AttributeConstraints with more than 2 parameters are currently not supported!");
+//				continue;
 			}
 
 			if (constrAttrChanges.affectedParams.size() > 1) {
