@@ -111,12 +111,12 @@ public abstract class IBeXGtAPI<PM extends IBeXGTPatternMatcher<?>, PF extends I
 		rs.getPackageRegistry().put(IBeXCoreModelPackage.eINSTANCE.getNsURI(), IBeXCoreModelPackage.eINSTANCE);
 		rs.getPackageRegistry().put(IBeXGTModelPackage.eINSTANCE.getNsURI(), IBeXGTModelPackage.eINSTANCE);
 		registerMetamodels(rs);
-		File f = new File(ibexModelPath);
+		File f = new File(getIBeXModelPath());
 		if (f.exists()) {
 			Resource r = rs.getResource(URI.createFileURI(f.getCanonicalPath()), true);
 			return (GTModel) r.getContents().get(0);
 		}
-		throw new IOException("IBeX-GT model path could not be resolved: " + ibexModelPath);
+		throw new IOException("IBeX-GT model path could not be resolved: " + getIBeXModelPath());
 	}
 
 	public Resource addModel(final String modelPath) throws Exception {
