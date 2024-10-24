@@ -380,6 +380,7 @@ public abstract class OperationalShortcutRule {
 	protected void transformAttributeConstraintBindings(RuntimeShortcutRule runtimeSCRule, DomainType domain) {
 		var preservedNodeNames = runtimeSCRule.getPreservedNodes().stream() //
 				.filter(n -> n.getDomainType() == domain) //
+				.filter(n -> n.getBindingType() != CONTEXT)	
 				.map(TGGNode::getName) //
 				.collect(Collectors.toSet());
 
