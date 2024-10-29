@@ -51,16 +51,13 @@ public abstract class IBeXGtAPI<PM extends IBeXGTPatternMatcher<?>, PF extends I
 	protected PF patternFactory;
 	protected RF ruleFactory;
 
+	/**
+	 * Default constructor for instantiating a new IBeXGtAPI object with the default
+	 * IBeX GT pattern model taken from the default path determined during compile
+	 * time of the project.
+	 */
 	public IBeXGtAPI() {
-		workspacePath = getWorkspacePath();
-		projectPath = getProjectPath();
-		ibexModelPath = getIBeXModelPath();
-		projectName = getProjectName();
-		try {
-			ibexModel = loadGTModel();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		init(getDefaultIBeXModelPath());
 	}
 
 	/**
@@ -71,6 +68,15 @@ public abstract class IBeXGtAPI<PM extends IBeXGTPatternMatcher<?>, PF extends I
 	 * @param patternPath IBeX GT pattern model (XMI) path to load.
 	 */
 	public IBeXGtAPI(final String patternPath) {
+		init(patternPath);
+	}
+
+	/**
+	 * Initializes the API object with the given IBeX GT pattern model (XMI) path.
+	 * 
+	 * @param patternPath IBeX GT pattern model (XMI) path.
+	 */
+	private void init(final String patternPath) {
 		workspacePath = getWorkspacePath();
 		projectPath = getProjectPath();
 		ibexModelPath = patternPath;
@@ -86,7 +92,25 @@ public abstract class IBeXGtAPI<PM extends IBeXGTPatternMatcher<?>, PF extends I
 
 	public abstract String getProjectPath();
 
-	public abstract String getIBeXModelPath();
+	/**
+	 * Returns the actual IBeX GT pattern model (XMI) path. In default mode, this is
+	 * the hard-coded value determined during compile time of the project or a
+	 * specific custom path given to the constructor.
+	 * 
+	 * @return Actual IBeX GT pattern model (XMI) path used by this API.
+	 */
+	public String getIBeXModelPath() {
+		return this.ibexModelPath;
+	}
+
+	/**
+	 * Returns the default IBeX model path, i.e., the default path found during
+	 * compile time of the project. (This value will be hard-coded during compile
+	 * time.)
+	 * 
+	 * @return Default IBeX model path.
+	 */
+	public abstract String getDefaultIBeXModelPath();
 
 	public abstract String getProjectName();
 
@@ -111,12 +135,12 @@ public abstract class IBeXGtAPI<PM extends IBeXGTPatternMatcher<?>, PF extends I
 		rs.getPackageRegistry().put(IBeXCoreModelPackage.eINSTANCE.getNsURI(), IBeXCoreModelPackage.eINSTANCE);
 		rs.getPackageRegistry().put(IBeXGTModelPackage.eINSTANCE.getNsURI(), IBeXGTModelPackage.eINSTANCE);
 		registerMetamodels(rs);
-		File f = new File(getIBeXModelPath());
+		File f = new File(ibexModelPath);
 		if (f.exists()) {
 			Resource r = rs.getResource(URI.createFileURI(f.getCanonicalPath()), true);
 			return (GTModel) r.getContents().get(0);
 		}
-		throw new IOException("IBeX-GT model path could not be resolved: " + getIBeXModelPath());
+		throw new IOException("IBeX-GT model path could not be resolved: " + ibexModelPath);
 	}
 
 	public Resource addModel(final String modelPath) throws Exception {

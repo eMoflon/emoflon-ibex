@@ -67,7 +67,7 @@ class IBeXGtApiAbstractTemplate extends GeneratorTemplate<GTModel> {
 	}
 	
 	@Override
-	public String getIBeXModelPath() {
+	public String getDefaultIBeXModelPath() {
 		return "«data.model.metaData.projectPath»«data.gtModelPath»";
 	}
 	
