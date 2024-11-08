@@ -46,6 +46,7 @@ For detailed installation instructions, please refer to the [README.md file](htt
 
 
 ## How to develop
+
 1. Install a Java JDK >= 21.
 1. Install [GraphViz](http://www.graphviz.org/download/).
 1. Get the latest version of the [Eclipse Modeling Tools](https://www.eclipse.org/downloads/packages/). You need at least **Eclipse 2024-06**.
