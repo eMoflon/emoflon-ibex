@@ -36,8 +36,8 @@ public class EMFManipulationUtils {
 	 * Checks whether the given object is a dangling node.
 	 * 
 	 * @param eObject an {@link Optional} for a node
-	 * @return true if the node is a dangling node; false if the node is not a dangling node or the
-	 *         Optional is not present
+	 * @return true if the node is a dangling node; false if the node is not a
+	 *         dangling node or the Optional is not present
 	 */
 	public static boolean isDanglingNode(Optional<EObject> eObject) {
 		return eObject.map(EMFManipulationUtils::isDanglingNode).orElse(false);
@@ -97,8 +97,8 @@ public class EMFManipulationUtils {
 	 * @param edgesToDelete      the edges marked for deletion
 	 * @param danglingNodeAction the action to execute for dangling nodes
 	 */
-	public static void delete(final Set<EObject> nodesToDelete, final Set<EMFEdge> edgesToDelete, final Consumer<EObject> danglingNodeAction,
-			boolean optimize) {
+	public static void delete(final Set<EObject> nodesToDelete, final Set<EMFEdge> edgesToDelete,
+			final Consumer<EObject> danglingNodeAction, boolean optimize) {
 		delete(nodesToDelete, edgesToDelete, danglingNodeAction, false, optimize);
 	}
 
@@ -117,14 +117,15 @@ public class EMFManipulationUtils {
 		delete(nodesToDelete, edgesToDelete, false, optimize);
 	}
 
-	public static void delete(final Set<EObject> nodesToDelete, final Set<EMFEdge> edgesToDelete, final Consumer<EObject> danglingNodeAction,
-			boolean recursive, boolean optimize) {
+	public static void delete(final Set<EObject> nodesToDelete, final Set<EMFEdge> edgesToDelete,
+			final Consumer<EObject> danglingNodeAction, boolean recursive, boolean optimize) {
 		deleteEdges(edgesToDelete, danglingNodeAction, false);
 		deleteEdges(edgesToDelete, danglingNodeAction, true);
 		deleteNodes(nodesToDelete, danglingNodeAction, recursive, optimize);
 	}
 
-	public static void delete(final Set<EObject> nodesToDelete, final Set<EMFEdge> edgesToDelete, boolean recursive, boolean optimize) {
+	public static void delete(final Set<EObject> nodesToDelete, final Set<EMFEdge> edgesToDelete, boolean recursive,
+			boolean optimize) {
 		deleteEdges(edgesToDelete, false);
 		deleteEdges(edgesToDelete, true);
 		deleteNodes(nodesToDelete, recursive, optimize);
@@ -181,14 +182,35 @@ public class EMFManipulationUtils {
 		}
 	}
 
+	public static void deleteNode(final EObject node, boolean recursive, boolean optimize) {
+		if (node instanceof SmartObject) {
+			SmartEMFUtil.deleteNode(node, recursive);
+			return;
+		}
+
+		if (optimize) {
+			for (EReference ref : node.eClass().getEAllReferences()) {
+				if (ref.isMany())
+					((List<?>) node.eGet(ref)).clear();
+				else
+					node.eSet(ref, null);
+			}
+			delete(node);
+		} else {
+			if (!node.eContents().isEmpty() && recursive)
+				deleteNodes(node.eContents().stream().collect(Collectors.toSet()), recursive, optimize);
+			EcoreUtil.delete(node, false);
+		}
+	}
+
 	/**
 	 * Deletes the given nodes.
 	 * 
 	 * @param nodesToDelete      the nodes marked for deletion
 	 * @param danglingNodeAction the action to execute for dangling nodes
 	 */
-	private static void deleteNodes(final Set<EObject> nodesToDelete, final Consumer<EObject> danglingNodeAction, boolean recursive,
-			boolean optimize) {
+	private static void deleteNodes(final Set<EObject> nodesToDelete, final Consumer<EObject> danglingNodeAction,
+			boolean recursive, boolean optimize) {
 		if (optimize) {
 			for (EObject eObject : nodesToDelete) {
 				for (EReference ref : eObject.eClass().getEAllReferences()) {
@@ -206,7 +228,8 @@ public class EMFManipulationUtils {
 					danglingNodeAction.accept(node);
 				}
 				if (!node.eContents().isEmpty() && recursive)
-					deleteNodes(node.eContents().stream().collect(Collectors.toSet()), danglingNodeAction, recursive, optimize);
+					deleteNodes(node.eContents().stream().collect(Collectors.toSet()), danglingNodeAction, recursive,
+							optimize);
 			}
 			// temporary solution
 			if (!nodesToDelete.isEmpty() && nodesToDelete.iterator().next() instanceof InternalEObject) {
@@ -216,13 +239,38 @@ public class EMFManipulationUtils {
 
 	}
 
+	public static void deleteNode(final EObject node, final Consumer<EObject> danglingNodeAction, boolean recursive,
+			boolean optimize) {
+		if (optimize) {
+			for (EReference ref : node.eClass().getEAllReferences()) {
+				if (ref.isMany())
+					((List<?>) node.eGet(ref)).clear();
+				else
+					node.eSet(ref, null);
+			}
+			delete(node);
+		} else {
+			if (isDanglingNode(node)) {
+				danglingNodeAction.accept(node);
+			}
+			if (!node.eContents().isEmpty() && recursive)
+				deleteNodes(node.eContents().stream().collect(Collectors.toSet()), danglingNodeAction, recursive,
+						optimize);
+		}
+		// temporary solution
+		if (node instanceof InternalEObject) {
+			EcoreUtil.delete(node, false);
+		}
+	}
+
 	/**
 	 * Deletes the edges whose type has the containment set to the given value.
 	 * 
 	 * @param edgesToDelete the edges marked for deletion
 	 * @param containment   the containment setting
 	 */
-	private static void deleteEdges(final Set<EMFEdge> edgesToDelete, final Consumer<EObject> danglingNodeAction, boolean containment) {
+	private static void deleteEdges(final Set<EMFEdge> edgesToDelete, final Consumer<EObject> danglingNodeAction,
+			boolean containment) {
 		for (EMFEdge edge : edgesToDelete) {
 			if (isContainment(edge.getType()) == containment) {
 				if (isDanglingNode(edge.getSource())) {
@@ -234,6 +282,17 @@ public class EMFManipulationUtils {
 				deleteEdge(edge.getSource(), edge.getTarget(), edge.getType());
 			}
 		}
+	}
+
+	public static void deleteEdge(final EObject src, final EObject trg, final EReference edge,
+			final Consumer<EObject> danglingNodeAction) {
+		if (isDanglingNode(src)) {
+			danglingNodeAction.accept(src);
+		}
+		if (isDanglingNode(trg)) {
+			danglingNodeAction.accept(trg);
+		}
+		deleteEdge(src, trg, edge);
 	}
 
 	/**
@@ -251,10 +310,12 @@ public class EMFManipulationUtils {
 	}
 
 	/**
-	 * Checks whether the reference is a reference is not containment edge or its opposite.
+	 * Checks whether the reference is a reference is not containment edge or its
+	 * opposite.
 	 * 
 	 * @param reference the reference
-	 * @return true if and only if the reference is a containment or container reference
+	 * @return true if and only if the reference is a containment or container
+	 *         reference
 	 */
 	private static boolean isContainment(final EReference reference) {
 		return reference.isContainment() || reference.isContainer();

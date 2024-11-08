@@ -3,10 +3,4 @@
   <extension point="org.eclipse.emf.ecore.generated_package">
     <package class="runtime.RuntimePackage" genModel="model/Runtime.genmodel" uri="platform:/plugin/org.emoflon.ibex.tgg.runtime/model/Runtime.ecore"/>
   </extension>
-  <extension
-        point="org.emoflon.ibex.tgg.language.TGGInternalModelBuilderExtension">
-     <builder_extension
-           class="org.emoflon.ibex.tgg.compiler.defaults.InternalModelBuilder">
-     </builder_extension>
-  </extension>
 </plugin>
