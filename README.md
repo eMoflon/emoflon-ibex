@@ -75,29 +75,34 @@ For detailed installation instructions, please refer to the [README.md file](htt
     - Open package ```org.emoflon.ibex.common/launch```.
     - Right-click on ```Run all eMoflon MWE2 files.mwe2```.
     - Press ```Run As -> Run all eMoflon MWE2 files```.
+    - If you can not find the package, open the `eMoflon` perspective (`Window` -> `Perspective` -> `Open Perspective` -> `Other...` -> `eMoflon`).
+	- In case any error warning pops up, simply click `Proceed`.
 1. Set UTF-8 as file encoding for the development workspace (*Window &rarr; Preferences &rarr; General/Workspace*) and manually build all projects by clicking (*Project &rarr; Clean... &rarr; Clean all projects*) to trigger code generation (and get rid of errors). Make sure to check *Project &rarr; Build Automatically*.
 1. Set up your runtime and test workspaces by starting a runtime Eclipse workspace from your development workspace:
 	- To start the runtime workspace, do the following steps *inside* your development workspace: *Run &rarr; Run Configurations...;* double click on *Eclipse Application*, give it a name (e.g., *test-workspace*) and click on *Run*.
 		- Your development Eclipse should now start another Eclipse instance with all eMoflon plug-ins installed.
 	- Inside your runtime workspace:
-		- Check and/or apply the git setting of **step 8** again.
+		- Check and/or apply the git setting of **step 9** again.
 		- Import this PSF file:  
 		https://raw.githubusercontent.com/eMoflon/emoflon-ibex-tests/master/testProjectSet.psf
 1. Inside the runtime workspace, build all projects (*Project &rarr; Clean... &rarr; Clean all projects*) to trigger code generation.
 	- Hint: It may be required to trigger a full eMoflon build on all projects. Select all projects in *Package Explorer* and click on the black hammer symbol.
 1. Run the JUnit tests to ensure that all is well by right-clicking
 	one of the ```Testsuite_*.launch``` in the ```Testsuite``` project
-	and ```TestsuiteGT.launch``` in the ```TestsuiteGT``` project
-	and start the tests by selecting ```Run As/JUnit```.
+	and ```TestsuiteGT_*.launch``` in the ```TestsuiteGT``` project
+	and start the tests by selecting ```Run As/<name-of-the-file>```.
 	If everything is set up correctly, all tests should be green.
+	- If you get an error `Class not found`, select all projects on the package explorer and click `F5`/`Refresh`.
 
-Running ```Testsuite_GLPK.launch``` requires GLPK (see installation step 5).
-	
-Running ```Testsuite_Gurobi.launch``` requires Gurobi (see installation step 6).
+In a standard scenario, you want to run:
+- `TestSuite_HiPE.launch`
+- `TestSuiteGT_HiPE.launch`
 
-Running ```Testsuite_CBC.launch``` requires Google OR tools (see installation step 7).
-
-```Testsuite_SAT4J.launch``` uses the SAT4J (automatically installed, but the slowest option).  
+Other options:
+- Running ```Testsuite_GLPK.launch``` requires GLPK (see installation step 5).
+- Running ```Testsuite_Gurobi.launch``` requires Gurobi (see installation step 6).
+- Running ```Testsuite_CBC.launch``` requires Google OR tools (see installation step 7).
+- ```Testsuite_SAT4J.launch``` uses the SAT4J (automatically installed, but the slowest option).  
 
 
 ## How to install
