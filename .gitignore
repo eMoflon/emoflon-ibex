@@ -36,6 +36,7 @@ org.emoflon.ibex.tgg.tests/ClassInheritanceHierarchy/xtend-gen/org/benchmarx/cla
 *.xtendbin
 *.orig
 **.class
+/bin/
 
 src-gen/
 

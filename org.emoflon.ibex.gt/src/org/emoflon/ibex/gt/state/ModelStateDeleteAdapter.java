@@ -15,187 +15,139 @@ import org.emoflon.ibex.gt.StateModel.Link;
 import org.emoflon.ibex.gt.StateModel.StateModelFactory;
 
 public class ModelStateDeleteAdapter extends EContentAdapter {
-	
+
 	private StateModelFactory factory = StateModelFactory.eINSTANCE;
 	private final Resource resource;
 	private Map<EObject, Set<Integer>> nodesToWatch = new LinkedHashMap<>();
 	private Map<Integer, Set<EObject>> watcherToNodes = new LinkedHashMap<>();
 	private Map<Integer, Set<Link>> removedLinks = new LinkedHashMap<>();
 	private boolean active = false;
-	
+
 	public ModelStateDeleteAdapter(final Resource resource) {
 		this.resource = resource;
 		this.resource.eAdapters().add(this);
 		nodesToWatch = new LinkedHashMap<>();
 	}
-	
+
 	public synchronized void removeAdapter() {
 		resource.eAdapters().remove(this);
 		nodesToWatch.clear();
 		watcherToNodes.clear();
 		removedLinks.clear();
 	}
-	
+
 	public synchronized void addNodesToWatch(final Set<EObject> nodesToWatch, int watcherID) {
 		Set<EObject> watchedNodes = watcherToNodes.get(watcherID);
-		if(watchedNodes == null) {
+		if (watchedNodes == null) {
 			watchedNodes = new LinkedHashSet<>();
 			watcherToNodes.put(watcherID, watchedNodes);
 		}
 		watchedNodes.addAll(nodesToWatch);
-		
-		for(EObject node : nodesToWatch) {
+
+		for (EObject node : nodesToWatch) {
 			Set<Integer> watchers = this.nodesToWatch.get(node);
-			if(watchers == null) {
+			if (watchers == null) {
 				watchers = new LinkedHashSet<>();
 				this.nodesToWatch.put(node, watchers);
 			}
 			watchers.add(watcherID);
 		}
 	}
-	
+
 	public synchronized void clear(int watcherID) {
 		Set<EObject> nodes = watcherToNodes.get(watcherID);
-		if(nodes == null)
+		if (nodes == null)
 			return;
-		
-		for(EObject node : nodes) {
-			if(!nodesToWatch.containsKey(node))
+
+		for (EObject node : nodes) {
+			if (!nodesToWatch.containsKey(node))
 				continue;
-			
+
 			nodesToWatch.get(node).remove(watcherID);
-			if(nodesToWatch.get(node).isEmpty())
+			if (nodesToWatch.get(node).isEmpty())
 				nodesToWatch.remove(node);
 		}
-		
+
 		watcherToNodes.remove(watcherID);
 		removedLinks.remove(watcherID);
 	}
-	
+
 	public Set<Link> getRemovedLinks(int watcherID) {
 		Set<Link> removed = removedLinks.get(watcherID);
-		if(removed != null)
+		if (removed != null)
 			return removed;
 		else
-			return new LinkedHashSet<>(); 
+			return new LinkedHashSet<>();
 	}
-	
+
 	public synchronized void setActive() {
 		active = true;
 	}
-	
+
 	public synchronized void setInactive() {
 		active = false;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
-	public void notifyChanged(Notification notification) {	
+	public void notifyChanged(Notification notification) {
 		super.notifyChanged(notification);
-		if(!active)
+		if (!active)
 			return;
-		
+
 		switch (notification.getEventType()) {
-			case Notification.REMOVE -> {
-				Object feature = notification.getFeature();
-				if(feature == null)
-					break;
-				
+		case Notification.REMOVE -> {
+			Object feature = notification.getFeature();
+			if (feature == null)
+				break;
+
 //				Ignore resource notifications, since these are untyped/undefined containment edges.
-				if(!(notification.getNotifier() instanceof EObject notifier))
-					break;
-				
-				if(nodesToWatch.keySet().contains(notifier) || nodesToWatch.keySet().contains(notification.getOldValue())) {
+			if (!(notification.getNotifier() instanceof EObject notifier))
+				break;
+
+			if (nodesToWatch.keySet().contains(notifier)
+					|| nodesToWatch.keySet().contains(notification.getOldValue())) {
+				Link link = factory.createLink();
+				link.setSrc(notifier);
+				link.setTrg((EObject) notification.getOldValue());
+				link.setType((EReference) feature);
+				Set<Integer> watchers = nodesToWatch.get(notifier);
+				if (watchers == null)
+					watchers = nodesToWatch.get(notification.getOldValue());
+
+				for (Integer watcher : watchers) {
+					Set<Link> watchedLinks = removedLinks.get(watcher);
+					if (watchedLinks == null) {
+						watchedLinks = new LinkedHashSet<>();
+						removedLinks.put(watcher, watchedLinks);
+					}
+					watchedLinks.add(link);
+				}
+			}
+		}
+		case Notification.REMOVE_MANY -> {
+			Object feature = notification.getFeature();
+			if (feature == null)
+				break;
+
+//				Ignore resource notifications, since these are untyped/undefined containment edges.
+			if (!(notification.getNotifier() instanceof EObject notifier))
+				break;
+
+			List<EObject> oldValues = (List<EObject>) notification.getOldValue();
+			for (EObject oldValue : oldValues) {
+				if (nodesToWatch.keySet().contains(notifier) || nodesToWatch.keySet().contains(oldValue)) {
 					Link link = factory.createLink();
 					link.setSrc(notifier);
-					link.setTrg((EObject) notification.getOldValue());
+					link.setTrg(oldValue);
 					link.setType((EReference) feature);
-					Set<Integer> watchers  = nodesToWatch.get(notifier);
-					if(watchers == null)
-						watchers = nodesToWatch.get(notification.getOldValue());
-					
-					for(Integer watcher : watchers) {
+					Set<Integer> watchers = nodesToWatch.get(notifier);
+					if (watchers == null)
+						watchers = nodesToWatch.get(oldValue);
+
+					for (Integer watcher : watchers) {
 						Set<Link> watchedLinks = removedLinks.get(watcher);
-						if(watchedLinks == null) {
-							watchedLinks = new LinkedHashSet<>();
-							removedLinks.put(watcher, watchedLinks);
-						}
-						watchedLinks.add(link);
-					}
-				}
-			}
-			case Notification.REMOVE_MANY -> {
-				Object feature = notification.getFeature();
-				if(feature == null)
-					break;
-				
-//				Ignore resource notifications, since these are untyped/undefined containment edges.
-				if(!(notification.getNotifier() instanceof EObject notifier))
-					break;
-				
-				List<EObject> oldValues = (List<EObject>) notification.getOldValue();
-				for(EObject oldValue : oldValues) {
-					if(nodesToWatch.keySet().contains(notifier) || nodesToWatch.keySet().contains(oldValue)) {
-						Link link = factory.createLink();
-						link.setSrc(notifier);
-						link.setTrg(oldValue);
-						link.setType((EReference) feature);
-						Set<Integer> watchers  = nodesToWatch.get(notifier);
-						if(watchers == null)
-							watchers = nodesToWatch.get(oldValue);
-						
-						for(Integer watcher : watchers) {
-							Set<Link> watchedLinks = removedLinks.get(watcher);
-							if(watchedLinks == null) {
-								watchedLinks = new LinkedHashSet<>();
-								removedLinks.put(watcher, watchedLinks);
-							}
-							watchedLinks.add(link);
-						}
-					}
-				}
-			}
-			case Notification.REMOVING_ADAPTER -> {
-				Object feature = notification.getFeature();
-				if(feature == null || !(feature instanceof EReference reference))
-					break;
-//				Ignore resource notifications, since these are untyped/undefined containment edges.
-				if(!(notification.getNotifier() instanceof EObject notifier))
-					break;
-				
-				if(nodesToWatch.keySet().contains(notifier) || nodesToWatch.keySet().contains(notification.getOldValue())) {
-					Link link = factory.createLink();
-					link.setSrc(notifier);
-					link.setTrg((EObject) notification.getOldValue());
-					link.setType(reference);
-					Set<Integer> watchers  = nodesToWatch.get(notifier);
-					if(watchers == null)
-						watchers = nodesToWatch.get(notification.getOldValue());
-					
-					for(Integer watcher : watchers) {
-						Set<Link> watchedLinks = removedLinks.get(watcher);
-						if(watchedLinks == null) {
-							watchedLinks = new LinkedHashSet<>();
-							removedLinks.put(watcher, watchedLinks);
-						}
-						watchedLinks.add(link);
-					}
-				}
-			}
-			case Notification.SET -> {
-				Object feature = notification.getFeature();
-				if(feature == null || !(feature instanceof EReference reference))
-					break;
-				
-				if(nodesToWatch.keySet().contains(notification.getNotifier()) || nodesToWatch.keySet().contains(notification.getOldValue())) {
-					Link link = factory.createLink();
-					link.setSrc((EObject) notification.getNotifier());
-					link.setTrg((EObject) notification.getOldValue());
-					link.setType(reference);
-					Set<Integer> watchers  = nodesToWatch.get(notification.getNotifier());
-					for(Integer watcher : watchers) {
-						Set<Link> watchedLinks = removedLinks.get(watcher);
-						if(watchedLinks == null) {
+						if (watchedLinks == null) {
 							watchedLinks = new LinkedHashSet<>();
 							removedLinks.put(watcher, watchedLinks);
 						}
@@ -204,8 +156,58 @@ public class ModelStateDeleteAdapter extends EContentAdapter {
 				}
 			}
 		}
-	
+		case Notification.REMOVING_ADAPTER -> {
+			Object feature = notification.getFeature();
+			if (feature == null || !(feature instanceof EReference reference))
+				break;
+//				Ignore resource notifications, since these are untyped/undefined containment edges.
+			if (!(notification.getNotifier() instanceof EObject notifier))
+				break;
+
+			if (nodesToWatch.keySet().contains(notifier)
+					|| nodesToWatch.keySet().contains(notification.getOldValue())) {
+				Link link = factory.createLink();
+				link.setSrc(notifier);
+				link.setTrg((EObject) notification.getOldValue());
+				link.setType(reference);
+				Set<Integer> watchers = nodesToWatch.get(notifier);
+				if (watchers == null)
+					watchers = nodesToWatch.get(notification.getOldValue());
+
+				for (Integer watcher : watchers) {
+					Set<Link> watchedLinks = removedLinks.get(watcher);
+					if (watchedLinks == null) {
+						watchedLinks = new LinkedHashSet<>();
+						removedLinks.put(watcher, watchedLinks);
+					}
+					watchedLinks.add(link);
+				}
+			}
+		}
+		case Notification.SET -> {
+			Object feature = notification.getFeature();
+			if (feature == null || !(feature instanceof EReference reference))
+				break;
+
+			if (nodesToWatch.keySet().contains(notification.getNotifier())
+					|| nodesToWatch.keySet().contains(notification.getOldValue())) {
+				Link link = factory.createLink();
+				link.setSrc((EObject) notification.getNotifier());
+				link.setTrg((EObject) notification.getOldValue());
+				link.setType(reference);
+				Set<Integer> watchers = nodesToWatch.get(notification.getNotifier());
+				for (Integer watcher : watchers) {
+					Set<Link> watchedLinks = removedLinks.get(watcher);
+					if (watchedLinks == null) {
+						watchedLinks = new LinkedHashSet<>();
+						removedLinks.put(watcher, watchedLinks);
+					}
+					watchedLinks.add(link);
+				}
+			}
+		}
+		}
+
 	}
-	
-	
+
 }

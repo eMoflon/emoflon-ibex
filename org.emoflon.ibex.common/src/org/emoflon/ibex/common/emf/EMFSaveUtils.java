@@ -52,7 +52,7 @@ public class EMFSaveUtils {
 	public static void resolveAll(Resource resource) {
 		if (resource instanceof SmartEMFResource)
 			return;
-		
+
 		EcoreUtil.resolveAll(resource);
 	}
 
