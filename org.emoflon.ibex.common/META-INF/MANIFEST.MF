@@ -22,8 +22,7 @@ Require-Bundle: net.sourceforge.plantuml.eclipse,
  org.emoflon.smartemf;visibility:=reexport,
  org.emoflon.ibex.common.slimgt,
  org.emoflon.ibex.common.coremodel,
- org.emoflon.ibex.gt.gtmodel,
- org.emoflon.ibex.tgg.tggmodel;bundle-version="0.1.0"
+ org.emoflon.ibex.gt.gtmodel
 Bundle-ClassPath: .
 Automatic-Module-Name: org.emoflon.ibex.common
 Bundle-RequiredExecutionEnvironment: JavaSE-21
