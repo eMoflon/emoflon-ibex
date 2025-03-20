@@ -15,7 +15,7 @@ Bundle-ClassPath: lib/com.google.ortools.jar,
  lib/org.eclipse.emf.codegen-2.11.0.jar,
  lib/protobuf.jar,
  .
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Export-Package: .,
  by.bsu.JVmipcl,
  by.bsu.JVmipshell,
