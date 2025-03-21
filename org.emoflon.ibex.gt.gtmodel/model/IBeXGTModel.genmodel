@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel"
+    modelDirectory="/org.emoflon.ibex.gt.gtmodel/src-gen" creationIcons="false"
+    editDirectory="/org.emoflon.ibex.gt.gtmodel.edit/src-gen" editorDirectory="/org.emoflon.ibex.gt.gtmodel.editor/src-gen"
+    modelPluginID="org.emoflon.ibex.gt.gtmodel" modelName="IBeXGTModel" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
+    codeFormatting="true" importerID="org.eclipse.emf.importer.ecore" complianceLevel="21.0"
+    copyrightFields="false" usedGenPackages="../../org.emoflon.ibex.common.coremodel/model/IBeXCoreModel.genmodel#//IBeXCoreModel"
+    operationReflection="true" importOrganizing="true">
+  <foreignModel>IBeXGTModel.ecore</foreignModel>
+  <testsDirectory xsi:nil="true"/>
+  <genPackages prefix="IBeXGTModel" basePackage="org.emoflon.ibex.gt.gtmodel" disposableProviderFactory="true"
+      ecorePackage="IBeXGTModel.ecore#/">
+    <genClasses ecoreClass="IBeXGTModel.ecore#//GTModel">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTModel/ruleSet"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXGTModel.ecore#//GTRuleSet">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTRuleSet/rules"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXGTModel.ecore#//GTPattern">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTPattern/parameters"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTPattern/watchDogs"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTPattern/usedFeatures"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXGTModel.ecore#//GTRule">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTRule/parameters"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTRule/forEachOperations"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTRule/probability"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXGTModel.ecore#//GTForEachExpression">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTForEachExpression/created"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTForEachExpression/deleted"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTForEachExpression/attributeAssignments"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTForEachExpression/source"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTForEachExpression/reference"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTForEachExpression/iterator"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXGTModel.ecore#//GTParameter">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTParameter/type"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXGTModel.ecore#//GTParameterValue">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTParameterValue/parameter"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXGTModel.ecore#//GTIteratorEdge">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTIteratorEdge/iterator"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXGTModel.ecore#//GTIteratorAttributeAssignment">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTIteratorAttributeAssignment/iterator"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXGTModel.ecore#//GTIteratorAttributeReference">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTIteratorAttributeReference/iterator"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTIteratorAttributeReference/attribute"/>
+    </genClasses>
+    <genClasses ecoreClass="IBeXGTModel.ecore#//GTWatchDog">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTWatchDog/node"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference IBeXGTModel.ecore#//GTWatchDog/attribute"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

@@ -13,7 +13,7 @@
     <booleanAttribute key="org.eclipse.jdt.launching.ATTR_SHOW_CODEDETAILS_IN_EXCEPTION_MESSAGES" value="true"/>
     <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_CLASSPATH_ONLY_JAR" value="false"/>
     <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.eclipse.emf.mwe2.launch.runtime.Mwe2Launcher"/>
-    <stringAttribute key="org.eclipse.jdt.launching.MODULE_NAME" value="org.emoflon.ibex.tgg.runtime"/>
-    <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="src/org/emoflon/ibex/tgg/runtime/GenerateIBeXTGGRuntimeModel.mwe2"/>
-    <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="org.emoflon.ibex.tgg.runtime"/>
+    <stringAttribute key="org.eclipse.jdt.launching.MODULE_NAME" value="org.emoflon.ibex.tgg.runtimemodel"/>
+    <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="src/org/emoflon/ibex/tgg/runtimemodel/GenerateIBeXTGGRuntimeModel.mwe2"/>
+    <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="org.emoflon.ibex.tgg.runtimemodel"/>
 </launchConfiguration>

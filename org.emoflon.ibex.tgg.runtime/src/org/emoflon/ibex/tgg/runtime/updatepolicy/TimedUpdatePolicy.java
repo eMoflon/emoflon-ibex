@@ -1,0 +1,46 @@
+package org.emoflon.ibex.tgg.runtime.updatepolicy;
+
+import java.util.concurrent.TimeUnit;
+
+import org.emoflon.ibex.tgg.runtime.matches.ITGGMatch;
+import org.emoflon.ibex.tgg.runtime.matches.container.ImmutableMatchContainer;
+
+/**
+ * This UpdatePolicy can be used to extend other UpdatePolicies
+ * by a timeout feature.
+ * When the deadline is exceeded by the operationalization, the
+ * TimedUpdatePolicy will not provide any more matches, resulting
+ * in an OutOfTimeException.
+ */
+public class TimedUpdatePolicy implements IUpdatePolicy {
+	private IUpdatePolicy basePolicy;
+	private long startTime;
+	private long timeout;
+	
+	public class OutOfTimeException extends RuntimeException {
+		private static final long serialVersionUID = -1643055022267531668L;
+		
+		public OutOfTimeException() {
+			super("A request for a match was issued to a TimedUpdatePolicy after its timeout.");
+		}
+	}
+	
+	public TimedUpdatePolicy(IUpdatePolicy basePolicy, long timeout, TimeUnit timeUnit) {
+		this.basePolicy = basePolicy;
+		this.startTime = System.nanoTime();
+		this.timeout = timeUnit.toNanos(timeout);
+	}
+	
+	@Override
+	public ITGGMatch chooseOneMatch(ImmutableMatchContainer matchContainer) {
+		long currentTime = System.nanoTime();
+		long deadline = startTime + timeout;
+		if (currentTime >= deadline)
+			throw new OutOfTimeException();
+		return basePolicy.chooseOneMatch(matchContainer);
+	}
+	
+	public void reset() {
+		this.startTime = System.nanoTime();
+	}
+}

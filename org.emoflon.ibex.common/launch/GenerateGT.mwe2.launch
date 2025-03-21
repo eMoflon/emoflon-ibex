@@ -13,7 +13,7 @@
     <booleanAttribute key="org.eclipse.jdt.launching.ATTR_SHOW_CODEDETAILS_IN_EXCEPTION_MESSAGES" value="true"/>
     <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_CLASSPATH_ONLY_JAR" value="false"/>
     <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.eclipse.emf.mwe2.launch.runtime.Mwe2Launcher"/>
-    <stringAttribute key="org.eclipse.jdt.launching.MODULE_NAME" value="org.emoflon.ibex.gt.editor"/>
-    <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="src/org/emoflon/ibex/gt/editor/GenerateGT.mwe2"/>
-    <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="org.emoflon.ibex.gt.editor"/>
+    <stringAttribute key="org.eclipse.jdt.launching.MODULE_NAME" value="org.emoflon.ibex.gt.gtl"/>
+    <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="src/org/emoflon/ibex/gt/gtl/GenerateGTL.mwe2"/>
+    <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="org.emoflon.ibex.gt.gtl"/>
 </launchConfiguration>

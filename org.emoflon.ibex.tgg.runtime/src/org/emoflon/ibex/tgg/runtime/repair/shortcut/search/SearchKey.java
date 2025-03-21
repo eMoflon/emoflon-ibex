@@ -1,0 +1,53 @@
+package org.emoflon.ibex.tgg.runtime.repair.shortcut.search;
+
+import java.util.Objects;
+
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGEdge;
+import org.emoflon.ibex.tgg.tggmodel.IBeXTGGModel.TGGNode;
+
+/**
+ * A SearchKey represents an edge and consists of a sourceNode, a targetNode,
+ * the edge plus the information in which direction we are looking
+ * (source->target or target->source)
+ * 
+ * @author lfritsche
+ *
+ */
+public class SearchKey {
+
+	public TGGNode sourceNode;
+	public TGGNode targetNode;
+	public TGGEdge edge;
+	public boolean reverse;
+
+	public SearchKey(TGGNode sourceNode, TGGNode targetNode, TGGEdge edge, boolean reverse) {
+		this.sourceNode = sourceNode;
+		this.targetNode = targetNode;
+		this.edge = edge;
+		this.reverse = reverse;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if(obj instanceof SearchKey otherKey) {
+			return sourceNode.equals(otherKey.sourceNode) &&
+					targetNode.equals(otherKey.targetNode) &&
+							edge.equals(otherKey.edge) &&
+							reverse == otherKey.reverse;
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(sourceNode, targetNode, edge, reverse);
+	}
+
+	@Override
+	public String toString() {
+		if (reverse)
+			return targetNode.getName() + "__" + edge.getType().getName() + "__" + sourceNode.getName();
+		else
+			return sourceNode.getName() + "__" + edge.getType().getName() + "__" + targetNode.getName();
+	}
+}
