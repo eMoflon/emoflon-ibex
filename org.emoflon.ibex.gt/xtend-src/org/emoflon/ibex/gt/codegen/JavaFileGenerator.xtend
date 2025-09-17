@@ -201,7 +201,7 @@ class JavaFileGenerator {
 						*
 						* @return the new instance of the rule»
 						*/
-						public «getRuleClassName(rule)» «rule.name»(«FOR parameter : rule.parameters SEPARATOR ', '»final «getJavaType(parameter.type)» «parameter.name»Value«ENDFOR») {
+						public synchronized «getRuleClassName(rule)» «rule.name»(«FOR parameter : rule.parameters SEPARATOR ', '»final «getJavaType(parameter.type)» «parameter.name»Value«ENDFOR») {
 							try{
 								«getRuleClassName(rule)» rule = («getRuleClassName(rule)») interpreter.getRegisteredGraphTransformationPattern("«rule.name»");
 								«FOR parameter : rule.parameters»
@@ -212,7 +212,7 @@ class JavaFileGenerator {
 								return new «getRuleClassName(rule)»(this, interpreter«FOR parameter : rule.parameters BEFORE ', 'SEPARATOR ', '»«parameter.name»Value«ENDFOR»);
 							}
 						}
-			«ENDFOR»
+				«ENDFOR»
 				«FOR pattern : ibexModel.patternSet.contextPatterns
 						.filter [ pattern | !rulePreconditions.contains(pattern)]
 						.filter [ pattern | !pattern.name.contains("CONDITION")]»
@@ -222,7 +222,7 @@ class JavaFileGenerator {
 						*
 						* @return the new instance of the pattern»
 						*/
-						public «getPatternClassName(pattern)» «pattern.name»(«FOR parameter : getPatternParameter(pattern) SEPARATOR ', '»final «getJavaType(parameter.type)» «parameter.name»Value«ENDFOR») {
+						public synchronized «getPatternClassName(pattern)» «pattern.name»(«FOR parameter : getPatternParameter(pattern) SEPARATOR ', '»final «getJavaType(parameter.type)» «parameter.name»Value«ENDFOR») {
 							try{
 								«getPatternClassName(pattern)» pattern = («getPatternClassName(pattern)») interpreter.getRegisteredGraphTransformationPattern("«pattern.name»");
 								«FOR parameter : getPatternParameter(pattern)»
