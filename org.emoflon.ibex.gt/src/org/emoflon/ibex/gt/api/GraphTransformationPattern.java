@@ -1,6 +1,8 @@
 package org.emoflon.ibex.gt.api;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -172,7 +174,7 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 * 
 	 * @return the list of matches (can be empty if no matches exist)
 	 */
-	public final Collection<M> findMatches(boolean doUpdate) {
+	public final synchronized Collection<M> findMatches(boolean doUpdate) {		
 		return matchStream(doUpdate).collect(Collectors.toSet());
 	}
 	
@@ -181,7 +183,7 @@ public abstract class GraphTransformationPattern<M extends GraphTransformationMa
 	 * 
 	 * @return the list of matches (can be empty if no matches exist)
 	 */
-	public final Collection<M> findMatches() {
+	public final synchronized Collection<M> findMatches() {
 		return matchStream(true).collect(Collectors.toSet());
 	}
 	
