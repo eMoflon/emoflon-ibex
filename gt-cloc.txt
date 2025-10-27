@@ -1,0 +1,8 @@
+GT
+    filter replace_regex \\$  
+    filter replace_between_regex (["'])(.*?/\*)\g1 (.*?) "xx"
+    filter replace_between_regex (["'])(.*?\*/)\g1 (.*?) "xx"
+    filter call_regexp_common C++
+    extension gt
+    3rd_gen_scale 1.36
+

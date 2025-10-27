@@ -98,7 +98,7 @@ Other options:
 - Running ```Testsuite_GLPK.launch``` requires GLPK (see installation step 5).
 - Running ```Testsuite_Gurobi.launch``` requires Gurobi (see installation step 6).
 - Running ```Testsuite_CBC.launch``` requires Google OR tools (see installation step 7).
-- ```Testsuite_SAT4J.launch``` uses the SAT4J (automatically installed, but the slowest option).  
+- ```Testsuite_SAT4J.launch``` uses the SAT4J (automatically installed, but the slowest option).
 
 
 ## How to install
@@ -113,3 +113,13 @@ Please notice: Ensure that your Eclipse runs with an OpenJDK >= 21.
 This section is for *installation purpose* only.
 If you already setup your development workspace as described above, this section is irrelevant for you.
 Furthermore, you may need to install some additional dependencies if Eclipse tells you to.)
+
+
+## Counting GT lines of code
+
+[gt-cloc.txt](./gt-cloc.txt) is a language configuration file for [cloc](https://github.com/AlDanial/cloc) which can help to count lines of code (without comments, empty lines, etc.).
+After installing cloc on your system, run the following command to count the lines of a file `Rules.gt`:
+
+```
+$ cloc --read-lang-def=gt-cloc.txt Rules.gt
+```
