@@ -103,7 +103,9 @@ Other options:
 
 ## How to install
 
-eMoflon::IBeX can be installed via its updatesite: https://github.com/eMoflon/emoflon-ibex-updatesite
+eMoflon::IBeX can be installed via its updatesite:
+- Direct link of the updatesite: https://emoflon.org/emoflon-ibex-updatesite/snapshot/updatesite
+- Update site GitHub repository: https://github.com/eMoflon/emoflon-ibex-updatesite
 
 Please notice: You need at least Eclipse 2024-06.
 
