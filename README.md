@@ -47,9 +47,9 @@ For detailed installation instructions, please refer to the [README.md file](htt
 
 ## How to develop
 
-1. Install a Java JDK >= 21.
+1. Install a Java JDK >= 25.
 1. Install [GraphViz](http://www.graphviz.org/download/).
-1. Get the latest version of the [Eclipse Modeling Tools](https://www.eclipse.org/downloads/packages/). You need at least **Eclipse 2026-03**.
+1. Get the latest version of the [Eclipse Modeling Tools](https://www.eclipse.org/downloads/packages/). You need at least **Eclipse 2026-09**.
 1. Install Xtext from this update site (or use the Eclipse Marketplace):
 	http://download.eclipse.org/modeling/tmf/xtext/updates/composite/releases/
 1. Install PlantUML from this update site (or use the Eclipse Marketplace):
@@ -115,9 +115,9 @@ eMoflon::IBeX can be installed via its updatesite:
 - Direct link of the updatesite: https://emoflon.org/emoflon-ibex-updatesite/snapshot/updatesite
 - Update site GitHub repository: https://github.com/eMoflon/emoflon-ibex-updatesite
 
-Please notice: You need at least Eclipse 2026-03.
+Please notice: You need at least Eclipse 2026-09.
 
-Please notice: Ensure that your Eclipse runs with an OpenJDK >= 21.
+Please notice: Ensure that your Eclipse runs with an OpenJDK >= 25.
 
 (Please notice:
 This section is for *installation purpose* only.
